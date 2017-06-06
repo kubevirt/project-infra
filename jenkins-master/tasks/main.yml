@@ -1,0 +1,56 @@
+---
+- name: Install jenkins RPM repo
+  get_url: url=http://pkg.jenkins-ci.org/redhat/jenkins.repo dest=/etc/yum.repos.d/jenkins.repo
+  retries: 5
+  delay: 10
+  when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS'
+- name: Install jenkins GPG key
+  rpm_key:
+    state: present
+    key: http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
+- name: Install the latest version of Java
+  yum:
+    name: java
+    state: latest
+- name: Install the latest version of Jenkins
+  yum:
+    name: jenkins
+    state: latest
+- name: Enable Jenkins
+  systemd:
+    name: jenkins
+    enabled: yes
+- lineinfile:
+    path: /etc/sysconfig/jenkins
+    regexp: '^JENKINS_JAVA_OPTIONS='
+    line: 'JENKINS_JAVA_OPTIONS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"'    
+- name: Ensures init.groovy.d directory exists
+  file: 
+    path: /var/lib/jenkins/init.groovy.d/ 
+    state: directory    
+- copy:
+    src: "{{ role_path }}/files/01-plugins.groovy"
+    dest: /var/lib/jenkins/init.groovy.d/01-plugins.groovy
+- template:
+    src: "{{ role_path }}/templates/02-security.groovy"
+    dest: /var/lib/jenkins/init.groovy.d/02-security.groovy
+- name: Make sure the Jenkins service is running
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: jenkins
+- name: Restart Jenkins
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: jenkins
+- firewalld:
+    zone: public
+    port: 8080/tcp
+    permanent: true
+    state: enabled
+- firewalld:
+    zone: public
+    service: http
+    permanent: true
+    state: enabled

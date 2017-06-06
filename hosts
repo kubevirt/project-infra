@@ -1,0 +1,6 @@
+[jenkins-master]
+master ansible_host=virtlab101.virt.lab.eng.bos.redhat.com ansible_user=root
+
+[jenkins-slaves]
+slave0 ansible_host=virtlab103.virt.lab.eng.bos.redhat.com ansible_user=root
+slave1 ansible_host=virtblade06.virt.lab.eng.bos.redhat.com ansible_user=root

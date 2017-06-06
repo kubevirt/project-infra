@@ -1,0 +1,7 @@
+---
+- hosts: jenkins-master
+  roles:
+    - { role: jenkins-master }
+- hosts: jenkins-slaves
+  roles:
+    - { role: jenkins-slave }

@@ -1,0 +1,11 @@
+[Unit]
+Description=Jenkins Swarm client
+
+[Service]
+Type=simple
+User=jenkins
+ExecStart=/usr/bin/java -jar /swarm-client.jar -master {{ master }}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

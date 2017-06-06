@@ -1,0 +1,18 @@
+- name: Install the latest version of Java
+  yum:
+    name: java
+    state: latest
+- name: Download swarm client
+  get_url:
+    url: https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.4/swarm-client-3.4.jar
+    dest: /swarm-client.jar
+    mode: 0440
+- name: Copy systemd file    
+  template:
+    src: "{{ role_path }}/templates/swarm.service"
+    dest: /etc/systemd/system/swarm.service
+- name: Make sure that  the swarm agent is running
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: swarm
