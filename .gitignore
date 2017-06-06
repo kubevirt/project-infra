@@ -1,2 +1,5 @@
 *~
 *pyc
+group_vars/all/main.yml
+hosts
+hosts.*

@@ -3,19 +3,17 @@
   get_url: url=http://pkg.jenkins-ci.org/redhat/jenkins.repo dest=/etc/yum.repos.d/jenkins.repo
   retries: 5
   delay: 10
-  when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS'
 - name: Install jenkins GPG key
   rpm_key:
     state: present
     key: http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
-- name: Install the latest version of Java
-  yum:
-    name: java
+- name: Install jenkins
+  dnf:
+    name: '{{ item }}'
     state: latest
-- name: Install the latest version of Jenkins
-  yum:
-    name: jenkins
-    state: latest
+  with_items:
+    - java
+    - jenkins  
 - name: Enable Jenkins
   systemd:
     name: jenkins
@@ -28,22 +26,42 @@
   file: 
     path: /var/lib/jenkins/init.groovy.d/ 
     state: directory    
-- copy:
-    src: "{{ role_path }}/files/01-plugins.groovy"
+- template:
+    src: "{{ role_path }}/templates/01-plugins.groovy"
     dest: /var/lib/jenkins/init.groovy.d/01-plugins.groovy
 - template:
     src: "{{ role_path }}/templates/02-security.groovy"
     dest: /var/lib/jenkins/init.groovy.d/02-security.groovy
+- template:
+    src: "{{ role_path }}/templates/03-seed.groovy"
+    dest: /var/lib/jenkins/init.groovy.d/03-seed.groovy
+- template:
+    src: "{{ role_path }}/templates/04-jobs.groovy"
+    dest: /var/lib/jenkins/init.groovy.d/jobs.groovy
+- template:
+    src: "{{ role_path }}/templates/05-github.groovy"
+    dest: /var/lib/jenkins/init.groovy.d/05-github.groovy
 - name: Make sure the Jenkins service is running
   systemd:
     state: restarted
     daemon_reload: yes
     name: jenkins
-- name: Restart Jenkins
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    name: jenkins
+- name: Wait for Jenkins to start up
+  uri:
+    url: http://localhost:8080
+    status_code: 200
+    timeout: 5
+  register: jenkins_service_status
+  # Keep trying for 5 mins in 5 sec intervals
+  retries: 60
+  delay: 5
+  until: >
+     'status' in jenkins_service_status and
+     jenkins_service_status['status'] == 200    
+- name: Delete startu scripts with sensible data after jenkins started
+  file:
+    state: absent
+    path: "/var/lib/jenkins/init.groovy.d/"
 - firewalld:
     zone: public
     port: 8080/tcp

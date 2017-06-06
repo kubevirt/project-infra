@@ -2,11 +2,21 @@
   yum:
     name: java
     state: latest
+- user:
+    name: jenkins
+    shell: /bin/bash
+    createhome: yes
 - name: Download swarm client
   get_url:
-    url: https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.4/swarm-client-3.4.jar
-    dest: /swarm-client.jar
-    mode: 0440
+    url: https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.3/swarm-client-3.3.jar
+    dest: /opt/swarm-client.jar
+- name: Ensures systemd directory exists
+  file: 
+    path: /etc/systemd/system/
+    state: directory    
+- copy: 
+    content: "{{ jenkinsPass }}" 
+    dest: /opt/.pwd 
 - name: Copy systemd file    
   template:
     src: "{{ role_path }}/templates/swarm.service"

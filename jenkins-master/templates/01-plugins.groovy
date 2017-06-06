@@ -5,7 +5,7 @@ def logger = Logger.getLogger("")
 def installed = false
 def initialized = false
 
-def pluginParameter="github-oauth swarm"
+def pluginParameter="{{ plugins }}"
 def plugins = pluginParameter.split()
 logger.info("" + plugins)
 def instance = Jenkins.getInstance()

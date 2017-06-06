@@ -1,7 +1,9 @@
 ---
 - hosts: jenkins-master
   roles:
-    - { role: jenkins-master }
+    - jenkins-deps      
+    - jenkins-master
 - hosts: jenkins-slaves
   roles:
-    - { role: jenkins-slave }
+    - jenkins-deps      
+    - jenkins-slave

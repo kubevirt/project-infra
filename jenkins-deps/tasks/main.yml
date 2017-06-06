@@ -1,0 +1,30 @@
+---
+- name: Install build dependencies
+  dnf:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+    - vagrant
+    - vagrant-libvirt
+    - git
+    - golang  
+- name: Add jenkins user to libvirt group
+  user:
+    name: jenkins
+    groups: libvirt
+    append: yes      
+- name: Enable Libvirt
+  systemd:
+    name: '{{ item }}'
+    enabled: yes
+  with_items:
+    - virtlogd
+    - libvirtd      
+- name: Start Libvirt
+  systemd:
+    name: '{{ item }}'
+    state: restarted
+    daemon_reload: yes
+  with_items:
+    - virtlogd
+    - libvirtd      
