@@ -1,0 +1,290 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+	"name": "kubevirt-github-webhooks",
+	"annotations": {
+	    "openshift.io/display-name": "KubeVirt WebHooks",
+	    "description": "Hooks for github used by the KubeVirt project",
+	    "tags": "kubevirt",
+	    "iconClass": "icon-php"
+	}
+    },
+    "labels": {
+	"template": "kubevirt-github-webhooks"
+    },
+    "objects": [
+	{
+	    "kind": "Secret",
+	    "apiVersion": "v1",
+	    "metadata": {
+		"name": "${NAME}"
+	    },
+	    "stringData" : {
+		"github-sig-token" : "${GITHUB_SIG_TOKEN_SECRET}",
+		"github-auth-token" : "${GITHUB_AUTH_TOKEN_SECRET}"
+	    }
+	},
+	{
+	    "kind": "Service",
+	    "apiVersion": "v1",
+	    "metadata": {
+		"name": "${NAME}",
+		"annotations": {
+		    "description": "Exposes and load balances the application pods"
+		}
+	    },
+	    "spec": {
+		"ports": [
+		    {
+			"name": "web",
+			"port": 80,
+			"targetPort": 8080
+		    }
+		],
+		"selector": {
+		    "name": "${NAME}"
+		}
+	    }
+	},
+	{
+	    "kind": "Route",
+	    "apiVersion": "v1",
+	    "metadata": {
+		"name": "${NAME}",
+		"annotations": {
+		    "template.openshift.io/expose-uri": "http://{.spec.host}{.spec.path}"
+		}
+	    },
+	    "spec": {
+		"host": "${APPLICATION_DOMAIN}",
+		"to": {
+		    "kind": "Service",
+		    "name": "${NAME}"
+		}
+	    }
+	},
+	{
+	    "kind": "ImageStream",
+	    "apiVersion": "v1",
+	    "metadata": {
+		"name": "${NAME}",
+		"annotations": {
+		    "description": "Keeps track of changes in the application image"
+		}
+	    }
+	},
+	{
+	    "kind": "BuildConfig",
+	    "apiVersion": "v1",
+	    "metadata": {
+		"name": "${NAME}",
+		"annotations": {
+		    "description": "Defines how to build the application"
+		}
+	    },
+	    "spec": {
+		"source": {
+		    "type": "Git",
+		    "git": {
+			"uri": "${SOURCE_REPOSITORY_URL}",
+			"ref": "${SOURCE_REPOSITORY_REF}"
+		    },
+		    "contextDir": "${SOURCE_REPOSITORY_SUBDIR}"
+		},
+		"strategy": {
+		    "type": "Source",
+		    "sourceStrategy": {
+			"from": {
+			    "kind": "ImageStreamTag",
+			    "namespace": "${NAMESPACE}",
+			    "name": "python:2.7"
+			}
+		    }
+		},
+		"output": {
+		    "to": {
+			"kind": "ImageStreamTag",
+			"name": "${NAME}:latest"
+		    }
+		},
+		"triggers": [
+		    {
+			"type": "ImageChange"
+		    },
+		    {
+			"type": "ConfigChange"
+		    },
+		    {
+			"type": "GitHub",
+			"github": {
+			    "secret": "${IMAGE_REBUILD_HOOK_SECRET}"
+			}
+		    }
+		]
+	    }
+	},
+	{
+	    "kind": "DeploymentConfig",
+	    "apiVersion": "v1",
+	    "metadata": {
+		"name": "${NAME}",
+		"annotations": {
+		    "description": "Defines how to deploy the application server"
+		}
+	    },
+	    "spec": {
+		"triggers": [
+		    {
+			"type": "ImageChange",
+			"imageChangeParams": {
+			    "automatic": true,
+			    "containerNames": [
+				"kubevirt-github-webhooks"
+			    ],
+			    "from": {
+				"kind": "ImageStreamTag",
+				"name": "${NAME}:latest"
+			    }
+			}
+		    },
+		    {
+			"type": "ConfigChange"
+		    }
+		],
+		"replicas": 1,
+		"selector": {
+		    "name": "${NAME}"
+		},
+		"template": {
+		    "metadata": {
+			"name": "${NAME}",
+			"labels": {
+			    "name": "${NAME}"
+			}
+		    },
+		    "spec": {
+			"containers": [
+			    {
+				"name": "kubevirt-github-webhooks",
+				"image": " ",
+				"ports": [
+				    {
+					"containerPort": 8080
+				    }
+				],
+				"readinessProbe": {
+				    "timeoutSeconds": 3,
+				    "initialDelaySeconds": 3,
+				    "httpGet": {
+					"path": "/healthz",
+					"port": 8080
+				    }
+				},
+				"livenessProbe": {
+				    "timeoutSeconds": 3,
+				    "initialDelaySeconds": 30,
+				    "httpGet": {
+					"path": "/healthz",
+					"port": 8080
+				    }
+				},
+				"env": [
+				    {
+					"name": "GITHUB_SIG_TOKEN",
+					"valueFrom": {
+					    "secretKeyRef" : {
+						"name" : "${NAME}",
+						"key" : "github-sig-token"
+					    }
+					}
+				    },
+				    {
+					"name": "GITHUB_AUTH_TOKEN",
+					"valueFrom": {
+					    "secretKeyRef" : {
+						"name" : "${NAME}",
+						"key" : "github-auth-token"
+					    }
+					}
+				    }
+				],
+				"resources": {
+				    "limits": {
+					"memory": "${MEMORY_LIMIT}"
+				    }
+				}
+			    }
+			]
+		    }
+		}
+	    }
+	}
+    ],
+    "parameters": [
+	{
+	    "name": "NAME",
+	    "displayName": "Name",
+	    "description": "The name assigned to all of the frontend objects defined in this template.",
+	    "required": true,
+	    "value": "kubevirt-github-webhooks"
+	},
+	{
+	    "name": "NAMESPACE",
+	    "displayName": "Namespace",
+	    "description": "The OpenShift Namespace where the ImageStream resides.",
+	    "required": true,
+	    "value": "openshift"
+	},
+	{
+	    "name": "MEMORY_LIMIT",
+	    "displayName": "Memory Limit",
+	    "description": "Maximum amount of memory the hook container can use.",
+	    "required": true,
+	    "value": "512Mi"
+	},
+	{
+	    "name": "SOURCE_REPOSITORY_URL",
+	    "displayName": "Git Repository URL",
+	    "description": "The URL of the repository with your application source code.",
+	    "required": true,
+	    "value": "https://github.com/kubevirt/project-infra.git"
+	},
+	{
+	    "name": "SOURCE_REPOSITORY_REF",
+	    "displayName": "Git Reference",
+	    "description": "Set this to a branch name, tag or other ref of your repository if you are not using the default branch."
+	},
+	{
+	    "name": "SOURCE_REPOSITORY_SUBDIR",
+	    "displayName": "Git Repository Subdir",
+	    "description": "Set this to the relative path to your project if it is not in the root of your repository.",
+	    "value": "/github/webhooks"
+	},
+	{
+	    "name": "APPLICATION_DOMAIN",
+	    "displayName": "Application Hostname",
+	    "description": "The exposed hostname that will route to the webhook service, if left blank a value will be defaulted.",
+	    "value": ""
+	},
+	{
+	    "name": "IMAGE_REBUILD_HOOK_SECRET",
+	    "displayName": "GitHub image rebuild webhook secret",
+	    "description": "GitHub secret for triggering image rebuilds",
+	    "generate": "expression",
+	    "from": "[a-zA-Z0-9]{40}"
+	},
+	{
+	    "name": "GITHUB_SIG_TOKEN_SECRET",
+	    "displayName": "GitHub webhook signature token secret",
+	    "description": "GitHub webhook signature token secret",
+	    "generate": "expression",
+	    "from": "[a-zA-Z0-9]{40}"
+	},
+	{
+	    "name": "GITHUB_AUTH_TOKEN_SECRET",
+	    "displayName": "GitHub webhook auth token secret",
+	    "description": "GitHub webhook auth token secret"
+	}
+    ]
+}
