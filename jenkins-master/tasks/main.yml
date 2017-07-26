@@ -46,23 +46,22 @@
 - template:
     src: "{{ role_path }}/templates/05-github.groovy"
     dest: /var/lib/jenkins/init.groovy.d/05-github.groovy
+- template:
+    src: "{{ role_path }}/templates/06-done.groovy"
+    dest: /var/lib/jenkins/init.groovy.d/06-done.groovy
 - name: Make sure the Jenkins service is running
   systemd:
     state: restarted
     daemon_reload: yes
     name: jenkins
-- name: Wait for Jenkins to start up
-  uri:
-    url: http://localhost:8080
-    status_code: 200
-    timeout: 5
-  register: jenkins_service_status
-  # Keep trying for 5 mins in 5 sec intervals
-  retries: 60
-  delay: 5
-  until: >
-     'status' in jenkins_service_status and
-     jenkins_service_status['status'] == 200    
+- name: Wait for Jenkins to be fully provisioned
+  wait_for:
+    path: /var/lib/jenkins/done
+    timeout: 300
+- name: Delete the file which indicates a completed jenkins provision
+  file:
+    state: absent
+    path: "/var/lib/jenkins/done"
 - firewalld:
     zone: public
     port: 8080/tcp
@@ -77,7 +76,7 @@
   file:
     state: absent
     path: "/var/lib/jenkins/init.groovy.d/"
-- name: Delete startup scripts with sensible data after jenkins started
+- name: Delete job description with sensitive data
   file:
     state: absent
     path: "/var/lib/jenkins/jobs.groovy"
