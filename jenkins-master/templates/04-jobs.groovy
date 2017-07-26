@@ -25,6 +25,7 @@ job('kubevirt-functional-tests') {
                     context('kubevirt-functional-tests/jenkins/pr')
                     triggeredStatus('kubevirt-functional-tests/jenkins/pr')
                     startedStatus('kubevirt-functional-tests/jenkins/pr')
+                    statusUrl('https://github.com/kubevirt/kubevirt')
                     completedStatus('SUCCESS', 'All is well')
                     completedStatus('FAILURE', 'Something went wrong. Investigate!')
                     completedStatus('PENDING', 'still in progress...')
