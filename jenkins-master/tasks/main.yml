@@ -14,6 +14,11 @@
   with_items:
     - java
     - jenkins  
+    - firewalld  
+- name: Enable Firewalld
+  systemd:
+    name: firewalld
+    enabled: yes
 - name: Enable Jenkins
   systemd:
     name: jenkins
@@ -58,7 +63,7 @@
   until: >
      'status' in jenkins_service_status and
      jenkins_service_status['status'] == 200    
-- name: Delete startu scripts with sensible data after jenkins started
+- name: Delete startup scripts with sensible data after jenkins started
   file:
     state: absent
     path: "/var/lib/jenkins/init.groovy.d/"

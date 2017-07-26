@@ -1,0 +1,42 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+Vagrant.configure(2) do |config|
+  config.vm.box = "fedora26"
+  config.vm.box_url = "http://mirror.de.leaseweb.net/fedora/linux/releases/26/CloudImages/x86_64/images/Fedora-Cloud-Base-Vagrant-26-1.5.x86_64.vagrant-libvirt.box"
+
+  if Vagrant.has_plugin?("vagrant-cachier") then
+      config.cache.scope = :machine
+      config.cache.auto_detect = false
+      config.cache.enable :dnf
+      config.cache.synced_folder_opts = {
+      type: :nfs,
+      mount_options: ['rw', 'vers=4', 'tcp']
+    }
+  end
+
+  config.vm.provider :libvirt do |domain|
+      domain.cpus = 2
+      domain.nested = true  # enable nested virtualization
+      domain.cpu_mode = "host-model"
+  end
+ 
+   config.ssh.insert_key = false
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.verbose = "v"
+    ansible.playbook = "ci.yaml"
+  end 
+
+  config.vm.define "jenkins-master" do |master|
+      master.vm.hostname = "master"
+      master.vm.network "private_network", ip: "192.168.201.2"
+      master.vm.provider :libvirt do |domain|
+          domain.memory = 3000
+      end
+
+      master.vm.provision "shell", inline: <<-SHELL
+      echo "hallo"
+      SHELL
+  end
+end

@@ -1,9 +1,18 @@
 ---
+- hosts: all
+  sudo: yes
+  gather_facts: False
+
+  tasks:
+  - name: install python 2
+    raw: dnf install -y python2 
 - hosts: jenkins-master
+  sudo: yes
   roles:
     - jenkins-deps      
     - jenkins-master
 - hosts: jenkins-slaves
+  sudo: yes
   roles:
     - jenkins-deps      
     - jenkins-slave
