@@ -1,5 +1,5 @@
 - name: Install the latest version of Java
-  yum:
+  dnf:
     name: java
     state: latest
 - user:

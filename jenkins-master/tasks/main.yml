@@ -42,7 +42,7 @@
     dest: /var/lib/jenkins/init.groovy.d/03-seed.groovy
 - template:
     src: "{{ role_path }}/templates/04-jobs.groovy"
-    dest: /var/lib/jenkins/init.groovy.d/jobs.groovy
+    dest: /var/lib/jenkins/jobs.groovy
 - template:
     src: "{{ role_path }}/templates/05-github.groovy"
     dest: /var/lib/jenkins/init.groovy.d/05-github.groovy
@@ -63,10 +63,6 @@
   until: >
      'status' in jenkins_service_status and
      jenkins_service_status['status'] == 200    
-- name: Delete startup scripts with sensible data after jenkins started
-  file:
-    state: absent
-    path: "/var/lib/jenkins/init.groovy.d/"
 - firewalld:
     zone: public
     port: 8080/tcp
@@ -77,3 +73,11 @@
     service: http
     permanent: true
     state: enabled
+- name: Delete startup scripts with sensible data after jenkins started
+  file:
+    state: absent
+    path: "/var/lib/jenkins/init.groovy.d/"
+- name: Delete startup scripts with sensible data after jenkins started
+  file:
+    state: absent
+    path: "/var/lib/jenkins/jobs.groovy"

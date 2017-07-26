@@ -34,9 +34,14 @@ Vagrant.configure(2) do |config|
       master.vm.provider :libvirt do |domain|
           domain.memory = 3000
       end
-
-      master.vm.provision "shell", inline: <<-SHELL
-      echo "hallo"
-      SHELL
   end
+
+  config.vm.define "jenkins-slaves" do |master|
+      master.vm.hostname = "slave"
+      master.vm.network "private_network", ip: "192.168.201.3"
+      master.vm.provider :libvirt do |domain|
+          domain.memory = 3000
+      end
+  end
+
 end
