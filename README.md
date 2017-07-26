@@ -11,5 +11,5 @@ This repository provides supporting code for the project infrastructure
  * github/ci
 
   Ansible based jenkins provisioner, for running functional tests with vagrant
-  on Github Pull Requests. 
+  on Github Pull Requests.
 

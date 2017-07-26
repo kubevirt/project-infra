@@ -16,7 +16,7 @@ used.
  * Fill in your callback URL (e.g. `http://myjenkins.com:1234/ghprbhook/`)
  * Content-type should be `application/x-www-form-urlencoded`
  * Add a secret
- * Enable `Push`, `Pull request`, `Issue comment` notifications 
+ * Enable `Push`, `Pull request`, `Issue comment` notifications
 
 ## Prepare your Ansible Variables
 
