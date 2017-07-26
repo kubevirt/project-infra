@@ -15,7 +15,7 @@
     mode: 0775
 - name: Download swarm client
   get_url:
-    url: https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.3/swarm-client-3.3.jar
+    url: https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.4/swarm-client-3.4.jar
     dest: /opt/swarm-client.jar
 - name: Ensures systemd directory exists
   file: 
@@ -33,3 +33,7 @@
     state: restarted
     daemon_reload: yes
     name: swarm
+- name: Make sure that the swarm agent is started on boot
+  systemd:
+    name: swarm
+    enabled: yes
