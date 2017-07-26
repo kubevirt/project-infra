@@ -1,10 +1,10 @@
-= kubevirt-ci =
+# kubevirt-ci
 
 Ansible based description of the KubeVirt CI environment for functional tests.
 The ansible roles here allow to recrate and scale the Jenkins CI environment
 used.
 
-= Prepare your Github Project =
+## Prepare your Github Project
 
 1. create an access token with the following permissions.
 
@@ -18,7 +18,7 @@ used.
  * Add a secret
  * Enable `Push`, `Pull request`, `Issue comment` notifications 
 
-= Prepare your Ansible Variables =
+## Prepare your Ansible Variables
 
 Create a file `group_vars/all/main.yml` based on
 
@@ -36,12 +36,12 @@ githubRepo: "rmohr/kubevirt"
 
 There you can fill in you token, your secret and the Jenkins callback URL.
 
-= Scaling =
+## Scaling
 
 To add new workers, a client role exists. It uses the Jenkins Swarm plugin to
 attach it to the Jenkins master.
 
-= Run the playbook =
+## Run the playbook
 
 Add your master and your clients to the `hosts` file:
 
