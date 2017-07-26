@@ -12,6 +12,7 @@
     - golang
     - rsync
     - libvirt-client
+    - libvirt-devel
 - name: Add jenkins user to libvirt group
   user:
     name: jenkins
