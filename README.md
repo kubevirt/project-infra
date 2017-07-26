@@ -37,7 +37,7 @@ Create a file `group_vars/all/main.yml` based on
 jenkinsUser: "jenkins"
 jenkinsPass: "mypwd"
 master: "http://my.jenkins.com:8080"
-slaveSlots: 3
+slaveSlots: 1
 githubSecret: ""
 githubCallbackUrl: "http://my.jenkins.com:8080"
 githubToken: "453f86e8a6c9eed45789c689089e1eb2w9x2fda3"

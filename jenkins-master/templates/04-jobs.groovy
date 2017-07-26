@@ -17,7 +17,7 @@ job('kubevirt-functional-tests') {
     triggers {
         githubPullRequest {
             admins(['rmohr', 'fabiand', 'stu-gott', 'admiyo'])
-            cron('H/5 * * * *')
+            cron('H/2 * * * *')
             triggerPhrase('OK to test')
             allowMembersOfWhitelistedOrgsAsAdmin()
             extensions {
@@ -35,6 +35,6 @@ job('kubevirt-functional-tests') {
         }
     }
     steps {
-        shell('cd go/src/kubevirt.io/kubevirt && vagrant up')
+        shell('cd go/src/kubevirt.io/kubevirt && bash automation/test.sh')
     }
 }
