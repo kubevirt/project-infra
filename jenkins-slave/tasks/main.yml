@@ -6,6 +6,13 @@
     name: jenkins
     shell: /bin/bash
     createhome: yes
+- name: Creates jenkins workdir
+  file:
+    path: /var/lib/jenkins
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: 0775
 - name: Download swarm client
   get_url:
     url: https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.3/swarm-client-3.3.jar
