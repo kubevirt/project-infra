@@ -7,19 +7,21 @@
     - vagrant
     - vagrant-libvirt
     - git
-    - golang  
+    - golang
+    - rsync
+    - libvirt-client
 - name: Add jenkins user to libvirt group
   user:
     name: jenkins
     groups: libvirt
-    append: yes      
+    append: yes
 - name: Enable Libvirt
   systemd:
     name: '{{ item }}'
     enabled: yes
   with_items:
     - virtlogd
-    - libvirtd      
+    - libvirtd
 - name: Start Libvirt
   systemd:
     name: '{{ item }}'
@@ -27,4 +29,8 @@
     daemon_reload: yes
   with_items:
     - virtlogd
-    - libvirtd      
+    - libvirtd
+- name: Disable selinux, to not block rsync via SSH in Jenkins
+  selinux:
+    policy: targeted
+    state: permissive

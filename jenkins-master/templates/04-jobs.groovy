@@ -34,6 +34,6 @@ job('kubevirt-functional-tests') {
         }
     }
     steps {
-        shell('echo HELLO')
+        shell('cd go/src/kubevirt.io/kubevirt && vagrant up')
     }
 }
