@@ -1,6 +1,6 @@
-*~
-*pyc
-group_vars/all/main.yml
+**/group_vars/all/main.yml
 hosts
 hosts.*
 .vagrant
+*~
+*pyc
