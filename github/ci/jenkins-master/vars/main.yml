@@ -1,0 +1,2 @@
+---
+plugins: "ghprb job-dsl github-oauth swarm"

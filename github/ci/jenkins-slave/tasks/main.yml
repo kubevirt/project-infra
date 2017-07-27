@@ -1,0 +1,39 @@
+- name: Install the latest version of Java
+  dnf:
+    name: java
+    state: latest
+- user:
+    name: jenkins
+    shell: /bin/bash
+    createhome: yes
+- name: Creates jenkins workdir
+  file:
+    path: /var/lib/jenkins
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: 0775
+- name: Download swarm client
+  get_url:
+    url: https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.4/swarm-client-3.4.jar
+    dest: /opt/swarm-client.jar
+- name: Ensures systemd directory exists
+  file: 
+    path: /etc/systemd/system/
+    state: directory    
+- copy: 
+    content: "{{ jenkinsPass }}" 
+    dest: /opt/.pwd 
+- name: Copy systemd file    
+  template:
+    src: "{{ role_path }}/templates/swarm.service"
+    dest: /etc/systemd/system/swarm.service
+- name: Make sure that  the swarm agent is running
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: swarm
+- name: Make sure that the swarm agent is started on boot
+  systemd:
+    name: swarm
+    enabled: yes
