@@ -59,3 +59,10 @@ Provision your maschines:
 ```
 ansible-playbook -i hosts ci.yaml
 ```
+
+## KubeVirt CI Landscape specifics
+
+There exists an additional `beaker.yaml` playbook. It is not generalized, and
+allows us the increase in all our beaker managed servers, to increase the LVM
+volumes to the maximum available size. The resulting extra LVM volume, is then
+used as the default storage location for all libvirt related images.

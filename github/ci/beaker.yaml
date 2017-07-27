@@ -1,0 +1,30 @@
+---
+- hosts: all
+  sudo: yes
+  gather_facts: False
+
+  tasks:
+  - name: install python 2
+    raw: dnf install -y python2 
+- hosts: all
+  sudo: yes
+  tasks:
+  - lvol:
+      vg: fedora
+      lv: data
+      size: +100%FREE
+  - filesystem:
+      fstype: ext4
+      dev: /dev/mapper/fedora-data
+  - name: Mount data volume
+    mount:
+      path: /var/lib/libvirt/images/
+      src: /dev/mapper/fedora-data
+      fstype: ext4
+      state: present
+  - name: Mount data volume
+    mount:
+      path: /var/lib/libvirt/images/
+      src: /dev/mapper/fedora-data
+      fstype: ext4
+      state: mounted
