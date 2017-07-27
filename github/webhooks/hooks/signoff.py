@@ -18,7 +18,7 @@ import re
 class SignoffHook(pullrequest.CommitCheckHook):
 
     SOB = re.compile("^\s*Signed-off-by:.*")
-    
+
     def check_commit(self, commit):
         message = commit["commit"]["message"]
         lines = message.split("\n")

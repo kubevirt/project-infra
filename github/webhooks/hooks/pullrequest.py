@@ -50,7 +50,7 @@ class CommitCheckHook(base.Hook):
 
     def check_commit(self, commit):
         raise NotImplementedError()
-        
+
     def run(self, data):
         if "pull_request" not in data:
             return "OK"
