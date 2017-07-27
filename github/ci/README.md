@@ -6,7 +6,14 @@ used.
 
 ## Prepare your Github Project
 
-1. create an access token with the following permissions.
+The following steps **1** and **2** give youre Jenkins server the permissions
+to add comments to your Pull Request and to change the build status. Step **3**
+allow your jenkins server, to be notified by Github, if there is new code to
+test. Independently of these steps, periodically polling a Github repo for
+changes will always work.
+
+1. create an access token with the following permissions, to allow your jenkins
+   server to update the PR states.
 
 ![test](personal_access_token.png)
 
@@ -66,3 +73,34 @@ There exists an additional `beaker.yaml` playbook. It is not generalized, and
 allows us the increase in all our beaker managed servers, to increase the LVM
 volumes to the maximum available size. The resulting extra LVM volume, is then
 used as the default storage location for all libvirt related images.
+
+## Testing the CI infrastructure
+
+To test changes in this setup, an extra Vagrant setup exists in this repo. To
+provision a master and a slave with Vagrant, do the follwoing:
+
+```bash
+mkdir -p group_vars/all/
+cat >group_vars/all/main.yml <<EOL
+jenkinsUser: "vagrant"
+jenkinsPass: "vagrant"
+master: "http://192.168.201.2:8080"
+slaveSlots: 1
+githubSecret: ""
+githubCallbackUrl: "http://my.jenkins.com:8080"
+githubToken: "453f86e8a6c9eed45789c689089e1eb2w9x2fda3"
+githubRepo: "kubevirt/kubevirt"
+EOL
+vagrant up
+```
+
+This will provision a master and a slave. The master jenkins instance can be
+reached at `http://192.168.201.2:8080` after the ansible playbooks are done.
+Credentials are `vagrant:vagrant` To re-run the ansible playbooks after a
+change, it is sufficient to just run `vagrant provision`. So no need to
+reprovision the machines, if you don't want a full test run.
+
+The provisioned VMs, will periodically poll the `kubevirt/kubevirt` repo and
+try to run the functional tests. Since the token is not valid, it will not
+update the kubevirt repo. Nested virtualization can be slow, don't expect too
+much from it.
