@@ -15,6 +15,14 @@ uc.updateAllSites()
 
 LinkedList futures = []
 
+logger.info("Updating all plugins")
+uc.getUpdates().each {
+  logger.info("Updating " + it.getDisplayName())
+  futures << it.deploy(true)
+  installed = true
+}
+
+logger.info("Install missing plugins")
 plugins.each {
   logger.info("Checking " + it)
   if (!pm.getPlugin(it)) {
