@@ -72,7 +72,7 @@
     service: http
     permanent: true
     state: enabled
-- name: Delete startup scripts with sensible data after jenkins started
+- name: Delete startup scripts with sensitive data after jenkins started
   file:
     state: absent
     path: "/var/lib/jenkins/init.groovy.d/"
