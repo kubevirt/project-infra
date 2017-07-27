@@ -16,7 +16,7 @@ job('kubevirt-functional-tests') {
     }
     triggers {
         githubPullRequest {
-            admins(['rmohr', 'fabiand', 'stu-gott', 'admiyo'])
+            admins(['rmohr', 'fabiand', 'stu-gott', 'admiyo', 'davidvossel', 'vladikr', 'berrange'])
             cron('H/2 * * * *')
             triggerPhrase('OK to test')
             allowMembersOfWhitelistedOrgsAsAdmin()
