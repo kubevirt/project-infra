@@ -1,13 +1,15 @@
 ---
 - hosts: all
-  sudo: yes
+  become: true
+  become_user: root
   gather_facts: False
 
   tasks:
   - name: install python 2
     raw: dnf install -y python2
 - hosts: all
-  sudo: yes
+  become: true
+  become_user: root
   tasks:
   - lvol:
       vg: fedora
