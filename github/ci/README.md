@@ -69,10 +69,19 @@ ansible-playbook -i hosts ci.yaml
 
 ## KubeVirt CI Landscape Specifics
 
-There exists an additional `beaker.yaml` playbook. It is not generalized, and
-allows us in all our beaker managed servers, to increase the LVM volumes to the
-maximum available size. The resulting extra LVM volume, is then used as the
-default storage location for all VM images.
+There exists an additional `beaker` role. It is not generalized, and allows us
+in all our beaker managed servers, to increase the LVM volumes to the maximum
+available size. The resulting extra LVM volume, is then used as the default
+storage location for all VM images.
+
+To make use of that role, adjust your `hosts` file and add all beaker managed
+servers to a `beaker` section:
+
+```
+[beaker]
+slave0 ansible_host=slave0.my.jenkins.com ansible_user=root
+slave1 ansible_host=slave1.my.jenkins.com ansible_user=root
+```
 
 ## Testing the CI infrastructure
 

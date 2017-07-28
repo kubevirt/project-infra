@@ -1,4 +1,8 @@
 job('kubevirt-functional-tests') {
+    throttleConcurrentBuilds {
+        maxTotal(0)
+        maxPerNode(1)
+    }
     parameters {
         stringParam('sha1', '', 'commit to build')
     }
