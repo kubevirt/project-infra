@@ -5,7 +5,7 @@
   gather_facts: False
   tasks:
   - name: install python 2
-    raw: dnf install -y python2
+    raw: dnf install -y python2 libselinux-python
 - hosts: beaker
   become: true
   become_user: root
@@ -23,3 +23,6 @@
   roles:
     - jenkins-deps
     - jenkins-slave
+- hosts: store
+  roles:
+    - store

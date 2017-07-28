@@ -16,7 +16,6 @@ CLI.get().setEnabled(false);
 def instance = Jenkins.getInstance()
 
 def hudsonRealm = new HudsonPrivateSecurityRealm(false)
-// XXX, that should be done via jenkins and obviously without hardcoding
 hudsonRealm.createAccount("{{ jenkinsUser }}","{{ jenkinsPass }}")
 instance.setSecurityRealm(hudsonRealm)
 

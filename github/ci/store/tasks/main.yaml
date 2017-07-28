@@ -1,0 +1,11 @@
+---
+- name: Set authorized key, taken from file
+  become: false
+  authorized_key:
+    user: "{{ storeSshUser }}"
+    state: present
+    key: "{{ lookup('file', 'id_rsa_jenkins_master.pub') }}"
+- name: Make sure the publish root directory exists    
+  file:
+    state: directory
+    path: "{{ storeSshRemoteDir }}"

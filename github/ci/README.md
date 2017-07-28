@@ -39,6 +39,10 @@ githubSecret: ""
 githubCallbackUrl: "http://my.jenkins.com:8080"
 githubToken: "453f86e8a6c9eed45789c689089e1eb2w9x2fda3"
 githubRepo: "rmohr/kubevirt"
+storeSshUser: "fas-user"
+storeSshUrl: "fedoraproject.org"
+storeSshRemoteDir: "public_html/jenkins"
+storeReportUrl: "https://fas-user.fedorapeople.org/"
 ```
 
 There you can fill in you token, your secret and the Jenkins callback URL.
@@ -69,6 +73,8 @@ ansible-playbook -i hosts ci.yaml
 
 ## KubeVirt CI Landscape Specifics
 
+### Beaker Role
+
 There exists an additional `beaker` role. It is not generalized, and allows us
 in all our beaker managed servers, to increase the LVM volumes to the maximum
 available size. The resulting extra LVM volume, is then used as the default
@@ -83,10 +89,33 @@ slave0 ansible_host=slave0.my.jenkins.com ansible_user=root
 slave1 ansible_host=slave1.my.jenkins.com ansible_user=root
 ```
 
+### Store Role
+
+Our CI infrastructure is not public accessible. Therefore we publish our build
+logs separately. The `store` role, can be used to use a fedorapeople account,
+to publish the console logs. The PR status message link, will point there.
+
+Use the four variables
+
+```
+storeSshUser: "fas-user"
+storeSshUrl: "fedoraproject.org"
+storeSshRemoteDir: "public_html/jenkins"
+storeReportUrl: "https://fas-user.fedorapeople.org/"
+```
+
+in `group_vars/all/main.yml` to configure your account, and add the
+fedorapeople server to your hosts file:
+
+```
+[store]
+store0 ansible_host=fedorapeople.org ansible_user=fas-user
+```
+
 ## Testing the CI infrastructure
 
 To test changes in this setup, an extra Vagrant setup exists in this repository. To
-provision a master and a slave with Vagrant, do the following:
+provision a master, a slave and a store with Vagrant, do the following:
 
 ```bash
 mkdir -p group_vars/all/
@@ -99,6 +128,10 @@ githubSecret: ""
 githubCallbackUrl: "http://my.jenkins.com:8080"
 githubToken: "453f86e8a6c9eed45789c689089e1eb2w9x2fda3"
 githubRepo: "kubevirt/kubevirt"
+storeSshUser: "vagrant"
+storeSshUrl: "192.168.201.4"
+storeSshRemoteDir: "public_html/jenkins"
+storeReportUrl: "http://192.168.201.4/jenkins"
 EOL
 vagrant up
 ```

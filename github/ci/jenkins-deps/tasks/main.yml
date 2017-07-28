@@ -5,7 +5,6 @@
     state: latest
   with_items:
     - python-firewall
-    - libselinux-python
     - vagrant
     - vagrant-libvirt
     - git

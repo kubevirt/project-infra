@@ -29,7 +29,7 @@ job('kubevirt-functional-tests') {
                     context('kubevirt-functional-tests/jenkins/pr')
                     triggeredStatus('kubevirt-functional-tests/jenkins/pr')
                     startedStatus('kubevirt-functional-tests/jenkins/pr')
-                    statusUrl('https://github.com/kubevirt/kubevirt')
+                    statusUrl('{{ storeReportUrl }}/$BUILD_NUMBER/console.log')
                     completedStatus('SUCCESS', 'All is well')
                     completedStatus('FAILURE', 'Something went wrong. Investigate!')
                     completedStatus('PENDING', 'still in progress...')
@@ -39,6 +39,17 @@ job('kubevirt-functional-tests') {
         }
     }
     steps {
-        shell('cd go/src/kubevirt.io/kubevirt && bash automation/test.sh')
+        shell('cd go/src/kubevirt.io/kubevirt && bash automation/test.sh 2>&1 | tee ${WORKSPACE}/console.log')
+    }
+    publishers {
+        publishOverSsh {
+            server('store') {
+                transferSet {
+                    sourceFiles('console.log')
+                    remoteDirectory('$BUILD_NUMBER')
+
+                }
+            }
+        }
     }
 }

@@ -47,8 +47,11 @@
     src: "{{ role_path }}/templates/05-github.groovy"
     dest: /var/lib/jenkins/init.groovy.d/05-github.groovy
 - template:
-    src: "{{ role_path }}/templates/06-done.groovy"
-    dest: /var/lib/jenkins/init.groovy.d/06-done.groovy
+    src: "{{ role_path }}/templates/06-publisher.groovy"
+    dest: /var/lib/jenkins/init.groovy.d/06-publisher.groovy
+- template:
+    src: "{{ role_path }}/templates/99-done.groovy"
+    dest: /var/lib/jenkins/init.groovy.d/99-done.groovy
 - name: Make sure the Jenkins service is running
   systemd:
     state: restarted
@@ -80,3 +83,5 @@
   file:
     state: absent
     path: "/var/lib/jenkins/jobs.groovy"
+- name: Run ssh setup for publishing    
+  include: "{{ role_path }}/tasks/ssh.yml"
