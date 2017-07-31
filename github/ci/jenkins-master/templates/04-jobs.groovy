@@ -3,6 +3,7 @@ job('kubevirt-functional-tests') {
         maxTotal(0)
         maxPerNode(1)
     }
+    concurrentBuild()
     parameters {
         stringParam('sha1', '', 'commit to build')
     }
