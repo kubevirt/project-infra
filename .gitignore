@@ -1,4 +1,6 @@
 **/group_vars/all/main.yml
+id_rsa_jenkins_master
+id_rsa_jenkins_master.pub
 hosts
 hosts.*
 .vagrant

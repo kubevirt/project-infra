@@ -5,7 +5,7 @@ def logger = Logger.getLogger("")
 def installed = false
 def initialized = false
 
-def pluginParameter="ghprb job-dsl github-oauth swarm throttle-concurrents"
+def pluginParameter="ghprb job-dsl github-oauth swarm throttle-concurrents publish-over-ssh"
 def plugins = pluginParameter.split()
 logger.info("" + plugins)
 def instance = Jenkins.getInstance()
