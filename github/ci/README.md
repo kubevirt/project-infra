@@ -42,7 +42,7 @@ githubRepo: "rmohr/kubevirt"
 storeSshUser: "fas-user"
 storeSshUrl: "fedoraproject.org"
 storeSshRemoteDir: "public_html/jenkins"
-storeReportUrl: "https://fas-user.fedorapeople.org/"
+storeReportUrl: "https://fas-user.fedorapeople.org/jenkins"
 ```
 
 There you can fill in you token, your secret and the Jenkins callback URL.

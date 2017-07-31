@@ -27,6 +27,8 @@
     path: /etc/sysconfig/jenkins
     regexp: '^JENKINS_JAVA_OPTIONS='
     line: 'JENKINS_JAVA_OPTIONS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"'    
+- name: Run ssh setup for publishing
+  include: "{{ role_path }}/tasks/ssh.yml"
 - name: Ensures init.groovy.d directory exists
   file: 
     path: /var/lib/jenkins/init.groovy.d/ 
@@ -38,8 +40,8 @@
     src: "{{ role_path }}/templates/02-security.groovy"
     dest: /var/lib/jenkins/init.groovy.d/02-security.groovy
 - template:
-    src: "{{ role_path }}/templates/03-seed.groovy"
-    dest: /var/lib/jenkins/init.groovy.d/03-seed.groovy
+    src: "{{ role_path }}/templates/90-seed.groovy"
+    dest: /var/lib/jenkins/init.groovy.d/90-seed.groovy
 - template:
     src: "{{ role_path }}/templates/04-jobs.groovy"
     dest: /var/lib/jenkins/jobs.groovy
@@ -83,5 +85,3 @@
   file:
     state: absent
     path: "/var/lib/jenkins/jobs.groovy"
-- name: Run ssh setup for publishing    
-  include: "{{ role_path }}/tasks/ssh.yml"

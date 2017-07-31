@@ -39,7 +39,9 @@ job('kubevirt-functional-tests') {
         }
     }
     steps {
-        shell('cd go/src/kubevirt.io/kubevirt && bash automation/test.sh 2>&1 | tee ${WORKSPACE}/console.log')
+        shell('''#!/bin/bash
+set -o pipefail
+cd go/src/kubevirt.io/kubevirt && bash automation/test.sh 2>&1 | tee ${WORKSPACE}/console.log''')
     }
     publishers {
         publishOverSsh {
@@ -47,7 +49,6 @@ job('kubevirt-functional-tests') {
                 transferSet {
                     sourceFiles('console.log')
                     remoteDirectory('$BUILD_NUMBER')
-
                 }
             }
         }
