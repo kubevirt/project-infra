@@ -4,6 +4,29 @@ job('kubevirt-functional-tests') {
         maxPerNode(1)
     }
     concurrentBuild()
+    wrappers {
+        configure { node ->
+            node / 'buildWrappers'  << 'jenkins.plugins.publish__over__ssh.BapSshPostBuildWrapper' {
+                postBuild {
+                    consolePrefix('SSH:')
+                    delegate {
+                    delegate.publishers {
+                        'jenkins.plugins.publish__over__ssh.BapSshPublisher' {
+                            configName('store')
+                            transfers {
+                                'jenkins.plugins.publish__over__ssh.BapSshTransfer' {
+                             remoteDirectory('$BUILD_NUMBER')
+                              sourceFiles('console.log')
+                                }
+                            }
+                        }
+                    }
+                     hostConfigurationAccess(class: 'jenkins.plugins.publish_over_ssh.BapSshAlwaysRunPublisherPlugin', reference: '../..')
+                    }
+                }
+            }
+        }
+    }
     parameters {
         stringParam('sha1', '', 'commit to build')
     }
@@ -43,15 +66,5 @@ job('kubevirt-functional-tests') {
         shell('''#!/bin/bash
 set -o pipefail
 cd go/src/kubevirt.io/kubevirt && bash automation/test.sh 2>&1 | tee ${WORKSPACE}/console.log''')
-    }
-    publishers {
-        publishOverSsh {
-            server('store') {
-                transferSet {
-                    sourceFiles('console.log')
-                    remoteDirectory('$BUILD_NUMBER')
-                }
-            }
-        }
     }
 }
