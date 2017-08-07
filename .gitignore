@@ -6,3 +6,5 @@ hosts.*
 .vagrant
 *~
 *pyc
+venv
+github/ci/*.retry
