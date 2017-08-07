@@ -23,9 +23,6 @@ Vagrant.configure(2) do |config|
  
   config.ssh.insert_key = false
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "ci.yaml"
-  end 
 
   config.vm.define "jenkins-master" do |master|
       master.vm.hostname = "master"
@@ -33,23 +30,36 @@ Vagrant.configure(2) do |config|
       master.vm.provider :libvirt do |domain|
           domain.memory = 1024
       end
-  end
-
-  config.vm.define "jenkins-slaves" do |master|
-      master.vm.hostname = "slave"
-      master.vm.network "private_network", ip: "192.168.201.3"
-      master.vm.provider :libvirt do |domain|
-          domain.memory = 1024
-      end
-  end
-
-  config.vm.define "store" do |master|
-      master.vm.hostname = "store"
-      master.vm.network "private_network", ip: "192.168.201.4"
-      master.vm.provider :libvirt do |domain|
-          domain.memory = 1024
-      end
       master.vm.provision "ansible" do |ansible|
+        ansible.playbook = "ci.yaml"
+      end
+  end
+
+  config.vm.define "jenkins-slaves" do |slave|
+      slave.vm.hostname = "slave"
+      slave.vm.network "private_network", ip: "192.168.201.3"
+      slave.vm.provider :libvirt do |domain|
+          domain.memory = 1024
+      end
+      slave.vm.provision "ansible" do |ansible|
+        ansible.playbook = "ci.yaml"
+      end
+  end
+
+  config.vm.define "store" do |store|
+      store.vm.hostname = "store"
+      store.vm.network "private_network", ip: "192.168.201.4"
+      store.vm.provider :libvirt do |domain|
+          domain.memory = 1024
+      end
+
+      # fedorapeople has python already installed, but our VM not
+      store.vm.provision "shell", inline: <<-SHELL
+        #!/bin/bash
+        sudo dnf install -y python2 libselinux-python
+      SHELL
+
+      store.vm.provision "ansible" do |ansible|
         ansible.playbook = "ci.yaml"
       end
   end
