@@ -5,6 +5,9 @@ job('kubevirt-functional-tests') {
     }
     concurrentBuild()
     wrappers {
+        timeout {
+          absolute(minutes = 120)
+        }
         configure { node ->
             node / 'buildWrappers'  << 'jenkins.plugins.publish__over__ssh.BapSshPostBuildWrapper' {
                 postBuild {
