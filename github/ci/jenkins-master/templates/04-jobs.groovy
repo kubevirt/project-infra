@@ -42,6 +42,7 @@ job('kubevirt-functional-tests') {
             branch('${sha1}')
             extensions {
                 relativeTargetDirectory('go/src/kubevirt.io/kubevirt')
+                cleanAfterCheckout()
             }
         }
     }
