@@ -8,6 +8,7 @@
     - vagrant
     - vagrant-libvirt
     - git
+    - mercurial
     - golang
     - rsync
     - libvirt-client
