@@ -1,4 +1,5 @@
-job('kubevirt-functional-tests') {
+{% for target in targets %}
+job('kubevirt-functional-tests-{{ target }}') {
     throttleConcurrentBuilds {
         maxTotal(0)
         maxPerNode(1)
@@ -19,7 +20,7 @@ job('kubevirt-functional-tests') {
                             transfers {
                                 'jenkins.plugins.publish__over__ssh.BapSshTransfer' {
                              remoteDirectory('$BUILD_NUMBER')
-                              sourceFiles('console.log')
+                              sourceFiles('{{ target }}-console.log')
                                 }
                             }
                         }
@@ -53,10 +54,10 @@ job('kubevirt-functional-tests') {
             allowMembersOfWhitelistedOrgsAsAdmin()
             extensions {
                 commitStatus {
-                    context('kubevirt-functional-tests/jenkins/pr')
-                    triggeredStatus('kubevirt-functional-tests/jenkins/pr')
-                    startedStatus('kubevirt-functional-tests/jenkins/pr')
-                    statusUrl('{{ storeReportUrl }}/$BUILD_NUMBER/console.log')
+                    context('kubevirt-functional-tests/jenkins/pr/{{ target }}')
+                    triggeredStatus('kubevirt-functional-tests/jenkins/pr {{ target }}')
+                    startedStatus('kubevirt-functional-tests/jenkins/pr {{ target }}')
+                    statusUrl('{{ storeReportUrl }}/$BUILD_NUMBER/{{ target }}-console.log')
                     completedStatus('SUCCESS', 'All is well')
                     completedStatus('FAILURE', 'Something went wrong. Investigate!')
                     completedStatus('PENDING', 'still in progress...')
@@ -68,6 +69,8 @@ job('kubevirt-functional-tests') {
     steps {
         shell('''#!/bin/bash
 set -o pipefail
-cd go/src/kubevirt.io/kubevirt && bash automation/test.sh 2>&1 | tee ${WORKSPACE}/console.log''')
+export TARGET={{ target }}
+cd go/src/kubevirt.io/kubevirt && bash automation/test.sh 2>&1 | tee ${WORKSPACE}/{{ target }}-console.log''')
     }
 }
+{% endfor %}
