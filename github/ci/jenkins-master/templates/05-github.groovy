@@ -26,4 +26,9 @@ githubAuth = new ArrayList<GhprbGitHubAuth>(1)
 githubAuth.add(new GhprbGitHubAuth(serverUri.toString(), "{{ githubCallbackUrl }}", githubCredentials , "kubevirt-bot", "aebe0886-5ead-47cd-9a13-18490b7a2831" , new Secret("{{ githubSecret }}")))
 auth.set(descriptor, githubAuth)
 
+// Disable request for testing phrase
+Field requestPhrase = descriptor.class.getDeclaredField("requestForTestingPhrase")
+requestPhrase.setAccessible(true)
+requestPhrase.set(descriptor, "")
+
 descriptor.save()
