@@ -132,6 +132,9 @@ storeSshUser: "vagrant"
 storeSshUrl: "192.168.201.4"
 storeSshRemoteDir: "public_html/jenkins"
 storeReportUrl: "http://192.168.201.4/jenkins"
+targets:
+  - vagrant-dev
+  - vagrant-release
 EOL
 vagrant up
 ```
