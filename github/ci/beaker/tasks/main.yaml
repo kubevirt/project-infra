@@ -1,20 +1,39 @@
 ---
 - lvol:
     vg: fedora
-    lv: data
-    size: +100%FREE
+    lv: libvirt
+    size: +60%FREE
 - filesystem:
     fstype: ext4
-    dev: /dev/mapper/fedora-data
+    dev: /dev/mapper/fedora-libvirt
 - name: Mount data volume
   mount:
     path: /var/lib/libvirt/images/
-    src: /dev/mapper/fedora-data
+    src: /dev/mapper/fedora-libvirt
     fstype: ext4
     state: present
 - name: Mount data volume
   mount:
     path: /var/lib/libvirt/images/
-    src: /dev/mapper/fedora-data
+    src: /dev/mapper/fedora-libvirt
+    fstype: ext4
+    state: mounted
+- lvol:
+    vg: fedora
+    lv: docker
+    size: +100%FREE
+- filesystem:
+    fstype: ext4
+    dev: /dev/mapper/fedora-docker
+- name: Mount data volume
+  mount:
+    path: /var/lib/docker/
+    src: /dev/mapper/fedora-docker
+    fstype: ext4
+    state: present
+- name: Mount data volume
+  mount:
+    path: /var/lib/docker/
+    src: /dev/mapper/fedora-docker
     fstype: ext4
     state: mounted

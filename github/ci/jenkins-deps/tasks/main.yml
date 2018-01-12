@@ -13,19 +13,24 @@
     - rsync
     - libvirt-client
     - libvirt-devel
-- name: Add jenkins user to libvirt group
+    - docker
+- group:
+    name: docker
+    state: present
+- name: Add jenkins user to libvirt and docker group
   user:
     name: jenkins
-    groups: libvirt
+    groups: libvirt,docker
     append: yes
-- name: Enable Libvirt
+- name: Enable Libvirt and Docker
   systemd:
     name: '{{ item }}'
     enabled: yes
   with_items:
     - virtlogd
     - libvirtd
-- name: Start Libvirt
+    - docker
+- name: Start Libvirt and Docker
   systemd:
     name: '{{ item }}'
     state: restarted
@@ -33,6 +38,7 @@
   with_items:
     - virtlogd
     - libvirtd
+    - docker
 - name: Disable selinux, to not block rsync via SSH in Jenkins
   selinux:
     policy: targeted
