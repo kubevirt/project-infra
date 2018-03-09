@@ -1,20 +1,19 @@
 ---
-- lvol:
-    vg: fedora
-    lv: data
-    size: +100%FREE
-- filesystem:
-    fstype: ext4
-    dev: /dev/mapper/fedora-data
-- name: Mount data volume
-  mount:
-    path: /var/lib/libvirt/images/
-    src: /dev/mapper/fedora-data
-    fstype: ext4
-    state: present
-- name: Mount data volume
-  mount:
-    path: /var/lib/libvirt/images/
-    src: /dev/mapper/fedora-data
-    fstype: ext4
-    state: mounted
+- stat: path=/var/lib/docker
+  register: links
+- debug: msg="link does not exists"
+  when: links.stat.islnk is undefined or not links.stat.islnk
+- name: Remove docker directory if it is not a symlink
+  file:
+    state: absent
+    path: /var/lib/docker
+  when: links.stat.islnk is undefined or not links.stat.islnk
+- name: Create docker directory in /home/
+  file:
+    state: directory
+    path: /home/docker
+- name: Link
+  file: path=/var/lib/docker
+        src=/home/docker
+        state=link 
+        force=yes

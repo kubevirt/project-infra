@@ -1,46 +1,67 @@
 ---
 - name: Install build dependencies
-  dnf:
+  yum:
     name: '{{ item }}'
     state: latest
   with_items:
     - python-firewall
-    - vagrant
-    - vagrant-libvirt
     - git
-    - mercurial
-    - golang
+    - make
     - rsync
-    - libvirt-client
-    - libvirt-devel
     - docker
 - name: Add docker group for the jenkins user
   group:
     name: docker
     state: present
-- name: Add jenkins user to libvirt and docker group
+- name: Add jenkins user to docker group
   user:
     name: jenkins
-    groups: libvirt,docker
+    groups: docker
     append: yes
-- name: Enable Libvirt and Docker
+- name: Enable Docker
   systemd:
     name: '{{ item }}'
     enabled: yes
   with_items:
-    - virtlogd
-    - libvirtd
     - docker
-- name: Start Libvirt and Docker
+- name: Start Docker
   systemd:
     name: '{{ item }}'
     state: restarted
     daemon_reload: yes
   with_items:
-    - virtlogd
-    - libvirtd
     - docker
 - name: Disable selinux, to not block rsync via SSH in Jenkins
   selinux:
     policy: targeted
     state: permissive
+- name: Check if we are on intel
+  shell: 'cat /sys/module/kvm_intel/parameters/nested'
+  register: kvm_intel
+  ignore_errors: True
+- name: Check if we are on amd
+  shell: 'cat /sys/module/kvm_amd/parameters/nested'
+  register: kvm_amd
+  ignore_errors: True
+- name: Remove virtualization module to allow enabling it with nesting
+  modprobe:
+    name: "kvm_intel"
+    state: absent
+  when: kvm_intel.rc == 0
+- name: Enable module with nesting
+  modprobe:
+    name: "kvm_intel"
+    state: present
+    params: "nested=1"
+  when: kvm_intel.rc == 0
+- name: Remove virtualization module to allow enabling it with nesting
+  modprobe:
+    name: "kvm_amd"
+    state: absent
+  when: kvm_amd.rc == 0
+- name: Enable module with nesting
+  modprobe:
+    name: "kvm_amd"
+    state: present
+    params: "nested=1"
+  when: kvm_amd.rc == 0
