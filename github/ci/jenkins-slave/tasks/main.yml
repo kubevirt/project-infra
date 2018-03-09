@@ -37,3 +37,12 @@
   systemd:
     name: swarm
     enabled: yes
+- name: Disable nested virtualization
+  modprobe:
+    name: "kvm_intel"
+    state: absent
+- name: Enable nested virtualization
+  modprobe:
+    name: "kvm_intel"
+    state: present
+    params: "nested=1"
