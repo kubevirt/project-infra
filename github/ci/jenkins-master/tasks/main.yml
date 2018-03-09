@@ -74,6 +74,11 @@
     state: enabled
 - firewalld:
     zone: public
+    port: 37947/tcp
+    permanent: true
+    state: enabled
+- firewalld:
+    zone: public
     service: http
     permanent: true
     state: enabled
