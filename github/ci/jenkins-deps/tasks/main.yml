@@ -43,11 +43,15 @@
   shell: 'cat /sys/module/kvm_amd/parameters/nested'
   register: kvm_amd
   ignore_errors: True
+- name: Check if nesting is enabled
+  shell: '(cat /sys/module/kvm_intel/parameters/nested || cat /sys/module/kvm_amd/parameters/nested) | egrep "[nN0]"'
+  register: nesting_disabled
+  ignore_errors: True
 - name: Remove virtualization module to allow enabling it with nesting
   modprobe:
     name: "kvm_intel"
     state: absent
-  when: kvm_intel.rc == 0
+  when: kvm_intel.rc == 0 and nesting_disabled.rc == 0
 - name: Enable module with nesting
   modprobe:
     name: "kvm_intel"
@@ -58,7 +62,7 @@
   modprobe:
     name: "kvm_amd"
     state: absent
-  when: kvm_amd.rc == 0
+  when: kvm_amd.rc == 0 and nesting_disabled.rc == 0
 - name: Enable module with nesting
   modprobe:
     name: "kvm_amd"
