@@ -8,7 +8,7 @@
     state: present
     key: http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
 - name: Install jenkins
-  dnf:
+  yum:
     name: '{{ item }}'
     state: latest
   with_items:
@@ -68,15 +68,13 @@
     state: absent
     path: "/var/lib/jenkins/done"
 - firewalld:
-    zone: public
-    port: 8080/tcp
-    permanent: true
-    state: enabled
-- firewalld:
-    zone: public
-    port: 37947/tcp
-    permanent: true
-    state: enabled
+     zone: public
+     port: "{{ item }}"
+     permanent: true
+     state: enabled
+  with_items:
+    - 8080/tcp
+    - 37947/tcp
 - firewalld:
     zone: public
     service: http
