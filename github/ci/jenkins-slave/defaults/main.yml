@@ -1,3 +1,4 @@
 ---
 swarmRootDir: "/var/lib/jenkins"
 slaveSlots: 2
+labels: ""
