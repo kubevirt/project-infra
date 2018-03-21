@@ -61,9 +61,16 @@ Add your master and your clients to the `hosts` file:
 master ansible_host=my.jenkins.com ansible_user=root
 
 [jenkins-slaves]
-slave0 ansible_host=slave0.my.jenkins.com ansible_user=root
+slave0 ansible_host=slave0.my.jenkins.com ansible_user=root labels="windows test1"
 slave1 ansible_host=slave1.my.jenkins.com ansible_user=root
 ```
+
+The master itself has no executors. It will not run any jobs. If you want to
+build also on master, it is possible to add the master to the
+`[jenkins-slaves]` section. Then the swarm plugin will register the master node
+as a slave too. Optionally it is possible to use the `labels` variable to
+assign labels to jenkins nodes. In the example above slave0 would get the
+labels `windows` and `test1` attached.
 
 Provision your machines:
 
