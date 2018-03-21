@@ -1,5 +1,8 @@
 {% for target in targets %}
 job('kubevirt-functional-tests-{{ target }}') {
+    {% if target == "windows" %}
+       label('windows')
+    {% endif %}
     throttleConcurrentBuilds {
         maxTotal(0)
         maxPerNode(1)

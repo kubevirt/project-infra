@@ -1,0 +1,6 @@
+---
+labels: ""
+targets:
+ - vagrant-dev
+ - vagrant-release
+ - windows
