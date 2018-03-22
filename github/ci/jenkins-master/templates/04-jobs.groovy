@@ -70,6 +70,11 @@ job('kubevirt-functional-tests-{{ target }}') {
             }
         }
     }
+    configure { node ->
+        node / 'triggers' / 'org.jenkinsci.plugins.ghprb.GhprbTrigger' / 'extensions' << 'org.jenkinsci.plugins.ghprb.extensions.build.GhprbCancelBuildsOnUpdate' {
+            overrideGlobal(false)
+        }
+    }
     steps {
         shell('''#!/bin/bash
 set -o pipefail
