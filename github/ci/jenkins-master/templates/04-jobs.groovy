@@ -1,5 +1,8 @@
 {% for target in targets %}
 job('kubevirt-functional-tests-{{ target }}') {
+    {% if target == "windows" %}
+       label('windows')
+    {% endif %}
     throttleConcurrentBuilds {
         maxTotal(0)
         maxPerNode(1)
@@ -65,6 +68,11 @@ job('kubevirt-functional-tests-{{ target }}') {
                     completedStatus('ERROR', 'Something went really wrong. Investigate!')
                 }
             }
+        }
+    }
+    configure { node ->
+        node / 'triggers' / 'org.jenkinsci.plugins.ghprb.GhprbTrigger' / 'extensions' << 'org.jenkinsci.plugins.ghprb.extensions.build.GhprbCancelBuildsOnUpdate' {
+            overrideGlobal(false)
         }
     }
     steps {

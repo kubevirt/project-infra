@@ -32,4 +32,7 @@ instance.setAgentProtocols(newProtocols);
 def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
 instance.setAuthorizationStrategy(strategy)
 
+// Don't run builds through master. We can build also on master through the swarm plugin
+instance.setNumExecutors(0)
+
 instance.save()

@@ -2,8 +2,8 @@
 # vi: set ft=ruby :
 #
 Vagrant.configure(2) do |config|
-  config.vm.box = "fedora26"
-  config.vm.box_url = "http://mirror.de.leaseweb.net/fedora/linux/releases/26/CloudImages/x86_64/images/Fedora-Cloud-Base-Vagrant-26-1.5.x86_64.vagrant-libvirt.box"
+  config.vm.box = "centos/7"
+  config.vm.box_url = "http://cloud.centos.org/centos/7/vagrant/x86_64/images/CentOS-7-x86_64-Vagrant-1802_01.Libvirt.box"
 
   if Vagrant.has_plugin?("vagrant-cachier") then
       config.cache.scope = :machine
@@ -32,6 +32,13 @@ Vagrant.configure(2) do |config|
       end
       master.vm.provision "ansible" do |ansible|
         ansible.playbook = "ci.yaml"
+        ansible.groups = {
+          "jenkins-master" => ["jenkins-master"],
+          "jenkins-slaves" => ["jenkins-master"],
+        }
+        ansible.host_vars = {
+          "jenkins-master" => {"swarmRootDir" => "/var/lib/swarm"},
+        }
       end
   end
 
@@ -43,6 +50,9 @@ Vagrant.configure(2) do |config|
       end
       slave.vm.provision "ansible" do |ansible|
         ansible.playbook = "ci.yaml"
+        ansible.host_vars = {
+          "jenkins-slaves" => {"labels" => "windows test test1"},
+        }
       end
   end
 
@@ -56,7 +66,7 @@ Vagrant.configure(2) do |config|
       # fedorapeople has python already installed, but our VM not
       store.vm.provision "shell", inline: <<-SHELL
         #!/bin/bash
-        sudo dnf install -y python2 libselinux-python
+        sudo yum install -y python2 libselinux-python
       SHELL
 
       store.vm.provision "ansible" do |ansible|

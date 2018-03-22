@@ -1,3 +1,37 @@
+- name: Check if we are on intel
+  shell: 'cat /sys/module/kvm_intel/parameters/nested'
+  register: kvm_intel
+  ignore_errors: True
+- name: Check if we are on amd
+  shell: 'cat /sys/module/kvm_amd/parameters/nested'
+  register: kvm_amd
+  ignore_errors: True
+- name: Check if nesting is enabled
+  shell: '(cat /sys/module/kvm_intel/parameters/nested || cat /sys/module/kvm_amd/parameters/nested) | egrep "[nN0]"'
+  register: nesting_disabled
+  ignore_errors: True
+- name: Remove virtualization module to allow enabling it with nesting
+  modprobe:
+    name: "kvm_intel"
+    state: absent
+  when: kvm_intel.rc == 0 and nesting_disabled.rc == 0
+- name: Enable module with nesting
+  modprobe:
+    name: "kvm_intel"
+    state: present
+    params: "nested=1"
+  when: kvm_intel.rc == 0
+- name: Remove virtualization module to allow enabling it with nesting
+  modprobe:
+    name: "kvm_amd"
+    state: absent
+  when: kvm_amd.rc == 0 and nesting_disabled.rc == 0
+- name: Enable module with nesting
+  modprobe:
+    name: "kvm_amd"
+    state: present
+    params: "nested=1"
+  when: kvm_amd.rc == 0
 - name: Install the latest version of Java
   yum:
     name: java
@@ -8,7 +42,7 @@
     createhome: yes
 - name: Creates jenkins workdir
   file:
-    path: /var/lib/jenkins
+    path: "{{ swarmRootDir }}"
     state: directory
     owner: jenkins
     group: jenkins
@@ -28,6 +62,10 @@
   template:
     src: "{{ role_path }}/templates/swarm.service"
     dest: /etc/systemd/system/swarm.service
+- name: Copy labels file
+  template:
+    src: "{{ role_path }}/templates/labels"
+    dest: "{{ swarmRootDir }}/labels"
 - name: Make sure that  the swarm agent is running
   systemd:
     state: restarted
@@ -37,12 +75,3 @@
   systemd:
     name: swarm
     enabled: yes
-- name: Disable nested virtualization
-  modprobe:
-    name: "kvm_intel"
-    state: absent
-- name: Enable nested virtualization
-  modprobe:
-    name: "kvm_intel"
-    state: present
-    params: "nested=1"
