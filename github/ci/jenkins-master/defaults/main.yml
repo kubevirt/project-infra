@@ -3,4 +3,5 @@ labels: ""
 targets:
  - vagrant-dev
  - vagrant-release
+ - openshift-release
  - windows
