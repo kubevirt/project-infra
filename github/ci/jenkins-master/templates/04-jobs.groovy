@@ -81,5 +81,32 @@ set -o pipefail
 export TARGET={{ target }}
 cd go/src/kubevirt.io/kubevirt && bash automation/test.sh 2>&1 | tee ${WORKSPACE}/{{ target }}-console.log''')
     }
+    publishers {
+        xUnitPublisher {
+            tools {
+                jUnitType {
+                    pattern('junit.xml')
+                    skipNoTestFiles(false)
+                    failIfNotNew(true)
+                    deleteOutputFiles(true)
+                    stopProcessingIfError(true)
+                }
+            }
+            thresholds {
+                failedThreshold {
+                    unstableThreshold("")
+                    unstableNewThreshold("")
+                    failureThreshold("")
+                    failureNewThreshold("")
+                }
+                skippedThreshold {
+                    unstableThreshold("")
+                    unstableNewThreshold("")
+                    failureThreshold("")
+                    failureNewThreshold("")
+                }
+            }
+        }
+    }
 }
 {% endfor %}
