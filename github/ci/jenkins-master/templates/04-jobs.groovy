@@ -33,6 +33,7 @@ job('kubevirt-functional-tests-{{ target }}') {
                 }
             }
         }
+        preBuildCleanup()
     }
     parameters {
         stringParam('sha1', '', 'commit to build')
@@ -83,6 +84,8 @@ cd go/src/kubevirt.io/kubevirt && bash automation/test.sh 2>&1 | tee ${WORKSPACE
     }
     publishers {
         xUnitPublisher {
+            thresholdMode(1)
+            testTimeMargin("")
             tools {
                 jUnitType {
                     pattern('junit.xml')
