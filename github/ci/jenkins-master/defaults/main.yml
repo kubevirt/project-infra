@@ -3,4 +3,5 @@ targets:
  - vagrant-dev
  - vagrant-release
  - openshift-release
+ - openshift-release-crio
  - windows
