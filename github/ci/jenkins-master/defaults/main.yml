@@ -1,7 +1,8 @@
 ---
 targets:
- - vagrant-dev
- - vagrant-release
- - openshift-release
- - openshift-release-crio
- - windows
+ - k8s-1.10.3-dev
+ - k8s-1.10.3-release
+ - k8s-1.9.3-release
+ - openshift-3.9-release
+ - openshift-3.9-crio-release
+ - windows2016-release
