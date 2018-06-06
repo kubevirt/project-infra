@@ -15,22 +15,32 @@
     name: "kvm_intel"
     state: absent
   when: kvm_intel.rc == 0 and nesting_disabled.rc == 0
+- name: Enable nested virtualization under module options
+  copy:
+    dest: /etc/modprobe.d/kvm.conf
+    content: |
+      options kvm_intel nested=1
+  when: kvm_intel.rc == 0
 - name: Enable module with nesting
   modprobe:
     name: "kvm_intel"
     state: present
-    params: "nested=1"
   when: kvm_intel.rc == 0
 - name: Remove virtualization module to allow enabling it with nesting
   modprobe:
     name: "kvm_amd"
     state: absent
   when: kvm_amd.rc == 0 and nesting_disabled.rc == 0
+- name: Enable nested virtualization under module options
+  copy:
+    dest: /etc/modprobe.d/kvm.conf
+    content: |
+      options kvm_amd nested=1
+  when: kvm_amd.rc == 0
 - name: Enable module with nesting
   modprobe:
     name: "kvm_amd"
     state: present
-    params: "nested=1"
   when: kvm_amd.rc == 0
 - name: Install the latest version of Java
   yum:
