@@ -1,6 +1,6 @@
 {% for target in targets %}
 job('kubevirt-functional-tests-{{ target }}') {
-    {% if target == "windows" %}
+    {% if target == "windows2016" %}
        label('windows')
     {% endif %}
     throttleConcurrentBuilds {
@@ -109,6 +109,21 @@ cd go/src/kubevirt.io/kubevirt && bash automation/test.sh 2>&1 | tee ${WORKSPACE
                     failureNewThreshold("")
                 }
             }
+        }
+        postBuildScripts {
+            steps {
+                shell('''#!/bin/bash
+set +e
+
+if [ -n "$(docker ps -q -f status=exited)" ]; then
+	docker rm $(docker ps -q -f status=exited)
+fi
+
+if [ -n "$(docker volume ls -qf dangling=true)" ]; then
+    docker volume rm $(docker volume ls -qf dangling=true)
+fi''')
+            }
+            onlyIfBuildSucceeds(false)
         }
     }
 }
