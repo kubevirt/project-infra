@@ -53,7 +53,7 @@ job('kubevirt-functional-tests-{{ target }}') {
     }
     triggers {
         githubPullRequest {
-            admins(['cynepco3hahue', 'davidvossel', 'fabiand', 'rmohr', 'slintes', 'stu-gott', 'vladikr'])
+            admins(['booxter', 'cynepco3hahue', 'davidvossel', 'fabiand', 'rmohr', 'slintes', 'stu-gott', 'vladikr'])
             cron('H/2 * * * *')
             triggerPhrase('OK to test')
             allowMembersOfWhitelistedOrgsAsAdmin()
