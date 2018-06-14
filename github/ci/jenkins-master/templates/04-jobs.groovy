@@ -1,6 +1,6 @@
 {% for target in targets %}
 job('kubevirt-functional-tests-{{ target }}') {
-    {% if target == "windows" %}
+    {% if target == "windows2016" %}
        label('windows')
     {% endif %}
     throttleConcurrentBuilds {
