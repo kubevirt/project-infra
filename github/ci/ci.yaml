@@ -26,3 +26,6 @@
 - hosts: store
   roles:
     - store
+- hosts: prow
+  roles:
+    - prow

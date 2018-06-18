@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: hook
+spec:
+  host: "{{ prowUrl }}"
+  path: /hook
+  to:
+    kind: Service
+    name: hook
+    weight: 100
+  wildcardPolicy: None

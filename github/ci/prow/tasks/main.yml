@@ -1,0 +1,62 @@
+---
+- name: Create project
+  openshift_raw:
+    state: present
+    kind: Project
+    name: '{{ prowNamespace }}'
+    display_name: Prow
+    description: Prow for KubeVirt
+- name: Create Prow Hook Route
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/route-hook.yaml') | from_yaml }}"
+  state: present
+- name: Create HMAC secret
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: hmac-token
+      type: Opaque            
+      data:
+        hmac: "{{ prowHmac | b64encode }}"
+- name: Create OAuth secret
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: oauth-token
+      type: Opaque
+      data:
+        oauth: "{{ githubToken | b64encode }}"
+- name: Update plugin config-map
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/plugins.yaml') | from_yaml }}"
+  state: present
+- name: Update config config-map
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/config.yaml') | from_yaml }}"
+  state: present
+- name: Deploy prow-hook
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/hook.yaml') | from_yaml }}"
+  state: present
+- name: Deploy prow-hook-service
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/hook-service.yaml') | from_yaml }}"
+  state: present

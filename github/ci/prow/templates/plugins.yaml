@@ -1,0 +1,16 @@
+apiVersion: v1
+data:
+  plugins.yaml: |
+    plugins:
+      kubevirt/kubevirt:
+      - size
+      - assign
+      - hold
+      - release-note
+      - label
+      - blunderbuss
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: plugins
+
