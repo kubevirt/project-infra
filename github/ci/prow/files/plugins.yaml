@@ -1,0 +1,8 @@
+plugins:
+  rmohr/kubevirt:
+  - size
+  - assign
+  - hold
+  - release-note
+  - label
+  - blunderbuss

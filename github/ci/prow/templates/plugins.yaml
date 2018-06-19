@@ -1,16 +1,9 @@
+#jinja2: lstrip_blocks: "False", trim_blocks: "False"
 apiVersion: v1
 data:
   plugins.yaml: |
-    plugins:
-      kubevirt/kubevirt:
-      - size
-      - assign
-      - hold
-      - release-note
-      - label
-      - blunderbuss
+{{ prowPluginsConfig | indent(width=4, indentfirst=True) }}
 kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: plugins
-

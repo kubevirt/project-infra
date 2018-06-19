@@ -36,18 +36,30 @@
       type: Opaque
       data:
         oauth: "{{ githubToken | b64encode }}"
-- name: Update plugin config-map
+- name: Update prow plugins config 
   openshift_raw:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/plugins.yaml') | from_yaml }}"
   state: present
-- name: Update config config-map
+  vars:
+    prowPluginsConfig: "{{ lookup('file', '{{ role_path }}/files/plugins.yaml') }}"
+- name: Update prow job config
   openshift_raw:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/config.yaml') | from_yaml }}"
   state: present
+  vars:
+    prowConfig: "{{ lookup('file', '{{ role_path }}/files/config.yaml') }}"
+- name: Update prow label-sync config
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/labels.yaml') | from_yaml }}"
+  state: present
+  vars:
+    prowLabelsConfig: "{{ lookup('file', '{{ role_path }}/files/labels.yaml') }}"
 - name: Deploy prow-hook
   openshift_raw:
     state: present
@@ -59,4 +71,10 @@
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/hook-service.yaml') | from_yaml }}"
+  state: present
+- name: Deploy label-sync cron job
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/label-sync.yaml') | from_yaml }}"
   state: present
