@@ -82,12 +82,13 @@ slave1 ansible_host=slave1.my.jenkins.com ansible_user=root
 localhost ansible_connection=local
 ```
 
-The master itself has no executors. It will not run any jobs. If you want to
+The `[jenkins-master]` itself has no executors. It will not run any jobs. If you want to
 build also on master, it is possible to add the master to the
 `[jenkins-slaves]` section. Then the swarm plugin will register the master node
 as a slave too. Optionally it is possible to use the `labels` variable to
 assign labels to jenkins nodes. In the example above slave0 would get the
-labels `windows` and `test1` attached.
+labels `windows` and `test1` attached. `[prow]` will use your local openshift
+credentials and deploy prow on the configured cluster.
 
 Provision your machines:
 
@@ -135,6 +136,16 @@ fedorapeople server to your hosts file:
 [store]
 store0 ansible_host=fedorapeople.org ansible_user=fas-user
 ```
+
+### Prow Role
+
+It deploys the main prow components and related configs. In the case of prow,
+we don't config templates per repo. Instead we have fully configs inside
+`prow/files`:
+
+ * `config.yaml`: Contains all prow jobs (not used right now)
+ * `plugins.yaml`: Contains all enabled github bots per repo (again, not templatized, instead the full kubevirt-org config)
+ * `labels.yaml`: Labels which are used in `kubevirt/kubevirt`. They will be synchronized twice a day with `kubevirt/kubevirt`
 
 ## Testing the CI infrastructure
 
