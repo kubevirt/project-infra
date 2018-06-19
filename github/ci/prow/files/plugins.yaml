@@ -1,5 +1,5 @@
 plugins:
-  rmohr/kubevirt:
+  kubevirt/kubevirt:
   - size
   - assign
   - hold

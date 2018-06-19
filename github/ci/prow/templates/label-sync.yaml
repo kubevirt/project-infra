@@ -32,9 +32,9 @@ spec:
               image: gcr.io/k8s-testimages/label_sync:v20180531-20dbd7ab8
               args:
               - --config=/etc/config/labels.yaml
-              - --confirm=false
-              - --orgs=rmohr
-              - --only=rmohr/kubevirt
+              - --confirm=true
+              - --orgs=kubevirt
+              - --only=kubevirt/kubevirt
               - --token=/etc/github/oauth
               volumeMounts:
               - name: oauth
