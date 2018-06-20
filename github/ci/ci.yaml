@@ -1,5 +1,5 @@
 ---
-- hosts: "!store"
+- hosts: "!store:!prow"
   become: true
   become_user: root
   gather_facts: False
@@ -27,5 +27,6 @@
   roles:
     - store
 - hosts: prow
+  gather_facts: False
   roles:
     - prow
