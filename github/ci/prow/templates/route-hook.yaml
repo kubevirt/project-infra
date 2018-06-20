@@ -5,6 +5,8 @@ metadata:
 spec:
   host: "{{ prowUrl }}"
   path: /hook
+  tls:
+    termination: edge
   to:
     kind: Service
     name: hook

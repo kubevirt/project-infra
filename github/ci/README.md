@@ -31,10 +31,12 @@ for changes will always work.
    `public_repo` permission.
 2. register the Prow callback URL in your github project
 
- * Fill in your callback URL (e.g. `http://prow.myopenshift.com/hook/`)
+ * Fill in your callback URL (e.g. `https://prow.myopenshift.com/hook/`)
  * Content-type should be `application/json`
  * Create a secret with `openssl rand -hex 20` and set it on the webhook
  * Enable all notifications
+
+Note that the included route for prow hooks will be exposed via `https`.
 
 ## Prepare your Ansible Variables
 
