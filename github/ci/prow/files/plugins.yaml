@@ -1,0 +1,8 @@
+plugins:
+  kubevirt/kubevirt:
+  - size
+  - assign
+  - hold
+  - release-note
+  - label
+  - blunderbuss

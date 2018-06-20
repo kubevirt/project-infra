@@ -1,0 +1,161 @@
+---
+labels:
+- name: area/api-server
+  color: bfd4f2
+  target: both
+- name: area/controller
+  color: bfd4f2
+  target: both
+- name: area/handler
+  color: bfd4f2
+  target: both
+- name: area/launcher
+  color: bfd4f2
+  target: both
+- name: area/virtctl
+  color: bfd4f2
+  target: both
+- name: distro/kuberenetes
+  color: fcb3ad
+  target: both
+- name: distro/openshift
+  color: fcb3ad
+  target: both
+- color: e11d21
+  description: Indicates that a PR should not merge because it's missing one of the release note labels.
+  name: do-not-merge/release-note-label-needed
+  previously:
+    - name: needs/release-note
+      color: d4c5f9
+  target: prs
+- name: duplicate
+  color: cccccc
+  target: both
+- name: for/developers
+  color: fef2c0
+  target: both
+- name: for/users
+  color: fef2c0
+  target: both
+- name: good first issue
+  color: 128A0C
+  target: issues
+- name: help wanted
+  color: 128A0C
+  target: issues
+- name: kind/blocker
+  color: b60205
+  target: both
+- name: kind/bug
+  color: ee0701
+  target: both
+- name: kind/enhancement
+  color: bfd4f2
+  target: both
+- name: kind/proposal
+  color: bfd4f2
+  target: both
+- name: kind/question
+  color: cc317c
+  target: both
+- name: kind/tracker
+  color: bc19c1
+  target: both
+- name: needs/documentation
+  color: d4c5f9
+  target: both
+- name: priority/backlog
+  color: fbca04
+  target: both
+- name: priority/critical-urgent
+  color: d93f0b
+  target: both
+- color: c2e0c6
+  name: release-note
+  target: prs
+  description: Denotes a PR that will be considered when it comes time to generate release notes.
+- color: c2e0c6
+  description: Denotes a PR that doesn't merit a release note. # will be ignored when it comes time to generate release notes.
+  name: release-note-none
+  target: prs
+- name: research-needed
+  color: fef2c0
+  target: both
+- name: size/L
+  color: ee9900
+  target: both
+  previously:
+  - name: size-L
+    color: f9d0c4
+- name: size/M
+  color: eebb00
+  target: both
+  previously:
+  - name: size-M
+    color: f9d0c4
+- name: size/S
+  color: 77bb00
+  target: both
+  previously:
+  - name: size-S
+    color: f9d0c4
+- name: size/XL
+  color: ee5500
+  target: both
+  previously:
+  - name: size-XL
+    color: f9d0c4
+- color: "009900"
+  name: size/XS
+  target: both
+- color: ee0000
+  name: size/XXL
+  target: both
+- name: topic/api
+  color: c5def5
+  target: both
+- name: topic/build
+  color: c5def5
+  target: both
+- name: topic/ci
+  color: c5def5
+  target: both
+- name: topic/client
+  color: c5def5
+  target: both
+- name: topic/community
+  color: c5def5
+  target: both
+- name: topic/documentation
+  color: c5def5
+  target: both
+- name: topic/infrastructure
+  color: c5def5
+  target: both
+- name: topic/integration
+  color: c5def5
+  target: both
+- name: topic/network
+  color: c5def5
+  target: both
+- name: topic/packaging
+  color: c5def5
+  target: both
+- name: topic/scheduling
+  color: c5def5
+  target: both
+- name: topic/security
+  color: c5def5
+  target: both
+- name: topic/storage
+  color: c5def5
+  target: both
+- name: topic/testing
+  color: c5def5
+  target: both
+- name: topic/virtualization
+  color: c5def5
+  target: both
+- name: wontfix
+  color: ffffff
+  target: both

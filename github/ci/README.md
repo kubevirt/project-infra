@@ -4,7 +4,7 @@ Ansible based description of the KubeVirt CI environment for functional tests.
 The Ansible roles here allow to re-crate and scale the Jenkins CI environment
 used.
 
-## Prepare your Github Project
+## Prepare your Github Project for Jenkins
 
 The following steps **1** and **2** give your Jenkins server the permissions to
 add comments to your Pull Request and to change the build status. Step **3**
@@ -25,6 +25,19 @@ for changes will always work.
  * Add a secret
  * Enable `Push`, `Pull request`, `Issue comment` notifications
 
+## Prepare your Github Project for Prow
+
+1. create an access token or use the one you created above. Prow needs the
+   `public_repo` permission.
+2. register the Prow callback URL in your github project
+
+ * Fill in your callback URL (e.g. `https://prow.myopenshift.com/hook/`)
+ * Content-type should be `application/json`
+ * Create a secret with `openssl rand -hex 20` and set it on the webhook
+ * Enable all notifications
+
+Note that the included route for prow hooks will be exposed via `https`.
+
 ## Prepare your Ansible Variables
 
 Create a file `group_vars/all/main.yml` based on
@@ -43,6 +56,9 @@ storeSshUser: "fas-user"
 storeSshUrl: "fedoraproject.org"
 storeSshRemoteDir: "public_html/jenkins"
 storeReportUrl: "https://fas-user.fedorapeople.org/jenkins"
+prowUrl: "deck-prow.e8ca.engint.openshiftapps.com" # without the /hook subpath
+prowNamespace: "prow"
+prowHmac: "e4a61a12b5cae91dca3b8c1a576c735fe971110f" # the webhook secret generated
 ```
 
 There you can fill in you token, your secret and the Jenkins callback URL.
@@ -63,14 +79,18 @@ master ansible_host=my.jenkins.com ansible_user=root
 [jenkins-slaves]
 slave0 ansible_host=slave0.my.jenkins.com ansible_user=root labels="windows test1"
 slave1 ansible_host=slave1.my.jenkins.com ansible_user=root
+
+[prow]
+localhost ansible_connection=local
 ```
 
-The master itself has no executors. It will not run any jobs. If you want to
+The `[jenkins-master]` itself has no executors. It will not run any jobs. If you want to
 build also on master, it is possible to add the master to the
 `[jenkins-slaves]` section. Then the swarm plugin will register the master node
 as a slave too. Optionally it is possible to use the `labels` variable to
 assign labels to jenkins nodes. In the example above slave0 would get the
-labels `windows` and `test1` attached.
+labels `windows` and `test1` attached. `[prow]` will use your local openshift
+credentials and deploy prow on the configured cluster.
 
 Provision your machines:
 
@@ -118,6 +138,16 @@ fedorapeople server to your hosts file:
 [store]
 store0 ansible_host=fedorapeople.org ansible_user=fas-user
 ```
+
+### Prow Role
+
+It deploys the main prow components and related configs. In the case of prow,
+we don't config templates per repo. Instead we have fully configs inside
+`prow/files`:
+
+ * `config.yaml`: Contains all prow jobs (not used right now)
+ * `plugins.yaml`: Contains all enabled github bots per repo (again, not templatized, instead the full kubevirt-org config)
+ * `labels.yaml`: Labels which are used in `kubevirt/kubevirt`. They will be synchronized twice a day with `kubevirt/kubevirt`
 
 ## Testing the CI infrastructure
 
