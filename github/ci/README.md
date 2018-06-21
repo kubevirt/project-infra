@@ -186,3 +186,31 @@ The provisioned VMs, will periodically poll the `kubevirt/kubevirt` repository
 and try to run the functional tests. Since the token is not valid, it will not
 update the KubeVirt repository. Nested virtualization can be slow, don't expect
 too much from it.
+
+### How to share secrets?
+
+There is an `encrypt.sh` script include. For instance to share the needed
+secrets with the user `nobody`, us the public key of the user and run:
+
+```bash
+$ ./encrypt.sh ~/.ssh/nobody.pub nobody
+Adding the following files:
+
+  secrets/
+  secrets/group_vars/
+  secrets/group_vars/all/
+  secrets/group_vars/all/main.yml
+  secrets/inventory
+  secrets/id_rsa_jenkins_master.pub
+  secrets/id_rsa_jenkins_master
+
+Created nobody.tar.enc and nobody.key.enc
+```
+
+The receiver can decrypt the aes key via her public key and then use the aes
+key to decrypt the tar file:
+
+```bash
+./decrypt.sh ~/.ssh/id_rsa rmohr
+File rmohr.tar decrypted.
+```
