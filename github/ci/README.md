@@ -208,4 +208,9 @@ Created nobody.tar.enc and nobody.key.enc
 ```
 
 The receiver can decrypt the aes key via her public key and then use the aes
-key to decrypt the tar file.
+key to decrypt the tar file:
+
+```bash
+./decrypt.sh ~/.ssh/id_rsa rmohr
+File rmohr.tar decrypted.
+```

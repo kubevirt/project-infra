@@ -25,4 +25,4 @@ rm -rf ${TMP_DIR}
 rm ${RECIPIENT}.tar
 
 echo 
-echo "Created ${RECIPIENT}.tar.enc and ${RECIPIENT}.key.enc"
+echo "Created ${RECIPIENT}.tar.enc and ${RECIPIENT}.key.enc."
