@@ -59,6 +59,7 @@ storeReportUrl: "https://fas-user.fedorapeople.org/jenkins"
 prowUrl: "deck-prow.e8ca.engint.openshiftapps.com" # without the /hook subpath
 prowNamespace: "prow"
 prowHmac: "e4a61a12b5cae91dca3b8c1a576c735fe971110f" # the webhook secret generated
+prowAdmins: [ "username" ]
 ```
 
 There you can fill in you token, your secret and the Jenkins callback URL.
