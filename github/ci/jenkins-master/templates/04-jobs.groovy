@@ -1,6 +1,6 @@
 {% for target in targets %}
 job('kubevirt-functional-tests-{{ target }}') {
-    {% if target == "windows2016" %}
+    {% if target == "windows2016-release" %}
        label('windows')
     {% endif %}
     concurrentBuild()
