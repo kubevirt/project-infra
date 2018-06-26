@@ -1,0 +1,8 @@
+kind: Role
+apiVersion: v1 
+metadata:
+  name: hook
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["update", "get", "create", "delete"]

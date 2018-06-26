@@ -60,6 +60,20 @@
   state: present
   vars:
     prowLabelsConfig: "{{ lookup('file', '{{ role_path }}/files/labels.yaml') }}"
+- name: Deploy prow-hook-role
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/hook-rbac.yaml')}}"
+- name: Deploy prow-hook-service-account
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/hook-service-account.yaml') | from_yaml }}"
+  state: present
+- name: Deploy prow-hook-rbac-role-binding
+  command: "oc -n {{ prowNamespace }} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/hook-rbac-role-binding.yaml')}}"
 - name: Deploy prow-hook
   openshift_raw:
     state: present

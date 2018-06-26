@@ -1,8 +1,21 @@
+config_updater:
+  maps:
+    github/ci/prow/files/config.yaml:
+      name: config
+    github/ci/prow/files/plugins.yaml:
+      name: plugins
+    github/ci/prow/files/labels.yaml:
+      name: label-config
+
 plugins:
   kubevirt/kubevirt:
   - size
-  - assign
-  - hold
-  - release-note
   - label
+  - hold
+  - assign
+  - release-note
   - blunderbuss
+
+  kubevirt/project-infra:
+  - config-updater
+
