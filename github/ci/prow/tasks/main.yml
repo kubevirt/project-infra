@@ -6,6 +6,10 @@
     name: '{{ prowNamespace }}'
     display_name: Prow
     description: Prow for KubeVirt
+- name: Add admins to the project
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/admin-rbac.yaml')}}"
 - name: Create Prow Hook Route
   openshift_raw:
     state: present
