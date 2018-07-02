@@ -1,0 +1,3 @@
+machine https://{{ pushGatewayUrl }}
+login {{ pushGatewayUser }}
+password {{ pushGatewayPass }}

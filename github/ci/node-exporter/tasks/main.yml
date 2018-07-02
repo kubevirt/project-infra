@@ -19,4 +19,12 @@
     state: restarted
     daemon_reload: yes
     name: node-exporter
-
+- template:
+    src: "{{ role_path }}/templates/netrc"
+    dest: "{{ swarmRootDir }}/.netrc"
+    mode: "0600"
+    owner: jenkins
+- name: Export metrics to push gatway every minute
+  cron:
+    name: "push-node-metrics"
+    job: "curl -s http://localhost:9100/metrics | curl --netrc-file {{ swarmRootDir }}/.netrc --data-binary @- https://{{ pushGatewayUrl }}/metrics/job/node-metrics/instance/{{ ansible_hostname }}"
