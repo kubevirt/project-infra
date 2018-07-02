@@ -23,6 +23,7 @@
   roles:
     - jenkins-deps
     - jenkins-slave
+    - node-exporter
 - hosts: store
   roles:
     - store

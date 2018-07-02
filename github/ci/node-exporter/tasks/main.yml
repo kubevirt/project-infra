@@ -1,0 +1,22 @@
+- name: Download node-exporter
+  unarchive:
+    src: https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz
+    dest: /usr/local/bin
+    remote_src: yes
+    extra_opts: 
+      - "--strip"
+      - "1"
+- name: Ensures systemd directory exists
+  file: 
+    path: /etc/systemd/system/
+    state: directory    
+- name: Copy systemd file    
+  copy:
+    src: "{{ role_path }}/files/node-exporter.service"
+    dest: /etc/systemd/system/node-exporter.service
+- name: Make sure that the node-exporter agent is running
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: node-exporter
+

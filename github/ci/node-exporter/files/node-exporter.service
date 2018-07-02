@@ -1,0 +1,11 @@
+[Unit]
+Description=Prometheus node metrics exporter
+
+[Service]
+Type=simple
+User=jenkins
+ExecStart=/usr/local/bin/node_exporter --web.listen-address localhost:9100
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
