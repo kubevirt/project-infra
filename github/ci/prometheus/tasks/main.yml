@@ -1,0 +1,45 @@
+---
+- name: Update basic-auth secret for push gateway
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: basic-auth
+      type: Opaque            
+      data:
+        htaccess: "{{ str | b64encode }}"
+  vars:
+    str: "{{pushGatewayUser}}:{{pushGatewayPass | password_hash('sha512')}}"
+- name: Update nginx config
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('file', '{{ role_path }}/files/pushgateway-proxy-config.yaml') | from_yaml }}"
+  state: present
+- name: Deploy pushgateway
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway.yaml') | from_yaml }}"
+  state: present
+- name: Deploy pushgateway proxy service
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway-proxy-service.yaml') | from_yaml }}"
+  state: present
+- name: Deploy pushgateway service
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway-service.yaml') | from_yaml }}"
+  state: present
+- name: Deploy pushgateway route
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway-route.yaml') | from_yaml }}"
+  state: present

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: pushgateway
+spec:
+  host: "{{ pushGatewayUrl }}"
+  path: /
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: pushgateway-external
+    weight: 100
+  wildcardPolicy: None

@@ -1,0 +1,24 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: pushgateway-proxy-config
+data:
+  nginx.conf: |-
+    worker_processes 4;
+    pid /var/cache/nginx/nginx.pid;
+    error_log /dev/stdout;
+    events {
+      worker_connections 1024;
+    }
+    http {
+      access_log /dev/stdout;
+      server {
+        listen 0.0.0.0:8081;
+        location / {
+          auth_basic           "Pushgateway";
+          auth_basic_user_file /etc/security/htaccess;
+          proxy_pass http://127.0.0.1:9091;
+        }
+      }
+    }
