@@ -56,10 +56,14 @@ storeSshUser: "fas-user"
 storeSshUrl: "fedoraproject.org"
 storeSshRemoteDir: "public_html/jenkins"
 storeReportUrl: "https://fas-user.fedorapeople.org/jenkins"
-prowUrl: "deck-prow.e8ca.engint.openshiftapps.com" # without the /hook subpath
+prowUrl: "deck-prow.openshiftapps.com" # without the /hook subpath
 prowNamespace: "prow"
 prowHmac: "e4a61a12b5cae91dca3b8c1a576c735fe971110f" # the webhook secret generated
 prowAdmins: [ "username" ]
+
+pushGatewayUrl: "pushgateway-prow.openshiftapps.com"
+pushGatewayUser: secretuser
+pushGatewayPass: secretpass
 ```
 
 There you can fill in you token, your secret and the Jenkins callback URL.
@@ -149,6 +153,17 @@ we don't config templates per repo. Instead we have fully configs inside
  * `config.yaml`: Contains all prow jobs (not used right now)
  * `plugins.yaml`: Contains all enabled github bots per repo (again, not templatized, instead the full kubevirt-org config)
  * `labels.yaml`: Labels which are used in `kubevirt/kubevirt`. They will be synchronized twice a day with `kubevirt/kubevirt`
+
+### Node Exporter Role
+
+The `node-exporter` role installs the prometheus node-exporter on every node
+and adds a cronjob to push the metrics every minute to the Prometheus
+Pushgateway.  Right now this is needed, since our CI workers are not publich reachable.
+
+### Prometheus Role
+
+The `prometheus` role deploy Prometheus and the Pushgateway. The Prometheus
+server will scrape the Pushgateway and Prow components.
 
 ## Testing the CI infrastructure
 
