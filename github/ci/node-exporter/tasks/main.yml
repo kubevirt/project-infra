@@ -19,6 +19,10 @@
     state: restarted
     daemon_reload: yes
     name: node-exporter
+- name: Make sure that the node-exporter agent is running
+  systemd:
+    enabled: yes
+    name: node-exporter
 - template:
     src: "{{ role_path }}/templates/netrc"
     dest: "{{ swarmRootDir }}/.netrc"
