@@ -11,4 +11,4 @@ data:
     scrape_configs:
       - job_name: 'prometheus'
         static_configs:
-          - targets: ['localhost:9090', 'pushgateway' ]
+          - targets: ['localhost:9090', 'pushgateway', 'hook:8888' ]
