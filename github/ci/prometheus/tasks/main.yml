@@ -43,3 +43,19 @@
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway-route.yaml') | from_yaml }}"
   state: present
+- name: Update prometheus config
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('file', '{{ role_path }}/files/prometheus-config.yaml') | from_yaml }}"
+  state: present
+- name: Deploy prometheus
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/prometheus.yaml')}}"
+- name: Deploy prometheus service
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/prometheus-service.yaml') | from_yaml }}"
+  state: present
