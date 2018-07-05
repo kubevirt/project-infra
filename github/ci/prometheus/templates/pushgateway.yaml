@@ -20,25 +20,3 @@ spec:
         ports:
           - name: http-unsecured
             containerPort: 9091
-      - name: nginx
-        ports:
-          - name: http-secured
-            containerPort: 8081
-        image: nginx:1
-        volumeMounts:
-        - name: htaccess
-          mountPath: /etc/security/
-          readOnly: true
-        - name: config-volume
-          mountPath: /etc/nginx/
-        - name: cache
-          mountPath: /var/cache/nginx
-      volumes:
-      - name: config-volume
-        configMap:
-          name: pushgateway-proxy-config
-      - name: cache
-        emptyDir: {}
-      - name: htaccess
-        secret:
-          secretName: basic-auth

@@ -17,7 +17,7 @@
   openshift_raw:
     state: present
     namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('file', '{{ role_path }}/files/pushgateway-proxy-config.yaml') | from_yaml }}"
+    definition: "{{ lookup('file', '{{ role_path }}/files/prometheus-proxy-config.yaml') | from_yaml }}"
   state: present
 - name: Deploy pushgateway
   openshift_raw:
@@ -25,23 +25,11 @@
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway.yaml') | from_yaml }}"
   state: present
-- name: Deploy pushgateway proxy service
-  openshift_raw:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway-proxy-service.yaml') | from_yaml }}"
-  state: present
 - name: Deploy pushgateway service
   openshift_raw:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway-service.yaml') | from_yaml }}"
-  state: present
-- name: Deploy pushgateway route
-  openshift_raw:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway-route.yaml') | from_yaml }}"
   state: present
 - name: Update prometheus config
   openshift_raw:
@@ -59,3 +47,34 @@
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/prometheus-service.yaml') | from_yaml }}"
   state: present
+- name: Deploy prometheus proxy
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/prometheus-proxy.yaml') | from_yaml }}"
+  state: present
+- name: Deploy prometheus proxy service
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/prometheus-proxy-service.yaml') | from_yaml }}"
+  state: present
+- name: Deploy pushgateway proxy service
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway-proxy-service.yaml') | from_yaml }}"
+  state: present
+- name: Deploy prometheus route
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/prometheus-route.yaml') | from_yaml }}"
+  state: present
+- name: Deploy pushgateway route
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway-route.yaml') | from_yaml }}"
+  state: present
+

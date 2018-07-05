@@ -4,7 +4,7 @@ kind: StatefulSet
 metadata:
   name: prometheus 
   labels:
-    k8s-app: prometheus
+    app: prometheus
     version: v2.2.1
 spec:
   serviceName: "prometheus"
@@ -14,13 +14,11 @@ spec:
    type: "RollingUpdate"
   selector:
     matchLabels:
-      k8s-app: prometheus
+      app: prometheus
   template:
     metadata:
       labels:
-        k8s-app: prometheus
-      annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
+        app: prometheus
     spec:
       priorityClassName: system-cluster-critical
       initContainers:

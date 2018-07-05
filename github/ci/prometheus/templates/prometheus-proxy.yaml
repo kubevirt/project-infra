@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: prometheus-proxy
+  labels:
+    app: prometheus-proxy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prometheus-proxy
+    spec:
+      securityContext:
+        runAsUser: 1001
+        fsGroup: 2001
+      containers:
+      - name: nginx
+        ports:
+          - name: pushgateway
+            containerPort: 8081
+          - name: prometheus
+            containerPort: 8082
+        image: nginx:1
+        volumeMounts:
+        - name: htaccess
+          mountPath: /etc/security/
+          readOnly: true
+        - name: config-volume
+          mountPath: /etc/nginx/
+        - name: cache
+          mountPath: /var/cache/nginx
+      volumes:
+      - name: config-volume
+        configMap:
+          name: pushgateway-proxy-config
+      - name: cache
+        emptyDir: {}
+      - name: htaccess
+        secret:
+          secretName: basic-auth
