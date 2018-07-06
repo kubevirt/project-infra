@@ -31,6 +31,22 @@
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway-service.yaml') | from_yaml }}"
   state: present
+- name: Update grafana config
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/files/grafana-config.yaml') | from_yaml }}"
+  state: present
+- name: Deploy grafana
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/grafana.yaml')}}"
+- name: Deploy grafana service
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/grafana-service.yaml') | from_yaml }}"
+  state: present
 - name: Update prometheus config
   openshift_raw:
     state: present
@@ -65,6 +81,12 @@
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway-proxy-service.yaml') | from_yaml }}"
   state: present
+- name: Deploy grafana proxy service
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/grafana-proxy-service.yaml') | from_yaml }}"
+  state: present
 - name: Deploy prometheus route
   openshift_raw:
     state: present
@@ -76,5 +98,11 @@
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/pushgateway-route.yaml') | from_yaml }}"
+  state: present
+- name: Deploy grafana route
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/grafana-route.yaml') | from_yaml }}"
   state: present
 

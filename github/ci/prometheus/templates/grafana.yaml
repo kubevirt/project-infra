@@ -1,0 +1,65 @@
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: grafana6
+  labels:
+    app: grafana
+    version: v5.2.1
+spec:
+  serviceName: "grafana"
+  replicas: 1
+  podManagementPolicy: "Parallel"
+  updateStrategy:
+   type: "RollingUpdate"
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: "grafana/grafana:5.2.1"
+          imagePullPolicy: "IfNotPresent"
+          command:
+            - grafana-server 
+            - --homepath=/usr/share/grafana
+            - --config=/etc/grafana/grafana.ini
+            - cfg:default.log.mode=console
+            - cfg:default.paths.data=/var/lib/grafana
+            - cfg:default.log.level=debug
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/grafana
+              readOnly: true
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi            
+      terminationGracePeriodSeconds: 300
+      volumes:
+        - name: config-volume
+          configMap:
+            name: grafana-config
+            items:
+            - key: datasources.yaml
+              path: provisioning/datasources/datasources.yaml
+            - key: grafana.ini
+              path: grafana.ini
+  volumeClaimTemplates:
+  - metadata:
+      name: grafana-data
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: "2Gi"

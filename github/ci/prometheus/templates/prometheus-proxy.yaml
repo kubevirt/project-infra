@@ -21,6 +21,8 @@ spec:
             containerPort: 8081
           - name: prometheus
             containerPort: 8082
+          - name: grafana
+            containerPort: 8083
         image: nginx:1
         volumeMounts:
         - name: htaccess

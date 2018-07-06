@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-proxy
+  labels:
+    app: grafana-proxy
+spec:
+  ports:
+  - name: prometheus-proxy
+    port: 80
+    targetPort: grafana
+  type: NodePort
+  selector:
+    app: prometheus-proxy

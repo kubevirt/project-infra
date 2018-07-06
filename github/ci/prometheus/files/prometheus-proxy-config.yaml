@@ -29,4 +29,12 @@ data:
           proxy_pass http://prometheus;
         }
       }
+      server {
+        listen 0.0.0.0:8083;
+        location / {
+          auth_basic           "Grafana";
+          auth_basic_user_file /etc/security/htaccess;
+          proxy_pass http://grafana;
+        }
+      }
     }

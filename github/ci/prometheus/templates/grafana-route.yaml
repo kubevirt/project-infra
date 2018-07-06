@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: grafana
+spec:
+  host: "{{ grafanaUrl }}"
+  path: /
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: grafana-proxy
+    weight: 100
+  wildcardPolicy: None
