@@ -4,46 +4,20 @@
     state: present
     kind: Project
     name: '{{ prowNamespace }}'
-    display_name: Prow
-    description: Prow for KubeVirt
 - name: Add admins to the project
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/admin-rbac.yaml')}}"
-- name: Create Prow Hook Route
+- name: Create tokens
   openshift_raw:
     state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/route-hook.yaml') | from_yaml }}"
-  state: present
-- name: Create HMAC secret
-  openshift_raw:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: hmac-token
-      type: Opaque            
-      data:
-        hmac: "{{ prowHmac | b64encode }}"
-- name: Create OAuth secret
-  openshift_raw:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: oauth-token
-      type: Opaque
-      data:
-        oauth: "{{ githubToken | b64encode }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/{{ item }}') | from_yaml }}"
+  loop:
+    - hmac-token.yaml
+    - oauth-token.yaml
 - name: Update prow plugins config 
   openshift_raw:
     state: present
-    namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/plugins.yaml') | from_yaml }}"
   state: present
   vars:
@@ -51,7 +25,6 @@
 - name: Update prow job config
   openshift_raw:
     state: present
-    namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/config.yaml') | from_yaml }}"
   state: present
   vars:
@@ -59,7 +32,6 @@
 - name: Update prow label-sync config
   openshift_raw:
     state: present
-    namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/labels.yaml') | from_yaml }}"
   state: present
   vars:
@@ -68,31 +40,26 @@
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/hook-rbac.yaml')}}"
-- name: Deploy prow-hook-service-account
-  openshift_raw:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/hook-service-account.yaml') | from_yaml }}"
-  state: present
 - name: Deploy prow-hook-rbac-role-binding
   command: "oc -n {{ prowNamespace }} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/hook-rbac-role-binding.yaml')}}"
-- name: Deploy prow-hook
+- name: Create prow hook
   openshift_raw:
     state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/hook.yaml') | from_yaml }}"
-  state: present
-- name: Deploy prow-hook-service
+    definition: "{{ lookup('template', '{{ role_path }}/templates/{{ item }}') | from_yaml }}"
+  loop:
+    - route-hook.yaml
+    - hook-service-account.yaml
+    - hook.yaml
+    - hook-service.yaml
+    - label-sync.yaml
+- name: Deploy Jenkins
   openshift_raw:
     state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/hook-service.yaml') | from_yaml }}"
-  state: present
-- name: Deploy label-sync cron job
-  openshift_raw:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/label-sync.yaml') | from_yaml }}"
-  state: present
+    definition: "{{ lookup('template', '{{ role_path }}/templates/{{ item }}') | from_yaml }}"
+  loop:
+    - jenkins-secret.yaml
+    - jenkins-service.yaml
+    - jenkins-pvc.yaml
+    - jenkins.yaml

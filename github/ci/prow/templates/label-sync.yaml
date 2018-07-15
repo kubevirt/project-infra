@@ -17,6 +17,7 @@ apiVersion: batch/v2alpha1
 kind: CronJob
 metadata:
   name: label-sync
+  namespace: "{{ prowNamespace }}"
 spec:
   schedule: "17 23 * * *"    # Every day 23:17 / 11:17PM
   concurrencyPolicy: Forbid
