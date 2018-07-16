@@ -37,7 +37,7 @@ spec:
             memory: "2Gi"
         env:
         - name: JAVA_OPTS
-          value: "-Xms512m -Xmx512m"
+          value: "-Djenkins.install.runSetupWizard=false -Xms512m -Xmx512m"
       volumes:
       - name: jenkins-secret
         secret:

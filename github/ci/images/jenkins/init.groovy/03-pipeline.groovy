@@ -37,7 +37,7 @@ FolderCredentialsProperty property = folderAbs.getProperties().get(FolderCredent
 if (property) {
     boolean credExist = false
     for (cred in property.getCredentials()) {
-        if (cred.id == c.id) {
+        if (cred.description == c.description) {
             credExist = true
             break
         }

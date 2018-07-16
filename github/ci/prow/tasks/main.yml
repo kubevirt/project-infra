@@ -62,4 +62,5 @@
     - jenkins-secret.yaml
     - jenkins-service.yaml
     - jenkins-pvc.yaml
+    - jenkins-route.yaml
     - jenkins.yaml
