@@ -17,6 +17,7 @@ USER jenkins
 RUN mkdir -p /tmp/init.groovy.j2/ \
   && mkdir -p /var/jenkins_home/init.groovy.d 
 
+COPY init.groovy/01-init-jenkins.groovy /tmp/init.groovy.j2/
 COPY init.groovy/02-security.groovy /tmp/init.groovy.j2/
 COPY init.groovy/03-pipeline.groovy /tmp/init.groovy.j2/
 

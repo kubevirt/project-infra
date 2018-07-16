@@ -1,23 +1,23 @@
 import jenkins.model.*
 
-import com.cloudbees.hudson.plugins.folder.*;
-import com.cloudbees.hudson.plugins.folder.properties.*;
-import com.cloudbees.hudson.plugins.folder.properties.FolderCredentialsProvider.FolderCredentialsProperty;
-import com.cloudbees.plugins.credentials.impl.*;
-import com.cloudbees.plugins.credentials.*;
-import com.cloudbees.plugins.credentials.domains.*;
-import com.cloudbees.hudson.plugins.folder.computed.DefaultOrphanedItemStrategy;
+import com.cloudbees.hudson.plugins.folder.*
+import com.cloudbees.hudson.plugins.folder.properties.*
+import com.cloudbees.hudson.plugins.folder.properties.FolderCredentialsProvider.FolderCredentialsProperty
+import com.cloudbees.plugins.credentials.impl.*
+import com.cloudbees.plugins.credentials.*
+import com.cloudbees.plugins.credentials.domains.*
+import com.cloudbees.hudson.plugins.folder.computed.DefaultOrphanedItemStrategy
 
-import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
-import org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait;
-import org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait;
-import org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait;
-import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProjectFactory;
+import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator
+import org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait
+import org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait
+import org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProjectFactory
 
-import jenkins.branch.OrganizationFolder;
-import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
-import jenkins.scm.impl.trait.RegexSCMHeadFilterTrait;
-import jenkins.scm.impl.trait.RegexSCMSourceFilterTrait;
+import jenkins.branch.OrganizationFolder
+import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy
+import jenkins.scm.impl.trait.RegexSCMHeadFilterTrait
+import jenkins.scm.impl.trait.RegexSCMSourceFilterTrait
 
 
 jenkins = Jenkins.instance
@@ -29,13 +29,22 @@ if (folder == null) {
 
 // Create GitHub credentials
 String id = java.util.UUID.randomUUID().toString()
-Credentials c = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "description: GitHub access token", "{{ githubUser }}", "{{ githubUserToken }}")
+Credentials c = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, "GitHub access token", "{{ githubUser }}", "{{ githubToken }}")
 
 AbstractFolder<?> folderAbs = AbstractFolder.class.cast(folder)
 FolderCredentialsProperty property = folderAbs.getProperties().get(FolderCredentialsProperty.class)
 
 if (property) {
-    property.getStore().addCredentials(Domain.global(), c)
+    boolean credExist = false
+    for (cred in property.getCredentials()) {
+        if (cred.id == c.id) {
+            credExist = true
+            break
+        }
+    }
+    if (!credExist) {
+        property.getStore().addCredentials(Domain.global(), c)
+    }
 } else {
     property = new FolderCredentialsProperty([c])
     folderAbs.addProperty(property)
