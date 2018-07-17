@@ -1,8 +1,16 @@
 import java.util.*
-import jenkins.model.*
+
+import hudson.model.User
 import hudson.security.*
-import jenkins.security.s2m.AdminWhitelistRule
+
 import jenkins.CLI;
+import jenkins.model.*
+import jenkins.security.s2m.AdminWhitelistRule
+
+import com.cloudbees.plugins.credentials.impl.*
+import com.cloudbees.plugins.credentials.*
+import com.cloudbees.plugins.credentials.domains.*
+
 
 def instance = Jenkins.getInstance()
 

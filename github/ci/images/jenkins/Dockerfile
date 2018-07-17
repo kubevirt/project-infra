@@ -17,7 +17,9 @@ USER jenkins
 RUN mkdir -p /tmp/init.groovy.j2/
 COPY init.groovy/01-init-jenkins.groovy /tmp/init.groovy.j2/
 COPY init.groovy/02-security.groovy /tmp/init.groovy.j2/
-COPY init.groovy/03-pipeline.groovy /tmp/init.groovy.j2/
+COPY init.groovy/03-credentials.groovy /tmp/init.groovy.j2/
+COPY init.groovy/90-seed.groovy /tmp/init.groovy.j2/
+COPY jobs.groovy /tmp/
 
 COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]

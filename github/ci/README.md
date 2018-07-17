@@ -60,6 +60,15 @@ prowUrl: "deck-prow.e8ca.engint.openshiftapps.com" # without the /hook subpath
 prowNamespace: "prow"
 prowHmac: "e4a61a12b5cae91dca3b8c1a576c735fe971110f" # the webhook secret generated
 prowAdmins: [ "username" ]
+jenkins_data: |
+  {
+    "jenkinsUser": "test",
+    "jenkinsPass": "test",
+    "jenkinsUrl": "https://test.testdomain.com",
+    "githubOrg": "test",
+    "githubUser": "test",
+    "githubToken": "test"
+  }
 ```
 
 There you can fill in you token, your secret and the Jenkins callback URL.
@@ -82,6 +91,9 @@ slave0 ansible_host=slave0.my.jenkins.com ansible_user=root labels="windows test
 slave1 ansible_host=slave1.my.jenkins.com ansible_user=root
 
 [prow]
+localhost ansible_connection=local
+
+[jenkins-blueocean]
 localhost ansible_connection=local
 ```
 
@@ -149,6 +161,11 @@ we don't config templates per repo. Instead we have fully configs inside
  * `config.yaml`: Contains all prow jobs (not used right now)
  * `plugins.yaml`: Contains all enabled github bots per repo (again, not templatized, instead the full kubevirt-org config)
  * `labels.yaml`: Labels which are used in `kubevirt/kubevirt`. They will be synchronized twice a day with `kubevirt/kubevirt`
+
+### Jenkins-Blueocean Role
+
+It deploys the jenkins with configured blueocean pipeline for specified project under an OpenShift cluster.
+For deployment it uses credentials from `oc login` command.
 
 ## Testing the CI infrastructure
 

@@ -30,3 +30,8 @@
   gather_facts: False
   roles:
     - prow
+
+- hosts: jenkins-blueocean
+  gather_facts: False
+  roles:
+    - jenkins-blueocean

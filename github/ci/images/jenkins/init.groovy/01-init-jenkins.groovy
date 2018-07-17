@@ -1,6 +1,8 @@
 import jenkins.model.*
-import hudson.util.*
 import jenkins.install.*
+
+import hudson.util.*
+
 import java.util.logging.Logger
 
 // Set Jenkins URL
@@ -11,9 +13,6 @@ if (jenkinsLocationConfiguration.getUrl() != "{{ jenkinsUrl }}") {
 }
 
 def instance = Jenkins.getInstance()
-
-// Set Jenkins state to INITIAL_SETUP_COMPLETED
-instance.setInstallState(InstallState.INITIAL_SETUP_COMPLETED)
 
 // Install all needed plugins
 def logger = Logger.getLogger("")
