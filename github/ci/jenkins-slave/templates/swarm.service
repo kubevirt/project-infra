@@ -4,7 +4,7 @@ Description=Jenkins Swarm client
 [Service]
 Type=simple
 User=jenkins
-ExecStart=/usr/bin/java -jar /opt/swarm-client.jar -master {{ master }} -username {{ jenkinsUser }} -password @/opt/.pwd -executors {{ slaveSlots }} -deleteExistingClients -fsroot {{ swarmRootDir }} -labelsFile {{ swarmRootDir }}/labels -disableSslVerification
+ExecStart=/usr/bin/java -jar /opt/swarm-client.jar -master {{ master }} -username {{ jenkinsUser }} -password @/opt/.pwd -executors {{ slaveSlots }} -deleteExistingClients -fsroot {{ swarmRootDir }} -labelsFile {{ swarmRootDir }}/labels -disableSslVerification -mode {{ mode }}
 Restart=always
 
 [Install]
