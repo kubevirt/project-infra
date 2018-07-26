@@ -1,4 +1,5 @@
 ---
 swarmRootDir: "/var/lib/swarm"
+mode: "normal"
 slaveSlots: 2
 labels: ""
