@@ -15,6 +15,12 @@ plugins:
   - assign
   - release-note
   - blunderbuss
+  kubevirt/containerized-data-importer:
+  - size
+  - label
+  - hold
+  - assign
+  - release-note
 
   kubevirt/project-infra:
   - config-updater
