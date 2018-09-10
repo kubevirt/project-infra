@@ -1,15 +1,16 @@
 apiVersion: v1
 kind: Route
 metadata:
-  name: hook
+  name: jenkins
   namespace: "{{ prowNamespace }}"
 spec:
-  host: "{{ prowUrl }}"
-  path: /hook
+  host: "{{ jenkinsUrl }}"
+  path: /
   tls:
     termination: edge
+    insecureEdgeTerminationPolicy: Redirect
   to:
     kind: Service
-    name: hook
+    name: jenkins
     weight: 100
   wildcardPolicy: None

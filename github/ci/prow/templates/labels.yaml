@@ -6,4 +6,4 @@ kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: label-config
-
+  namespace: "{{ prowNamespace }}"

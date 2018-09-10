@@ -1,0 +1,47 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "jenkins"
+  namespace: "{{ prowNamespace }}"
+  labels:
+    app: jenkins
+spec:
+  # Do not scale up.
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - name: "jenkins"
+        image: "alukiano/jenkins-blueocean:lts-alpine"
+        ports:
+        - name: logs
+          containerPort: 8080
+        volumeMounts:
+        - name: jenkins-secret
+          mountPath: /etc/jenkins
+          readOnly: true
+        - name: jenkins-data
+          mountPath: /var/jenkins_home
+        resources:
+          requests:
+            memory: "1Gi"
+          limits:
+            memory: "2Gi"
+        env:
+        - name: JAVA_OPTS
+          value: "-Djenkins.install.runSetupWizard=false -Xms512m -Xmx512m"
+      volumes:
+      - name: jenkins-secret
+        secret:
+          secretName: jenkins-secret
+      - name: jenkins-data
+        persistentVolumeClaim:
+          claimName: jenkins-data

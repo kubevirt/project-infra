@@ -7,3 +7,4 @@ kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: plugins
+  namespace: "{{ prowNamespace }}"
