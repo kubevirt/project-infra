@@ -15,6 +15,7 @@ plugins:
   - assign
   - release-note
   - blunderbuss
+  - lifecycle
   kubevirt/containerized-data-importer:
   - size
   - label
