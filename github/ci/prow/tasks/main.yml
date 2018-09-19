@@ -40,6 +40,14 @@
       type: Opaque
       data:
         oauth: "{{ githubToken | b64encode }}"
+- name: Update prow config
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/config.yaml') | from_yaml }}"
+  state: present
+  vars:
+    prowConfig: "{{ lookup('file', '{{ role_path }}/files/config.yaml') }}"
 - name: Update prow plugins config 
   openshift_raw:
     state: present
@@ -52,10 +60,10 @@
   openshift_raw:
     state: present
     namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/config.yaml') | from_yaml }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/job-config.yaml') | from_yaml }}"
   state: present
   vars:
-    prowConfig: "{{ lookup('file', '{{ role_path }}/files/config.yaml') }}"
+    prowJobConfig: "{{ lookup('file', '{{ role_path }}/files/job-config.yaml') }}"
 - name: Update prow label-sync config
   openshift_raw:
     state: present
@@ -89,6 +97,38 @@
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/hook-service.yaml') | from_yaml }}"
+  state: present
+- name: Deploy horologium-rbac
+  command: "oc -n {{ prowNamespace }} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/horologium-rbac.yaml')}}"
+  state: present
+- name: Deploy horologium
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/horologium-deployment.yaml') | from_yaml }}"
+- name: Deploy plank-rbac
+  command: "oc -n {{ prowNamespace }} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/plank-rbac.yaml')}}"
+  state: present
+- name: Deploy plank
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/plank-deployment.yaml') | from_yaml }}"
+
+- name: Deploy sinker-rbac
+  command: "oc -n {{ prowNamespace }} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/sinker-rbac.yaml')}}"
+  state: present
+- name: Deploy sinker
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/sinker-deployment.yaml') | from_yaml }}"
   state: present
 - name: Deploy label-sync cron job
   openshift_raw:

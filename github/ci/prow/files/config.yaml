@@ -1,8 +1,7 @@
-periodics:
-- interval: 10m
-  agent: kubernetes
-  name: echo-test
-  spec:
-    containers:
-    - image: alpine
-      command: ["/bin/date"]
+sinker:
+  resync_period: 1m
+  max_prowjob_age: 48h
+  max_pod_age: 30m
+
+prowjob_namespace: kubevirt-prow
+pod_namespace: kubevirt-prow
