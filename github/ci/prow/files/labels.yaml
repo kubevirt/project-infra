@@ -159,3 +159,23 @@ labels:
 - name: wontfix
   color: ffffff
   target: both
+- color: d3e2f0
+  description: Indicates that an issue or PR should not be auto-closed due to staleness.
+  name: lifecycle/frozen
+  target: both
+  prowPlugin: lifecycle
+- color: 8fc951
+  description: Indicates that an issue or PR is actively being worked on by a contributor.
+  name: lifecycle/active
+  target: both
+  prowPlugin: lifecycle
+- color: "604460"
+  description: Denotes an issue or PR that has aged beyond stale and will be auto-closed.
+  name: lifecycle/rotten
+  target: both
+  prowPlugin: lifecycle
+- color: "795548"
+  description: Denotes an issue or PR has remained open with no activity and has become stale.
+  name: lifecycle/stale
+  target: both
+  prowPlugin: lifecycle
