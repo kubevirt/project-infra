@@ -118,7 +118,6 @@
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/plank-deployment.yaml') | from_yaml }}"
-
 - name: Deploy sinker-rbac
   command: "oc -n {{ prowNamespace }} apply -f -"
   args:
@@ -135,4 +134,15 @@
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/label-sync.yaml') | from_yaml }}"
+  state: present
+- name: Deploy needs-rebase
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/needs-rebase_deployment.yaml') | from_yaml }}"
+- name: Deploy needs-rebase-service
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/needs-rebase_service.yaml') | from_yaml }}"
   state: present

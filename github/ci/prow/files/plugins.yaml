@@ -28,3 +28,12 @@ plugins:
   kubevirt/project-infra:
   - config-updater
 
+external_plugins:
+  kubevirt/kubevirt:
+  - name: needs-rebase
+    events:
+      - pull_request
+  kubevirt/containerized-data-importer:
+  - name: needs-rebase
+    events:
+      - pull_request
