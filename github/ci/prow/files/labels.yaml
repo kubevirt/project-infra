@@ -183,3 +183,9 @@ repos:
       - name: topic/virtualization
         color: c5def5
         target: both
+      - color: BDBDBD
+        description: Indicates a PR cannot be merged because it has merge conflicts with HEAD.
+        name: needs-rebase
+        target: prs
+        prowPlugin: needs-rebase
+        addedBy: prow
