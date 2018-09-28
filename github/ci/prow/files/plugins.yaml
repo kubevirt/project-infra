@@ -24,6 +24,7 @@ plugins:
   - hold
   - assign
   - release-note
+  - lifecycle
 
   kubevirt/project-infra:
   - config-updater
