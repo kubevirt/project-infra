@@ -7,6 +7,7 @@ periodics:
       args:
       - |-
         --query=repo:kubevirt/kubevirt
+        --query=repo:kubevirt/containerized-data-importer
         -label:lifecycle/frozen
         label:lifecycle/rotten
       - --updated=720h
@@ -36,6 +37,7 @@ periodics:
       args:
       - |-
         --query=repo:kubevirt/kubevirt
+        --query=repo:kubevirt/containerized-data-importer
         -label:lifecycle/frozen
         label:lifecycle/stale
         -label:lifecycle/rotten
@@ -68,6 +70,7 @@ periodics:
       args:
       - |-
         --query=repo:kubevirt/kubevirt
+        --query=repo:kubevirt/containerized-data-importer
         -label:lifecycle/frozen
         -label:lifecycle/stale
         -label:lifecycle/rotten
