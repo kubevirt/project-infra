@@ -6,7 +6,7 @@ periodics:
     - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
       args:
       - |-
-        --query=repo:kubevirt/kubevirt
+        --query=org:kubevirt
         -label:lifecycle/frozen
         label:lifecycle/rotten
       - --updated=720h
@@ -35,7 +35,7 @@ periodics:
     - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
       args:
       - |-
-        --query=repo:kubevirt/kubevirt
+        --query=org:kubevirt
         -label:lifecycle/frozen
         label:lifecycle/stale
         -label:lifecycle/rotten
@@ -67,7 +67,7 @@ periodics:
     - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
       args:
       - |-
-        --query=repo:kubevirt/kubevirt
+        --query=org:kubevirt
         -label:lifecycle/frozen
         -label:lifecycle/stale
         -label:lifecycle/rotten

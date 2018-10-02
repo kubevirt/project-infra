@@ -10,20 +10,13 @@ config_updater:
       name: label-config
 
 plugins:
-  kubevirt/kubevirt:
+  kubevirt:
   - size
   - label
   - hold
   - assign
   - release-note
   - blunderbuss
-  - lifecycle
-  kubevirt/containerized-data-importer:
-  - size
-  - label
-  - hold
-  - assign
-  - release-note
   - lifecycle
 
   kubevirt/project-infra:
