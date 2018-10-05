@@ -1,12 +1,31 @@
 ---
 default:
   labels:
-    - name: distro/kuberenetes
-      color: fcb3ad
-      target: both
-    - name: distro/openshift
-      color: fcb3ad
-      target: both
+    - color: c2e0c6
+      name: release-note
+      target: prs
+      description: Denotes a PR that will be considered when it comes time to generate release notes.
+      prowPlugin: release-note
+      addedBy: prow 
+    - color: c2e0c6
+      description: Denotes a PR that doesn't merit a release note.  # will be ignored when it comes time to generate release notes.
+      name: release-note-none
+      target: prs
+      prowPlugin: release-note
+      addedBy: prow 
+    - color: e11d21
+      description: Indicates that a PR should not merge because someone has issued a /hold command.
+      name: do-not-merge/hold
+      target: prs
+      prowPlugin: hold
+      addedBy: anyone          
+    - color: BDBDBD
+      description: Indicates a PR cannot be merged because it has merge conflicts with HEAD.
+      name: needs-rebase
+      target: prs
+      prowPlugin: needs-rebase
+      addedBy: prow
+      prowPlugin: release-note
     - color: e11d21
       description: Indicates that a PR should not merge because it's missing one of the release note labels.
       name: do-not-merge/release-note-label-needed
@@ -14,115 +33,143 @@ default:
         - name: needs/release-note
           color: d4c5f9
       target: prs
-    - name: duplicate
-      color: cccccc
-      target: both
-    - name: for/developers
-      color: fef2c0
-      target: both
-    - name: for/users
-      color: fef2c0
-      target: both
-    - name: good first issue
-      color: 128A0C
-      target: issues
-    - name: help wanted
-      color: 128A0C
-      target: issues
+      addedBy: prow
+      prowPlugin: release-note
     - name: kind/blocker
       color: b60205
       target: both
+      addedBy: anyone
+      prowPlugin: label
     - name: kind/bug
       color: ee0701
       target: both
+      addedBy: anyone
+      prowPlugin: label
     - name: kind/enhancement
       color: bfd4f2
       target: both
+      addedBy: anyone
+      prowPlugin: label
     - name: kind/proposal
       color: bfd4f2
       target: both
+      addedBy: anyone
+      prowPlugin: label
     - name: kind/question
       color: cc317c
       target: both
+      addedBy: anyone
+      prowPlugin: label
     - name: kind/tracker
       color: bc19c1
       target: both
-    - name: needs/documentation
-      color: d4c5f9
-      target: both
-    - name: priority/backlog
-      color: fbca04
-      target: both
-    - name: priority/critical-urgent
-      color: d93f0b
-      target: both
-    - color: c2e0c6
-      name: release-note
-      target: prs
-      description: Denotes a PR that will be considered when it comes time to generate release notes.
-    - color: c2e0c6
-      description: Denotes a PR that doesn't merit a release note.  # will be ignored when it comes time to generate release notes.
-      name: release-note-none
-      target: prs
-    - name: research-needed
-      color: fef2c0
-      target: both
+      addedBy: anyone
+      prowPlugin: label
     - name: size/L
       color: ee9900
       target: both
       previously:
         - name: size-L
           color: f9d0c4
+      addedBy: prow
+      prowPlugin: size
     - name: size/M
       color: eebb00
       target: both
       previously:
         - name: size-M
           color: f9d0c4
+      addedBy: prow
+      prowPlugin: size
     - name: size/S
       color: 77bb00
       target: both
       previously:
         - name: size-S
           color: f9d0c4
+      addedBy: prow
+      prowPlugin: size
     - name: size/XL
       color: ee5500
       target: both
       previously:
         - name: size-XL
           color: f9d0c4
+      addedBy: prow
+      prowPlugin: size
     - color: "009900"
       name: size/XS
       target: both
+      addedBy: prow
+      prowPlugin: size
     - color: ee0000
       name: size/XXL
       target: both
-    - name: wontfix
-      color: ffffff
-      target: both
+      addedBy: prow
+      prowPlugin: size
     - color: d3e2f0
       description: Indicates that an issue or PR should not be auto-closed due to staleness.
       name: lifecycle/frozen
       target: both
       prowPlugin: lifecycle
+      addedBy: prow
     - color: 8fc951
       description: Indicates that an issue or PR is actively being worked on by a contributor.
       name: lifecycle/active
       target: both
       prowPlugin: lifecycle
+      addedBy: prow
     - color: "604460"
       description: Denotes an issue or PR that has aged beyond stale and will be auto-closed.
       name: lifecycle/rotten
       target: both
       prowPlugin: lifecycle
+      addedBy: prow
     - color: "795548"
       description: Denotes an issue or PR has remained open with no activity and has become stale.
       name: lifecycle/stale
       target: both
       prowPlugin: lifecycle
+      addedBy: prow
 repos:
   kubevirt/kubevirt:
     labels:
+      - name: needs/documentation
+        color: d4c5f9
+        target: both
+      - name: priority/backlog
+        color: fbca04
+        target: both
+      - name: priority/critical-urgent
+        color: d93f0b
+        target: both
+      - name: research-needed
+        color: fef2c0
+        target: both
+      - name: wontfix
+        color: ffffff
+        target: both
+      - name: duplicate
+        color: cccccc
+        target: both
+      - name: for/developers
+        color: fef2c0
+        target: both
+      - name: for/users
+        color: fef2c0
+        target: both
+      - name: good first issue
+        color: 128A0C
+        target: issues
+      - name: help wanted
+        color: 128A0C
+        target: issues
+      - name: distro/kuberenetes
+        color: fcb3ad
+        target: both
+      - name: distro/openshift
+        color: fcb3ad
+        target: both
       - name: area/api-server
         color: bfd4f2
         target: both
@@ -183,9 +230,3 @@ repos:
       - name: topic/virtualization
         color: c5def5
         target: both
-      - color: BDBDBD
-        description: Indicates a PR cannot be merged because it has merge conflicts with HEAD.
-        name: needs-rebase
-        target: prs
-        prowPlugin: needs-rebase
-        addedBy: prow
