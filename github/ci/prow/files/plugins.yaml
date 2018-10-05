@@ -15,12 +15,20 @@ plugins:
   - label
   - hold
   - assign
-  - release-note
   - blunderbuss
   - lifecycle
 
   kubevirt/project-infra:
   - config-updater
+
+  kubevirt/kubevirt:
+  - release-note
+
+  kubevirt/containerized-data-importer:
+  - release-note
+
+  kubevirt/kubevirt-ansible:
+  - release-note
 
 external_plugins:
   kubevirt/kubevirt:
