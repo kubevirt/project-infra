@@ -31,11 +31,7 @@ plugins:
   - release-note
 
 external_plugins:
-  kubevirt/kubevirt:
-  - name: needs-rebase
-    events:
-      - pull_request
-  kubevirt/containerized-data-importer:
+  kubevirt:
   - name: needs-rebase
     events:
       - pull_request
