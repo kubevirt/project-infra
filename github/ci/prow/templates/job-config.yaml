@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: job-config
 data:
-  config.yaml: |
+  job-config.yaml: |
 {{ prowJobConfig | indent(width=4, indentfirst=True) }}
