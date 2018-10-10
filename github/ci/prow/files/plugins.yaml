@@ -17,12 +17,14 @@ plugins:
   - assign
   - blunderbuss
   - lifecycle
+  - verify-owners
 
   kubevirt/project-infra:
   - config-updater
 
   kubevirt/kubevirt:
   - release-note
+  - owners-label
 
   kubevirt/containerized-data-importer:
   - release-note

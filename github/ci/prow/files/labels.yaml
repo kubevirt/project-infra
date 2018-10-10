@@ -65,6 +65,12 @@ default:
       target: both
       addedBy: anyone
       prowPlugin: label
+    - color: e11d21
+      description: Categorizes issue or PR as related to adding, removing, or otherwise changing an API
+      name: kind/api-change
+      target: both
+      prowPlugin: label
+      addedBy: anyone
     - name: size/L
       color: ee9900
       target: both
