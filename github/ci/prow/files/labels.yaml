@@ -137,6 +137,18 @@ default:
       target: both
       prowPlugin: lifecycle
       addedBy: prow
+    - name: topic/network
+      color: c5def5
+      target: both
+    - name: topic/security
+      color: c5def5
+      target: both
+    - name: topic/storage
+      color: c5def5
+      target: both
+    - name: topic/virtualization
+      color: c5def5
+      target: both
 repos:
   kubevirt/kubevirt:
     labels:
@@ -215,24 +227,12 @@ repos:
       - name: topic/integration
         color: c5def5
         target: both
-      - name: topic/network
-        color: c5def5
-        target: both
       - name: topic/packaging
         color: c5def5
         target: both
       - name: topic/scheduling
         color: c5def5
         target: both
-      - name: topic/security
-        color: c5def5
-        target: both
-      - name: topic/storage
-        color: c5def5
-        target: both
       - name: topic/testing
-        color: c5def5
-        target: both
-      - name: topic/virtualization
         color: c5def5
         target: both
