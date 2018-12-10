@@ -37,3 +37,4 @@ external_plugins:
   - name: needs-rebase
     events:
       - pull_request
+  - name: cherrypicker

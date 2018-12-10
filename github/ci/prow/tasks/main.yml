@@ -146,3 +146,14 @@
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/needs-rebase_service.yaml') | from_yaml }}"
   state: present
+- name: Deploy cherrypicker
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/cherrypicker_deployment.yaml') | from_yaml }}"
+- name: Deploy cherrypicker-service
+  openshift_raw:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/cherrypicker_service.yaml') | from_yaml }}"
+  state: present
