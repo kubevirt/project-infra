@@ -188,6 +188,9 @@ repos:
       - name: distro/openshift
         color: fcb3ad
         target: both
+      - name: area/operator
+        color: bfd4f2
+        target: both
       - name: area/api-server
         color: bfd4f2
         target: both
