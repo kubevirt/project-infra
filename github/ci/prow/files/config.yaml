@@ -5,3 +5,48 @@ sinker:
 
 prowjob_namespace: kubevirt-prow
 pod_namespace: kubevirt-prow
+
+
+tide:
+  merge_method:
+    kubeflow/community: squash
+
+  target_url: tide
+
+  queries:
+  - repos:
+    - rmohr/kubevirt
+    labels:
+    - lgtm
+    - approved
+    missingLabels:
+    - needs-ok-to-test
+    - do-not-merge
+    - do-not-merge/blocked-paths
+    - do-not-merge/cherry-pick-not-approved
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/release-note-label-needed
+    - do-not-merge/work-in-progress
+    - needs-rebase
+  pr_status_base_url: https://deck-kubevirt-prow.apps.ovirt.org/pr
+  context_options:
+    # Use branch protection options to define required and optional contexts
+    from-branch-protection: true
+    # Treat unknown contexts as optional
+    skip-unknown-contexts: true
+    orgs:
+      org:
+        required-contexts:
+        - "check-required-for-all-repos"
+        repos:
+          repo:
+            required-contexts:
+             - "check-required-for-all-branches"
+            branches:
+              branch:
+                from-branch-protection: false
+                required-contexts:
+                - "required_test"
+                optional-contexts:
+                - "optional_test"

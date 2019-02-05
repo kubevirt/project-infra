@@ -1,23 +1,22 @@
 ---
-- name: Create project
-  openshift_raw:
-    state: present
-    kind: Project
-    name: '{{ prowNamespace }}'
-    display_name: Prow
-    description: Prow for KubeVirt
+#- name: Create project
+#  k8s:
+#    state: present
+#    definition:
+#      kind: Project
+#      name: '{{ prowNamespace }}'
+#      display_name: Prow
+#      description: Prow for KubeVirt
 - name: Add admins to the project
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/admin-rbac.yaml')}}"
-- name: Create Prow Hook Route
-  openshift_raw:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/route-hook.yaml') | from_yaml }}"
-  state: present
+- name: Create Prow Routes
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/routes.yaml')}}"
 - name: Create HMAC secret
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition:
@@ -29,7 +28,7 @@
       data:
         hmac: "{{ prowHmac | b64encode }}"
 - name: Create OAuth secret
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition:
@@ -41,35 +40,31 @@
       data:
         oauth: "{{ githubToken | b64encode }}"
 - name: Update prow config
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/config.yaml') | from_yaml }}"
-  state: present
   vars:
     prowConfig: "{{ lookup('file', '{{ role_path }}/files/config.yaml') }}"
 - name: Update prow plugins config 
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/plugins.yaml') | from_yaml }}"
-  state: present
   vars:
     prowPluginsConfig: "{{ lookup('file', '{{ role_path }}/files/plugins.yaml') }}"
 - name: Update prow job config
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/job-config.yaml') | from_yaml }}"
-  state: present
   vars:
     prowJobConfig: "{{ lookup('file', '{{ role_path }}/files/job-config.yaml') }}"
 - name: Update prow label-sync config
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/labels.yaml') | from_yaml }}"
-  state: present
   vars:
     prowLabelsConfig: "{{ lookup('file', '{{ role_path }}/files/labels.yaml') }}"
 - name: Deploy prow-hook-role
@@ -77,34 +72,30 @@
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/hook-rbac.yaml')}}"
 - name: Deploy prow-hook-service-account
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/hook-service-account.yaml') | from_yaml }}"
-  state: present
 - name: Deploy prow-hook-rbac-role-binding
   command: "oc -n {{ prowNamespace }} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/hook-rbac-role-binding.yaml')}}"
 - name: Deploy prow-hook
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/hook.yaml') | from_yaml }}"
-  state: present
 - name: Deploy prow-hook-service
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/hook-service.yaml') | from_yaml }}"
-  state: present
 - name: Deploy horologium-rbac
   command: "oc -n {{ prowNamespace }} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/horologium-rbac.yaml')}}"
-  state: present
 - name: Deploy horologium
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/horologium-deployment.yaml') | from_yaml }}"
@@ -112,9 +103,8 @@
   command: "oc -n {{ prowNamespace }} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/plank-rbac.yaml')}}"
-  state: present
 - name: Deploy plank
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/plank-deployment.yaml') | from_yaml }}"
@@ -122,38 +112,57 @@
   command: "oc -n {{ prowNamespace }} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/sinker-rbac.yaml')}}"
-  state: present
 - name: Deploy sinker
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/sinker-deployment.yaml') | from_yaml }}"
-  state: present
 - name: Deploy label-sync cron job
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/label-sync.yaml') | from_yaml }}"
-  state: present
 - name: Deploy needs-rebase
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/needs-rebase_deployment.yaml') | from_yaml }}"
 - name: Deploy needs-rebase-service
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/needs-rebase_service.yaml') | from_yaml }}"
-  state: present
 - name: Deploy cherrypicker
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/cherrypicker_deployment.yaml') | from_yaml }}"
 - name: Deploy cherrypicker-service
-  openshift_raw:
+  k8s:
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/cherrypicker_service.yaml') | from_yaml }}"
-  state: present
+- name: Deploy prow-deck-rbac
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-rbac.yaml')}}"
+- name: Deploy prow-deck-service
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-service.yaml')}}"
+- name: Deploy prow-deck-deployment
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-deployment.yaml')}}"
+- name: Deploy prow-tide-rbac
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-rbac.yaml')}}"
+- name: Deploy prow-tide-service
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-service.yaml')}}"
+- name: Deploy prow-tide-deployment
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-deployment.yaml')}}"
