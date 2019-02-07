@@ -18,8 +18,6 @@ plugins:
   - blunderbuss
   - lifecycle
   - verify-owners
-  - approve
-  - lgtm
 
   kubevirt/project-infra:
   - config-updater

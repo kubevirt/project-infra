@@ -1,12 +1,13 @@
 ---
-#- name: Create project
-#  k8s:
-#    state: present
-#    definition:
-#      kind: Project
-#      name: '{{ prowNamespace }}'
-#      display_name: Prow
-#      description: Prow for KubeVirt
+- name: Create project
+  k8s:
+    state: present
+    definition:
+      kind: Project
+      metadata:
+        name: '{{ prowNamespace }}'
+      display_name: Prow
+      description: Prow for KubeVirt
 - name: Add admins to the project
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
@@ -39,6 +40,30 @@
       type: Opaque
       data:
         oauth: "{{ githubToken | b64encode }}"
+- name: Create OAuth Config
+  k8s:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: github-oauth-config
+      type: Opaque
+      data:
+        secret: "{{ appOAuthConfig | b64encode }}"
+- name: Create OAuth Cookie
+  k8s:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cookie
+      type: Opaque
+      data:
+        secret: "{{ appCookieSecret | b64encode }}"
 - name: Update prow config
   k8s:
     state: present

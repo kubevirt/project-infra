@@ -11,8 +11,6 @@ tide:
   merge_method:
     kubeflow/community: squash
 
-  target_url: tide
-
   queries:
   - repos:
     - rmohr/kubevirt
