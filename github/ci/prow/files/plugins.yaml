@@ -32,9 +32,19 @@ plugins:
   kubevirt/kubevirt-ansible:
   - release-note
 
+  rmohr/kubevirt:
+  - trigger
+  - lgtm
+  - approve
+
 external_plugins:
   kubevirt:
   - name: needs-rebase
     events:
       - pull_request
   - name: cherrypicker
+
+triggers:
+- repos:
+  - rmohr/kubevirt
+  trusted_org: kubevirt

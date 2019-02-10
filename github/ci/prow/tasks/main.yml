@@ -105,19 +105,10 @@
     definition: "{{ lookup('template', '{{ role_path }}/templates/labels.yaml') | from_yaml }}"
   vars:
     prowLabelsConfig: "{{ lookup('file', '{{ role_path }}/files/labels.yaml') }}"
-- name: Deploy prow-hook-role
+- name: Deploy prow-hook-rbac
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/hook-rbac.yaml')}}"
-- name: Deploy prow-hook-service-account
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/hook-service-account.yaml') | from_yaml }}"
-- name: Deploy prow-hook-rbac-role-binding
-  command: "oc -n {{ prowNamespace }} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/hook-rbac-role-binding.yaml')}}"
 - name: Deploy prow-hook
   k8s:
     state: present
@@ -204,3 +195,11 @@
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-deployment.yaml')}}"
+- name: Deploy prow-statusreconciler-rbac
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/statusreconciler-rbac.yaml')}}"
+- name: Deploy prow-statusreconciler-deployment
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/statusreconciler-deployment.yaml')}}"

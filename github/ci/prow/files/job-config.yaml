@@ -91,3 +91,20 @@ periodics:
     - name: token
       secret:
         secretName: oauth-token
+
+presubmits:
+  rmohr/kubevirt:
+  - name: pull-kubevirt-test
+    always_run: true
+    decorate: true
+    branches:
+    - master
+    spec:
+      containers:
+      - image: busybox
+        args:
+        - "echo"
+        - "hello world"
+        resources:
+          requests:
+            memory: "1Gi"

@@ -1,3 +1,29 @@
+plank:
+  job_url_template: 'https://deck-kubevirt-prow.apps.ovirt.org/view/gcs/kubevirt/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
+  job_url_prefix: https://deck-kubevirt-prow.apps.ovirt.org/view/gcs/
+  pod_pending_timeout: 60m
+  allow_cancellations: true # AllowCancellations enables aborting presubmit jobs for commits that have been superseded by newer commits in Github pull requests.
+  default_decoration_config:
+    timeout: 7200000000000 # 2h
+    grace_period: 15000000000 # 15s
+    utility_images:
+      clonerefs: "gcr.io/k8s-prow/clonerefs:v20190125-2aca69d"
+      initupload: "gcr.io/k8s-prow/initupload:v20190125-2aca69d"
+      entrypoint: "gcr.io/k8s-prow/entrypoint:v20190125-2aca69d"
+      sidecar: "gcr.io/k8s-prow/sidecar:v20190125-2aca69d"
+    gcs_configuration:
+      bucket: "kubevirt"
+      path_strategy: "explicit"
+    gcs_credentials_secret: "gcs"
+
+deck:
+  spyglass:
+    size_limit: 500000000 # 500MB
+    viewers:
+      "started.json|finished.json": ["metadata-viewer"]
+      "build-log.txt": ["build-log-viewer"]
+      "artifacts/junit.*\\.xml": ["junit-viewer"]
+
 sinker:
   resync_period: 1m
   max_prowjob_age: 48h
@@ -5,11 +31,11 @@ sinker:
 
 prowjob_namespace: kubevirt-prow
 pod_namespace: kubevirt-prow
-
+log_level: debug
 
 tide:
   merge_method:
-    kubeflow/community: squash
+    rmohr/kubevirt: squash
 
   queries:
   - repos:
@@ -30,21 +56,6 @@ tide:
   pr_status_base_url: https://deck-kubevirt-prow.apps.ovirt.org/pr
   context_options:
     # Use branch protection options to define required and optional contexts
-    from-branch-protection: true
+    from-branch-protection: false
     # Treat unknown contexts as optional
     skip-unknown-contexts: true
-    orgs:
-      org:
-        required-contexts:
-        - "check-required-for-all-repos"
-        repos:
-          repo:
-            required-contexts:
-             - "check-required-for-all-branches"
-            branches:
-              branch:
-                from-branch-protection: false
-                required-contexts:
-                - "required_test"
-                optional-contexts:
-                - "optional_test"

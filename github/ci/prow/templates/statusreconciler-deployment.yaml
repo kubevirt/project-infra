@@ -1,4 +1,4 @@
-# Copyright 2017 The Kubernetes Authors All rights reserved.
+# Copyright 2016 The Kubernetes Authors All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,25 +15,32 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: plank
+  name: statusreconciler
   labels:
-    app: plank
+    app: statusreconciler
 spec:
-  replicas: 1 # Do not scale up.
+  replicas: 1
   template:
     metadata:
       labels:
-        app: plank
+        app: statusreconciler
     spec:
-      serviceAccountName: "plank"
+      serviceAccountName: "statusreconciler" # Uncomment for use with RBAC
+      terminationGracePeriodSeconds: 180
       containers:
-      - name: plank
-        image: gcr.io/k8s-prow/plank:v20190125-2aca69d
+      - name: statusreconciler
+        image: gcr.io/k8s-prow/status-reconciler:v20190125-2aca69d
+        imagePullPolicy: Always
         args:
         - --dry-run=false
-        - --github-endpoint=http://ghproxy
-        - --github-endpoint=https://api.github.com
+        - --continue-on-error=true
+        - --plugin-config=/etc/plugins/plugins.yaml
+        - --config-path=/etc/config/config.yaml
+        - --github-token-path=/etc/github/oauth
         - --job-config-path=/etc/job-config
+        ports:
+          - name: http
+            containerPort: 8888
         volumeMounts:
         - name: oauth
           mountPath: /etc/github
@@ -43,6 +50,9 @@ spec:
           readOnly: true
         - name: job-config
           mountPath: /etc/job-config
+          readOnly: true
+        - name: plugins
+          mountPath: /etc/plugins
           readOnly: true
       volumes:
       - name: oauth
@@ -54,3 +64,6 @@ spec:
       - name: job-config
         configMap:
           name: job-config
+      - name: plugins
+        configMap:
+          name: plugins
