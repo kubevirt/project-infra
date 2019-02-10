@@ -45,6 +45,7 @@ spec:
         - --job-config-path=/etc/job-config
         - --oauth-url=/github-login
         - --spyglass=true
+        - --gcs-credentials-file=/etc/gcs/service-account.json
         volumeMounts:
         - name: oauth-config
           mountPath: /etc/github
@@ -57,6 +58,9 @@ spec:
           readOnly: true
         - name: cookie-secret
           mountPath: /etc/cookie
+          readOnly: true
+        - name: gcs
+          mountPath: /etc/gcs
           readOnly: true
       volumes:
       - name: oauth-config
@@ -71,3 +75,6 @@ spec:
       - name: cookie-secret
         secret:
           secretName: cookie
+      - name: gcs
+        secret:
+          secretName: gcs

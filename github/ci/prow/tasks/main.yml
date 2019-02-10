@@ -64,6 +64,19 @@
       type: Opaque
       data:
         secret: "{{ appCookieSecret | b64encode }}"
+- name: Create GCS service account config
+  k8s:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gcs
+      type: Opaque
+      data:
+        service-account.json: "{{ gcsServiceAccount | b64encode }}"
+
 - name: Update prow config
   k8s:
     state: present
