@@ -25,7 +25,27 @@ for changes will always work.
  * Add a secret
  * Enable `Push`, `Pull request`, `Issue comment` notifications
 
-## Prepare your Github Project for Prow
+### Prepare your Ansible Variables
+
+Create a file `group_vars/all/main.yml` based on
+
+```yaml
+---
+jenkinsUser: "jenkins"
+jenkinsPass: "mypwd"
+master: "http://my.jenkins.com:8080"
+slaveSlots: 1
+githubSecret: ""
+githubCallbackUrl: "http://my.jenkins.com:8080"
+githubToken: "453f86e8a6c9eed45789c689089e1eb2w9x2fda3"
+githubRepo: "rmohr/kubevirt"
+storeSshUser: "fas-user"
+storeSshUrl: "fedoraproject.org"
+storeSshRemoteDir: "public_html/jenkins"
+storeReportUrl: "https://fas-user.fedorapeople.org/jenkins"
+```
+
+### Prepare your Github Project for Prow
 
 1. create an access token or use the one you created above. Prow needs the
    `public_repo` permission.
@@ -42,27 +62,40 @@ Note that the included route for prow hooks will be exposed via `https`.
 
 Create a file `group_vars/all/main.yml` based on
 
-```
+```yaml
 ---
-jenkinsUser: "jenkins"
-jenkinsPass: "mypwd"
-master: "http://my.jenkins.com:8080"
-slaveSlots: 1
 githubSecret: ""
 githubCallbackUrl: "http://my.jenkins.com:8080"
 githubToken: "453f86e8a6c9eed45789c689089e1eb2w9x2fda3"
-githubRepo: "rmohr/kubevirt"
-storeSshUser: "fas-user"
-storeSshUrl: "fedoraproject.org"
-storeSshRemoteDir: "public_html/jenkins"
-storeReportUrl: "https://fas-user.fedorapeople.org/jenkins"
 prowUrl: "deck-prow.e8ca.engint.openshiftapps.com" # without the /hook subpath
 prowNamespace: "prow"
 prowHmac: "e4a61a12b5cae91dca3b8c1a576c735fe971110f" # the webhook secret generated
 prowAdmins: [ "username" ]
-```
 
-There you can fill in you token, your secret and the Jenkins callback URL.
+appOAuthConfig: |
+  client_id: myid
+  client_secret: mysecret
+  redirect_url: https://deck-url/github-login/redirect
+  final_redirect_url: https://deck-url/pr
+# openssl rand -base64 64
+appCookieSecret: |
+  6G38MhKmwr6AR9je1YbZfiSSHEMazBzItMHfA0XeiQNzNaSw/ACp05WqAIOUQR60
+XlA8HciTwAh/+pNhR7aquA==
+# gce service-account.json with bucket admin rights
+gcsServiceAccount: |
+  {
+    "type": "service_account",
+    "project_id": "project-id",
+    "private_key_id": "private-key-id",
+    "private_key": "private-key",
+    "client_email": "email",
+    "client_id": "client-id",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "cert-url"
+  }
+```
 
 ## Scaling
 
