@@ -203,3 +203,16 @@
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/statusreconciler-deployment.yaml')}}"
+- name: Deploy greenhouse-pvc
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/greenhouse-pvc.yaml')}}"
+- name: Deploy greenhouse-deployment
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/greenhouse-deployment.yaml')}}"
+- name: Deploy greenhouse-service
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/greenhouse-service.yaml')}}"
+
