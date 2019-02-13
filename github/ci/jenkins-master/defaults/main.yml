@@ -1,7 +1,0 @@
----
-targets:
- - k8s-1.10.4-release
- - k8s-1.11.0-dev
- - k8s-1.11.0-release
- - openshift-3.10-release
- - windows2016-release
