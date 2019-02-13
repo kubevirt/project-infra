@@ -8,7 +8,6 @@ TMP_DIR=secrets
 
 rm ${TMP_DIR} -rf
 mkdir ${TMP_DIR}
-cp -a id_rsa* ${TMP_DIR}/
 cp -a group_vars ${TMP_DIR}/
 cp -a inventory ${TMP_DIR}/
 

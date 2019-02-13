@@ -28,13 +28,12 @@ Create a file `group_vars/all/main.yml` based on
 ```yaml
 ---
 githubSecret: ""
-githubCallbackUrl: "http://my.jenkins.com:8080"
 githubToken: "453f86e8a6c9eed45789c689089e1eb2w9x2fda3"
 prowUrl: "deck-prow.e8ca.engint.openshiftapps.com" # without the /hook subpath
 prowNamespace: "prow"
 prowHmac: "e4a61a12b5cae91dca3b8c1a576c735fe971110f" # the webhook secret generated
 prowAdmins: [ "username" ]
-
+# create a github application in your org and fill in the secrets
 appOAuthConfig: |
   client_id: myid
   client_secret: mysecret
@@ -45,6 +44,7 @@ appCookieSecret: |
   6G38MhKmwr6AR9je1YbZfiSSHEMazBzItMHfA0XeiQNzNaSw/ACp05WqAIOUQR60
 XlA8HciTwAh/+pNhR7aquA==
 # gce service-account.json with bucket admin rights
+# this is the usual service account format when creating a gce service account
 gcsServiceAccount: |
   {
     "type": "service_account",
