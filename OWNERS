@@ -10,6 +10,7 @@ filters:
       - yuvalif
       - cynepco3hahue
     approvers:
+      - slintes
       - davidvossel
       - vladikr
       - rmohr
