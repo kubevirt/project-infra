@@ -1,0 +1,16 @@
+filters:
+  ".*":
+    reviewers:
+      - davidvossel
+      - rmohr
+      - stu-gott
+      - booxter
+      - vladikr
+      - slintes
+      - yuvalif
+      - cynepco3hahue
+    approvers:
+      - davidvossel
+      - vladikr
+      - rmohr
+      - cynepco3hahue
