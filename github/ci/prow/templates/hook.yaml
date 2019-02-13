@@ -20,10 +20,11 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
       - name: hook
-        image: gcr.io/k8s-prow/hook:v20180917-8a2266b96
+        image: gcr.io/k8s-prow/hook:v20190125-2aca69d
         imagePullPolicy: Always
         args:
         - --dry-run=false
+        - --job-config-path=/etc/job-config
         ports:
           - name: http
             containerPort: 8888
@@ -40,6 +41,9 @@ spec:
         - name: plugins
           mountPath: /etc/plugins
           readOnly: true
+        - name: job-config
+          mountPath: /etc/job-config
+          readOnly: true
       volumes:
       - name: hmac
         secret:
@@ -53,3 +57,6 @@ spec:
       - name: plugins
         configMap:
           name: plugins
+      - name: job-config
+        configMap:
+          name: job-config

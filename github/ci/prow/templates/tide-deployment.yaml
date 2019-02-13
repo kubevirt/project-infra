@@ -15,25 +15,30 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: plank
+  name: tide
   labels:
-    app: plank
+    app: tide
 spec:
   replicas: 1 # Do not scale up.
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
-        app: plank
+        app: tide
     spec:
-      serviceAccountName: "plank"
+      serviceAccountName: "tide" # Uncomment for use with RBAC
       containers:
-      - name: plank
-        image: gcr.io/k8s-prow/plank:v20190125-2aca69d
+      - name: tide
+        image: gcr.io/k8s-prow/tide:v20190125-2aca69d
         args:
         - --dry-run=false
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
         - --job-config-path=/etc/job-config
+        ports:
+          - name: http
+            containerPort: 8888
         volumeMounts:
         - name: oauth
           mountPath: /etc/github

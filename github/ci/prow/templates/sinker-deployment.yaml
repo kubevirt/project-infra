@@ -16,7 +16,7 @@ spec:
       - name: sinker
         args:
         - --job-config-path=/etc/job-config
-        image: gcr.io/k8s-prow/sinker:v20180917-8a2266b96
+        image: gcr.io/k8s-prow/sinker:v20190125-2aca69d
         volumeMounts:
         - name: config
           mountPath: /etc/config
