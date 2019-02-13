@@ -93,18 +93,22 @@ periodics:
         secretName: oauth-token
 
 presubmits:
-  rmohr/kubevirt:
-  - name: pull-kubevirt-test
+  kubevirt/project-infra:
+  - name: check-prow-config
     always_run: true
     decorate: true
-    branches:
-    - master
     spec:
       containers:
-      - image: busybox
+      - image: gcr.io/k8s-prow/checkconfig:v20190213-2748736
         args:
-        - "echo"
-        - "hello world"
+        - "/checkconfig"
+        - "--config-path"
+        - "github/ci/prow/files/config.yaml"
+        - "--job-config-path"
+        - "github/ci/prow/files/labels.yaml"
+        - "--plugin-config"
+        - "github/ci/prow/files/plugins.yaml"
+        - "--strict"
         resources:
           requests:
-            memory: "1Gi"
+            memory: "500Mi"

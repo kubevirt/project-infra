@@ -262,3 +262,29 @@ repos:
         target: prs
         prowPlugin: trigger
         addedBy: prow
+  kubevirt/project-infra:
+    labels:
+      - color: 15dd18
+        description: Indicates that a PR is ready to be merged.
+        name: lgtm
+        target: prs
+        prowPlugin: lgtm
+        addedBy: reviewers or members
+      - color: 0ffa16
+        description: Indicates a PR has been approved by an approver from all required OWNERS files.
+        name: approved
+        target: prs
+        prowPlugin: approve
+        addedBy: approvers
+      - color: b60205
+        description: Indicates a PR that requires an org member to verify it is safe to test. # This is to prevent spam/abuse of our CI system, and can be circumvented by becoming an org member. Org members can remove this label with the `/ok-to-test` command.
+        name: needs-ok-to-test
+        target: prs
+        prowPlugin: trigger
+        addedBy: prow
+      - color: 15dd18
+        description: Indicates a non-member PR verified by an org member that is safe to test. # This is the opposite of needs-ok-to-test and should be mutually exclusive.
+        name: ok-to-test
+        target: prs
+        prowPlugin: trigger
+        addedBy: prow

@@ -18,6 +18,7 @@ plugins:
   - blunderbuss
   - lifecycle
   - verify-owners
+  - wip
 
   kubevirt/project-infra:
   - config-updater
@@ -32,7 +33,7 @@ plugins:
   kubevirt/kubevirt-ansible:
   - release-note
 
-  rmohr/kubevirt:
+  kubevirt/project-infra:
   - trigger
   - lgtm
   - approve
@@ -46,5 +47,5 @@ external_plugins:
 
 triggers:
 - repos:
-  - rmohr/kubevirt
+  - kubevirt/project-infra
   trusted_org: kubevirt

@@ -35,22 +35,18 @@ log_level: debug
 
 tide:
   merge_method:
-    rmohr/kubevirt: squash
+    kubevirt/project-infra: squash
 
   queries:
   - repos:
-    - rmohr/kubevirt
+    - kubevirt/project-infra
     labels:
     - lgtm
     - approved
     missingLabels:
-    - needs-ok-to-test
     - do-not-merge
-    - do-not-merge/blocked-paths
-    - do-not-merge/cherry-pick-not-approved
     - do-not-merge/hold
     - do-not-merge/invalid-owners-file
-    - do-not-merge/release-note-label-needed
     - do-not-merge/work-in-progress
     - needs-rebase
   pr_status_base_url: https://deck-kubevirt-prow.apps.ovirt.org/pr
