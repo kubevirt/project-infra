@@ -20,9 +20,6 @@ plugins:
   - verify-owners
   - wip
 
-  kubevirt/project-infra:
-  - config-updater
-
   kubevirt/kubevirt:
   - release-note
   - owners-label
@@ -37,6 +34,9 @@ plugins:
   - trigger
   - lgtm
   - approve
+  - config-updater
+  - skip
+  - override
 
 external_plugins:
   kubevirt:
