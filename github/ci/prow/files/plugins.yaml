@@ -49,3 +49,15 @@ triggers:
 - repos:
   - kubevirt/project-infra
   trusted_org: kubevirt
+
+approve:
+- repos:
+  - kubevirt/project-infra
+  require_self_approval: true
+  lgtm_acts_as_approve: false
+  ignore_review_state: true
+
+lgtm:
+- repos:
+  - kubevirt/project-infra
+  review_acts_as_lgtm: true
