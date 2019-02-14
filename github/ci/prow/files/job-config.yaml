@@ -114,8 +114,9 @@ presubmits:
             memory: "500Mi"
 
   kubevirt/kubevirtci:
-  - name: check-provision-k8s-1.10.4-cluster
+  - name: check-provision-os-3.11.0-multus
     always_run: false
+    optional: true
     decorate: true
     max_concurrency: 1
     spec:
@@ -128,7 +129,145 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "cd k8s/1.10.4 && ./provision.sh"
+        - "cd os-3.11.0-multus && ./provision.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "5Gi"
+
+  - name: check-provision-os-3.11.0
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    spec:
+    labels:
+      preset-dind-enabled: "true"
+    spec:
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "cd os-3.11.0 && ./provision.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "5Gi"
+
+  - name: check-provision-os-3.11.0-crio
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    spec:
+    labels:
+      preset-dind-enabled: "true"
+    spec:
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "cd os-3.11.0-crio && ./provision.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "5Gi"
+
+  - name: check-provision-k8s-1.10.11
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    spec:
+    labels:
+      preset-dind-enabled: "true"
+    spec:
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "cd k8s/1.10.11 && ./provision.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "5Gi"
+
+  - name: check-provision-k8s-1.11.0
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    spec:
+    labels:
+      preset-dind-enabled: "true"
+    spec:
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "cd k8s/1.11.0 && ./provision.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "5Gi"
+
+  - name: check-provision-k8s-multus-1.12.2
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    spec:
+    labels:
+      preset-dind-enabled: "true"
+    spec:
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "cd k8s-multus/1.12.2/ && ./provision.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "5Gi"
+
+  - name: check-provision-k8s-genie-1.11.1
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    spec:
+    labels:
+      preset-dind-enabled: "true"
+    spec:
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "cd k8s-genie/1.11.1/ && ./provision.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
