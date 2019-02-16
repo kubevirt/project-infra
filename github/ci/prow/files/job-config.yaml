@@ -2,15 +2,8 @@ periodics:
 - name: periodic-test-infra-close
   interval: 1h
   spec:
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: type
-              operator: In
-              values:
-              - vm
+    nodeSelector:
+      type: vm
     containers:
     - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
       args:
@@ -40,15 +33,8 @@ periodics:
 - name: periodic-test-infra-rotten
   interval: 1h
   spec:
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: type
-              operator: In
-              values:
-              - vm
+    nodeSelector:
+      type: vm
     containers:
     - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
       args:
@@ -81,15 +67,8 @@ periodics:
 - name: periodic-test-infra-stale
   interval: 1h
   spec:
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: type
-              operator: In
-              values:
-              - vm
+    nodeSelector:
+      type: vm
     containers:
     - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
       args:
@@ -125,15 +104,8 @@ presubmits:
     always_run: true
     decorate: true
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: type
-                operator: In
-                values:
-                - vm
+      nodeSelector:
+        type: vm
       containers:
       - image: gcr.io/k8s-prow/checkconfig:v20190213-2748736
         args:
@@ -159,28 +131,22 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: type
-                operator: In
-                values:
-                - bare-metal
+      nodeSelector:
+        model: r430
+        type: bare-metal
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "cd os-3.11.0-multus && ./provision.sh"
+        - "cd os-3.11-multus && ./provision.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
         resources:
           requests:
-            memory: "5Gi"
+            memory: "8Gi"
 
   - name: check-provision-os-3.11.0
     always_run: false
@@ -191,28 +157,22 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: type
-                operator: In
-                values:
-                - bare-metal
+      nodeSelector:
+        model: r430
+        type: bare-metal
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "cd os-3.11.0 && ./provision.sh"
+        - "cd os-3.11 && ./provision.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
         resources:
           requests:
-            memory: "5Gi"
+            memory: "8Gi"
 
   - name: check-provision-os-3.11.0-crio
     always_run: false
@@ -223,28 +183,22 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: type
-                operator: In
-                values:
-                - bare-metal
+      nodeSelector:
+        model: r430
+        type: bare-metal
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "cd os-3.11.0-crio && ./provision.sh"
+        - "cd os-3.11-crio && ./provision.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
         resources:
           requests:
-            memory: "5Gi"
+            memory: "8Gi"
 
   - name: check-provision-k8s-1.10.11
     always_run: false
@@ -255,15 +209,9 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: type
-                operator: In
-                values:
-                - bare-metal
+      nodeSelector:
+        model: r430
+        type: bare-metal
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
         command:
@@ -276,7 +224,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "5Gi"
+            memory: "8Gi"
 
   - name: check-provision-k8s-1.11.0
     always_run: false
@@ -287,15 +235,9 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: type
-                operator: In
-                values:
-                - bare-metal
+      nodeSelector:
+        model: r430
+        type: bare-metal
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
         command:
@@ -308,7 +250,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "5Gi"
+            memory: "8Gi"
 
   - name: check-provision-k8s-multus-1.12.2
     always_run: false
@@ -319,15 +261,9 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: type
-                operator: In
-                values:
-                - bare-metal
+      nodeSelector:
+        model: r430
+        type: bare-metal
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
         command:
@@ -340,7 +276,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "5Gi"
+            memory: "8Gi"
 
   - name: check-provision-k8s-multus-1.13.3
     always_run: false
@@ -351,15 +287,9 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: type
-                operator: In
-                values:
-                - bare-metal
+      nodeSelector:
+        model: r430
+        type: bare-metal
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
         command:
@@ -372,7 +302,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "5Gi"
+            memory: "8Gi"
 
   - name: check-provision-k8s-genie-1.11.1
     always_run: false
@@ -383,15 +313,9 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: type
-                operator: In
-                values:
-                - bare-metal
+      nodeSelector:
+        model: r430
+        type: bare-metal
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
         command:
@@ -404,4 +328,4 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "5Gi"
+            memory: "8Gi"
