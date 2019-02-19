@@ -91,13 +91,6 @@
     definition: "{{ lookup('template', '{{ role_path }}/templates/plugins.yaml') | from_yaml }}"
   vars:
     prowPluginsConfig: "{{ lookup('file', '{{ role_path }}/files/plugins.yaml') }}"
-- name: Update prow job config
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/job-config.yaml') | from_yaml }}"
-  vars:
-    prowJobConfig: "{{ lookup('file', '{{ role_path }}/files/job-config.yaml') }}"
 - name: Update prow label-sync config
   k8s:
     state: present
