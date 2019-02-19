@@ -42,7 +42,6 @@ plugins:
   - trigger
   - lgtm
   - approve
-  - config-updater
   - skip
   - override
 
