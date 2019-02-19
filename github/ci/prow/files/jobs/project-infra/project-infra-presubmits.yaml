@@ -1,0 +1,22 @@
+presubmits:
+  kubevirt/project-infra:
+  - name: check-prow-config
+    always_run: true
+    decorate: true
+    spec:
+      nodeSelector:
+        type: vm
+      containers:
+      - image: gcr.io/k8s-prow/checkconfig:v20190213-2748736
+        args:
+        - "/checkconfig"
+        - "--config-path"
+        - "github/ci/prow/files/config.yaml"
+        - "--job-config-path"
+        - "github/ci/prow/files/jobs"
+        - "--plugin-config"
+        - "github/ci/prow/files/plugins.yaml"
+        - "--strict"
+        resources:
+          requests:
+            memory: "500Mi"
