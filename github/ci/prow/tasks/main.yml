@@ -215,4 +215,7 @@
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/greenhouse-service.yaml')}}"
-
+- name: Deploy ghproxy
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/ghproxy.yaml')}}"
