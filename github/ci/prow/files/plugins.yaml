@@ -38,6 +38,14 @@ plugins:
   - skip
   - override
 
+  kubevirt/kubevirtci:
+  - trigger
+  - lgtm
+  - approve
+  - config-updater
+  - skip
+  - override
+
 external_plugins:
   kubevirt:
   - name: needs-rebase
@@ -48,11 +56,13 @@ external_plugins:
 triggers:
 - repos:
   - kubevirt/project-infra
+  - kubevirt/kubevirtci
   trusted_org: kubevirt
 
 approve:
 - repos:
   - kubevirt/project-infra
+  - kubevirt/kubevirtci
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -60,4 +70,5 @@ approve:
 lgtm:
 - repos:
   - kubevirt/project-infra
+  - kubevirt/kubevirtci
   review_acts_as_lgtm: true
