@@ -76,7 +76,10 @@
       type: Opaque
       data:
         service-account.json: "{{ gcsServiceAccount | b64encode }}"
-
+- name: Deploy the pushgateway
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/pushgateway.yaml')}}"
 - name: Update prow config
   k8s:
     state: present
