@@ -7,6 +7,8 @@ periodics:
       type: vm
     containers:
     - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
+      command:
+      - /commenter
       args:
       - |-
         --query=org:kubevirt
@@ -39,6 +41,8 @@ periodics:
       type: vm
     containers:
     - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
+      command:
+      - /commenter
       args:
       - |-
         --query=org:kubevirt
@@ -74,6 +78,8 @@ periodics:
       type: vm
     containers:
     - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
+      command:
+      - /commenter
       args:
       - |-
         --query=org:kubevirt
