@@ -46,6 +46,7 @@ spec:
         args:
         - --cache-dir=/cache
         - --cache-sizeGB=29
+        - --push-gateway=pushgateway
         ports:
         - containerPort: 8888
         volumeMounts:
