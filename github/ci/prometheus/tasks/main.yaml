@@ -1,0 +1,9 @@
+---
+- name: Deploy the prometheus config
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/prometheus-config.yaml')}}"
+- name: Deploy prometheus
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/prometheus.yaml')}}"
