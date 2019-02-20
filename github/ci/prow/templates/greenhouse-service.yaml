@@ -24,3 +24,18 @@ spec:
     protocol: TCP
   selector:
     app: greenhouse
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bazel-cache-metrics
+  labels:
+    metrics: "true"
+spec:
+  selector:
+    app: greenhouse
+  ports:
+  - name: default
+    protocol: TCP
+    port: 80
+    targetPort: 9090
