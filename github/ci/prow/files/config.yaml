@@ -58,6 +58,9 @@ tide:
     # Treat unknown contexts as optional
     skip-unknown-contexts: true
 
+push_gateway:
+  endpoint: pushgateway
+
 presets:
 - labels:
     preset-dind-enabled: "true"
