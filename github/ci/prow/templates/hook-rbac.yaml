@@ -22,6 +22,8 @@ rules:
     verbs:
       - create
       - update
+      - get
+      - list
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
