@@ -2,7 +2,7 @@ config_updater:
   maps:
     github/ci/prow/files/config.yaml:
       name: config
-    github/ci/prow/files/job-config.yaml:
+    github/ci/prow/files/jobs/**/*.yaml:
       name: job-config
     github/ci/prow/files/plugins.yaml:
       name: plugins
@@ -42,7 +42,6 @@ plugins:
   - trigger
   - lgtm
   - approve
-  - config-updater
   - skip
   - override
 
