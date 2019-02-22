@@ -19,3 +19,6 @@ data:
         metrics_path: /prometheus
         static_configs:
           - targets: ['bazel-cache-metrics']
+      - job_name: 'token-counter'
+        static_configs:
+          - targets: ['token-counter-metrics']

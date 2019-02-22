@@ -36,6 +36,9 @@ spec:
             - name: config-volume
               mountPath: /etc/grafana
               readOnly: true
+            - name: dashboards
+              mountPath: /var/lib/grafana/dashboards
+              readOnly: true
           ports:
             - containerPort: 3000
           resources:
@@ -53,8 +56,13 @@ spec:
             items:
             - key: datasources.yaml
               path: provisioning/datasources/datasources.yaml
+            - key: dashboards.yaml
+              path: provisioning/dashboards/dashboards.yaml
             - key: grafana.ini
               path: grafana.ini
+        - name: dashboards
+          configMap:
+            name: dashboards
 ---
 kind: Service
 apiVersion: v1
