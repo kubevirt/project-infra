@@ -30,6 +30,8 @@ spec:
       labels:
         app: deck
     spec:
+      nodeSelector:
+        type: vm
       serviceAccountName: "deck" # Uncomment for use with RBAC
       terminationGracePeriodSeconds: 30
       containers:

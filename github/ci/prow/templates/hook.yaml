@@ -16,6 +16,8 @@ spec:
       labels:
         app: hook
     spec:
+      nodeSelector:
+        type: vm
       serviceAccountName: hook
       terminationGracePeriodSeconds: 180
       containers:

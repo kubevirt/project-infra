@@ -75,7 +75,7 @@ credentials and deploy prow on the configured cluster.
 Provision prow:
 
 ```
-ansible-playbook -i inventory ci.yaml
+ansible-playbook -i inventory prow.yaml
 ```
 ### How to share secrets?
 

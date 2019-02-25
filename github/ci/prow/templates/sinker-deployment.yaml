@@ -11,6 +11,8 @@ spec:
       labels:
         app: sinker
     spec:
+      nodeSelector:
+        type: vm
       serviceAccountName: "sinker"
       containers:
       - name: sinker

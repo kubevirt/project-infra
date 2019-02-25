@@ -25,6 +25,8 @@ spec:
       labels:
         app: plank
     spec:
+      nodeSelector:
+        type: vm
       serviceAccountName: "plank"
       containers:
       - name: plank
