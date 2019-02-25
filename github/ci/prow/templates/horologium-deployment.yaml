@@ -25,6 +25,8 @@ spec:
       labels:
         app: horologium
     spec:
+      nodeSelector:
+        type: vm
       serviceAccountName: "horologium"
       terminationGracePeriodSeconds: 30
       containers:

@@ -12,6 +12,8 @@ spec:
       labels:
         app: token-counter
     spec:
+      nodeSelector:
+        type: vm
       containers:
       - name: token-counter
         args:

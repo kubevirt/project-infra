@@ -20,6 +20,8 @@ spec:
       labels:
         app: prometheus
     spec:
+      nodeSelector:
+        type: vm
       priorityClassName: system-cluster-critical
       containers:
         - name: prometheus-server-configmap-reload

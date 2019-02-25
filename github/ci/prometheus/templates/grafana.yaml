@@ -21,6 +21,8 @@ spec:
       labels:
         app: grafana
     spec:
+      nodeSelector:
+        type: vm
       containers:
         - name: grafana
           image: "grafana/grafana:5.2.1"

@@ -27,6 +27,8 @@ spec:
       labels:
         app: tide
     spec:
+      nodeSelector:
+        type: vm
       serviceAccountName: "tide" # Uncomment for use with RBAC
       containers:
       - name: tide

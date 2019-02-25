@@ -39,6 +39,8 @@ spec:
       labels:
         app: ghproxy
     spec:
+      nodeSelector:
+        type: vm
       containers:
       - name: ghproxy
         image: gcr.io/k8s-testimages/ghproxy:latest # TODO(fejta): tagged
