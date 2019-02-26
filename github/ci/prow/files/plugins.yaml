@@ -19,6 +19,7 @@ plugins:
   - lifecycle
   - verify-owners
   - wip
+  - add-non-existent-plugin
 
   kubevirt/kubevirt:
   - release-note
