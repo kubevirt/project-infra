@@ -207,3 +207,30 @@ presubmits:
         resources:
           requests:
             memory: "8Gi"
+
+  - name: push-k8s-genie-1.11.1
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    spec:
+    labels:
+      preset-dind-enabled: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        model: r430
+        type: bare-metal
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/bash"
+        - "-c"
+        - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd k8s-genie/1.11.1/ && ./provision.sh && ./publish.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
