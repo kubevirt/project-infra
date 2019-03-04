@@ -38,7 +38,7 @@
       kind: Secret
       metadata:
         name: hmac-token
-      type: Opaque            
+      type: Opaque
       data:
         hmac: "{{ prowHmac | b64encode }}"
 - name: Create OAuth secret
@@ -100,7 +100,7 @@
     definition: "{{ lookup('template', '{{ role_path }}/templates/config.yaml') | from_yaml }}"
   vars:
     prowConfig: "{{ lookup('file', '{{ role_path }}/files/config.yaml') }}"
-- name: Update prow plugins config 
+- name: Update prow plugins config
   k8s:
     state: present
     namespace: "{{ prowNamespace }}"
