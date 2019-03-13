@@ -5,7 +5,6 @@ presubmits:
     optional: true
     decorate: true
     max_concurrency: 1
-    spec:
     labels:
       preset-dind-enabled: "true"
     spec:
@@ -31,7 +30,6 @@ presubmits:
     optional: true
     decorate: true
     max_concurrency: 1
-    spec:
     labels:
       preset-dind-enabled: "true"
     spec:
@@ -57,7 +55,6 @@ presubmits:
     optional: true
     decorate: true
     max_concurrency: 1
-    spec:
     labels:
       preset-dind-enabled: "true"
     spec:
@@ -83,7 +80,6 @@ presubmits:
     optional: true
     decorate: true
     max_concurrency: 1
-    spec:
     labels:
       preset-dind-enabled: "true"
     spec:
@@ -109,7 +105,6 @@ presubmits:
     optional: true
     decorate: true
     max_concurrency: 1
-    spec:
     labels:
       preset-dind-enabled: "true"
     spec:
@@ -135,7 +130,6 @@ presubmits:
     optional: true
     decorate: true
     max_concurrency: 1
-    spec:
     labels:
       preset-dind-enabled: "true"
     spec:
@@ -161,7 +155,6 @@ presubmits:
     optional: true
     decorate: true
     max_concurrency: 1
-    spec:
     labels:
       preset-dind-enabled: "true"
     spec:
@@ -187,7 +180,6 @@ presubmits:
     optional: true
     decorate: true
     max_concurrency: 1
-    spec:
     labels:
       preset-dind-enabled: "true"
     spec:
@@ -213,7 +205,6 @@ presubmits:
     optional: true
     decorate: true
     max_concurrency: 1
-    spec:
     labels:
       preset-dind-enabled: "true"
     spec:
@@ -239,7 +230,6 @@ presubmits:
     optional: true
     decorate: true
     max_concurrency: 1
-    spec:
     labels:
       preset-dind-enabled: "true"
       preset-kubevirtci-docker-credential: "true"
@@ -266,7 +256,6 @@ presubmits:
     optional: true
     decorate: true
     max_concurrency: 1
-    spec:
     labels:
       preset-dind-enabled: "true"
       preset-kubevirtci-docker-credential: "true"
