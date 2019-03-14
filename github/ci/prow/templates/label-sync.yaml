@@ -29,6 +29,7 @@ spec:
         spec:
           nodeSelector:
             type: vm
+            zone: ci
           containers:
             - name: label-sync
               image: index.docker.io/kubevirtci/label_sync:v20181214-258f6ce10-dirty

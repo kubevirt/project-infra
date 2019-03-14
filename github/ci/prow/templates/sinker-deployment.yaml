@@ -13,6 +13,7 @@ spec:
     spec:
       nodeSelector:
         type: vm
+        zone: ci
       serviceAccountName: "sinker"
       containers:
       - name: sinker

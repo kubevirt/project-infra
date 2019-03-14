@@ -27,6 +27,7 @@ spec:
     spec:
       nodeSelector:
         type: vm
+        zone: ci
       serviceAccountName: "horologium"
       terminationGracePeriodSeconds: 30
       containers:

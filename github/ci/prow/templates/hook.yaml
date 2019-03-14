@@ -62,3 +62,12 @@ spec:
       - name: job-config
         configMap:
           name: job-config
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values: ["hook"]
+              topologyKey: "kubernetes.io/hostname"
