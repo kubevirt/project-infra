@@ -32,6 +32,7 @@ spec:
     spec:
       nodeSelector:
         type: vm
+        zone: ci
       serviceAccountName: "deck" # Uncomment for use with RBAC
       terminationGracePeriodSeconds: 30
       containers:
@@ -64,6 +65,11 @@ spec:
         - name: gcs
           mountPath: /etc/gcs
           readOnly: true
+        resources:
+          requests:
+            memory: 2Gi
+          limits:
+            memory: 2Gi
       volumes:
       - name: oauth-config
         secret:
@@ -80,3 +86,12 @@ spec:
       - name: gcs
         secret:
           secretName: gcs
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values: ["deck"]
+              topologyKey: "kubernetes.io/hostname"

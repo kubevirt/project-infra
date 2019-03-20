@@ -27,6 +27,7 @@ spec:
     spec:
       nodeSelector:
         type: vm
+        zone: ci
       serviceAccountName: "statusreconciler" # Uncomment for use with RBAC
       terminationGracePeriodSeconds: 180
       containers:

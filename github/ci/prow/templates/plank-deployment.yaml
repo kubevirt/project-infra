@@ -27,6 +27,7 @@ spec:
     spec:
       nodeSelector:
         type: vm
+        zone: ci
       serviceAccountName: "plank"
       containers:
       - name: plank

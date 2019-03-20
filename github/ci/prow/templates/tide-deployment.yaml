@@ -29,6 +29,7 @@ spec:
     spec:
       nodeSelector:
         type: vm
+        zone: ci
       serviceAccountName: "tide" # Uncomment for use with RBAC
       containers:
       - name: tide
