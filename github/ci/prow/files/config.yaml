@@ -29,8 +29,8 @@ sinker:
   max_prowjob_age: 48h
   max_pod_age: 30m
 
-prowjob_namespace: kubevirt-prow
-pod_namespace: kubevirt-prow
+prowjob_namespace: kubevirt-prow-jobs
+pod_namespace: kubevirt-prow-jobs
 log_level: debug
 
 tide:
