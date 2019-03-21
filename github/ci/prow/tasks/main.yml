@@ -110,6 +110,11 @@
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('file', '{{ role_path }}/templates/memory-defaults.yaml') }}"
+- name: Deploy job limit range
+  command: "oc -n {{prowJobsNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('file', '{{ role_path }}/templates/memory-job-defaults.yaml') }}"
+
 - name: Deploy the pushgateway
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
