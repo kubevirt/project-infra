@@ -36,7 +36,7 @@
 - name: Create Docker-kubevirtbot secret
   k8s:
     state: present
-    namespace: "{{ prowNamespace }}"
+    namespace: "{{ prowJobsNamespace }}"
     definition:
       apiVersion: v1
       kind: Secret
@@ -58,10 +58,22 @@
       type: Opaque
       data:
         hmac: "{{ prowHmac | b64encode }}"
-- name: Create OAuth secret
+- name: Create OAuth secret in prow namespace
   k8s:
     state: present
     namespace: "{{ prowNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: oauth-token
+      type: Opaque
+      data:
+        oauth: "{{ githubToken | b64encode }}"
+- name: Create OAuth secret in prow jobs namespace
+  k8s:
+    state: present
+    namespace: "{{ prowJobsNamespace }}"
     definition:
       apiVersion: v1
       kind: Secret
@@ -94,10 +106,22 @@
       type: Opaque
       data:
         secret: "{{ appCookieSecret | b64encode }}"
-- name: Create GCS service account config
+- name: Create GCS service account config in prow namespace
   k8s:
     state: present
     namespace: "{{ prowNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gcs
+      type: Opaque
+      data:
+        service-account.json: "{{ gcsServiceAccount | b64encode }}"
+- name: Create GCS service account config in prow jobs namespace
+  k8s:
+    state: present
+    namespace: "{{ prowJobsNamespace }}"
     definition:
       apiVersion: v1
       kind: Secret

@@ -29,4 +29,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: "sinker"
-  namespace: "{{prowJobsNamespace}}"
+  namespace: "{{prowNamespace}}"
