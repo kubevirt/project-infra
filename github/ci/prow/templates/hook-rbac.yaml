@@ -31,4 +31,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: "hook"
-  namespace: "{{prowJobsNamespace}}"
+  namespace: "{{prowNamespace}}"
