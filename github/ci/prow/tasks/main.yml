@@ -5,17 +5,34 @@
     definition:
       kind: Project
       metadata:
+        name: '{{ prowJobsNamespace }}'
+      display_name: ProwJobs
+      description: Job namespace for Prow for KubeVirt
+- name: Create project
+  k8s:
+    state: present
+    definition:
+      kind: Project
+      metadata:
         name: '{{ prowNamespace }}'
       display_name: Prow
       description: Prow for KubeVirt
-- name: Add admins to the project
+- name: Add admins to the prow namespace
   command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/admin-rbac.yaml')}}"
+- name: Add admins to the pow job namespace
+  command: "oc -n {{prowJobsNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/admin-rbac.yaml')}}"
 - name: Create Prow Routes
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/routes.yaml')}}"
+- name: Create Service Accounts
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/accounts.yaml')}}"
 - name: Create Docker-kubevirtbot secret
   k8s:
     state: present
@@ -93,6 +110,11 @@
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('file', '{{ role_path }}/templates/memory-defaults.yaml') }}"
+- name: Deploy job limit range
+  command: "oc -n {{prowJobsNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('file', '{{ role_path }}/templates/memory-job-defaults.yaml') }}"
+
 - name: Deploy the pushgateway
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
@@ -119,7 +141,7 @@
   vars:
     prowLabelsConfig: "{{ lookup('file', '{{ role_path }}/files/labels.yaml') }}"
 - name: Deploy prow-hook-rbac
-  command: "oc -n {{prowNamespace}} apply -f -"
+  command: "oc -n {{prowJobsNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/hook-rbac.yaml')}}"
 - name: Deploy prow-hook
@@ -133,7 +155,7 @@
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/hook-service.yaml') | from_yaml }}"
 - name: Deploy horologium-rbac
-  command: "oc -n {{ prowNamespace }} apply -f -"
+  command: "oc -n {{ prowJobsNamespace }} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/horologium-rbac.yaml')}}"
 - name: Deploy horologium
@@ -142,7 +164,7 @@
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/horologium-deployment.yaml') | from_yaml }}"
 - name: Deploy plank-rbac
-  command: "oc -n {{ prowNamespace }} apply -f -"
+  command: "oc -n {{ prowJobsNamespace }} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/plank-rbac.yaml')}}"
 - name: Deploy plank
@@ -151,7 +173,7 @@
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/plank-deployment.yaml') | from_yaml }}"
 - name: Deploy sinker-rbac
-  command: "oc -n {{ prowNamespace }} apply -f -"
+  command: "oc -n {{ prowJobsNamespace }} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/sinker-rbac.yaml')}}"
 - name: Deploy sinker
@@ -185,7 +207,7 @@
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/cherrypicker_service.yaml') | from_yaml }}"
 - name: Deploy prow-deck-rbac
-  command: "oc -n {{prowNamespace}} apply -f -"
+  command: "oc -n {{prowJobsNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-rbac.yaml')}}"
 - name: Deploy prow-deck-service
@@ -197,7 +219,7 @@
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-deployment.yaml')}}"
 - name: Deploy prow-tide-rbac
-  command: "oc -n {{prowNamespace}} apply -f -"
+  command: "oc -n {{prowJobsNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-rbac.yaml')}}"
 - name: Deploy prow-tide-service
@@ -209,7 +231,7 @@
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-deployment.yaml')}}"
 - name: Deploy prow-statusreconciler-rbac
-  command: "oc -n {{prowNamespace}} apply -f -"
+  command: "oc -n {{prowJobsNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/statusreconciler-rbac.yaml')}}"
 - name: Deploy prow-statusreconciler-deployment
