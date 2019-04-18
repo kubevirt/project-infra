@@ -21,6 +21,7 @@ plugins:
   - wip
 
   kubevirt/kubevirt:
+  - trigger
   - release-note
   - owners-label
 
@@ -56,6 +57,7 @@ triggers:
 - repos:
   - kubevirt/project-infra
   - kubevirt/kubevirtci
+  - kubevirt/kubevirt
   trusted_org: kubevirt
 
 approve:
