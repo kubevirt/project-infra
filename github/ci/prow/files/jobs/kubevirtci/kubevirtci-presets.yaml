@@ -15,13 +15,3 @@ presets:
   - name: kubevirtci-cred
     mountPath: /etc/kubevirtci-cred
     readOnly: true
-- labels:
-    preset-docker-mirror: "true"
-  volumes:
-  - name: docker-config
-    configMap:
-      name: docker-daemon-mirror-config
-  volumeMounts:
-  - name: docker-config
-    mountPath: /etc/default
-    readOnly: true
