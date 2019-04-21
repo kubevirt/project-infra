@@ -143,6 +143,29 @@
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/pushgateway.yaml')}}"
+- name: Update the docker mirror config
+  k8s:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-config.yaml') | from_yaml }}"
+  vars:
+    mirrorConfig: "{{ lookup('file', '{{ role_path }}/files/mirror.yaml') }}"
+- name: Update the docker daemon mirror config
+  k8s:
+    state: present
+    namespace: "{{ prowJobsNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/docker-daemon-mirror-config.yaml') | from_yaml }}"
+  vars:
+    dockerDaemonConfig: "{{ lookup('file', '{{ role_path }}/files/docker-daemon-mirror.conf') }}"
+- name: Deploy the docker mirror config
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/mirror.yaml')}}"
+- name: Deploy docker mirror service
+  k8s:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-service.yaml') | from_yaml }}"
 - name: Update prow config
   k8s:
     state: present

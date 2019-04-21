@@ -6,4 +6,5 @@ spec:
   limits:
   - defaultRequest:
       memory: 1Gi
+      cpu: 100m
     type: Container
