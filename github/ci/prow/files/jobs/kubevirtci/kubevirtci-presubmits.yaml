@@ -25,6 +25,32 @@ presubmits:
           requests:
             memory: "8Gi"
 
+  - name: push-os-3.11.0
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        model: r430
+        type: bare-metal
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd os-3.11 && ./provision.sh && ./publish.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+
   - name: check-provision-os-3.11.0-crio
     always_run: false
     optional: true
@@ -50,6 +76,32 @@ presubmits:
           requests:
             memory: "8Gi"
 
+  - name: push-os-3.11.0-crio
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        model: r430
+        type: bare-metal
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd os-3.11-crio && ./provision.sh && ./publish.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+
   - name: check-provision-os-3.11.0-multus
     always_run: false
     optional: true
@@ -68,6 +120,32 @@ presubmits:
             - "/bin/sh"
             - "-c"
             - "cd os-3.11-multus && ./provision.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+
+  - name: push-os-3.11.0-multus
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        model: r430
+        type: bare-metal
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd os-3.11-multus && ./provision.sh && ./publish.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -431,4 +509,3 @@ presubmits:
         resources:
           requests:
             memory: "1Gi"
-
