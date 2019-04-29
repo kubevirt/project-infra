@@ -18,6 +18,7 @@ rules:
     verbs:
       - create
       - list
+      - get
       - update
 ---
 kind: RoleBinding
