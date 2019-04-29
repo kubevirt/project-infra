@@ -46,6 +46,18 @@
       data:
         username: "{{ dockerUser | b64encode }}"
         password: "{{ dockerPass | b64encode }}"
+- name: Create OKD installer pull token secret
+  k8s:
+    state: present
+    namespace: "{{ prowJobsNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: kubevirtci-installer-pull-token
+      type: Opaque
+      data:
+        token: "{{ installerPullToken | b64encode }}"
 - name: Create HMAC secret
   k8s:
     state: present
