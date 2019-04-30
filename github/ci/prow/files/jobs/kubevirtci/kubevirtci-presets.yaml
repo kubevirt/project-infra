@@ -15,3 +15,17 @@ presets:
   - name: kubevirtci-cred
     mountPath: /etc/kubevirtci-cred
     readOnly: true
+- labels:
+    preset-kubevirtci-installer-pull-token: "true"
+  env:
+  - name: INSTALLER_PULL_SECRET
+    value: /etc/kubevirtci-okd/token
+  volumes:
+  - name: kubevirtci-okd
+    secret:
+      defaultMode: 0400
+      secretName: kubevirtci-installer-pull-token
+  volumeMounts:
+  - name: kubevirtci-okd
+    mountPath: /etc/kubevirtci-okd
+    readOnly: true
