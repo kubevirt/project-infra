@@ -171,7 +171,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "cd okd/okd-4.0.9 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh"
+        - "cd okd/4.0.9 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
@@ -198,7 +198,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
-            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd okd/okd-4.0.9 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh && ./publish.sh"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd okd/4.0.9 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh && ./publish.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
