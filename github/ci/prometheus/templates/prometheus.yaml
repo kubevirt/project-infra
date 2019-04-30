@@ -22,6 +22,7 @@ spec:
     spec:
       nodeSelector:
         type: vm
+        zone: ci
       priorityClassName: system-cluster-critical
       containers:
         - name: prometheus-server-configmap-reload
