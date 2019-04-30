@@ -6,6 +6,7 @@ presubmits:
     spec:
       nodeSelector:
         type: vm
+        zone: ci
       containers:
       - image: gcr.io/k8s-prow/checkconfig:v20190213-2748736
         args:

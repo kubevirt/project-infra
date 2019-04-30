@@ -5,6 +5,7 @@ periodics:
   spec:
     nodeSelector:
       type: vm
+      zone: ci
     containers:
     - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
       command:
@@ -39,6 +40,7 @@ periodics:
   spec:
     nodeSelector:
       type: vm
+      zone: ci
     containers:
     - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
       command:
@@ -76,6 +78,7 @@ periodics:
   spec:
     nodeSelector:
       type: vm
+      zone: ci
     containers:
     - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
       command:
