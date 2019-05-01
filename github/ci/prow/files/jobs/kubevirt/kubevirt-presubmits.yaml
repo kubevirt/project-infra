@@ -203,6 +203,35 @@ presubmits:
         resources:
           requests:
             memory: "16Gi"
+  - name: pull-kubevirt-e2e-okd-4.1.0-rc.0
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 14400000000000 # 4h
+      grace_period: 500000000000 # 5m
+    max_concurrency: 8
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        model: r430
+        type: bare-metal
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=okd-4.1.0-rc.0 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "19Gi"
   - name: pull-kubevirt-e2e-windows2016
     always_run: false
     optional: true
