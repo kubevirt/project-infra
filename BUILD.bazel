@@ -1,0 +1,6 @@
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+# gazelle:prefix kubevirt.io/project-infra
+gazelle(name = "gazelle")
+
+exports_files(["testaccount.json"])
