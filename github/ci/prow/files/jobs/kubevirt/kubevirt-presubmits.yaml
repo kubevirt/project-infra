@@ -17,7 +17,7 @@ presubmits:
         model: r430
         type: bare-metal
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -46,7 +46,7 @@ presubmits:
         model: r430
         type: bare-metal
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -75,7 +75,7 @@ presubmits:
         model: r430
         type: bare-metal
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -104,7 +104,7 @@ presubmits:
         model: r430
         type: bare-metal
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -133,7 +133,7 @@ presubmits:
         model: r430
         type: bare-metal
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -162,7 +162,7 @@ presubmits:
         model: r430
         type: bare-metal
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -191,7 +191,7 @@ presubmits:
         model: r430
         type: bare-metal
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -220,7 +220,7 @@ presubmits:
         model: r430
         type: bare-metal
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -249,7 +249,7 @@ presubmits:
         model: r430
         type: bare-metal
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190211-fab6034b4
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
