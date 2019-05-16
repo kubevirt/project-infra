@@ -4,3 +4,6 @@ inventory
 *pyc
 venv
 github/ci/*.retry
+testaccount.json
+bazel-*
+.idea
