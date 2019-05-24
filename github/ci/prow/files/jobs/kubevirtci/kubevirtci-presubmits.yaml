@@ -206,6 +206,59 @@ presubmits:
             requests:
               memory: "15Gi"
 
+  - name: check-provision-okd-4.1.0-rc.4
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-kubevirtci-installer-pull-token: "true"
+    spec:
+      nodeSelector:
+        model: r430
+        type: bare-metal
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "cd okd/4.1.0-rc.4 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "15Gi"
+
+  - name: push-okd-4.1.0-rc.4
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-kubevirtci-docker-credential: "true"
+      preset-kubevirtci-installer-pull-token: "true"
+    spec:
+      nodeSelector:
+        model: r430
+        type: bare-metal
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd okd/4.1.0-rc.4 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh && ./publish.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "15Gi"
+
   - name: check-provision-k8s-1.10.11
     always_run: false
     optional: true
