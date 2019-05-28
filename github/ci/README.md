@@ -102,3 +102,14 @@ key to decrypt the tar file:
 ./decrypt.sh ~/.ssh/id_rsa rmohr
 File rmohr.tar decrypted.
 ```
+
+### Testing new ProwJobs
+
+The tool `mkpj` can be used to create jobs out of local configurations. Then
+simply post them to the cluster:
+
+```
+go get k8s.io/test-infra/prow/cmd/mkpj
+mkpj --pull-number <pr-number> -job <job-name>  -job-config-path github/ci/prow/files/jobs/ --config-path github/ci/prow/files/config.yaml > job.yaml
+oc create -f job.yaml -n kubevirt-prow-jobs
+```
