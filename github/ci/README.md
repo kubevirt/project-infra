@@ -58,6 +58,8 @@ gcsServiceAccount: |
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "client_x509_cert_url": "cert-url"
   }
+# the OKD installer pull token secret
+installerPullToken: 'pullSecret: {"auths":{"cloud.openshift.com":{"auth":"test","email":"test@test.com"},"quay.io":{"auth":"test","email":"test@test.com"}}}'
 ```
 
 ## Run the Playbook
