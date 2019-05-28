@@ -4,8 +4,8 @@ plank:
   pod_pending_timeout: 60m
   allow_cancellations: true # AllowCancellations enables aborting presubmit jobs for commits that have been superseded by newer commits in Github pull requests.
   default_decoration_config:
-    timeout: 7200000000000 # 2h
-    grace_period: 15000000000 # 15s
+    timeout: 2h
+    grace_period: 15s
     utility_images:
       clonerefs: "gcr.io/k8s-prow/clonerefs:v20190125-2aca69d"
       initupload: "gcr.io/k8s-prow/initupload:v20190125-2aca69d"
