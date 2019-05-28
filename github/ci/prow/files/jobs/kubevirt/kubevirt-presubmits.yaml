@@ -5,8 +5,8 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 14400000000000 # 4h
-      grace_period: 500000000000 # 5m
+      timeout: 4h
+      grace_period: 5m
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
@@ -34,8 +34,8 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 14400000000000 # 4h
-      grace_period: 500000000000 # 5m
+      timeout: 4h
+      grace_period: 5m
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
@@ -63,8 +63,8 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 14400000000000 # 4h
-      grace_period: 500000000000 # 5m
+      timeout: 4h
+      grace_period: 5m
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
@@ -92,8 +92,8 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 18000000000000 # 5h
-      grace_period: 500000000000 # 5m
+      timeout: 5h
+      grace_period: 5m
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
@@ -121,8 +121,8 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 18000000000000 # 5h
-      grace_period: 500000000000 # 5m
+      timeout: 5h
+      grace_period: 5m
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
@@ -150,8 +150,8 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 18000000000000 # 5h
-      grace_period: 500000000000 # 5m
+      timeout: 5h
+      grace_period: 5m
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
@@ -179,8 +179,8 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 14400000000000 # 4h
-      grace_period: 500000000000 # 5m
+      timeout: 4h
+      grace_period: 5m
     max_concurrency: 8
     labels:
       preset-dind-enabled: "true"
@@ -208,8 +208,8 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 14400000000000 # 4h
-      grace_period: 500000000000 # 5m
+      timeout: 4h
+      grace_period: 5m
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
