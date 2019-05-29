@@ -89,7 +89,7 @@ presets:
   - name: shared-iso
     hostPath:
       path: /var/lib/stdci/shared/kubevirt-images/
-      type: Directory
+      type: DirectoryOrCreate
   volumeMounts:
   - name: shared-iso
     mountPath: /var/lib/stdci/shared/kubevirt-images/
