@@ -1,7 +1,9 @@
 apiVersion: v1
+data:
+  docker: |
+    DOCKER_OPTS="${DOCKER_OPTS} --data-root=/docker-graph"
+    DOCKER_OPTS="${DOCKER_OPTS} --mtu=1450"
 kind: ConfigMap
 metadata:
-  name: config
-data:
-  config.yaml: |
-{{ prowConfig | indent(width=4, indentfirst=True) }}
+  name: docker-daemon-mtu-config
+  namespace: kubevirt-prow-jobs

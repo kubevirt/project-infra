@@ -31,3 +31,22 @@ spec:
     name: deck
     weight: 100
   wildcardPolicy: None
+---
+apiVersion: v1
+kind: Route
+metadata:
+  name: deck-legacy
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  host: "deck-kubevirt-prow.apps.ovirt.org"
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: deck
+    weight: 100
+  wildcardPolicy: None
+
+
+  

@@ -11,6 +11,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-shared-images: "true"
+      preset-docker-mtu: "true"
     spec:
       nodeSelector:
         kubernetes.io/hostname: 139.178.69.73.nip.io
@@ -36,6 +37,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
     spec:
@@ -63,6 +65,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
     spec:
@@ -90,6 +93,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
     spec:
@@ -117,6 +121,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
     spec:
@@ -144,6 +149,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
     spec:
@@ -171,6 +177,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
     spec:
@@ -198,6 +205,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 8
     labels:
+      preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
     spec:
@@ -225,6 +233,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
     spec:

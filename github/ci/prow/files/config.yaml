@@ -84,6 +84,16 @@ presets:
     mountPath: /etc/default
     readOnly: true
 - labels:
+    preset-docker-mtu: "true"
+  volumes:
+  - name: docker-config
+    configMap:
+      name: docker-daemon-mtu-config
+  volumeMounts:
+  - name: docker-config
+    mountPath: /etc/default
+    readOnly: true
+- labels:
     preset-shared-images: "true"
   volumes:
   - name: shared-iso
