@@ -1,6 +1,6 @@
 plank:
-  job_url_template: 'https://deck-kubevirt-prow.apps.ovirt.org/view/gcs/kubevirt/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
-  job_url_prefix: https://deck-kubevirt-prow.apps.ovirt.org/view/gcs/
+  job_url_template: 'https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
+  job_url_prefix: https://prow.apps.ovirt.org/view/gcs/
   pod_pending_timeout: 60m
   allow_cancellations: true # AllowCancellations enables aborting presubmit jobs for commits that have been superseded by newer commits in Github pull requests.
   default_decoration_config:
@@ -12,7 +12,7 @@ plank:
       entrypoint: "gcr.io/k8s-prow/entrypoint:v20190523-832050b39"
       sidecar: "gcr.io/k8s-prow/sidecar:v20190523-832050b39"
     gcs_configuration:
-      bucket: "kubevirt"
+      bucket: "kubevirt-prow"
       path_strategy: "explicit"
     gcs_credentials_secret: "gcs"
 
@@ -51,7 +51,7 @@ tide:
     - do-not-merge/invalid-owners-file
     - do-not-merge/work-in-progress
     - needs-rebase
-  pr_status_base_url: https://deck-kubevirt-prow.apps.ovirt.org/pr
+  pr_status_base_url: https://prow.apps.ovirt.org/pr
   context_options:
     # Use branch protection options to define required and optional contexts
     from-branch-protection: false
