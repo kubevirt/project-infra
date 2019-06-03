@@ -1,6 +1,6 @@
 presubmits:
   kubevirt/kubevirt:
-  - name: pull-kubevirt-e2e-k8s-1.11.0
+  - name: pull-packer-kubevirt-e2e-k8s-1.11.0
     always_run: true
     optional: true
     decorate: true
@@ -10,12 +10,10 @@ presubmits:
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        kubernetes.io/hostname: 139.178.69.73.nip.io
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -29,7 +27,7 @@ presubmits:
         resources:
           requests:
             memory: "12Gi"
-  - name: pull-kubevirt-e2e-k8s-genie-1.11.1
+  - name: pull-packer-kubevirt-e2e-k8s-genie-1.11.1
     always_run: true
     optional: true
     decorate: true
@@ -39,12 +37,10 @@ presubmits:
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        kubernetes.io/hostname: 139.178.69.73.nip.io
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -58,7 +54,7 @@ presubmits:
         resources:
           requests:
             memory: "12Gi"
-  - name: pull-kubevirt-e2e-k8s-1.13.3
+  - name: pull-packer-kubevirt-e2e-k8s-1.13.3
     always_run: true
     optional: true
     decorate: true
@@ -68,12 +64,10 @@ presubmits:
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        kubernetes.io/hostname: 139.178.69.73.nip.io
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -87,7 +81,7 @@ presubmits:
         resources:
           requests:
             memory: "12Gi"
-  - name: pull-kubevirt-e2e-k8s-multus-1.13.3
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3
     always_run: true
     optional: true
     decorate: true
@@ -97,12 +91,10 @@ presubmits:
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        kubernetes.io/hostname: 139.178.69.73.nip.io
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -116,7 +108,7 @@ presubmits:
         resources:
           requests:
             memory: "12Gi"
-  - name: pull-kubevirt-e2e-os-3.11.0-crio
+  - name: pull-packer-kubevirt-e2e-os-3.11.0-crio
     always_run: true
     optional: true
     decorate: true
@@ -126,12 +118,10 @@ presubmits:
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        kubernetes.io/hostname: 139.178.69.73.nip.io
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -145,7 +135,7 @@ presubmits:
         resources:
           requests:
             memory: "16Gi"
-  - name: pull-kubevirt-e2e-os-3.11.0-multus
+  - name: pull-packer-kubevirt-e2e-os-3.11.0-multus
     always_run: true
     optional: true
     decorate: true
@@ -155,12 +145,10 @@ presubmits:
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        kubernetes.io/hostname: 139.178.69.73.nip.io
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -174,7 +162,7 @@ presubmits:
         resources:
           requests:
             memory: "16Gi"
-  - name: pull-kubevirt-e2e-os-3.11.0
+  - name: pull-packer-kubevirt-e2e-os-3.11.0
     always_run: true
     optional: true
     decorate: true
@@ -184,12 +172,10 @@ presubmits:
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        kubernetes.io/hostname: 139.178.69.73.nip.io
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -203,8 +189,8 @@ presubmits:
         resources:
           requests:
             memory: "16Gi"
-  - name: pull-kubevirt-e2e-okd-4.1.0-rc.0
-    always_run: false
+  - name: pull-packer-kubevirt-e2e-okd-4.1.0-rc.0
+    always_run: true
     optional: true
     decorate: true
     decoration_config:
@@ -213,12 +199,10 @@ presubmits:
     max_concurrency: 8
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        kubernetes.io/hostname: 139.178.69.73.nip.io
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -232,7 +216,7 @@ presubmits:
         resources:
           requests:
             memory: "19Gi"
-  - name: pull-kubevirt-e2e-windows2016
+  - name: pull-packer-kubevirt-e2e-windows2016
     always_run: true
     optional: true
     decorate: true
@@ -242,12 +226,10 @@ presubmits:
     max_concurrency: 5
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        kubernetes.io/hostname: 139.178.69.73.nip.io
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
