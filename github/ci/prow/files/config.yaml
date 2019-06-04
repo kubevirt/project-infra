@@ -103,3 +103,8 @@ presets:
   volumeMounts:
   - name: shared-iso
     mountPath: /var/lib/stdci/shared/kubevirt-images/
+- labels:
+    preset-bazel-cache: "true"
+  env:
+  - name: BAZEL_CACHE
+    value: "http://bazel-cache-external.kubevirt-prow.svc.cluster.local:8080/kubevirt.io/kubevirt"

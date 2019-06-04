@@ -1,9 +1,113 @@
+---
 apiVersion: v1
 data:
   docker: |
     DOCKER_OPTS="${DOCKER_OPTS} --data-root=/docker-graph"
     DOCKER_OPTS="${DOCKER_OPTS} --mtu=1450"
+    DOCKER_OPTS="${DOCKER_OPTS} --registry-mirror=http://docker-mirror-external.kubevirt-prow.svc:5000 --insecure-registry=http://docker-mirror-external.kubevirt-prow.svc:5000"
 kind: ConfigMap
 metadata:
   name: docker-daemon-mtu-config
   namespace: kubevirt-prow-jobs
+---  
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: greenhouse-external
+  namespace: kubevirt-prow
+  labels:
+    app: greenhouse-external
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: greenhouse-external
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - name: greenhouse
+        image: gcr.io/k8s-testimages/greenhouse@sha256:ab1a3421cc3c072a813d8543735f218ca6caa811011391a0e5b00104700e6e7b
+        imagePullPolicy: Always
+        ports:
+        - name: cache
+          containerPort: 8080
+        - name: metrics
+          containerPort: 9090
+        args:
+        - --dir=/data
+        - --min-percent-blocks-free=3
+        volumeMounts:
+        - name: cache
+          mountPath: /data
+        resources:
+          requests:
+            memory: 3Gi
+          limits:
+            memory: 3Gi
+      volumes:
+      - name: cache
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bazel-cache-external
+  namespace: kubevirt-prow
+  labels:
+    run: bazel-cache-external
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    app: greenhouse-external
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-mirror-external
+  namespace: kubevirt-prow
+spec:
+  selector:
+    matchLabels:
+      app: docker-mirror-external
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: docker-mirror-external
+    spec:
+      terminationGracePeriodSeconds: 180
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - name: mirror
+        image: registry:2.7.1
+        volumeMounts:
+        - name: config
+          mountPath: /etc/docker/registry/
+          readOnly: true
+        - name: storage
+          mountPath: /var/lib/registry
+        ports:
+          - name: http
+            containerPort: 5000
+      volumes:
+      - name: config
+        configMap:
+          name: mirror-config
+      - name: storage
+        emptyDir: {}
+---  
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-mirror-external
+  namespace: kubevirt-prow
+spec:
+  selector:
+    app: docker-mirror-external
+  ports:
+  - port: 5000

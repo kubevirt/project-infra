@@ -4,11 +4,13 @@ presubmits:
     always_run: true
     optional: true
     decorate: true
+    skip_report: true
     decoration_config:
       timeout: 4h
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
       preset-docker-mtu: "true"
@@ -32,11 +34,13 @@ presubmits:
     always_run: true
     optional: true
     decorate: true
+    skip_report: true
     decoration_config:
       timeout: 4h
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-bazel-cache: "true"
       preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
@@ -60,11 +64,13 @@ presubmits:
     always_run: true
     optional: true
     decorate: true
+    skip_report: true
     decoration_config:
       timeout: 4h
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-bazel-cache: "true"
       preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
@@ -88,11 +94,13 @@ presubmits:
     always_run: true
     optional: true
     decorate: true
+    skip_report: true
     decoration_config:
       timeout: 4h
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-bazel-cache: "true"
       preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
@@ -116,11 +124,13 @@ presubmits:
     always_run: true
     optional: true
     decorate: true
+    skip_report: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-bazel-cache: "true"
       preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
@@ -144,11 +154,13 @@ presubmits:
     always_run: true
     optional: true
     decorate: true
+    skip_report: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-bazel-cache: "true"
       preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
@@ -172,11 +184,13 @@ presubmits:
     always_run: true
     optional: true
     decorate: true
+    skip_report: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-bazel-cache: "true"
       preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
@@ -200,11 +214,13 @@ presubmits:
     always_run: true
     optional: true
     decorate: true
+    skip_report: true
     decoration_config:
       timeout: 4h
       grace_period: 5m
     max_concurrency: 8
     labels:
+      preset-bazel-cache: "true"
       preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
@@ -228,11 +244,13 @@ presubmits:
     always_run: true
     optional: true
     decorate: true
+    skip_report: true
     decoration_config:
       timeout: 4h
       grace_period: 5m
     max_concurrency: 5
     labels:
+      preset-bazel-cache: "true"
       preset-docker-mtu: "true"
       preset-dind-enabled: "true"
       preset-shared-images: "true"
