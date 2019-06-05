@@ -90,7 +90,530 @@ presubmits:
         resources:
           requests:
             memory: "12Gi"
-  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-7
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-8
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-9
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-10
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-11
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-12
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-13
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-14
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-15
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-16
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-17
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-18
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-1
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-2
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-3
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-4
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-5
+    always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 5
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mtu: "true"
+      preset-dind-enabled: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 139.178.69.73.nip.io
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-multus-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "12Gi"
+
+  - name: pull-packer-kubevirt-e2e-k8s-multus-1.13.3-6
     always_run: true
     optional: true
     decorate: true
