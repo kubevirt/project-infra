@@ -50,6 +50,25 @@ plugins:
   - skip
   - override
 
+  kubevirt/kubevirt.github.io:
+  - approve
+  - lgtm
+  - owners-label
+  - config-updater
+  - skip
+  - override
+  - trigger
+
+  kubevirt/cloud-image-builder:
+  - approve
+  - lgtm
+  - owners-label
+
+  kubevirt/community:
+  - approve
+  - lgtm
+  - owners-label
+
 external_plugins:
   kubevirt:
   - name: needs-rebase
@@ -62,12 +81,16 @@ triggers:
   - kubevirt/project-infra
   - kubevirt/kubevirtci
   - kubevirt/kubevirt
+  - kubevirt/kubevirt.github.io
   trusted_org: kubevirt
 
 approve:
 - repos:
   - kubevirt/project-infra
   - kubevirt/kubevirtci
+  - kubevirt/kubevirt.github.io
+  - kubevirt/cloud-image-builder
+  - kubevirt/community
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -76,4 +99,7 @@ lgtm:
 - repos:
   - kubevirt/project-infra
   - kubevirt/kubevirtci
+  - kubevirt/kubevirt.github.io
+  - kubevirt/cloud-image-builder
+  - kubevirt/community
   review_acts_as_lgtm: true

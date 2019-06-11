@@ -37,11 +37,13 @@ tide:
   merge_method:
     kubevirt/project-infra: squash
     kubevirt/kubevirtci: squash
+    kubevirt/kubevirt.github.io: squash
 
   queries:
   - repos:
     - kubevirt/project-infra
     - kubevirt/kubevirtci
+    - kubevirt/kubevirt.github.io
     labels:
     - lgtm
     - approved

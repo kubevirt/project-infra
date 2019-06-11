@@ -203,8 +203,6 @@ repos:
         color: bfd4f2
         target: both
       - name: area/virtctl
-        color: bfd4f2
-        target: both
       - name: topic/api
         color: c5def5
         target: both
@@ -314,3 +312,17 @@ repos:
         target: prs
         prowPlugin: trigger
         addedBy: prow
+  kubevirt/kubevirt.github.io:
+    labels:
+      - color: 80e591
+        description: Label for blog entries
+        name: kind/blog
+        target: prs
+        addedBy: anyone
+        prowPlugin: label
+      - color: 064d70
+        description: Label for web site management/maintenance/...
+        name: kind/website
+        target: both
+        addedBy: anyone
+        prowPlugin: label
