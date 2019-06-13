@@ -203,7 +203,7 @@ presubmits:
         resources:
           requests:
             memory: "24Gi"
-  - name: pull-kubevirt-e2e-okd-4.1.0-rc.0
+  - name: pull-kubevirt-e2e-okd-4.1.0
     always_run: false
     optional: true
     decorate: true
@@ -225,7 +225,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "export TARGET=okd-4.1.0-rc.0 && automation/test.sh"
+        - "export TARGET=okd-4.1.0 && automation/test.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
