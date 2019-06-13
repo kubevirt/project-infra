@@ -1,0 +1,12 @@
+periodics:
+  - interval: 24h
+    name: kubevirt-io-periodic-link-checker
+    decorate: true
+    spec:
+      containers:
+        - image: docker.io/library/ruby
+          env:
+            - name: NOKOGIRI_USE_SYSTEM_LIBRARIES
+              value: "true"
+          command: ["/bin/sh", "-c"]
+          args: ["git clone https://github.com/kubevirt/kubevirt.github.io.git && cd kubevirt.github.io && /usr/local/bin/bundle install && bundle exec rake"]
