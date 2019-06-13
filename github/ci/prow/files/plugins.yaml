@@ -23,6 +23,9 @@ plugins:
   - lifecycle
   - verify-owners
   - wip
+  - pony
+  - dog
+  - cat
 
   kubevirt/kubevirt:
   - trigger
