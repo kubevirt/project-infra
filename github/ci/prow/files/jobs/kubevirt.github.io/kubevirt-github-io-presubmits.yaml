@@ -5,6 +5,8 @@ presubmits:
       always_run: true
       skip_report: false
       spec:
+        nodeSelector:
+          region: primary
         containers:
           - image: docker.io/library/ruby
             env:

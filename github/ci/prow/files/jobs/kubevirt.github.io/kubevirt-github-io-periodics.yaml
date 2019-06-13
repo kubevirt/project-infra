@@ -3,6 +3,8 @@ periodics:
     name: kubevirt-io-periodic-link-checker
     decorate: true
     spec:
+      nodeSelector:
+        region: primary
       containers:
         - image: docker.io/library/ruby
           env:
