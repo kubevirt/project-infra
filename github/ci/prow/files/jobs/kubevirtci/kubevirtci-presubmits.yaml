@@ -7,6 +7,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -31,6 +32,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
@@ -56,6 +58,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -80,6 +83,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
@@ -105,6 +109,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -129,6 +134,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
@@ -154,6 +160,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
       preset-kubevirtci-installer-pull-token: "true"
     spec:
       nodeSelector:
@@ -179,6 +186,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
       preset-kubevirtci-docker-credential: "true"
       preset-kubevirtci-installer-pull-token: "true"
     spec:
@@ -205,6 +213,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -229,6 +238,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
@@ -254,6 +264,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -278,6 +289,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
@@ -303,6 +315,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -327,6 +340,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
@@ -352,6 +366,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -376,6 +391,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
@@ -401,6 +417,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -425,6 +442,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
@@ -450,6 +468,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -475,6 +494,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-kubevirtci-docker-credential: "true"
+      preset-docker-mirror: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -499,6 +519,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -523,6 +544,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
