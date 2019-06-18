@@ -9,8 +9,7 @@ presubmits:
       preset-dind-enabled: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -35,8 +34,7 @@ presubmits:
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
           command:
@@ -60,8 +58,7 @@ presubmits:
       preset-dind-enabled: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -86,8 +83,7 @@ presubmits:
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
           command:
@@ -111,8 +107,7 @@ presubmits:
       preset-dind-enabled: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
           command:
@@ -137,8 +132,7 @@ presubmits:
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
           command:
@@ -163,8 +157,7 @@ presubmits:
       preset-kubevirtci-installer-pull-token: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -190,8 +183,7 @@ presubmits:
       preset-kubevirtci-installer-pull-token: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
           command:
@@ -215,8 +207,7 @@ presubmits:
       preset-dind-enabled: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -241,8 +232,7 @@ presubmits:
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
           command:
@@ -266,8 +256,7 @@ presubmits:
       preset-dind-enabled: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -292,8 +281,7 @@ presubmits:
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
           command:
@@ -317,8 +305,7 @@ presubmits:
       preset-dind-enabled: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -343,8 +330,7 @@ presubmits:
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
           command:
@@ -368,8 +354,7 @@ presubmits:
       preset-dind-enabled: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -394,8 +379,7 @@ presubmits:
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
           command:
@@ -419,8 +403,7 @@ presubmits:
       preset-dind-enabled: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -445,8 +428,7 @@ presubmits:
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
           command:
@@ -470,8 +452,7 @@ presubmits:
       preset-dind-enabled: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -496,8 +477,7 @@ presubmits:
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -521,8 +501,7 @@ presubmits:
       preset-dind-enabled: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
         - image: gcr.io/k8s-testimages/kubekins-e2e:v20190329-811f7954b-master
           command:
@@ -547,8 +526,7 @@ presubmits:
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/kubekins-e2e:v20190329-811f7954b-master
         command:

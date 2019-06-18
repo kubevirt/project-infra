@@ -14,8 +14,7 @@ presubmits:
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -43,8 +42,7 @@ presubmits:
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -72,8 +70,7 @@ presubmits:
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -101,8 +98,7 @@ presubmits:
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -130,8 +126,7 @@ presubmits:
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -159,8 +154,7 @@ presubmits:
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -188,8 +182,7 @@ presubmits:
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -217,8 +210,7 @@ presubmits:
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -246,8 +238,7 @@ presubmits:
       preset-shared-images: "true"
     spec:
       nodeSelector:
-        model: r430
-        type: bare-metal
+        type: bare-metal-external
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
