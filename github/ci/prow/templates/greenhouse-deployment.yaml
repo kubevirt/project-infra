@@ -26,7 +26,7 @@ spec:
         app: greenhouse
     spec:
       nodeSelector:
-        type: vm
+        type: bare-metal-external
         zone: ci
       containers:
       - name: greenhouse
@@ -50,5 +50,5 @@ spec:
             memory: 3Gi
       volumes:
       - name: cache
-        persistentVolumeClaim:
-          claimName: greenhouse
+        emptyDir:
+          sizeLimit: 100G
