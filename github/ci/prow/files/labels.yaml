@@ -326,3 +326,23 @@ repos:
         target: both
         addedBy: anyone
         prowPlugin: label
+  kubevirt/kubevirt-tutorial:
+    labels:
+      - color: 80e591
+        description: Label for new Labs included
+        name: kind/new-lab
+        target: prs
+        addedBy: anyone
+        prowPlugin: label
+      - color: 064d70
+        description: Label for Lab deployment inclusion
+        name: kind/lab-deployment
+        target: prs
+        addedBy: anyone
+        prowPlugin: label
+      - name: kind/lab-updates
+        description: Label for Labs updates
+        color: bfd4f2
+        target: pr
+        addedBy: anyone
+        prowPlugin: label

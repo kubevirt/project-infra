@@ -57,6 +57,12 @@ plugins:
   - owners-label
   - trigger
 
+  kubevirt/kubevirt-tutorial:
+  - approve
+  - lgtm
+  - owners-label
+  - trigger
+
   kubevirt/cloud-image-builder:
   - approve
   - lgtm
@@ -82,6 +88,7 @@ triggers:
   - kubevirt/kubevirt
   - kubevirt/kubevirt.github.io
   - kubevirt/cloud-image-builder
+  - kubevirt/kubevirt-tutorial
   trusted_org: kubevirt
 
 approve:
@@ -91,6 +98,7 @@ approve:
   - kubevirt/kubevirt.github.io
   - kubevirt/cloud-image-builder
   - kubevirt/community
+  - kubevirt/kubevirt-tutorial
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -102,4 +110,5 @@ lgtm:
   - kubevirt/kubevirt.github.io
   - kubevirt/cloud-image-builder
   - kubevirt/community
+  - kubevirt/kubevirt-tutorial
   review_acts_as_lgtm: true
