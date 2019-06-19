@@ -66,6 +66,10 @@ plugins:
   - approve
   - lgtm
   - owners-label
+  - config-updater
+  - skip
+  - override
+  - trigger
 
   kubevirt/community:
   - approve
@@ -85,6 +89,7 @@ triggers:
   - kubevirt/kubevirtci
   - kubevirt/kubevirt
   - kubevirt/kubevirt.github.io
+  - kubevirt/cloud-image-builder
   trusted_org: kubevirt
 
 approve:
