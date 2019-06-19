@@ -45,22 +45,16 @@ plugins:
   - lgtm
   - approve
   - config-updater
-  - skip
-  - override
 
   kubevirt/kubevirtci:
   - trigger
   - lgtm
   - approve
-  - skip
-  - override
 
   kubevirt/kubevirt.github.io:
   - approve
   - lgtm
   - owners-label
-  - skip
-  - override
   - trigger
 
   kubevirt/cloud-image-builder:
