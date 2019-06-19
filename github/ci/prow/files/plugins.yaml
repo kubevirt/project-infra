@@ -22,6 +22,8 @@ plugins:
   - blunderbuss
   - lifecycle
   - verify-owners
+  - skip
+  - override
   - wip
   - pony
   - dog
@@ -43,29 +45,23 @@ plugins:
   - lgtm
   - approve
   - config-updater
-  - skip
-  - override
 
   kubevirt/kubevirtci:
   - trigger
   - lgtm
   - approve
-  - skip
-  - override
 
   kubevirt/kubevirt.github.io:
   - approve
   - lgtm
   - owners-label
-  - config-updater
-  - skip
-  - override
   - trigger
 
   kubevirt/cloud-image-builder:
   - approve
   - lgtm
   - owners-label
+  - trigger
 
   kubevirt/community:
   - approve
@@ -85,6 +81,7 @@ triggers:
   - kubevirt/kubevirtci
   - kubevirt/kubevirt
   - kubevirt/kubevirt.github.io
+  - kubevirt/cloud-image-builder
   trusted_org: kubevirt
 
 approve:
