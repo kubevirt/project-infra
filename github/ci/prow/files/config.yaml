@@ -38,12 +38,14 @@ tide:
     kubevirt/project-infra: squash
     kubevirt/kubevirtci: squash
     kubevirt/kubevirt.github.io: squash
+    kubevirt/cloud-image-builder: squash
 
   queries:
   - repos:
     - kubevirt/project-infra
     - kubevirt/kubevirtci
     - kubevirt/kubevirt.github.io
+    - kubevirt/cloud-image-builder
     labels:
     - lgtm
     - approved
