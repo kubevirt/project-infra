@@ -39,6 +39,7 @@ tide:
     kubevirt/kubevirtci: squash
     kubevirt/kubevirt.github.io: squash
     kubevirt/cloud-image-builder: squash
+    kubevirt/kubevirt-tutorial: squash
 
   queries:
   - repos:
@@ -46,6 +47,7 @@ tide:
     - kubevirt/kubevirtci
     - kubevirt/kubevirt.github.io
     - kubevirt/cloud-image-builder
+    - kubevirt/kubevirt-tutorial
     labels:
     - lgtm
     - approved
