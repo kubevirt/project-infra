@@ -5,7 +5,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 4h
+      timeout: 5h
       grace_period: 5m
     max_concurrency: 3
     labels:
@@ -33,7 +33,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 4h
+      timeout: 5h
       grace_period: 5m
     max_concurrency: 3
     labels:
@@ -61,7 +61,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 4h
+      timeout: 5h
       grace_period: 5m
     max_concurrency: 3
     labels:
@@ -89,7 +89,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 4h
+      timeout: 5h
       grace_period: 5m
     max_concurrency: 3
     labels:
@@ -201,7 +201,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 4h
+      timeout: 5h
       grace_period: 5m
     max_concurrency: 3
     labels:
@@ -229,7 +229,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 4h
+      timeout: 5h
       grace_period: 5m
     max_concurrency: 1 # we have one license
     labels:
