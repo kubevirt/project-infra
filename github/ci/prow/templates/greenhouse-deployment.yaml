@@ -50,5 +50,5 @@ spec:
             memory: 3Gi
       volumes:
       - name: cache
-        emptyDir:
-          sizeLimit: 100G
+        hostPath:
+          path: /var/lib/greenhouse

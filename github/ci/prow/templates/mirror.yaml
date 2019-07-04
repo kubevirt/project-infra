@@ -37,5 +37,5 @@ spec:
         configMap:
           name: mirror-config
       - name: storage
-        emptyDir:
-          sizeLimit: 80G
+        hostPath:
+          path: /var/lib/docker-mirror
