@@ -1,4 +1,43 @@
 periodics:
+- name: periodic-project-infra-retester
+  interval: 1h  # Retest at most 1 PR every hour, which should not DOS the queue.
+  decorate: true
+  spec:
+    containers:
+    - image: gcr.io/k8s-prow/commenter:v20190702-110f536c6
+      command:
+      - /app/robots/commenter/app.binary
+      args:
+      - |-
+        --query=is:pr
+        -label:do-not-merge
+        -label:do-not-merge/blocked-paths
+        -label:do-not-merge/cherry-pick-not-approved
+        -label:do-not-merge/hold
+        -label:do-not-merge/invalid-owners-file
+        -label:do-not-merge/release-note-label-needed
+        -label:do-not-merge/work-in-progress
+        label:lgtm
+        label:approved
+        status:failure
+        -label:needs-rebase
+        -label:needs-ok-to-test
+        repo:kubevirt/kubevirt
+      - --token=/etc/github/oauth
+      - |-
+        --comment=/retest
+        This bot automatically retries jobs that failed/flaked on approved PRs.
+        Silence the bot with an `/lgtm cancel` or `/hold` comment for consistent failures.
+      - --template
+      - --ceiling=1
+      - --confirm
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+    volumes:
+    - name: token
+      secret:
+        secretName:  oauth-token
 - name: periodic-test-infra-close
   interval: 1h
   decorate: true
