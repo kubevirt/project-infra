@@ -21,6 +21,11 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  name: "caches"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
   name: "sinker"
 ---
 apiVersion: v1

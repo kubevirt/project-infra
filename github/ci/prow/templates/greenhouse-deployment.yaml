@@ -25,6 +25,7 @@ spec:
       labels:
         app: greenhouse
     spec:
+      serviceAccountName: "caches"
       nodeSelector:
         type: bare-metal-external
         zone: ci
