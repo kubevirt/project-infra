@@ -40,6 +40,7 @@ log_level: debug
 
 tide:
   merge_method:
+    kubevirt/kubevirt: merge
     kubevirt/project-infra: squash
     kubevirt/kubevirtci: squash
     kubevirt/kubevirt.github.io: squash
@@ -64,12 +65,39 @@ tide:
     - do-not-merge/invalid-owners-file
     - do-not-merge/work-in-progress
     - needs-rebase
+  - repos:
+    - kubevirt/kubevirt
+    labels:
+    - lgtm
+    - approved
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/work-in-progress
+    - do-not-merge/release-note-label-needed
+    - needs-rebase
   pr_status_base_url: https://prow.apps.ovirt.org/pr
   context_options:
-    # Use branch protection options to define required and optional contexts
-    from-branch-protection: false
-    # Treat unknown contexts as optional
-    skip-unknown-contexts: true
+    orgs:
+     kubevirt:
+      repos:
+        dashboard:
+          skip-unknown-contexts: true
+          from-branch-protection: true
+
+# we don't enable the branch protector itself yet, but want to
+# let tide know that travis-ci is needed
+branch-protection:
+  orgs:
+    kubevirt:
+      repos:
+        kubevirt:
+          protect: true
+          required_status_checks:
+            contexts:
+            - continuous-integration/travis-ci
+            - coverage/coveralls
 
 push_gateway:
   endpoint: pushgateway
