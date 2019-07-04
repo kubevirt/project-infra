@@ -1,8 +1,8 @@
 presubmits:
   kubevirt/kubevirt:
   - name: pull-kubevirt-e2e-k8s-1.11.0
-    always_run: true
-    optional: true
+    always_run: false
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -29,8 +29,8 @@ presubmits:
           requests:
             memory: "24Gi"
   - name: pull-kubevirt-e2e-k8s-genie-1.11.1
-    always_run: true
-    optional: true
+    always_run: false
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -58,7 +58,7 @@ presubmits:
             memory: "24Gi"
   - name: pull-kubevirt-e2e-k8s-1.13.3
     always_run: true
-    optional: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -86,7 +86,7 @@ presubmits:
             memory: "24Gi"
   - name: pull-kubevirt-e2e-k8s-multus-1.13.3
     always_run: true
-    optional: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -114,7 +114,7 @@ presubmits:
             memory: "24Gi"
   - name: pull-kubevirt-e2e-os-3.11.0-crio
     always_run: true
-    optional: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -141,8 +141,8 @@ presubmits:
           requests:
             memory: "24Gi"
   - name: pull-kubevirt-e2e-os-3.11.0-multus
-    always_run: true
-    optional: true
+    always_run: false
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -169,8 +169,8 @@ presubmits:
           requests:
             memory: "24Gi"
   - name: pull-kubevirt-e2e-os-3.11.0
-    always_run: true
-    optional: true
+    always_run: false
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -225,8 +225,8 @@ presubmits:
           requests:
             memory: "24Gi"
   - name: pull-kubevirt-e2e-windows2016
-    always_run: true
-    optional: true
+    always_run: false
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
