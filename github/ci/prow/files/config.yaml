@@ -20,9 +20,14 @@ deck:
   spyglass:
     size_limit: 500000000 # 500MB
     viewers:
-      "started.json|finished.json": ["metadata-viewer"]
-      "build-log.txt": ["build-log-viewer"]
-      "artifacts/junit.*\\.xml": ["junit-viewer"]
+      "started.json|finished.json":
+      - "metadata"
+      "build-log.txt":
+      - "buildlog"
+      "artifacts/junit.*\\.xml":
+      - "junit"
+      "artifacts/filtered.cov":
+      - "coverage"
 
 sinker:
   resync_period: 1m
