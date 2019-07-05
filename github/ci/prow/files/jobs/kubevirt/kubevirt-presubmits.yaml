@@ -63,7 +63,7 @@ presubmits:
     decoration_config:
       timeout: 5h
       grace_period: 5m
-    max_concurrency: 6
+    max_concurrency: 10
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
@@ -91,7 +91,7 @@ presubmits:
     decoration_config:
       timeout: 5h
       grace_period: 5m
-    max_concurrency: 6
+    max_concurrency: 10
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
@@ -119,7 +119,7 @@ presubmits:
     decoration_config:
       timeout: 5h
       grace_period: 5m
-    max_concurrency: 6
+    max_concurrency: 10
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
