@@ -94,6 +94,18 @@
       type: Opaque
       data:
         oauth: "{{ githubToken | b64encode }}"
+- name: Create OAuth commenter secret in prow jobs namespace
+  k8s:
+    state: present
+    namespace: "{{ prowJobsNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: commenter-oauth-token
+      type: Opaque
+      data:
+        oauth: "{{ githubCommenterToken | b64encode }}"
 - name: Create OAuth Config
   k8s:
     state: present
