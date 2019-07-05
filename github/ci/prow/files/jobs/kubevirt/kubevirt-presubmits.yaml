@@ -27,7 +27,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "24Gi"
+            memory: "29Gi"
   - name: pull-kubevirt-e2e-k8s-genie-1.11.1
     always_run: false
     optional: false
@@ -55,7 +55,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "24Gi"
+            memory: "29Gi"
   - name: pull-kubevirt-e2e-k8s-1.13.3
     always_run: true
     optional: false
@@ -83,7 +83,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "24Gi"
+            memory: "29Gi"
   - name: pull-kubevirt-e2e-k8s-multus-1.13.3
     always_run: true
     optional: false
@@ -111,7 +111,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "24Gi"
+            memory: "29Gi"
   - name: pull-kubevirt-e2e-os-3.11.0-crio
     always_run: true
     optional: false
@@ -139,7 +139,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "24Gi"
+            memory: "29Gi"
   - name: pull-kubevirt-e2e-os-3.11.0-multus
     always_run: false
     optional: false
@@ -167,7 +167,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "24Gi"
+            memory: "29Gi"
   - name: pull-kubevirt-e2e-os-3.11.0
     always_run: false
     optional: false
@@ -195,7 +195,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "24Gi"
+            memory: "29Gi"
   - name: pull-kubevirt-e2e-okd-4.1.0
     always_run: false
     optional: true
@@ -223,7 +223,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "24Gi"
+            memory: "29Gi"
   - name: pull-kubevirt-e2e-windows2016
     always_run: false
     optional: false
@@ -251,4 +251,4 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "24Gi"
+            memory: "29Gi"
