@@ -2,6 +2,7 @@ package limiter
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -14,8 +15,13 @@ type BillingAlert struct {
 	Data []byte `json:"data"`
 }
 
+// https://cloud.google.com/billing/docs/how-to/budgets#manage-notifications
+type BillingInfo struct {
+	AlertThresholdExceeded float32 `json:"alertThresholdExceeded"`
+}
+
 // CutBucketConnections consumes a Pub/Sub message.
-func CutBucketConnections(ctx context.Context, _ BillingAlert) error {
+func CutBucketConnections(ctx context.Context, alert BillingAlert) error {
 	rawBuckets := os.Getenv("GOOGLE_CLOUD_BUCKETS")
 	if rawBuckets == "" {
 		return fmt.Errorf("GOOGLE_CLOUD_BUCKETS environment variable must be set")
@@ -29,7 +35,18 @@ func CutBucketConnections(ctx context.Context, _ BillingAlert) error {
 	if err != nil {
 		return fmt.Errorf("failed to obtain a gce client: %v", err)
 	}
-	return cutBucketConnections(client, buckets)
+
+	info := &BillingInfo{}
+	if err := json.Unmarshal(alert.Data, info); err != nil {
+		return fmt.Errorf("failed to unmarshal billing info: %v", err)
+	}
+
+	if info.AlertThresholdExceeded < 1 {
+		fmt.Printf("Alert threshold is not yet exceeded: %v\n", info.AlertThresholdExceeded)
+		return nil
+	} else {
+		return cutBucketConnections(client, buckets)
+	}
 }
 
 func cutBucketConnections(client *storage.Client, buckets []string) error {
