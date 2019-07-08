@@ -5,7 +5,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 5h
+      timeout: 6h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -33,7 +33,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 5h
+      timeout: 6h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -61,7 +61,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 5h
+      timeout: 6h
       grace_period: 5m
     max_concurrency: 10
     labels:
@@ -89,7 +89,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 5h
+      timeout: 6h
       grace_period: 5m
     max_concurrency: 10
     labels:
@@ -117,7 +117,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 5h
+      timeout: 6h
       grace_period: 5m
     max_concurrency: 10
     labels:
@@ -145,7 +145,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 5h
+      timeout: 6h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -173,7 +173,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 5h
+      timeout: 6h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -201,7 +201,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 5h
+      timeout: 6h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -229,7 +229,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 5h
+      timeout: 6h
       grace_period: 5m
     max_concurrency: 1 # we have one license
     labels:
