@@ -313,7 +313,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "automation/check-patch.k8s-1.14.2-kind-sriov.sh"
+        - "apt update && apt install pciutils -y && automation/check-patch.k8s-1.14.2-kind-sriov.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
