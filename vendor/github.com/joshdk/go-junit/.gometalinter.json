@@ -1,0 +1,30 @@
+{
+  "Disable": [
+    "gosec",
+    "lll"
+  ],
+  "Enable": [
+    "deadcode",
+    "dupl",
+    "errcheck",
+    "gochecknoglobals",
+    "gochecknoinits",
+    "goconst",
+    "gocyclo",
+    "goimports",
+    "golint",
+    "gotype",
+    "gotypex",
+    "ineffassign",
+    "interfacer",
+    "maligned",
+    "misspell",
+    "nakedret",
+    "safesql",
+    "staticcheck",
+    "structcheck",
+    "unconvert",
+    "unparam",
+    "varcheck"
+  ]
+}
