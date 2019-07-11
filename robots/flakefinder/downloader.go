@@ -16,7 +16,7 @@ limitations under the License.
 
 // Package downloader finds and downloads the coverage profile file from the latest healthy build
 // stored in given gcs directory
-package downloader
+package main
 
 import (
 	"context"
@@ -26,15 +26,19 @@ import (
 	"path"
 	"sort"
 	"strconv"
+	"strings"
 
 	"cloud.google.com/go/storage"
+	junit "github.com/joshdk/go-junit"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/api/iterator"
+	"k8s.io/test-infra/prow/github"
 )
 
 const (
-	//statusJSON is the JSON file that stores build success info
-	statusJSON = "finished.json"
+	//finishedJSON is the JSON file that stores build success info
+	finishedJSON = "finished.json"
+	startedJSON  = "started.json"
 )
 
 //listGcsObjects get the slice of gcs objects under a given path
@@ -68,43 +72,85 @@ func readGcsObject(ctx context.Context, client *storage.Client, bucket, object s
 	logrus.Infof("Trying to read gcs object '%s' in bucket '%s'\n", object, bucket)
 	o := client.Bucket(bucket).Object(object)
 	reader, err := o.NewReader(ctx)
-	if err != nil {
+	if err == storage.ErrObjectNotExist {
+		return nil, err
+	} else if err != nil {
 		return nil, fmt.Errorf("cannot read object '%s': %v", object, err)
 	}
 	return ioutil.ReadAll(reader)
 }
 
-// FindBaseProfile finds the coverage profile file from the latest healthy build
-// stored in given gcs directory
-func FindBaseProfile(ctx context.Context, client *storage.Client, bucket, prowJobName, artifactsDirName,
-	covProfileName string) ([]byte, error) {
+func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest) ([]*Result, error) {
 
-	dirOfJob := path.Join("logs", prowJobName)
+	dirOfPrJobs := path.Join("pr-logs", "pull", strings.ReplaceAll(repo, "/", "_"), strconv.Itoa(pr.Number))
 
-	strBuilds, err := listGcsObjects(ctx, client, bucket, dirOfJob+"/", "/")
+	prJobsDirs, err := listGcsObjects(ctx, client, bucket, dirOfPrJobs+"/", "/")
 	if err != nil {
 		return nil, fmt.Errorf("error listing gcs objects: %v", err)
 	}
 
-	builds := sortBuilds(strBuilds)
-	profilePath := ""
-	for _, build := range builds {
-		buildDirPath := path.Join(dirOfJob, strconv.Itoa(build))
-		dirOfStatusJSON := path.Join(buildDirPath, statusJSON)
-
-		statusText, err := readGcsObject(ctx, client, bucket, dirOfStatusJSON)
+	junits := []*Result{}
+	for _, job := range prJobsDirs {
+		junit, err := FindUnitTestFileForJob(ctx, client, bucket, dirOfPrJobs, job, pr)
 		if err != nil {
-			logrus.Infof("Cannot read finished.json (%s) in bucket '%s'", dirOfStatusJSON, bucket)
-		} else if isBuildSucceeded(statusText) {
-			artifactsDirPath := path.Join(buildDirPath, artifactsDirName)
-			profilePath = path.Join(artifactsDirPath, covProfileName)
-			break
+			return nil, err
+		}
+		if junit != nil {
+			junits = append(junits, junit...)
 		}
 	}
-	if profilePath == "" {
-		return nil, fmt.Errorf("no healthy build found for job '%s' in bucket '%s'; total # builds = %v", dirOfJob, bucket, len(builds))
+	return junits, err
+}
+
+func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket string, dirOfPrJobs string, job string, pr *github.PullRequest) ([]*Result, error) {
+	dirOfJobs := path.Join(dirOfPrJobs, job)
+
+	prJobs, err := listGcsObjects(ctx, client, bucket, dirOfJobs+"/", "/")
+	if err != nil {
+		return nil, fmt.Errorf("error listing gcs objects: %v", err)
 	}
-	return readGcsObject(ctx, client, bucket, profilePath)
+	builds := sortBuilds(prJobs)
+	profilePath := ""
+	buildNumber := 0
+	reports := []*Result{}
+	for _, build := range builds {
+		buildDirPath := path.Join(dirOfJobs, strconv.Itoa(build))
+		dirOfFinishedJSON := path.Join(buildDirPath, finishedJSON)
+		dirOfStartedJSON := path.Join(buildDirPath, startedJSON)
+
+		_, err := readGcsObject(ctx, client, bucket, dirOfFinishedJSON)
+		if err == storage.ErrObjectNotExist {
+			// build still running?
+			continue
+		} else if err != nil {
+			return nil, fmt.Errorf("Cannot read finished.json (%s) in bucket '%s'", dirOfFinishedJSON, bucket)
+		} else {
+			startedJSON, err := readGcsObject(ctx, client, bucket, dirOfStartedJSON)
+			if err != nil {
+				return nil, fmt.Errorf("Cannot read started.json (%s) in bucket '%s'", dirOfStartedJSON, bucket)
+			}
+			if !isLatestCommit(startedJSON, pr) {
+				break
+			}
+			buildNumber = build
+			artifactsDirPath := path.Join(buildDirPath, "artifacts")
+			profilePath = path.Join(artifactsDirPath, "junit.functest.xml")
+			data, err := readGcsObject(ctx, client, bucket, profilePath)
+			if err == storage.ErrObjectNotExist {
+				return nil, nil
+			}
+			if err != nil {
+				return nil, err
+			}
+			report, err := junit.Ingest(data)
+			if err != nil {
+				return nil, err
+			}
+			reports = append(reports, &Result{Job: job, JUnit: report, BuildNumber: buildNumber})
+		}
+	}
+
+	return reports, nil
 }
 
 // sortBuilds converts all build from str to int and sorts all builds in descending order and
@@ -128,8 +174,23 @@ type finishedStatus struct {
 	Passed    bool
 }
 
-func isBuildSucceeded(jsonText []byte) bool {
-	var status finishedStatus
+// {"timestamp":1562772668,"pull":"2473","repo-version":"f3bb83f4377b8b45bd47d33373edfacf85361f0e","repos":{"kubevirt/kubevirt":"release-0.13:577e95c340e1b21ff431cbba25ad33c891554e38,2473:8c33c116def661c69b4a8eb08fac9ca07dfbf03c"}}
+type startedStatus struct {
+	Timestamp int
+	Repos     map[string]string
+}
+
+type Result struct {
+	Job         string
+	JUnit       []junit.Suite
+	BuildNumber int
+}
+
+func isLatestCommit(jsonText []byte, pr *github.PullRequest) bool {
+	var status startedStatus
 	err := json.Unmarshal(jsonText, &status)
-	return err == nil && status.Passed
+	for _, v := range status.Repos {
+		return err == nil && strings.Contains(v, fmt.Sprintf("%d:%s", pr.Number, pr.Head.SHA))
+	}
+	return false
 }
