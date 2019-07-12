@@ -1,0 +1,27 @@
+periodics:
+  - interval: 96h
+    name: periodic-kubevirt-tutorial-lab-testing
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+    extra_refs:
+      - org: kubevirt
+        repo: kubevirt-tutorial
+        base_ref: master
+        path_alias: kubevirt-tutorial
+    spec:
+      nodeSelector:
+        region: primary
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "export TARGET=k8s-1.13.3 && make tests"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "10Gi"
