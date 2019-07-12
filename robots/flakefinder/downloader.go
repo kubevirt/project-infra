@@ -146,7 +146,7 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			if err != nil {
 				return nil, err
 			}
-			reports = append(reports, &Result{Job: job, JUnit: report, BuildNumber: buildNumber})
+			reports = append(reports, &Result{Job: job, JUnit: report, BuildNumber: buildNumber, PR: pr.Number})
 		}
 	}
 
@@ -184,6 +184,7 @@ type Result struct {
 	Job         string
 	JUnit       []junit.Suite
 	BuildNumber int
+	PR int
 }
 
 func isLatestCommit(jsonText []byte, pr *github.PullRequest) bool {

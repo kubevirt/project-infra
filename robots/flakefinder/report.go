@@ -37,6 +37,66 @@ table, th, td {
 .center {
   text-align:center
 }
+
+/* Popup container - can be anything you want */
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* The actual popup */
+.popup .popuptext {
+  visibility: hidden;
+  width: 220px;
+  background-color: #555;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -110px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* Toggle this class - hide and show the popup */
+.popup .show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;} 
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}
 </style>
 </head>
 <body>
@@ -48,17 +108,24 @@ table, th, td {
   <td>{{ $header }}</td>
 {{ end }}
 </tr>
-{{ range $test := $.Tests }}
+{{ range $row, $test := $.Tests }}
 <tr>
   <td>{{ $test }}</td>
-{{ range $header := $.Headers }}
+{{ range $col, $header := $.Headers }}
     {{if not (index $.Data $test $header) }}
   <td class="center">
       N/A
   </td>
     {{else}}
   <td class="{{ (index $.Data $test $header).Severity }} center">
+<div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup" >
       {{ (index $.Data $test $header).Failed }}/{{ (index $.Data $test $header).Succeeded }}/{{ (index $.Data $test $header).Skipped }}
+<div class="popuptext" id="targetr{{$row}}c{{$col}}">
+{{ range $job := (index $.Data $test $header).Jobs }}
+<div class="{{.Severity}} nowrap"><a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> (<a href="https://github.com/kubevirt/kubevirt/pull/{{.PR}}">#{{.PR}}</a>)</div>
+{{ end }}
+</div>
+</div>
     {{end}}
   </td>
 {{ end }}
@@ -66,6 +133,13 @@ table, th, td {
 {{ end }}
 
 </table>
+
+<script>
+function popup(id) {
+  var popup = document.getElementById("target" + id);
+  popup.classList.toggle("show");
+}
+</script>
 
 </body>
 </html>
@@ -82,6 +156,14 @@ type details struct {
 	Skipped   int
 	Failed    int
 	Severity  string
+	Jobs []*job
+}
+
+type job struct {
+	BuildNumber int
+	Severity string
+	PR int
+	Job string
 }
 
 func Report(results []*Result) error {
@@ -146,6 +228,9 @@ func Report(results []*Result) error {
 					data[test.Name][result.Job].Skipped = data[test.Name][result.Job].Skipped + 1
 				} else if test.Status == junit.StatusPassed {
 					data[test.Name][result.Job].Succeeded = data[test.Name][result.Job].Succeeded + 1
+					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs,&job{Severity: "green", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR})
+				} else {
+					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs,&job{Severity: "red", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR})
 				}
 			}
 		}
