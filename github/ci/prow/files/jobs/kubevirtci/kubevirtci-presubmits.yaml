@@ -153,7 +153,7 @@ presubmits:
             requests:
               memory: "8Gi"
 
-  - name: check-provision-okd-4.1.0
+  - name: check-provision-okd-4.1
     always_run: false
     optional: true
     decorate: true
@@ -171,7 +171,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "cd cluster-provision/okd/4.1.0 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh"
+        - "cd cluster-provision/okd/4.1 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
@@ -179,7 +179,7 @@ presubmits:
           requests:
             memory: "15Gi"
 
-  - name: push-okd-4.1.0
+  - name: push-okd-4.1
     always_run: false
     optional: true
     decorate: true
@@ -198,7 +198,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
-            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd cluster-provision/okd/4.1.0 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh && ./publish.sh"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd cluster-provision/okd/4.1 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh && ./publish.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
