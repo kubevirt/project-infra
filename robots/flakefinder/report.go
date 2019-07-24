@@ -5,8 +5,37 @@ import (
 	"html/template"
 	"os"
 
+	"cloud.google.com/go/storage"
 	"github.com/joshdk/go-junit"
 )
+
+const indexTpl = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<table>
+		<tr>
+			<th>FlakeFinder reports</th>
+		</tr>
+{{ range $reportFile := $.Reports }}
+		<tr>
+			<td><a href="{{ .FileName }}">{{ .Date }}</a></td>
+		</tr>
+{{ end }}
+
+	</table>
+</body>
+</html>
+`
 
 const tpl = `
 <!DOCTYPE html>
@@ -151,22 +180,31 @@ type params struct {
 	Tests   []string
 }
 
+type reportFile struct {
+	Date     string
+	FileName string
+}
+
+type indexParams struct {
+	Reports []reportFile
+}
+
 type details struct {
 	Succeeded int
 	Skipped   int
 	Failed    int
 	Severity  string
-	Jobs []*job
+	Jobs      []*job
 }
 
 type job struct {
 	BuildNumber int
-	Severity string
-	PR int
-	Job string
+	Severity    string
+	PR          int
+	Job         string
 }
 
-func Report(results []*Result) error {
+func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 	t, err := template.New("report").Parse(tpl)
 	if err != nil {
 		return fmt.Errorf("failed to load report template: %v", err)
@@ -228,9 +266,9 @@ func Report(results []*Result) error {
 					data[test.Name][result.Job].Skipped = data[test.Name][result.Job].Skipped + 1
 				} else if test.Status == junit.StatusPassed {
 					data[test.Name][result.Job].Succeeded = data[test.Name][result.Job].Succeeded + 1
-					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs,&job{Severity: "green", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR})
+					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &job{Severity: "green", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR})
 				} else {
-					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs,&job{Severity: "red", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR})
+					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &job{Severity: "red", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR})
 				}
 			}
 		}
@@ -275,9 +313,16 @@ func Report(results []*Result) error {
 		}
 	}
 
-	err = t.Execute(os.Stdout, params{Data: data, Headers: headers, Tests: tests})
+	parameters := params{Data: data, Headers: headers, Tests: tests}
+	if reportOutputWriter != nil {
+		err = t.Execute(reportOutputWriter, parameters)
+	} else {
+		err = t.Execute(os.Stdout, parameters)
+	}
+
 	if err != nil {
 		return fmt.Errorf("failed to render report template: %v", err)
 	}
+
 	return nil
 }
