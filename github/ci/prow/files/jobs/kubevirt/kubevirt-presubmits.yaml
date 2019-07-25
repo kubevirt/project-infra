@@ -302,7 +302,7 @@ presubmits:
         requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
-              - key: sriovpod
+              - key: sriov-pod
                 operator: In
                 values:
                 - "true"
@@ -319,7 +319,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "24Gi"
+            memory: "29Gi"
         volumeMounts:
           #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
           - name: modules   
