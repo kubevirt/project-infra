@@ -4,12 +4,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"google.golang.org/api/iterator"
-	"html/template"
 	"log"
 	"net/url"
-	"path"
-	"sort"
 	"strings"
 	"time"
 
@@ -46,6 +42,9 @@ type client interface {
 }
 
 const BucketName = "kubevirt-prow"
+const ReportsPath = "reports/flakefinder"
+const ReportFilePrefix = "flakefinder-"
+const MaxNumberOfReportsToLinkTo = 50
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
@@ -101,94 +100,15 @@ func main() {
 		reports = append(reports, r...)
 	}
 
-
-	//
-	// Write report to GCS Bucket
-	//
-
-	reportFileName := fmt.Sprintf("flakefinder-%s.html", time.Now().Format("2006-01-02"))
-	reportsPath := path.Join("reports", "flakefinder")
-	reportObject := client.Bucket(BucketName).Object(path.Join(reportsPath, reportFileName))
-	log.Printf("Report will be written to gs://%s/%s", BucketName, reportObject.ObjectName())
-	reportOutputWriter := reportObject.NewWriter(ctx)
-	err = Report(reports, reportOutputWriter)
+	err = WriteReportToBucket(ctx, client, reports)
 	if err != nil {
-		log.Fatal(fmt.Errorf("Failed on generating report: %v", err))
-		//return
-	}
-	err = reportOutputWriter.Close()
-	if err != nil {
-		log.Fatal(fmt.Errorf("Failed on closing report object: %v", err))
-		//return
-	}
-
-	//
-	// create index.html that links to the last X reports in GCS "folder", sorted from recent to oldest
-	//
-
-	const MaxNumberOfReportsToLinkTo = 50
-
-	// get all items from report directory
-	var reportDirGcsObjects []string
-	it := client.Bucket(BucketName).Objects(ctx, &storage.Query{
-		Prefix:    reportsPath+"/",
-		Delimiter: "/",
-	})
-	for {
-		attrs, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			log.Fatal(fmt.Errorf("error iterating: %v", err))
-			return
-		}
-		reportDirGcsObjects = append(reportDirGcsObjects, path.Base(attrs.Name))
-	}
-
-	// remove all non report objects by matching start of filename
-	for index, fileName := range reportDirGcsObjects {
-		if !strings.HasPrefix(fileName, "flakefinder-") {
-			reportDirGcsObjects[index] = reportDirGcsObjects[len(reportDirGcsObjects)-1]
-			reportDirGcsObjects = reportDirGcsObjects[:len(reportDirGcsObjects)-1]
-		}
-	}
-
-	// keep only the X most recent
-	sort.Sort(sort.Reverse(sort.StringSlice(reportDirGcsObjects)))
-	if len(reportDirGcsObjects) > MaxNumberOfReportsToLinkTo {
-		reportDirGcsObjects = reportDirGcsObjects[:MaxNumberOfReportsToLinkTo]
-	}
-
-	// Prepare template for index.html
-	t, err := template.New("index").Parse(indexTpl)
-	if err != nil {
-		log.Fatal(fmt.Errorf("failed to load report template: %v", err))
+		log.Fatal(fmt.Errorf("failed to write report: %v", err))
 		return
 	}
 
-	var reportFiles []reportFile
-	for _, reportFileName := range reportDirGcsObjects {
-		date := strings.Replace(reportFileName, "flakefinder-", "", -1)
-		date = strings.Replace(date, ".html", "", -1)
-		reportFiles = append(reportFiles, reportFile{Date:date, FileName:reportFileName})
-	}
-
-	// Create output writer
-	reportIndexObject := client.Bucket(BucketName).Object(path.Join(reportsPath, "index.html"))
-	log.Printf("Report index page will be written to gs://%s/%s", BucketName, reportIndexObject.ObjectName())
-	parameters := indexParams{Reports: reportFiles}
-	reportIndexObjectWriter := reportIndexObject.NewWriter(ctx)
-
-	// write index page
-	err = t.Execute(reportIndexObjectWriter, parameters)
+	err = CreateReportIndex(ctx, client)
 	if err != nil {
-		log.Fatal(fmt.Errorf("Failed on generating index page: %v", err))
-		return
-	}
-	err = reportIndexObjectWriter.Close()
-	if err != nil {
-		log.Fatal(fmt.Errorf("Failed on closing index page writer: %v", err))
+		log.Fatal(fmt.Errorf("failed to create report index page: %v", err))
 		return
 	}
 

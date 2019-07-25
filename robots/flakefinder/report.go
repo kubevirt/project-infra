@@ -1,41 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"html/template"
+	"log"
 	"os"
+	"path"
+	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/joshdk/go-junit"
 )
-
-const indexTpl = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-	<style>
-		table, th, td {
-		  border: 1px solid black;
-		}
-	</style>
-</head>
-<body>
-	<table>
-		<tr>
-			<th>FlakeFinder reports</th>
-		</tr>
-{{ range $reportFile := $.Reports }}
-		<tr>
-			<td><a href="{{ .FileName }}">{{ .Date }}</a></td>
-		</tr>
-{{ end }}
-
-	</table>
-</body>
-</html>
-`
 
 const tpl = `
 <!DOCTYPE html>
@@ -202,6 +178,23 @@ type job struct {
 	Severity    string
 	PR          int
 	Job         string
+}
+
+// WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
+func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result) (err error) {
+	reportFileName := fmt.Sprintf(ReportFilePrefix+"%s.html", time.Now().Format("2006-01-02"))
+	reportObject := client.Bucket(BucketName).Object(path.Join(ReportsPath, reportFileName))
+	log.Printf("Report will be written to gs://%s/%s", BucketName, reportObject.ObjectName())
+	reportOutputWriter := reportObject.NewWriter(ctx)
+	err = Report(reports, reportOutputWriter)
+	if err != nil {
+		return fmt.Errorf("failed on generating report: %v", err)
+	}
+	err = reportOutputWriter.Close()
+	if err != nil {
+		return fmt.Errorf("failed on closing report object: %v", err)
+	}
+	return nil
 }
 
 func Report(results []*Result, reportOutputWriter *storage.Writer) error {
