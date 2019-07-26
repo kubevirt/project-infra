@@ -280,3 +280,65 @@ presubmits:
         resources:
           requests:
             memory: "29Gi"
+  - name: pull-kubevirt-e2e-kind-k8s-sriov-1.14.2
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 5h
+      grace_period: 5m
+    max_concurrency: 10
+    annotations:
+      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+      sriov-pod: "true"
+    spec:
+      nodeSelector:
+        hardwareSupport: sriov-nic
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: sriov-pod
+                operator: In
+                values:
+                - "true"
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "apt update && apt install pciutils -y && export TARGET=kind-k8s-sriov-1.14.2 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "29Gi"
+        volumeMounts:
+          #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
+          - name: modules   
+            mountPath: /lib/modules
+            readOnly: true
+          - name: cgroup
+            mountPath: /sys/fs/cgroup
+          - name: vfio
+            mountPath: /dev/vfio/
+      volumes:
+        - name: modules
+          hostPath:
+            path: /lib/modules
+            type: Directory
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: Directory
+        - name: vfio
+          hostPath:
+            path: /dev/vfio/
+            type: Directory
