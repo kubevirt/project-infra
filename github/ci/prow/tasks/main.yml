@@ -289,6 +289,14 @@
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-deployment.yaml')}}"
+- name: Deploy gcsweb-service
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/gcsweb-service.yaml')}}"
+- name: Deploy gcsweb-deployment
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/gcsweb-deployment.yaml')}}"
 - name: Deploy prow-tide-rbac
   command: "oc -n {{prowJobsNamespace}} apply -f -"
   args:
