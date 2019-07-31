@@ -31,3 +31,19 @@ spec:
     name: deck
     weight: 100
   wildcardPolicy: None
+---
+apiVersion: v1
+kind: Route
+metadata:
+  name: gcsweb
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  host: "{{ gcswebUrl }}"
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: gcsweb
+    weight: 100
+  wildcardPolicy: None
