@@ -1,0 +1,25 @@
+presubmits:
+  kubevirt/kubevirt-tutorial:
+    - name: kubevirt-tutorial-presubmit-lab-testing-k8s-1.13.3
+      always_run: true
+      skip_report: false
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "true"
+      spec:
+        nodeSelector:
+          region: primary
+        containers:
+          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "export TARGET=k8s-1.13.3 && make tests"
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "10Gi"

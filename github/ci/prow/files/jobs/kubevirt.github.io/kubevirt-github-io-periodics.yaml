@@ -2,6 +2,11 @@ periodics:
   - interval: 24h
     name: kubevirt-io-periodic-link-checker
     decorate: true
+    extra_refs:
+      - org: kubevirt
+        repo: kubevirt.github.io
+        base_ref: master
+        path_alias: kubevirt.github.io
     spec:
       nodeSelector:
         region: primary
@@ -11,4 +16,4 @@ periodics:
             - name: NOKOGIRI_USE_SYSTEM_LIBRARIES
               value: "true"
           command: ["/bin/sh", "-c"]
-          args: ["git clone https://github.com/kubevirt/kubevirt.github.io.git && cd kubevirt.github.io && /usr/local/bin/bundle install && bundle exec rake"]
+          args: ["/usr/local/bin/bundle install && bundle exec rake"]
