@@ -115,3 +115,15 @@ go get k8s.io/test-infra/prow/cmd/mkpj
 mkpj --pull-number <pr-number> -job <job-name>  -job-config-path github/ci/prow/files/jobs/ --config-path github/ci/prow/files/config.yaml > job.yaml
 oc create -f job.yaml -n kubevirt-prow-jobs
 ```
+
+### Forking kubevirt/kubevirt jobs on release
+
+Run
+
+```
+git clone git@github.com:kubernetes/test-infra.git
+cd test-infra
+bazel run //experiment/config-forker -- --job-config ~/project-infra/jobs/kubevirt/kubevirt-presubmits.yaml   --version ${RELEASE_VERSION} --output ~/project-infra/jobs/kubevirt/kubevirt-presubmits-${RELEASE_VERSION}.yaml
+```
+
+For more details see https://github.com/kubernetes/test-infra/blob/master/experiment/config-forker/README.md
