@@ -14,6 +14,10 @@ config_updater:
       namespace: kubevirt-prow
 
 plugins:
+
+  virtblocks:
+  - trigger
+
   kubevirt:
   - size
   - label
@@ -92,6 +96,8 @@ triggers:
   - kubevirt/cloud-image-builder
   - kubevirt/kubevirt-tutorial
   trusted_org: kubevirt
+- repos:
+  - virtblocks/virtblocks
 
 approve:
 - repos:
