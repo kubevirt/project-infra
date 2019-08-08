@@ -1,0 +1,44 @@
+presubmits:
+  virtblocks/virtblocks:
+  - name: pull-virtblocks-build
+    decorate: true
+    always_run: true
+    spec:
+      containers:
+        - image: kubevirt/golang-libtool:1.12.5-r1
+          command:
+            - "make"
+            - "build"
+          env:
+            - name: GO111MODULE
+              value: "on"
+            - name: XDG_CACHE_HOME
+              value: "/tmp/.cache"
+  - name: pull-virtblocks-vet
+    decorate: true
+    always_run: true
+    spec:
+      containers:
+        - image: golang:1.12.5
+          command:
+            - "make"
+            - "vet"
+          env:
+            - name: GO111MODULE
+              value: "on"
+            - name: XDG_CACHE_HOME
+              value: "/tmp/.cache"
+  - name: pull-virtblocks-gofmt
+    decorate: true
+    always_run: true
+    spec:
+      containers:
+        - image: golang:1.12.5
+          command:
+            - "make"
+            - "verify-fmt"
+          env:
+            - name: GO111MODULE
+              value: "on"
+            - name: XDG_CACHE_HOME
+              value: "/tmp/.cache"
