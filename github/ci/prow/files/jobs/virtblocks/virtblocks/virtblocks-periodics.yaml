@@ -19,7 +19,7 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: golang:1.12.5
+        - image: kubevirt/golang-libtool:1.12.5-r1
           command:
             - "make"
             - "vet"
@@ -33,7 +33,7 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: golang:1.12.5
+        - image: kubevirt/golang-libtool:1.12.5-r1
           command:
             - "make"
             - "verify-fmt"
