@@ -42,6 +42,7 @@ log_level: debug
 tide:
   merge_method:
     kubevirt/kubevirt: merge
+    kubevirt/machine-remediation-operator: squash
     kubevirt/project-infra: squash
     kubevirt/kubevirtci: squash
     kubevirt/kubevirt.github.io: squash
@@ -52,6 +53,7 @@ tide:
   queries:
   - repos:
     - kubevirt/project-infra
+    - kubevirt/machine-remediation-operator
     - kubevirt/kubevirtci
     - kubevirt/kubevirt.github.io
     - kubevirt/cloud-image-builder
