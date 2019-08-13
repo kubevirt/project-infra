@@ -40,6 +40,11 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/machine-remediation-operator:
+  - trigger
+  - lgtm
+  - approve
+
   kubevirt/containerized-data-importer:
   - release-note
 
@@ -90,6 +95,7 @@ external_plugins:
 triggers:
 - repos:
   - kubevirt/project-infra
+  - kubevirt/machine-remediation-operator
   - kubevirt/kubevirtci
   - kubevirt/kubevirt
   - kubevirt/kubevirt.github.io
@@ -102,6 +108,7 @@ triggers:
 approve:
 - repos:
   - kubevirt/project-infra
+  - kubevirt/machine-remediation-operator
   - kubevirt/kubevirtci
   - kubevirt/kubevirt.github.io
   - kubevirt/cloud-image-builder
@@ -114,6 +121,7 @@ approve:
 
 lgtm:
 - repos:
+  - kubevirt/machine-remediation-operator
   - kubevirt/project-infra
   - kubevirt/kubevirtci
   - kubevirt/kubevirt.github.io
