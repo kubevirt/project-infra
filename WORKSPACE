@@ -1,9 +1,19 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "aed1c249d4ec8f703edddf35cbe9dfaca0b5f5ea6e4cd9e83e99f3b0d1136c3d",
+    strip_prefix = "rules_docker-0.7.0",
+    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.7.0.tar.gz"],
+)
+
+http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "3743a20704efc319070957c45e24ae4626a05ba4b1d6a8961e87520296f1b676",
-    urls = ["https://github.com/bazelbuild/rules_go/releases/download/0.18.4/rules_go-0.18.4.tar.gz"],
+    sha256 = "2f09c340da7b4c14d2475f9c8c9d20c633740100345df67b97864d4f86dbe518",
+    urls = [
+        "https://storage.googleapis.com/bazel-mirror/github.com/bazelbuild/rules_go/releases/download/0.18.8/rules_go-0.18.8.tar.gz",
+        "https://github.com/bazelbuild/rules_go/releases/download/0.18.8/rules_go-0.18.8.tar.gz",
+    ],
 )
 
 http_archive(

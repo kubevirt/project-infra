@@ -1,9 +1,35 @@
+load("@io_bazel_rules_docker//docker:docker.bzl", "docker_bundle")
+load("@io_bazel_rules_docker//contrib:push-all.bzl", "docker_push")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+
+docker_bundle(
+    name = "bundle",
+    images = {
+        "https://cloud.docker.com/u/kubevirtci/repository/docker/kubevirtci/flakefinder:{DOCKER_TAG}": ":flakefinder-image",
+        "https://cloud.docker.com/u/kubevirtci/repository/docker/kubevirtci/flakefinder:latest": ":flakefinder-image",
+        "https://cloud.docker.com/u/kubevirtci/repository/docker/kubevirtci/flakefinder:latest-{BUILD_USER}": ":flakefinder-image",
+    },
+    stamp = True,
+)
+
+docker_push(
+    name = "push",
+    bundle = ":bundle",
+)
+
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_image(
+    name = "flakefinder-image",
+    base = "@distroless-base//image",
+    embed = [":go_default_library"],
+)
 
 go_library(
     name = "go_default_library",
     srcs = [
         "downloader.go",
+        "index.go",
         "main.go",
         "report.go",
     ],
