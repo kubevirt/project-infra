@@ -10,6 +10,8 @@ presubmits:
             - "make"
             - "build"
           env:
+            - name: VIRTBLOCKS_LANGUAGE
+              value: "golang"
             - name: GO111MODULE
               value: "on"
             - name: XDG_CACHE_HOME
@@ -24,6 +26,8 @@ presubmits:
             - "make"
             - "vet"
           env:
+            - name: VIRTBLOCKS_LANGUAGE
+              value: "golang"
             - name: GO111MODULE
               value: "on"
             - name: XDG_CACHE_HOME
@@ -38,6 +42,8 @@ presubmits:
             - "make"
             - "verify-fmt"
           env:
+            - name: VIRTBLOCKS_LANGUAGE
+              value: "golang"
             - name: GO111MODULE
               value: "on"
             - name: XDG_CACHE_HOME
