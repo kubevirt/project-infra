@@ -21,3 +21,24 @@ presubmits:
         resources:
           requests:
             memory: "500Mi"
+
+  - name: periodic-publish-flakefinder-reports
+    always_run: false
+    decorate: true
+    spec:
+      nodeSelector:
+        type: vm
+        zone: ci
+      containers:
+        - image: index.docker.io/kubevirtci/flakefinder:latest
+          command:
+            - /flakefinder
+          args:
+            - -token=/etc/github/oauth
+          volumeMounts:
+            - name: token
+              mountPath: /etc/github
+      volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
