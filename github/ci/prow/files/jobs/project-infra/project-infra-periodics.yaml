@@ -158,8 +158,10 @@ periodics:
       zone: ci
     containers:
     - image: index.docker.io/kubevirtci/flakefinder:latest
+      command:
+      - "/app/robots/flakefinder/app.binary"
       args:
-      - -token=/etc/github/oauth
+      - "--token=/etc/github/oauth"
       volumeMounts:
       - name: token
         mountPath: /etc/github
