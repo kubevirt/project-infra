@@ -32,7 +32,7 @@ presubmits:
       containers:
       - image: index.docker.io/kubevirtci/flakefinder:latest
         command:
-        - "/app/robots/flakefinder/go_image.binary"
+        - "/app/robots/flakefinder/app.binary"
         args:
         - "--token=/etc/github/oauth"
         volumeMounts:
