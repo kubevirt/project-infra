@@ -31,8 +31,6 @@ presubmits:
         zone: ci
       containers:
         - image: index.docker.io/kubevirtci/flakefinder:latest
-          command:
-            - /flakefinder
           args:
             - -token=/etc/github/oauth
           volumeMounts:
