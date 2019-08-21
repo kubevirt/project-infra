@@ -30,7 +30,7 @@ go_binary(
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 
 go_image(
-    name = "go_image",
+    name = "app",
     embed = [":go_default_library"],
 )
 
@@ -39,7 +39,7 @@ load("@io_bazel_rules_docker//docker:docker.bzl", "docker_bundle")
 docker_bundle(
     name = "bundle",
     images = {
-        "kubevirtci/flakefinder:latest": ":go_image",
+        "kubevirtci/flakefinder:latest": ":app",
     },
 )
 
@@ -48,7 +48,7 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 container_push(
     name = "push",
     format = "Docker",
-    image = ":go_image",
+    image = ":app",
     registry = "index.docker.io",
     repository = "kubevirtci/flakefinder",
 )
