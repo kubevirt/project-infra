@@ -9,6 +9,7 @@ filters:
       - slintes
       - cynepco3hahue
       - danielBelenky
+      - dhiller
     approvers:
       - slintes
       - davidvossel
@@ -16,3 +17,4 @@ filters:
       - rmohr
       - cynepco3hahue
       - danielBelenky
+      - dhiller
