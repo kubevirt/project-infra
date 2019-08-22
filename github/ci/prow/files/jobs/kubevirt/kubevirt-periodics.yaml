@@ -1,0 +1,30 @@
+periodics:
+- name: periodic-publish-flakefinder-reports
+  interval: 168h
+  decorate: true
+  spec:
+    nodeSelector:
+      type: vm
+      zone: ci
+    containers:
+    - image: index.docker.io/kubevirtci/flakefinder:latest
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      command:
+      - "/app/robots/flakefinder/app.binary"
+      args:
+      - --token=/etc/github/oauth
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+      - name: gcs
+        mountPath: /etc/gcs
+        readOnly: true
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: gcs
+      secret:
+        secretName: gcs
