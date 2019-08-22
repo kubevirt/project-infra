@@ -130,7 +130,7 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			if err != nil {
 				return nil, fmt.Errorf("Cannot read started.json (%s) in bucket '%s'", dirOfStartedJSON, bucket)
 			}
-			if !isLatestCommit(startedJSON, pr) {
+			if !IsLatestCommit(startedJSON, pr) {
 				break
 			}
 			buildNumber = build
@@ -175,8 +175,7 @@ type finishedStatus struct {
 	Passed    bool
 }
 
-// {"timestamp":1562772668,"pull":"2473","repo-version":"f3bb83f4377b8b45bd47d33373edfacf85361f0e","repos":{"kubevirt/kubevirt":"release-0.13:577e95c340e1b21ff431cbba25ad33c891554e38,2473:8c33c116def661c69b4a8eb08fac9ca07dfbf03c"}}
-type startedStatus struct {
+type StartedStatus struct {
 	Timestamp int
 	Repos     map[string]string
 }
@@ -188,11 +187,16 @@ type Result struct {
 	PR          int
 }
 
-func isLatestCommit(jsonText []byte, pr *github.PullRequest) bool {
-	var status startedStatus
+func IsLatestCommit(jsonText []byte, pr *github.PullRequest) bool {
+	var status StartedStatus
 	err := json.Unmarshal(jsonText, &status)
+	if err != nil {
+		return false
+	}
 	for _, v := range status.Repos {
-		return err == nil && strings.Contains(v, fmt.Sprintf("%d:%s", pr.Number, pr.Head.SHA))
+		if strings.Contains(v, fmt.Sprintf("%d:%s", pr.Number, pr.Head.SHA)) {
+			return true
+		}
 	}
 	return false
 }
