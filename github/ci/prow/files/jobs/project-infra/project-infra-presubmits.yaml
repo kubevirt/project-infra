@@ -34,7 +34,8 @@ presubmits:
         command:
         - "/app/robots/flakefinder/app.binary"
         args:
-        - "--token=/etc/github/oauth"
+        - --token=/etc/github/oauth
+        - --gcs-credentials-file=/etc/gcs/service-account.json
         volumeMounts:
         - name: token
           mountPath: /etc/github
