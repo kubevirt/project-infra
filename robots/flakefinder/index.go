@@ -17,7 +17,7 @@ const indexTpl = `
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>kubevirt.io - flakefinder reports</title>
 	<style>
 		table, th, td {
 		  border: 1px solid black;
@@ -27,7 +27,7 @@ const indexTpl = `
 <body>
 	<table>
 		<tr>
-			<th>FlakeFinder reports</th>
+			<th>flakefinder reports</th>
 		</tr>
 {{ range $reportFile := $.Reports }}
 		<tr>

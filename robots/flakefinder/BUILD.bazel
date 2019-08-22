@@ -21,26 +21,11 @@ go_library(
     ],
 )
 
-go_binary(
-    name = "flakefinder",
-    embed = [":go_default_library"],
-    visibility = ["//visibility:public"],
-)
-
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 
 go_image(
     name = "app",
     embed = [":go_default_library"],
-)
-
-load("@io_bazel_rules_docker//docker:docker.bzl", "docker_bundle")
-
-docker_bundle(
-    name = "bundle",
-    images = {
-        "kubevirtci/flakefinder:latest": ":app",
-    },
 )
 
 load("@io_bazel_rules_docker//container:container.bzl", "container_push")

@@ -7,7 +7,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder:latest
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:491cb61028bd5fcb3ae5ae3e79497f7cf3b4d4e68b70b7471cdc7359a3123e86
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json

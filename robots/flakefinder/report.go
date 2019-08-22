@@ -17,6 +17,7 @@ const tpl = `
 <!DOCTYPE html>
 <html>
 <head>
+<title>kubevirt.io - flakefinder report</title>
 <meta charset="UTF-8">
 <style>
 table, th, td {
