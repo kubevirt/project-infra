@@ -118,17 +118,22 @@ func getReportItemsFromBucketDirectory(client *storage.Client, ctx context.Conte
 		}
 		reportDirGcsObjects = append(reportDirGcsObjects, path.Base(attrs.Name))
 	}
-	// remove all non report objects by matching start of filename
-	for index, fileName := range reportDirGcsObjects {
-		if !strings.HasPrefix(fileName, ReportFilePrefix) {
-			reportDirGcsObjects[index] = reportDirGcsObjects[len(reportDirGcsObjects)-1]
-			reportDirGcsObjects = reportDirGcsObjects[:len(reportDirGcsObjects)-1]
+	return FilterReportItemsForIndexPage(reportDirGcsObjects), nil
+}
+
+// filterReportItemsForIndexPage removes all non relevant report objects
+func FilterReportItemsForIndexPage(fileNames []string) []string {
+	result := make([]string, 0)
+	for _, fileName := range fileNames {
+		if !strings.HasPrefix(fileName, ReportFilePrefix) || !strings.HasSuffix(fileName, ".html") {
+			continue
 		}
+		result = append(result, fileName)
 	}
 	// keep only the X most recent
-	sort.Sort(sort.Reverse(sort.StringSlice(reportDirGcsObjects)))
-	if len(reportDirGcsObjects) > MaxNumberOfReportsToLinkTo {
-		reportDirGcsObjects = reportDirGcsObjects[:MaxNumberOfReportsToLinkTo]
+	sort.Sort(sort.Reverse(sort.StringSlice(result)))
+	if len(result) > MaxNumberOfReportsToLinkTo {
+		result = result[:MaxNumberOfReportsToLinkTo]
 	}
-	return reportDirGcsObjects, nil
+	return result
 }

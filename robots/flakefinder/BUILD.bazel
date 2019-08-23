@@ -49,6 +49,7 @@ go_test(
     srcs = [
         "downloader_test.go",
         "flakefinder_suite_test.go",
+        "index_test.go",
     ],
     embed = [":go_default_library"],
     deps = [
