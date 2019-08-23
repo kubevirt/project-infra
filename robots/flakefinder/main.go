@@ -116,7 +116,7 @@ func main() {
 		reports = append(reports, r...)
 	}
 
-	err = WriteReportToBucket(ctx, client, reports)
+	err = WriteReportToBucket(ctx, client, reports, o.merged)
 	if err != nil {
 		log.Fatal(fmt.Errorf("failed to write report: %v", err))
 		return

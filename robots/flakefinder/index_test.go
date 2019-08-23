@@ -6,7 +6,7 @@ import (
 	. "kubevirt.io/project-infra/robots/flakefinder"
 )
 
-var _ = Describe("Index", func() {
+var _ = Describe("index.go", func() {
 
 	When("filtering report objects for index", func() {
 
@@ -45,10 +45,13 @@ var _ = Describe("Index", func() {
 			}
 			reportItemsForIndexPage := FilterReportItemsForIndexPage(reportDirGcsObjects)
 			Expect(reportItemsForIndexPage).To(BeEquivalentTo([]string{
-				"flakefinder-2019-08-22.html",
-				"flakefinder-2019-07-25.html",
-				"flakefinder-2019-07-24.html",
-				"flakefinder-2019-07-17.html",
+				"flakefinder-2019-08-24-672h.html",
+				"flakefinder-2019-08-24-168h.html",
+				"flakefinder-2019-08-24-024h.html",
+				"flakefinder-2019-08-23-024h.html",
+				"flakefinder-2019-08-22-024h.html",
+				"flakefinder-2019-07-24-168h.html",
+				"flakefinder-2019-07-17-168h.html",
 			}))
 		})
 

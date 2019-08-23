@@ -201,9 +201,8 @@ type job struct {
 }
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
-func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result) (err error) {
-	reportFileName := fmt.Sprintf(ReportFilePrefix+"%s.html", time.Now().Format("2006-01-02"))
-	reportObject := client.Bucket(BucketName).Object(path.Join(ReportsPath, reportFileName))
+func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration) (err error) {
+	reportObject := client.Bucket(BucketName).Object(path.Join(ReportsPath, CreateReportFileName(time.Now(), merged)))
 	log.Printf("Report will be written to gs://%s/%s", BucketName, reportObject.ObjectName())
 	reportOutputWriter := reportObject.NewWriter(ctx)
 	err = Report(reports, reportOutputWriter)
@@ -215,6 +214,10 @@ func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []
 		return fmt.Errorf("failed on closing report object: %v", err)
 	}
 	return nil
+}
+
+func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
+	return fmt.Sprintf(ReportFilePrefix+"%s-%dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
 }
 
 func Report(results []*Result, reportOutputWriter *storage.Writer) error {

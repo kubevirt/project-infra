@@ -7,7 +7,7 @@ import (
 	. "kubevirt.io/project-infra/robots/flakefinder"
 )
 
-var _ = Describe("Downloader", func() {
+var _ = Describe("downloader.go", func() {
 
 	When("testing isLatestCommit", func() {
 
