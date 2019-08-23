@@ -208,7 +208,7 @@ func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []
 }
 
 func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
-	return fmt.Sprintf(ReportFilePrefix+"%s-%dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
+	return fmt.Sprintf(ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
 }
 
 func Report(results []*Result, reportOutputWriter *storage.Writer) error {

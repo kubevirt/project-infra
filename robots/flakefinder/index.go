@@ -50,16 +50,13 @@ const indexTpl = `
 			<th colspan="3">flakefinder reports</th>
 		</tr>
 		<tr>
-			<th>672h</th>
-			<th>168h</th>
-			<th>024h</th>
+			<th>Date</th>{{ range $key, $value := (index .Reports 0).ReportFiles }}
+			<th>{{ $key }}</th>{{ end }}
 		</tr>
-{{ range $reportFile := $.Reports }}
-		<tr>
-			<td><a href="{{ .FileName }}">{{ .Date }}</a></td>
-		</tr>
-{{ end }}
-
+		{{ range $reportFileRow := $.Reports }}<tr>
+			<td>{{ .Date }}</td>{{ range $key, $value := .ReportFiles }}
+			<td>{{ if eq $value "" }}&nbsp;{{ else }}<a href="{{ $value }}">{{ $key }}</a>{{ end }}</td>{{ end }}
+		</tr>{{ end }}
 	</table>
 </body>
 </html>
@@ -84,7 +81,7 @@ type reportFile struct {
 }
 
 type indexParams struct {
-	Reports []reportFile
+	Reports []ReportFilesRow
 }
 
 // CreateReportIndex creates an index.html that links to the X most recent reports in GCS "folder", sorted from most
@@ -131,15 +128,46 @@ func WriteReportIndexPage(reportDirGcsObjects []string, reportIndexObjectWriter 
 	return err
 }
 
+// PrepareDataForTemplate returns a data structure to easily create a 2d table with the report objects associated
+// by date, then by report duration
+//
+// Assumptions: input data sorted in alphanumeric desc order, i.e.
+// [
+// 	"flakefinder-2019-08-24-672h.html",
+//	"flakefinder-2019-08-24-168h.html",
+//	"flakefinder-2019-08-24-024h.html",
+//  ...
+// ]
+//
+// Note: legacy format "flakefinder-2019-08-24.html" is allowed, missing duration leads to taking this for weekly (168h)
 func PrepareDataForTemplate(reportDirGcsObjects []string) indexParams {
-	var reportFiles []reportFile
+	var reportData []ReportFilesRow
+	indexMap := make(map[string]ReportFilesRow)
+
 	for _, reportFileName := range reportDirGcsObjects {
 		date := strings.Replace(reportFileName, ReportFilePrefix, "", -1)
 		date = strings.Replace(date, ".html", "", -1)
-		reportFiles = append(reportFiles, reportFile{Date: date, FileName: reportFileName})
+		mergedDuration := ReportFileMergedDuration(date[strings.LastIndex(date,"-")+1:])
+		if mergedDuration != Day && mergedDuration != Week  && mergedDuration != FourWeeks {
+			mergedDuration = Week
+		} else {
+			date = strings.Replace(date, fmt.Sprintf("-%s", mergedDuration),"", -1)
+		}
+		if reportFilesRow, ok := indexMap[date]; !ok {
+			reportFilesRow = ReportFilesRow{Date: date, ReportFiles: map[ReportFileMergedDuration]string{
+				FourWeeks: "",
+				Week: "",
+				Day: "",
+			}}
+			reportFilesRow.ReportFiles[mergedDuration] = reportFileName
+			indexMap[date] = reportFilesRow
+			reportData = append(reportData, indexMap[date])
+		} else {
+			reportFilesRow.ReportFiles[mergedDuration] = reportFileName
+		}
 	}
-	parameters := indexParams{Reports: reportFiles}
-	return parameters
+
+	return indexParams{Reports: reportData}
 }
 
 // getReportItemsFromBucketDirectory fetches the X most recent report file names from report directory, returning only

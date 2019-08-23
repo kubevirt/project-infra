@@ -17,9 +17,14 @@ var _ = Describe("report.go", func() {
 
 	When("creates filename with date and merged as hours", func() {
 
-		It("filters non report objects", func() {
+		It("creates a filename for week", func() {
 			fileName := CreateReportFileName(reportTime, 24*7*time.Hour)
 			Expect(fileName).To(BeEquivalentTo("flakefinder-2019-08-23-168h.html"))
+		})
+
+		It("creates a filename for day", func() {
+			fileName := CreateReportFileName(reportTime, 24*time.Hour)
+			Expect(fileName).To(BeEquivalentTo("flakefinder-2019-08-23-024h.html"))
 		})
 
 	})
