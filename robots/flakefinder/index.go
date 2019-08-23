@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"google.golang.org/api/iterator"
 	"html/template"
+	"io"
 	"log"
 	"path"
 	"sort"
@@ -46,7 +47,12 @@ const indexTpl = `
 <body>
 	<table>
 		<tr>
-			<th>flakefinder reports</th>
+			<th colspan="3">flakefinder reports</th>
+		</tr>
+		<tr>
+			<th>672h</th>
+			<th>168h</th>
+			<th>024h</th>
 		</tr>
 {{ range $reportFile := $.Reports }}
 		<tr>
@@ -59,14 +65,58 @@ const indexTpl = `
 </html>
 `
 
+type ReportFileMergedDuration string
+
+const (
+	Day       ReportFileMergedDuration = "024h"
+	Week      ReportFileMergedDuration = "168h"
+	FourWeeks ReportFileMergedDuration = "672h"
+)
+
+type ReportFilesRow struct {
+	Date        string
+	ReportFiles map[ReportFileMergedDuration]string
+}
+
+type reportFile struct {
+	Date     string
+	FileName string
+}
+
+type indexParams struct {
+	Reports []reportFile
+}
+
 // CreateReportIndex creates an index.html that links to the X most recent reports in GCS "folder", sorted from most
 // recent to oldest
 func CreateReportIndex(ctx context.Context, client *storage.Client) (err error) {
-
 	reportDirGcsObjects, err := getReportItemsFromBucketDirectory(client, ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get report items: %v", err)
 	}
+
+	reportIndexObjectWriter := CreateOutputWriter(client, ctx)
+
+	err = WriteReportIndexPage(reportDirGcsObjects, reportIndexObjectWriter)
+	if err != nil {
+		return fmt.Errorf("failed generating index page: %v", err)
+	}
+
+	err = reportIndexObjectWriter.Close()
+	if err != nil {
+		return fmt.Errorf("failed closing index page writer: %v", err)
+	}
+	return nil
+}
+
+func CreateOutputWriter(client *storage.Client, ctx context.Context) io.WriteCloser {
+	reportIndexObject := client.Bucket(BucketName).Object(path.Join(ReportsPath, "index.html"))
+	log.Printf("Report index page will be written to gs://%s/%s", BucketName, reportIndexObject.ObjectName())
+	reportIndexObjectWriter := reportIndexObject.NewWriter(ctx)
+	return reportIndexObjectWriter
+}
+
+func WriteReportIndexPage(reportDirGcsObjects []string, reportIndexObjectWriter io.Writer) error {
 
 	// Prepare template for index.html
 	t, err := template.New("index").Parse(indexTpl)
@@ -74,30 +124,22 @@ func CreateReportIndex(ctx context.Context, client *storage.Client) (err error) 
 		return fmt.Errorf("failed to load report template: %v", err)
 	}
 
-	// Prepare data for template
+	parameters := PrepareDataForTemplate(reportDirGcsObjects)
+
+	// write index page
+	err = t.Execute(reportIndexObjectWriter, parameters)
+	return err
+}
+
+func PrepareDataForTemplate(reportDirGcsObjects []string) indexParams {
 	var reportFiles []reportFile
 	for _, reportFileName := range reportDirGcsObjects {
 		date := strings.Replace(reportFileName, ReportFilePrefix, "", -1)
 		date = strings.Replace(date, ".html", "", -1)
 		reportFiles = append(reportFiles, reportFile{Date: date, FileName: reportFileName})
 	}
-
-	// Create output writer
-	reportIndexObject := client.Bucket(BucketName).Object(path.Join(ReportsPath, "index.html"))
-	log.Printf("Report index page will be written to gs://%s/%s", BucketName, reportIndexObject.ObjectName())
 	parameters := indexParams{Reports: reportFiles}
-	reportIndexObjectWriter := reportIndexObject.NewWriter(ctx)
-
-	// write index page
-	err = t.Execute(reportIndexObjectWriter, parameters)
-	if err != nil {
-		return fmt.Errorf("failed generating index page: %v", err)
-	}
-	err = reportIndexObjectWriter.Close()
-	if err != nil {
-		return fmt.Errorf("failed closing index page writer: %v", err)
-	}
-	return nil
+	return parameters
 }
 
 // getReportItemsFromBucketDirectory fetches the X most recent report file names from report directory, returning only

@@ -176,15 +176,6 @@ type params struct {
 	Tests   []string
 }
 
-type reportFile struct {
-	Date     string
-	FileName string
-}
-
-type indexParams struct {
-	Reports []reportFile
-}
-
 type details struct {
 	Succeeded int
 	Skipped   int
