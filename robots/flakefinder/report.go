@@ -17,134 +17,134 @@ const tpl = `
 <!DOCTYPE html>
 <html>
 <head>
-<title>kubevirt.io - flakefinder report</title>
-<meta charset="UTF-8">
-<style>
-table, th, td {
-  border: 1px solid black;
-}
-.yellow {
-  background-color: #ffff80;
-}
-.almostgreen {
-  background-color: #dfff80;
-}
-.green {
-  background-color: #9fff80;
-}
-.red {
-  background-color: #ff8080;
-}
-.orange {
-  background-color: #ffbf80;
-}
-.unimportant {
-}
-.center {
-  text-align:center
-}
+    <title>kubevirt.io - flakefinder report</title>
+    <meta charset="UTF-8">
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+        .yellow {
+            background-color: #ffff80;
+        }
+        .almostgreen {
+            background-color: #dfff80;
+        }
+        .green {
+            background-color: #9fff80;
+        }
+        .red {
+            background-color: #ff8080;
+        }
+        .orange {
+            background-color: #ffbf80;
+        }
+        .unimportant {
+        }
+        .center {
+            text-align:center
+        }
 
-/* Popup container - can be anything you want */
-.popup {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
+        /* Popup container - can be anything you want */
+        .popup {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
 
-/* The actual popup */
-.popup .popuptext {
-  visibility: hidden;
-  width: 220px;
-  background-color: #555;
-  text-align: center;
-  border-radius: 6px;
-  padding: 8px 8px;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -110px;
-}
+        /* The actual popup */
+        .popup .popuptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #555;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+        }
 
-.nowrap {
-  white-space: nowrap;
-}
+        .nowrap {
+            white-space: nowrap;
+        }
 
-/* Popup arrow */
-.popup .popuptext::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #555 transparent transparent transparent;
-}
+        /* Popup arrow */
+        .popup .popuptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
 
-/* Toggle this class - hide and show the popup */
-.popup .show {
-  visibility: visible;
-  -webkit-animation: fadeIn 1s;
-  animation: fadeIn 1s;
-}
+        /* Toggle this class - hide and show the popup */
+        .popup .show {
+            visibility: visible;
+            -webkit-animation: fadeIn 1s;
+            animation: fadeIn 1s;
+        }
 
-/* Add animation (fade in the popup) */
-@-webkit-keyframes fadeIn {
-  from {opacity: 0;} 
-  to {opacity: 1;}
-}
+        /* Add animation (fade in the popup) */
+        @-webkit-keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
 
-@keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity:1 ;}
-}
-</style>
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity:1 ;}
+        }
+    </style>
 </head>
 <body>
 
 <table>
-<tr>
-<td></td>
-{{ range $header := $.Headers }}
-  <td>{{ $header }}</td>
-{{ end }}
-</tr>
-{{ range $row, $test := $.Tests }}
-<tr>
-  <td>{{ $test }}</td>
-{{ range $col, $header := $.Headers }}
-    {{if not (index $.Data $test $header) }}
-  <td class="center">
-      N/A
-  </td>
-    {{else}}
-  <td class="{{ (index $.Data $test $header).Severity }} center">
-<div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup" >
-      {{ (index $.Data $test $header).Failed }}/{{ (index $.Data $test $header).Succeeded }}/{{ (index $.Data $test $header).Skipped }}
-<div class="popuptext" id="targetr{{$row}}c{{$col}}">
-{{ range $job := (index $.Data $test $header).Jobs }}
-<div class="{{.Severity}} nowrap"><a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> (<a href="https://github.com/kubevirt/kubevirt/pull/{{.PR}}">#{{.PR}}</a>)</div>
-{{ end }}
-</div>
-</div>
-    {{end}}
-  </td>
-{{ end }}
-</tr>
-{{ end }}
+    <tr>
+        <td></td>
+        {{ range $header := $.Headers }}
+        <td>{{ $header }}</td>
+        {{ end }}
+    </tr>
+    {{ range $row, $test := $.Tests }}
+    <tr>
+        <td>{{ $test }}</td>
+        {{ range $col, $header := $.Headers }}
+        {{if not (index $.Data $test $header) }}
+        <td class="center">
+            N/A
+        </td>
+        {{else}}
+        <td class="{{ (index $.Data $test $header).Severity }} center">
+            <div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup" >
+                {{ (index $.Data $test $header).Failed }}/{{ (index $.Data $test $header).Succeeded }}/{{ (index $.Data $test $header).Skipped }}
+                <div class="popuptext" id="targetr{{$row}}c{{$col}}">
+                    {{ range $job := (index $.Data $test $header).Jobs }}
+                    <div class="{{.Severity}} nowrap"><a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> (<a href="https://github.com/kubevirt/kubevirt/pull/{{.PR}}">#{{.PR}}</a>)</div>
+                    {{ end }}
+                </div>
+            </div>
+            {{end}}
+        </td>
+        {{ end }}
+    </tr>
+    {{ end }}
 
 </table>
 
 <script>
-function popup(id) {
-  var popup = document.getElementById("target" + id);
-  popup.classList.toggle("show");
-}
+    function popup(id) {
+        var popup = document.getElementById("target" + id);
+        popup.classList.toggle("show");
+    }
 </script>
 
 </body>
