@@ -5,7 +5,7 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: quay.io/virtblocks/buildenv:1.0.0
+        - image: quay.io/virtblocks/buildenv:1.0.1
           command:
             - "make"
             - "build"
@@ -19,7 +19,7 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: quay.io/virtblocks/buildenv:1.0.0
+        - image: quay.io/virtblocks/buildenv:1.0.1
           command:
             - "make"
             - "test"
@@ -33,7 +33,7 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: quay.io/virtblocks/buildenv:1.0.0
+        - image: quay.io/virtblocks/buildenv:1.0.1
           command:
             - "make"
             - "run-examples"
@@ -47,7 +47,7 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: quay.io/virtblocks/buildenv:1.0.0
+        - image: quay.io/virtblocks/buildenv:1.0.1
           command:
             - "make"
             - "vet"
@@ -56,12 +56,12 @@ presubmits:
               value: "on"
             - name: XDG_CACHE_HOME
               value: "/tmp/.cache"
-  - name: pull-virtblocks-gofmt
+  - name: pull-virtblocks-verify-fmt
     decorate: true
     always_run: true
     spec:
       containers:
-        - image: quay.io/virtblocks/buildenv:1.0.0
+        - image: quay.io/virtblocks/buildenv:1.0.1
           command:
             - "make"
             - "verify-fmt"
