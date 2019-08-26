@@ -14,6 +14,34 @@ presubmits:
               value: "on"
             - name: XDG_CACHE_HOME
               value: "/tmp/.cache"
+  - name: pull-virtblocks-test
+    decorate: true
+    always_run: true
+    spec:
+      containers:
+        - image: quay.io/virtblocks/buildenv:1.0.0
+          command:
+            - "make"
+            - "test"
+          env:
+            - name: GO111MODULE
+              value: "on"
+            - name: XDG_CACHE_HOME
+              value: "/tmp/.cache"
+  - name: pull-virtblocks-run-examples
+    decorate: true
+    always_run: true
+    spec:
+      containers:
+        - image: quay.io/virtblocks/buildenv:1.0.0
+          command:
+            - "make"
+            - "run-examples"
+          env:
+            - name: GO111MODULE
+              value: "on"
+            - name: XDG_CACHE_HOME
+              value: "/tmp/.cache"
   - name: pull-virtblocks-vet
     decorate: true
     always_run: true
