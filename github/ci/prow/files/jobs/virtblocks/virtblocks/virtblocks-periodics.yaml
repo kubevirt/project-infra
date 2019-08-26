@@ -5,13 +5,39 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: kubevirt/golang-libtool:1.12.5-r1
+        - image: quay.io/virtblocks/buildenv:1.0.0
           command:
             - "make"
             - "build"
           env:
-            - name: VIRTBLOCKS_LANGUAGE
-              value: "golang"
+            - name: GO111MODULE
+              value: "on"
+            - name: XDG_CACHE_HOME
+              value: "/tmp/.cache"
+  - name: pull-virtblocks-test
+    decorate: true
+    always_run: true
+    spec:
+      containers:
+        - image: quay.io/virtblocks/buildenv:1.0.0
+          command:
+            - "make"
+            - "test"
+          env:
+            - name: GO111MODULE
+              value: "on"
+            - name: XDG_CACHE_HOME
+              value: "/tmp/.cache"
+  - name: pull-virtblocks-run-examples
+    decorate: true
+    always_run: true
+    spec:
+      containers:
+        - image: quay.io/virtblocks/buildenv:1.0.0
+          command:
+            - "make"
+            - "run-examples"
+          env:
             - name: GO111MODULE
               value: "on"
             - name: XDG_CACHE_HOME
@@ -21,13 +47,11 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: kubevirt/golang-libtool:1.12.5-r1
+        - image: quay.io/virtblocks/buildenv:1.0.0
           command:
             - "make"
             - "vet"
           env:
-            - name: VIRTBLOCKS_LANGUAGE
-              value: "golang"
             - name: GO111MODULE
               value: "on"
             - name: XDG_CACHE_HOME
@@ -37,13 +61,11 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: kubevirt/golang-libtool:1.12.5-r1
+        - image: quay.io/virtblocks/buildenv:1.0.0
           command:
             - "make"
             - "verify-fmt"
           env:
-            - name: VIRTBLOCKS_LANGUAGE
-              value: "golang"
             - name: GO111MODULE
               value: "on"
             - name: XDG_CACHE_HOME
