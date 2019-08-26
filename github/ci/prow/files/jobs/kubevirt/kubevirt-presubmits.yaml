@@ -5,11 +5,11 @@ presubmits:
     - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-    always_run: true
-    optional: false
+    always_run: false
+    optional: true
     decorate: true
     decoration_config:
-      timeout: 6h
+      timeout: 7h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -41,7 +41,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 6h
+      timeout: 7h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -73,7 +73,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 6h
+      timeout: 7h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -101,11 +101,11 @@ presubmits:
       - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     decorate: true
     decoration_config:
-      timeout: 6h
+      timeout: 7h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -137,7 +137,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 6h
+      timeout: 7h
       grace_period: 5m
     max_concurrency: 10
     labels:
@@ -169,7 +169,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 6h
+      timeout: 7h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -201,7 +201,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 6h
+      timeout: 7h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -233,7 +233,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 6h
+      timeout: 7h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -265,7 +265,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 6h
+      timeout: 7h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -297,7 +297,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 6h
+      timeout: 7h
       grace_period: 5m
     max_concurrency: 1 # we have one license
     labels:
