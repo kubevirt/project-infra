@@ -49,15 +49,15 @@ Prerequisites:
     phaino --privileged /tmp/prowjob.yaml
     INFO[0000] Reading...                                    path=/tmp/prowjob.yaml
     INFO[0000] Converting job into docker run command...     job=periodic-publish-flakefinder-reports
-    local /etc/github path ("token" mount): /home/dhiller/.tokens/etc/github
-    local /etc/gcs path ("gcs" mount): /home/dhiller/.gcs/credentials
+    local /etc/github path ("token" mount): /path/to/home/.tokens/etc/github
+    local /etc/gcs path ("gcs" mount): /path/to/home/.gcs/credentials
     "docker" "run" "--rm=true" \
      "--name=phaino-24602-1" \
      "--entrypoint=/app/robots/flakefinder/app.binary" \                        
      "-e" \                                                                     
      "GOOGLE_APPLICATION_CREDENTIALS=/etc/gcs/service-account.json" \
      "-v" \
-     "/home/dhiller/.tokens/etc/github:/etc/github" \
+     "/path/to/home/.tokens/etc/github:/etc/github" \
      ...
     INFO[0007] Starting job...                               job=periodic-publish-flakefinder-reports                                                                                             
     INFO[0007] Waiting for job to finish...                  container=phaino-24602-1 job=periodic-publish-flakefinder-reports                                                                    

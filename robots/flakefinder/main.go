@@ -57,7 +57,7 @@ type options struct {
 
 type client interface {
 	FindIssues(query, sort string, asc bool) ([]github.Issue, error)
-    GetPullRequest(org, repo string, number int) (*github.PullRequest, error)
+	GetPullRequest(org, repo string, number int) (*github.PullRequest, error)
 }
 
 const BucketName = "kubevirt-prow"

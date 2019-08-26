@@ -185,7 +185,7 @@ type Result struct {
 	Job         string
 	JUnit       []junit.Suite
 	BuildNumber int
-	PR int
+	PR          int
 }
 
 func isLatestCommit(jsonText []byte, pr *github.PullRequest) bool {
