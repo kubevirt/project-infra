@@ -45,10 +45,8 @@ const indexTpl = `
 	</style>
 </head>
 <body>
+	<h1>flakefinder reports</h1>
 	<table>
-		<tr>
-			<th colspan="3">flakefinder reports</th>
-		</tr>
 		<tr>
 			<th>Date</th>{{ range $key, $value := (index .Reports 0).ReportFiles }}
 			<th>{{ $key }}</th>{{ end }}
