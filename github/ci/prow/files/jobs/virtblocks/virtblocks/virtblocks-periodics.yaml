@@ -56,7 +56,7 @@ presubmits:
               value: "on"
             - name: XDG_CACHE_HOME
               value: "/tmp/.cache"
-  - name: pull-virtblocks-gofmt
+  - name: pull-virtblocks-verify-fmt
     decorate: true
     always_run: true
     spec:
