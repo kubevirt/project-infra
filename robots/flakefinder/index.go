@@ -73,12 +73,7 @@ type ReportFilesRow struct {
 	ReportFiles map[ReportFileMergedDuration]string
 }
 
-type reportFile struct {
-	Date     string
-	FileName string
-}
-
-type indexParams struct {
+type IndexParams struct {
 	Reports []ReportFilesRow
 }
 
@@ -138,7 +133,7 @@ func WriteReportIndexPage(reportDirGcsObjects []string, reportIndexObjectWriter 
 // ]
 //
 // Note: legacy format "flakefinder-2019-08-24.html" is allowed, missing duration leads to taking this for weekly (168h)
-func PrepareDataForTemplate(reportDirGcsObjects []string) indexParams {
+func PrepareDataForTemplate(reportDirGcsObjects []string) IndexParams {
 	var reportData []ReportFilesRow
 	indexMap := make(map[string]ReportFilesRow)
 
@@ -165,7 +160,7 @@ func PrepareDataForTemplate(reportDirGcsObjects []string) indexParams {
 		}
 	}
 
-	return indexParams{Reports: reportData}
+	return IndexParams{Reports: reportData}
 }
 
 // getReportItemsFromBucketDirectory fetches the X most recent report file names from report directory, returning only

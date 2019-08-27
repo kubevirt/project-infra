@@ -3,10 +3,12 @@ package main_test
 import (
 	"bytes"
 	"log"
+	"os"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	. "kubevirt.io/project-infra/robots/flakefinder"
-	"os"
 )
 
 var _ = Describe("index.go", func() {

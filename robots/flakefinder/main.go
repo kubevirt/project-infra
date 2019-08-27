@@ -87,7 +87,7 @@ func main() {
 	}
 
 	var c client = github.NewClient(secretAgent.GetTokenGenerator(o.token), o.graphqlEndpoint, o.endpoint.Strings()...)
-	query := makeQuery("repo:kubevirt/kubevirt is:merged is:pr", o.merged)
+	query := MakeQuery("repo:kubevirt/kubevirt is:merged is:pr", o.merged, time.Now())
 	issues, err := c.FindIssues(query, "", false)
 	if err != nil {
 		log.Fatalf("Failed run: %v", err)
@@ -130,10 +130,10 @@ func main() {
 
 }
 
-func makeQuery(query string, minMerged time.Duration) string {
+func MakeQuery(query string, minMerged time.Duration, till time.Time) string {
 	parts := []string{query}
 	if minMerged != 0 {
-		latest := time.Now().Add(-minMerged)
+		latest := till.Add(-minMerged)
 		parts = append(parts, "merged:>="+latest.Format(time.RFC3339))
 	}
 	return strings.Join(parts, " ")
