@@ -23,6 +23,7 @@ import (
 	"context"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"os"
 	"path"
@@ -146,7 +147,7 @@ const tpl = `
             <div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup" >
                 {{ (index $.Data $test $header).Failed }}/{{ (index $.Data $test $header).Succeeded }}/{{ (index $.Data $test $header).Skipped }}
                 <div class="popuptext" id="targetr{{$row}}c{{$col}}">
-                    {{ range $job := (index $.Data $test $header).Jobs }}
+                    {{ range $Job := (index $.Data $test $header).Jobs }}
                     <div class="{{.Severity}} nowrap"><a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> (<a href="https://github.com/kubevirt/kubevirt/pull/{{.PR}}">#{{.PR}}</a>)</div>
                     {{ end }}
                 </div>
@@ -170,21 +171,21 @@ const tpl = `
 </html>
 `
 
-type params struct {
-	Data    map[string]map[string]*details
+type Params struct {
+	Data    map[string]map[string]*Details
 	Headers []string
 	Tests   []string
 }
 
-type details struct {
+type Details struct {
 	Succeeded int
 	Skipped   int
 	Failed    int
 	Severity  string
-	Jobs      []*job
+	Jobs      []*Job
 }
 
-type job struct {
+type Job struct {
 	BuildNumber int
 	Severity    string
 	PR          int
@@ -212,12 +213,7 @@ func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
 }
 
 func Report(results []*Result, reportOutputWriter *storage.Writer) error {
-	t, err := template.New("report").Parse(tpl)
-	if err != nil {
-		return fmt.Errorf("failed to load report template: %v", err)
-	}
-
-	data := map[string]map[string]*details{}
+	data := map[string]map[string]*Details{}
 	headers := []string{}
 	tests := []string{}
 	buildNumberMap := map[int]struct{}{}
@@ -237,12 +233,12 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 					testEntry := data[test.Name]
 					if testEntry == nil {
 						tests = append(tests, test.Name)
-						testEntry = map[string]*details{}
+						testEntry = map[string]*Details{}
 						data[test.Name] = testEntry
 					}
 
 					if _, exists := testEntry[result.Job]; !exists {
-						testEntry[result.Job] = &details{}
+						testEntry[result.Job] = &Details{}
 					}
 					if _, exists := headerMap[result.Job]; !exists {
 						headerMap[result.Job] = struct{}{}
@@ -267,15 +263,15 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 					continue
 				}
 				if _, exists := data[test.Name][result.Job]; !exists {
-					data[test.Name][result.Job] = &details{}
+					data[test.Name][result.Job] = &Details{}
 				}
 				if test.Status == junit.StatusSkipped {
 					data[test.Name][result.Job].Skipped = data[test.Name][result.Job].Skipped + 1
 				} else if test.Status == junit.StatusPassed {
 					data[test.Name][result.Job].Succeeded = data[test.Name][result.Job].Succeeded + 1
-					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &job{Severity: "green", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR})
+					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &Job{Severity: "green", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR})
 				} else {
-					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &job{Severity: "red", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR})
+					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &Job{Severity: "red", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR})
 				}
 			}
 		}
@@ -320,16 +316,26 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 		}
 	}
 
-	parameters := params{Data: data, Headers: headers, Tests: tests}
+	parameters := Params{Data: data, Headers: headers, Tests: tests}
+	var err error
 	if reportOutputWriter != nil {
-		err = t.Execute(reportOutputWriter, parameters)
-	} else {
-		err = t.Execute(os.Stdout, parameters)
+		err = WriteReportToOutput(reportOutputWriter, parameters)
 	}
+	err = WriteReportToOutput(os.Stdout, parameters)
 
 	if err != nil {
 		return fmt.Errorf("failed to render report template: %v", err)
 	}
 
 	return nil
+}
+
+func WriteReportToOutput(writer io.Writer, parameters Params) error {
+	t, err := template.New("report").Parse(tpl)
+	if err != nil {
+		return fmt.Errorf("failed to load report template: %v", err)
+	}
+
+	err = t.Execute(writer, parameters)
+	return err
 }

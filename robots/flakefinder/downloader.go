@@ -30,7 +30,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
-	junit "github.com/joshdk/go-junit"
+	"github.com/joshdk/go-junit"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/api/iterator"
 	"k8s.io/test-infra/prow/github"
@@ -138,6 +138,7 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			profilePath = path.Join(artifactsDirPath, "junit.functest.xml")
 			data, err := readGcsObject(ctx, client, bucket, profilePath)
 			if err == storage.ErrObjectNotExist {
+				logrus.Infof("Didn't find object '%s' in bucket '%s'\n", profilePath, bucket)
 				return nil, nil
 			}
 			if err != nil {
@@ -168,11 +169,6 @@ func sortBuilds(strBuilds []string) []int {
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(res)))
 	return res
-}
-
-type finishedStatus struct {
-	Timestamp int
-	Passed    bool
 }
 
 type StartedStatus struct {

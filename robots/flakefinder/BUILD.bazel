@@ -50,6 +50,7 @@ go_test(
         "downloader_test.go",
         "flakefinder_suite_test.go",
         "index_test.go",
+        "main_test.go",
         "report_test.go",
     ],
     embed = [":go_default_library"],

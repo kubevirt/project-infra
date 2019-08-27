@@ -140,17 +140,17 @@ func PrepareDataForTemplate(reportDirGcsObjects []string) IndexParams {
 	for _, reportFileName := range reportDirGcsObjects {
 		date := strings.Replace(reportFileName, ReportFilePrefix, "", -1)
 		date = strings.Replace(date, ".html", "", -1)
-		mergedDuration := ReportFileMergedDuration(date[strings.LastIndex(date,"-")+1:])
-		if mergedDuration != Day && mergedDuration != Week  && mergedDuration != FourWeeks {
+		mergedDuration := ReportFileMergedDuration(date[strings.LastIndex(date, "-")+1:])
+		if mergedDuration != Day && mergedDuration != Week && mergedDuration != FourWeeks {
 			mergedDuration = Week
 		} else {
-			date = strings.Replace(date, fmt.Sprintf("-%s", mergedDuration),"", -1)
+			date = strings.Replace(date, fmt.Sprintf("-%s", mergedDuration), "", -1)
 		}
 		if reportFilesRow, ok := indexMap[date]; !ok {
 			reportFilesRow = ReportFilesRow{Date: date, ReportFiles: map[ReportFileMergedDuration]string{
 				FourWeeks: "",
-				Week: "",
-				Day: "",
+				Week:      "",
+				Day:       "",
 			}}
 			reportFilesRow.ReportFiles[mergedDuration] = reportFileName
 			indexMap[date] = reportFilesRow
