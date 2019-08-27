@@ -131,7 +131,7 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 				return nil, fmt.Errorf("Cannot read started.json (%s) in bucket '%s'", dirOfStartedJSON, bucket)
 			}
 			if !IsLatestCommit(startedJSON, pr) {
-				break
+				continue
 			}
 			buildNumber = build
 			artifactsDirPath := path.Join(buildDirPath, "artifacts")
@@ -139,7 +139,7 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			data, err := readGcsObject(ctx, client, bucket, profilePath)
 			if err == storage.ErrObjectNotExist {
 				logrus.Infof("Didn't find object '%s' in bucket '%s'\n", profilePath, bucket)
-				return nil, nil
+				continue
 			}
 			if err != nil {
 				return nil, err
@@ -149,6 +149,7 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 				return nil, err
 			}
 			reports = append(reports, &Result{Job: job, JUnit: report, BuildNumber: buildNumber, PR: pr.Number})
+			return reports, nil
 		}
 	}
 
