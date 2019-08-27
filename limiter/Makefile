@@ -1,7 +1,3 @@
-deps-update:
-	bazel run //:gazelle -- update-repos -from_file=limiter/go.mod
-	bazel run //:gazelle
-
 test:
 	bazel test //limiter:*
 
