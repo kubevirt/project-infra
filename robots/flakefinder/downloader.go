@@ -23,6 +23,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/google/go-github/v28/github"
 	"io/ioutil"
 	"path"
 	"sort"
@@ -33,7 +34,6 @@ import (
 	"github.com/joshdk/go-junit"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/api/iterator"
-	"k8s.io/test-infra/prow/github"
 )
 
 const (
@@ -83,7 +83,7 @@ func readGcsObject(ctx context.Context, client *storage.Client, bucket, object s
 
 func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest) ([]*Result, error) {
 
-	dirOfPrJobs := path.Join("pr-logs", "pull", strings.ReplaceAll(repo, "/", "_"), strconv.Itoa(pr.Number))
+	dirOfPrJobs := path.Join("pr-logs", "pull", strings.ReplaceAll(repo, "/", "_"), strconv.Itoa(*pr.Number))
 
 	prJobsDirs, err := listGcsObjects(ctx, client, bucket, dirOfPrJobs+"/", "/")
 	if err != nil {
@@ -148,7 +148,7 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			if err != nil {
 				return nil, err
 			}
-			reports = append(reports, &Result{Job: job, JUnit: report, BuildNumber: buildNumber, PR: pr.Number})
+			reports = append(reports, &Result{Job: job, JUnit: report, BuildNumber: buildNumber, PR: *pr.Number})
 		}
 	}
 

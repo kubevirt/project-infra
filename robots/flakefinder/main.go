@@ -23,6 +23,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/google/go-github/v28/github"
+	"github.com/sirupsen/logrus"
+	"golang.org/x/oauth2"
 	"log"
 	"net/url"
 	"strings"
@@ -31,7 +34,6 @@ import (
 	"cloud.google.com/go/storage"
 	"k8s.io/test-infra/prow/config/secret"
 	"k8s.io/test-infra/prow/flagutil"
-	"k8s.io/test-infra/prow/github"
 )
 
 func flagOptions() options {
@@ -42,7 +44,7 @@ func flagOptions() options {
 	flag.DurationVar(&o.merged, "merged", 24*7*time.Hour, "Filter to issues merged in the time window")
 	flag.Var(&o.endpoint, "endpoint", "GitHub's API endpoint")
 	flag.StringVar(&o.token, "token", "", "Path to github token")
-	flag.StringVar(&o.graphqlEndpoint, "graphql-endpoint", github.DefaultGraphQLEndpoint, "GitHub's GraphQL API Endpoint")
+	//flag.StringVar(&o.graphqlEndpoint, "graphql-endpoint", github.DefaultGraphQLEndpoint, "GitHub's GraphQL API Endpoint")
 	flag.Parse()
 	return o
 }
@@ -86,23 +88,32 @@ func main() {
 		}
 	}
 
-	var c client = github.NewClient(secretAgent.GetTokenGenerator(o.token), o.graphqlEndpoint, o.endpoint.Strings()...)
-	query := MakeQuery("repo:kubevirt/kubevirt is:merged is:pr", o.merged, time.Now())
-	issues, err := c.FindIssues(query, "", false)
-	if err != nil {
-		log.Fatalf("Failed run: %v", err)
-	}
-
-	prs := []*github.PullRequest{}
-	for _, issue := range issues {
-		pr, err := c.GetPullRequest("kubevirt", "kubevirt", issue.Number)
-		if err != nil {
-			log.Fatalf("Failed to fetch PR: %v.\n", err)
-		}
-		prs = append(prs, pr)
-	}
-
 	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: string(secretAgent.GetSecret(o.token))},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+
+	c := github.NewClient(tc)
+	query := MakeQuery("repo:kubevirt/kubevirt is:merged is:pr", o.merged, time.Now())
+	prs := []*github.PullRequest{}
+	for nextPage := 1; nextPage > 0; {
+		issues, response, err := c.Search.Issues(ctx, query, &github.SearchOptions{ListOptions: github.ListOptions{Page: nextPage}})
+		nextPage = response.NextPage
+		if err != nil {
+			log.Fatalf("Failed run: %v", err)
+		}
+
+		for _, issue := range issues.Issues {
+			pr, _, err := c.PullRequests.Get(ctx, "kubevirt", "kubevirt", *issue.Number)
+			if err != nil {
+				log.Fatalf("Failed to fetch PR: %v.\n", err)
+			}
+			prs = append(prs, pr)
+		}
+	}
+	logrus.Infof("%d pull requests found.", len(prs))
+
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		log.Fatalf("Failed to create new storage client: %v.\n", err)
