@@ -7,7 +7,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder@sha256:5d1932e423043111f8f74649005836eb9c882a43aaf2907171aefd38c00e50f3
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:6a6ec45ac249d5ea9e2650b2c5823b317f6792b0d8c9e971f3fe071bafcbe43f
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -37,7 +37,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder@sha256:5d1932e423043111f8f74649005836eb9c882a43aaf2907171aefd38c00e50f3
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:6a6ec45ac249d5ea9e2650b2c5823b317f6792b0d8c9e971f3fe071bafcbe43f
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -59,7 +59,7 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
-- name: periodic-publish-flakefinder-four-weekly-reports
+- name: periodic-publish-flakefinder-four-weekly-report
   interval: 168h
   decorate: true
   spec:
@@ -67,7 +67,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder@sha256:5d1932e423043111f8f74649005836eb9c882a43aaf2907171aefd38c00e50f3
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:6a6ec45ac249d5ea9e2650b2c5823b317f6792b0d8c9e971f3fe071bafcbe43f
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json

@@ -149,7 +149,6 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 				return nil, err
 			}
 			reports = append(reports, &Result{Job: job, JUnit: report, BuildNumber: buildNumber, PR: pr.Number})
-			return reports, nil
 		}
 	}
 

@@ -160,6 +160,10 @@ const tpl = `
 
 </table>
 
+<div>
+    Source PRs: {{ range $key, $value := $.PrNumberMap }}{{ $key }}, {{ end }}
+</div>
+
 <script>
     function popup(id) {
         var popup = document.getElementById("target" + id);
@@ -172,9 +176,10 @@ const tpl = `
 `
 
 type Params struct {
-	Data    map[string]map[string]*Details
-	Headers []string
-	Tests   []string
+	Data        map[string]map[string]*Details
+	Headers     []string
+	Tests       []string
+	PrNumberMap map[int]struct{}
 }
 
 type Details struct {
@@ -218,18 +223,16 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 	tests := []string{}
 	buildNumberMap := map[int]struct{}{}
 	headerMap := map[string]struct{}{}
+	prNumberMap := map[int]struct{}{}
 
 	for _, result := range results {
-		if _, exists := buildNumberMap[result.BuildNumber]; exists {
-			// merge pool > 1
-			continue
-		}
-		buildNumberMap[result.BuildNumber] = struct{}{}
+		prNumberMap[result.PR] = struct{}{}
 
 		// first find failing tests to isolate tests which interest us
 		for _, suite := range result.JUnit {
 			for _, test := range suite.Tests {
 				if test.Status == junit.StatusFailed || test.Status == junit.StatusError {
+					buildNumberMap[result.BuildNumber] = struct{}{}
 					testEntry := data[test.Name]
 					if testEntry == nil {
 						tests = append(tests, test.Name)
@@ -316,7 +319,7 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 		}
 	}
 
-	parameters := Params{Data: data, Headers: headers, Tests: tests}
+	parameters := Params{Data: data, Headers: headers, Tests: tests, PrNumberMap: prNumberMap}
 	var err error
 	if reportOutputWriter != nil {
 		err = WriteReportToOutput(reportOutputWriter, parameters)

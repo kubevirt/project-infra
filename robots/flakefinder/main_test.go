@@ -23,7 +23,7 @@ var _ = Describe("main.go", func() {
 
 		It("does not fail for 24", func() {
 			query := MakeQuery("blah", h24, reportTime)
-			Expect(query).To(BeEquivalentTo("blah merged:>=2019-08-22T03:27:01Z"))
+			Expect(query).To(BeEquivalentTo("blah merged:>=2019-08-22T00:00:00Z"))
 		})
 
 	})

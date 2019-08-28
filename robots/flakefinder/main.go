@@ -134,7 +134,8 @@ func MakeQuery(query string, minMerged time.Duration, till time.Time) string {
 	parts := []string{query}
 	if minMerged != 0 {
 		latest := till.Add(-minMerged)
-		parts = append(parts, "merged:>="+latest.Format(time.RFC3339))
+		start := latest.Format("2006-01-02") + "T00:00:00Z"
+		parts = append(parts, "merged:>="+start)
 	}
 	return strings.Join(parts, " ")
 }

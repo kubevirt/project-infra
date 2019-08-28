@@ -1,5 +1,8 @@
-.PHONY: all clean test push
-all: test push
+.PHONY: all clean format test push
+all: format test push
+
+format:
+	gofmt -w .
 
 test:
 	# Python 2 is required due to a problem with container using python 2
