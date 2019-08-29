@@ -12,12 +12,13 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//vendor/cloud.google.com/go/storage:go_default_library",
+        "//vendor/github.com/google/go-github/v28/github:go_default_library",
         "//vendor/github.com/joshdk/go-junit:go_default_library",
         "//vendor/github.com/sirupsen/logrus:go_default_library",
+        "//vendor/golang.org/x/oauth2:go_default_library",
         "//vendor/google.golang.org/api/iterator:go_default_library",
         "//vendor/k8s.io/test-infra/prow/config/secret:go_default_library",
         "//vendor/k8s.io/test-infra/prow/flagutil:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/github:go_default_library",
     ],
 )
 
@@ -55,8 +56,8 @@ go_test(
     ],
     embed = [":go_default_library"],
     deps = [
+        "//vendor/github.com/google/go-github/v28/github:go_default_library",
         "//vendor/github.com/onsi/ginkgo:go_default_library",
         "//vendor/github.com/onsi/gomega:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/github:go_default_library",
     ],
 )

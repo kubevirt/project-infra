@@ -45,6 +45,10 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
+# github.com/google/go-github/v28 v28.0.0
+github.com/google/go-github/v28/github
+# github.com/google/go-querystring v1.0.0
+github.com/google/go-querystring/query
 # github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf
 github.com/google/gofuzz
 # github.com/googleapis/gax-go/v2 v2.0.5
@@ -181,12 +185,19 @@ go.opencensus.io/internal/tagencoding
 go.opencensus.io/metric/metricproducer
 go.opencensus.io/resource
 # golang.org/x/crypto v0.0.0-20190404164418-38d8ce5564a5
+golang.org/x/crypto/openpgp
+golang.org/x/crypto/openpgp/armor
+golang.org/x/crypto/openpgp/errors
+golang.org/x/crypto/openpgp/packet
+golang.org/x/crypto/openpgp/s2k
+golang.org/x/crypto/cast5
+golang.org/x/crypto/openpgp/elgamal
 golang.org/x/crypto/ssh/terminal
 # golang.org/x/net v0.0.0-20190403144856-b630fd6fe46b
 golang.org/x/net/context
+golang.org/x/net/context/ctxhttp
 golang.org/x/net/trace
 golang.org/x/net/http2
-golang.org/x/net/context/ctxhttp
 golang.org/x/net/html/charset
 golang.org/x/net/internal/timeseries
 golang.org/x/net/http2/hpack
@@ -196,8 +207,8 @@ golang.org/x/net/html
 golang.org/x/net/html/atom
 # golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
 golang.org/x/oauth2
-golang.org/x/oauth2/google
 golang.org/x/oauth2/internal
+golang.org/x/oauth2/google
 golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
 # golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6
@@ -441,16 +452,16 @@ k8s.io/client-go/util/retry
 # k8s.io/test-infra v0.0.0-20190709111002-c9d9081e68ff
 k8s.io/test-infra/prow/config/secret
 k8s.io/test-infra/prow/flagutil
-k8s.io/test-infra/prow/github
 k8s.io/test-infra/prow/bugzilla
 k8s.io/test-infra/prow/client/clientset/versioned
 k8s.io/test-infra/prow/client/clientset/versioned/typed/prowjobs/v1
 k8s.io/test-infra/prow/git
+k8s.io/test-infra/prow/github
 k8s.io/test-infra/prow/kube
-k8s.io/test-infra/ghproxy/ghcache
-k8s.io/test-infra/prow/errorutil
 k8s.io/test-infra/prow/apis/prowjobs/v1
 k8s.io/test-infra/prow/client/clientset/versioned/scheme
+k8s.io/test-infra/ghproxy/ghcache
+k8s.io/test-infra/prow/errorutil
 k8s.io/test-infra/prow/apis/prowjobs
 # sigs.k8s.io/yaml v1.1.0
 sigs.k8s.io/yaml
