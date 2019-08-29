@@ -23,15 +23,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/google/go-github/v28/github"
-	"github.com/sirupsen/logrus"
-	"golang.org/x/oauth2"
 	"log"
 	"net/url"
-	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
+	"github.com/google/go-github/v28/github"
+	"github.com/sirupsen/logrus"
+	"golang.org/x/oauth2"
 	"k8s.io/test-infra/prow/config/secret"
 	"k8s.io/test-infra/prow/flagutil"
 )
@@ -44,7 +43,6 @@ func flagOptions() options {
 	flag.DurationVar(&o.merged, "merged", 24*7*time.Hour, "Filter to issues merged in the time window")
 	flag.Var(&o.endpoint, "endpoint", "GitHub's API endpoint")
 	flag.StringVar(&o.token, "token", "", "Path to github token")
-	//flag.StringVar(&o.graphqlEndpoint, "graphql-endpoint", github.DefaultGraphQLEndpoint, "GitHub's GraphQL API Endpoint")
 	flag.Parse()
 	return o
 }
@@ -95,20 +93,45 @@ func main() {
 	tc := oauth2.NewClient(ctx, ts)
 
 	c := github.NewClient(tc)
-	query := MakeQuery("repo:kubevirt/kubevirt is:merged is:pr", o.merged, time.Now())
+
+	// we are fetching reports from start of day to avoid working against a moving target.
+	// In general a user would expect to find all pull requests of the previous day in a 24h report, regardless of
+	// when the report has been run at the current day, which, depending on time of day when the report had been run,
+	// would not always be the case.
+	// Consider i.e. if the report is run late in the afternoon the user might wonder why the PR merged in the morning
+	// the day before was not included.
+	startOfReport := time.Now().Add(-o.merged)
+	startOfDay := startOfReport.Format("2006-01-02") + "T00:00:00Z"
+	logrus.Infof("Fetching Prs starting from %v", startOfDay)
+	startOfReport, err = time.Parse(time.RFC3339, startOfDay)
+	if err != nil {
+		log.Fatalf("Failed to parse time %+v", startOfDay, err)
+	}
+
 	prs := []*github.PullRequest{}
 	for nextPage := 1; nextPage > 0; {
-		issues, response, err := c.Search.Issues(ctx, query, &github.SearchOptions{ListOptions: github.ListOptions{Page: nextPage}})
-		nextPage = response.NextPage
+		pullRequests, response, err := c.PullRequests.List(ctx, "kubevirt", "kubevirt", &github.PullRequestListOptions{
+			State:       "closed",
+			Sort:        "updated",
+			Direction:   "desc",
+			ListOptions: github.ListOptions{Page: nextPage},
+		})
 		if err != nil {
-			log.Fatalf("Failed run: %v", err)
+			log.Fatalf("Failed to fetch PRs for page %d: %v.", nextPage, err)
 		}
-
-		for _, issue := range issues.Issues {
-			pr, _, err := c.PullRequests.Get(ctx, "kubevirt", "kubevirt", *issue.Number)
-			if err != nil {
-				log.Fatalf("Failed to fetch PR: %v.\n", err)
+		nextPage = response.NextPage
+		for _, pr := range pullRequests {
+			if startOfReport.After(*pr.UpdatedAt) {
+				nextPage = 0
+				break
 			}
+			if pr.MergedAt == nil {
+				continue
+			}
+			if startOfReport.After(*pr.MergedAt) {
+				continue
+			}
+			logrus.Infof("Adding PR %v '%v' (updated at %s)", *pr.Number, *pr.Title, pr.UpdatedAt.Format(time.RFC3339))
 			prs = append(prs, pr)
 		}
 	}
@@ -139,14 +162,4 @@ func main() {
 		return
 	}
 
-}
-
-func MakeQuery(query string, minMerged time.Duration, till time.Time) string {
-	parts := []string{query}
-	if minMerged != 0 {
-		latest := till.Add(-minMerged)
-		start := latest.Format("2006-01-02") + "T00:00:00Z"
-		parts = append(parts, "merged:>="+start)
-	}
-	return strings.Join(parts, " ")
 }
