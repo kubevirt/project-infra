@@ -1,9 +1,9 @@
 package main_test
 
 import (
+	"github.com/google/go-github/v28/github"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"k8s.io/test-infra/prow/github"
 	. "kubevirt.io/project-infra/robots/flakefinder"
 )
 
@@ -21,14 +21,26 @@ var _ = Describe("downloader.go", func() {
 	}
 }`
 
+		prNumber := 2473
+		oneOffPrNumber := 2474
+
+		headSHA := "8c33c116def661c69b4a8eb08fac9ca07dfbf03c"
+		secondHeadSHA := "8c33c116def661c69b4a8eb08fac9ca07dfbf03d"
+
 		It("finds a commit", func() {
-			pullRequest := github.PullRequest{Number: 2473, Head: github.PullRequestBranch{SHA: "8c33c116def661c69b4a8eb08fac9ca07dfbf03c"}}
+			pullRequest := github.PullRequest{Number: &prNumber, Head: &github.PullRequestBranch{SHA: &headSHA}}
 			isLatestCommit := IsLatestCommit([]byte(singleRepoJsonText), &pullRequest)
 			Expect(isLatestCommit).To(BeTrue())
 		})
 
-		It("does not find a commit", func() {
-			pullRequest := github.PullRequest{Number: 2474, Head: github.PullRequestBranch{SHA: "8c33c116def661c69b4a8eb08fac9ca07dfbf03c"}}
+		It("does not find a commit if pr number wrong", func() {
+			pullRequest := github.PullRequest{Number: &oneOffPrNumber, Head: &github.PullRequestBranch{SHA: &headSHA}}
+			isLatestCommit := IsLatestCommit([]byte(singleRepoJsonText), &pullRequest)
+			Expect(isLatestCommit).To(BeFalse())
+		})
+
+		It("does not find a commit if sha wrong", func() {
+			pullRequest := github.PullRequest{Number: &prNumber, Head: &github.PullRequestBranch{SHA: &secondHeadSHA}}
 			isLatestCommit := IsLatestCommit([]byte(singleRepoJsonText), &pullRequest)
 			Expect(isLatestCommit).To(BeFalse())
 		})
@@ -44,7 +56,7 @@ var _ = Describe("downloader.go", func() {
 		"kubevirt/kubevirt2":"release-0.11:577e95c340e1b21ff431cbba25ad33c891554e38,2474:8c33c116def661c69b4a8eb08fac9ca07dfbf03c"
 	}
 }`
-			pullRequest := github.PullRequest{Number: 2474, Head: github.PullRequestBranch{SHA: "8c33c116def661c69b4a8eb08fac9ca07dfbf03c"}}
+			pullRequest := github.PullRequest{Number: &oneOffPrNumber, Head: &github.PullRequestBranch{SHA: &headSHA}}
 			isLatestCommit := IsLatestCommit([]byte(jsonTextWithTwoRepos), &pullRequest)
 			Expect(isLatestCommit).To(BeTrue())
 		})

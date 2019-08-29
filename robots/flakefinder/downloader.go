@@ -190,7 +190,7 @@ func IsLatestCommit(jsonText []byte, pr *github.PullRequest) bool {
 		return false
 	}
 	for _, v := range status.Repos {
-		if strings.Contains(v, fmt.Sprintf("%d:%s", pr.Number, pr.Head.SHA)) {
+		if strings.Contains(v, fmt.Sprintf("%d:%s", *pr.Number, *pr.Head.SHA)) {
 			return true
 		}
 	}
