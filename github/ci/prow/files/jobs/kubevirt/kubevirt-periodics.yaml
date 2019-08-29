@@ -1,0 +1,91 @@
+periodics:
+- name: periodic-publish-flakefinder-weekly-report
+  interval: 168h
+  decorate: true
+  spec:
+    nodeSelector:
+      type: vm
+      zone: ci
+    containers:
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:b3fda0d7ba202ad94101a63fa314839f2a28d98580b89ca115d5217370f0430d
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      command:
+      - "/app/robots/flakefinder/app.binary"
+      args:
+      - --token=/etc/github/oauth
+      - --merged=168h
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+      - name: gcs
+        mountPath: /etc/gcs
+        readOnly: true
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: gcs
+      secret:
+        secretName: gcs
+- name: periodic-publish-flakefinder-daily-report
+  interval: 24h
+  decorate: true
+  spec:
+    nodeSelector:
+      type: vm
+      zone: ci
+    containers:
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:b3fda0d7ba202ad94101a63fa314839f2a28d98580b89ca115d5217370f0430d
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      command:
+      - "/app/robots/flakefinder/app.binary"
+      args:
+      - --token=/etc/github/oauth
+      - --merged=24h
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+      - name: gcs
+        mountPath: /etc/gcs
+        readOnly: true
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: gcs
+      secret:
+        secretName: gcs
+- name: periodic-publish-flakefinder-four-weekly-report
+  interval: 168h
+  decorate: true
+  spec:
+    nodeSelector:
+      type: vm
+      zone: ci
+    containers:
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:b3fda0d7ba202ad94101a63fa314839f2a28d98580b89ca115d5217370f0430d
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      command:
+      - "/app/robots/flakefinder/app.binary"
+      args:
+      - --token=/etc/github/oauth
+      - --merged=672h
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+      - name: gcs
+        mountPath: /etc/gcs
+        readOnly: true
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: gcs
+      secret:
+        secretName: gcs

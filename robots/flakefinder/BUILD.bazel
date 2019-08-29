@@ -1,0 +1,62 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "downloader.go",
+        "index.go",
+        "main.go",
+        "report.go",
+    ],
+    importpath = "kubevirt.io/project-infra/robots/flakefinder",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/cloud.google.com/go/storage:go_default_library",
+        "//vendor/github.com/google/go-github/v28/github:go_default_library",
+        "//vendor/github.com/joshdk/go-junit:go_default_library",
+        "//vendor/github.com/sirupsen/logrus:go_default_library",
+        "//vendor/golang.org/x/oauth2:go_default_library",
+        "//vendor/google.golang.org/api/iterator:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/config/secret:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/flagutil:go_default_library",
+    ],
+)
+
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+
+go_image(
+    name = "app",
+    embed = [":go_default_library"],
+)
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+
+container_push(
+    name = "push",
+    format = "Docker",
+    image = ":app",
+    registry = "index.docker.io",
+    repository = "kubevirtci/flakefinder",
+)
+
+go_binary(
+    name = "flakefinder",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "downloader_test.go",
+        "flakefinder_suite_test.go",
+        "index_test.go",
+        "report_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "//vendor/github.com/google/go-github/v28/github:go_default_library",
+        "//vendor/github.com/onsi/ginkgo:go_default_library",
+        "//vendor/github.com/onsi/gomega:go_default_library",
+    ],
+)
