@@ -37,7 +37,7 @@ var _ = Describe("report.go", func() {
 		buffer := bytes.Buffer{}
 		parameters := Params{Data: map[string]map[string]*Details{
 			"t1": map[string]*Details{"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{}}},
-		}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}}
+		}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23"}
 		WriteReportToOutput(&buffer, parameters)
 
 		logger := log.New(os.Stdout, "report.go:", log.Flags())
@@ -61,8 +61,13 @@ var _ = Describe("report.go", func() {
 
 		It("has one filled test cell", func() {
 			Expect(buffer.String()).To(ContainSubstring("<td class=\"red center\">"))
-			Expect(buffer.String()).To(ContainSubstring("4/1/2"))
+			Expect(buffer.String()).To(MatchRegexp("(?s)4.*1.*2"))
 		})
+
+		It("contains the date", func() {
+			Expect(buffer.String()).To(ContainSubstring("2019-08-23"))
+		})
+
 	})
 
 })

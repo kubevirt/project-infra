@@ -60,6 +60,18 @@ const tpl = `
         }
         .unimportant {
         }
+        .tests_passed {
+            color: #226c18;
+            font-weight: bold;
+        }
+        .tests_failed {
+            color: #8a1717;
+            font-weight: bold;
+        }
+        .tests_skipped {
+            color: #535453;
+            font-weight: bold;
+        }
         .center {
             text-align:center
         }
@@ -127,6 +139,8 @@ const tpl = `
 </head>
 <body>
 
+<h1>flakefinder report - {{ $.Date }}</h1>
+
 <table>
     <tr>
         <td></td>
@@ -145,7 +159,7 @@ const tpl = `
         {{else}}
         <td class="{{ (index $.Data $test $header).Severity }} center">
             <div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup" >
-                {{ (index $.Data $test $header).Failed }}/{{ (index $.Data $test $header).Succeeded }}/{{ (index $.Data $test $header).Skipped }}
+                <span class="tests_failed" title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span class="tests_passed" title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span class="tests_skipped" title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>
                 <div class="popuptext" id="targetr{{$row}}c{{$col}}">
                     {{ range $Job := (index $.Data $test $header).Jobs }}
                     <div class="{{.Severity}} nowrap"><a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> (<a href="https://github.com/kubevirt/kubevirt/pull/{{.PR}}">#{{.PR}}</a>)</div>
@@ -180,6 +194,7 @@ type Params struct {
 	Headers     []string
 	Tests       []string
 	PrNumberMap map[int]struct{}
+	Date        string
 }
 
 type Details struct {
@@ -319,7 +334,7 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 		}
 	}
 
-	parameters := Params{Data: data, Headers: headers, Tests: tests, PrNumberMap: prNumberMap}
+	parameters := Params{Data: data, Headers: headers, Tests: tests, PrNumberMap: prNumberMap, Date: time.Now().Format("2006-01-02")}
 	var err error
 	if reportOutputWriter != nil {
 		err = WriteReportToOutput(reportOutputWriter, parameters)
