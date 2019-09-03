@@ -105,7 +105,7 @@ func main() {
 	logrus.Infof("Fetching Prs starting from %v", startOfDay)
 	startOfReport, err = time.Parse(time.RFC3339, startOfDay)
 	if err != nil {
-		log.Fatalf("Failed to parse time %+v", startOfDay, err)
+		log.Fatalf("Failed to parse time %+v: %+v", startOfDay, err)
 	}
 
 	prs := []*github.PullRequest{}
