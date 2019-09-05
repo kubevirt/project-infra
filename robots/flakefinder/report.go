@@ -214,7 +214,7 @@ type Job struct {
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
 func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration) (err error) {
-	reportObject := client.Bucket(BucketName).Object(path.Join(ReportsPath, CreateReportFileName(time.Now(), merged)))
+	reportObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(time.Now(), merged)))
 	log.Printf("Report will be written to gs://%s/%s", BucketName, reportObject.ObjectName())
 	reportOutputWriter := reportObject.NewWriter(ctx)
 	err = Report(reports, reportOutputWriter)
@@ -318,23 +318,24 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 					ratio = float32(entry.Failed) / float32(entry.Succeeded)
 				}
 
-				entry.Severity = "green"
+				entry.Severity = Fine
 				if entry.Succeeded == 0 && entry.Failed == 0 {
-					entry.Severity = "unimportant"
+					entry.Severity = Unimportant
 				} else if ratio > 0.5 {
-					entry.Severity = "red"
+					entry.Severity = HeavilyFlaky
 				} else if ratio > 0.2 {
-					entry.Severity = "orange"
+					entry.Severity = MostlyFlaky
 				} else if ratio > 0.1 {
-					entry.Severity = "yellow"
+					entry.Severity = ModeratelyFlaky
 				} else if ratio > 0 {
-					entry.Severity = "almostgreen"
+					entry.Severity = MildlyFlaky
 				}
 			}
 		}
 	}
 
-	parameters := Params{Data: data, Headers: headers, Tests: tests, PrNumberMap: prNumberMap, Date: time.Now().Format("2006-01-02")}
+	testsSortedByRelevance := SortTestsByRelevance(data, tests)
+	parameters := Params{Data: data, Headers: headers, Tests: testsSortedByRelevance, PrNumberMap: prNumberMap, Date: time.Now().Format("2006-01-02")}
 	var err error
 	if reportOutputWriter != nil {
 		err = WriteReportToOutput(reportOutputWriter, parameters)
@@ -347,6 +348,67 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 
 	return nil
 }
+
+// SortTestsByRelevance sorts given tests according to the severity from the test data, where tests with a higher
+// severity have a smaller index in the slice than tests with a lower severity.
+// The returned slice does not contain
+// duplicates, thus if a test has data with several severities the highest one is picked, leading to an earlier
+// encounter in the slice.
+func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (testsSortedByRelevance []string) {
+	foundTests := map[string]bool{}
+	for _, test := range tests {
+		foundTests[test] = false
+	}
+
+	// Group all tests by severity, ignoring duplicates for the moment, but keeping a record of tests
+	// that have not been found
+	flakinessToTestNames := map[string][]string{}
+	for test, jobsToDetails := range data {
+		for _, details := range jobsToDetails {
+			if _, exists := flakinessToTestNames[details.Severity]; !exists {
+				flakinessToTestNames[details.Severity] = []string{}
+			}
+			flakinessToTestNames[details.Severity] = append(flakinessToTestNames[details.Severity], test)
+
+			foundTests[test] = true
+		}
+	}
+
+	// Build up the initial sorted result (with duplicates)
+	initialTestsSortedByRelevance := append(flakinessToTestNames[HeavilyFlaky])
+	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[MostlyFlaky]...)
+	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[ModeratelyFlaky]...)
+	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[MildlyFlaky]...)
+	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[Fine]...)
+	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[Unimportant]...)
+
+	// Append all tests that have not been found in the data
+	for _, test := range tests {
+		if !foundTests[test] {
+			initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, test)
+		}
+	}
+
+	// Now kill the duplicates by keeping a map of whether the test was encountered before
+	encounteredTests := map[string]bool{}
+	for _, test := range initialTestsSortedByRelevance {
+		if _, exists := encounteredTests[test]; !exists {
+			encounteredTests[test] = true
+			testsSortedByRelevance = append(testsSortedByRelevance, test)
+		}
+	}
+
+	return
+}
+
+const (
+	HeavilyFlaky    = "red"
+	MostlyFlaky     = "orange"
+	ModeratelyFlaky = "yellow"
+	MildlyFlaky     = "almostgreen"
+	Fine            = "green"
+	Unimportant     = "unimportant"
+)
 
 func WriteReportToOutput(writer io.Writer, parameters Params) error {
 	t, err := template.New("report").Parse(tpl)

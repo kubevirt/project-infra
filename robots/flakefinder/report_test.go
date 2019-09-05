@@ -36,7 +36,7 @@ var _ = Describe("report.go", func() {
 
 		buffer := bytes.Buffer{}
 		parameters := Params{Data: map[string]map[string]*Details{
-			"t1": map[string]*Details{"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{}}},
+			"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{}}},
 		}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23"}
 		WriteReportToOutput(&buffer, parameters)
 
@@ -66,6 +66,58 @@ var _ = Describe("report.go", func() {
 
 		It("contains the date", func() {
 			Expect(buffer.String()).To(ContainSubstring("2019-08-23"))
+		})
+
+	})
+
+	When("sorting test data", func() {
+		tests := []string{"t1", "t2", "t3"}
+
+		It("returns tests in correct order", func() {
+			data := map[string]map[string]*Details{
+				"t1": {"a": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: MostlyFlaky, Jobs: []*Job{}}},
+				"t2": {"a": &Details{Failed: 2, Succeeded: 1, Skipped: 2, Severity: MildlyFlaky, Jobs: []*Job{}}},
+				"t3": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}},
+			}
+
+			Expect(SortTestsByRelevance(data, tests)).To(BeEquivalentTo([]string{"t3", "t1", "t2"}))
+		})
+
+		It("returns all tests", func() {
+			data := map[string]map[string]*Details{
+				"t3": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}},
+			}
+
+			Expect(SortTestsByRelevance(data, tests)).To(BeEquivalentTo([]string{"t3", "t1", "t2"}))
+		})
+
+		It("returns no duplicated tests", func() {
+			data := map[string]map[string]*Details{
+				"t1": {
+					"a": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: MostlyFlaky, Jobs: []*Job{}},
+					"b": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: Unimportant, Jobs: []*Job{}},
+				},
+				"t2": {"a": &Details{Failed: 2, Succeeded: 1, Skipped: 2, Severity: MildlyFlaky, Jobs: []*Job{}}},
+				"t3": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}},
+			}
+
+			Expect(SortTestsByRelevance(data, tests)).To(BeEquivalentTo([]string{"t3", "t1", "t2"}))
+		})
+
+		It("returns no duplicated tests for the end", func() {
+			data := map[string]map[string]*Details{
+				"t1": {
+					"a": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: MostlyFlaky, Jobs: []*Job{}},
+					"b": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: Unimportant, Jobs: []*Job{}},
+				},
+				"t2": {
+					"a": &Details{Failed: 2, Succeeded: 1, Skipped: 2, Severity: MildlyFlaky, Jobs: []*Job{}},
+					"b": &Details{Failed: 2, Succeeded: 1, Skipped: 2, Severity: Unimportant, Jobs: []*Job{}},
+				},
+				"t3": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}},
+			}
+
+			Expect(SortTestsByRelevance(data, tests)).To(BeEquivalentTo([]string{"t3", "t1", "t2"}))
 		})
 
 	})
