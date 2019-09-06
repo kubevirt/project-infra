@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -43,6 +44,7 @@ func flagOptions() options {
 	flag.DurationVar(&o.merged, "merged", 24*7*time.Hour, "Filter to issues merged in the time window")
 	flag.Var(&o.endpoint, "endpoint", "GitHub's API endpoint")
 	flag.StringVar(&o.token, "token", "", "Path to github token")
+	flag.BoolVar(&o.isPreview, "preview", false, "if report should be written to preview directory")
 	flag.Parse()
 	return o
 }
@@ -53,6 +55,7 @@ type options struct {
 	token           string
 	graphqlEndpoint string
 	merged          time.Duration
+	isPreview       bool
 }
 
 type client interface {
@@ -65,12 +68,18 @@ const ReportsPath = "reports/flakefinder"
 const ReportFilePrefix = "flakefinder-"
 const MaxNumberOfReportsToLinkTo = 50
 
+var ReportOutputPath = ReportsPath
+
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	o := flagOptions()
 
 	if o.token == "" {
 		log.Fatal("empty --token")
+	}
+
+	if o.isPreview {
+		ReportOutputPath = strings.Join([]string{ReportsPath, "preview"}, "/")
 	}
 
 	secretAgent := &secret.Agent{}

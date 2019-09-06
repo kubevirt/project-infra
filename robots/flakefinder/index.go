@@ -100,7 +100,7 @@ func CreateReportIndex(ctx context.Context, client *storage.Client) (err error) 
 }
 
 func CreateOutputWriter(client *storage.Client, ctx context.Context) io.WriteCloser {
-	reportIndexObject := client.Bucket(BucketName).Object(path.Join(ReportsPath, "index.html"))
+	reportIndexObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, "index.html"))
 	log.Printf("Report index page will be written to gs://%s/%s", BucketName, reportIndexObject.ObjectName())
 	reportIndexObjectWriter := reportIndexObject.NewWriter(ctx)
 	return reportIndexObjectWriter
@@ -168,7 +168,7 @@ func PrepareDataForTemplate(reportDirGcsObjects []string) IndexParams {
 func getReportItemsFromBucketDirectory(client *storage.Client, ctx context.Context) ([]string, error) {
 	var reportDirGcsObjects []string
 	it := client.Bucket(BucketName).Objects(ctx, &storage.Query{
-		Prefix:    ReportsPath + "/",
+		Prefix:    ReportOutputPath + "/",
 		Delimiter: "/",
 	})
 	for {
