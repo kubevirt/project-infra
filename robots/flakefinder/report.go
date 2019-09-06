@@ -355,13 +355,10 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 // duplicates, thus if a test has data with several severities the highest one is picked, leading to an earlier
 // encounter in the slice.
 func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (testsSortedByRelevance []string) {
-	foundTests := map[string]bool{}
-	for _, test := range tests {
-		foundTests[test] = false
-	}
+	foundTests := map[string]struct{}{}
 
 	// Group all tests by severity, ignoring duplicates for the moment, but keeping a record of tests
-	// that have not been found
+	// that have been found
 	flakinessToTestNames := map[string][]string{}
 	for test, jobsToDetails := range data {
 		for _, details := range jobsToDetails {
@@ -370,7 +367,7 @@ func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (
 			}
 			flakinessToTestNames[details.Severity] = append(flakinessToTestNames[details.Severity], test)
 
-			foundTests[test] = true
+			foundTests[test] = struct{}{}
 		}
 	}
 
@@ -384,16 +381,16 @@ func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (
 
 	// Append all tests that have not been found in the data
 	for _, test := range tests {
-		if !foundTests[test] {
+		if _, exists := foundTests[test]; !exists {
 			initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, test)
 		}
 	}
 
 	// Now kill the duplicates by keeping a map of whether the test was encountered before
-	encounteredTests := map[string]bool{}
+	encounteredTests := map[string]struct{}{}
 	for _, test := range initialTestsSortedByRelevance {
 		if _, exists := encounteredTests[test]; !exists {
-			encounteredTests[test] = true
+			encounteredTests[test] = struct{}{}
 			testsSortedByRelevance = append(testsSortedByRelevance, test)
 		}
 	}
