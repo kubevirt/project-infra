@@ -39,6 +39,7 @@ plugins:
   - owners-label
   - lgtm
   - approve
+  - dco
 
   kubevirt/machine-remediation-operator:
   - trigger
@@ -61,6 +62,7 @@ plugins:
   - trigger
   - lgtm
   - approve
+  - dco
 
   kubevirt/kubevirt.github.io:
   - approve
