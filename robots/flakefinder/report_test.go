@@ -2,11 +2,13 @@ package main_test
 
 import (
 	"bytes"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 	"log"
 	"os"
 	"time"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/gomega"
 
 	. "kubevirt.io/project-infra/robots/flakefinder"
 )
@@ -121,5 +123,18 @@ var _ = Describe("report.go", func() {
 		})
 
 	})
+
+	DescribeTable("When calculating severity",
+		func(details *Details, expected string) {
+			SetSeverity(details)
+			Expect(details.Severity).To(BeEquivalentTo(expected))
+		},
+		Entry("no failed tests but successful tests is fine", &Details{Failed: 0, Succeeded: 1, Skipped: 2, Jobs: []*Job{}}, Fine),
+		Entry("test that never succeed is unimportant", &Details{Failed: 1, Succeeded: 0, Skipped: 2, Jobs: []*Job{}}, Unimportant),
+		Entry("HeavilyFlaky", &Details{Failed: 1, Succeeded: 1, Skipped: 2, Jobs: []*Job{}}, HeavilyFlaky),
+		Entry("MostlyFlaky", &Details{Failed: 1, Succeeded: 2, Skipped: 2, Jobs: []*Job{}}, MostlyFlaky),
+		Entry("ModeratelyFlaky", &Details{Failed: 1, Succeeded: 5, Skipped: 2, Jobs: []*Job{}}, ModeratelyFlaky),
+		Entry("MildlyFlaky", &Details{Failed: 1, Succeeded: 10, Skipped: 2, Jobs: []*Job{}}, MildlyFlaky),
+	)
 
 })
