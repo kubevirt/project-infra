@@ -68,6 +68,7 @@ tide:
     - do-not-merge/invalid-owners-file
     - do-not-merge/work-in-progress
     - needs-rebase
+    - "dco-signoff: no"
   - repos:
     - kubevirt/kubevirt
     labels:
@@ -80,6 +81,7 @@ tide:
     - do-not-merge/work-in-progress
     - do-not-merge/release-note-label-needed
     - needs-rebase
+    - "dco-signoff: no"
   pr_status_base_url: https://prow.apps.ovirt.org/pr
   context_options:
     orgs:
