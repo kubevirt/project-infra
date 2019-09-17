@@ -75,16 +75,6 @@ var _ = Describe("report.go", func() {
 	When("sorting test data", func() {
 		tests := []string{"t1", "t2", "t3"}
 
-		It("returns tests in correct order", func() {
-			data := map[string]map[string]*Details{
-				"t1": {"a": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: MostlyFlaky, Jobs: []*Job{}}},
-				"t2": {"a": &Details{Failed: 2, Succeeded: 1, Skipped: 2, Severity: MildlyFlaky, Jobs: []*Job{}}},
-				"t3": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}},
-			}
-
-			Expect(SortTestsByRelevance(data, tests)).To(BeEquivalentTo([]string{"t3", "t1", "t2"}))
-		})
-
 		It("returns all tests", func() {
 			data := map[string]map[string]*Details{
 				"t3": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}},
@@ -120,6 +110,50 @@ var _ = Describe("report.go", func() {
 			}
 
 			Expect(SortTestsByRelevance(data, tests)).To(BeEquivalentTo([]string{"t3", "t1", "t2"}))
+		})
+
+		It("returns tests sorted descending by severity", func() {
+			data := map[string]map[string]*Details{
+				"t1": {"a": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: MostlyFlaky, Jobs: []*Job{}}},
+				"t2": {"a": &Details{Failed: 2, Succeeded: 1, Skipped: 2, Severity: MildlyFlaky, Jobs: []*Job{}}},
+				"t3": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}},
+			}
+
+			Expect(SortTestsByRelevance(data, tests)).To(BeEquivalentTo([]string{"t3", "t1", "t2"}))
+		})
+
+		It("returns tests of same severity sorted descending by number of severity points", func() {
+			data := map[string]map[string]*Details{
+				"t1": {"a": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}, "b": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: MostlyFlaky, Jobs: []*Job{}}},
+				"t2": {"a": &Details{Failed: 2, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}, "b": &Details{Failed: 2, Succeeded: 1, Skipped: 2, Severity: MildlyFlaky, Jobs: []*Job{}}},
+				"t3": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}, "b": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}},
+			}
+
+			Expect(SortTestsByRelevance(data, tests)).To(BeEquivalentTo([]string{"t3", "t1", "t2"}))
+		})
+
+	})
+
+	When("sorting test via severity", func() {
+
+		It("returns tests of same severity sorted descending by number of severity points", func() {
+			tests := map[string][]string{HeavilyFlaky: {"t1", "t2", "t3"}}
+
+			Expect(BuildUpSortedTestsBySeverity(tests, map[string]map[string]int{
+				"t1": {HeavilyFlaky: 2},
+				"t2": {HeavilyFlaky: 1},
+				"t3": {HeavilyFlaky: 3},
+			})).To(BeEquivalentTo([]string{"t3", "t1", "t2"}))
+		})
+
+		It("returns tests of same severity and same number of severity points sorted lexically", func() {
+			tests := map[string][]string{HeavilyFlaky: {"tc", "tb", "ta"}}
+
+			Expect(BuildUpSortedTestsBySeverity(tests, map[string]map[string]int{
+				"tb": {HeavilyFlaky: 2},
+				"tc": {HeavilyFlaky: 2},
+				"ta": {HeavilyFlaky: 2},
+			})).To(BeEquivalentTo([]string{"ta", "tb", "tc"}))
 		})
 
 	})

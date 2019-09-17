@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"kubevirt.io/project-infra/bazel-project-infra/external/go_sdk/src/sort"
 	"log"
 	"os"
 	"path"
@@ -361,6 +362,9 @@ func SetSeverity(entry *Details) {
 // duplicates, thus if a test has data with several severities the highest one is picked, leading to an earlier
 // encounter in the slice.
 func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (testsSortedByRelevance []string) {
+
+	testsToSeveritiesWithNumbers := map[string]map[string]int{}
+
 	foundTests := map[string]struct{}{}
 
 	// Group all tests by severity, ignoring duplicates for the moment, but keeping a record of tests
@@ -373,17 +377,17 @@ func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (
 			}
 			flakinessToTestNames[details.Severity] = append(flakinessToTestNames[details.Severity], test)
 
+			if _, exists := testsToSeveritiesWithNumbers[test]; !exists {
+				testsToSeveritiesWithNumbers[test] = map[string]int{details.Severity: 0}
+			}
+			testsToSeveritiesWithNumbers[test][details.Severity] = testsToSeveritiesWithNumbers[test][details.Severity] + 1
+
 			foundTests[test] = struct{}{}
 		}
 	}
 
 	// Build up the initial sorted result (with duplicates)
-	initialTestsSortedByRelevance := append(flakinessToTestNames[HeavilyFlaky])
-	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[MostlyFlaky]...)
-	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[ModeratelyFlaky]...)
-	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[MildlyFlaky]...)
-	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[Fine]...)
-	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[Unimportant]...)
+	initialTestsSortedByRelevance := BuildUpSortedTestsBySeverity(flakinessToTestNames, testsToSeveritiesWithNumbers)
 
 	// Append all tests that have not been found in the data
 	for _, test := range tests {
@@ -402,6 +406,40 @@ func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (
 	}
 
 	return
+}
+
+func BuildUpSortedTestsBySeverity(flakinessToTestNames map[string][]string, testsToSeveritiesWithNumbers map[string]map[string]int) []string {
+	initialTestsSortedByRelevance := []string{}
+	for _, severity := range []string{HeavilyFlaky, MostlyFlaky, ModeratelyFlaky, MildlyFlaky, Fine, Unimportant} {
+
+		// flat the map one level, insertion according to number of severities
+		numberOfSeverityToTests := map[int][]string{}
+		maxNumberOfSeverity := 0
+		for _, test := range flakinessToTestNames[severity] {
+			numberOfSeverity := testsToSeveritiesWithNumbers[test][severity]
+			if maxNumberOfSeverity < numberOfSeverity {
+				maxNumberOfSeverity = numberOfSeverity
+			}
+			if _, exists := numberOfSeverityToTests[numberOfSeverity]; !exists {
+				numberOfSeverityToTests[numberOfSeverity] = []string{}
+			}
+			numberOfSeverityToTests[numberOfSeverity] = append(numberOfSeverityToTests[numberOfSeverity], test)
+		}
+
+		// Now append all lists from the map in order from highest to lowest count of severity to the result
+		sortedTestsForSeverity := []string{}
+		for numberOfSeverity := maxNumberOfSeverity; numberOfSeverity >= 0; numberOfSeverity-- {
+			if testsForNumber, exists := numberOfSeverityToTests[numberOfSeverity]; exists {
+				// before appending, sort the list lexically
+				sort.Strings(testsForNumber)
+				sortedTestsForSeverity = append(sortedTestsForSeverity, testsForNumber...)
+			}
+		}
+
+		initialTestsSortedByRelevance = append(initialTestsSortedByRelevance,
+			sortedTestsForSeverity...)
+	}
+	return initialTestsSortedByRelevance
 }
 
 const (
