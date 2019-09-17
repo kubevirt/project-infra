@@ -313,23 +313,7 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 
 				entry := data[test.Name][result.Job]
 
-				var ratio float32 = 1.0
-				if entry.Succeeded > 0 {
-					ratio = float32(entry.Failed) / float32(entry.Succeeded)
-				}
-
-				entry.Severity = Fine
-				if entry.Succeeded == 0 && entry.Failed == 0 {
-					entry.Severity = Unimportant
-				} else if ratio > 0.5 {
-					entry.Severity = HeavilyFlaky
-				} else if ratio > 0.2 {
-					entry.Severity = MostlyFlaky
-				} else if ratio > 0.1 {
-					entry.Severity = ModeratelyFlaky
-				} else if ratio > 0 {
-					entry.Severity = MildlyFlaky
-				}
+				SetSeverity(entry)
 			}
 		}
 	}
@@ -347,6 +331,28 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 	}
 
 	return nil
+}
+
+// SetSeverity sets the field Severity on the passed details according to the ratio of failed vs succeeded tests,
+// where test results are the more severe the more test failures they contain in relation to succeeded tests.
+func SetSeverity(entry *Details) {
+	var ratio float32 = 1.0
+	if entry.Succeeded > 0 {
+		ratio = float32(entry.Failed) / float32(entry.Succeeded)
+	}
+
+	entry.Severity = Fine
+	if entry.Succeeded == 0 && entry.Failed == 0 {
+		entry.Severity = Unimportant
+	} else if ratio > 0.5 {
+		entry.Severity = HeavilyFlaky
+	} else if ratio > 0.2 {
+		entry.Severity = MostlyFlaky
+	} else if ratio > 0.1 {
+		entry.Severity = ModeratelyFlaky
+	} else if ratio > 0 {
+		entry.Severity = MildlyFlaky
+	}
 }
 
 // SortTestsByRelevance sorts given tests according to the severity from the test data, where tests with a higher
