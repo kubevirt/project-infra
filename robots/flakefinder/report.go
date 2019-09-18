@@ -24,10 +24,10 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"kubevirt.io/project-infra/bazel-project-infra/external/go_sdk/src/sort"
 	"log"
 	"os"
 	"path"
+	"sort"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -387,7 +387,7 @@ func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (
 	}
 
 	// Build up the initial sorted result (with duplicates)
-	initialTestsSortedByRelevance := BuildUpSortedTestsBySeverity(flakinessToTestNames, testsToSeveritiesWithNumbers)
+	initialTestsSortedByRelevance := BuildUpSortedTestsBySeverity(testsToSeveritiesWithNumbers)
 
 	// Append all tests that have not been found in the data
 	for _, test := range tests {
@@ -408,36 +408,54 @@ func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (
 	return
 }
 
-func BuildUpSortedTestsBySeverity(flakinessToTestNames map[string][]string, testsToSeveritiesWithNumbers map[string]map[string]int) []string {
-	initialTestsSortedByRelevance := []string{}
-	for _, severity := range []string{HeavilyFlaky, MostlyFlaky, ModeratelyFlaky, MildlyFlaky, Fine, Unimportant} {
+type TestToSeverityOccurrences struct {
+	Name                string
+	SeverityOccurrences []int
+}
 
-		// flat the map one level, insertion according to number of severities
-		numberOfSeverityToTests := map[int][]string{}
-		maxNumberOfSeverity := 0
-		for _, test := range flakinessToTestNames[severity] {
-			numberOfSeverity := testsToSeveritiesWithNumbers[test][severity]
-			if maxNumberOfSeverity < numberOfSeverity {
-				maxNumberOfSeverity = numberOfSeverity
-			}
-			if _, exists := numberOfSeverityToTests[numberOfSeverity]; !exists {
-				numberOfSeverityToTests[numberOfSeverity] = []string{}
-			}
-			numberOfSeverityToTests[numberOfSeverity] = append(numberOfSeverityToTests[numberOfSeverity], test)
+type BySeverity []*TestToSeverityOccurrences
+
+func (t BySeverity) Len() int { return len(t) }
+func (t BySeverity) Less(i, j int) bool {
+	if len(t[i].SeverityOccurrences) != len(t[j].SeverityOccurrences) {
+		return len(t[i].SeverityOccurrences) < len(t[j].SeverityOccurrences)
+	}
+	for index := 0; index < len(t[i].SeverityOccurrences); index++ {
+		if t[i].SeverityOccurrences[index] < t[j].SeverityOccurrences[index] {
+			return true
+		} else if t[i].SeverityOccurrences[index] > t[j].SeverityOccurrences[index] {
+			return false
 		}
+	}
+	return t[i].Name > t[j].Name
+}
+func (t BySeverity) Swap(i, j int) { t[i], t[j] = t[j], t[i] }
 
-		// Now append all lists from the map in order from highest to lowest count of severity to the result
-		sortedTestsForSeverity := []string{}
-		for numberOfSeverity := maxNumberOfSeverity; numberOfSeverity >= 0; numberOfSeverity-- {
-			if testsForNumber, exists := numberOfSeverityToTests[numberOfSeverity]; exists {
-				// before appending, sort the list lexically
-				sort.Strings(testsForNumber)
-				sortedTestsForSeverity = append(sortedTestsForSeverity, testsForNumber...)
+func BuildUpSortedTestsBySeverity(testsToSeveritiesWithOccurrences map[string]map[string]int) []string {
+
+	// Create flat array storing test names to numbers of occurrences for each severity order by priority from left
+	// to right
+	testsWithAllSeverityOccurrences := make([]*TestToSeverityOccurrences, 0)
+	severitiesInOrder := []string{HeavilyFlaky, MostlyFlaky, ModeratelyFlaky, MildlyFlaky, Fine, Unimportant}
+	for test, severitiesWithOccurrences := range testsToSeveritiesWithOccurrences {
+		severityOccurrences := make([]int, len(severitiesInOrder))
+		testWithAllSeverityOccurrences := TestToSeverityOccurrences{Name: test, SeverityOccurrences: severityOccurrences}
+		for index, severity := range severitiesInOrder {
+			occurrencesOfSeverity := 0
+			if existingNumber, exists := severitiesWithOccurrences[severity]; exists {
+				occurrencesOfSeverity = existingNumber
 			}
+			severityOccurrences[index] = occurrencesOfSeverity
 		}
+		testsWithAllSeverityOccurrences = append(testsWithAllSeverityOccurrences, &testWithAllSeverityOccurrences)
+	}
 
-		initialTestsSortedByRelevance = append(initialTestsSortedByRelevance,
-			sortedTestsForSeverity...)
+	// now sort the array
+	sort.Sort(sort.Reverse(BySeverity(testsWithAllSeverityOccurrences)))
+
+	initialTestsSortedByRelevance := make([]string, len(testsWithAllSeverityOccurrences))
+	for index, test := range testsWithAllSeverityOccurrences {
+		initialTestsSortedByRelevance[index] = test.Name
 	}
 	return initialTestsSortedByRelevance
 }

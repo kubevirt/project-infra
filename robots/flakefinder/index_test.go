@@ -71,7 +71,7 @@ var _ = Describe("index.go", func() {
 		buffer := bytes.Buffer{}
 		WriteReportIndexPage(reportDataFiles, &buffer)
 		htmlIndex := buffer.String()
-		logger.Printf(htmlIndex)
+		logger.Printf("")
 
 		It("uses all report items", func() {
 			Expect(htmlIndex).To(ContainSubstring("flakefinder-2019-08-24-672h.html"))
