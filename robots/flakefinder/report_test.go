@@ -20,6 +20,8 @@ var _ = Describe("report.go", func() {
 	reportTime, e := time.Parse("2006-01-02", "2019-08-23")
 	Expect(e).ToNot(HaveOccurred())
 
+	printLogOutput := false
+
 	When("creates filename with date and merged as hours", func() {
 
 		It("creates a filename for week", func() {
@@ -43,7 +45,9 @@ var _ = Describe("report.go", func() {
 		WriteReportToOutput(&buffer, parameters)
 
 		logger := log.New(os.Stdout, "report.go:", log.Flags())
-		logger.Printf("")
+		if printLogOutput {
+			logger.Printf(buffer.String())
+		}
 
 		It("outputs something", func() {
 			Expect(buffer.String()).ToNot(BeEmpty())
