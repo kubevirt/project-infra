@@ -27,6 +27,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"sort"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -313,23 +314,7 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 
 				entry := data[test.Name][result.Job]
 
-				var ratio float32 = 1.0
-				if entry.Succeeded > 0 {
-					ratio = float32(entry.Failed) / float32(entry.Succeeded)
-				}
-
-				entry.Severity = Fine
-				if entry.Succeeded == 0 && entry.Failed == 0 {
-					entry.Severity = Unimportant
-				} else if ratio > 0.5 {
-					entry.Severity = HeavilyFlaky
-				} else if ratio > 0.2 {
-					entry.Severity = MostlyFlaky
-				} else if ratio > 0.1 {
-					entry.Severity = ModeratelyFlaky
-				} else if ratio > 0 {
-					entry.Severity = MildlyFlaky
-				}
+				SetSeverity(entry)
 			}
 		}
 	}
@@ -349,12 +334,37 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 	return nil
 }
 
+// SetSeverity sets the field Severity on the passed details according to the ratio of failed vs succeeded tests,
+// where test results are the more severe the more test failures they contain in relation to succeeded tests.
+func SetSeverity(entry *Details) {
+	var ratio float32 = 1.0
+	if entry.Succeeded > 0 {
+		ratio = float32(entry.Failed) / float32(entry.Succeeded)
+	}
+
+	entry.Severity = Fine
+	if entry.Succeeded == 0 && entry.Failed == 0 {
+		entry.Severity = Unimportant
+	} else if ratio > 0.5 {
+		entry.Severity = HeavilyFlaky
+	} else if ratio > 0.2 {
+		entry.Severity = MostlyFlaky
+	} else if ratio > 0.1 {
+		entry.Severity = ModeratelyFlaky
+	} else if ratio > 0 {
+		entry.Severity = MildlyFlaky
+	}
+}
+
 // SortTestsByRelevance sorts given tests according to the severity from the test data, where tests with a higher
 // severity have a smaller index in the slice than tests with a lower severity.
 // The returned slice does not contain
 // duplicates, thus if a test has data with several severities the highest one is picked, leading to an earlier
 // encounter in the slice.
 func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (testsSortedByRelevance []string) {
+
+	testsToSeveritiesWithNumbers := map[string]map[string]int{}
+
 	foundTests := map[string]struct{}{}
 
 	// Group all tests by severity, ignoring duplicates for the moment, but keeping a record of tests
@@ -367,17 +377,17 @@ func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (
 			}
 			flakinessToTestNames[details.Severity] = append(flakinessToTestNames[details.Severity], test)
 
+			if _, exists := testsToSeveritiesWithNumbers[test]; !exists {
+				testsToSeveritiesWithNumbers[test] = map[string]int{details.Severity: 0}
+			}
+			testsToSeveritiesWithNumbers[test][details.Severity] = testsToSeveritiesWithNumbers[test][details.Severity] + 1
+
 			foundTests[test] = struct{}{}
 		}
 	}
 
 	// Build up the initial sorted result (with duplicates)
-	initialTestsSortedByRelevance := append(flakinessToTestNames[HeavilyFlaky])
-	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[MostlyFlaky]...)
-	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[ModeratelyFlaky]...)
-	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[MildlyFlaky]...)
-	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[Fine]...)
-	initialTestsSortedByRelevance = append(initialTestsSortedByRelevance, flakinessToTestNames[Unimportant]...)
+	initialTestsSortedByRelevance := BuildUpSortedTestsBySeverity(testsToSeveritiesWithNumbers)
 
 	// Append all tests that have not been found in the data
 	for _, test := range tests {
@@ -396,6 +406,58 @@ func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (
 	}
 
 	return
+}
+
+type TestToSeverityOccurrences struct {
+	Name                string
+	SeverityOccurrences []int
+}
+
+type BySeverity []*TestToSeverityOccurrences
+
+func (t BySeverity) Len() int { return len(t) }
+func (t BySeverity) Less(i, j int) bool {
+	if len(t[i].SeverityOccurrences) != len(t[j].SeverityOccurrences) {
+		return len(t[i].SeverityOccurrences) < len(t[j].SeverityOccurrences)
+	}
+	for index := 0; index < len(t[i].SeverityOccurrences); index++ {
+		if t[i].SeverityOccurrences[index] < t[j].SeverityOccurrences[index] {
+			return true
+		} else if t[i].SeverityOccurrences[index] > t[j].SeverityOccurrences[index] {
+			return false
+		}
+	}
+	return t[i].Name > t[j].Name
+}
+func (t BySeverity) Swap(i, j int) { t[i], t[j] = t[j], t[i] }
+
+func BuildUpSortedTestsBySeverity(testsToSeveritiesWithOccurrences map[string]map[string]int) []string {
+
+	// Create flat array storing test names to numbers of occurrences for each severity order by priority from left
+	// to right
+	testsWithAllSeverityOccurrences := make([]*TestToSeverityOccurrences, 0)
+	severitiesInOrder := []string{HeavilyFlaky, MostlyFlaky, ModeratelyFlaky, MildlyFlaky, Fine, Unimportant}
+	for test, severitiesWithOccurrences := range testsToSeveritiesWithOccurrences {
+		severityOccurrences := make([]int, len(severitiesInOrder))
+		testWithAllSeverityOccurrences := TestToSeverityOccurrences{Name: test, SeverityOccurrences: severityOccurrences}
+		for index, severity := range severitiesInOrder {
+			occurrencesOfSeverity := 0
+			if existingNumber, exists := severitiesWithOccurrences[severity]; exists {
+				occurrencesOfSeverity = existingNumber
+			}
+			severityOccurrences[index] = occurrencesOfSeverity
+		}
+		testsWithAllSeverityOccurrences = append(testsWithAllSeverityOccurrences, &testWithAllSeverityOccurrences)
+	}
+
+	// now sort the array
+	sort.Sort(sort.Reverse(BySeverity(testsWithAllSeverityOccurrences)))
+
+	initialTestsSortedByRelevance := make([]string, len(testsWithAllSeverityOccurrences))
+	for index, test := range testsWithAllSeverityOccurrences {
+		initialTestsSortedByRelevance[index] = test.Name
+	}
+	return initialTestsSortedByRelevance
 }
 
 const (
