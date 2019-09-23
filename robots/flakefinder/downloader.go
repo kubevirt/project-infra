@@ -29,6 +29,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/joshdk/go-junit"
@@ -81,7 +82,19 @@ func readGcsObject(ctx context.Context, client *storage.Client, bucket, object s
 	return ioutil.ReadAll(reader)
 }
 
-func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest) ([]*Result, error) {
+func readGcsObjectAttrs(ctx context.Context, client *storage.Client, bucket, object string) (attrs *storage.ObjectAttrs, err error) {
+	logrus.Infof("Trying to read gcs object attrs '%s' in bucket '%s'\n", object, bucket)
+	attrs, err = client.Bucket(bucket).Object(object).Attrs(ctx)
+	if err == nil {
+		return
+	}
+	if err == storage.ErrObjectNotExist {
+		return nil, err
+	}
+	return nil, fmt.Errorf("Cannot read attrs from %s in bucket '%s'", object, bucket)
+}
+
+func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest, startOfReport time.Time) ([]*Result, error) {
 
 	dirOfPrJobs := path.Join("pr-logs", "pull", strings.ReplaceAll(repo, "/", "_"), strconv.Itoa(*pr.Number))
 
@@ -92,7 +105,7 @@ func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo
 
 	junits := []*Result{}
 	for _, job := range prJobsDirs {
-		junit, err := FindUnitTestFileForJob(ctx, client, bucket, dirOfPrJobs, job, pr)
+		junit, err := FindUnitTestFileForJob(ctx, client, bucket, dirOfPrJobs, job, pr, startOfReport)
 		if err != nil {
 			return nil, err
 		}
@@ -103,7 +116,7 @@ func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo
 	return junits, err
 }
 
-func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket string, dirOfPrJobs string, job string, pr *github.PullRequest) ([]*Result, error) {
+func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket string, dirOfPrJobs string, job string, pr *github.PullRequest, startOfReport time.Time) ([]*Result, error) {
 	dirOfJobs := path.Join(dirOfPrJobs, job)
 
 	prJobs, err := listGcsObjects(ctx, client, bucket, dirOfJobs+"/", "/")
@@ -119,7 +132,21 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 		dirOfFinishedJSON := path.Join(buildDirPath, finishedJSON)
 		dirOfStartedJSON := path.Join(buildDirPath, startedJSON)
 
-		_, err := readGcsObject(ctx, client, bucket, dirOfFinishedJSON)
+		// Fetch file attributes to check whether this test result should be included into the report
+		attrsOfFinishedJsonFile, err := readGcsObjectAttrs(ctx, client, bucket, dirOfFinishedJSON)
+		if err == storage.ErrObjectNotExist {
+			// build still running?
+			continue
+		} else if err != nil {
+			return nil, err
+		}
+		isBeforeStartOfReport := attrsOfFinishedJsonFile.Created.Before(startOfReport)
+		if isBeforeStartOfReport {
+			logrus.Infof("Skipping test results before %v for %s in bucket '%s'\n", startOfReport, buildDirPath, bucket)
+			continue
+		}
+
+		_, err = readGcsObject(ctx, client, bucket, dirOfFinishedJSON)
 		if err == storage.ErrObjectNotExist {
 			// build still running?
 			continue

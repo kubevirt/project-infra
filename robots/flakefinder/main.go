@@ -152,7 +152,7 @@ func main() {
 	}
 	reports := []*Result{}
 	for _, pr := range prs {
-		r, err := FindUnitTestFiles(ctx, client, BucketName, "kubevirt/kubevirt", pr)
+		r, err := FindUnitTestFiles(ctx, client, BucketName, "kubevirt/kubevirt", pr, startOfReport)
 		if err != nil {
 			log.Printf("failed to load JUnit file for %v: %v", pr.Number, err)
 		}
