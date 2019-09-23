@@ -2,6 +2,8 @@ package limiter
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"strings"
 	"testing"
 
@@ -18,6 +20,10 @@ const (
 func Test(t *testing.T) {
 
 	ctx := context.Background()
+
+	if _, err := os.Stat(credentialsPath); os.IsNotExist(err) {
+		t.Skip(fmt.Sprintf("credentials file %s not found", credentialsPath))
+	}
 
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsPath))
 	if err != nil {
