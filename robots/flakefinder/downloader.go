@@ -85,13 +85,13 @@ func readGcsObject(ctx context.Context, client *storage.Client, bucket, object s
 func readGcsObjectAttrs(ctx context.Context, client *storage.Client, bucket, object string) (attrs *storage.ObjectAttrs, err error) {
 	logrus.Infof("Trying to read gcs object attrs '%s' in bucket '%s'\n", object, bucket)
 	attrs, err = client.Bucket(bucket).Object(object).Attrs(ctx)
-	if err == nil {
-		return
-	}
 	if err == storage.ErrObjectNotExist {
 		return nil, err
 	}
-	return nil, fmt.Errorf("Cannot read attrs from %s in bucket '%s'", object, bucket)
+	if err != nil {
+		return nil, fmt.Errorf("Cannot read attrs from %s in bucket '%s'", object, bucket)
+	}
+	return
 }
 
 func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest, startOfReport time.Time) ([]*Result, error) {
