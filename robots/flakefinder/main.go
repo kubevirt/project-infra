@@ -36,26 +36,30 @@ import (
 	"k8s.io/test-infra/prow/flagutil"
 )
 
-func flagOptions() options {
-	o := options{
+func flagOptions() Options {
+	o := Options{
 		endpoint: flagutil.NewStrings("https://api.github.com"),
 	}
 	flag.IntVar(&o.ceiling, "ceiling", 100, "Maximum number of issues to modify, 0 for infinite")
 	flag.DurationVar(&o.merged, "merged", 24*7*time.Hour, "Filter to issues merged in the time window")
 	flag.Var(&o.endpoint, "endpoint", "GitHub's API endpoint")
 	flag.StringVar(&o.token, "token", "", "Path to github token")
-	flag.BoolVar(&o.isPreview, "preview", false, "if report should be written to preview directory")
+	flag.BoolVar(&o.IsPreview, "preview", false, "Whether report should be written to preview directory")
+	flag.StringVar(&o.PRBaseBranch, "pr_base_branch", PRBaseBranchDefault, fmt.Sprintf("Base branch for the PRs (default: '%s')", PRBaseBranchDefault))
+	flag.StringVar(&o.ReportOutputChildPath, "report_output_child_path", "", fmt.Sprintf("Child path below the main reporting directory '%s' (i.e. 'master', default is '')", ReportsPath))
 	flag.Parse()
 	return o
 }
 
-type options struct {
-	ceiling         int
-	endpoint        flagutil.Strings
-	token           string
-	graphqlEndpoint string
-	merged          time.Duration
-	isPreview       bool
+type Options struct {
+	ceiling               int
+	endpoint              flagutil.Strings
+	token                 string
+	graphqlEndpoint       string
+	merged                time.Duration
+	IsPreview             bool
+	PRBaseBranch          string
+	ReportOutputChildPath string
 }
 
 type client interface {
@@ -67,8 +71,10 @@ const BucketName = "kubevirt-prow"
 const ReportsPath = "reports/flakefinder"
 const ReportFilePrefix = "flakefinder-"
 const MaxNumberOfReportsToLinkTo = 50
+const PRBaseBranchDefault = "master"
 
 var ReportOutputPath = ReportsPath
+var PRBaseBranch string
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
@@ -78,9 +84,8 @@ func main() {
 		log.Fatal("empty --token")
 	}
 
-	if o.isPreview {
-		ReportOutputPath = strings.Join([]string{ReportsPath, "preview"}, "/")
-	}
+	ReportOutputPath = BuildReportOutputPath(o)
+	PRBaseBranch = o.PRBaseBranch
 
 	secretAgent := &secret.Agent{}
 	if err := secretAgent.Start([]string{o.token}); err != nil {
@@ -117,9 +122,11 @@ func main() {
 		log.Fatalf("Failed to parse time %+v: %+v", startOfDay, err)
 	}
 
+	logrus.Infof("Filtering PRs for base branch %s", PRBaseBranch)
 	prs := []*github.PullRequest{}
 	for nextPage := 1; nextPage > 0; {
 		pullRequests, response, err := c.PullRequests.List(ctx, "kubevirt", "kubevirt", &github.PullRequestListOptions{
+			Base:        PRBaseBranch,
 			State:       "closed",
 			Sort:        "updated",
 			Direction:   "desc",
@@ -171,4 +178,15 @@ func main() {
 		return
 	}
 
+}
+
+func BuildReportOutputPath(o Options) string {
+	var outputPath = ReportsPath
+	if o.IsPreview {
+		outputPath = strings.Join([]string{outputPath, "preview"}, "/")
+	}
+	if o.ReportOutputChildPath != "" {
+		outputPath = strings.Join([]string{outputPath, o.ReportOutputChildPath}, "/")
+	}
+	return outputPath
 }
