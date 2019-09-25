@@ -1,10 +1,8 @@
-package main_test
+package main
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	. "kubevirt.io/project-infra/robots/flakefinder"
 )
 
 var _ = Describe("main.go", func() {
@@ -16,22 +14,22 @@ var _ = Describe("main.go", func() {
 		})
 
 		It("has default path", func() {
-			options := Options{}
+			options := options{}
 			Expect(BuildReportOutputPath(options)).To(BeEquivalentTo("reports/flakefinder"))
 		})
 
 		It("has preview if option enabled", func() {
-			options := Options{IsPreview: true}
+			options := options{isPreview: true}
 			Expect(BuildReportOutputPath(options)).To(BeEquivalentTo("reports/flakefinder/preview"))
 		})
 
 		It("has child branch", func() {
-			options := Options{ReportOutputChildPath: "master"}
+			options := options{reportOutputChildPath: "master"}
 			Expect(BuildReportOutputPath(options)).To(BeEquivalentTo("reports/flakefinder/master"))
 		})
 
 		It("has preview and child branch", func() {
-			options := Options{IsPreview: true, ReportOutputChildPath: "master"}
+			options := options{isPreview: true, reportOutputChildPath: "master"}
 			Expect(BuildReportOutputPath(options)).To(BeEquivalentTo("reports/flakefinder/preview/master"))
 		})
 

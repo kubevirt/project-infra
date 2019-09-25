@@ -36,30 +36,30 @@ import (
 	"k8s.io/test-infra/prow/flagutil"
 )
 
-func flagOptions() Options {
-	o := Options{
+func flagOptions() options {
+	o := options{
 		endpoint: flagutil.NewStrings("https://api.github.com"),
 	}
 	flag.IntVar(&o.ceiling, "ceiling", 100, "Maximum number of issues to modify, 0 for infinite")
 	flag.DurationVar(&o.merged, "merged", 24*7*time.Hour, "Filter to issues merged in the time window")
 	flag.Var(&o.endpoint, "endpoint", "GitHub's API endpoint")
 	flag.StringVar(&o.token, "token", "", "Path to github token")
-	flag.BoolVar(&o.IsPreview, "preview", false, "Whether report should be written to preview directory")
-	flag.StringVar(&o.PRBaseBranch, "pr_base_branch", PRBaseBranchDefault, fmt.Sprintf("Base branch for the PRs (default: '%s')", PRBaseBranchDefault))
-	flag.StringVar(&o.ReportOutputChildPath, "report_output_child_path", "", fmt.Sprintf("Child path below the main reporting directory '%s' (i.e. 'master', default is '')", ReportsPath))
+	flag.BoolVar(&o.isPreview, "preview", false, "Whether report should be written to preview directory")
+	flag.StringVar(&o.prBaseBranch, "pr_base_branch", PRBaseBranchDefault, fmt.Sprintf("Base branch for the PRs (default: '%s')", PRBaseBranchDefault))
+	flag.StringVar(&o.reportOutputChildPath, "report_output_child_path", "", fmt.Sprintf("Child path below the main reporting directory '%s' (i.e. 'master', default is '')", ReportsPath))
 	flag.Parse()
 	return o
 }
 
-type Options struct {
+type options struct {
 	ceiling               int
 	endpoint              flagutil.Strings
 	token                 string
 	graphqlEndpoint       string
 	merged                time.Duration
-	IsPreview             bool
-	PRBaseBranch          string
-	ReportOutputChildPath string
+	isPreview             bool
+	prBaseBranch          string
+	reportOutputChildPath string
 }
 
 const BucketName = "kubevirt-prow"
@@ -80,7 +80,7 @@ func main() {
 	}
 
 	ReportOutputPath = BuildReportOutputPath(o)
-	PRBaseBranch = o.PRBaseBranch
+	PRBaseBranch = o.prBaseBranch
 
 	secretAgent := &secret.Agent{}
 	if err := secretAgent.Start([]string{o.token}); err != nil {
@@ -175,11 +175,11 @@ func main() {
 
 }
 
-func BuildReportOutputPath(o Options) string {
+func BuildReportOutputPath(o options) string {
 	outputPath := ReportsPath
-	if o.IsPreview {
+	if o.isPreview {
 		outputPath = filepath.Join(outputPath, "preview")
 	}
-	outputPath = filepath.Join(outputPath, o.ReportOutputChildPath)
+	outputPath = filepath.Join(outputPath, o.reportOutputChildPath)
 	return outputPath
 }
