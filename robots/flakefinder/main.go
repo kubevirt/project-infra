@@ -25,7 +25,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"strings"
+	"path/filepath"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -60,11 +60,6 @@ type Options struct {
 	IsPreview             bool
 	PRBaseBranch          string
 	ReportOutputChildPath string
-}
-
-type client interface {
-	FindIssues(query, sort string, asc bool) ([]github.Issue, error)
-	GetPullRequest(org, repo string, number int) (*github.PullRequest, error)
 }
 
 const BucketName = "kubevirt-prow"
@@ -181,12 +176,10 @@ func main() {
 }
 
 func BuildReportOutputPath(o Options) string {
-	var outputPath = ReportsPath
+	outputPath := ReportsPath
 	if o.IsPreview {
-		outputPath = strings.Join([]string{outputPath, "preview"}, "/")
+		outputPath = filepath.Join(outputPath, "preview")
 	}
-	if o.ReportOutputChildPath != "" {
-		outputPath = strings.Join([]string{outputPath, o.ReportOutputChildPath}, "/")
-	}
+	outputPath = filepath.Join(outputPath, o.ReportOutputChildPath)
 	return outputPath
 }
