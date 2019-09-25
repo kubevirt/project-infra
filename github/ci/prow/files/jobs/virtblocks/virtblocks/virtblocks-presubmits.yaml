@@ -70,3 +70,22 @@ presubmits:
               value: "on"
             - name: XDG_CACHE_HOME
               value: "/tmp/.cache"
+  - name: pull-virtblocks-e2e
+    decorate: true
+    always_run: true
+    spec:
+      nodeSelector:
+        type: bare-metal
+      containers:
+        - image: rmohr/virtblocks-qemu:latest
+          command:
+            - "make"
+            - "functest"
+          env:
+            - name: GO111MODULE
+              value: "on"
+            - name: XDG_CACHE_HOME
+              value: "/tmp/.cache"
+          # for /dev/kvm right now required
+          securityContext:
+            privileged: true
