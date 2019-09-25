@@ -34,6 +34,8 @@ presubmits:
         env:
           - name: GO111MODULE
             value: "on"
+          - name: XDG_CACHE_HOME
+            value: "/tmp/.cache"
         command:
           - go
         args:
