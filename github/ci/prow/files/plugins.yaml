@@ -17,6 +17,7 @@ plugins:
 
   virtblocks:
   - trigger
+  - dco
 
   kubevirt:
   - size
@@ -105,6 +106,7 @@ triggers:
   trusted_org: kubevirt
 - repos:
   - virtblocks/virtblocks
+
 
 approve:
 - repos:
