@@ -21,3 +21,21 @@ presubmits:
         resources:
           requests:
             memory: "500Mi"
+  - name: pull-project-infra-test-flakefinder
+    always_run: true
+    optional: false
+    decorate: true
+    spec:
+      nodeSelector:
+        type: vm
+        zone: ci
+      containers:
+      - image: golang:1.12
+        env:
+          - name: GO111MODULE
+            value: "on"
+        command:
+          - go
+        args:
+          - test
+          - ./...
