@@ -66,16 +66,19 @@ var _ = Describe("index.go", func() {
 
 	When("writing the index page", func() {
 
-		printLogOutput := false
+		var htmlIndex string
 
-		logger := log.New(os.Stdout, "index.go:", log.Flags())
-
-		buffer := bytes.Buffer{}
-		WriteReportIndexPage(reportDataFiles, &buffer)
-		htmlIndex := buffer.String()
-		if printLogOutput {
-			logger.Printf(htmlIndex)
-		}
+		BeforeEach(func() {
+			if htmlIndex == "" {
+				buffer := bytes.Buffer{}
+				WriteReportIndexPage(reportDataFiles, &buffer)
+				htmlIndex = buffer.String()
+				if testOptions.printTestOutput {
+					logger := log.New(os.Stdout, "index_test.go:", log.Flags())
+					logger.Printf(htmlIndex)
+				}
+			}
+		})
 
 		It("uses all report items", func() {
 			Expect(htmlIndex).To(ContainSubstring("flakefinder-2019-08-24-672h.html"))

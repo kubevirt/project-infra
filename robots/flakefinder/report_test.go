@@ -20,8 +20,6 @@ var _ = Describe("report.go", func() {
 	reportTime, e := time.Parse("2006-01-02", "2019-08-23")
 	Expect(e).ToNot(HaveOccurred())
 
-	printLogOutput := false
-
 	When("creates filename with date and merged as hours", func() {
 
 		It("creates a filename for week", func() {
@@ -38,16 +36,22 @@ var _ = Describe("report.go", func() {
 
 	When("rendering report data", func() {
 
-		buffer := bytes.Buffer{}
-		parameters := Params{Data: map[string]map[string]*Details{
-			"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{}}},
-		}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23"}
-		WriteReportToOutput(&buffer, parameters)
+		var buffer bytes.Buffer
 
-		logger := log.New(os.Stdout, "report.go:", log.Flags())
-		if printLogOutput {
-			logger.Printf(buffer.String())
-		}
+		BeforeEach(func() {
+			if buffer.String() == "" {
+				buffer = bytes.Buffer{}
+				parameters := Params{Data: map[string]map[string]*Details{
+					"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{}}},
+				}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23"}
+				WriteReportToOutput(&buffer, parameters)
+
+				if testOptions.printTestOutput {
+					logger := log.New(os.Stdout, "report_test.go:", log.Flags())
+					logger.Printf(buffer.String())
+				}
+			}
+		})
 
 		It("outputs something", func() {
 			Expect(buffer.String()).ToNot(BeEmpty())
