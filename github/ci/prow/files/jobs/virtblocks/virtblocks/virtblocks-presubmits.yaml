@@ -5,7 +5,7 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: quay.io/virtblocks/buildenv:1.0.2
+        - image: quay.io/virtblocks/buildenv:1.1.0
           command:
             - "make"
             - "build"
@@ -19,7 +19,7 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: quay.io/virtblocks/buildenv:1.0.2
+        - image: quay.io/virtblocks/buildenv:1.1.0
           command:
             - "make"
             - "test"
@@ -33,7 +33,7 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: quay.io/virtblocks/buildenv:1.0.2
+        - image: quay.io/virtblocks/buildenv:1.1.0
           command:
             - "make"
             - "run-examples"
@@ -47,7 +47,7 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: quay.io/virtblocks/buildenv:1.0.2
+        - image: quay.io/virtblocks/buildenv:1.1.0
           command:
             - "make"
             - "vet"
@@ -61,7 +61,7 @@ presubmits:
     always_run: true
     spec:
       containers:
-        - image: quay.io/virtblocks/buildenv:1.0.2
+        - image: quay.io/virtblocks/buildenv:1.1.0
           command:
             - "make"
             - "verify-fmt"
@@ -77,7 +77,7 @@ presubmits:
       nodeSelector:
         type: bare-metal
       containers:
-        - image: rmohr/virtblocks-qemu:latest
+        - image: quay.io/virtblocks/buildenv:1.1.0
           command:
             - "make"
             - "functest"
