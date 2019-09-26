@@ -103,6 +103,13 @@ branch-protection:
             contexts:
             - continuous-integration/travis-ci
             - coverage/coveralls
+        project-infra:
+          protect: true
+          required_status_checks:
+            contexts:
+            - dco
+            - pull-project-infra-test-flakefinder
+            - check-prow-config
 
 push_gateway:
   endpoint: pushgateway
