@@ -95,15 +95,15 @@ branch-protection:
 #  protect: true
   required_status_checks:
     contexts:
-      - dco
+    - dco
   orgs:
     kubevirt:
       repos:
         kubevirt:
           required_status_checks:
             contexts:
-              - continuous-integration/travis-ci
-              - coverage/coveralls
+            - continuous-integration/travis-ci
+            - coverage/coveralls
           branches:
             master:
               protect: true
