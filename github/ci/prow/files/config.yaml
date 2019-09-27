@@ -110,10 +110,6 @@ branch-protection:
             release-*:
               protect: true
         project-infra:
-          required_status_checks:
-            contexts:
-              - pull-project-infra-test-flakefinder
-              - check-prow-config
           branches:
             master:
               protect: true
