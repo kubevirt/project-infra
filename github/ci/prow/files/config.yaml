@@ -91,18 +91,23 @@ tide:
           skip-unknown-contexts: true
           from-branch-protection: true
 
-# we don't enable the branch protector itself yet, but want to
-# let tide know that travis-ci is needed
 branch-protection:
   orgs:
     kubevirt:
+      # TODO: enable dco within branch protection for whole org
+#      protect: true
+#      required_status_checks:
+#        contexts:
+#          - dco
       repos:
         kubevirt:
           protect: true
           required_status_checks:
             contexts:
+            - dco
             - continuous-integration/travis-ci
             - coverage/coveralls
+            # we do not include the presubmit jobs here as they should get included automatically
         project-infra:
           protect: true
           required_status_checks:
@@ -110,6 +115,12 @@ branch-protection:
             - dco
             - pull-project-infra-test-flakefinder
             - check-prow-config
+    # TODO: enable dco within branch protection for whole org
+#    virtblocks:
+#      protect: true
+#      required_status_checks:
+#        contexts:
+#          - dco
 
 push_gateway:
   endpoint: pushgateway
