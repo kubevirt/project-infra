@@ -92,35 +92,31 @@ tide:
           from-branch-protection: true
 
 branch-protection:
+#  protect: true
+  required_status_checks:
+    contexts:
+      - dco
   orgs:
     kubevirt:
-      # TODO: enable dco within branch protection for whole org
-#      protect: true
-#      required_status_checks:
-#        contexts:
-#          - dco
       repos:
         kubevirt:
-          protect: true
           required_status_checks:
             contexts:
-            - dco
-            - continuous-integration/travis-ci
-            - coverage/coveralls
-            # we do not include the presubmit jobs here as they should get included automatically
+              - continuous-integration/travis-ci
+              - coverage/coveralls
+          branches:
+            master:
+              protect: true
+            release-*:
+              protect: true
         project-infra:
-          protect: true
           required_status_checks:
             contexts:
-            - dco
-            - pull-project-infra-test-flakefinder
-            - check-prow-config
-    # TODO: enable dco within branch protection for whole org
-#    virtblocks:
-#      protect: true
-#      required_status_checks:
-#        contexts:
-#          - dco
+              - pull-project-infra-test-flakefinder
+              - check-prow-config
+          branches:
+            master:
+              protect: true
 
 push_gateway:
   endpoint: pushgateway
