@@ -96,14 +96,16 @@ branch-protection:
   required_status_checks:
     contexts:
     - dco
+    - continuous-integration/travis-ci
+    - continuous-integration/travis-ci/pr
+    - coverage/coveralls
+# does not work as golang regex does not support PCRE
+#  exclude:
+#  - ^(?!!master)$
   orgs:
     kubevirt:
       repos:
         kubevirt:
-          required_status_checks:
-            contexts:
-            - continuous-integration/travis-ci
-            - coverage/coveralls
           branches:
             master:
               protect: true
@@ -113,6 +115,39 @@ branch-protection:
           branches:
             master:
               protect: true
+        kubevirtci:
+          branches:
+            master:
+              protect: true
+        containerized-data-importer:
+          branches:
+            master:
+              protect: true
+        hyperconverged-cluster-operator:
+          branches:
+            master:
+              protect: true
+        user-guide:
+          branches:
+            master:
+              protect: true
+        cluster-network-addons-operator:
+          branches:
+            master:
+              protect: true
+        ovs-cni:
+          branches:
+            master:
+              protect: true
+        common-templates:
+          branches:
+            master:
+              protect: true
+# need to add KubeVirt to admins
+#    virtblocks:
+#      repos:
+#        virtblocks:
+#          protect: true
 
 push_gateway:
   endpoint: pushgateway
