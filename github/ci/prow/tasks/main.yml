@@ -333,3 +333,8 @@
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/ghproxy.yaml')}}"
+- name: Deploy branch-protector cron job
+  k8s:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/branch-protector.yaml') | from_yaml }}"
