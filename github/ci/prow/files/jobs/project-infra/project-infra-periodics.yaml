@@ -148,3 +148,46 @@ periodics:
     - name: token
       secret:
         secretName: oauth-token
+
+# It's suggested to run the branch protector as a periodic job, not using that CronJob, so you get logs.
+# https://github.com/kubernetes/test-infra/issues/11581#issuecomment-468802223
+- name: periodic-project-infra-branchprotector
+  interval: 1h
+  decorate: true
+  spec:
+    containers:
+      - args:
+        - --config-path=/etc/config/config.yaml
+        - --job-config-path=/etc/job-config
+        - --confirm
+        - --github-token-path=/etc/github/oauth
+        - --github-endpoint=http://ghproxy
+        - --github-endpoint=https://api.github.com
+        command:
+        - /app/prow/cmd/branchprotector/app.binary
+        image: gcr.io/k8s-prow/branchprotector:v20190926-a128cddb1
+        imagePullPolicy: Always
+        name: ""
+        resources:
+          requests:
+            cpu: 500m
+        volumeMounts:
+        - mountPath: /etc/github
+          name: token
+          readOnly: true
+        - mountPath: /etc/config
+          name: config
+          readOnly: true
+        - name: job-config
+          mountPath: /etc/job-config
+          readOnly: true
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: config
+      configMap:
+        name: config
+    - name: job-config
+      configMap:
+        name: job-config

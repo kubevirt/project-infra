@@ -91,18 +91,62 @@ tide:
           skip-unknown-contexts: true
           from-branch-protection: true
 
-# we don't enable the branch protector itself yet, but want to
-# let tide know that travis-ci is needed
 branch-protection:
+#  protect: true
+  required_status_checks:
+    contexts:
+    - dco
+    - continuous-integration/travis-ci/pr
+    - coverage/coveralls
+# does not work as golang regex does not support PCRE
+#  exclude:
+#  - ^(?!!master)$
   orgs:
     kubevirt:
       repos:
         kubevirt:
-          protect: true
-          required_status_checks:
-            contexts:
-            - continuous-integration/travis-ci
-            - coverage/coveralls
+          branches:
+            master:
+              protect: true
+            release-*:
+              protect: true
+        project-infra:
+          branches:
+            master:
+              protect: true
+        kubevirtci:
+          branches:
+            master:
+              protect: true
+        containerized-data-importer:
+          branches:
+            master:
+              protect: true
+        hyperconverged-cluster-operator:
+          branches:
+            master:
+              protect: true
+        user-guide:
+          branches:
+            master:
+              protect: true
+        cluster-network-addons-operator:
+          branches:
+            master:
+              protect: true
+        ovs-cni:
+          branches:
+            master:
+              protect: true
+        common-templates:
+          branches:
+            master:
+              protect: true
+# need to add KubeVirt to admins
+#    virtblocks:
+#      repos:
+#        virtblocks:
+#          protect: true
 
 push_gateway:
   endpoint: pushgateway
