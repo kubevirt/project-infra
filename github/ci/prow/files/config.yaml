@@ -91,9 +91,10 @@ tide:
           skip-unknown-contexts: true
           from-branch-protection: true
 
-# we don't enable the branch protector itself yet, but want to
-# let tide know that travis-ci is needed
 branch-protection:
+  required_status_checks:
+    contexts:
+    - dco
   orgs:
     kubevirt:
       repos:
@@ -101,8 +102,52 @@ branch-protection:
           protect: true
           required_status_checks:
             contexts:
-            - continuous-integration/travis-ci
-            - coverage/coveralls
+              - continuous-integration/travis-ci/pr
+              - coverage/coveralls
+        project-infra:
+          branches:
+            master:
+              protect: true
+        kubevirtci:
+          branches:
+            master:
+              protect: true
+        containerized-data-importer:
+          branches:
+            master:
+              protect: true
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+        hyperconverged-cluster-operator:
+          branches:
+            master:
+              protect: true
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+                  - coverage/coveralls
+        user-guide:
+          branches:
+            master:
+              protect: true
+              required_pull_request_reviews:
+                dismiss_stale_reviews: true
+                required_approving_review_count: 1
+              required_status_checks:
+                strict: true
+        cluster-network-addons-operator:
+          branches:
+            master:
+              protect: true
+        ovs-cni:
+          branches:
+            master:
+              protect: true
+        common-templates:
+          branches:
+            master:
+              protect: true
 
 push_gateway:
   endpoint: pushgateway
