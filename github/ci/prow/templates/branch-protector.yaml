@@ -1,7 +1,6 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  namespace: default
   name: branch-protector
 spec:
   schedule: "54 * * * *"  # Every hour at 54 minutes past the hour
