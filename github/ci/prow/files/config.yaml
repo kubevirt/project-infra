@@ -96,7 +96,6 @@ branch-protection:
   required_status_checks:
     contexts:
     - dco
-    - continuous-integration/travis-ci
     - continuous-integration/travis-ci/pr
     - coverage/coveralls
 # does not work as golang regex does not support PCRE
