@@ -9,7 +9,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 7h
+      timeout: 3h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -41,7 +41,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 7h
+      timeout: 3h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -73,7 +73,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 7h
+      timeout: 3h
       grace_period: 5m
     max_concurrency: 6
     labels:
