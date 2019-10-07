@@ -41,6 +41,7 @@ log_level: debug
 
 tide:
   merge_method:
+    kubevirt/containerized-data-importer: squash
     kubevirt/kubevirt: merge
     kubevirt/machine-remediation-operator: squash
     kubevirt/project-infra: squash
@@ -71,6 +72,7 @@ tide:
     - "dco-signoff: no"
   - repos:
     - kubevirt/kubevirt
+    - kubevirt/containerized-data-importer
     labels:
     - lgtm
     - approved
