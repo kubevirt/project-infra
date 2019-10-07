@@ -48,7 +48,11 @@ plugins:
   - approve
 
   kubevirt/containerized-data-importer:
+  - trigger
   - release-note
+  - owners-label
+  - lgtm
+  - approve
 
   kubevirt/kubevirt-ansible:
   - release-note
@@ -103,6 +107,7 @@ triggers:
   - kubevirt/kubevirt.github.io
   - kubevirt/cloud-image-builder
   - kubevirt/kubevirt-tutorial
+  - kubevirt/containerized-data-importer
   trusted_org: kubevirt
 - repos:
   - virtblocks/virtblocks
@@ -118,6 +123,7 @@ approve:
   - kubevirt/community
   - kubevirt/kubevirt-tutorial
   - kubevirt/kubevirt
+  - kubevirt/containerized-data-importer
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -132,4 +138,5 @@ lgtm:
   - kubevirt/community
   - kubevirt/kubevirt-tutorial
   - kubevirt/kubevirt
+  - kubevirt/containerized-data-importer
   review_acts_as_lgtm: true
