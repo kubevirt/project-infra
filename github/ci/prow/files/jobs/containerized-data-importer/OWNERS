@@ -1,0 +1,10 @@
+filters:
+  ".*":
+    reviewers:
+      - awels
+      - mhenriks
+      - aglitke
+    approvers:
+      - awels
+      - mhenriks
+      - aglitke
