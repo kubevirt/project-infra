@@ -38,3 +38,8 @@ kind: ServiceAccount
 metadata:
   name: "tide"
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: "exporter"
+---

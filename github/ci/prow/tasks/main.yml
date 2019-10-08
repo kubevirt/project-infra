@@ -309,6 +309,14 @@
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-deployment.yaml')}}"
+- name: Deploy prow-exporter-rbac
+  command: "oc -n {{prowJobsNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/exporter-rbac.yaml')}}"
+- name: Deploy prow-exporter-deployment
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/exporter-deployment.yaml')}}"
 - name: Deploy prow-statusreconciler-rbac
   command: "oc -n {{prowJobsNamespace}} apply -f -"
   args:
