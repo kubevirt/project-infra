@@ -1,6 +1,6 @@
 periodics:
 - name: periodic-publish-flakefinder-weekly-report
-  interval: 168h
+  interval: 24h
   decorate: true
   spec:
     nodeSelector:
