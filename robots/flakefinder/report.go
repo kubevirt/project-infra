@@ -38,7 +38,7 @@ const tpl = `
 <!DOCTYPE html>
 <html>
 <head>
-    <title>kubevirt.io - flakefinder report</title>
+    <title>{{ $.Org }}/{{ $.Repo }} - flakefinder report</title>
     <meta charset="UTF-8">
     <style>
         table, th, td {
@@ -140,7 +140,7 @@ const tpl = `
 </head>
 <body>
 
-<h1>flakefinder report - {{ $.Date }}</h1>
+<h1>flakefinder report for {{ $.Org }}/{{ $.Repo }} - {{ $.Date }}</h1>
 
 <table>
     <tr>
@@ -163,7 +163,7 @@ const tpl = `
                 <span class="tests_failed" title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span class="tests_passed" title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span class="tests_skipped" title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>
                 <div class="popuptext" id="targetr{{$row}}c{{$col}}">
                     {{ range $Job := (index $.Data $test $header).Jobs }}
-                    <div class="{{.Severity}} nowrap"><a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> (<a href="https://github.com/kubevirt/kubevirt/pull/{{.PR}}">#{{.PR}}</a>)</div>
+                    <div class="{{.Severity}} nowrap"><a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/{{ $.Org }}_{{ $.Repo }}/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> (<a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{.PR}}">#{{.PR}}</a>)</div>
                     {{ end }}
                 </div>
             </div>
@@ -196,6 +196,8 @@ type Params struct {
 	Tests       []string
 	PrNumberMap map[int]struct{}
 	Date        string
+	Org         string
+	Repo        string
 }
 
 type Details struct {
@@ -214,11 +216,11 @@ type Job struct {
 }
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
-func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration) (err error) {
+func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string) (err error) {
 	reportObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(time.Now(), merged)))
 	log.Printf("Report will be written to gs://%s/%s", BucketName, reportObject.ObjectName())
 	reportOutputWriter := reportObject.NewWriter(ctx)
-	err = Report(reports, reportOutputWriter)
+	err = Report(reports, reportOutputWriter, org, repo)
 	if err != nil {
 		return fmt.Errorf("failed on generating report: %v", err)
 	}
@@ -233,7 +235,7 @@ func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
 	return fmt.Sprintf(ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
 }
 
-func Report(results []*Result, reportOutputWriter *storage.Writer) error {
+func Report(results []*Result, reportOutputWriter *storage.Writer, org string, repo string) error {
 	data := map[string]map[string]*Details{}
 	headers := []string{}
 	tests := []string{}
@@ -320,7 +322,15 @@ func Report(results []*Result, reportOutputWriter *storage.Writer) error {
 	}
 
 	testsSortedByRelevance := SortTestsByRelevance(data, tests)
-	parameters := Params{Data: data, Headers: headers, Tests: testsSortedByRelevance, PrNumberMap: prNumberMap, Date: time.Now().Format("2006-01-02")}
+	parameters := Params{
+		Data:        data,
+		Headers:     headers,
+		Tests:       testsSortedByRelevance,
+		PrNumberMap: prNumberMap,
+		Date:        time.Now().Format("2006-01-02"),
+		Org:         org,
+		Repo:        repo,
+	}
 	var err error
 	if reportOutputWriter != nil {
 		err = WriteReportToOutput(reportOutputWriter, parameters)

@@ -26,6 +26,7 @@ import (
 	"log"
 	"net/url"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -47,6 +48,8 @@ func flagOptions() options {
 	flag.BoolVar(&o.isPreview, "preview", false, "Whether report should be written to preview directory")
 	flag.StringVar(&o.prBaseBranch, "pr_base_branch", PRBaseBranchDefault, fmt.Sprintf("Base branch for the PRs (default: '%s')", PRBaseBranchDefault))
 	flag.StringVar(&o.reportOutputChildPath, "report_output_child_path", "", fmt.Sprintf("Child path below the main reporting directory '%s' (i.e. 'master', default is '')", ReportsPath))
+	flag.StringVar(&o.org, "org", Org, fmt.Sprintf("GitHub org name (default is '%s')", Org))
+	flag.StringVar(&o.repo, "repo", Repo, fmt.Sprintf("GitHub org name (default is '%s')", Repo))
 	flag.Parse()
 	return o
 }
@@ -60,6 +63,8 @@ type options struct {
 	isPreview             bool
 	prBaseBranch          string
 	reportOutputChildPath string
+	org                   string
+	repo                  string
 }
 
 const BucketName = "kubevirt-prow"
@@ -67,6 +72,8 @@ const ReportsPath = "reports/flakefinder"
 const ReportFilePrefix = "flakefinder-"
 const MaxNumberOfReportsToLinkTo = 50
 const PRBaseBranchDefault = "master"
+const Org = "kubevirt"
+const Repo = "kubevirt"
 
 var ReportOutputPath = ReportsPath
 var PRBaseBranch string
@@ -120,7 +127,7 @@ func main() {
 	logrus.Infof("Filtering PRs for base branch %s", PRBaseBranch)
 	prs := []*github.PullRequest{}
 	for nextPage := 1; nextPage > 0; {
-		pullRequests, response, err := c.PullRequests.List(ctx, "kubevirt", "kubevirt", &github.PullRequestListOptions{
+		pullRequests, response, err := c.PullRequests.List(ctx, o.org, o.repo, &github.PullRequestListOptions{
 			Base:        PRBaseBranch,
 			State:       "closed",
 			Sort:        "updated",
@@ -154,20 +161,20 @@ func main() {
 	}
 	reports := []*Result{}
 	for _, pr := range prs {
-		r, err := FindUnitTestFiles(ctx, client, BucketName, "kubevirt/kubevirt", pr, startOfReport)
+		r, err := FindUnitTestFiles(ctx, client, BucketName, strings.Join([]string{o.org, o.repo}, "/"), pr, startOfReport)
 		if err != nil {
 			log.Printf("failed to load JUnit file for %v: %v", pr.Number, err)
 		}
 		reports = append(reports, r...)
 	}
 
-	err = WriteReportToBucket(ctx, client, reports, o.merged)
+	err = WriteReportToBucket(ctx, client, reports, o.merged, o.org, o.repo)
 	if err != nil {
 		log.Fatal(fmt.Errorf("failed to write report: %v", err))
 		return
 	}
 
-	err = CreateReportIndex(ctx, client)
+	err = CreateReportIndex(ctx, client, o.org, o.repo)
 	if err != nil {
 		log.Fatal(fmt.Errorf("failed to create report index page: %v", err))
 		return

@@ -2,10 +2,12 @@ package main_test
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"os"
 
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 
 	. "kubevirt.io/project-infra/robots/flakefinder"
@@ -68,19 +70,20 @@ var _ = Describe("index.go", func() {
 
 		var htmlIndex string
 
-		BeforeEach(func() {
-			if htmlIndex == "" {
-				buffer := bytes.Buffer{}
-				WriteReportIndexPage(reportDataFiles, &buffer)
-				htmlIndex = buffer.String()
-				if testOptions.printTestOutput {
-					logger := log.New(os.Stdout, "index_test.go:", log.Flags())
-					logger.Printf(htmlIndex)
-				}
+		prepareBuffer := func(org, repo string) {
+			buffer := bytes.Buffer{}
+			err := WriteReportIndexPage(reportDataFiles, &buffer, org, repo)
+			Expect(err).ToNot(HaveOccurred())
+			htmlIndex = buffer.String()
+			if testOptions.printTestOutput {
+				logger := log.New(os.Stdout, "index_test.go:", log.Flags())
+				logger.Printf(htmlIndex)
 			}
-		})
+		}
 
 		It("uses all report items", func() {
+			prepareBuffer(Org, Repo)
+
 			Expect(htmlIndex).To(ContainSubstring("flakefinder-2019-08-24-672h.html"))
 			Expect(htmlIndex).To(ContainSubstring("flakefinder-2019-08-24-168h.html"))
 			Expect(htmlIndex).To(ContainSubstring("flakefinder-2019-08-24-024h.html"))
@@ -91,17 +94,29 @@ var _ = Describe("index.go", func() {
 		})
 
 		It("contains the merged duration spans as headers", func() {
+			prepareBuffer(Org, Repo)
+
 			Expect(htmlIndex).To(ContainSubstring("<th>672h</th>"))
 			Expect(htmlIndex).To(ContainSubstring("<th>024h</th>"))
 			Expect(htmlIndex).To(ContainSubstring("<th>168h</th>"))
 		})
+
+		DescribeTable("contains the org and repo in title", func(org, repo string) {
+			prepareBuffer(org, repo)
+
+			Expect(htmlIndex).To(ContainSubstring(fmt.Sprintf("<title>%s/%s", org, repo)))
+		},
+			Entry("contains kubevirt/kubevirt", "kubevirt", "kubevirt"),
+			Entry("contains kubevirt/containerized-data-importer", "kubevirt", "containerized-data-importer"),
+			Entry("contains test/blah", "test", "blah"),
+		)
 
 	})
 
 	When("preparing data for index page", func() {
 
 		It("puts it into a map per duration", func() {
-			indexParams := PrepareDataForTemplate(reportDataFiles)
+			indexParams := PrepareDataForTemplate(reportDataFiles, Org, Repo)
 			Expect(indexParams.Reports).To(BeEquivalentTo([]ReportFilesRow{
 				{
 					Date: "2019-08-24",
@@ -155,7 +170,7 @@ var _ = Describe("index.go", func() {
 				"flakefinder-2019-07-17.html",
 			}
 
-			indexParams := PrepareDataForTemplate(mixedDataFiles)
+			indexParams := PrepareDataForTemplate(mixedDataFiles, Org, Repo)
 			Expect(indexParams.Reports).To(BeEquivalentTo([]ReportFilesRow{
 				{
 					Date: "2019-08-24",
