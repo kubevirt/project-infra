@@ -16,4 +16,4 @@ periodics:
             - name: NOKOGIRI_USE_SYSTEM_LIBRARIES
               value: "true"
           command: ["/bin/sh", "-c"]
-          args: ["/usr/local/bin/bundle install && bundle exec rake"]
+          args: ["/usr/local/bin/bundle install && bundle exec rake -- -u"]
