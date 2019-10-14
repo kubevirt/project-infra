@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -38,45 +39,99 @@ var _ = Describe("report.go", func() {
 
 		var buffer bytes.Buffer
 
-		BeforeEach(func() {
-			if buffer.String() == "" {
-				buffer = bytes.Buffer{}
-				parameters := Params{Data: map[string]map[string]*Details{
-					"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{}}},
-				}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23"}
-				WriteReportToOutput(&buffer, parameters)
-
-				if testOptions.printTestOutput {
-					logger := log.New(os.Stdout, "report_test.go:", log.Flags())
-					logger.Printf(buffer.String())
-				}
+		prepareBuffer := func(parameters Params) {
+			buffer = bytes.Buffer{}
+			err := WriteReportToOutput(&buffer, parameters)
+			Expect(err).ToNot(HaveOccurred())
+			if testOptions.printTestOutput {
+				logger := log.New(os.Stdout, "report_test.go:", log.Flags())
+				logger.Printf(buffer.String())
 			}
-		})
+		}
+
+		prepareWithDefaultParams := func() {
+			parameters := Params{Data: map[string]map[string]*Details{
+				"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{}}},
+			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23", Org: Org, Repo: Repo}
+
+			prepareBuffer(parameters)
+		}
 
 		It("outputs something", func() {
+			prepareWithDefaultParams()
 			Expect(buffer.String()).ToNot(BeEmpty())
 		})
 
 		It("has rows", func() {
+			prepareWithDefaultParams()
 			Expect(buffer.String()).To(ContainSubstring("<td>t1</td>"))
 			Expect(buffer.String()).To(ContainSubstring("<td>t2</td>"))
 			Expect(buffer.String()).To(ContainSubstring("<td>t3</td>"))
 		})
 
 		It("has columns", func() {
+			prepareWithDefaultParams()
 			Expect(buffer.String()).To(ContainSubstring("<td>a</td>"))
 			Expect(buffer.String()).To(ContainSubstring("<td>b</td>"))
 			Expect(buffer.String()).To(ContainSubstring("<td>c</td>"))
 		})
 
 		It("has one filled test cell", func() {
+			prepareWithDefaultParams()
 			Expect(buffer.String()).To(ContainSubstring("<td class=\"red center\">"))
 			Expect(buffer.String()).To(MatchRegexp("(?s)4.*1.*2"))
 		})
 
 		It("contains the date", func() {
+			prepareWithDefaultParams()
 			Expect(buffer.String()).To(ContainSubstring("2019-08-23"))
 		})
+
+		DescribeTable("title contains repo and org", func(org, repo string) {
+			parameters := Params{Data: map[string]map[string]*Details{
+				"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{}}},
+			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23", Org: org, Repo: repo}
+
+			prepareBuffer(parameters)
+
+			Expect(buffer.String()).To(ContainSubstring(fmt.Sprintf("<title>%s/%s", org, repo)))
+		},
+			Entry("is kubevirt/kubevirt", "kubevirt", "kubevirt"),
+			Entry("is kubevirt/containerized-data-importer", "kubevirt", "containerized-data-importer"),
+			Entry("is test/blah", "test", "blah"),
+		)
+
+		DescribeTable("prow link contains repo and org", func(org, repo string) {
+			parameters := Params{Data: map[string]map[string]*Details{
+				"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{
+					{BuildNumber: 1742, Severity: "red", PR: 1427, Job: "testblah"},
+				}}},
+			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23", Org: org, Repo: repo}
+
+			prepareBuffer(parameters)
+
+			Expect(buffer.String()).To(ContainSubstring(fmt.Sprintf("pr-logs/pull/%s", fmt.Sprintf("%s_%s", org, repo))))
+		},
+			Entry("is kubevirt/kubevirt", "kubevirt", "kubevirt"),
+			Entry("is kubevirt/containerized-data-importer", "kubevirt", "containerized-data-importer"),
+			Entry("is test/blah", "test", "blah"),
+		)
+
+		DescribeTable("GitHub link contains repo and org", func(org, repo string) {
+			parameters := Params{Data: map[string]map[string]*Details{
+				"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{
+					{BuildNumber: 1742, Severity: "red", PR: 1427, Job: "testblah"},
+				}}},
+			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23", Org: org, Repo: repo}
+
+			prepareBuffer(parameters)
+
+			Expect(buffer.String()).To(ContainSubstring(fmt.Sprintf("https://github.com/%s/%s", org, repo)))
+		},
+			Entry("is kubevirt/kubevirt", "kubevirt", "kubevirt"),
+			Entry("is kubevirt/containerized-data-importer", "kubevirt", "containerized-data-importer"),
+			Entry("is test/blah", "test", "blah"),
+		)
 
 	})
 
@@ -279,8 +334,8 @@ var _ = Describe("report.go", func() {
 
 		It("Works", func() {
 			bySeverity := []*TestToSeverityOccurrences{
-				&TestToSeverityOccurrences{Name: "tb", SeverityOccurrences: []int{3, 0, 2}},
-				&TestToSeverityOccurrences{Name: "ta", SeverityOccurrences: []int{3, 0, 3}},
+				{Name: "tb", SeverityOccurrences: []int{3, 0, 2}},
+				{Name: "ta", SeverityOccurrences: []int{3, 0, 3}},
 			}
 			BySeverity.Swap(bySeverity, 0, 1)
 			Expect(bySeverity[0].Name).To(BeEquivalentTo("ta"))

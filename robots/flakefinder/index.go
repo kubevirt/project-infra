@@ -37,7 +37,7 @@ const indexTpl = `
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>kubevirt.io - flakefinder reports</title>
+    <title>{{ $.Org }}/{{ $.Repo }} - flakefinder reports</title>
 	<style>
 		table, th, td {
 		  border: 1px solid black;
@@ -45,7 +45,7 @@ const indexTpl = `
 	</style>
 </head>
 <body>
-	<h1>flakefinder reports</h1>
+	<h1>flakefinder reports for {{ $.Org }}/{{ $.Repo }}</h1>
 	<table>
 		<tr>
 			<th>Date</th>{{ range $key, $value := (index .Reports 0).ReportFiles }}
@@ -75,11 +75,13 @@ type ReportFilesRow struct {
 
 type IndexParams struct {
 	Reports []ReportFilesRow
+	Org     string
+	Repo    string
 }
 
 // CreateReportIndex creates an index.html that links to the X most recent reports in GCS "folder", sorted from most
 // recent to oldest
-func CreateReportIndex(ctx context.Context, client *storage.Client) (err error) {
+func CreateReportIndex(ctx context.Context, client *storage.Client, org, repo string) (err error) {
 	reportDirGcsObjects, err := getReportItemsFromBucketDirectory(client, ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get report items: %v", err)
@@ -87,7 +89,7 @@ func CreateReportIndex(ctx context.Context, client *storage.Client) (err error) 
 
 	reportIndexObjectWriter := CreateOutputWriter(client, ctx)
 
-	err = WriteReportIndexPage(reportDirGcsObjects, reportIndexObjectWriter)
+	err = WriteReportIndexPage(reportDirGcsObjects, reportIndexObjectWriter, org, repo)
 	if err != nil {
 		return fmt.Errorf("failed generating index page: %v", err)
 	}
@@ -106,7 +108,7 @@ func CreateOutputWriter(client *storage.Client, ctx context.Context) io.WriteClo
 	return reportIndexObjectWriter
 }
 
-func WriteReportIndexPage(reportDirGcsObjects []string, reportIndexObjectWriter io.Writer) error {
+func WriteReportIndexPage(reportDirGcsObjects []string, reportIndexObjectWriter io.Writer, org, repo string) error {
 
 	// Prepare template for index.html
 	t, err := template.New("index").Parse(indexTpl)
@@ -114,7 +116,7 @@ func WriteReportIndexPage(reportDirGcsObjects []string, reportIndexObjectWriter 
 		return fmt.Errorf("failed to load report template: %v", err)
 	}
 
-	parameters := PrepareDataForTemplate(reportDirGcsObjects)
+	parameters := PrepareDataForTemplate(reportDirGcsObjects, org, repo)
 
 	// write index page
 	err = t.Execute(reportIndexObjectWriter, parameters)
@@ -133,7 +135,7 @@ func WriteReportIndexPage(reportDirGcsObjects []string, reportIndexObjectWriter 
 // ]
 //
 // Note: legacy format "flakefinder-2019-08-24.html" is allowed, missing duration leads to taking this for weekly (168h)
-func PrepareDataForTemplate(reportDirGcsObjects []string) IndexParams {
+func PrepareDataForTemplate(reportDirGcsObjects []string, org string, repo string) IndexParams {
 	var reportData []ReportFilesRow
 	indexMap := make(map[string]ReportFilesRow)
 
@@ -160,7 +162,7 @@ func PrepareDataForTemplate(reportDirGcsObjects []string) IndexParams {
 		}
 	}
 
-	return IndexParams{Reports: reportData}
+	return IndexParams{Reports: reportData, Org: org, Repo: repo}
 }
 
 // getReportItemsFromBucketDirectory fetches the X most recent report file names from report directory, returning only
