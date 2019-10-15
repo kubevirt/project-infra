@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"path"
 	"regexp"
 
@@ -109,5 +110,7 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, url
 }
 
 func GenerateFilePath(bucket string, artifact *Artifact) string {
-	return path.Join("https://storage.googleapis.com/", bucket, artifact.SHA256())
+	u, _ := url.Parse("https://storage.googleapis.com")
+	u.Path = path.Join(u.Path, bucket, artifact.SHA256())
+	return u.String()
 }
