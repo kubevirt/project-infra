@@ -1,12 +1,16 @@
-package main
+package mirror
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"path"
 	"regexp"
 
+	"cloud.google.com/go/storage"
 	"github.com/bazelbuild/buildtools/build"
 )
 
@@ -39,9 +43,12 @@ func LoadWorkspace(path string) (*build.File, error) {
 	return workspace, nil
 }
 
-func WriteWorkspace(workspace *build.File, path string) error {
-	fmt.Println(build.FormatString(workspace))
-	return nil
+func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
+	if dryRun {
+		fmt.Println(build.FormatString(workspace))
+		return nil
+	}
+	return ioutil.WriteFile(path, build.Format(workspace), 0666 )
 }
 
 func GetArtifacts(workspace *build.File) (artifacts []Artifact, err error) {
@@ -59,6 +66,9 @@ func GetArtifacts(workspace *build.File) (artifacts []Artifact, err error) {
 func FilterArtifactsWithoutMirror(artifacts []Artifact, regexp *regexp.Regexp) (noMirror []Artifact)  {
 	for _, artifact := range artifacts {
 		var mirror string
+		if len(artifact.URLs()) == 0 {
+			continue
+		}
 		for _, url := range artifact.URLs() {
 			if regexp.MatchString(url) {
 				mirror = url
@@ -72,21 +82,32 @@ func FilterArtifactsWithoutMirror(artifacts []Artifact, regexp *regexp.Regexp) (
 	return noMirror
 }
 
-func UploadFile(url string) error {
-		defer out.Close()
-
-		// Get the data
-		resp, err := http.Get(url)
-		if err != nil {
+func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, url string, bucket string, name string) (err error) {
+	resp, err := http.Get(url)
+	if err != nil {
 		return err
 	}
-		defer resp.Body.Close()
-
-		// Write the body to GCS
-		_, err = io.Copy(out, resp.Body)
-		if err != nil {
-		return err
-	}
-
+	reportObject := client.Bucket(bucket).Object(name)
+	reader, err := reportObject.NewReader(ctx)
+	if err != nil && err != storage.ErrObjectNotExist{
+		return fmt.Errorf("error checking if object exists: %v", err)
+	} else if err == nil {
+		// object already exists
+		reader.Close()
+		log.Printf("File %s already exists, will not upload again\n", name)
 		return nil
+	}
+	log.Printf("File will be written to gs://%s/%s", bucket, reportObject.ObjectName())
+
+	if dryRun {
+		return nil
+	}
+	reportOutputWriter := reportObject.NewWriter(ctx)
+	defer reportOutputWriter.Close()
+	_, err = io.Copy(reportOutputWriter, resp.Body)
+	return err
+}
+
+func GenerateFilePath(bucket string, artifact *Artifact) string {
+	return path.Join("https://storage.googleapis.com/", bucket, artifact.SHA256())
 }
