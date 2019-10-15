@@ -56,4 +56,5 @@ func Test(t *testing.T) {
 	if len(invalid) != 2 {
 		t.Fatalf("expect 2 invalid artifacts, found %v", len(artifacts))
 	}
+	invalid[0].AppendURL("test")
 }

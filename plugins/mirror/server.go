@@ -160,10 +160,9 @@ func (s *Server) handlePullRequest(l *logrus.Entry, pre github.PullRequestEvent)
 			break
 		}
 	}
-	client := github.NewClient()
 
 	if workspaceChanged {
-		workspace.BlobURL
+		fmt.Println(workspace)
 	}
 
 
