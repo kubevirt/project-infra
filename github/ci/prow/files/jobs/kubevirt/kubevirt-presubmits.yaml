@@ -224,38 +224,6 @@ presubmits:
         resources:
           requests:
             memory: "29Gi"
-  - name: pull-kubevirt-e2e-os-3.11.0
-    skip_branches:
-    - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 6
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
-      preset-shared-images: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-c"
-        - "export TARGET=os-3.11.0 && automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
   - name: pull-kubevirt-e2e-okd-4.1
     skip_branches:
     - release-\d+\.\d+
