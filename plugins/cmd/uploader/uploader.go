@@ -59,7 +59,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not read artifacts: %v", err)
 	}
-	invalid := mirror.FilterArtifactsWithoutMirror(artifacts, regexp.MustCompile(`^https://kubevirt.storage.googleapis.com/.+`))
+	invalid := mirror.FilterArtifactsWithoutMirror(artifacts, regexp.MustCompile(`^https://storage.googleapis.com/.+`))
 
 	for _, artifact := range invalid {
 		newFileUrl := mirror.GenerateFilePath(options.bucket, &artifact)
