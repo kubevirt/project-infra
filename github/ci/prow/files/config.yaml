@@ -40,6 +40,13 @@ deck:
         - artifacts/filtered.cov
       optional_files:
         - artifacts/filtered.html
+    - lens:
+        name: restcoverage
+        config:
+          threshold_warning: 50
+          threshold_error: 10
+      required_files:
+        - artifacts/rest-coverage.json
   tide_update_period: 1s
   rerun_auth_config:
     github_team_ids:
