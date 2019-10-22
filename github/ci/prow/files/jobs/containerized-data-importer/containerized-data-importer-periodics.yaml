@@ -1,5 +1,5 @@
 periodics:
-- name: periodic-publish-kubevirt-flakefinder-weekly-report
+- name: periodic-publish-cdi-flakefinder-weekly-report
   interval: 24h
   decorate: true
   spec:
@@ -16,7 +16,8 @@ periodics:
       args:
       - --token=/etc/github/oauth
       - --merged=168h
-      - --report_output_child_path=kubevirt/kubevirt
+      - --report_output_child_path=kubevirt/containerized-data-importer
+      - --repo=containerized-data-importer
       volumeMounts:
       - name: token
         mountPath: /etc/github
@@ -30,7 +31,7 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
-- name: periodic-publish-kubevirt-flakefinder-daily-report
+- name: periodic-publish-cdi-flakefinder-daily-report
   interval: 24h
   decorate: true
   spec:
@@ -47,7 +48,8 @@ periodics:
       args:
       - --token=/etc/github/oauth
       - --merged=24h
-      - --report_output_child_path=kubevirt/kubevirt
+      - --report_output_child_path=kubevirt/containerized-data-importer
+      - --repo=containerized-data-importer
       volumeMounts:
       - name: token
         mountPath: /etc/github
@@ -61,7 +63,7 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
-- name: periodic-publish-kubevirt-flakefinder-four-weekly-report
+- name: periodic-publish-cdi-flakefinder-four-weekly-report
   interval: 168h
   decorate: true
   spec:
@@ -78,7 +80,8 @@ periodics:
       args:
       - --token=/etc/github/oauth
       - --merged=672h
-      - --report_output_child_path=kubevirt/kubevirt
+      - --report_output_child_path=kubevirt/containerized-data-importer
+      - --repo=containerized-data-importer
       volumeMounts:
       - name: token
         mountPath: /etc/github
