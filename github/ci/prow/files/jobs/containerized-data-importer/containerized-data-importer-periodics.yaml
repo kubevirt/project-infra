@@ -1,5 +1,5 @@
 periodics:
-- name: periodic-publish-flakefinder-weekly-report
+- name: periodic-publish-cdi-flakefinder-weekly-report
   interval: 24h
   decorate: true
   spec:
@@ -31,7 +31,7 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
-- name: periodic-publish-flakefinder-daily-report
+- name: periodic-publish-cdi-flakefinder-daily-report
   interval: 24h
   decorate: true
   spec:
@@ -63,7 +63,7 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
-- name: periodic-publish-flakefinder-four-weekly-report
+- name: periodic-publish-cdi-flakefinder-four-weekly-report
   interval: 168h
   decorate: true
   spec:
