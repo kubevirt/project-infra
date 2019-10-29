@@ -354,3 +354,11 @@ repos:
         target: pr
         addedBy: anyone
         prowPlugin: label
+  kubevirt/hyperconverged-cluster-operator:
+    labels:
+      - color: e11d21
+        description: Needed to be compatible with openshift CI
+        name: tide/merge-blocker
+        target: prs
+        addedBy: openshift-ci
+        prowPlugin: label
