@@ -112,6 +112,23 @@ plugins:
   - lgtm
   - approve
 
+  nmstate/kubernetes-nmstate:
+  - size
+  - label
+  - hold
+  - assign
+  - blunderbuss
+  - lifecycle
+  - verify-owners
+  - skip
+  - override
+  - wip
+  - pony
+  - dog
+  - cat
+  - dco
+  - trigger
+
 external_plugins:
   kubevirt:
   - name: needs-rebase
@@ -136,6 +153,8 @@ triggers:
   trusted_org: kubevirt
 - repos:
   - virtblocks/virtblocks
+- repos:
+  - nmstate/kubernetes-nmstate
 
 
 approve:
@@ -152,6 +171,7 @@ approve:
   - kubevirt/hostpath-provisioner
   - kubevirt/katacoda-scenarios
   - kubevirt/demo
+  - nmstate/kubernetes-nmstate
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -170,4 +190,5 @@ lgtm:
   - kubevirt/hostpath-provisioner
   - kubevirt/katacoda-scenarios
   - kubevirt/demo
+  - nmstate/kubernetes-nmstate
   review_acts_as_lgtm: true
