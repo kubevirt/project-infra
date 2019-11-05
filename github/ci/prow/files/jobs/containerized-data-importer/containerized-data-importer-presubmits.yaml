@@ -6,7 +6,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
     always_run: true
-    optional: false
+    optional: true
     decorate: true
     decoration_config:
       timeout: 3h
@@ -38,7 +38,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
     always_run: true
-    optional: false
+    optional: true
     decorate: true
     decoration_config:
       timeout: 3h
@@ -69,8 +69,8 @@ presubmits:
     - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-    always_run: true
-    optional: false
+    always_run: false
+    optional: true
     decorate: true
     decoration_config:
       timeout: 3h
