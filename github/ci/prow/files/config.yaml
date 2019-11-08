@@ -154,16 +154,10 @@ branch-protection:
           branches:
             master:
               protect: true
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
         hostpath-provisioner-operator:
           branches:
             master:
               protect: true
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
 
 push_gateway:
   endpoint: pushgateway
