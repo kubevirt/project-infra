@@ -1,4 +1,3 @@
-periodics: null
 postsubmits: {}
 presubmits:
   kubevirt/kubevirt:
