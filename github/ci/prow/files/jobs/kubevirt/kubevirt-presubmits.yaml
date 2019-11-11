@@ -165,8 +165,8 @@ presubmits:
     - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-    always_run: true
-    optional: false
+    always_run: false
+    optional: true
     decorate: true
     decoration_config:
       timeout: 7h
@@ -197,8 +197,8 @@ presubmits:
     - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-    always_run: true
-    optional: false
+    always_run: false
+    optional: true
     decorate: true
     decoration_config:
       timeout: 7h
@@ -367,7 +367,7 @@ presubmits:
             memory: "29Gi"
         volumeMounts:
           #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
-          - name: modules   
+          - name: modules
             mountPath: /lib/modules
             readOnly: true
           - name: cgroup

@@ -89,7 +89,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    optional: true
     branches:
     - release-0.17
     decorate: true
@@ -118,7 +119,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    optional: true
     branches:
     - release-0.17
     decorate: true
@@ -147,7 +149,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    optional: true
     branches:
     - release-0.17
     decorate: true
