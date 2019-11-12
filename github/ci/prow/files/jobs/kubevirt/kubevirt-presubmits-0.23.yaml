@@ -1,8 +1,8 @@
 presubmits:
   kubevirt/kubevirt:
   - name: pull-kubevirt-e2e-k8s-genie-1.11.1
-    skip_branches:
-    - release-\d+\.\d+
+    branches:
+      - release-0.23
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -33,8 +33,8 @@ presubmits:
           requests:
             memory: "29Gi"
   - name: pull-kubevirt-e2e-k8s-1.13.3
-    skip_branches:
-    - release-\d+\.\d+
+    branches:
+      - release-0.23
     annotations:
       fork-per-release: "true"
     always_run: false
@@ -65,8 +65,8 @@ presubmits:
           requests:
             memory: "29Gi"
   - name: pull-kubevirt-e2e-k8s-1.14.6
-    skip_branches:
-    - release-\d+\.\d+
+    branches:
+      - release-0.23
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -97,8 +97,8 @@ presubmits:
           requests:
             memory: "29Gi"
   - name: pull-kubevirt-e2e-k8s-1.15.1-ceph
-    skip_branches:
-      - release-\d+\.\d+
+    branches:
+      - release-0.23
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -129,8 +129,8 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-kubevirt-e2e-k8s-multus-1.13.3
-    skip_branches:
-    - release-\d+\.\d+
+    branches:
+      - release-0.23
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -161,8 +161,8 @@ presubmits:
           requests:
             memory: "29Gi"
   - name: pull-kubevirt-e2e-os-3.11.0-crio
-    skip_branches:
-    - release-\d+\.\d+
+    branches:
+      - release-0.23
     annotations:
       fork-per-release: "true"
     always_run: false
@@ -193,8 +193,8 @@ presubmits:
           requests:
             memory: "29Gi"
   - name: pull-kubevirt-e2e-os-3.11.0-multus
-    skip_branches:
-    - release-\d+\.\d+
+    branches:
+      - release-0.23
     annotations:
       fork-per-release: "true"
     always_run: false
@@ -225,8 +225,8 @@ presubmits:
           requests:
             memory: "29Gi"
   - name: pull-kubevirt-e2e-okd-4.1
-    skip_branches:
-    - release-\d+\.\d+
+    branches:
+      - release-0.23
     annotations:
       fork-per-release: "true"
     always_run: false
@@ -257,8 +257,8 @@ presubmits:
           requests:
             memory: "29Gi"
   - name: pull-kubevirt-e2e-windows2016
-    skip_branches:
-    - release-\d+\.\d+
+    branches:
+      - release-0.23
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -289,8 +289,8 @@ presubmits:
           requests:
             memory: "29Gi"
   - name: pull-kubevirt-e2e-kind-k8s-sriov-1.14.2
-    skip_branches:
-    - release-\d+\.\d+
+    branches:
+      - release-0.23
     annotations:
       fork-per-release: "true"
     always_run: true
