@@ -142,6 +142,9 @@ const tpl = `
 
 <h1>flakefinder report for {{ $.Org }}/{{ $.Repo }} - {{ $.Date }}</h1>
 
+{{ if not .Headers }}
+	<div>No failing tests! :)</div>
+{{ else }}
 <table>
     <tr>
         <td></td>
@@ -172,11 +175,11 @@ const tpl = `
         {{ end }}
     </tr>
     {{ end }}
-
 </table>
+{{ end }}
 
 <div>
-    Source PRs: {{ range $key, $value := $.PrNumberMap }}{{ $key }}, {{ end }}
+    Source PRs: {{ range $key := $.PrIds }}<a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{ $key }}">#{{ $key }}</a>, {{ end }}
 </div>
 
 <script>
@@ -191,13 +194,13 @@ const tpl = `
 `
 
 type Params struct {
-	Data        map[string]map[string]*Details
-	Headers     []string
-	Tests       []string
-	PrNumberMap map[int]struct{}
-	Date        string
-	Org         string
-	Repo        string
+	Data    map[string]map[string]*Details
+	Headers []string
+	Tests   []string
+	PrIds   []int64
+	Date    string
+	Org     string
+	Repo    string
 }
 
 type Details struct {
@@ -216,11 +219,11 @@ type Job struct {
 }
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
-func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string) (err error) {
+func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string, prIds []int64) (err error) {
 	reportObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(time.Now(), merged)))
 	log.Printf("Report will be written to gs://%s/%s", BucketName, reportObject.ObjectName())
 	reportOutputWriter := reportObject.NewWriter(ctx)
-	err = Report(reports, reportOutputWriter, org, repo)
+	err = Report(reports, reportOutputWriter, org, repo, prIds)
 	if err != nil {
 		return fmt.Errorf("failed on generating report: %v", err)
 	}
@@ -235,16 +238,14 @@ func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
 	return fmt.Sprintf(ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
 }
 
-func Report(results []*Result, reportOutputWriter *storage.Writer, org string, repo string) error {
+func Report(results []*Result, reportOutputWriter *storage.Writer, org string, repo string, prIds []int64) error {
 	data := map[string]map[string]*Details{}
 	headers := []string{}
 	tests := []string{}
 	buildNumberMap := map[int]struct{}{}
 	headerMap := map[string]struct{}{}
-	prNumberMap := map[int]struct{}{}
 
 	for _, result := range results {
-		prNumberMap[result.PR] = struct{}{}
 
 		// first find failing tests to isolate tests which interest us
 		for _, suite := range result.JUnit {
@@ -323,13 +324,13 @@ func Report(results []*Result, reportOutputWriter *storage.Writer, org string, r
 
 	testsSortedByRelevance := SortTestsByRelevance(data, tests)
 	parameters := Params{
-		Data:        data,
-		Headers:     headers,
-		Tests:       testsSortedByRelevance,
-		PrNumberMap: prNumberMap,
-		Date:        time.Now().Format("2006-01-02"),
-		Org:         org,
-		Repo:        repo,
+		Data:    data,
+		Headers: headers,
+		Tests:   testsSortedByRelevance,
+		PrIds:   prIds,
+		Date:    time.Now().Format("2006-01-02"),
+		Org:     org,
+		Repo:    repo,
 	}
 	var err error
 	if reportOutputWriter != nil {
