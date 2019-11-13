@@ -6,19 +6,19 @@ default:
       target: prs
       description: Denotes a PR that will be considered when it comes time to generate release notes.
       prowPlugin: release-note
-      addedBy: prow 
+      addedBy: prow
     - color: c2e0c6
       description: Denotes a PR that doesn't merit a release note.  # will be ignored when it comes time to generate release notes.
       name: release-note-none
       target: prs
       prowPlugin: release-note
-      addedBy: prow 
+      addedBy: prow
     - color: e11d21
       description: Indicates that a PR should not merge because someone has issued a /hold command.
       name: do-not-merge/hold
       target: prs
       prowPlugin: hold
-      addedBy: anyone          
+      addedBy: anyone
     - color: BDBDBD
       description: Indicates a PR cannot be merged because it has merge conflicts with HEAD.
       name: needs-rebase
@@ -334,6 +334,32 @@ repos:
         target: both
         addedBy: anyone
         prowPlugin: label
+  kubevirt/katacoda-scenarios:
+    labels:
+      - color: 15dd18
+        description: Indicates that a PR is ready to be merged.
+        name: lgtm
+        target: prs
+        prowPlugin: lgtm
+        addedBy: reviewers or members
+      - color: 0ffa16
+        description: Indicates a PR has been approved by an approver from all required OWNERS files.
+        name: approved
+        target: prs
+        prowPlugin: approve
+        addedBy: approvers
+      - color: b60205
+        description: Indicates a PR that requires an org member to verify it is safe to test. # This is to prevent spam/abuse of our CI system, and can be circumvented by becoming an org member. Org members can remove this label with the `/ok-to-test` command.
+        name: needs-ok-to-test
+        target: prs
+        prowPlugin: trigger
+        addedBy: prow
+      - color: 15dd18
+        description: Indicates a non-member PR verified by an org member that is safe to test. # This is the opposite of needs-ok-to-test and should be mutually exclusive.
+        name: ok-to-test
+        target: prs
+        prowPlugin: trigger
+        addedBy: prow
   kubevirt/kubevirt-tutorial:
     labels:
       - color: 80e591
