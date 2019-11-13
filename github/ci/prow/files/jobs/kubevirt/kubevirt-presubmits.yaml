@@ -128,6 +128,38 @@ presubmits:
           resources:
             requests:
               memory: "29Gi"
+  - name: pull-kubevirt-e2e-k8s-1.16.2
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 7h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "export TARGET=k8s-1.16.2 && automation/test.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "29Gi"
   - name: pull-kubevirt-e2e-k8s-multus-1.13.3
     skip_branches:
     - release-\d+\.\d+
@@ -293,6 +325,7 @@ presubmits:
     - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
+      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
     always_run: true
     optional: false
     decorate: true
@@ -300,8 +333,6 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 10
-    annotations:
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
