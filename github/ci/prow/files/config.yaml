@@ -50,6 +50,7 @@ tide:
     kubevirt/cloud-image-builder: squash
     kubevirt/kubevirt-tutorial: squash
     kubevirt/community: squash
+    kubevirt/hostpath-provisioner: squash
 
   queries:
   - repos:
@@ -73,6 +74,7 @@ tide:
   - repos:
     - kubevirt/kubevirt
     - kubevirt/containerized-data-importer
+    - kubevirt/hostpath-provisioner
     labels:
     - lgtm
     - approved

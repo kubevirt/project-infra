@@ -1,0 +1,34 @@
+presubmits:
+  kubevirt/hostpath-provisioner:
+  - name: pull-hostpath-provisioner-e2e-k8s-1.15.1
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "export KUBEVIRT_NUM_NODES=2 make cluster-down && make cluster-up && make cluster-sync && make test-functional"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "29Gi"
