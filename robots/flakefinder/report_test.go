@@ -52,7 +52,10 @@ var _ = Describe("report.go", func() {
 		prepareWithDefaultParams := func() {
 			parameters := Params{Data: map[string]map[string]*Details{
 				"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{}}},
-			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23", Org: Org, Repo: Repo}
+			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23",
+				Org: Org, Repo: Repo,
+				PrIds: []int64{17, 42},
+			}
 
 			prepareBuffer(parameters)
 		}
@@ -85,6 +88,37 @@ var _ = Describe("report.go", func() {
 		It("contains the date", func() {
 			prepareWithDefaultParams()
 			Expect(buffer.String()).To(ContainSubstring("2019-08-23"))
+		})
+
+		It("contains the pr ids", func() {
+			prepareWithDefaultParams()
+			Expect(buffer.String()).To(ContainSubstring("#17"))
+			Expect(buffer.String()).To(ContainSubstring("#42"))
+		})
+
+		It("shows no errors if no failing tests", func() {
+			parameters := Params{Data: map[string]map[string]*Details{},
+				Headers: []string{}, Tests: []string{}, Date: "2019-08-23",
+				Org: Org, Repo: Repo,
+				PrIds: []int64{17, 42},
+			}
+
+			prepareBuffer(parameters)
+
+			Expect(buffer.String()).To(ContainSubstring("No failing tests! :)"))
+		})
+
+		It("shows pr ids if no failing tests", func() {
+			parameters := Params{Data: map[string]map[string]*Details{},
+				Headers: []string{}, Tests: []string{}, Date: "2019-08-23",
+				Org: Org, Repo: Repo,
+				PrIds: []int64{17, 42},
+			}
+
+			prepareBuffer(parameters)
+
+			Expect(buffer.String()).To(ContainSubstring("#17"))
+			Expect(buffer.String()).To(ContainSubstring("#42"))
 		})
 
 		DescribeTable("title contains repo and org", func(org, repo string) {
