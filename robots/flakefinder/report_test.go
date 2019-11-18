@@ -54,7 +54,7 @@ var _ = Describe("report.go", func() {
 				"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{}}},
 			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23",
 				Org: Org, Repo: Repo,
-				PrIds: []int64{17, 42},
+				PrNumbers: []int{17, 42},
 			}
 
 			prepareBuffer(parameters)
@@ -100,7 +100,7 @@ var _ = Describe("report.go", func() {
 			parameters := Params{Data: map[string]map[string]*Details{},
 				Headers: []string{}, Tests: []string{}, Date: "2019-08-23",
 				Org: Org, Repo: Repo,
-				PrIds: []int64{17, 42},
+				PrNumbers: []int{17, 42},
 			}
 
 			prepareBuffer(parameters)
@@ -112,7 +112,7 @@ var _ = Describe("report.go", func() {
 			parameters := Params{Data: map[string]map[string]*Details{},
 				Headers: []string{}, Tests: []string{}, Date: "2019-08-23",
 				Org: Org, Repo: Repo,
-				PrIds: []int64{17, 42},
+				PrNumbers: []int{17, 42},
 			}
 
 			prepareBuffer(parameters)
