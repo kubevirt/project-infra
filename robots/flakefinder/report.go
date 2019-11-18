@@ -179,7 +179,7 @@ const tpl = `
 {{ end }}
 
 <div>
-    Source PRs: {{ range $key := $.PrIds }}<a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{ $key }}">#{{ $key }}</a>, {{ end }}
+    Source PRs: {{ range $key := $.PrNumbers }}<a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{ $key }}">#{{ $key }}</a>, {{ end }}
 </div>
 
 <script>
@@ -194,13 +194,13 @@ const tpl = `
 `
 
 type Params struct {
-	Data    map[string]map[string]*Details
-	Headers []string
-	Tests   []string
-	PrIds   []int64
-	Date    string
-	Org     string
-	Repo    string
+	Data      map[string]map[string]*Details
+	Headers   []string
+	Tests     []string
+	PrNumbers []int
+	Date      string
+	Org       string
+	Repo      string
 }
 
 type Details struct {
@@ -219,11 +219,11 @@ type Job struct {
 }
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
-func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string, prIds []int64) (err error) {
+func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string, prNumbers []int) (err error) {
 	reportObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(time.Now(), merged)))
 	log.Printf("Report will be written to gs://%s/%s", BucketName, reportObject.ObjectName())
 	reportOutputWriter := reportObject.NewWriter(ctx)
-	err = Report(reports, reportOutputWriter, org, repo, prIds)
+	err = Report(reports, reportOutputWriter, org, repo, prNumbers)
 	if err != nil {
 		return fmt.Errorf("failed on generating report: %v", err)
 	}
@@ -238,7 +238,7 @@ func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
 	return fmt.Sprintf(ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
 }
 
-func Report(results []*Result, reportOutputWriter *storage.Writer, org string, repo string, prIds []int64) error {
+func Report(results []*Result, reportOutputWriter *storage.Writer, org string, repo string, prNumbers []int) error {
 	data := map[string]map[string]*Details{}
 	headers := []string{}
 	tests := []string{}
@@ -324,13 +324,13 @@ func Report(results []*Result, reportOutputWriter *storage.Writer, org string, r
 
 	testsSortedByRelevance := SortTestsByRelevance(data, tests)
 	parameters := Params{
-		Data:    data,
-		Headers: headers,
-		Tests:   testsSortedByRelevance,
-		PrIds:   prIds,
-		Date:    time.Now().Format("2006-01-02"),
-		Org:     org,
-		Repo:    repo,
+		Data:      data,
+		Headers:   headers,
+		Tests:     testsSortedByRelevance,
+		PrNumbers: prNumbers,
+		Date:      time.Now().Format("2006-01-02"),
+		Org:       org,
+		Repo:      repo,
 	}
 	var err error
 	if reportOutputWriter != nil {

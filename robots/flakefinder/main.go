@@ -126,7 +126,7 @@ func main() {
 
 	logrus.Infof("Filtering PRs for base branch %s", PRBaseBranch)
 	prs := []*github.PullRequest{}
-	prIds := []int64{}
+	prNumbers := []int{}
 	for nextPage := 1; nextPage > 0; {
 		pullRequests, response, err := c.PullRequests.List(ctx, o.org, o.repo, &github.PullRequestListOptions{
 			Base:        PRBaseBranch,
@@ -152,7 +152,7 @@ func main() {
 			}
 			logrus.Infof("Adding PR %v '%v' (updated at %s)", *pr.Number, *pr.Title, pr.UpdatedAt.Format(time.RFC3339))
 			prs = append(prs, pr)
-			prIds = append(prIds, *pr.ID)
+			prNumbers = append(prNumbers, *pr.Number)
 		}
 	}
 	logrus.Infof("%d pull requests found.", len(prs))
@@ -170,7 +170,7 @@ func main() {
 		reports = append(reports, r...)
 	}
 
-	err = WriteReportToBucket(ctx, client, reports, o.merged, o.org, o.repo, prIds)
+	err = WriteReportToBucket(ctx, client, reports, o.merged, o.org, o.repo, prNumbers)
 	if err != nil {
 		log.Fatal(fmt.Errorf("failed to write report: %v", err))
 		return
