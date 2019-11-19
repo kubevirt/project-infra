@@ -82,6 +82,11 @@ plugins:
   - owners-label
   - trigger
 
+  kubevirt/demo:
+  - approve
+  - lgtm
+  - owners-label
+  - trigger
 
   kubevirt/kubevirt-tutorial:
   - approve
@@ -127,6 +132,7 @@ triggers:
   - kubevirt/hostpath-provisioner
   - kubevirt/katacoda-scenarios
   - kubevirt/common-templates
+  - kubevirt/demo
   trusted_org: kubevirt
 - repos:
   - virtblocks/virtblocks
@@ -145,6 +151,7 @@ approve:
   - kubevirt/containerized-data-importer
   - kubevirt/hostpath-provisioner
   - kubevirt/katacoda-scenarios
+  - kubevirt/demo
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -162,4 +169,5 @@ lgtm:
   - kubevirt/containerized-data-importer
   - kubevirt/hostpath-provisioner
   - kubevirt/katacoda-scenarios
+  - kubevirt/demo
   review_acts_as_lgtm: true

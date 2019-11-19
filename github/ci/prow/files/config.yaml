@@ -52,6 +52,7 @@ tide:
     kubevirt/community: squash
     kubevirt/hostpath-provisioner: squash
     kubevirt/katacoda-scenarios: squash
+    kubevirt/demo: squash
 
   queries:
   - repos:
@@ -63,6 +64,7 @@ tide:
     - kubevirt/kubevirt-tutorial
     - kubevirt/community
     - kubevirt/katacoda-scenarios
+    - kubevirt/demo
     labels:
     - lgtm
     - approved
