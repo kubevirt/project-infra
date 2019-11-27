@@ -1,0 +1,182 @@
+presubmits:
+  kubevirt/common-templates:
+  - name: pull-rhel6
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=rhel6 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "20Gi"
+  - name: pull-rhel7
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=rhel7 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "29Gi"
+  - name: pull-rhel8
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=rhel8 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "20Gi"
+  - name: pull-windows10
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=windows10 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "20Gi"
+  - name: pull-windows2012
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=windows2012 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "20Gi"
+  - name: pull-windows2016
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=windows2016 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "20Gi"

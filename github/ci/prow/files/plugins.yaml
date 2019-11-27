@@ -14,6 +14,8 @@ config_updater:
       namespace: kubevirt-prow
 
 plugins:
+  kubevirt/common-templates:
+  - trigger
 
   virtblocks:
   - trigger
@@ -124,6 +126,7 @@ triggers:
   - kubevirt/containerized-data-importer
   - kubevirt/hostpath-provisioner
   - kubevirt/katacoda-scenarios
+  - kubevirt/common-templates
   trusted_org: kubevirt
 - repos:
   - virtblocks/virtblocks
