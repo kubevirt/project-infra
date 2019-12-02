@@ -105,6 +105,40 @@ key to decrypt the tar file:
 File rmohr.tar decrypted.
 ```
 
+#### Error: unable to load Private Key
+If you are getting an error of the following:
+
+```bash
+❯ ./decrypt.sh ~/.ssh/id_rsa dhiller
+unable to load Private Key
+139888015738688:error:0909006C:PEM routines:get_name:no start line:crypto/pem/pem_lib.c:745:Expecting: ANY PRIVATE KEY
+```
+
+the reason is likely that your key is not in PEM format. According to the documentation keys created by `ssh-keygen` are created in OpenSSH format by default (i.e. file starting with `-----BEGIN OPENSSH PRIVATE KEY-----`).
+
+You can convert the OpenSSH key into PEM format by doing the following:
+
+```bash
+# make a copy of the key as the conversion will be done inline
+cp ~/.ssh/id_rsa /tmp/
+
+# convert it to pem format inline (asking for old password and new password)
+ssh-keygen -p -f /tmp/id_rsa -m PEM
+mv /tmp/id_rsa ~/.ssh/id_rsa.pem
+```
+The resulting file should look like this:
+
+```bash
+-----BEGIN RSA PRIVATE KEY-----
+...
+```
+
+Then you can use the decrypt script again like above, except that you use the pem key:
+
+```bash
+> ./decrypt.sh ~/.ssh/id_rsa.pem dhiller
+```
+
 ### Testing new ProwJobs
 
 The tool `mkpj` can be used to create jobs out of local configurations. Then
