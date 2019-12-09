@@ -8,7 +8,7 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror: "true"
-        preset-kubevirtci-docker-credential: "true"
+        preset-project-infra-kubevirtci-docker-credential: "true"
       spec:
         nodeSelector:
           type: vm
