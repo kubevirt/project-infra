@@ -41,3 +41,29 @@ presubmits:
         args:
           - test
           - ./...
+  - name: build-kubevirt-infra-bootstrap-image
+    always_run: false
+    run_if_changed: "images/kubevirt-infra-bootstrap/.*"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        type: vm
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cd images && ./publish_image.sh -b kubevirt-infra-bootstrap docker.io kubevirtci"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
