@@ -1,0 +1,17 @@
+presets:
+- labels:
+    preset-project-infra-kubevirtci-docker-credential: "true"
+  env:
+  - name: DOCKER_USER
+    value: /etc/kubevirtci-cred/username
+  - name: DOCKER_PASSWORD
+    value: /etc/kubevirtci-cred/password
+  volumes:
+  - name: kubevirtci-cred
+    secret:
+      defaultMode: 0400
+      secretName: kubevirtci-docker-credential
+  volumeMounts:
+  - name: kubevirtci-cred
+    mountPath: /etc/kubevirtci-cred
+    readOnly: true
