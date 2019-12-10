@@ -119,6 +119,13 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/cluster-network-addons-operator:
+  - trigger
+  - owners-label
+  - release-note
+  - lgtm
+  - approve
+
   nmstate/kubernetes-nmstate:
   - size
   - label
@@ -162,6 +169,7 @@ triggers:
   - kubevirt/katacoda-scenarios
   - kubevirt/common-templates
   - kubevirt/demo
+  - kubevirt/cluster-network-addons-operator
   trusted_org: kubevirt
 - repos:
   - virtblocks/virtblocks
@@ -183,6 +191,7 @@ approve:
   - kubevirt/hostpath-provisioner
   - kubevirt/katacoda-scenarios
   - kubevirt/demo
+  - kubevirt/cluster-network-addons-operator
   - nmstate/kubernetes-nmstate
   - kubevirt/kubectl-virt-plugin
   require_self_approval: true
@@ -203,6 +212,7 @@ lgtm:
   - kubevirt/hostpath-provisioner
   - kubevirt/katacoda-scenarios
   - kubevirt/demo
+  - kubevirt/cluster-network-addons-operator
   - nmstate/kubernetes-nmstate
   - kubevirt/kubectl-virt-plugin
   review_acts_as_lgtm: true
