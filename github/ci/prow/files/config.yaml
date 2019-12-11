@@ -54,6 +54,7 @@ tide:
     kubevirt/katacoda-scenarios: squash
     kubevirt/demo: squash
     kubevirt/ovs-cni: squash
+    kubevirt/cluster-network-addons-operator: squash
     nmstate/kubernetes-nmstate: squash
     kubevirt/kubectl-virt-plugin: squash
 
@@ -84,6 +85,7 @@ tide:
     - kubevirt/containerized-data-importer
     - kubevirt/hostpath-provisioner
     - kubevirt/ovs-cni
+    - kubevirt/cluster-network-addons-operator
     labels:
     - lgtm
     - approved
