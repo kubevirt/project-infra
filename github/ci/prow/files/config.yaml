@@ -53,6 +53,7 @@ tide:
     kubevirt/hostpath-provisioner: squash
     kubevirt/katacoda-scenarios: squash
     kubevirt/demo: squash
+    kubevirt/ovs-cni: squash
     nmstate/kubernetes-nmstate: squash
 
   queries:
@@ -80,6 +81,7 @@ tide:
     - kubevirt/kubevirt
     - kubevirt/containerized-data-importer
     - kubevirt/hostpath-provisioner
+    - kubevirt/ovs-cni
     labels:
     - lgtm
     - approved
