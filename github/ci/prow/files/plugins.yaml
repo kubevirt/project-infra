@@ -44,6 +44,13 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/ovs-cni:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
   kubevirt/machine-remediation-operator:
   - trigger
   - lgtm
