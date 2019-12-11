@@ -54,6 +54,7 @@ tide:
     kubevirt/katacoda-scenarios: squash
     kubevirt/demo: squash
     nmstate/kubernetes-nmstate: squash
+    kubevirt/kubectl-virt-plugin: squash
 
   queries:
   - repos:
@@ -66,6 +67,7 @@ tide:
     - kubevirt/community
     - kubevirt/katacoda-scenarios
     - kubevirt/demo
+    - kubevirt/kubectl-virt-plugin
     labels:
     - lgtm
     - approved
@@ -165,6 +167,8 @@ branch-protection:
           branches:
             master:
               protect: true
+        kubectl-virt-plugin:
+          protect: true
 
 push_gateway:
   endpoint: pushgateway

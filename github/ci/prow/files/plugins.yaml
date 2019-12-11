@@ -129,6 +129,11 @@ plugins:
   - dco
   - trigger
 
+  kubevirt/kubectl-virt-plugin:
+  - trigger
+  - lgtm
+  - approve
+
 external_plugins:
   kubevirt:
   - name: needs-rebase
@@ -172,6 +177,7 @@ approve:
   - kubevirt/katacoda-scenarios
   - kubevirt/demo
   - nmstate/kubernetes-nmstate
+  - kubevirt/kubectl-virt-plugin
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -191,4 +197,5 @@ lgtm:
   - kubevirt/katacoda-scenarios
   - kubevirt/demo
   - nmstate/kubernetes-nmstate
+  - kubevirt/kubectl-virt-plugin
   review_acts_as_lgtm: true
