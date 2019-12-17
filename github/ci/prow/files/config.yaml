@@ -86,6 +86,7 @@ tide:
     - kubevirt/hostpath-provisioner
     - kubevirt/ovs-cni
     - kubevirt/cluster-network-addons-operator
+    - nmstate/kubernetes-nmstate
     labels:
     - lgtm
     - approved

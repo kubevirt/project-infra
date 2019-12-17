@@ -130,6 +130,9 @@ plugins:
   - size
   - label
   - hold
+  - lgtm
+  - approve
+  - release-note
   - assign
   - blunderbuss
   - lifecycle
@@ -154,6 +157,10 @@ external_plugins:
     events:
       - pull_request
   - name: cherrypicker
+  nmstate:
+  - name: needs-rebase
+    events:
+      - pull_request
 
 triggers:
 - repos:
