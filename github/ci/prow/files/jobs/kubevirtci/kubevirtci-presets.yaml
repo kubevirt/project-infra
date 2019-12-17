@@ -16,6 +16,23 @@ presets:
     mountPath: /etc/kubevirtci-cred
     readOnly: true
 - labels:
+    preset-kubevirtci-quay-credential: "true"
+  env:
+  - name: QUAY_USER
+    value: /etc/kubevirtci-cred/username
+  - name: QUAY_PASSWORD
+    value: /etc/kubevirtci-cred/password
+  volumes:
+  - name: kubevirtci-cred
+    secret:
+      defaultMode: 0400
+      secretName: kubevirtci-quay-credential
+  volumeMounts:
+  - name: kubevirtci-cred
+    mountPath: /etc/kubevirtci-cred
+    readOnly: true
+
+- labels:
     preset-kubevirtci-installer-pull-token: "true"
   env:
   - name: INSTALLER_PULL_SECRET
