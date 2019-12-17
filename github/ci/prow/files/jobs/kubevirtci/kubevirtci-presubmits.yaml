@@ -331,7 +331,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io && cd cluster-provision/ocp/4.3 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh"
+        - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && cd cluster-provision/ocp/4.3 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
@@ -358,7 +358,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
-            - "cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io && cd cluster-provision/ocp/4.3 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh && ./publish.sh"
+            - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && cd cluster-provision/ocp/4.3 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh && ./publish.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
