@@ -367,7 +367,7 @@ presubmits:
               memory: "15Gi"
 
   - name: check-provision-k8s-1.10.11
-    always_run: false
+    run_if_changed: "cluster-provision/k8s/.*"
     optional: true
     decorate: true
     max_concurrency: 1
@@ -472,7 +472,7 @@ presubmits:
               memory: "8Gi"
 
   - name: check-provision-k8s-1.11.0
-    always_run: false
+    run_if_changed: "cluster-provision/k8s/.*"
     optional: true
     decorate: true
     max_concurrency: 1
@@ -523,7 +523,7 @@ presubmits:
               memory: "8Gi"
 
   - name: check-provision-k8s-1.15.1
-    always_run: false
+    run_if_changed: "cluster-provision/k8s/.*"
     optional: true
     decorate: true
     max_concurrency: 1
@@ -573,8 +573,59 @@ presubmits:
             requests:
               memory: "8Gi"
 
-  - name: check-provision-k8s-1.16.2
+  - name: check-provision-k8s-1.17.0
+    run_if_changed: "cluster-provision/k8s/.*"
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "cd cluster-provision/k8s/1.17.0 && ./provision.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+
+  - name: push-k8s-1.17.0
     always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd cluster-provision/k8s/1.17.0/ && ./provision.sh && ./publish.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+
+  - name: check-provision-k8s-1.16.2
+    run_if_changed: "cluster-provision/k8s/.*"
     optional: true
     decorate: true
     max_concurrency: 1
@@ -625,7 +676,7 @@ presubmits:
               memory: "8Gi"
 
   - name: check-provision-k8s-1.14.6
-    always_run: false
+    run_if_changed: "cluster-provision/k8s/.*"
     optional: true
     decorate: true
     max_concurrency: 1
@@ -677,7 +728,7 @@ presubmits:
 
 
   - name: check-provision-k8s-1.13.3
-    always_run: false
+    run_if_changed: "cluster-provision/k8s/.*"
     optional: true
     decorate: true
     max_concurrency: 1
