@@ -1,0 +1,8 @@
+filters:
+  ".*":
+    reviewers:
+      - qinqon
+      - phoracek
+    approvers:
+      - qinqon
+      - phoracek
