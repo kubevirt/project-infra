@@ -46,6 +46,19 @@
       data:
         username: "{{ dockerUser | b64encode }}"
         password: "{{ dockerPass | b64encode }}"
+- name: Create Quay-kubevirtbot secret
+  k8s:
+    state: present
+    namespace: "{{ prowJobsNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: kubevirtci-quay-credential
+      type: Opaque
+      data:
+        username: "{{ quayUser | b64encode }}"
+        password: "{{ quayPass | b64encode }}"
 - name: Create OKD installer pull token secret
   k8s:
     state: present
