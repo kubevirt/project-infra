@@ -55,7 +55,7 @@ tide:
     kubevirt/demo: squash
     kubevirt/ovs-cni: squash
     kubevirt/cluster-network-addons-operator: squash
-    kubevirt/bridge-maker: squash
+    kubevirt/bridge-marker: squash
     nmstate/kubernetes-nmstate: squash
     kubevirt/kubectl-virt-plugin: squash
 
@@ -87,7 +87,7 @@ tide:
     - kubevirt/hostpath-provisioner
     - kubevirt/ovs-cni
     - kubevirt/cluster-network-addons-operator
-    - kubevirt/bridge-maker
+    - kubevirt/bridge-marker
     - nmstate/kubernetes-nmstate
     labels:
     - lgtm

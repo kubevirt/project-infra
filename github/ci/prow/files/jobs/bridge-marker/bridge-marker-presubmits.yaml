@@ -1,7 +1,7 @@
 ---
 presubmits:
-  nmstate/kubernetes-nmstate:
-    - name: pull-bridge-maker-test
+  kubevirt/bridge-marker:
+    - name: pull-bridge-marker-test
       skip_branches:
         - release-\d+\.\d+
       annotations:
