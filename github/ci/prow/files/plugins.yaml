@@ -44,7 +44,7 @@ plugins:
   - lgtm
   - approve
 
-  kubevirt/bridge-maker:
+  kubevirt/bridge-marker:
   - trigger
   - release-note
   - owners-label
@@ -201,7 +201,7 @@ approve:
   - kubevirt/community
   - kubevirt/kubevirt-tutorial
   - kubevirt/kubevirt
-  - kubevirt/bridge-maker
+  - kubevirt/bridge-marker
   - kubevirt/containerized-data-importer
   - kubevirt/hostpath-provisioner
   - kubevirt/katacoda-scenarios
@@ -223,7 +223,7 @@ lgtm:
   - kubevirt/community
   - kubevirt/kubevirt-tutorial
   - kubevirt/kubevirt
-  - kubevirt/bridge-maker
+  - kubevirt/bridge-marker
   - kubevirt/containerized-data-importer
   - kubevirt/hostpath-provisioner
   - kubevirt/katacoda-scenarios
