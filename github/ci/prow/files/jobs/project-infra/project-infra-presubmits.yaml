@@ -22,7 +22,7 @@ presubmits:
           requests:
             memory: "500Mi"
   - name: pull-project-infra-test-flakefinder
-    always_run: true
+    run_if_changed: robots/flakefinder/.*
     optional: false
     decorate: true
     spec:
