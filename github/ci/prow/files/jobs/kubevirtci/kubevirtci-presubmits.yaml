@@ -206,6 +206,32 @@ presubmits:
             requests:
               memory: "15Gi"
 
+  - name: check-up-okd-4.1
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-installer-pull-token: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "KUBEVIRT_PROVIDER=okd-4.1 make cluster-up"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "15Gi"
+
   - name: check-provision-okd-network-4.1
     always_run: false
     optional: true
@@ -259,6 +285,33 @@ presubmits:
             requests:
               memory: "15Gi"
 
+  - name: check-up-okd-network-4.1
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-installer-pull-token: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "KUBEVIRT_PROVIDER=okd-network-4.1 make cluster-up"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "15Gi"
+
+
   - name: check-provision-okd-4.2
     always_run: false
     optional: true
@@ -311,6 +364,32 @@ presubmits:
           resources:
             requests:
               memory: "15Gi"
+
+  - name: check-up-okd-4.2
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-installer-pull-token: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "KUBEVIRT_PROVIDER=okd-4.2 make cluster-up"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "15Gi"
 
   - name: check-provision-ocp-4.3
     always_run: false
