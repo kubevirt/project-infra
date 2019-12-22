@@ -164,7 +164,7 @@ external_plugins:
     events:
       - pull_request
   - name: cherrypicker
-  nmstate:
+  nmstate/kubernetes-nmstate:
   - name: needs-rebase
     events:
       - pull_request
