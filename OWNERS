@@ -10,6 +10,7 @@ filters:
       - cynepco3hahue
       - danielBelenky
       - dhiller
+      - gbenhaim
     approvers:
       - slintes
       - davidvossel
@@ -18,3 +19,4 @@ filters:
       - cynepco3hahue
       - danielBelenky
       - dhiller
+      - gbenhaim
