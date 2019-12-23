@@ -7,4 +7,6 @@ RUN apt-get update \
         osinfo-db-tools \
         libosinfo-1.0 \
         expect python-gi \
+        python3-yaml \
+        make \
         && rm -rf /var/lib/apt/lists/*
