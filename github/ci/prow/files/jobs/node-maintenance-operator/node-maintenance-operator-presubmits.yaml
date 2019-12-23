@@ -1,0 +1,66 @@
+presubmits:
+  kubevirt/node-maintenance-operator:
+  - name: pull-node-maintenance-operator-e2e-k8s-1.13.3
+    skip_branches:
+    - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 7h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20191223-f0a2baa
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-1.13.3 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "29Gi"
+  - name: pull-node-maintenance-operator-e2e-os-3.11.0
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 7h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20191223-f0a2baa
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "export TARGET=os-3.11.0 && automation/test.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "29Gi"

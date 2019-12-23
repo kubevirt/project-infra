@@ -158,6 +158,13 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/node-maintenance-operator:
+  - trigger
+  - owners-label
+  - release-note
+  - lgtm
+  - approve
+
 external_plugins:
   kubevirt:
   - name: needs-rebase
@@ -184,6 +191,7 @@ triggers:
   - kubevirt/common-templates
   - kubevirt/demo
   - kubevirt/cluster-network-addons-operator
+  - kubevirt/node-maintenance-operator
   trusted_org: kubevirt
 - repos:
   - virtblocks/virtblocks
@@ -209,6 +217,7 @@ approve:
   - kubevirt/cluster-network-addons-operator
   - nmstate/kubernetes-nmstate
   - kubevirt/kubectl-virt-plugin
+  - kubevirt/node-maintenance-operator
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -231,4 +240,5 @@ lgtm:
   - kubevirt/cluster-network-addons-operator
   - nmstate/kubernetes-nmstate
   - kubevirt/kubectl-virt-plugin
+  - kubevirt/node-maintenance-operator
   review_acts_as_lgtm: true
