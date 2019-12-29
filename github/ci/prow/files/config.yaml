@@ -59,6 +59,7 @@ tide:
     nmstate/kubernetes-nmstate: squash
     kubevirt/kubectl-virt-plugin: squash
     kubevirt/node-maintenance-operator: squash
+    kubevirt/ansible-kubevirt-modules: squash
 
   queries:
   - repos:
@@ -91,6 +92,7 @@ tide:
     - kubevirt/bridge-marker
     - nmstate/kubernetes-nmstate
     - kubevirt/node-maintenance-operator
+    - kubevirt/ansible-kubevirt-modules
     labels:
     - lgtm
     - approved
