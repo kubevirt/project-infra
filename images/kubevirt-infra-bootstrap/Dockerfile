@@ -14,4 +14,5 @@ RUN apt-get update \
         libssl-dev \
         libpython-dev \
         python3 \
+        python3-pip \
         && rm -rf /var/lib/apt/lists/*
