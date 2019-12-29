@@ -1,0 +1,10 @@
+filters:
+  ".*":
+    reviewers:
+      - machacekondra
+      - pkliczewski
+      - vatsalparekh
+    approvers:
+      - machacekondra
+      - pkliczewski
+      - vatsalparekh
