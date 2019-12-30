@@ -1,6 +1,6 @@
 presubmits:
   kubevirt/ansible-kubevirt-modules:
-  - name: pull-node-maintenance-operator-e2e-os-3.11.0
+  - name: pull-ansible-kubevirt-modules-e2e-os-3.11.0
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -20,7 +20,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20191229-80bc167
+        - image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20191229-23d8f62
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
