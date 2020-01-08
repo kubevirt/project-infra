@@ -1,0 +1,28 @@
+postsubmits:
+  nmstate/kubernetes-nmstate:
+    - name: publish-kubernetes-nmstate
+      always_run: true
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "true"
+        preset-kubevirtci-quay-credential: "true"
+      spec:
+        nodeSelector:
+          type: vm
+        containers:
+          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && ./automation/publish.sh"
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "1Gi"
+              limits:
+                memory: "1Gi"
