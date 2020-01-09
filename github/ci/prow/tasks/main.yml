@@ -46,6 +46,19 @@
       data:
         username: "{{ dockerUser | b64encode }}"
         password: "{{ dockerPass | b64encode }}"
+- name: Create Quay-nmstate secret
+  k8s:
+    state: present
+    namespace: "{{ prowJobsNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: kubernetes-nmstate-quay-credential
+      type: Opaque
+      data:
+        username: "{{ nmstateQuayUser | b64encode }}"
+        password: "{{ nmstateQuayPass | b64encode }}"
 - name: Create Quay-kubevirtbot secret
   k8s:
     state: present
