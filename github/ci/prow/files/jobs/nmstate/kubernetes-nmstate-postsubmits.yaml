@@ -11,6 +11,7 @@ postsubmits:
       spec:
         nodeSelector:
           type: vm
+          zone: ci
         containers:
           - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
             command:
@@ -21,8 +22,3 @@ postsubmits:
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
-            resources:
-              requests:
-                memory: "1Gi"
-              limits:
-                memory: "1Gi"
