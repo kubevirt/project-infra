@@ -37,8 +37,8 @@ presubmits:
         - release-\d+\.\d+
       annotations:
         fork-per-release: "true"
-      always_run: true
-      optional: false
+      always_run: false
+      optional: true
       decorate: true
       decoration_config:
         timeout: 3h
@@ -63,7 +63,7 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-lifecycle-okd.sh"
-    - name: pull-e2e-cluster-network-addons-operator-lifecycle-workflow-k8s
+    - name: pull-e2e-cluster-network-addons-operator-workflow-k8s
       skip_branches:
         - release-\d+\.\d+
       annotations:
@@ -94,13 +94,13 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-workflow-k8s.sh"
-    - name: pull-e2e-cluster-network-addons-operator-lifecycle-workflow-okd
+    - name: pull-e2e-cluster-network-addons-operator-workflow-okd
       skip_branches:
         - release-\d+\.\d+
       annotations:
         fork-per-release: "true"
-      always_run: true
-      optional: false
+      always_run: false
+      optional: true
       decorate: true
       decoration_config:
         timeout: 3h
