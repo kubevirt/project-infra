@@ -1,0 +1,100 @@
+periodics:
+- name: periodic-publish-knmstate-flakefinder-weekly-report
+  interval: 24h
+  decorate: true
+  spec:
+    nodeSelector:
+      type: vm
+      zone: ci
+    containers:
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:1d359b10c91008c2f5a027fc56dbad9d7618361c6f0f8cdc461bddbbced4c2f5
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      command:
+      - "/app/robots/flakefinder/app.binary"
+      args:
+      - --token=/etc/github/oauth
+      - --merged=168h
+      - --report_output_child_path=nmstate/kubernetes-nmstate
+      - --org=nmstate
+      - --repo=kubernetes-nmstate
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+      - name: gcs
+        mountPath: /etc/gcs
+        readOnly: true
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: gcs
+      secret:
+        secretName: gcs
+- name: periodic-publish-knmstate-flakefinder-daily-report
+  interval: 24h
+  decorate: true
+  spec:
+    nodeSelector:
+      type: vm
+      zone: ci
+    containers:
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:1d359b10c91008c2f5a027fc56dbad9d7618361c6f0f8cdc461bddbbced4c2f5
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      command:
+      - "/app/robots/flakefinder/app.binary"
+      args:
+      - --token=/etc/github/oauth
+      - --merged=24h
+      - --report_output_child_path=nmstate/kubernetes-nmstate
+      - --org=nmstate
+      - --repo=kubernetes-nmstate
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+      - name: gcs
+        mountPath: /etc/gcs
+        readOnly: true
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: gcs
+      secret:
+        secretName: gcs
+- name: periodic-publish-knmstate-flakefinder-four-weekly-report
+  interval: 168h
+  decorate: true
+  spec:
+    nodeSelector:
+      type: vm
+      zone: ci
+    containers:
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:1d359b10c91008c2f5a027fc56dbad9d7618361c6f0f8cdc461bddbbced4c2f5
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      command:
+      - "/app/robots/flakefinder/app.binary"
+      args:
+      - --token=/etc/github/oauth
+      - --merged=672h
+      - --report_output_child_path=nmstate/kubernetes-nmstate
+      - --org=nmstate
+      - --repo=kubernetes-nmstate
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+      - name: gcs
+        mountPath: /etc/gcs
+        readOnly: true
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: gcs
+      secret:
+        secretName: gcs
