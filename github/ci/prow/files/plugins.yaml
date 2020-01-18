@@ -66,6 +66,13 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/macvtap-cni:
+  - trigger
+  - owners-label
+  - lgtm
+  - approve
+  - release-note
+
   kubevirt/machine-remediation-operator:
   - trigger
   - lgtm

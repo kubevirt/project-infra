@@ -68,6 +68,7 @@ tide:
     kubevirt/katacoda-scenarios: squash
     kubevirt/demo: squash
     kubevirt/ovs-cni: squash
+    kubevirt/macvtap-cni: squash
     kubevirt/cluster-network-addons-operator: squash
     kubevirt/bridge-marker: squash
     nmstate/kubernetes-nmstate: squash
@@ -101,6 +102,7 @@ tide:
     - kubevirt/containerized-data-importer
     - kubevirt/hostpath-provisioner
     - kubevirt/ovs-cni
+    - kubevirt/macvtap-cni
     - kubevirt/cluster-network-addons-operator
     - kubevirt/bridge-marker
     - nmstate/kubernetes-nmstate
@@ -177,6 +179,10 @@ branch-protection:
             master:
               protect: true
         ovs-cni:
+          branches:
+            master:
+              protect: true
+        macvtap-cni:
           branches:
             master:
               protect: true
