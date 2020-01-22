@@ -180,6 +180,12 @@ branch-protection:
               protect: true
         kubectl-virt-plugin:
           protect: true
+    nmstate:
+      repos:
+        kubernetes-nmstate:
+          branches:
+            master:
+              protect: true
 
 push_gateway:
   endpoint: pushgateway
