@@ -395,6 +395,10 @@ presubmits:
     always_run: false
     optional: true
     decorate: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
@@ -422,6 +426,10 @@ presubmits:
     always_run: false
     optional: true
     decorate: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
