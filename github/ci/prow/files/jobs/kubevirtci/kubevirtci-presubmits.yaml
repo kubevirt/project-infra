@@ -420,7 +420,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "15Gi"
+            memory: "30Gi"
 
   - name: push-ocp-4.3
     always_run: false
@@ -451,7 +451,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "15Gi"
+              memory: "30Gi"
 
   - name: check-up-ocp-4.3
     always_run: false
