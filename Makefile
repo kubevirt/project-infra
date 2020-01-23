@@ -1,13 +1,14 @@
 limiter     := limiter
 flakefinder := robots/flakefinder
+querier := robots/release-querier
 
-.PHONY: all clean deps-update $(limiter) $(flakefinder)
-all: deps-update $(limiter) $(flakefinder)
+.PHONY: all clean deps-update $(limiter) $(flakefinder) $(querier)
+all: deps-update $(limiter) $(flakefinder) $(querier)
 
 clean:
 	bazel clean
 
-$(limiter) $(flakefinder): deps-update
+$(limiter) $(flakefinder) $(querier): deps-update
 	$(MAKE) --directory=$@
 
 deps-update:
