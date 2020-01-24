@@ -11,6 +11,8 @@ filters:
       - danielBelenky
       - dhiller
       - gbenhaim
+      - qinqon
+      - phoracek
     approvers:
       - slintes
       - davidvossel
@@ -20,3 +22,5 @@ filters:
       - danielBelenky
       - dhiller
       - gbenhaim
+      - qinqon
+      - phoracek
