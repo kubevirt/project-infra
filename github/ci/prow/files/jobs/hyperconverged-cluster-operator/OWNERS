@@ -1,0 +1,8 @@
+filters:
+  ".*":
+    reviewers:
+      - tiraboschi
+      - orenc1
+    approvers:
+      - tiraboschi
+      - orenc1

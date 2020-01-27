@@ -187,6 +187,13 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/hyperconverged-cluster-operator:
+  - trigger
+  - owners-label
+  - release-note
+  - lgtm
+  - approve
+
 external_plugins:
   kubevirt:
   - name: needs-rebase
@@ -215,6 +222,8 @@ triggers:
   - kubevirt/cluster-network-addons-operator
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
+  - kubevirt/hyperconverged-cluster-operator
+  trusted_org: kubevirt
 - repos:
   - virtblocks/virtblocks
 - repos:
@@ -241,6 +250,7 @@ approve:
   - kubevirt/kubectl-virt-plugin
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
+  - kubevirt/hyperconverged-cluster-operator
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -265,4 +275,5 @@ lgtm:
   - kubevirt/kubectl-virt-plugin
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
+  - kubevirt/hyperconverged-cluster-operator
   review_acts_as_lgtm: true
