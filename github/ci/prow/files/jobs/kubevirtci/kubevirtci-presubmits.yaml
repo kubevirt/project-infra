@@ -257,6 +257,22 @@ presubmits:
         resources:
           requests:
             memory: "15Gi"
+        volumeMounts:
+          #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
+          - name: modules
+            mountPath: /lib/modules
+            readOnly: true
+          - name: cgroup
+            mountPath: /sys/fs/cgroup
+      volumes:
+        - name: modules
+          hostPath:
+            path: /lib/modules
+            type: Directory
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: Directory
 
   - name: check-up-kind-k8s-1.14.2
     always_run: false
