@@ -257,6 +257,22 @@ presubmits:
         resources:
           requests:
             memory: "15Gi"
+        volumeMounts:
+          #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
+          - name: modules
+            mountPath: /lib/modules
+            readOnly: true
+          - name: cgroup
+            mountPath: /sys/fs/cgroup
+      volumes:
+        - name: modules
+          hostPath:
+            path: /lib/modules
+            type: Directory
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: Directory
 
   - name: check-up-kind-k8s-1.14.2
     always_run: false
@@ -827,6 +843,58 @@ presubmits:
           resources:
             requests:
               memory: "8Gi"
+
+  - name: check-provision-k8s-fedora-1.17.0
+    run_if_changed: "cluster-provision/k8s/.*"
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "cd cluster-provision/k8s-fedora/1.17.0 && ./provision.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+
+  - name: push-k8s-fedora-1.17.0
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd cluster-provision/k8s-fedora/1.17.0/ && ./provision.sh && ./publish.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+
 
   - name: check-provision-k8s-1.17.0
     run_if_changed: "cluster-provision/k8s/.*"
