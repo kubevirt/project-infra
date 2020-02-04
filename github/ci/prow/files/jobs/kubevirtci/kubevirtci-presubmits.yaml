@@ -637,6 +637,96 @@ presubmits:
             requests:
               memory: "15Gi"
 
+  - name: check-provision-ocp-cnao-4.4
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-quay-credential: "true"
+      preset-kubevirtci-installer-pull-token: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && cd cluster-provision/ocp-cnao/4.4 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "30Gi"
+
+  - name: push-ocp-cnao-4.4
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-quay-credential: "true"
+      preset-kubevirtci-installer-pull-token: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && cd cluster-provision/ocp-cnao/4.4 && INSTALLER_PULL_SECRET=$INSTALLER_PULL_SECRET ./provision.sh && ./publish.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "30Gi"
+
+  - name: check-up-ocp-cnao-4.4
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-quay-credential: "true"
+      preset-kubevirtci-installer-pull-token: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && KUBEVIRT_PROVIDER=ocp-cnao-4.4 make cluster-up"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "15Gi"
+
+
   - name: check-provision-k8s-1.10.11
     run_if_changed: "cluster-provision/k8s/.*"
     optional: true
