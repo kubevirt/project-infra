@@ -2,16 +2,24 @@ config_updater:
   maps:
     github/ci/prow/files/config.yaml:
       name: config
-      namespace: kubevirt-prow
+      clusters:
+        default:
+          - kubevirt-prow
     github/ci/prow/files/jobs/**/*.yaml:
       name: job-config
-      namespace: kubevirt-prow
+      clusters:
+        default:
+          - kubevirt-prow
     github/ci/prow/files/plugins.yaml:
       name: plugins
-      namespace: kubevirt-prow
+      clusters:
+        default:
+          - kubevirt-prow
     github/ci/prow/files/labels.yaml:
       name: label-config
-      namespace: kubevirt-prow
+      clusters:
+        default:
+          - kubevirt-prow
 
 plugins:
   kubevirt/common-templates:
@@ -200,7 +208,6 @@ triggers:
   - kubevirt/cluster-network-addons-operator
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
-  trusted_org: kubevirt
 - repos:
   - virtblocks/virtblocks
 - repos:
