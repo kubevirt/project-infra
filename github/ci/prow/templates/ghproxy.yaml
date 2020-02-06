@@ -44,7 +44,7 @@ spec:
         zone: ci
       containers:
       - name: ghproxy
-        image: gcr.io/k8s-prow/ghproxy:v20190703-132f32f32 # TODO(fejta): tagged
+        image: gcr.io/k8s-prow/ghproxy:v20200204-7e8cd997a
         imagePullPolicy: Always
         args:
         - --cache-dir=/cache

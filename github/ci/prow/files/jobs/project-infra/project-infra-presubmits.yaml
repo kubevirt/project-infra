@@ -8,7 +8,7 @@ presubmits:
         type: vm
         zone: ci
       containers:
-      - image: gcr.io/k8s-prow/checkconfig:v20190703-132f32f32
+      - image: gcr.io/k8s-prow/checkconfig:v20200204-7e8cd997a
         args:
         - "/checkconfig"
         - "--config-path"

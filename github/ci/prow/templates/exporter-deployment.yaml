@@ -33,7 +33,7 @@ spec:
       serviceAccountName: "exporter"
       containers:
       - name: exporter
-        image: gcr.io/k8s-prow/exporter@sha256:371fd93503fa1de2b6a191faa2d426c928eb423046df20d5ca8b00e85a299d09
+        image: gcr.io/k8s-prow/exporter:v20200204-7e8cd997a
         args:
         - -config-path=/etc/config/config.yaml
         ports:

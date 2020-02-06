@@ -4,7 +4,7 @@ periodics:
   decorate: true
   spec:
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20190702-110f536c6
+    - image: gcr.io/k8s-prow/commenter:v20200204-7e8cd997a
       command:
       - /app/robots/commenter/app.binary
       args:
@@ -46,7 +46,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
+    - image: gcr.io/k8s-testimages/commenter:v20200204-7e8cd997a
       command:
       - /commenter
       args:
@@ -81,7 +81,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
+    - image: gcr.io/k8s-testimages/commenter:v20200204-7e8cd997a
       command:
       - /commenter
       args:
@@ -119,7 +119,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-testimages/commenter:v20170808-abf66782
+    - image: gcr.io/k8s-testimages/commenter:v20200204-7e8cd997a
       command:
       - /commenter
       args:

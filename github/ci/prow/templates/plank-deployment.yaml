@@ -31,7 +31,7 @@ spec:
       serviceAccountName: "plank"
       containers:
       - name: plank
-        image: gcr.io/k8s-prow/plank:v20190703-132f32f32
+        image: gcr.io/k8s-prow/plank:v20200204-7e8cd997a
         args:
         - --dry-run=false
         - --github-endpoint=http://ghproxy

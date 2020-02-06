@@ -1,45 +1,59 @@
 plank:
   job_url_template: 'https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
-  job_url_prefix: https://prow.apps.ovirt.org/view/gcs/
+  job_url_prefix_config:
+    '*':  https://prow.apps.ovirt.org/view/gcs/
   pod_pending_timeout: 60m
-  allow_cancellations: true # AllowCancellations enables aborting presubmit jobs for commits that have been superseded by newer commits in Github pull requests.
-  default_decoration_config:
-    timeout: 2h
-    grace_period: 15s
-    utility_images:
-      clonerefs: "gcr.io/k8s-prow/clonerefs:v20190703-132f32f32"
-      initupload: "gcr.io/k8s-prow/initupload:v20190703-132f32f32"
-      entrypoint: "gcr.io/k8s-prow/entrypoint:v20190703-132f32f32"
-      sidecar: "gcr.io/k8s-prow/sidecar:v20190703-132f32f32"
-    gcs_configuration:
-      bucket: "kubevirt-prow"
-      path_strategy: "explicit"
-    gcs_credentials_secret: "gcs"
+  default_decoration_configs:
+    '*':          
+      timeout: 2h
+      grace_period: 15s
+      utility_images:
+        clonerefs: "gcr.io/k8s-prow/clonerefs:v20200204-7e8cd997a"
+        initupload: "gcr.io/k8s-prow/initupload:v20200204-7e8cd997a"
+        entrypoint: "gcr.io/k8s-prow/entrypoint:v20200204-7e8cd997a"
+        sidecar: "gcr.io/k8s-prow/sidecar:v20200204-7e8cd997a"
+      gcs_configuration:
+        bucket: "kubevirt-prow"
+        path_strategy: "explicit"
+      gcs_credentials_secret: "gcs"
 
 deck:
   spyglass:
     size_limit: 500000000 # 500MB
     gcs_browser_prefix: https://gcsweb.apps.ovirt.org/gcs/
-    viewers:
-      "started.json|finished.json":
-      - "metadata"
-      "build-log.txt":
-      - "buildlog"
-      "artifacts/junit.*\\.xml":
-      - "junit"
-      "artifacts/filtered.cov":
-      - "coverage"
+    lenses:
+    - lens:
+        name: metadata
+      required_files:
+      - started.json|finished.json
+    - lens:
+        name: buildlog
+      required_files:
+        - build-log.txt
+    - lens:
+        name: junit
+      required_files:
+        - artifacts/junit.*\.xml
+    - lens:
+        name: coverage
+      required_files:
+        - artifacts/filtered.cov
+      optional_files:
+        - artifacts/filtered.html
+  tide_update_period: 1s
 
 sinker:
   resync_period: 1m
   max_prowjob_age: 48h
   max_pod_age: 30m
+  terminated_pod_ttl: 2h
 
 prowjob_namespace: kubevirt-prow-jobs
 pod_namespace: kubevirt-prow-jobs
 log_level: debug
 
 tide:
+  sync_period: 2m
   merge_method:
     kubevirt/containerized-data-importer: squash
     kubevirt/kubevirt: merge
@@ -60,7 +74,6 @@ tide:
     kubevirt/kubectl-virt-plugin: squash
     kubevirt/node-maintenance-operator: squash
     kubevirt/ansible-kubevirt-modules: squash
-
   queries:
   - repos:
     - kubevirt/project-infra
@@ -104,7 +117,8 @@ tide:
     - do-not-merge/release-note-label-needed
     - needs-rebase
     - "dco-signoff: no"
-  pr_status_base_url: https://prow.apps.ovirt.org/pr
+  pr_status_base_urls: 
+    '*': https://prow.apps.ovirt.org/pr
   context_options:
     orgs:
      kubevirt:
