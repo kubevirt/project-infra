@@ -46,9 +46,9 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-testimages/commenter:v20200204-7e8cd997a
+    - image: gcr.io/k8s-prow/commenter:v20200204-7e8cd997a
       command:
-      - /commenter
+      - /app/robots/commenter/app.binary
       args:
       - |-
         --query=org:kubevirt
@@ -81,9 +81,9 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-testimages/commenter:v20200204-7e8cd997a
+    - image: gcr.io/k8s-prow/commenter:v20200204-7e8cd997a
       command:
-      - /commenter
+      - /app/robots/commenter/app.binary
       args:
       - |-
         --query=org:kubevirt
@@ -119,9 +119,9 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-testimages/commenter:v20200204-7e8cd997a
+    - image: gcr.io/k8s-prow/commenter:v20200204-7e8cd997a
       command:
-      - /commenter
+      - /app/robots/commenter/app.binary
       args:
       - |-
         --query=org:kubevirt
