@@ -183,8 +183,8 @@ presubmits:
   - name: pull-e2e-common-templates-windows2019
     annotations:
       fork-per-release: "true"
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 3h
