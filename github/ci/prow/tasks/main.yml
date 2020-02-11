@@ -302,6 +302,26 @@
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
     stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-deployment.yaml')}}"
+- name: Create slack-token secret
+  k8s:
+    state: present
+    namespace: "{{ prowNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: slack-token
+      type: Opaque
+      data:
+        token: "{{ slackToken | b64encode }}"
+- name: Deploy crier-rbac
+  command: "oc -n {{prowJobsNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/crier-rbac.yaml')}}"
+- name: Deploy crier-deployment
+  command: "oc -n {{prowNamespace}} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/crier-deployment.yaml')}}"
 - name: Deploy gcsweb-service
   command: "oc -n {{prowNamespace}} apply -f -"
   args:
