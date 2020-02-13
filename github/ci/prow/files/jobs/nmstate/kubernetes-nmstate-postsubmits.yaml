@@ -41,13 +41,13 @@ postsubmits:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
-              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/token) ./automation/release.sh"
+              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/oauth) ./automation/release.sh"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             volumeMounts:
               - name: github-token
-                mountPath: /etc/github/token
+                mountPath: /etc/github
         volumes:
           - name: github-token
             secret:
