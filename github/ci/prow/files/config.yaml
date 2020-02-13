@@ -234,6 +234,8 @@ branch-protection:
           branches:
             master:
               protect: true
+            release-0.15:
+              protect: true
 
 push_gateway:
   endpoint: pushgateway
