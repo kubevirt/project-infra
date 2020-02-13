@@ -4,7 +4,7 @@ plank:
     '*':  https://prow.apps.ovirt.org/view/gcs/
   pod_pending_timeout: 60m
   default_decoration_configs:
-    '*':          
+    '*':
       timeout: 2h
       grace_period: 15s
       utility_images:
@@ -122,7 +122,7 @@ tide:
     - do-not-merge/release-note-label-needed
     - needs-rebase
     - "dco-signoff: no"
-  pr_status_base_urls: 
+  pr_status_base_urls:
     '*': https://prow.apps.ovirt.org/pr
   context_options:
     orgs:
@@ -142,6 +142,18 @@ slack_reporter_configs:
       - failure
       - error
     channel: kubevirt-ci-monitoring
+    # The template shown below is the default
+    report_template: 'Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>'
+
+  'kubevirt/kubevirt-tutorial':
+    job_types_to_report:
+      - postsubmit
+      - periodic
+      - batch
+    job_states_to_report:
+      - failure
+      - error
+    channel: eko
     # The template shown below is the default
     report_template: 'Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>'
 
