@@ -72,6 +72,7 @@ tide:
     kubevirt/cluster-network-addons-operator: squash
     kubevirt/bridge-marker: squash
     nmstate/kubernetes-nmstate: squash
+    k8snetworkplumbingwg/kubemacpool: squash
     kubevirt/kubectl-virt-plugin: squash
     kubevirt/node-maintenance-operator: squash
     kubevirt/ansible-kubevirt-modules: squash
@@ -108,6 +109,7 @@ tide:
     - kubevirt/cluster-network-addons-operator
     - kubevirt/bridge-marker
     - nmstate/kubernetes-nmstate
+    - k8snetworkplumbingwg/kubemacpool
     - kubevirt/node-maintenance-operator
     - kubevirt/ansible-kubevirt-modules
     - kubevirt/hyperconverged-cluster-operator
@@ -228,6 +230,12 @@ branch-protection:
               protect: true
         kubectl-virt-plugin:
           protect: true
+    k8snetworkplumbingwg:
+      repos:
+        kubemacpool:
+          branches:
+            master:
+              protect: true
     nmstate:
       repos:
         kubernetes-nmstate:
