@@ -168,6 +168,26 @@ plugins:
   - dco
   - trigger
 
+  k8snetworkplumbingwg/kubemacpool:
+  - size
+  - label
+  - hold
+  - lgtm
+  - approve
+  - release-note
+  - assign
+  - blunderbuss
+  - lifecycle
+  - verify-owners
+  - skip
+  - override
+  - wip
+  - pony
+  - dog
+  - cat
+  - dco
+  - trigger
+
   kubevirt/kubectl-virt-plugin:
   - trigger
   - lgtm
@@ -196,6 +216,11 @@ plugins:
 
 external_plugins:
   kubevirt:
+  - name: needs-rebase
+    events:
+      - pull_request
+  - name: cherrypicker
+  k8snetworkplumbingwg/kubemacpool:
   - name: needs-rebase
     events:
       - pull_request
@@ -229,6 +254,8 @@ triggers:
   - virtblocks/virtblocks
 - repos:
   - nmstate/kubernetes-nmstate
+- repos:
+  - k8snetworkplumbingwg/kubemacpool
 
 
 approve:
@@ -248,6 +275,7 @@ approve:
   - kubevirt/demo
   - kubevirt/cluster-network-addons-operator
   - nmstate/kubernetes-nmstate
+  - k8snetworkplumbingwg/kubemacpool
   - kubevirt/kubectl-virt-plugin
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
@@ -273,6 +301,7 @@ lgtm:
   - kubevirt/demo
   - kubevirt/cluster-network-addons-operator
   - nmstate/kubernetes-nmstate
+  - k8snetworkplumbingwg/kubemacpool
   - kubevirt/kubectl-virt-plugin
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
