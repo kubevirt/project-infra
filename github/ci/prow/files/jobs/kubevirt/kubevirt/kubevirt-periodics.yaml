@@ -183,3 +183,87 @@ periodics:
       - name: gcs
         secret:
           secretName: gcs
+- name: periodic-kubevirt-bump-vendor-patch
+  cluster: ibm-prow-jobs
+  cron: "05 7 * * 1-5"  # Run at 7:05 AM UTC every M-F
+  max_concurrency: 1
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirt
+    base_ref: master
+    workdir: true
+  - org: kubevirt
+    repo: project-infra
+    base_ref: master
+  spec:
+    containers:
+      - image: "kubevirt/builder@sha256:e6a76ec71f2de87c3bc648bae87ab43a113540bf57da69f07f76bd0edfd500ab"
+        env:
+        - name: KUBEVIRT_RUN_UNNESTED
+          value: "true"
+        - name: GIT_ASKPASS
+          value: "../project-infra/hack/git-askpass.sh"
+        command:
+          - "/entrypoint.sh"
+          - "hack/autobump-generic.sh"
+          - "kubevirt-bot"
+          - "/etc/github/oauth"
+          - "kubevirt-bot"
+          - "rmohr+kubebot@redhat.com"
+          - "deps-update-patch"
+        volumeMounts:
+        - name: token
+          mountPath: /etc/github
+        resources:
+          requests:
+            memory: "1Gi"
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+- name: periodic-kubevirt-bump-vendor-minor
+  cluster: ibm-prow-jobs
+  cron: "05 7 * * 1"  # Run at 7:05 UTC every monday.
+  max_concurrency: 1
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirt
+    base_ref: master
+    workdir: true
+  - org: kubevirt
+    repo: project-infra
+    base_ref: master
+  spec:
+    containers:
+      - image: "kubevirt/builder@sha256:e6a76ec71f2de87c3bc648bae87ab43a113540bf57da69f07f76bd0edfd500ab"
+        env:
+        - name: KUBEVIRT_RUN_UNNESTED
+          value: "true"
+        - name: GIT_ASKPASS
+          value: "../project-infra/hack/git-askpass.sh"
+        command:
+          - "/entrypoint.sh"
+          - "hack/autobump-generic.sh"
+          - "kubevirt-bot"
+          - "/etc/github/oauth"
+          - "kubevirt-bot"
+          - "rmohr+kubebot@redhat.com"
+          - "deps-update"
+        volumeMounts:
+        - name: token
+          mountPath: /etc/github
+        resources:
+          requests:
+            memory: "1Gi"
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
