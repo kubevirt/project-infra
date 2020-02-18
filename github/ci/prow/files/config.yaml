@@ -208,6 +208,8 @@ branch-protection:
           branches:
             master:
               protect: true
+            release-0.27:
+              protect: true
         ovs-cni:
           branches:
             master:
