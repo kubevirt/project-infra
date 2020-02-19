@@ -1,14 +1,15 @@
 limiter     := limiter
 flakefinder := robots/flakefinder
 querier := robots/release-querier
+kubevirtci := robots/kubevirtci-bumper
 
-.PHONY: all clean deps-update $(limiter) $(flakefinder) $(querier)
-all: deps-update $(limiter) $(flakefinder) $(querier)
+.PHONY: all clean deps-update $(limiter) $(flakefinder) $(querier) $(kubevirtci)
+all: deps-update $(limiter) $(flakefinder) $(querier) $(kubevirtci)
 
 clean:
 	bazel clean
 
-$(limiter) $(flakefinder) $(querier): deps-update
+$(limiter) $(flakefinder) $(querier) $(kubevirtci): deps-update
 	$(MAKE) --directory=$@
 
 deps-update:
