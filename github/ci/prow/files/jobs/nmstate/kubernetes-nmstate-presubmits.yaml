@@ -56,7 +56,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "4Gi"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
