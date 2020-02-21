@@ -50,6 +50,7 @@ func flagOptions() options {
 	flag.StringVar(&o.reportOutputChildPath, "report_output_child_path", "", fmt.Sprintf("Child path below the main reporting directory '%s' (i.e. 'master', default is '')", ReportsPath))
 	flag.StringVar(&o.org, "org", Org, fmt.Sprintf("GitHub org name (default is '%s')", Org))
 	flag.StringVar(&o.repo, "repo", Repo, fmt.Sprintf("GitHub org name (default is '%s')", Repo))
+	flag.BoolVar(&o.stdout, "stdout", false, "write generated report to stdout (default is false)")
 	flag.Parse()
 	return o
 }
@@ -65,6 +66,7 @@ type options struct {
 	reportOutputChildPath string
 	org                   string
 	repo                  string
+	stdout                bool
 }
 
 const BucketName = "kubevirt-prow"
@@ -170,7 +172,7 @@ func main() {
 		reports = append(reports, r...)
 	}
 
-	err = WriteReportToBucket(ctx, client, reports, o.merged, o.org, o.repo, prNumbers)
+	err = WriteReportToBucket(ctx, client, reports, o.merged, o.org, o.repo, prNumbers, o.stdout)
 	if err != nil {
 		log.Fatal(fmt.Errorf("failed to write report: %v", err))
 		return

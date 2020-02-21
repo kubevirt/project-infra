@@ -219,11 +219,11 @@ type Job struct {
 }
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
-func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string, prNumbers []int) (err error) {
+func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string, prNumbers []int, writeToStdout bool) (err error) {
 	reportObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(time.Now(), merged)))
 	log.Printf("Report will be written to gs://%s/%s", BucketName, reportObject.ObjectName())
 	reportOutputWriter := reportObject.NewWriter(ctx)
-	err = Report(reports, reportOutputWriter, org, repo, prNumbers)
+	err = Report(reports, reportOutputWriter, org, repo, prNumbers, writeToStdout)
 	if err != nil {
 		return fmt.Errorf("failed on generating report: %v", err)
 	}
@@ -238,7 +238,7 @@ func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
 	return fmt.Sprintf(ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
 }
 
-func Report(results []*Result, reportOutputWriter *storage.Writer, org string, repo string, prNumbers []int) error {
+func Report(results []*Result, reportOutputWriter *storage.Writer, org string, repo string, prNumbers []int, writeToStdout bool) error {
 	data := map[string]map[string]*Details{}
 	headers := []string{}
 	tests := []string{}
@@ -336,7 +336,9 @@ func Report(results []*Result, reportOutputWriter *storage.Writer, org string, r
 	if reportOutputWriter != nil {
 		err = WriteReportToOutput(reportOutputWriter, parameters)
 	}
-	err = WriteReportToOutput(os.Stdout, parameters)
+	if writeToStdout {
+		err = WriteReportToOutput(os.Stdout, parameters)
+	}
 
 	if err != nil {
 		return fmt.Errorf("failed to render report template: %v", err)
