@@ -232,6 +232,12 @@ branch-protection:
               protect: true
         kubectl-virt-plugin:
           protect: true
+    k8snetworkplumbingwg:
+      repos:
+        kubemacpool:
+          branches:
+            master:
+              protect: true
     nmstate:
       repos:
         kubernetes-nmstate:
