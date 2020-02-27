@@ -22,7 +22,7 @@ presubmits:
           type: vm
           zone: ci
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20200226-3b9263d
             securityContext:
               privileged: true
             command:
@@ -51,7 +51,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20200226-3b9263d
             securityContext:
               privileged: true
             resources:
