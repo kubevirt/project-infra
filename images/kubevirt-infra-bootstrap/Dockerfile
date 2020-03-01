@@ -22,4 +22,4 @@ RUN export KUSTOMIZE_DIR=/opt/kustomize \
     && wget "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv3.5.4/kustomize_v3.5.4_linux_amd64.tar.gz" \
     && tar xzf ./kustomize_v3.5.4_linux_amd64.tar.gz \
     && rm kustomize_v3.5.4_linux_amd64.tar.gz \
-    && echo "export PATH=$KUSTOMIZE_DIR:$PATH" >> $HOME/.bashrc
+    && ln -s $KUSTOMIZE_DIR/kustomize /usr/bin/kustomize
