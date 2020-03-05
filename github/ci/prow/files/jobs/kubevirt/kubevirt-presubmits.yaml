@@ -455,7 +455,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "apt update && apt install gettext-base -y && export TARGET=kind-k8s-sriov-1.17.0 && automation/test.sh"
+        - "dpkg-reconfigure -f noninteractive bash && apt update && apt install gettext-base -y && export TARGET=kind-k8s-sriov-1.17.0 && automation/test.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
