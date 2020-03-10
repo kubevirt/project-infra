@@ -49,6 +49,7 @@ spec:
         - --oauth-url=/github-login
         - --spyglass=true
         - --gcs-credentials-file=/etc/gcs/service-account.json
+        - --rerun-creates-job=true
         volumeMounts:
         - name: oauth-config
           mountPath: /etc/github
