@@ -24,3 +24,32 @@ postsubmits:
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
+    - name: release-macvtap-cni
+      run_if_changed: "version/version.go"
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "true"
+        preset-kubevirtci-quay-credential: "true"
+      spec:
+        nodeSelector:
+          type: vm
+          zone: ci
+        containers:
+          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/oauth) ./automation/release.sh"
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            volumeMounts:
+              - name: github-token
+                mountPath: /etc/github
+        volumes:
+          - name: github-token
+            secret:
+              secretName: oauth-token
