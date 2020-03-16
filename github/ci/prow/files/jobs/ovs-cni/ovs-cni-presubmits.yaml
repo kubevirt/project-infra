@@ -31,4 +31,4 @@ presubmits:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
               - "-c"
-              - "automation/check-patch.sh"
+              - "automation/check-patch.e2e.sh"
