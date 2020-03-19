@@ -285,3 +285,17 @@ presets:
   volumeMounts:
   - name: shared-iso
     mountPath: /var/lib/stdci/shared/kubevirt-images/
+- labels:
+    preset-fossa-token: "true"
+  env:
+  - name: FOSSA_API_KEY
+    value: /etc/kubevirt-fossa/token
+  volumes:
+  - name: kubevirt-fossa
+    secret:
+      defaultMode: 0400
+      secretName: kubevirt-fossa-token
+  volumeMounts:
+  - name: kubevirt-fossa
+    mountPath: /etc/kubevirt-fossa
+    readOnly: true

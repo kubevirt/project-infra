@@ -314,6 +314,18 @@
       type: Opaque
       data:
         token: "{{ slackToken | b64encode }}"
+- name: Create fossa-token secret
+  k8s:
+    state: present
+    namespace: "{{ prowJobsNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: kubevirt-fossa-token
+      type: Opaque
+      data:
+        token: "{{ fossaToken | b64encode }}"
 - name: Deploy crier-rbac
   command: "oc -n {{prowJobsNamespace}} apply -f -"
   args:
