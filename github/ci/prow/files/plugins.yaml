@@ -155,6 +155,7 @@ plugins:
   - lgtm
   - approve
   - release-note
+  - owners-label
   - assign
   - blunderbuss
   - lifecycle
