@@ -430,6 +430,46 @@ repos:
         addedBy: approvers
   nmstate/kubernetes-nmstate:
     labels:
+      - name: kind/bug
+        color: d73a4a
+        target: both
+        prowPlugin: label
+        addedBy: anyone
+      - name: kind/documentation
+        color: 167e8c
+        target: both
+        prowPlugin: label
+        addedBy: anyone
+      - name: kind/enhancement
+        color: 3b58db
+        target: both
+        prowPlugin: label
+        addedBy: anyone
+      - name: kind/feature
+        color: 1a7f08
+        target: both
+        prowPlugin: label
+        addedBy: anyone
+      - name: kind/infrastructure
+        color: c90c67
+        target: both
+        prowPlugin: label
+        addedBy: anyone
+      - name: kind/question
+        color: 420672
+        target: issues
+        prowPlugin: label
+        addedBy: anyone
+      - name: kind/refactor
+        color: 842700
+        target: both
+        prowPlugin: label
+        addedBy: anyone
+      - name: kind/test
+        color: 114d6d
+        target: both
+        prowPlugin: label
+        addedBy: anyone
       - name: priority/highest
         color: 9999e6
         target: both
@@ -449,9 +489,6 @@ repos:
         color: cccccc
         target: both
       - name: invalid
-        color: ffffff
-        target: both
-      - name: wontfix
         color: ffffff
         target: both
       - name: good first issue
