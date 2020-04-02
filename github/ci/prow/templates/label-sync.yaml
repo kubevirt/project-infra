@@ -36,7 +36,7 @@ spec:
               args:
               - --config=/etc/config/labels.yaml
               - --confirm=true
-              - --orgs=kubevirt
+              - --orgs=kubevirt,nmstate
               - --token=/etc/github/oauth
               volumeMounts:
               - name: oauth
