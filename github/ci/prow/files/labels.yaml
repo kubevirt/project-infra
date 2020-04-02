@@ -430,18 +430,8 @@ repos:
         addedBy: approvers
   nmstate/kubernetes-nmstate:
     labels:
-      - name: kind/bug
-        color: d73a4a
-        target: both
-        prowPlugin: label
-        addedBy: anyone
       - name: kind/documentation
         color: 167e8c
-        target: both
-        prowPlugin: label
-        addedBy: anyone
-      - name: kind/enhancement
-        color: 3b58db
         target: both
         prowPlugin: label
         addedBy: anyone
@@ -453,11 +443,6 @@ repos:
       - name: kind/infrastructure
         color: c90c67
         target: both
-        prowPlugin: label
-        addedBy: anyone
-      - name: kind/question
-        color: 420672
-        target: issues
         prowPlugin: label
         addedBy: anyone
       - name: kind/refactor
