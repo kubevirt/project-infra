@@ -1,0 +1,12 @@
+filters:
+  ".*":
+    reviewers:
+      - jakub-dzon
+      - machacekondra
+      - masayag
+      - pkliczewski
+    approvers:
+      - jakub-dzon
+      - machacekondra
+      - masayag
+      - pkliczewski

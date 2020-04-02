@@ -215,6 +215,13 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/vm-import-operator:
+  - trigger
+  - owners-label
+  - release-note
+  - lgtm
+  - approve
+
 external_plugins:
   kubevirt:
   - name: needs-rebase
@@ -250,6 +257,7 @@ triggers:
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
   - kubevirt/hyperconverged-cluster-operator
+  - kubevirt/vm-import-operator
   trusted_org: kubevirt
 - repos:
   - virtblocks/virtblocks
