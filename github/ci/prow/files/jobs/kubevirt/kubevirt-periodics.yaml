@@ -92,3 +92,38 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
+- name: periodic-kubevirt-push-nightly-build-master
+  cron: "02 05 * * *"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror: "true"
+    preset-shared-images: "true"
+    preset-kubevirtci-docker-credential: "true"
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+    - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - >
+          cat $DOCKER_PASSWORD | docker login --username $(cat $DOCKER_USER) --password-stdin &&
+          git clone https://github.com/kubevirt/kubevirt.git &&
+          cd kubevirt &&
+          export DOCKER_PREFIX='kubevirtnightlybuilds' &&
+          export DOCKER_TAG='latest' &&
+          make &&
+          make push
+      # docker-in-docker needs privileged mode
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "29Gi"
