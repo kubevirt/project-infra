@@ -555,7 +555,6 @@ presubmits:
     max_concurrency: 6
     labels:
       preset-docker-mirror: "false"
-      preset-shared-images: "true"
     spec:
       nodeSelector:
         type: vm
