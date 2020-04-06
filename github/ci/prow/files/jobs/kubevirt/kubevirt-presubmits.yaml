@@ -564,5 +564,7 @@ presubmits:
           env:
             - name: "KUBEVIRT_RUN_UNNESTED"
               value: "true"
+            - name: "USER"
+              value: "root"
           args:
             - automation/unit-test.sh
