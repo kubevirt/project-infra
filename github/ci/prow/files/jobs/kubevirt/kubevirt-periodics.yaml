@@ -93,7 +93,7 @@ periodics:
       secret:
         secretName: gcs
 - name: periodic-kubevirt-push-nightly-build-master
-  cron: "02 05 * * *"
+  cron: "2 1 * * *"
   decorate: true
   decoration_config:
     timeout: 1h
