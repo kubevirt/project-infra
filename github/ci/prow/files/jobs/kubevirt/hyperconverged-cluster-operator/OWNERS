@@ -1,10 +1,20 @@
+# DO NOT EDIT; this file is auto-generated using https://github.com/openshift/ci-tools.
+# See the OWNERS docs: https://git.k8s.io/community/contributors/guide/owners.md
+
 filters:
-  ".*":
-    reviewers:
-      - tiraboschi
-      - orenc1
-      - nunnatsa
+  .*:
     approvers:
-      - tiraboschi
-      - orenc1
-      - nunnatsa
+    - djzager
+    - nunnatsa
+    - orenc1
+    - rthallisey
+    - tiraboschi
+    - yuvalturg
+    reviewers:
+    - djzager
+    - nunnatsa
+    - orenc1
+    - rthallisey
+    - tiraboschi
+    - yuvalturg
+options: {}

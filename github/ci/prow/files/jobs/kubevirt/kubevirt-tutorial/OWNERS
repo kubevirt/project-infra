@@ -1,10 +1,14 @@
-reviewers:
-  - codificat
-  - iranzo
-  - ptrnull
-  - jparrill
+# DO NOT EDIT; this file is auto-generated using https://github.com/openshift/ci-tools.
+# See the OWNERS docs: https://git.k8s.io/community/contributors/guide/owners.md
+
 approvers:
-  - jparrill
-  - codificat
-  - iranzo
-  - ptrnull
+- alosadagrande
+- codificat
+- iranzo
+- ptrnull
+options: {}
+reviewers:
+- alosadagrande
+- codificat
+- iranzo
+- ptrnull
