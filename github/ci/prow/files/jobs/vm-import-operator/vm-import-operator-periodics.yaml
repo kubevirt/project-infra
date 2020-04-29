@@ -23,7 +23,7 @@ periodics:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
           - "-c"
-          - "git clone https://github.com/kubevirt/vm-import-operator.git && cd vm-import-operator && export TARGET=ocp-4.3 && automation/test.sh"
+          - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && git clone https://github.com/kubevirt/vm-import-operator.git && cd vm-import-operator && export TARGET=ocp-4.3 && automation/test.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
