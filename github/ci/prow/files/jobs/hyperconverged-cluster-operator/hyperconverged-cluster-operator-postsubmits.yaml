@@ -18,12 +18,21 @@ postsubmits:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
-              - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && ./hack/build-in-docker.sh"
+              - |
+                  cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && \
+                  GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/oauth) ./hack/build-in-docker.sh
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
+            volumeMounts:
+              - name: github-token
+                mountPath: /etc/github
             resources:
               requests:
                 memory: "1Gi"
               limits:
                 memory: "1Gi"
+        volumes:
+          - name: github-token
+            secret:
+              secretName: oauth-token
