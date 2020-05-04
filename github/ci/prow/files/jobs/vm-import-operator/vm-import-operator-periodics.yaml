@@ -14,6 +14,7 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror: "true"
     preset-shared-images: "true"
+    preset-kubevirtci-docker-credential: "true"
   spec:
     nodeSelector:
       type: bare-metal-external
