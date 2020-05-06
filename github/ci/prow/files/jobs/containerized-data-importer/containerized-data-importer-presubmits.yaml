@@ -1,6 +1,6 @@
 presubmits:
   kubevirt/containerized-data-importer:
-  - name: pull-containerized-data-importer-e2e-k8s-1.16.2-hpp
+  - name: pull-containerized-data-importer-e2e-k8s-1.16-hpp
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -25,14 +25,14 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.16.2 && export KUBEVIRT_STORAGE=hpp && automation/test.sh"
+            - "export TARGET=k8s-1.16 && export KUBEVIRT_STORAGE=hpp && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
             requests:
               memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.17.0-hpp
+  - name: pull-containerized-data-importer-e2e-k8s-1.17-hpp
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -57,14 +57,14 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.17.0 && export KUBEVIRT_STORAGE=hpp && automation/test.sh"
+            - "export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=hpp && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
             requests:
               memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.17.0-ember-lvm
+  - name: pull-containerized-data-importer-e2e-k8s-1.17-ember-lvm
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -89,14 +89,14 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.17.0 && export KUBEVIRT_STORAGE=ember_lvm && export SNAPSHOT_SC=ember-csi-lvm && export BLOCK_SC=ember-csi-lvm && automation/test.sh"
+            - "export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=ember_lvm && export SNAPSHOT_SC=ember-csi-lvm && export BLOCK_SC=ember-csi-lvm && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
             requests:
               memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.16.2-upg
+  - name: pull-containerized-data-importer-e2e-k8s-1.16-upg
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -121,14 +121,14 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.16.2 && export KUBEVIRT_STORAGE=hpp && export MULTI_UPGRADE=true && automation/test.sh"
+            - "export TARGET=k8s-1.16 && export KUBEVIRT_STORAGE=hpp && export MULTI_UPGRADE=true && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
             requests:
               memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.16.2-nfs
+  - name: pull-containerized-data-importer-e2e-k8s-1.16-nfs
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -153,7 +153,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.16.2 && export KUBEVIRT_STORAGE=nfs && automation/test.sh"
+            - "export TARGET=k8s-1.16 && export KUBEVIRT_STORAGE=nfs && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
