@@ -1,9 +1,0 @@
-filters:
-  ".*":
-    reviewers:
-      - awels
-      - aglitke
-      - mhenriks
-      - j-griffith
-    approvers:
-      - awels
