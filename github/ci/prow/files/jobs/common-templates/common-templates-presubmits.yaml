@@ -29,7 +29,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "20Gi"
+            memory: "29Gi"
   - name: pull-e2e-common-templates-rhel7
     annotations:
       fork-per-release: "true"
@@ -89,7 +89,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "20Gi"
+            memory: "29Gi"
   - name: pull-e2e-common-templates-windows10
     annotations:
       fork-per-release: "true"
@@ -119,7 +119,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "20Gi"
+            memory: "29Gi"
   - name: pull-e2e-common-templates-windows2012
     annotations:
       fork-per-release: "true"
@@ -149,7 +149,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "20Gi"
+            memory: "29Gi"
   - name: pull-e2e-common-templates-windows2016
     annotations:
       fork-per-release: "true"
@@ -179,7 +179,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "20Gi"
+            memory: "29Gi"
   - name: pull-e2e-common-templates-windows2019
     annotations:
       fork-per-release: "true"
@@ -209,4 +209,4 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "20Gi"
+            memory: "29Gi"
