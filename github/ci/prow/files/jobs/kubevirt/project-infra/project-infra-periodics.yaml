@@ -170,10 +170,13 @@ periodics:
       - >
         mkdir -p /tmp && cd /tmp &&
         echo 'cat /etc/github/oauth' > /tmp/git-askpass-helper.sh &&
+        chmod +x /tmp/git-askpass-helper.sh &&
         export GIT_ASKPASS=/tmp/git-askpass-helper.sh &&
         git clone https://github.com/kubevirt/project-infra.git &&
         cd project-infra &&
-        autoowners --dry-run=false --github-login=kubevirt-bot --org=kubevirt --repo=project-infra --assign=dhiller --target-dir=. --target-subdir=github/ci/prow/files --config-subdir=jobs --github-token-path=/etc/github/oauth
+        autoowners --dry-run=false --github-login=kubevirt-bot --org=kubevirt --repo=project-infra --assign=dhiller --target-dir=. --target-subdir=github/ci/prow/files --config-subdir=jobs --github-token-path=/etc/github/oauth &&
+        git commit --amend --signoff --no-edit &&
+        git push -f "https://kubevirt-bot@github.com/kubevirt-bot/project-infra.git" HEAD:autoowners
       volumeMounts:
       - name: token
         mountPath: /etc/github
