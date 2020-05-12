@@ -4,6 +4,7 @@
 filters:
   .*:
     approvers:
+    - beekhof
     - ksimon1
     - yanirq
     reviewers:
