@@ -391,4 +391,48 @@ var _ = Describe("report.go", func() {
 		Entry("results being MildlyFlaky", &Details{Failed: 1, Succeeded: 10, Skipped: 2, Jobs: []*Job{}}, MildlyFlaky),
 	)
 
+	When("rendering report csv", func() {
+
+		var buffer bytes.Buffer
+
+		prepareBuffer := func() {
+			buffer = bytes.Buffer{}
+			data := CSVParams{
+				Data: map[string]map[string]*Details{
+					"t1": {
+						"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{
+							{
+								BuildNumber: 1742,
+								Severity:    "red",
+								PR:          4217,
+								Job:         "testJob",
+							}}},
+						"b": &Details{Failed: 5, Succeeded: 2, Skipped: 3, Severity: "yellow", Jobs: []*Job{}},
+					},
+					"t2": {
+						"a": &Details{Failed: 8, Succeeded: 2, Skipped: 4, Severity: "cyan", Jobs: []*Job{}},
+						"b": &Details{Failed: 9, Succeeded: 3, Skipped: 5, Severity: "blue", Jobs: []*Job{}},
+					},
+				},
+			}
+			err := WriteReportCSVToOutput(&buffer, data)
+			Expect(err).ToNot(HaveOccurred())
+			if testOptions.printTestOutput {
+				logger := log.New(os.Stdout, "reportCSV:", log.Flags())
+				logger.Printf(buffer.String())
+			}
+		}
+
+		It("contains headers", func() {
+			prepareBuffer()
+			Expect(buffer.String()).To(ContainSubstring("\"Test Name\",\"Test Lane\",\"Severity\",\"Failed\",\"Succeeded\",\"Skipped\",\"Jobs (JSON)\""))
+		})
+
+		It("contains data", func() {
+			prepareBuffer()
+			Expect(buffer.String()).To(ContainSubstring("\"t1\",\"a\",\"red\",4,1,2"))
+		})
+
+	})
+
 })

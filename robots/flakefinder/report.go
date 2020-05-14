@@ -29,6 +29,7 @@ import (
 	"os"
 	"path"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/joshdk/go-junit"
@@ -191,6 +192,10 @@ const tpl = `
 </html>
 `
 
+const tplCSV = `"Test Name","Test Lane","Severity","Failed","Succeeded","Skipped","Jobs (JSON)"
+{{ range $testName, $results := $.Data }}{{ range $jobName, $result := $results }}"{{ $testName }}","{{ $jobName }}","{{ $result.Severity }}",{{ $result.Failed }},{{ $result.Succeeded }},{{ $result.Skipped }},{{ range $job := $result.Jobs }}"{BuildNumber: {{ $job.BuildNumber }},Severity: ""{{ $job.Severity }}"",PR: {{ $job.PR }},Job: ""{{ $job.Job }}"",},"{{ end }}
+{{ end }}{{ end }}`
+
 type Params struct {
 	StartOfReport string
 	EndOfReport   string
@@ -219,13 +224,18 @@ type Job struct {
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
 func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string, prNumbers []int, writeToStdout, isDryRun bool, startOfReport, endOfReport time.Time) (err error) {
-	reportObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(endOfReport, merged)))
+	reportFileName := CreateReportFileName(time.Now(), merged)
+	reportObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, reportFileName))
 	log.Printf("Report will be written to gs://%s/%s", BucketName, reportObject.ObjectName())
 	var reportOutputWriter *storage.Writer
+	var reportCSVOutputWriter *storage.Writer
 	if !isDryRun {
 		reportOutputWriter = reportObject.NewWriter(ctx)
+		reportCSVObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, strings.Replace(reportFileName, ".html", ".csv", -1)))
+		log.Printf("Report CSV will be written to gs://%s/%s", BucketName, reportCSVObject.ObjectName())
+		reportCSVOutputWriter = reportCSVObject.NewWriter(ctx)
 	}
-	err = Report(reports, reportOutputWriter, org, repo, prNumbers, writeToStdout, isDryRun, startOfReport, endOfReport)
+	err = Report(reports, reportOutputWriter, reportCSVOutputWriter, org, repo, prNumbers, writeToStdout, isDryRun, startOfReport, endOfReport)
 	if err != nil {
 		return fmt.Errorf("failed on generating report: %v", err)
 	}
@@ -242,7 +252,7 @@ func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
 	return fmt.Sprintf(ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
 }
 
-func Report(results []*Result, reportOutputWriter *storage.Writer, org string, repo string, prNumbers []int, writeToStdout bool, isDryRun bool, startOfReport, endOfReport time.Time) error {
+func Report(results []*Result, reportOutputWriter *storage.Writer, reportCSVOutputWriter *storage.Writer, org string, repo string, prNumbers []int, writeToStdout bool, isDryRun bool, startOfReport, endOfReport time.Time) error {
 	data := map[string]map[string]*Details{}
 	headers := []string{}
 	tests := []string{}
@@ -340,13 +350,25 @@ func Report(results []*Result, reportOutputWriter *storage.Writer, org string, r
 	var err error
 	if !isDryRun && reportOutputWriter != nil {
 		err = WriteReportToOutput(reportOutputWriter, parameters)
+		if err != nil {
+			return fmt.Errorf("failed to write report: %v", err)
+		}
+	}
+	if !isDryRun && reportCSVOutputWriter != nil {
+		err = WriteReportCSVToOutput(reportCSVOutputWriter, CSVParams{Data: parameters.Data})
+		if err != nil {
+			return fmt.Errorf("failed to write report csv: %v", err)
+		}
 	}
 	if isDryRun || writeToStdout {
 		err = WriteReportToOutput(os.Stdout, parameters)
-	}
-
-	if err != nil {
-		return fmt.Errorf("failed to render report template: %v", err)
+		if err != nil {
+			return fmt.Errorf("failed to write report to std out: %v", err)
+		}
+		err = WriteReportCSVToOutput(os.Stdout, CSVParams{Data: parameters.Data})
+		if err != nil {
+			return fmt.Errorf("failed to write report csv: %v", err)
+		}
 	}
 
 	return nil
@@ -494,5 +516,19 @@ func WriteReportToOutput(writer io.Writer, parameters Params) error {
 	}
 
 	err = t.Execute(writer, parameters)
+	return err
+}
+
+type CSVParams struct {
+	Data map[string]map[string]*Details
+}
+
+func WriteReportCSVToOutput(writer io.Writer, csvParams CSVParams) error {
+	t, err := template.New("reportCSV").Parse(tplCSV)
+	if err != nil {
+		return fmt.Errorf("failed to load report csv template: %v", err)
+	}
+
+	err = t.Execute(writer, csvParams)
 	return err
 }
