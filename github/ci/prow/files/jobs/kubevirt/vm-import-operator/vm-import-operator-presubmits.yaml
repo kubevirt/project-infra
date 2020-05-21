@@ -1,4 +1,4 @@
-postsubmits:
+presubmits:
   kubevirt/vm-import-operator:
   - name: pull-vm-import-operator-e2e-k8s-1.16
     always_run: true
