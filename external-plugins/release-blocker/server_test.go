@@ -29,6 +29,12 @@ func TestHandleIssueComment(t *testing.T) {
 			isMember: true,
 		},
 		{
+			name:     "test random comment not member",
+			userName: "random-user",
+			body:     "random comment",
+			isMember: false,
+		},
+		{
 			name:          "non org member tries to add blocker",
 			userName:      "random-user",
 			body:          "/release-block release-v0.1",
@@ -48,7 +54,7 @@ func TestHandleIssueComment(t *testing.T) {
 			body:          "/release-block release-v0.1",
 			isMember:      true,
 			shouldLabel:   true,
-			expectedLabel: "someorg/someorg#1:release-block/release-v0.1",
+			expectedLabel: "someorg/someorg#1:release-blocker/release-v0.1",
 		},
 		{
 			name:          "org member adds blocker that already exists",
@@ -57,7 +63,7 @@ func TestHandleIssueComment(t *testing.T) {
 			isMember:      true,
 			shouldLabel:   false,
 			hasLabel:      true,
-			expectedLabel: "someorg/someorg#1:release-block/release-v0.1",
+			expectedLabel: "someorg/someorg#1:release-blocker/release-v0.1",
 		},
 		{
 			name:          "org member removes blocker",
@@ -66,7 +72,7 @@ func TestHandleIssueComment(t *testing.T) {
 			isMember:      true,
 			shouldUnlabel: true,
 			hasLabel:      true,
-			expectedLabel: "someorg/someorg#1:release-block/release-v0.1",
+			expectedLabel: "someorg/someorg#1:release-blocker/release-v0.1",
 		},
 		{
 			name:          "org member removes blocker that's already removed",
@@ -75,7 +81,7 @@ func TestHandleIssueComment(t *testing.T) {
 			isMember:      true,
 			shouldUnlabel: false,
 			hasLabel:      false,
-			expectedLabel: "someorg/someorg#1:release-block/release-v0.1",
+			expectedLabel: "someorg/someorg#1:release-blocker/release-v0.1",
 		},
 	}
 

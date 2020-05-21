@@ -15,10 +15,10 @@ import (
 	"k8s.io/test-infra/prow/plugins"
 )
 
-const pluginName = "release-block"
+const pluginName = "release-blocker"
 
-var releaseBlockRe = regexp.MustCompile(`(?m)^(?:/releaseblock|/release-block)\s+(.+)$`)
-var releaseBlockCancelRe = regexp.MustCompile(`(?m)^(?:/releaseblock\s+cancel|/release-block\s+cancel)\s+(.+)$`)
+var releaseBlockRe = regexp.MustCompile(`(?m)^(?:/releaseblock|/release-block|/release-blocker)\s+(.+)$`)
+var releaseBlockCancelRe = regexp.MustCompile(`(?m)^(?:/releaseblock\s+cancel|/release-block\s+cancel|/release-blocker\s+cancel)\s+(.+)$`)
 
 type githubClient interface {
 	AddLabel(org, repo string, number int, label string) error
@@ -31,14 +31,14 @@ type githubClient interface {
 // HelpProvider construct the pluginhelp.PluginHelp for this plugin.
 func HelpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	pluginHelp := &pluginhelp.PluginHelp{
-		Description: `The release-block plugin is used to signal an issue or PR must be resolved before the next release is made.`,
+		Description: `The release-blocker plugin is used to signal an issue or PR must be resolved before the next release is made.`,
 	}
 	pluginHelp.AddCommand(pluginhelp.Command{
-		Usage:       "/release-block [branch]",
+		Usage:       "/release-blocker [branch]",
 		Description: "Mark a PR or issue as a release blocker.",
 		Featured:    true,
 		WhoCanUse:   "Project members",
-		Examples:    []string{"/release-block release-3.9", "/release-block release-1.15"},
+		Examples:    []string{"/release-blocker release-3.9", "/release-blocker release-1.15"},
 	})
 	return pluginHelp, nil
 }
@@ -104,7 +104,7 @@ func (s *Server) handleEvent(eventType, eventGUID string, payload []byte) error 
 		}
 		go func() {
 			if err := s.handleIssueComment(l, ic); err != nil {
-				s.Log.WithError(err).WithFields(l.Data).Info("release-block issue comment failed.")
+				s.Log.WithError(err).WithFields(l.Data).Info("release-blocker issue comment failed.")
 			}
 		}()
 	/*
@@ -185,7 +185,7 @@ func (s *Server) handleIssueComment(l *logrus.Entry, ic github.IssueCommentEvent
 		Debug("release-blocker request.")
 
 	// TODO validate branch exists
-	label := fmt.Sprintf("release-block/%s", targetBranch)
+	label := fmt.Sprintf("release-blocker/%s", targetBranch)
 
 	hasLabel, err := hasLabel(s.GHC, label, org, repo, num)
 	if err != nil {

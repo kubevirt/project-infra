@@ -37,8 +37,6 @@ func (o *options) Validate() error {
 	return nil
 }
 
-const PluginName = "release-block"
-
 func gatherOptions() options {
 	o := options{}
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
@@ -61,7 +59,7 @@ func main() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 
 	logrus.SetLevel(logrus.DebugLevel)
-	log := logrus.StandardLogger().WithField("plugin", PluginName)
+	log := logrus.StandardLogger().WithField("plugin", pluginName)
 
 	secretAgent := &secret.Agent{}
 	if err := secretAgent.Start([]string{o.github.TokenPath, o.webhookSecretFile}); err != nil {
