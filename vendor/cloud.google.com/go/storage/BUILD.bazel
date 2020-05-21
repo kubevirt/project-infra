@@ -8,6 +8,7 @@ go_library(
         "copy.go",
         "doc.go",
         "go110.go",
+        "hmac.go",
         "iam.go",
         "invoke.go",
         "not_go110.go",

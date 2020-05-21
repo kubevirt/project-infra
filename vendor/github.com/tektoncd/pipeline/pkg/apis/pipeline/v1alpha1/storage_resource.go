@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Knative Authors.
+Copyright 2019-2020 The Tekton Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,41 +17,14 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"fmt"
-	"strings"
+	resource "github.com/tektoncd/pipeline/pkg/apis/resource/v1alpha1"
 )
-
-type PipelineResourceStorageType string
 
 const (
-	// PipelineResourceTypeGCS indicates that resource source is a GCS blob/directory.
-	PipelineResourceTypeGCS      PipelineResourceType = "gcs"
-	PipelineResourceTypeBuildGCS PipelineResourceType = "build-gcs"
+	// PipelineResourceTypeGCS is the subtype for the GCSResources, which is backed by a GCS blob/directory.
+	PipelineResourceTypeGCS PipelineResourceType = resource.PipelineResourceTypeGCS
+
+	// PipelineResourceTypeBuildGCS is the subtype for the BuildGCSResources, which is simialr to the GCSResource but
+	// with additional functionality that was added to be compatible with knative build.
+	PipelineResourceTypeBuildGCS PipelineResourceType = resource.PipelineResourceTypeBuildGCS
 )
-
-// PipelineResourceInterface interface to be implemented by different PipelineResource types
-type PipelineStorageResourceInterface interface {
-	PipelineResourceInterface
-	GetSecretParams() []SecretParam
-}
-
-func NewStorageResource(r *PipelineResource) (PipelineStorageResourceInterface, error) {
-	if r.Spec.Type != PipelineResourceTypeStorage {
-		return nil, fmt.Errorf("StoreResource: Cannot create a storage resource from a %s Pipeline Resource", r.Spec.Type)
-	}
-
-	for _, param := range r.Spec.Params {
-		switch {
-		case strings.EqualFold(param.Name, "type"):
-			switch {
-			case strings.EqualFold(param.Value, string(PipelineResourceTypeGCS)):
-				return NewGCSResource(r)
-			case strings.EqualFold(param.Value, string(PipelineResourceTypeBuildGCS)):
-				return NewBuildGCSResource(r)
-			default:
-				return nil, fmt.Errorf("%s is an invalid or unimplemented PipelineStorageResource", param.Value)
-			}
-		}
-	}
-	return nil, fmt.Errorf("StoreResource: Cannot create a storage resource without type %s in spec", r.Name)
-}

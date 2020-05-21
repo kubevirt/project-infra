@@ -1,0 +1,35 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "batch.go",
+        "bucket_region.go",
+        "buffered_read_seeker.go",
+        "default_read_seeker_write_to.go",
+        "default_read_seeker_write_to_windows.go",
+        "default_writer_read_from.go",
+        "default_writer_read_from_windows.go",
+        "doc.go",
+        "download.go",
+        "pool.go",
+        "read_seeker_write_to.go",
+        "upload.go",
+        "upload_input.go",
+        "writer_read_from.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/aws/aws-sdk-go/service/s3/s3manager",
+    importpath = "github.com/aws/aws-sdk-go/service/s3/s3manager",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/aws/aws-sdk-go/aws:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/aws/awserr:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/aws/awsutil:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/aws/client:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/aws/credentials:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/aws/request:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/internal/sdkio:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/service/s3:go_default_library",
+        "//vendor/github.com/aws/aws-sdk-go/service/s3/s3iface:go_default_library",
+    ],
+)

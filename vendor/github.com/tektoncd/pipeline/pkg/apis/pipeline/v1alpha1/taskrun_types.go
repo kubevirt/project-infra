@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Knative Authors.
+Copyright 2019 The Tekton Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,29 +18,18 @@ package v1alpha1
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/knative/pkg/apis"
-	duckv1alpha1 "github.com/knative/pkg/apis/duck/v1alpha1"
+	"github.com/tektoncd/pipeline/pkg/apis/pipeline"
+	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"knative.dev/pkg/apis"
 )
-
-// Check that TaskRun may be validated and defaulted.
-var _ apis.Validatable = (*TaskRun)(nil)
-var _ apis.Defaultable = (*TaskRun)(nil)
 
 // TaskRunSpec defines the desired state of TaskRun
 type TaskRunSpec struct {
-	Trigger TaskTrigger `json:"trigger"`
 	// +optional
-	Inputs TaskRunInputs `json:"inputs,omitempty"`
-	// +optional
-	Outputs TaskRunOutputs `json:"outputs,omitempty"`
-	// +optional
-	Results *Results `json:"results,omitempty"`
-	// +optional
-	ServiceAccount string `json:"serviceAccount,omitempty"`
+	ServiceAccountName string `json:"serviceAccountName"`
 	// no more than one of the TaskRef and TaskSpec may be specified.
 	// +optional
 	TaskRef *TaskRef `json:"taskRef,omitempty"`
@@ -48,29 +37,37 @@ type TaskRunSpec struct {
 	TaskSpec *TaskSpec `json:"taskSpec,omitempty"`
 	// Used for cancelling a taskrun (and maybe more later on)
 	// +optional
-	Status TaskRunSpecStatus
+	Status TaskRunSpecStatus `json:"status,omitempty"`
 	// Time after which the build times out. Defaults to 10 minutes.
 	// Specified build timeout should be less than 24h.
 	// Refer Go's ParseDuration documentation for expected format: https://golang.org/pkg/time/#ParseDuration
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
-	// NodeSelector is a selector which must be true for the pod to fit on a node.
-	// Selector which must match a node's labels for the pod to be scheduled on that node.
-	// More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+	// PodTemplate holds pod specific configuration
 	// +optional
-	NodeSelector map[string]string `json:"nodeSelector,omitempty"`
-	// If specified, the pod's scheduling constraints
+	PodTemplate *PodTemplate `json:"podTemplate,omitempty"`
+	// Workspaces is a list of WorkspaceBindings from volumes to workspaces.
 	// +optional
-	Affinity *corev1.Affinity `json:"affinity,omitempty"`
+	Workspaces []WorkspaceBinding `json:"workspaces,omitempty"`
+	// From v1beta1
+	// +optional
+	Params []Param `json:"params,omitempty"`
+	// +optional
+	Resources *v1beta1.TaskRunResources `json:"resources,omitempty"`
+	// Deprecated
+	// +optional
+	Inputs *TaskRunInputs `json:"inputs,omitempty"`
+	// +optional
+	Outputs *TaskRunOutputs `json:"outputs,omitempty"`
 }
 
 // TaskRunSpecStatus defines the taskrun spec status the user can provide
-type TaskRunSpecStatus string
+type TaskRunSpecStatus = v1beta1.TaskRunSpecStatus
 
 const (
 	// TaskRunSpecStatusCancelled indicates that the user wants to cancel the task,
 	// if not already cancelled or terminated
-	TaskRunSpecStatusCancelled = "TaskRunCancelled"
+	TaskRunSpecStatusCancelled = v1beta1.TaskRunSpecStatusCancelled
 )
 
 // TaskRunInputs holds the input values that this task was invoked with.
@@ -81,92 +78,61 @@ type TaskRunInputs struct {
 	Params []Param `json:"params,omitempty"`
 }
 
+// TaskResourceBinding points to the PipelineResource that
+// will be used for the Task input or output called Name.
+type TaskResourceBinding = v1beta1.TaskResourceBinding
+
 // TaskRunOutputs holds the output values that this task was invoked with.
 type TaskRunOutputs struct {
 	// +optional
 	Resources []TaskResourceBinding `json:"resources,omitempty"`
-	// +optional
-	Params []Param `json:"params,omitempty"`
 }
-
-// TaskTriggerType indicates the mechanism by which this TaskRun was created.
-type TaskTriggerType string
-
-const (
-	// TaskTriggerTypeManual indicates that this TaskRun was invoked manually by a user.
-	TaskTriggerTypeManual TaskTriggerType = "manual"
-
-	// TaskTriggerTypePipelineRun indicates that this TaskRun was created by a controller
-	// attempting to realize a PipelineRun. In this case the `name` will refer to the name
-	// of the PipelineRun.
-	TaskTriggerTypePipelineRun TaskTriggerType = "pipelineRun"
-)
-
-// TaskTrigger describes what triggered this Task to run. It could be triggered manually,
-// or it may have been part of a PipelineRun in which case this ref would refer
-// to the corresponding PipelineRun.
-type TaskTrigger struct {
-	Type TaskTriggerType `json:"type"`
-	// +optional
-	Name string `json:"name,omitempty"`
-}
-
-var taskRunCondSet = duckv1alpha1.NewBatchConditionSet()
 
 // TaskRunStatus defines the observed state of TaskRun
-type TaskRunStatus struct {
-	// Conditions describes the set of conditions of this build.
-	// +optional
-	Conditions duckv1alpha1.Conditions `json:"conditions,omitempty"`
+type TaskRunStatus = v1beta1.TaskRunStatus
 
-	// In #107 should be updated to hold the location logs have been uploaded to
-	// +optional
-	Results *Results `json:"results,omitempty"`
+// TaskRunStatusFields holds the fields of TaskRun's status.  This is defined
+// separately and inlined so that other types can readily consume these fields
+// via duck typing.
+type TaskRunStatusFields = v1beta1.TaskRunStatusFields
 
-	// PodName is the name of the pod responsible for executing this task's steps.
-	PodName string `json:"podName"`
-
-	// StartTime is the time the build is actually started.
-	// +optional
-	StartTime *metav1.Time `json:"startTime,omitempty"`
-
-	// CompletionTime is the time the build completed.
-	// +optional
-	CompletionTime *metav1.Time `json:"completionTime,omitempty"`
-
-	// Steps describes the state of each build step container.
-	// +optional
-	Steps []StepState `json:"steps,omitempty"`
-}
-
-// GetCondition returns the Condition matching the given type.
-func (tr *TaskRunStatus) GetCondition(t duckv1alpha1.ConditionType) *duckv1alpha1.Condition {
-	return taskRunCondSet.Manage(tr).GetCondition(t)
-}
-func (tr *TaskRunStatus) InitializeConditions() {
-	if tr.StartTime.IsZero() {
-		tr.StartTime = &metav1.Time{time.Now()}
-	}
-	taskRunCondSet.Manage(tr).InitializeConditions()
-}
-
-// SetCondition sets the condition, unsetting previous conditions with the same
-// type as necessary.
-func (tr *TaskRunStatus) SetCondition(newCond *duckv1alpha1.Condition) {
-	if newCond != nil {
-		taskRunCondSet.Manage(tr).SetCondition(*newCond)
-	}
-}
+// TaskRunResult used to describe the results of a task
+type TaskRunResult = v1beta1.TaskRunResult
 
 // StepState reports the results of running a step in the Task.
-type StepState struct {
-	corev1.ContainerState
-}
+type StepState = v1beta1.StepState
+
+// SidecarState reports the results of sidecar in the Task.
+type SidecarState = v1beta1.SidecarState
+
+// CloudEventDelivery is the target of a cloud event along with the state of
+// delivery.
+type CloudEventDelivery = v1beta1.CloudEventDelivery
+
+// CloudEventCondition is a string that represents the condition of the event.
+type CloudEventCondition = v1beta1.CloudEventCondition
+
+const (
+	// CloudEventConditionUnknown means that the condition for the event to be
+	// triggered was not met yet, or we don't know the state yet.
+	CloudEventConditionUnknown CloudEventCondition = v1beta1.CloudEventConditionUnknown
+	// CloudEventConditionSent means that the event was sent successfully
+	CloudEventConditionSent CloudEventCondition = v1beta1.CloudEventConditionSent
+	// CloudEventConditionFailed means that there was one or more attempts to
+	// send the event, and none was successful so far.
+	CloudEventConditionFailed CloudEventCondition = v1beta1.CloudEventConditionFailed
+)
+
+// CloudEventDeliveryState reports the state of a cloud event to be sent.
+type CloudEventDeliveryState = v1beta1.CloudEventDeliveryState
 
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// TaskRun is the Schema for the taskruns API
+// TaskRun represents a single execution of a Task. TaskRuns are how the steps
+// specified in a Task are executed; they specify the parameters and resources
+// used to run the steps in a Task.
+//
 // +k8s:openapi-gen=true
 type TaskRun struct {
 	metav1.TypeMeta `json:",inline"`
@@ -205,18 +171,18 @@ func (tr *TaskRun) GetPipelineRunPVCName() string {
 		return ""
 	}
 	for _, ref := range tr.GetOwnerReferences() {
-		if ref.Kind == pipelineRunControllerName {
+		if ref.Kind == pipeline.PipelineRunControllerName {
 			return fmt.Sprintf("%s-pvc", ref.Name)
 		}
 	}
 	return ""
 }
 
-// HasPipeluneRunOwnerReference returns true of TaskRun has
+// HasPipelineRunOwnerReference returns true of TaskRun has
 // owner reference of type PipelineRun
 func (tr *TaskRun) HasPipelineRunOwnerReference() bool {
 	for _, ref := range tr.GetOwnerReferences() {
-		if ref.Kind == pipelineRunControllerName {
+		if ref.Kind == pipeline.PipelineRunControllerName {
 			return true
 		}
 	}
@@ -225,7 +191,17 @@ func (tr *TaskRun) HasPipelineRunOwnerReference() bool {
 
 // IsDone returns true if the TaskRun's status indicates that it is done.
 func (tr *TaskRun) IsDone() bool {
-	return !tr.Status.GetCondition(duckv1alpha1.ConditionSucceeded).IsUnknown()
+	return !tr.Status.GetCondition(apis.ConditionSucceeded).IsUnknown()
+}
+
+// HasStarted function check whether taskrun has valid start time set in its status
+func (tr *TaskRun) HasStarted() bool {
+	return tr.Status.StartTime != nil && !tr.Status.StartTime.IsZero()
+}
+
+// IsSuccessful returns true if the TaskRun's status indicates that it is done.
+func (tr *TaskRun) IsSuccessful() bool {
+	return tr.Status.GetCondition(apis.ConditionSucceeded).IsTrue()
 }
 
 // IsCancelled returns true if the TaskRun's spec status is set to Cancelled state
@@ -235,5 +211,20 @@ func (tr *TaskRun) IsCancelled() bool {
 
 // GetRunKey return the taskrun key for timeout handler map
 func (tr *TaskRun) GetRunKey() string {
-	return fmt.Sprintf("%s/%s/%s", "TaskRun", tr.Namespace, tr.Name)
+	// The address of the pointer is a threadsafe unique identifier for the taskrun
+	return fmt.Sprintf("%s/%p", "TaskRun", tr)
+}
+
+// IsPartOfPipeline return true if TaskRun is a part of a Pipeline.
+// It also return the name of Pipeline and PipelineRun
+func (tr *TaskRun) IsPartOfPipeline() (bool, string, string) {
+	if tr == nil || len(tr.Labels) == 0 {
+		return false, "", ""
+	}
+
+	if pl, ok := tr.Labels[pipeline.GroupName+pipeline.PipelineLabelKey]; ok {
+		return true, pl, tr.Labels[pipeline.GroupName+pipeline.PipelineRunLabelKey]
+	}
+
+	return false, "", ""
 }

@@ -10,6 +10,7 @@ go_library(
         "be_a_regular_file.go",
         "be_an_existing_file.go",
         "be_closed_matcher.go",
+        "be_element_of_matcher.go",
         "be_empty_matcher.go",
         "be_equivalent_to_matcher.go",
         "be_false_matcher.go",
@@ -54,6 +55,7 @@ go_library(
         "//vendor/github.com/onsi/gomega/matchers/support/goraph/bipartitegraph:go_default_library",
         "//vendor/github.com/onsi/gomega/types:go_default_library",
         "//vendor/golang.org/x/net/html/charset:go_default_library",
+        "//vendor/golang.org/x/xerrors:go_default_library",
         "//vendor/gopkg.in/yaml.v2:go_default_library",
     ],
 )

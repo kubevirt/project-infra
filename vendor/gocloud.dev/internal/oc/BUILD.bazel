@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "metrics.go",
+        "trace.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/gocloud.dev/internal/oc",
+    importpath = "gocloud.dev/internal/oc",
+    visibility = ["//vendor/gocloud.dev:__subpackages__"],
+    deps = [
+        "//vendor/gocloud.dev/gcerrors:go_default_library",
+        "@io_opencensus_go//plugin/ocgrpc:go_default_library",
+        "@io_opencensus_go//stats:go_default_library",
+        "@io_opencensus_go//stats/view:go_default_library",
+        "@io_opencensus_go//tag:go_default_library",
+        "@io_opencensus_go//trace:go_default_library",
+    ],
+)

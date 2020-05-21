@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Knative Authors.
+Copyright 2019 The Tekton Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,7 +16,13 @@ limitations under the License.
 
 package v1alpha1
 
-import "context"
+import (
+	"context"
+
+	"knative.dev/pkg/apis"
+)
+
+var _ apis.Defaultable = (*Pipeline)(nil)
 
 func (p *Pipeline) SetDefaults(ctx context.Context) {
 	p.Spec.SetDefaults(ctx)
@@ -24,8 +30,16 @@ func (p *Pipeline) SetDefaults(ctx context.Context) {
 
 func (ps *PipelineSpec) SetDefaults(ctx context.Context) {
 	for _, pt := range ps.Tasks {
-		if pt.TaskRef.Kind == "" {
-			pt.TaskRef.Kind = NamespacedTaskKind
+		if pt.TaskRef != nil {
+			if pt.TaskRef.Kind == "" {
+				pt.TaskRef.Kind = NamespacedTaskKind
+			}
 		}
+		if pt.TaskSpec != nil {
+			pt.TaskSpec.SetDefaults(ctx)
+		}
+	}
+	for i := range ps.Params {
+		ps.Params[i].SetDefaults(ctx)
 	}
 }

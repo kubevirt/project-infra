@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "default.go",
+        "doc.go",
+        "store.go",
+        "zz_generated.deepcopy.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/tektoncd/pipeline/pkg/apis/config",
+    importpath = "github.com/tektoncd/pipeline/pkg/apis/config",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/ghodss/yaml:go_default_library",
+        "//vendor/github.com/tektoncd/pipeline/pkg/apis/pipeline/pod:go_default_library",
+        "//vendor/k8s.io/api/core/v1:go_default_library",
+        "//vendor/knative.dev/pkg/configmap:go_default_library",
+    ],
+)
