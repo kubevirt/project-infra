@@ -16,9 +16,10 @@ import (
 )
 
 const pluginName = "release-blocker"
+const baseLabel = "release-blocker"
 
-var releaseBlockRe = regexp.MustCompile(`(?m)^(?:/releaseblock|/release-block|/release-blocker)\s+(.+)$`)
-var releaseBlockCancelRe = regexp.MustCompile(`(?m)^(?:/releaseblock\s+cancel|/release-block\s+cancel|/release-blocker\s+cancel)\s+(.+)$`)
+var releaseBlockRe = regexp.MustCompile(`(?m)^(?:/releaseblock|/release-block|/release-blocker|/releaseblocker)\s+(.+)$`)
+var releaseBlockCancelRe = regexp.MustCompile(`(?m)^(?:/releaseblock\s+cancel|/release-block\s+cancel|/release-blocker\s+cancel|releaseblocker\s+cancel)\s+(.+)$`)
 
 type githubClient interface {
 	AddLabel(org, repo string, number int, label string) error
@@ -132,6 +133,27 @@ func (s *Server) handleEvent(eventType, eventGUID string, payload []byte) error 
 	return nil
 }
 
+func (s *Server) handleLabel(label string, org string, repo string, num int, add bool) error {
+	hasLabel, err := hasLabel(s.GHC, label, org, repo, num)
+	if err != nil {
+		return err
+	}
+
+	if !hasLabel && add {
+		err := s.GHC.AddLabel(org, repo, num, label)
+		if err != nil {
+			return err
+		}
+	} else if hasLabel && !add {
+		err := s.GHC.RemoveLabel(org, repo, num, label)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (s *Server) handleIssueComment(l *logrus.Entry, ic github.IssueCommentEvent) error {
 	// we're only interested in new comments
 	if ic.Action != github.IssueCommentActionCreated {
@@ -185,26 +207,12 @@ func (s *Server) handleIssueComment(l *logrus.Entry, ic github.IssueCommentEvent
 		Debug("release-blocker request.")
 
 	// TODO validate branch exists
-	label := fmt.Sprintf("release-blocker/%s", targetBranch)
+	label := fmt.Sprintf("%s/%s", baseLabel, targetBranch)
 
-	hasLabel, err := hasLabel(s.GHC, label, org, repo, num)
+	err = s.handleLabel(label, org, repo, num, needsLabel)
 	if err != nil {
 		s.Log.WithFields(l.Data).WithError(err)
 		return err
-	}
-
-	if needsLabel && !hasLabel {
-		err := s.GHC.AddLabel(org, repo, num, label)
-		if err != nil {
-			s.Log.WithFields(l.Data).WithError(err)
-			return err
-		}
-	} else if !needsLabel && hasLabel {
-		err := s.GHC.RemoveLabel(org, repo, num, label)
-		if err != nil {
-			s.Log.WithFields(l.Data).WithError(err)
-			return err
-		}
 	}
 
 	return nil
