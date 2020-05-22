@@ -22,14 +22,28 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
+	utilerrors "k8s.io/apimachinery/pkg/util/errors"
+)
+
+const (
+	methodField = "method"
 )
 
 type Client interface {
 	Endpoint() string
 	GetBug(id int) (*Bug, error)
+	GetComments(id int) ([]Comment, error)
+	GetExternalBugPRsOnBug(id int) ([]ExternalBug, error)
+	GetSubComponentsOnBug(id int) (map[string][]string, error)
+	GetClones(bug *Bug) ([]*Bug, error)
+	CreateBug(bug *BugCreate) (int, error)
+	CloneBug(bug *Bug) (int, error)
 	UpdateBug(id int, update BugUpdate) error
 	AddPullRequestAsExternalBug(id int, org, repo string, num int) (bool, error)
 }
@@ -60,7 +74,7 @@ func (c *client) Endpoint() string {
 // GetBug retrieves a Bug from the server
 // https://bugzilla.readthedocs.io/en/latest/api/core/v1/bug.html#get-bug
 func (c *client) GetBug(id int) (*Bug, error) {
-	logger := c.logger.WithFields(logrus.Fields{"method": "GetBug", "id": id})
+	logger := c.logger.WithFields(logrus.Fields{methodField: "GetBug", "id": id})
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/rest/bug/%d", c.endpoint, id), nil)
 	if err != nil {
 		return nil, err
@@ -81,10 +95,116 @@ func (c *client) GetBug(id int) (*Bug, error) {
 	return parsedResponse.Bugs[0], nil
 }
 
+func getClones(c Client, bug *Bug) ([]*Bug, error) {
+	var errs []error
+	clones := []*Bug{}
+	for _, dependentID := range bug.Blocks {
+		dependent, err := c.GetBug(dependentID)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("Failed to get dependent bug #%d: %v", dependentID, err))
+			continue
+		}
+		if dependent.Summary == bug.Summary {
+			clones = append(clones, dependent)
+		}
+	}
+	return clones, utilerrors.NewAggregate(errs)
+}
+
+// GetClones gets the list of bugs that the provided bug blocks that also have a matching summary.
+func (c *client) GetClones(bug *Bug) ([]*Bug, error) {
+	return getClones(c, bug)
+}
+
+// GetSubComponentsOnBug retrieves a the list of SubComponents of the bug.
+// SubComponents are a Red Hat bugzilla specific extra field.
+func (c *client) GetSubComponentsOnBug(id int) (map[string][]string, error) {
+	logger := c.logger.WithFields(logrus.Fields{methodField: "GetSubComponentsOnBug", "id": id})
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/rest/bug/%d", c.endpoint, id), nil)
+	if err != nil {
+		return nil, err
+	}
+	values := req.URL.Query()
+	values.Add("include_fields", "sub_components")
+	req.URL.RawQuery = values.Encode()
+	raw, err := c.request(req, logger)
+	if err != nil {
+		return nil, err
+	}
+	var parsedResponse struct {
+		Bugs []struct {
+			SubComponents map[string][]string `json:"sub_components"`
+		} `json:"bugs"`
+	}
+	if err := json.Unmarshal(raw, &parsedResponse); err != nil {
+		return nil, fmt.Errorf("could not unmarshal response body: %v", err)
+	}
+	// if there is no subcomponent, return an empty struct
+	if parsedResponse.Bugs == nil || len(parsedResponse.Bugs) == 0 {
+		return map[string][]string{}, nil
+	}
+	// make sure there is only 1 bug
+	if len(parsedResponse.Bugs) != 1 {
+		return nil, fmt.Errorf("did not get one bug, but %d: %v", len(parsedResponse.Bugs), parsedResponse)
+	}
+	return parsedResponse.Bugs[0].SubComponents, nil
+}
+
+// GetExternalBugPRsOnBug retrieves external bugs on a Bug from the server
+// and returns any that reference a Pull Request in GitHub
+// https://bugzilla.readthedocs.io/en/latest/api/core/v1/bug.html#get-bug
+func (c *client) GetExternalBugPRsOnBug(id int) ([]ExternalBug, error) {
+	logger := c.logger.WithFields(logrus.Fields{methodField: "GetExternalBugPRsOnBug", "id": id})
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/rest/bug/%d", c.endpoint, id), nil)
+	if err != nil {
+		return nil, err
+	}
+	values := req.URL.Query()
+	values.Add("include_fields", "external_bugs")
+	req.URL.RawQuery = values.Encode()
+	raw, err := c.request(req, logger)
+	if err != nil {
+		return nil, err
+	}
+	var parsedResponse struct {
+		Bugs []struct {
+			ExternalBugs []ExternalBug `json:"external_bugs"`
+		} `json:"bugs"`
+	}
+	if err := json.Unmarshal(raw, &parsedResponse); err != nil {
+		return nil, fmt.Errorf("could not unmarshal response body: %v", err)
+	}
+	if len(parsedResponse.Bugs) != 1 {
+		return nil, fmt.Errorf("did not get one bug, but %d: %v", len(parsedResponse.Bugs), parsedResponse)
+	}
+	var prs []ExternalBug
+	for _, bug := range parsedResponse.Bugs[0].ExternalBugs {
+		if bug.BugzillaBugID != id {
+			continue
+		}
+		if bug.Type.URL != "https://github.com/" {
+			// TODO: skuznets: figure out how to honor the endpoints given to the GitHub client to support enterprise here
+			continue
+		}
+		org, repo, num, err := PullFromIdentifier(bug.ExternalBugID)
+		if IsIdentifierNotForPullErr(err) {
+			continue
+		}
+		if err != nil {
+			return nil, fmt.Errorf("could not parse external identifier %q as pull: %v", bug.ExternalBugID, err)
+		}
+		bug.Org = org
+		bug.Repo = repo
+		bug.Num = num
+		prs = append(prs, bug)
+	}
+	return prs, nil
+}
+
 // UpdateBug updates the fields of a bug on the server
 // https://bugzilla.readthedocs.io/en/latest/api/core/v1/bug.html#update-bug
 func (c *client) UpdateBug(id int, update BugUpdate) error {
-	logger := c.logger.WithFields(logrus.Fields{"method": "UpdateBug", "id": id, "update": update})
+	logger := c.logger.WithFields(logrus.Fields{methodField: "UpdateBug", "id": id, "update": update})
 	body, err := json.Marshal(update)
 	if err != nil {
 		return fmt.Errorf("failed to marshal update payload: %v", err)
@@ -99,6 +219,139 @@ func (c *client) UpdateBug(id int, update BugUpdate) error {
 	return err
 }
 
+// CreateBug creates a new bug on the server.
+// https://bugzilla.readthedocs.io/en/latest/api/core/v1/bug.html#create-bug
+func (c *client) CreateBug(bug *BugCreate) (int, error) {
+	logger := c.logger.WithFields(logrus.Fields{methodField: "CreateBug", "bug": bug})
+	body, err := json.Marshal(bug)
+	if err != nil {
+		return 0, fmt.Errorf("failed to marshal create payload: %v", err)
+	}
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/rest/bug", c.endpoint), bytes.NewBuffer(body))
+	if err != nil {
+		return 0, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := c.request(req, logger)
+	if err != nil {
+		return 0, err
+	}
+	var idStruct struct {
+		ID int `json:"id,omitempty"`
+	}
+	err = json.Unmarshal(resp, &idStruct)
+	if err != nil {
+		return 0, fmt.Errorf("failed to unmarshal server response: %v", err)
+	}
+	return idStruct.ID, nil
+}
+
+func cloneBugStruct(bug *Bug, subcomponents map[string][]string, comments []Comment) *BugCreate {
+	newBug := &BugCreate{
+		Alias:           bug.Alias,
+		AssignedTo:      bug.AssignedTo,
+		CC:              bug.CC,
+		Component:       bug.Component,
+		Flags:           bug.Flags,
+		Groups:          bug.Groups,
+		Keywords:        bug.Keywords,
+		OperatingSystem: bug.OperatingSystem,
+		Platform:        bug.Platform,
+		Priority:        bug.Priority,
+		Product:         bug.Product,
+		QAContact:       bug.QAContact,
+		Severity:        bug.Severity,
+		Summary:         bug.Summary,
+		TargetMilestone: bug.TargetMilestone,
+		Version:         bug.Version,
+	}
+	if len(subcomponents) > 0 {
+		newBug.SubComponents = subcomponents
+	}
+	for _, comment := range comments {
+		if comment.IsPrivate {
+			newBug.CommentIsPrivate = true
+			break
+		}
+	}
+	var newDesc strings.Builder
+	// The following builds a description comprising all the bug's comments formatted the same way that Bugzilla does on clone
+	newDesc.WriteString(fmt.Sprintf("+++ This bug was initially created as a clone of Bug #%d +++\n\n", bug.ID))
+	if len(comments) > 0 {
+		newDesc.WriteString(comments[0].Text)
+	}
+	// This is a standard time layout string for golang, which formats the time `Mon Jan 2 15:04:05 -0700 MST 2006` to the layout we want
+	bzTimeLayout := "2006-01-02 15:04:05 MST"
+	for _, comment := range comments[1:] {
+		// Header
+		newDesc.WriteString("\n\n--- Additional comment from ")
+		newDesc.WriteString(comment.Creator)
+		newDesc.WriteString(" on ")
+		newDesc.WriteString(comment.Time.UTC().Format(bzTimeLayout))
+		newDesc.WriteString(" ---\n\n")
+
+		// Comment
+		newDesc.WriteString(comment.Text)
+	}
+	newBug.Description = newDesc.String()
+	return newBug
+}
+
+// clone handles the bz client calls for the bug cloning process and allows us to share the implementation
+// between the real and fake client to prevent bugs from accidental discrepencies between the two.
+func clone(c Client, bug *Bug) (int, error) {
+	subcomponents, err := c.GetSubComponentsOnBug(bug.ID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to check if bug has subcomponents: %v", err)
+	}
+	comments, err := c.GetComments(bug.ID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get parent bug's comments: %v", err)
+	}
+	id, err := c.CreateBug(cloneBugStruct(bug, subcomponents, comments))
+	if err != nil {
+		return id, err
+	}
+	depends := BugUpdate{
+		DependsOn: &IDUpdate{
+			Add: []int{bug.ID},
+		},
+	}
+	err = c.UpdateBug(id, depends)
+	return id, err
+}
+
+// CloneBug clones a bug by creating a new bug with the same fields, copying the description, and updating the bug to depend on the original bug
+func (c *client) CloneBug(bug *Bug) (int, error) {
+	return clone(c, bug)
+}
+
+// GetComments gets a list of comments for a specific bug ID.
+// https://bugzilla.readthedocs.io/en/latest/api/core/v1/comment.html#get-comments
+func (c *client) GetComments(bugID int) ([]Comment, error) {
+	logger := c.logger.WithFields(logrus.Fields{methodField: "GetComments", "id": bugID})
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/rest/bug/%d/comment", c.endpoint, bugID), nil)
+	if err != nil {
+		return nil, err
+	}
+	raw, err := c.request(req, logger)
+	if err != nil {
+		return nil, err
+	}
+	var parsedResponse struct {
+		Bugs map[int]struct {
+			Comments []Comment `json:"comments,omitempty"`
+		} `json:"bugs,omitempty"`
+	}
+	if err := json.Unmarshal(raw, &parsedResponse); err != nil {
+		return nil, fmt.Errorf("could not unmarshal response body: %v", err)
+	}
+	if len(parsedResponse.Bugs) != 1 {
+		return nil, fmt.Errorf("did not get one bug, but %d: %v", len(parsedResponse.Bugs), parsedResponse)
+	}
+	return parsedResponse.Bugs[bugID].Comments, nil
+}
+
 func (c *client) request(req *http.Request, logger *logrus.Entry) ([]byte, error) {
 	if apiKey := c.getAPIKey(); len(apiKey) > 0 {
 		// some BugZilla servers are too old and can't handle the header.
@@ -109,8 +362,17 @@ func (c *client) request(req *http.Request, logger *logrus.Entry) ([]byte, error
 		values.Add("api_key", string(apiKey))
 		req.URL.RawQuery = values.Encode()
 	}
+	start := time.Now()
 	resp, err := c.client.Do(req)
-	logger.WithField("response", resp.StatusCode).Debug("Got response from Bugzilla.")
+	stop := time.Now()
+	promLabels := prometheus.Labels(map[string]string{methodField: logger.Data[methodField].(string), "status": ""})
+	if resp != nil {
+		promLabels["status"] = strconv.Itoa(resp.StatusCode)
+	}
+	requestDurations.With(promLabels).Observe(float64(stop.Sub(start).Seconds()))
+	if resp != nil {
+		logger.WithField("response", resp.StatusCode).Debug("Got response from Bugzilla.")
+	}
 	if err != nil {
 		code := -1
 		if resp != nil {
@@ -123,12 +385,22 @@ func (c *client) request(req *http.Request, logger *logrus.Entry) ([]byte, error
 			logger.WithError(err).Warn("could not close response body")
 		}
 	}()
-	if resp.StatusCode != http.StatusOK {
-		return nil, &requestError{statusCode: resp.StatusCode, message: fmt.Sprintf("response code %d not %d", resp.StatusCode, http.StatusOK)}
-	}
 	raw, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("could not read response body: %v", err)
+	}
+	var error struct {
+		Error   bool   `json:"error"`
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}
+	if err := json.Unmarshal(raw, &error); err != nil && len(raw) > 0 {
+		logger.WithError(err).Debug("could not read response body as error")
+	}
+	if error.Error {
+		return nil, &requestError{statusCode: resp.StatusCode, message: fmt.Sprintf("code %d: %s", error.Code, error.Message)}
+	} else if resp.StatusCode != http.StatusOK {
+		return nil, &requestError{statusCode: resp.StatusCode, message: fmt.Sprintf("response code %d not %d", resp.StatusCode, http.StatusOK)}
 	}
 	return raw, nil
 }
@@ -157,8 +429,8 @@ func IsNotFound(err error) bool {
 // This will be done via JSONRPC:
 // https://bugzilla.redhat.com/docs/en/html/integrating/api/Bugzilla/Extension/ExternalBugs/WebService.html#add-external-bug
 func (c *client) AddPullRequestAsExternalBug(id int, org, repo string, num int) (bool, error) {
-	logger := c.logger.WithFields(logrus.Fields{"method": "AddExternalBug", "id": id, "org": org, "repo": repo, "num": num})
-	pullIdentifier := fmt.Sprintf("%s/%s/pull/%d", org, repo, num)
+	logger := c.logger.WithFields(logrus.Fields{methodField: "AddExternalBug", "id": id, "org": org, "repo": repo, "num": num})
+	pullIdentifier := IdentifierForPull(org, repo, num)
 	rpcPayload := struct {
 		// Version is the version of JSONRPC to use. All Bugzilla servers
 		// support 1.0. Some support 1.1 and some support 2.0
@@ -217,6 +489,10 @@ func (c *client) AddPullRequestAsExternalBug(id int, org, repo string, num int) 
 		return false, fmt.Errorf("failed to unmarshal JSONRPC response: %v", err)
 	}
 	if response.Error != nil {
+		if response.Error.Code == 100500 && strings.Contains(response.Error.Message, `duplicate key value violates unique constraint "ext_bz_bug_map_bug_id_idx"`) {
+			// adding the external bug failed since it is already added, this is not an error
+			return false, nil
+		}
 		return false, fmt.Errorf("JSONRPC error %d: %v", response.Error.Code, response.Error.Message)
 	}
 	if response.ID != rpcPayload.ID {
@@ -231,4 +507,37 @@ func (c *client) AddPullRequestAsExternalBug(id int, org, repo string, num int) 
 		}
 	}
 	return changed, nil
+}
+
+func IdentifierForPull(org, repo string, num int) string {
+	return fmt.Sprintf("%s/%s/pull/%d", org, repo, num)
+}
+
+func PullFromIdentifier(identifier string) (org, repo string, num int, err error) {
+	parts := strings.Split(identifier, "/")
+	if len(parts) != 4 {
+		return "", "", 0, fmt.Errorf("invalid pull identifier with %d parts: %q", len(parts), identifier)
+	}
+	if parts[2] != "pull" {
+		return "", "", 0, &identifierNotForPull{identifier: identifier}
+	}
+	number, err := strconv.Atoi(parts[3])
+	if err != nil {
+		return "", "", 0, fmt.Errorf("invalid pull identifier: could not parse %s as number: %v", parts[3], err)
+	}
+
+	return parts[0], parts[1], number, nil
+}
+
+type identifierNotForPull struct {
+	identifier string
+}
+
+func (i identifierNotForPull) Error() string {
+	return fmt.Sprintf("identifier %q is not for a pull request", i.identifier)
+}
+
+func IsIdentifierNotForPullErr(err error) bool {
+	_, ok := err.(*identifierNotForPull)
+	return ok
 }

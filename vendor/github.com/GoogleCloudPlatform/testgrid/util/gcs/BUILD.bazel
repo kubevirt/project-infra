@@ -1,0 +1,34 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "gcs.go",
+        "read.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/GoogleCloudPlatform/testgrid/util/gcs",
+    importpath = "github.com/GoogleCloudPlatform/testgrid/util/gcs",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/cloud.google.com/go/storage:go_default_library",
+        "//vendor/github.com/GoogleCloudPlatform/testgrid/metadata:go_default_library",
+        "//vendor/github.com/GoogleCloudPlatform/testgrid/metadata/junit:go_default_library",
+        "//vendor/google.golang.org/api/iterator:go_default_library",
+        "//vendor/google.golang.org/api/option:go_default_library",
+        "//vendor/vbom.ml/util/sortorder:go_default_library",
+    ],
+)
+
+filegroup(
+    name = "package-srcs",
+    srcs = glob(["**"]),
+    tags = ["automanaged"],
+    visibility = ["//visibility:private"],
+)
+
+filegroup(
+    name = "all-srcs",
+    srcs = [":package-srcs"],
+    tags = ["automanaged"],
+    visibility = ["//visibility:public"],
+)

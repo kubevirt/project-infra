@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Knative Authors
+Copyright 2019 The Tekton Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,13 +20,16 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/knative/pkg/apis"
+	"github.com/tektoncd/pipeline/pkg/apis/validate"
 	"k8s.io/apimachinery/pkg/api/equality"
+	"knative.dev/pkg/apis"
 )
+
+var _ apis.Validatable = (*PipelineRun)(nil)
 
 // Validate pipelinerun
 func (pr *PipelineRun) Validate(ctx context.Context) *apis.FieldError {
-	if err := validateObjectMetadata(pr.GetObjectMeta()).ViaField("metadata"); err != nil {
+	if err := validate.ObjectMetadata(pr.GetObjectMeta()).ViaField("metadata"); err != nil {
 		return err
 	}
 	return pr.Spec.Validate(ctx)
@@ -37,24 +40,41 @@ func (ps *PipelineRunSpec) Validate(ctx context.Context) *apis.FieldError {
 	if equality.Semantic.DeepEqual(ps, &PipelineRunSpec{}) {
 		return apis.ErrMissingField("spec")
 	}
-	// pipeline reference should be present for pipelinerun
-	if ps.PipelineRef.Name == "" {
-		return apis.ErrMissingField("pipelinerun.spec.Pipelineref.Name")
+
+	// can't have both pipelineRef and pipelineSpec at the same time
+	if (ps.PipelineRef != nil && ps.PipelineRef.Name != "") && ps.PipelineSpec != nil {
+		return apis.ErrDisallowedFields("spec.pipelineref", "spec.pipelinespec")
 	}
-	if ps.Trigger.Type != PipelineTriggerTypeManual {
-		return apis.ErrInvalidValue(string(ps.Trigger.Type), "pipelinerun.spec.trigger.type")
+
+	// Check that one of PipelineRef and PipelineSpec is present
+	if (ps.PipelineRef == nil || (ps.PipelineRef != nil && ps.PipelineRef.Name == "")) && ps.PipelineSpec == nil {
+		return apis.ErrMissingField("spec.pipelineref.name", "spec.pipelinespec")
 	}
-	// check for results
-	if ps.Results != nil {
-		if err := ps.Results.Validate(ctx, "spec.results"); err != nil {
+
+	// Validate PipelineSpec if it's present
+	if ps.PipelineSpec != nil {
+		if err := ps.PipelineSpec.Validate(ctx); err != nil {
 			return err
 		}
 	}
 
 	if ps.Timeout != nil {
 		// timeout should be a valid duration of at least 0.
-		if ps.Timeout.Duration <= 0 {
-			return apis.ErrInvalidValue(fmt.Sprintf("%s should be > 0", ps.Timeout.Duration.String()), "spec.timeout")
+		if ps.Timeout.Duration < 0 {
+			return apis.ErrInvalidValue(fmt.Sprintf("%s should be >= 0", ps.Timeout.Duration.String()), "spec.timeout")
+		}
+	}
+
+	if ps.Workspaces != nil {
+		wsNames := make(map[string]int)
+		for idx, ws := range ps.Workspaces {
+			if prevIdx, alreadyExists := wsNames[ws.Name]; alreadyExists {
+				return &apis.FieldError{
+					Message: fmt.Sprintf("workspace %q provided by pipelinerun more than once, at index %d and %d", ws.Name, prevIdx, idx),
+					Paths:   []string{"spec.workspaces"},
+				}
+			}
+			wsNames[ws.Name] = idx
 		}
 	}
 

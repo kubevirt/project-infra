@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Knative Authors.
+Copyright 2019 The Tekton Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,12 +16,41 @@ limitations under the License.
 
 package v1alpha1
 
-import "context"
+import (
+	"context"
+
+	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
+	"github.com/tektoncd/pipeline/pkg/contexts"
+	"knative.dev/pkg/apis"
+)
+
+var _ apis.Defaultable = (*Task)(nil)
 
 func (t *Task) SetDefaults(ctx context.Context) {
 	t.Spec.SetDefaults(ctx)
 }
 
+// SetDefaults set any defaults for the task spec
 func (ts *TaskSpec) SetDefaults(ctx context.Context) {
-	return
+	if contexts.IsUpgradeViaDefaulting(ctx) {
+		v := v1beta1.TaskSpec{}
+		if ts.ConvertUp(ctx, &v) == nil {
+			alpha := TaskSpec{}
+			if alpha.ConvertDown(ctx, &v) == nil {
+				*ts = alpha
+			}
+		}
+	}
+	for i := range ts.Params {
+		ts.Params[i].SetDefaults(ctx)
+	}
+	if ts.Inputs != nil {
+		ts.Inputs.SetDefaults(ctx)
+	}
+}
+
+func (inputs *Inputs) SetDefaults(ctx context.Context) {
+	for i := range inputs.Params {
+		inputs.Params[i].SetDefaults(ctx)
+	}
 }

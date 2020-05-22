@@ -1,0 +1,10 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["dag.go"],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/tektoncd/pipeline/pkg/reconciler/pipeline/dag",
+    importpath = "github.com/tektoncd/pipeline/pkg/reconciler/pipeline/dag",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/github.com/tektoncd/pipeline/pkg/list:go_default_library"],
+)

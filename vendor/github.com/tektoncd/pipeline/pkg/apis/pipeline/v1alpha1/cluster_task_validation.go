@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Knative Authors
+Copyright 2019 The Tekton Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,11 +19,14 @@ package v1alpha1
 import (
 	"context"
 
-	"github.com/knative/pkg/apis"
+	"github.com/tektoncd/pipeline/pkg/apis/validate"
+	"knative.dev/pkg/apis"
 )
 
+var _ apis.Validatable = (*ClusterTask)(nil)
+
 func (t *ClusterTask) Validate(ctx context.Context) *apis.FieldError {
-	if err := validateObjectMetadata(t.GetObjectMeta()); err != nil {
+	if err := validate.ObjectMetadata(t.GetObjectMeta()); err != nil {
 		return err.ViaField("metadata")
 	}
 	return t.Spec.Validate(ctx)

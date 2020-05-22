@@ -7,9 +7,9 @@ go_library(
     importpath = "cloud.google.com/go/internal/trace",
     visibility = ["//vendor/cloud.google.com/go:__subpackages__"],
     deps = [
-        "//vendor/go.opencensus.io/trace:go_default_library",
         "//vendor/google.golang.org/api/googleapi:go_default_library",
         "//vendor/google.golang.org/grpc/status:go_default_library",
         "@go_googleapis//google/rpc:code_go_proto",
+        "@io_opencensus_go//trace:go_default_library",
     ],
 )
