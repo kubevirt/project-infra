@@ -7,7 +7,7 @@ go_library(
     importpath = "google.golang.org/api/transport/http/internal/propagation",
     visibility = ["//vendor/google.golang.org/api/transport/http:__subpackages__"],
     deps = [
-        "@io_opencensus_go//trace:go_default_library",
-        "@io_opencensus_go//trace/propagation:go_default_library",
+        "//vendor/go.opencensus.io/trace:go_default_library",
+        "//vendor/go.opencensus.io/trace/propagation:go_default_library",
     ],
 )

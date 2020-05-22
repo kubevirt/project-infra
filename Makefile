@@ -13,6 +13,8 @@ $(limiter) $(flakefinder) $(querier) $(kubevirtci): deps-update
 	$(MAKE) --directory=$@
 
 deps-update:
+	export GO111MODULE=on
+	go get ./...
 	go mod tidy
 	go mod vendor
 	bazel run //:gazelle

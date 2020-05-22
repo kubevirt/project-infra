@@ -10,11 +10,11 @@ go_library(
     importpath = "gocloud.dev/internal/oc",
     visibility = ["//vendor/gocloud.dev:__subpackages__"],
     deps = [
+        "//vendor/go.opencensus.io/plugin/ocgrpc:go_default_library",
+        "//vendor/go.opencensus.io/stats:go_default_library",
+        "//vendor/go.opencensus.io/stats/view:go_default_library",
+        "//vendor/go.opencensus.io/tag:go_default_library",
+        "//vendor/go.opencensus.io/trace:go_default_library",
         "//vendor/gocloud.dev/gcerrors:go_default_library",
-        "@io_opencensus_go//plugin/ocgrpc:go_default_library",
-        "@io_opencensus_go//stats:go_default_library",
-        "@io_opencensus_go//stats/view:go_default_library",
-        "@io_opencensus_go//tag:go_default_library",
-        "@io_opencensus_go//trace:go_default_library",
     ],
 )

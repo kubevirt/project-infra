@@ -7,13 +7,13 @@ go_library(
     importpath = "gocloud.dev/blob",
     visibility = ["//visibility:public"],
     deps = [
+        "//vendor/go.opencensus.io/stats:go_default_library",
+        "//vendor/go.opencensus.io/stats/view:go_default_library",
+        "//vendor/go.opencensus.io/tag:go_default_library",
         "//vendor/gocloud.dev/blob/driver:go_default_library",
         "//vendor/gocloud.dev/gcerrors:go_default_library",
         "//vendor/gocloud.dev/internal/gcerr:go_default_library",
         "//vendor/gocloud.dev/internal/oc:go_default_library",
         "//vendor/gocloud.dev/internal/openurl:go_default_library",
-        "@io_opencensus_go//stats:go_default_library",
-        "@io_opencensus_go//stats/view:go_default_library",
-        "@io_opencensus_go//tag:go_default_library",
     ],
 )
