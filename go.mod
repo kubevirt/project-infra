@@ -2,6 +2,7 @@ module kubevirt.io/project-infra
 
 require (
 	cloud.google.com/go v0.47.0
+	github.com/bazelbuild/buildtools v0.0.0-20190917191645-69366ca98f89
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-github/v28 v28.0.0
 	github.com/joshdk/go-junit v0.0.0-20190428045703-ad7e11aa49ff
