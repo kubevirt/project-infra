@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"k8s.io/test-infra/prow/github"
-	"k8s.io/test-infra/prow/github/fakegithub"
+	"kubevirt.io/project-infra/external-plugins/testutils"
 )
 
 func TestHandleIssueComment(t *testing.T) {
@@ -57,6 +57,14 @@ func TestHandleIssueComment(t *testing.T) {
 			expectedLabel: "someorg/someorg#1:release-blocker/release-v0.1",
 		},
 		{
+			name:          "org member adds blocker for non-existent branch",
+			userName:      "random-user",
+			body:          "/release-block release-v0.1-does-not-exist",
+			isMember:      true,
+			shouldLabel:   false,
+			shouldComment: true,
+		},
+		{
 			name:          "org member adds blocker that already exists",
 			userName:      "random-user",
 			body:          "/release-block release-v0.1",
@@ -74,6 +82,16 @@ func TestHandleIssueComment(t *testing.T) {
 			hasLabel:      true,
 			expectedLabel: "someorg/someorg#1:release-blocker/release-v0.1",
 		},
+		// it should be possible to remove a label even if the branch doesn't exist anymore
+		{
+			name:          "org member removes blocker for non-existent label",
+			userName:      "random-user",
+			body:          "/release-block cancel release-v0.1-does-not-exist",
+			isMember:      true,
+			shouldUnlabel: true,
+			hasLabel:      true,
+			expectedLabel: "someorg/someorg#1:release-blocker/release-v0.1-does-not-exist",
+		},
 		{
 			name:          "org member removes blocker that's already removed",
 			userName:      "random-user",
@@ -89,12 +107,17 @@ func TestHandleIssueComment(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Logf("test case %s", tc.name)
-		fc := &fakegithub.FakeClient{
+		fc := &testutils.FakeClient{
 			Issues:              make(map[int]*github.Issue),
 			IssueComments:       make(map[int][]github.IssueComment),
 			IssueCommentsAdded:  []string{},
 			IssueLabelsExisting: []string{},
 			OrgMembers:          make(map[string][]string),
+			RepoBranches: []github.Branch{
+				{
+					Name: "release-v0.1",
+				},
+			},
 		}
 
 		if tc.isMember {

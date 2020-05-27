@@ -22,6 +22,7 @@ var releaseBlockRe = regexp.MustCompile(`(?m)^(?:/releaseblock|/release-block|/r
 var releaseBlockCancelRe = regexp.MustCompile(`(?m)^(?:/releaseblock\s+cancel|/release-block\s+cancel|/release-blocker\s+cancel|releaseblocker\s+cancel)\s+(.+)$`)
 
 type githubClient interface {
+	GetBranches(org, repo string, onlyProtected bool) ([]github.Branch, error)
 	AddLabel(org, repo string, number int, label string) error
 	RemoveLabel(org, repo string, number int, label string) error
 	GetIssueLabels(org, repo string, number int) ([]github.Label, error)
@@ -133,25 +134,54 @@ func (s *Server) handleEvent(eventType, eventGUID string, payload []byte) error 
 	return nil
 }
 
-func (s *Server) handleLabel(label string, org string, repo string, num int, add bool) error {
+func (s *Server) branchExists(org string, repo string, targetBranch string) (bool, error) {
+
+	branches, err := s.GHC.GetBranches(org, repo, false)
+
+	if err != nil {
+		return false, err
+	}
+
+	for _, branch := range branches {
+		if branch.Name == targetBranch {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
+func (s *Server) handleLabel(targetBranch string, org string, repo string, num int, add bool) (string, error) {
+
+	label := fmt.Sprintf("%s/%s", baseLabel, targetBranch)
+
 	hasLabel, err := hasLabel(s.GHC, label, org, repo, num)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if !hasLabel && add {
-		err := s.GHC.AddLabel(org, repo, num, label)
+		exists, err := s.branchExists(org, repo, targetBranch)
 		if err != nil {
-			return err
+			return "", err
+		}
+
+		if !exists {
+			return fmt.Sprintf("Unable to place blocker label for release branch [%s] because branch does not exist.", targetBranch), nil
+		}
+
+		err = s.GHC.AddLabel(org, repo, num, label)
+		if err != nil {
+			return "", err
 		}
 	} else if hasLabel && !add {
 		err := s.GHC.RemoveLabel(org, repo, num, label)
 		if err != nil {
-			return err
+			return "", err
 		}
 	}
 
-	return nil
+	return "", nil
 }
 
 func (s *Server) handleIssueComment(l *logrus.Entry, ic github.IssueCommentEvent) error {
@@ -206,13 +236,13 @@ func (s *Server) handleIssueComment(l *logrus.Entry, ic github.IssueCommentEvent
 		WithField("target_branch", targetBranch).
 		Debug("release-blocker request.")
 
-	// TODO validate branch exists
-	label := fmt.Sprintf("%s/%s", baseLabel, targetBranch)
-
-	err = s.handleLabel(label, org, repo, num, needsLabel)
+	resp, err := s.handleLabel(targetBranch, org, repo, num, needsLabel)
 	if err != nil {
 		s.Log.WithFields(l.Data).WithError(err)
 		return err
+	} else if resp != "" {
+		s.Log.WithFields(l.Data).Info(resp)
+		return s.GHC.CreateComment(org, repo, num, plugins.FormatICResponse(ic.Comment, resp))
 	}
 
 	return nil
