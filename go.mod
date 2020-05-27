@@ -11,6 +11,7 @@ require (
 	github.com/sirupsen/logrus v1.6.0
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	google.golang.org/api v0.15.0
+	k8s.io/apimachinery v0.17.3
 	k8s.io/test-infra v0.0.0-20200519204219-34a27f5e6d4e
 )
 

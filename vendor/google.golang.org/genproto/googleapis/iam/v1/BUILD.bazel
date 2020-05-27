@@ -11,9 +11,9 @@ go_library(
     importpath = "google.golang.org/genproto/googleapis/iam/v1",
     visibility = ["//visibility:public"],
     deps = [
-        "//vendor/google.golang.org/genproto/googleapis/type/expr:go_default_library",
         "@com_github_golang_protobuf//proto:go_default_library",
         "@go_googleapis//google/api:annotations_go_proto",
+        "@go_googleapis//google/type:expr_go_proto",
         "@org_golang_google_grpc//:go_default_library",
     ],
 )
