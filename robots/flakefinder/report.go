@@ -148,12 +148,14 @@ const tpl = `
 <table>
     <tr>
         <td></td>
+        <td></td>
         {{ range $header := $.Headers }}
         <td>{{ $header }}</td>
         {{ end }}
     </tr>
     {{ range $row, $test := $.Tests }}
     <tr>
+        <td><div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a><div></td>
         <td>{{ $test }}</td>
         {{ range $col, $header := $.Headers }}
         {{if not (index $.Data $test $header) }}
