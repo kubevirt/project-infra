@@ -30,7 +30,7 @@ presubmits:
         type: vm
         zone: ci
       containers:
-      - image: golang:1.12
+      - image: golang:1.13
         env:
           - name: GO111MODULE
             value: "on"
