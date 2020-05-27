@@ -1,5 +1,8 @@
-FROM gcr.io/k8s-prow/git:0.1
+FROM fedora:32
 
-COPY release-blocker /release-blocker
-ENTRYPOINT ["/release-blocker"]
+RUN dnf install -y git && \
+    dnf clean all
+
+COPY release-blocker /bin/release-blocker
+ENTRYPOINT ["/bin/release-blocker"]
 
