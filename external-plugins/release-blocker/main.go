@@ -86,11 +86,13 @@ func main() {
 	}
 
 	server := &Server{
-		TokenGenerator: secretAgent.GetTokenGenerator(o.webhookSecretFile),
-		BotName:        botName,
+		tokenGenerator: secretAgent.GetTokenGenerator(o.webhookSecretFile),
+		botName:        botName,
 
-		GHC: githubClient,
-		Log: log,
+		ghc: githubClient,
+		log: log,
+
+		branchExists: branchExistsFunc,
 	}
 
 	mux := http.NewServeMux()
