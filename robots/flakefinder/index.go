@@ -56,6 +56,9 @@ const indexTpl = `
 			<td>{{ if eq $value "" }}&nbsp;{{ else }}<a href="{{ $value }}">{{ $key }}</a>{{ end }}</td>{{ end }}
 		</tr>{{ end }}
 	</table>
+<div>
+<a href="../../index.html">Overview</a>
+</div>
 </body>
 </html>
 `

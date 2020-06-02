@@ -178,12 +178,13 @@ func main() {
 		return
 	}
 
-	err = CreateReportIndex(ctx, client, o.org, o.repo)
-	if err != nil {
-		log.Fatal(fmt.Errorf("failed to create report index page: %v", err))
-		return
+	if !o.stdout {
+		err = CreateReportIndex(ctx, client, o.org, o.repo)
+		if err != nil {
+			log.Fatal(fmt.Errorf("failed to create report index page: %v", err))
+			return
+		}
 	}
-
 }
 
 func BuildReportOutputPath(o options) string {
