@@ -9,7 +9,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 3h
+      timeout: 5h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -41,7 +41,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 3h
+      timeout: 5h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -137,7 +137,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 3h
+      timeout: 5h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -169,7 +169,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 3h
+      timeout: 5h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -201,7 +201,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 3h
+      timeout: 5h
       grace_period: 5m
     max_concurrency: 6
     labels:
@@ -233,7 +233,7 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 3h
+      timeout: 5h
       grace_period: 5m
     max_concurrency: 6
     labels:
