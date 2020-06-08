@@ -1,5 +1,5 @@
 ---
-- hosts: prow
+- hosts: local
   gather_facts: False
   roles:
     - prow

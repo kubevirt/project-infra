@@ -1,381 +1,405 @@
 ---
-- name: Create project
-  k8s:
-    state: present
-    definition:
-      kind: Project
-      metadata:
-        name: '{{ prowJobsNamespace }}'
-      display_name: ProwJobs
-      description: Job namespace for Prow for KubeVirt
-- name: Create project
-  k8s:
-    state: present
-    definition:
-      kind: Project
-      metadata:
-        name: '{{ prowNamespace }}'
-      display_name: Prow
-      description: Prow for KubeVirt
-- name: Add admins to the prow namespace
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/admin-rbac.yaml')}}"
-- name: Add admins to the pow job namespace
-  command: "oc -n {{prowJobsNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/admin-rbac.yaml')}}"
-- name: Create Prow Routes
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/routes.yaml')}}"
-- name: Create Service Accounts
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/accounts.yaml')}}"
-- name: Create Docker-kubevirtbot secret
-  k8s:
-    state: present
-    namespace: "{{ prowJobsNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: kubevirtci-docker-credential
-      type: Opaque
-      data:
-        username: "{{ dockerUser | b64encode }}"
-        password: "{{ dockerPass | b64encode }}"
-- name: Create Quay-kubevirtbot secret
-  k8s:
-    state: present
-    namespace: "{{ prowJobsNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: kubevirtci-quay-credential
-      type: Opaque
-      data:
-        username: "{{ quayUser | b64encode }}"
-        password: "{{ quayPass | b64encode }}"
-- name: Create OKD installer pull token secret
-  k8s:
-    state: present
-    namespace: "{{ prowJobsNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: kubevirtci-installer-pull-token
-      type: Opaque
-      data:
-        token: "{{ installerPullToken | b64encode }}"
-- name: Create HMAC secret
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: hmac-token
-      type: Opaque
-      data:
-        hmac: "{{ prowHmac | b64encode }}"
-- name: Create OAuth secret in prow namespace
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: oauth-token
-      type: Opaque
-      data:
-        oauth: "{{ githubToken | b64encode }}"
-- name: Create OAuth secret in prow jobs namespace
-  k8s:
-    state: present
-    namespace: "{{ prowJobsNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: oauth-token
-      type: Opaque
-      data:
-        oauth: "{{ githubToken | b64encode }}"
-- name: Create OAuth commenter secret in prow jobs namespace
-  k8s:
-    state: present
-    namespace: "{{ prowJobsNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: commenter-oauth-token
-      type: Opaque
-      data:
-        oauth: "{{ githubCommenterToken | b64encode }}"
-- name: Create OAuth Config
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: github-oauth-config
-      type: Opaque
-      data:
-        secret: "{{ appOAuthConfig | b64encode }}"
-- name: Create OAuth Cookie
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: cookie
-      type: Opaque
-      data:
-        secret: "{{ appCookieSecret | b64encode }}"
-- name: Create GCS service account config in prow namespace
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: gcs
-      type: Opaque
-      data:
-        service-account.json: "{{ gcsServiceAccount | b64encode }}"
-- name: Create GCS service account config in prow jobs namespace
-  k8s:
-    state: present
-    namespace: "{{ prowJobsNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: gcs
-      type: Opaque
-      data:
-        service-account.json: "{{ gcsServiceAccount | b64encode }}"
-- name: Deploy limit range
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('file', '{{ role_path }}/templates/memory-defaults.yaml') }}"
-- name: Deploy job limit range
-  command: "oc -n {{prowJobsNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('file', '{{ role_path }}/templates/memory-job-defaults.yaml') }}"
+- set_fact:
+    automationKubeconfig: "{{ lookup('env', 'HOME') }}/.kube/kubevirt_automation.kubeconfig"
+- name: Configure master cluster
+  always:
+    - name: Clean temporary kubeconfig
+      file:
+        path: '{{ automationKubeconfig }}'
+        state: absent
+  block:
+    - name: Ensure user's .kube directory exists
+      file:
+        path: "{{ lookup('env', 'HOME') }}/.kube"
+        state: directory
+        mode: '0750'
+    - name: Write kubeconfig
+      copy:
+        content: '{{ kubeconfig }}'
+        dest: '{{ automationKubeconfig }}'
+    - name: Set kubeconfig file permissions
+      file:
+        path: '{{ automationKubeconfig }}'
+        mode: '0600'
+    - name: Create a kubeconfig secret for the remote cluster
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: remote-cluster-kubeconfig
+          type: Opaque
+          data:
+            kubeconfig: "{{ kubeconfig | b64encode }}"
+      no_log: true
+    - name: Create project
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        definition:
+          kind: Project
+          metadata:
+            name: '{{ prowJobsNamespace }}'
+          display_name: ProwJobs
+          description: Job namespace for Prow for KubeVirt
+    - name: Create project
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        definition:
+          kind: Project
+          metadata:
+            name: '{{ prowNamespace }}'
+          display_name: Prow
+          description: Prow for KubeVirt
+    - name: Add admins to the prow namespace
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/admin-rbac.yaml')}}"
+    - name: Add admins to the pow job namespace
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowJobsNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/admin-rbac.yaml')}}"
+    - name: Create Prow Routes
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/routes.yaml')}}"
+    - name: Create Service Accounts
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/accounts.yaml')}}"
+    - name: Create HMAC secret
+      no_log: true
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: hmac-token
+          type: Opaque
+          data:
+            hmac: "{{ prowHmac | b64encode }}"
+    - name: Create OAuth secret in prow namespace
+      no_log: true
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: oauth-token
+          type: Opaque
+          data:
+            oauth: "{{ githubToken | b64encode }}"
+    - name: Create OAuth Config
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: github-oauth-config
+          type: Opaque
+          data:
+            secret: "{{ appOAuthConfig | b64encode }}"
+    - name: Create OAuth Cookie
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: cookie
+          type: Opaque
+          data:
+            secret: "{{ appCookieSecret | b64encode }}"
+    - name: Create GCS service account config in prow namespace
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: gcs
+          type: Opaque
+          data:
+            service-account.json: "{{ gcsServiceAccount | b64encode }}"
+    - name: Deploy limit range
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('file', '{{ role_path }}/templates/memory-defaults.yaml') }}"
+    - name: Deploy job limit range
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowJobsNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('file', '{{ role_path }}/templates/memory-job-defaults.yaml') }}"
 
-- name: Deploy the pushgateway
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/pushgateway.yaml')}}"
-- name: Update the docker mirror config
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-config.yaml') | from_yaml }}"
-  vars:
-    mirrorConfig: "{{ lookup('file', '{{ role_path }}/files/mirror.yaml') }}"
-- name: Update the docker daemon mirror config
-  k8s:
-    state: present
-    namespace: "{{ prowJobsNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/docker-daemon-mirror-config.yaml') | from_yaml }}"
-  vars:
-    dockerDaemonConfig: "{{ lookup('file', '{{ role_path }}/files/docker-daemon-mirror.conf') }}"
-- name: Deploy the docker mirror config
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/mirror.yaml')}}"
-- name: Deploy docker mirror service
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-service.yaml') | from_yaml }}"
-- name: Update prow config
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/config.yaml') | from_yaml }}"
-  vars:
-    prowConfig: "{{ lookup('file', '{{ role_path }}/files/config.yaml') }}"
-- name: Update prow plugins config
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/plugins.yaml') | from_yaml }}"
-  vars:
-    prowPluginsConfig: "{{ lookup('file', '{{ role_path }}/files/plugins.yaml') }}"
-- name: Update prow label-sync config
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/labels.yaml') | from_yaml }}"
-  vars:
-    prowLabelsConfig: "{{ lookup('file', '{{ role_path }}/files/labels.yaml') }}"
-- name: Deploy prow-hook-rbac
-  command: "oc -n {{prowJobsNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/hook-rbac.yaml')}}"
-- name: Deploy prow-hook
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/hook.yaml') | from_yaml }}"
-- name: Deploy prow-hook-service
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/hook-service.yaml') | from_yaml }}"
-- name: Deploy horologium-rbac
-  command: "oc -n {{ prowJobsNamespace }} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/horologium-rbac.yaml')}}"
-- name: Deploy horologium
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/horologium-deployment.yaml') | from_yaml }}"
-- name: Deploy plank-rbac
-  command: "oc -n {{ prowJobsNamespace }} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/plank-rbac.yaml')}}"
-- name: Deploy plank
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/plank-deployment.yaml') | from_yaml }}"
-- name: Deploy sinker-rbac
-  command: "oc -n {{ prowJobsNamespace }} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/sinker-rbac.yaml')}}"
-- name: Deploy sinker
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/sinker-deployment.yaml') | from_yaml }}"
-- name: Deploy label-sync cron job
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/label-sync.yaml') | from_yaml }}"
-- name: Deploy needs-rebase
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/needs-rebase_deployment.yaml') | from_yaml }}"
-- name: Deploy needs-rebase-service
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/needs-rebase_service.yaml') | from_yaml }}"
-- name: Deploy cherrypicker
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/cherrypicker_deployment.yaml') | from_yaml }}"
-- name: Deploy cherrypicker-service
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/cherrypicker_service.yaml') | from_yaml }}"
-- name: Deploy prow-deck-rbac
-  command: "oc -n {{prowJobsNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-rbac.yaml')}}"
-- name: Deploy prow-deck-service
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-service.yaml')}}"
-- name: Deploy prow-deck-deployment
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-deployment.yaml')}}"
-- name: Create slack-token secret
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: slack-token
-      type: Opaque
-      data:
-        token: "{{ slackToken | b64encode }}"
-- name: Deploy crier-rbac
-  command: "oc -n {{prowJobsNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/crier-rbac.yaml')}}"
-- name: Deploy crier-deployment
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/crier-deployment.yaml')}}"
-- name: Deploy gcsweb-service
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/gcsweb-service.yaml')}}"
-- name: Deploy gcsweb-deployment
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/gcsweb-deployment.yaml')}}"
-- name: Deploy prow-tide-rbac
-  command: "oc -n {{prowJobsNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-rbac.yaml')}}"
-- name: Deploy prow-tide-service
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-service.yaml')}}"
-- name: Deploy prow-tide-deployment
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-deployment.yaml')}}"
-- name: Deploy prow-exporter-rbac
-  command: "oc -n {{prowJobsNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/exporter-rbac.yaml')}}"
-- name: Deploy prow-exporter-deployment
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/exporter-deployment.yaml')}}"
-- name: Deploy prow-statusreconciler-rbac
-  command: "oc -n {{prowJobsNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/statusreconciler-rbac.yaml')}}"
-- name: Deploy prow-statusreconciler-deployment
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/statusreconciler-deployment.yaml')}}"
-- name: Deploy greenhouse-pvc
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/greenhouse-pvc.yaml')}}"
-- name: Deploy greenhouse-deployment
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/greenhouse-deployment.yaml')}}"
-- name: Deploy greenhouse-service
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/greenhouse-service.yaml')}}"
-- name: Deploy ghproxy
-  command: "oc -n {{prowNamespace}} apply -f -"
-  args:
-    stdin: "{{ lookup('template', '{{ role_path }}/templates/ghproxy.yaml')}}"
-- name: Deploy branch-protector cron job
-  k8s:
-    state: present
-    namespace: "{{ prowNamespace }}"
-    definition: "{{ lookup('template', '{{ role_path }}/templates/branch-protector.yaml') | from_yaml }}"
+    - name: Deploy the pushgateway
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/pushgateway.yaml')}}"
+    - name: Update the docker mirror config
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-config.yaml') | from_yaml }}"
+      vars:
+        mirrorConfig: "{{ lookup('file', '{{ role_path }}/files/mirror.yaml') }}"
+    - name: Update the docker daemon mirror config
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowJobsNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/docker-daemon-mirror-config.yaml') | from_yaml }}"
+      vars:
+        dockerDaemonConfig: "{{ lookup('file', '{{ role_path }}/files/docker-daemon-mirror.conf') }}"
+    - name: Deploy the docker mirror config
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/mirror.yaml')}}"
+    - name: Deploy docker mirror service
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-service.yaml') | from_yaml }}"
+    - name: Update prow config
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/config.yaml') | from_yaml }}"
+      vars:
+        prowConfig: "{{ lookup('file', '{{ role_path }}/files/config.yaml') }}"
+    - name: Update prow plugins config
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/plugins.yaml') | from_yaml }}"
+      vars:
+        prowPluginsConfig: "{{ lookup('file', '{{ role_path }}/files/plugins.yaml') }}"
+    - name: Update prow label-sync config
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/labels.yaml') | from_yaml }}"
+      vars:
+        prowLabelsConfig: "{{ lookup('file', '{{ role_path }}/files/labels.yaml') }}"
+    - name: Deploy prow-hook-rbac
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowJobsNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/hook-rbac.yaml')}}"
+    - name: Deploy prow-hook
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/hook.yaml') | from_yaml }}"
+    - name: Deploy prow-hook-service
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/hook-service.yaml') | from_yaml }}"
+    - name: Deploy horologium-rbac
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{ prowJobsNamespace }} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/horologium-rbac.yaml')}}"
+    - name: Deploy horologium
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/horologium-deployment.yaml') | from_yaml }}"
+    - name: Deploy plank-rbac
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{ prowJobsNamespace }} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/plank-rbac.yaml')}}"
+    - name: Deploy plank
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/plank-deployment.yaml') | from_yaml }}"
+    - name: Deploy sinker-rbac
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{ prowJobsNamespace }} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/sinker-rbac.yaml')}}"
+    - name: Deploy sinker
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/sinker-deployment.yaml') | from_yaml }}"
+    - name: Deploy label-sync cron job
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/label-sync.yaml') | from_yaml }}"
+    - name: Deploy needs-rebase
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/needs-rebase_deployment.yaml') | from_yaml }}"
+    - name: Deploy needs-rebase-service
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/needs-rebase_service.yaml') | from_yaml }}"
+    - name: Deploy cherrypicker
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/cherrypicker_deployment.yaml') | from_yaml }}"
+    - name: Deploy cherrypicker-service
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/cherrypicker_service.yaml') | from_yaml }}"
+    - name: Deploy prow-deck-rbac
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowJobsNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-rbac.yaml')}}"
+    - name: Deploy prow-deck-service
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-service.yaml')}}"
+    - name: Deploy prow-deck-deployment
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/deck-deployment.yaml')}}"
+    - name: Create slack-token secret
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: slack-token
+          type: Opaque
+          data:
+            token: "{{ slackToken | b64encode }}"
+      no_log: true
+    - name: Deploy crier-rbac
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowJobsNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/crier-rbac.yaml')}}"
+    - name: Deploy crier-deployment
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/crier-deployment.yaml')}}"
+    - name: Deploy gcsweb-service
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/gcsweb-service.yaml')}}"
+    - name: Deploy gcsweb-deployment
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/gcsweb-deployment.yaml')}}"
+    - name: Deploy prow-tide-rbac
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowJobsNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-rbac.yaml')}}"
+    - name: Deploy prow-tide-service
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-service.yaml')}}"
+    - name: Deploy prow-tide-deployment
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/tide-deployment.yaml')}}"
+    - name: Deploy prow-exporter-rbac
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowJobsNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/exporter-rbac.yaml')}}"
+    - name: Deploy prow-exporter-deployment
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/exporter-deployment.yaml')}}"
+    - name: Deploy prow-statusreconciler-rbac
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowJobsNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/statusreconciler-rbac.yaml')}}"
+    - name: Deploy prow-statusreconciler-deployment
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/statusreconciler-deployment.yaml')}}"
+    - name: Deploy greenhouse-pvc
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/greenhouse-pvc.yaml')}}"
+    - name: Deploy greenhouse-deployment
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/greenhouse-deployment.yaml')}}"
+    - name: Deploy greenhouse-service
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/greenhouse-service.yaml')}}"
+    - name: Deploy ghproxy
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/ghproxy.yaml')}}"
+    - name: Deploy branch-protector cron job
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/branch-protector.yaml') | from_yaml }}"
+    - name: Deploy Prow jobs secrets
+      vars:
+        targetNamespace: '{{ prowJobsNamespace }}'
+        targetContext: '{{ masterClusterContext }}'
+        automationKubeconfig: '{{ automationKubeconfig }}'
+      import_role:
+        name: prow-jobs-secrets
+      no_log: true
