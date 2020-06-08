@@ -31,34 +31,34 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
-    branches:
-    - release-2.4
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 7h0m0s
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
-      preset-kubevirtci-quay-credential: "true"
-      preset-shared-images: "true"
-    max_concurrency: 6
-    name: pull-hyperconverged-cluster-operator-e2e-ocp-4.4
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/bash
-        - -c
-        - cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true
-          quay.io && export TARGET=ocp-4.4 && automation/test.sh
-        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
+#  - always_run: true
+#    branches:
+#    - release-2.4
+#    decorate: true
+#    decoration_config:
+#      grace_period: 5m0s
+#      timeout: 7h0m0s
+#    labels:
+#      preset-dind-enabled: "true"
+#      preset-docker-mirror: "true"
+#      preset-kubevirtci-quay-credential: "true"
+#      preset-shared-images: "true"
+#    max_concurrency: 6
+#    name: pull-hyperconverged-cluster-operator-e2e-ocp-4.4
+#    spec:
+#      containers:
+#      - command:
+#        - /usr/local/bin/runner.sh
+#        - /bin/bash
+#        - -c
+#        - cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true
+#          quay.io && export TARGET=ocp-4.4 && automation/test.sh
+#        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+#        name: ""
+#        resources:
+#          requests:
+#            memory: 29Gi
+#        securityContext:
+#          privileged: true
+#      nodeSelector:
+#        type: bare-metal-external
