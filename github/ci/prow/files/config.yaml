@@ -183,6 +183,8 @@ branch-protection:
           branches:
             master:
               protect: true
+              required_status_checks:
+                strict: true
         containerized-data-importer:
           branches:
             master:
