@@ -51,6 +51,7 @@ spec:
         - --gcs-credentials-file=/etc/gcs/service-account.json
         - --rerun-creates-job=true
         - --github-token-path=/etc/githubtoken/oauth
+        - --kubeconfig=/etc/remote_cluster_config/kubeconfig
         volumeMounts:
         - name: oauth-config
           mountPath: /etc/github
@@ -69,6 +70,9 @@ spec:
           readOnly: true
         - name: oauth
           mountPath: /etc/githubtoken
+          readOnly: true
+        - name: remote-cluster-kubeconfig
+          mountPath: /etc/remote_cluster_config
           readOnly: true
         resources:
           requests:
@@ -94,6 +98,10 @@ spec:
       - name: gcs
         secret:
           secretName: gcs
+      - name: remote-cluster-kubeconfig
+        secret:
+          defaultMode: 0644
+          secretName: remote-cluster-kubeconfig
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

@@ -20,6 +20,7 @@ spec:
         args:
         - --job-config-path=/etc/job-config
         - --dry-run=false
+        - --kubeconfig=/etc/remote_cluster_config/kubeconfig
         image: gcr.io/k8s-prow/sinker:v20200204-7e8cd997a
         volumeMounts:
         - name: config
@@ -28,6 +29,9 @@ spec:
         - name: job-config
           mountPath: /etc/job-config
           readOnly: true
+        - name: remote-cluster-kubeconfig
+          mountPath: /etc/remote_cluster_config
+          readOnly: true
       volumes:
       - name: config
         configMap:
@@ -35,3 +39,7 @@ spec:
       - name: job-config
         configMap:
           name: job-config
+      - name: remote-cluster-kubeconfig
+        secret:
+          defaultMode: 0644
+          secretName: remote-cluster-kubeconfig
