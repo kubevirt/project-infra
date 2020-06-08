@@ -14,11 +14,13 @@ go_library(
         "//vendor/k8s.io/test-infra/prow/config:go_default_library",
         "//vendor/k8s.io/test-infra/prow/config/secret:go_default_library",
         "//vendor/k8s.io/test-infra/prow/flagutil:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/git/v2:go_default_library",
         "//vendor/k8s.io/test-infra/prow/github:go_default_library",
         "//vendor/k8s.io/test-infra/prow/interrupts:go_default_library",
         "//vendor/k8s.io/test-infra/prow/pluginhelp:go_default_library",
         "//vendor/k8s.io/test-infra/prow/pluginhelp/externalplugins:go_default_library",
         "//vendor/k8s.io/test-infra/prow/plugins:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/repoowners:go_default_library",
     ],
 )
 
@@ -35,6 +37,7 @@ go_test(
     deps = [
         "//external-plugins/testutils:go_default_library",
         "//vendor/github.com/sirupsen/logrus:go_default_library",
+        "//vendor/k8s.io/apimachinery/pkg/util/sets:go_default_library",
         "//vendor/k8s.io/test-infra/prow/github:go_default_library",
     ],
 )

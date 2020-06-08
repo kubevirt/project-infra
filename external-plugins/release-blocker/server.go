@@ -13,6 +13,7 @@ import (
 	"k8s.io/test-infra/prow/github"
 	"k8s.io/test-infra/prow/pluginhelp"
 	"k8s.io/test-infra/prow/plugins"
+	"k8s.io/test-infra/prow/repoowners"
 )
 
 const pluginName = "release-blocker"
@@ -32,6 +33,10 @@ type githubClient interface {
 	GetIssueLabels(org, repo string, number int) ([]github.Label, error)
 	CreateComment(org, repo string, number int, comment string) error
 	IsMember(org, user string) (bool, error)
+}
+
+type prowOwnersClient interface {
+	LoadRepoOwners(org, repo, base string) (repoowners.RepoOwner, error)
 }
 
 // HelpProvider construct the pluginhelp.PluginHelp for this plugin.
@@ -56,9 +61,10 @@ type Server struct {
 	botName        string
 
 	// Used for unit testing
-	push func(newBranch string) error
-	ghc  githubClient
-	log  *logrus.Entry
+	push         func(newBranch string) error
+	ghc          githubClient
+	log          *logrus.Entry
+	ownersClient prowOwnersClient
 
 	branchExists func(org string, repo string, targetBranch string) (bool, error)
 }
@@ -87,12 +93,23 @@ func hasLabel(ghc githubClient, label string, org string, repo string, num int) 
 	return hasLabel, nil
 }
 
-func canLabel(ghc githubClient, org string, commentAuthor string) (bool, error) {
+func (s *Server) canLabel(org string, repo string, base string, commentAuthor string) (bool, error) {
 	// only members can add blocking label.
-	ok, err := ghc.IsMember(org, commentAuthor)
+	// Leave this in as a safety precaution in the event
+	// that there's a vulnerability in the owners logic.
+	ok, err := s.ghc.IsMember(org, commentAuthor)
+	if err != nil {
+		return false, err
+	} else if !ok {
+		return false, nil
+	}
+
+	owners, err := s.ownersClient.LoadRepoOwners(org, repo, base)
 	if err != nil {
 		return false, err
 	}
+
+	ok = owners.TopLevelApprovers().Has(commentAuthor)
 
 	return ok, nil
 }
@@ -299,7 +316,9 @@ func (s *Server) handleIssueComment(l *logrus.Entry, ic github.IssueCommentEvent
 	}
 
 	// validate the user is allowed to block or unblock
-	ok, err := canLabel(s.ghc, org, commentAuthor)
+	// Since this needs to work with issues and PRs, we default to the
+	// owners in the master branch of the repo
+	ok, err := s.canLabel(org, repo, "master", commentAuthor)
 	if err != nil {
 		return err
 	}

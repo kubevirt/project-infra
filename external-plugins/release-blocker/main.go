@@ -11,10 +11,13 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"k8s.io/test-infra/pkg/flagutil"
+	"k8s.io/test-infra/prow/config"
 	"k8s.io/test-infra/prow/config/secret"
 	prowflagutil "k8s.io/test-infra/prow/flagutil"
+	"k8s.io/test-infra/prow/git/v2"
 	"k8s.io/test-infra/prow/interrupts"
 	"k8s.io/test-infra/prow/pluginhelp/externalplugins"
+	"k8s.io/test-infra/prow/repoowners"
 )
 
 type options struct {
@@ -85,12 +88,21 @@ func main() {
 		logrus.WithError(err).Fatal("Error getting bot name.")
 	}
 
+	mdYAMLEnabled := func(org, repo string) bool { return true }
+	skipCollaborators := func(org, repo string) bool { return false }
+	ownersDirBlacklist := func() config.OwnersDirBlacklist {
+		return config.OwnersDirBlacklist{}
+	}
+
+	ownersClient := repoowners.NewClient(git.ClientFactoryFrom(gitClient), githubClient, mdYAMLEnabled, skipCollaborators, ownersDirBlacklist)
+
 	server := &Server{
 		tokenGenerator: secretAgent.GetTokenGenerator(o.webhookSecretFile),
 		botName:        botName,
 
-		ghc: githubClient,
-		log: log,
+		ghc:          githubClient,
+		log:          log,
+		ownersClient: ownersClient,
 
 		branchExists: branchExistsFunc,
 	}

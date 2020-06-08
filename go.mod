@@ -13,6 +13,7 @@ require (
 	google.golang.org/api v0.15.0
 	k8s.io/apimachinery v0.17.3
 	k8s.io/test-infra v0.0.0-20200519204219-34a27f5e6d4e
+	sigs.k8s.io/yaml v1.2.0
 )
 
 replace (

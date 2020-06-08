@@ -5,6 +5,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
+	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/test-infra/prow/github"
 	"kubevirt.io/project-infra/external-plugins/testutils"
 )
@@ -406,6 +407,14 @@ func TestHandleIssueComment(t *testing.T) {
 			},
 		}
 
+		foc := &testutils.FakeOwnersClient{
+			ExistingTopLevelApprovers: sets.NewString(tc.userName),
+		}
+
+		froc := &testutils.FakeRepoownersClient{
+			Foc: foc,
+		}
+
 		if tc.isMember {
 			fc.OrgMembers[org] = []string{tc.userName}
 		}
@@ -426,6 +435,7 @@ func TestHandleIssueComment(t *testing.T) {
 			ghc:          fc,
 			log:          logrus.WithField("plugin", pluginName),
 			branchExists: branchExists,
+			ownersClient: froc,
 		}
 
 		ic := github.IssueCommentEvent{
