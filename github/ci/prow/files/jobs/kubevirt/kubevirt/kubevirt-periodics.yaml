@@ -109,6 +109,9 @@ periodics:
       type: bare-metal-external
     containers:
     - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -118,12 +121,28 @@ periodics:
           git clone https://github.com/kubevirt/kubevirt.git &&
           cd kubevirt &&
           export DOCKER_PREFIX='kubevirtnightlybuilds' &&
-          export DOCKER_TAG='latest' &&
+          export DOCKER_TAG="$(date +%Y%m%d)_$(git show --format=%h)" &&
           make &&
-          make push
+          make push &&
+          git show --format=%H > _out/commit &&
+          build_date="$(date +%Y%m%d)" &&
+          echo ${build_date} > _out/build_date &&
+          bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}" &&
+          gsutil cp ./_out/manifests/release/kubevirt-operator.yaml gs://$bucket_dir/kubevirt-operator.yaml &&
+          gsutil cp ./_out/manifests/release/kubevirt-cr.yaml gs://$bucket_dir/kubevirt-cr.yaml &&
+          gsutil cp ./_out/commit gs://$bucket_dir/commit &&
+          gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
       # docker-in-docker needs privileged mode
       securityContext:
         privileged: true
       resources:
         requests:
-          memory: "29Gi"
+          memory: "8Gi"
+      volumeMounts:
+        - name: gcs
+          mountPath: /etc/gcs
+          readOnly: false
+    volumes:
+      - name: gcs
+        secret:
+          secretName: gcs
