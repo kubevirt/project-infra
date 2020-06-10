@@ -101,9 +101,9 @@ presubmits:
       - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-    always_run: false
+    always_run: true
     optional: true
-    skip_report: true
+    skip_report: false
     decorate: true
     decoration_config:
       timeout: 7h
