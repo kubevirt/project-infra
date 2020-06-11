@@ -2,7 +2,7 @@
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
-  name: prometheus 
+  name: prometheus
   labels:
     app: prometheus
     version: v2.7.1
@@ -38,10 +38,10 @@ spec:
           resources:
             limits:
               cpu: 10m
-              memory: 10Mi
+              memory: 100Mi
             requests:
               cpu: 10m
-              memory: 10Mi
+              memory: 100Mi
 
         - name: prometheus-server
           image: "prom/prometheus:v2.7.1"
@@ -70,11 +70,10 @@ spec:
           resources:
             limits:
               cpu: 200m
-              memory: 1000Mi
+              memory: 8Gi
             requests:
               cpu: 200m
-              memory: 1000Mi
-            
+              memory: 8Gi
           volumeMounts:
             - name: config-volume
               mountPath: /etc/config
