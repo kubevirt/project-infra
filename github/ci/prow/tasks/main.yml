@@ -35,7 +35,7 @@
           type: Opaque
           data:
             kubeconfig: "{{ kubeconfig | b64encode }}"
-      no_log: true
+      # no_log: true
     - name: Create project
       k8s:
         kubeconfig: '{{ automationKubeconfig }}'
@@ -58,14 +58,6 @@
             name: '{{ prowNamespace }}'
           display_name: Prow
           description: Prow for KubeVirt
-    - name: Add admins to the prow namespace
-      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
-      args:
-        stdin: "{{ lookup('template', '{{ role_path }}/templates/admin-rbac.yaml')}}"
-    - name: Add admins to the pow job namespace
-      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowJobsNamespace}} apply -f -"
-      args:
-        stdin: "{{ lookup('template', '{{ role_path }}/templates/admin-rbac.yaml')}}"
     - name: Create Prow Routes
       command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
       args:
@@ -150,11 +142,6 @@
       command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
       args:
         stdin: "{{ lookup('file', '{{ role_path }}/templates/memory-defaults.yaml') }}"
-    - name: Deploy job limit range
-      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowJobsNamespace}} apply -f -"
-      args:
-        stdin: "{{ lookup('file', '{{ role_path }}/templates/memory-job-defaults.yaml') }}"
-
     - name: Deploy the pushgateway
       command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
       args:
@@ -168,15 +155,6 @@
         definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-config.yaml') | from_yaml }}"
       vars:
         mirrorConfig: "{{ lookup('file', '{{ role_path }}/files/mirror.yaml') }}"
-    - name: Update the docker daemon mirror config
-      k8s:
-        kubeconfig: '{{ automationKubeconfig }}'
-        context: '{{ masterClusterContext }}'
-        state: present
-        namespace: "{{ prowJobsNamespace }}"
-        definition: "{{ lookup('template', '{{ role_path }}/templates/docker-daemon-mirror-config.yaml') | from_yaml }}"
-      vars:
-        dockerDaemonConfig: "{{ lookup('file', '{{ role_path }}/files/docker-daemon-mirror.conf') }}"
     - name: Deploy the docker mirror config
       command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
       args:
@@ -395,6 +373,13 @@
         state: present
         namespace: "{{ prowNamespace }}"
         definition: "{{ lookup('template', '{{ role_path }}/templates/branch-protector.yaml') | from_yaml }}"
+    - name: Deploy shared objects
+      vars:
+        targetKubeconfig: '{{ automationKubeconfig }}'
+        targetContext: '{{ masterClusterContext }}'
+        targetNamespace: '{{ prowJobsNamespace }}'
+      import_role:
+        name: shared-deployments
     - name: Deploy Prow jobs secrets
       vars:
         targetNamespace: '{{ prowJobsNamespace }}'

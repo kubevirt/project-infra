@@ -32,6 +32,13 @@
             name: '{{ prowJobsNamespace }}'
           display_name: ProwJobs
           description: KubeVirt Prow jobs are running here
+    - name: Deploy shared objects
+      vars:
+        targetKubeconfig: '{{ automationKubeconfig }}'
+        targetContext: '{{ remoteClusterProwJobsContext }}'
+        targetNamespace: '{{ prowJobsNamespace }}'
+      import_role:
+        name: shared-deployments
     - name: Create a service account for Prow jobs executor
       k8s:
         kubeconfig: '{{ automationKubeconfig }}'
