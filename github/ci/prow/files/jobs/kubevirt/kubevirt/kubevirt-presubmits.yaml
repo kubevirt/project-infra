@@ -101,7 +101,7 @@ presubmits:
       - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-    always_run: true
+    always_run: false
     optional: true
     skip_report: false
     decorate: true
