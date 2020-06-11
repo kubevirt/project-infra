@@ -37,6 +37,7 @@ spec:
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
         - --job-config-path=/etc/job-config
+        - --kubeconfig=/etc/remote_cluster_config/kubeconfig
         volumeMounts:
         - name: oauth
           mountPath: /etc/github
@@ -46,6 +47,9 @@ spec:
           readOnly: true
         - name: job-config
           mountPath: /etc/job-config
+          readOnly: true
+        - name: remote-cluster-kubeconfig
+          mountPath: /etc/remote_cluster_config
           readOnly: true
       volumes:
       - name: oauth
@@ -57,3 +61,7 @@ spec:
       - name: job-config
         configMap:
           name: job-config
+      - name: remote-cluster-kubeconfig
+        secret:
+          defaultMode: 0644
+          secretName: remote-cluster-kubeconfig

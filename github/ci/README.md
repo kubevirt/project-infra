@@ -27,6 +27,12 @@ Create a file `group_vars/all/main.yml` based on
 
 ```yaml
 ---
+remoteClusterName: ""
+remoteClusterProwJobsContext: ""
+masterClusterContext: ""
+kubeconfig: |
+  # kubeconfig to be used by automation accounts
+remoteClusterEndpoint: ""
 githubSecret: ""
 githubToken: "453f86e8a6c9eed45789c689089e1eb2w9x2fda3"
 prowUrl: "deck-prow.e8ca.engint.openshiftapps.com" # without the /hook subpath
@@ -67,43 +73,39 @@ installerPullToken: 'pullSecret: {"auths":{"cloud.openshift.com":{"auth":"test",
 Add your master and your clients to the `inventory` file:
 
 ```
-[prow]
+[local]
 localhost ansible_connection=local
 ```
 
-`[prow]` will use your local openshift
-credentials and deploy prow on the configured cluster.
+`[prow]` will use your local kubectl and oc binaries to deploy the master cluster.
 
-Provision prow:
+`[remote-cluster]` will use your local kubectl and oc binaries to deploy the remote cluster.
+
+The credentials should be provided in your group_vars kubeconfig section.
+
+<b>Note about the order of deployment</b>
+
+The two playbooks are independant. You can run either one of them when you need.
+
+### Configure the remote cluster
+
+```
+ansible-playbook -i inventory remote-cluster.yml
+```
+
+### Configure the master cluster
+
 
 ```
 ansible-playbook -i inventory prow.yaml
 ```
+
 ### How to share secrets?
 
-There is an `encrypt.sh` script include. For instance to share the needed
-secrets with the user `nobody`, us the public key of the user and run:
-
-```bash
-$ ./encrypt.sh ~/.ssh/nobody.pub nobody
-Adding the following files:
-
-  secrets/
-  secrets/group_vars/
-  secrets/group_vars/all/
-  secrets/group_vars/all/main.yml
-  secrets/inventory
-
-Created nobody.tar.enc and nobody.key.enc
-```
-
-The receiver can decrypt the aes key via her public key and then use the aes
-key to decrypt the tar file:
-
-```bash
-./decrypt.sh ~/.ssh/id_rsa rmohr
-File rmohr.tar decrypted.
-```
+The project's secrets are stored in an encrypted format in a private GitHub repo.
+If you need access to the repo, please reach to one of the project's maintainers
+or send an email to our mailing list with an explanation why you need access to
+the project's secrets. 
 
 #### Error: unable to load Private Key
 If you are getting an error of the following:

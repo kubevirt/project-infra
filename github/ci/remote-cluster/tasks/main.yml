@@ -1,0 +1,97 @@
+---
+- set_fact:
+    automationKubeconfig: "{{ lookup('env', 'HOME') }}/.kube/kubevirt_automation.kubeconfig"
+- name: Configure remote cluster
+  always:
+    - name: Clean temporary kubeconfig
+      file:
+        path: '{{ automationKubeconfig }}'
+        state: absent
+  block:
+    - name: Ensure user's .kube directory exists
+      file:
+        path: "{{ lookup('env', 'HOME') }}/.kube"
+        state: directory
+        mode: '0750'
+    - name: Write kubeconfig
+      copy:
+        content: '{{ kubeconfig }}'
+        dest: '{{ automationKubeconfig }}'
+    - name: Set kubeconfig file permissions
+      file:
+        path: '{{ automationKubeconfig }}'
+        mode: '0600'
+    - name: Create project
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ remoteClusterProwJobsContext }}'
+        state: present
+        definition:
+          kind: Namespace
+          metadata:
+            name: '{{ prowJobsNamespace }}'
+          display_name: ProwJobs
+          description: KubeVirt Prow jobs are running here
+    - name: Deploy shared objects
+      vars:
+        targetKubeconfig: '{{ automationKubeconfig }}'
+        targetContext: '{{ remoteClusterProwJobsContext }}'
+        targetNamespace: '{{ prowJobsNamespace }}'
+      import_role:
+        name: shared-deployments
+    - name: Create a service account for Prow jobs executor
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ remoteClusterProwJobsContext }}'
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            namespace: '{{ prowJobsNamespace }}'
+            name: 'prow-jobs-executor'
+    - name: Create a role for Prow jobs executor
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ remoteClusterProwJobsContext }}'
+        state: present
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: Role
+          metadata:
+            namespace: '{{ prowJobsNamespace }}'
+            name: prow-remote-executor-role
+          rules:
+          - apiGroups:
+              - "*"
+            resources:
+              - "*"
+            verbs:
+              - "*"
+    - name: Create a role binding for prow-remote-executor
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ remoteClusterProwJobsContext }}'
+        state: present
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: RoleBinding
+          metadata:
+            name: prow-remote-executor-role-binding
+            namespace: '{{ prowJobsNamespace }}'
+          roleRef:
+            kind: Role
+            name: prow-remote-executor-role
+            namespace: '{{ prowJobsNamespace }}'
+          subjects:
+          - kind: ServiceAccount
+            name: prow-remote-executor
+            namespace: '{{ prowJobsNamespace }}'
+    - name: Configure cluster secrets
+      vars:
+        targetNamespace: '{{ prowJobsNamespace }}'
+        targetContext: '{{ remoteClusterProwJobsContext }}'
+        automationKubeconfig: '{{ automationKubeconfig }}'
+      import_role:
+        name: prow-jobs-secrets
+      no_log: true
