@@ -500,8 +500,8 @@ presubmits:
     annotations:
       fork-per-release: "true"
     always_run: true
-    optional: false
-    skip_report: false
+    optional: true
+    skip_report: true
     decorate: true
     decoration_config:
       timeout: 7h
