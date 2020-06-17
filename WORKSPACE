@@ -74,6 +74,14 @@ container_pull(
     tag = "v20190516-c6832d9",
 )
 
+container_pull(
+    name = "release-tool-base",
+    registry = "index.docker.io",
+    repository = "kubevirtci/release-tool-base",
+    tag = "v20200630-7042ca83147056a92bdf4752e53e8164fc432486",
+)
+
+
 load(
     "@io_bazel_rules_docker//go:image.bzl",
     _go_image_repos = "repositories",

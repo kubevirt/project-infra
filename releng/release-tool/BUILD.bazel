@@ -1,0 +1,46 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["release-tool.go"],
+    importpath = "kubevirt.io/project-infra/releng/release-tool",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//vendor/github.com/Masterminds/semver:go_default_library",
+        "//vendor/github.com/google/go-github/v32/github:go_default_library",
+        "//vendor/golang.org/x/oauth2:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "release-tool",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_image",
+)
+
+container_image(
+    name = "release-tool-image",
+    base = "@release-tool-base//image",
+    directory = "/usr/sbin",
+    entrypoint = ["/usr/sbin/entrypoint.sh"],
+    files = [
+        ":release-tool",
+        ":entrypoint.sh",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+container_push(
+    name = "release-tool-push",
+    format = "Docker",
+    image = ":release-tool-image",
+    registry = "index.docker.io",
+    repository = "kubevirtci/release-tool",
+    tag = "latest",
+)
