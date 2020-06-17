@@ -18,7 +18,7 @@ deps-update:
 	go get ./...
 	go mod tidy
 	go mod vendor
-	$(bazelbin) run -- @com_github_bazelbuild_buildtools//buildozer -- 'remove data' //project-infra/vendor/k8s.io/test-infra/pkg/genyaml:go_default_library
+	sed -i "s|^.*data = \[\"//prow/plugins:config-src\"\],||g" vendor/k8s.io/test-infra/pkg/genyaml/BUILD.bazel
 	$(bazelbin) run //:gazelle
 
 install-bazelisk:
