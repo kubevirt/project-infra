@@ -279,6 +279,16 @@
         state: present
         namespace: "{{ prowNamespace }}"
         definition: "{{ lookup('template', '{{ role_path }}/templates/cherrypicker_service.yaml') | from_yaml }}"
+    - name: Deploy release-blocker
+      k8s:
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/release-blocker_deployment.yaml') | from_yaml }}"
+    - name: Deploy release-blocker-service
+      k8s:
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/release-blocker_service.yaml') | from_yaml }}"
     - name: Deploy prow-deck-rbac
       command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowJobsNamespace}} apply -f -"
       args:

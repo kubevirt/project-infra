@@ -14,3 +14,4 @@ test:
 
 push:
 	$(bazelbin) run //external-plugins/release-blocker:push
+	bash -x ./update-job-with-latest-release-blocker-image.sh
