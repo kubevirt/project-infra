@@ -32,9 +32,9 @@ presubmits:
         resources:
           requests:
             memory: "29Gi"
-  - name: pull-node-maintenance-operator-e2e-os-3.11.0
+  - name: pull-node-maintenance-operator-e2e-k8s-1.17
     skip_branches:
-      - release-\d+\.\d+
+    - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -52,18 +52,18 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20191223-f0a2baa
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "export TARGET=os-3.11.0 && automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
+      - image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20191223-f0a2baa
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-1.17 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "29Gi"
   - name: pull-node-maintenance-operator-e2e-ocp-4.3
     skip_branches:
     - release-\d+\.\d+
