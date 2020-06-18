@@ -130,6 +130,7 @@ periodics:
           bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}" &&
           gsutil cp ./_out/manifests/release/kubevirt-operator.yaml gs://$bucket_dir/kubevirt-operator.yaml &&
           gsutil cp ./_out/manifests/release/kubevirt-cr.yaml gs://$bucket_dir/kubevirt-cr.yaml &&
+          gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/ &&
           gsutil cp ./_out/commit gs://$bucket_dir/commit &&
           gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
       # docker-in-docker needs privileged mode
