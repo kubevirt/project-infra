@@ -32,6 +32,137 @@
             name: '{{ prowJobsNamespace }}'
           display_name: ProwJobs
           description: KubeVirt Prow jobs are running here
+    - name: Create project
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ remoteClusterProwJobsContext }}'
+        state: present
+        definition:
+          kind: Namespace
+          metadata:
+            name: '{{ prowNamespace }}'
+          display_name: ProwJobs
+          description: KubeVirt Prow components are running here
+    - name: Create a service account for Greenhouse
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ remoteClusterProwJobsContext }}'
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            namespace: '{{ prowNamespace }}'
+            name: greenhouse
+    - name: Create Greenhouse PVC
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ remoteClusterProwJobsContext }}'
+        state: present
+        definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+           name: greenhouse
+           namespace: '{{ prowNamespace }}'
+          spec:
+           accessModes:
+           - ReadWriteOnce
+           resources:
+             requests:
+               storage: 450Gi
+           storageClassName: ibmc-vpc-block-general-purpose
+    - name: Create Greenhouse deployment
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ remoteClusterProwJobsContext }}'
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: greenhouse
+            namespace: '{{ prowNamespace }}'
+            labels:
+              app: greenhouse
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: greenhouse
+            template:
+              metadata:
+                labels:
+                  app: greenhouse
+                name: greenhouse
+                namespace: '{{ prowNamespace }}'
+              spec:
+                serviceAccountName: greenhouse
+                nodeSelector:
+                containers:
+                - name: greenhouse
+                  image: gcr.io/k8s-testimages/greenhouse@sha256:ab1a3421cc3c072a813d8543735f218ca6caa811011391a0e5b00104700e6e7b
+                  imagePullPolicy: Always
+                  ports:
+                  - name: cache
+                    containerPort: 8080
+                  - name: metrics
+                    containerPort: 9090
+                  args:
+                  - --dir=/data
+                  - --min-percent-blocks-free=3
+                  volumeMounts:
+                  - name: cache
+                    mountPath: /data
+                  resources:
+                    requests:
+                      memory: 3Gi
+                    limits:
+                      memory: 3Gi
+                volumes:
+                - name: cache
+                  persistentVolumeClaim:
+                    claimName: greenhouse
+    - name: Create Greenhouse service
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ remoteClusterProwJobsContext }}'
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: bazel-cache
+            labels:
+              run: bazel-cache
+            namespace: '{{ prowNamespace }}'
+          spec:
+            ports:
+            - port: 8080
+              protocol: TCP
+            selector:
+              app: greenhouse
+    - name: Create Greenhouse metrics service
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ remoteClusterProwJobsContext }}'
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: bazel-cache-metrics
+            labels:
+              metrics: "true"
+            namespace: '{{ prowNamespace }}'
+          spec:
+            selector:
+              app: greenhouse
+            ports:
+            - name: default
+              protocol: TCP
+              port: 80
+              targetPort: 9090
     - name: Deploy shared objects
       vars:
         targetKubeconfig: '{{ automationKubeconfig }}'
