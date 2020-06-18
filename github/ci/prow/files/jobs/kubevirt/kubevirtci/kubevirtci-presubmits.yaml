@@ -300,31 +300,75 @@ presubmits:
           requests:
             memory: "15Gi"
 
-  - name: check-up-kind-k8s-sriov-1.14.2
+  - name: check-up-kind-1.17-sriov
+    annotations:
+      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
     always_run: false
     optional: true
     decorate: true
+    decoration_config:
+      timeout: 1h
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
       preset-kubevirtci-installer-pull-token: "true"
+      sriov-pod: "true"
     spec:
       nodeSelector:
-        type: bare-metal-external
+        hardwareSupport: sriov-nic
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: sriov-pod
+                    operator: In
+                    values:
+                      - "true"
+              topologyKey: kubernetes.io/hostname
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "KUBEVIRT_PROVIDER=kind-k8s-sriov-1.14.2 make cluster-up"
+        - >
+            apt update &&
+            apt install gettext-base -y &&
+            wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz &&
+            tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ &&
+            export PATH=/usr/local/go/bin:$PATH &&
+            KUBEVIRT_PROVIDER=kind-k8s-sriov-1.17.0 &&
+            make cluster-up
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
         resources:
           requests:
             memory: "15Gi"
+        volumeMounts:
+          #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
+          - name: modules
+            mountPath: /lib/modules
+            readOnly: true
+          - name: cgroup
+            mountPath: /sys/fs/cgroup
+          - name: vfio
+            mountPath: /dev/vfio/
+      volumes:
+        - name: modules
+          hostPath:
+            path: /lib/modules
+            type: Directory
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: Directory
+        - name: vfio
+          hostPath:
+            path: /dev/vfio/
+            type: Directory
 
   - name: check-provision-okd-network-4.1
     always_run: false
