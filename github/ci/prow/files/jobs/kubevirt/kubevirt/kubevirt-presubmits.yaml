@@ -419,7 +419,7 @@ presubmits:
         resources:
           requests:
             memory: "29Gi"
-  - name: pull-kubevirt-e2e-kind-k8s-sriov-1.17.0
+  - name: pull-kubevirt-e2e-kind-1.17-sriov
     skip_branches:
     - release-\d+\.\d+
     annotations:
