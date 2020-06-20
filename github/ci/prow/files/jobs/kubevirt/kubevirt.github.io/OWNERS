@@ -4,15 +4,14 @@
 filters:
   .*:
     approvers:
-    - alosadagrande
     - codificat
-    - iranzo
-    - ptrnull
+    - fabiand
+    - hroyrh
+    - mazzystr
     reviewers:
-    - alosadagrande
     - codificat
-    - iranzo
-    - ptrnull
+    - hroyrh
+    - mazzystr
   ^_(data|layouts|sass|css|js)/.*:
     labels:
     - kind/website

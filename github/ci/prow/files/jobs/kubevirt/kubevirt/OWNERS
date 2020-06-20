@@ -4,6 +4,7 @@
 filters:
   .*:
     approvers:
+    - alonakaplan
     - codificat
     - cynepco3hahue
     - danielbelenky
