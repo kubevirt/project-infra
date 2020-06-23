@@ -244,13 +244,6 @@
         state: present
         namespace: "{{ prowNamespace }}"
         definition: "{{ lookup('template', '{{ role_path }}/templates/sinker-deployment.yaml') | from_yaml }}"
-    - name: Deploy label-sync cron job
-      k8s:
-        kubeconfig: '{{ automationKubeconfig }}'
-        context: '{{ masterClusterContext }}'
-        state: present
-        namespace: "{{ prowNamespace }}"
-        definition: "{{ lookup('template', '{{ role_path }}/templates/label-sync.yaml') | from_yaml }}"
     - name: Deploy needs-rebase
       k8s:
         kubeconfig: '{{ automationKubeconfig }}'
@@ -366,13 +359,6 @@
       command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
       args:
         stdin: "{{ lookup('template', '{{ role_path }}/templates/ghproxy.yaml')}}"
-    - name: Deploy branch-protector cron job
-      k8s:
-        kubeconfig: '{{ automationKubeconfig }}'
-        context: '{{ masterClusterContext }}'
-        state: present
-        namespace: "{{ prowNamespace }}"
-        definition: "{{ lookup('template', '{{ role_path }}/templates/branch-protector.yaml') | from_yaml }}"
     - name: Deploy shared objects
       vars:
         targetKubeconfig: '{{ automationKubeconfig }}'
