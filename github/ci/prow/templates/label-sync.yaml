@@ -16,7 +16,7 @@
 apiVersion: batch/v2alpha1
 kind: CronJob
 metadata:
-  name: label-sync
+  name: label-sync-kubevirt
 spec:
   schedule: "17 23 * * *"    # Every day 23:17 / 11:17PM
   concurrencyPolicy: Forbid
@@ -36,7 +36,49 @@ spec:
               args:
               - --config=/etc/config/labels.yaml
               - --confirm=true
-              - --orgs=kubevirt,nmstate
+              - --orgs=kubevirt
+              - --token=/etc/github/oauth
+              volumeMounts:
+              - name: oauth
+                mountPath: /etc/github
+                readOnly: true
+              - name: config
+                mountPath: /etc/config
+                readOnly: true
+          restartPolicy: Never
+          volumes:
+          - name: oauth
+            secret:
+              secretName: oauth-token
+          - name: config
+            configMap:
+              name: label-config
+---
+apiVersion: batch/v2alpha1
+kind: CronJob
+metadata:
+  name: label-sync-nmstate
+spec:
+  schedule: "17 23 * * *"    # Every day 23:17 / 11:17PM
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      labels:
+        app: label-sync
+    spec:
+      template:
+        spec:
+          nodeSelector:
+            type: vm
+            zone: ci
+          containers:
+            - name: label-sync
+              image: index.docker.io/kubevirtci/label_sync:v20181214-258f6ce10-dirty
+              args:
+              - --config=/etc/config/labels.yaml
+              - --confirm=true
+              - --orgs=nmstate
+              - --only=nmstate/kubernetes-nmstate
               - --token=/etc/github/oauth
               volumeMounts:
               - name: oauth
