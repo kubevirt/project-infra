@@ -157,10 +157,6 @@ default:
     - name: topic/virtualization
       color: c5def5
       target: both
-    - name: build-officer
-      color: 8452c9
-      target: issues
-      addedBy: anyone
 repos:
   kubevirt/kubevirt:
     labels:
