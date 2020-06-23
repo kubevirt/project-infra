@@ -1,6 +1,15 @@
 ---
 default:
   labels:
+    - color: 8452c9
+      name: triage/build-officer
+      target: issues
+      description: Discovered by a kubevirt build-officer. Pay attention to these issues to keep CI healthy.
+      prowPlugin: label
+      addedBy: anyone
+      previously:
+        - name: build-officer
+          color: 8452c9
     - color: c2e0c6
       name: release-note
       target: prs
