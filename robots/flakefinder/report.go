@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"log"
 	"os"
 	"path"
@@ -218,9 +219,9 @@ type Job struct {
 }
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
-func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string, prNumbers []int, writeToStdout, isDryRun bool, startOfReport, endOfReport time.Time) (err error) {
-	reportObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(endOfReport, merged)))
-	log.Printf("Report will be written to gs://%s/%s", BucketName, reportObject.ObjectName())
+func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string, prNumbers []int, writeToStdout bool, isDryRun bool, startOfReport, endOfReport time.Time) (err error) {
+	reportObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(endOfReport, merged)))
+	log.Printf("Report will be written to gs://%s/%s", flakefinder.BucketName, reportObject.ObjectName())
 	var reportOutputWriter *storage.Writer
 	if !isDryRun {
 		reportOutputWriter = reportObject.NewWriter(ctx)
@@ -239,7 +240,7 @@ func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []
 }
 
 func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
-	return fmt.Sprintf(ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
+	return fmt.Sprintf(flakefinder.ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
 }
 
 func Report(results []*Result, reportOutputWriter *storage.Writer, org string, repo string, prNumbers []int, writeToStdout bool, isDryRun bool, startOfReport, endOfReport time.Time) error {

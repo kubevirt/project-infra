@@ -26,6 +26,7 @@ import (
 	"google.golang.org/api/iterator"
 	"html/template"
 	"io"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"log"
 	"os"
 	"path"
@@ -109,8 +110,8 @@ func CreateReportIndex(ctx context.Context, client *storage.Client, org, repo st
 }
 
 func CreateOutputWriter(client *storage.Client, ctx context.Context) io.WriteCloser {
-	reportIndexObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, "index.html"))
-	log.Printf("Report index page will be written to gs://%s/%s", BucketName, reportIndexObject.ObjectName())
+	reportIndexObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, "index.html"))
+	log.Printf("Report index page will be written to gs://%s/%s", flakefinder.BucketName, reportIndexObject.ObjectName())
 	reportIndexObjectWriter := reportIndexObject.NewWriter(ctx)
 	return reportIndexObjectWriter
 }
@@ -147,7 +148,7 @@ func PrepareDataForTemplate(reportDirGcsObjects []string, org string, repo strin
 	indexMap := make(map[string]ReportFilesRow)
 
 	for _, reportFileName := range reportDirGcsObjects {
-		date := strings.Replace(reportFileName, ReportFilePrefix, "", -1)
+		date := strings.Replace(reportFileName, flakefinder.ReportFilePrefix, "", -1)
 		date = strings.Replace(date, ".html", "", -1)
 		mergedDuration := ReportFileMergedDuration(date[strings.LastIndex(date, "-")+1:])
 		if mergedDuration != Day && mergedDuration != Week && mergedDuration != FourWeeks {
@@ -176,7 +177,7 @@ func PrepareDataForTemplate(reportDirGcsObjects []string, org string, repo strin
 // their basenames
 func getReportItemsFromBucketDirectory(client *storage.Client, ctx context.Context) ([]string, error) {
 	var reportDirGcsObjects []string
-	it := client.Bucket(BucketName).Objects(ctx, &storage.Query{
+	it := client.Bucket(flakefinder.BucketName).Objects(ctx, &storage.Query{
 		Prefix:    ReportOutputPath + "/",
 		Delimiter: "/",
 	})
@@ -197,7 +198,7 @@ func getReportItemsFromBucketDirectory(client *storage.Client, ctx context.Conte
 func FilterReportItemsForIndexPage(fileNames []string) []string {
 	result := make([]string, 0)
 	for _, fileName := range fileNames {
-		if !strings.HasPrefix(fileName, ReportFilePrefix) || !strings.HasSuffix(fileName, ".html") {
+		if !strings.HasPrefix(fileName, flakefinder.ReportFilePrefix) || !strings.HasSuffix(fileName, ".html") {
 			continue
 		}
 		result = append(result, fileName)
