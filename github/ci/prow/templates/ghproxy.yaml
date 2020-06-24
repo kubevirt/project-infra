@@ -44,7 +44,7 @@ spec:
         zone: ci
       containers:
       - name: ghproxy
-        image: gcr.io/k8s-prow/ghproxy:v20200204-7e8cd997a
+        image: gcr.io/k8s-prow/ghproxy:v20200623-9f5410055c
         imagePullPolicy: Always
         args:
         - --cache-dir=/cache

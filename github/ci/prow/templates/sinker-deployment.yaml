@@ -18,10 +18,11 @@ spec:
       containers:
       - name: sinker
         args:
+        - --config-path=/etc/config/config.yaml
         - --job-config-path=/etc/job-config
         - --dry-run=false
         - --kubeconfig=/etc/remote_cluster_config/kubeconfig
-        image: gcr.io/k8s-prow/sinker:v20200204-7e8cd997a
+        image: gcr.io/k8s-prow/sinker:v20200623-9f5410055c
         volumeMounts:
         - name: config
           mountPath: /etc/config

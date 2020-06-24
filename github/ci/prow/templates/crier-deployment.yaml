@@ -32,9 +32,9 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: crier
-        image: gcr.io/k8s-prow/crier:v20200204-7e8cd997a
+        image: gcr.io/k8s-prow/crier:v20200623-9f5410055c
         args:
-        - --github-workers=0
+        - --github-workers=1
         - --config-path=/etc/config/config.yaml
         - --job-config-path=/etc/job-config
         - --github-endpoint=http://ghproxy
@@ -43,7 +43,8 @@ spec:
         - --slack-token-file=/etc/slack/token
         - --gcs-workers=0
         - --gcs-credentials-file=/etc/gcs/service-account.json
-        - --kubernetes-gcs-workers=0
+        - --blob-storage-workers=1
+        - --kubernetes-blob-storage-workers=1
         volumeMounts:
         - name: config
           mountPath: /etc/config

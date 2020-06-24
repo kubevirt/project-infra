@@ -31,12 +31,13 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
       - name: cherrypicker
-        image: gcr.io/k8s-prow/cherrypicker:v20200204-7e8cd997a
+        image: gcr.io/k8s-prow/cherrypicker:v20200623-9f5410055c
         imagePullPolicy: Always
         args:
         - --dry-run=false
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
+        - --github-token-path=/etc/github/oauth
         ports:
           - name: http
             containerPort: 8888
