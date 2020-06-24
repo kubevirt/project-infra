@@ -14,12 +14,32 @@ go_library(
         "//vendor/k8s.io/test-infra/prow/config:go_default_library",
         "//vendor/k8s.io/test-infra/prow/config/secret:go_default_library",
         "//vendor/k8s.io/test-infra/prow/flagutil:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/git/v2:go_default_library",
         "//vendor/k8s.io/test-infra/prow/github:go_default_library",
         "//vendor/k8s.io/test-infra/prow/interrupts:go_default_library",
         "//vendor/k8s.io/test-infra/prow/pluginhelp:go_default_library",
         "//vendor/k8s.io/test-infra/prow/pluginhelp/externalplugins:go_default_library",
         "//vendor/k8s.io/test-infra/prow/plugins:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/repoowners:go_default_library",
     ],
+)
+
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+
+go_image(
+    name = "app",
+    base = "@infra-base//image",
+    embed = [":go_default_library"],
+)
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+
+container_push(
+    name = "push",
+    format = "Docker",
+    image = ":app",
+    registry = "index.docker.io",
+    repository = "kubevirtci/release-blocker",
 )
 
 go_binary(
@@ -33,8 +53,9 @@ go_test(
     srcs = ["server_test.go"],
     embed = [":go_default_library"],
     deps = [
+        "//external-plugins/testutils:go_default_library",
         "//vendor/github.com/sirupsen/logrus:go_default_library",
+        "//vendor/k8s.io/apimachinery/pkg/util/sets:go_default_library",
         "//vendor/k8s.io/test-infra/prow/github:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/github/fakegithub:go_default_library",
     ],
 )

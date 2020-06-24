@@ -14,16 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package fakegithub
+package testutils
 
 import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"path/filepath"
 	"regexp"
+	"sigs.k8s.io/yaml"
 
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/test-infra/prow/github"
+	"k8s.io/test-infra/prow/repoowners"
 )
 
 const botName = "k8s-ci-robot"
@@ -34,6 +38,100 @@ const (
 	// TestRef is the ref returned when calling GetRef
 	TestRef = "abcde"
 )
+
+type FakeOwnersClient struct {
+	ExistingTopLevelApprovers sets.String
+	owners                    map[string]string
+	approvers                 map[string]sets.String
+	leafApprovers             map[string]sets.String
+	reviewers                 map[string]sets.String
+	requiredReviewers         map[string]sets.String
+	leafReviewers             map[string]sets.String
+	dirBlacklist              []*regexp.Regexp
+}
+
+// FakeOwnersClient allows us to exercise ownership logic.
+type FakeRepoownersClient struct {
+	Foc *FakeOwnersClient
+}
+
+func (froc FakeRepoownersClient) LoadRepoOwners(org, repo, base string) (repoowners.RepoOwner, error) {
+	return froc.Foc, nil
+}
+
+func (foc *FakeOwnersClient) TopLevelApprovers() sets.String {
+	return foc.ExistingTopLevelApprovers
+}
+
+func (foc *FakeOwnersClient) Approvers(path string) sets.String {
+	return foc.approvers[path]
+}
+
+func (foc *FakeOwnersClient) LeafApprovers(path string) sets.String {
+	return foc.leafApprovers[path]
+}
+
+func (foc *FakeOwnersClient) FindApproverOwnersForFile(path string) string {
+	return foc.owners[path]
+}
+
+func (foc *FakeOwnersClient) Reviewers(path string) sets.String {
+	return foc.reviewers[path]
+}
+
+func (foc *FakeOwnersClient) RequiredReviewers(path string) sets.String {
+	return foc.requiredReviewers[path]
+}
+
+func (foc *FakeOwnersClient) LeafReviewers(path string) sets.String {
+	return foc.leafReviewers[path]
+}
+
+func (foc *FakeOwnersClient) FindReviewersOwnersForFile(path string) string {
+	return foc.owners[path]
+}
+
+func (foc *FakeOwnersClient) FindLabelsForFile(path string) sets.String {
+	return sets.String{}
+}
+
+func (foc *FakeOwnersClient) IsNoParentOwners(path string) bool {
+	return false
+}
+
+func (foc *FakeOwnersClient) ParseSimpleConfig(path string) (repoowners.SimpleConfig, error) {
+	dir := filepath.Dir(path)
+	for _, re := range foc.dirBlacklist {
+		if re.MatchString(dir) {
+			return repoowners.SimpleConfig{}, filepath.SkipDir
+		}
+	}
+
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		return repoowners.SimpleConfig{}, err
+	}
+	full := new(repoowners.SimpleConfig)
+	err = yaml.Unmarshal(b, full)
+	return *full, err
+}
+
+func (foc *FakeOwnersClient) ParseFullConfig(path string) (repoowners.FullConfig, error) {
+	dir := filepath.Dir(path)
+	for _, re := range foc.dirBlacklist {
+		if re.MatchString(dir) {
+			return repoowners.FullConfig{}, filepath.SkipDir
+		}
+	}
+
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		return repoowners.FullConfig{}, err
+	}
+	full := new(repoowners.FullConfig)
+	err = yaml.Unmarshal(b, full)
+	return *full, err
+}
 
 // FakeClient is like client, but fake.
 type FakeClient struct {
@@ -51,6 +149,8 @@ type FakeClient struct {
 	CreatedStatuses     map[string][]github.Status
 	IssueEvents         map[int][]github.ListedIssueEvent
 	Commits             map[string]github.SingleCommit
+
+	RepoBranches []github.Branch
 
 	//All Labels That Exist In The Repo
 	RepoLabelsExisting []string
@@ -108,6 +208,10 @@ type FakeClient struct {
 // BotName returns authenticated login.
 func (f *FakeClient) BotName() (string, error) {
 	return botName, nil
+}
+
+func (f *FakeClient) GetBranches(org, repo string, onlyProtected bool) ([]github.Branch, error) {
+	return f.RepoBranches, nil
 }
 
 // IsMember returns true if user is in org.

@@ -67,6 +67,13 @@ load(
     "container_pull",
 )
 
+container_pull(
+    name = "infra-base",
+    registry = "gcr.io",
+    repository = "k8s-testimages/bootstrap",
+    tag = "v20190516-c6832d9",
+)
+
 load(
     "@io_bazel_rules_docker//go:image.bzl",
     _go_image_repos = "repositories",
