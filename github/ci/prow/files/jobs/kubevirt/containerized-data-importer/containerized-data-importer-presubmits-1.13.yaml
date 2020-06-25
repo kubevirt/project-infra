@@ -1,7 +1,7 @@
 presubmits:
   kubevirt/containerized-data-importer:
-  - name: pull-containerized-data-importer-e2e-k8s-1.16-hpp
-    skip_branches:
+  - name: pull-containerized-data-importer-e2e-k8s-1.16.2-hpp
+    branches:
       - release-v1.13
     annotations:
       fork-per-release: "true"
@@ -25,15 +25,15 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.16 && export KUBEVIRT_STORAGE=hpp && automation/test.sh"
+            - "export TARGET=k8s-1.16.2 && export KUBEVIRT_STORAGE=hpp && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
             requests:
               memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.17-hpp
-    skip_branches:
+  - name: pull-containerized-data-importer-e2e-k8s-1.17.0-hpp
+    branches:
       - release-v1.13
     annotations:
       fork-per-release: "true"
@@ -57,47 +57,15 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=hpp && automation/test.sh"
+            - "export TARGET=k8s-1.17.0 && export KUBEVIRT_STORAGE=hpp && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
             requests:
               memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.17-ceph
-    skip_branches:
-      - release-v1.13
-    annotations:
-      fork-per-release: "true"
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 5h
-      grace_period: 5m
-    max_concurrency: 6
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
-      preset-shared-images: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=ceph && automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.17-ember-lvm
-    skip_branches:
+  - name: pull-containerized-data-importer-e2e-k8s-1.17.0-ember-lvm
+    branches:
       - release-v1.13
     annotations:
       fork-per-release: "true"
@@ -121,15 +89,15 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=ember_lvm && export SNAPSHOT_SC=ember-csi-lvm && export BLOCK_SC=ember-csi-lvm && automation/test.sh"
+            - "export TARGET=k8s-1.17.0 && export KUBEVIRT_STORAGE=ember_lvm && export SNAPSHOT_SC=ember-csi-lvm && export BLOCK_SC=ember-csi-lvm && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
             requests:
               memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.16-upg
-    skip_branches:
+  - name: pull-containerized-data-importer-e2e-k8s-1.16.2-upg
+    branches:
       - release-v1.13
     annotations:
       fork-per-release: "true"
@@ -153,15 +121,15 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.16 && export KUBEVIRT_STORAGE=hpp && export MULTI_UPGRADE=true && automation/test.sh"
+            - "export TARGET=k8s-1.16.2 && export KUBEVIRT_STORAGE=hpp && export MULTI_UPGRADE=true && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
             requests:
               memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.16-nfs
-    skip_branches:
+  - name: pull-containerized-data-importer-e2e-k8s-1.16.2-nfs
+    branches:
       - release-v1.13
     annotations:
       fork-per-release: "true"
@@ -185,7 +153,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.16 && export KUBEVIRT_STORAGE=nfs && automation/test.sh"
+            - "export TARGET=k8s-1.16.2 && export KUBEVIRT_STORAGE=nfs && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -193,7 +161,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-os-3.11.0-crio
-    skip_branches:
+    branches:
     - release-v1.13
     annotations:
       fork-per-release: "true"
@@ -225,7 +193,7 @@ presubmits:
           requests:
             memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-okd-4.3-hpp
-    skip_branches:
+    branches:
     - release-v1.13
     annotations:
       fork-per-release: "true"
