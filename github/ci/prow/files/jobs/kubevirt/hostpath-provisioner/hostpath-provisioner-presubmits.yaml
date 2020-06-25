@@ -1,6 +1,6 @@
 presubmits:
   kubevirt/hostpath-provisioner:
-  - name: pull-hostpath-provisioner-e2e-k8s-1.15.1
+  - name: pull-hostpath-provisioner-e2e-k8s
     skip_branches:
       - release-\d+\.\d+
     annotations:
