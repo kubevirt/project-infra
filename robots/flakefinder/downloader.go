@@ -55,18 +55,6 @@ func readGcsObject(ctx context.Context, client *storage.Client, bucket, object s
 	return ioutil.ReadAll(reader)
 }
 
-func readGcsObjectAttrs(ctx context.Context, client *storage.Client, bucket, object string) (attrs *storage.ObjectAttrs, err error) {
-	logrus.Infof("Trying to read gcs object attrs '%s' in bucket '%s'\n", object, bucket)
-	attrs, err = client.Bucket(bucket).Object(object).Attrs(ctx)
-	if err == storage.ErrObjectNotExist {
-		return nil, err
-	}
-	if err != nil {
-		return nil, fmt.Errorf("Cannot read attrs from %s in bucket '%s'", object, bucket)
-	}
-	return
-}
-
 func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest, startOfReport time.Time) ([]*Result, error) {
 
 	dirOfPrJobs := path.Join("pr-logs", "pull", strings.ReplaceAll(repo, "/", "_"), strconv.Itoa(*pr.Number))
@@ -106,7 +94,7 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 		dirOfStartedJSON := path.Join(buildDirPath, startedJSON)
 
 		// Fetch file attributes to check whether this test result should be included into the report
-		attrsOfFinishedJsonFile, err := readGcsObjectAttrs(ctx, client, bucket, dirOfFinishedJSON)
+		attrsOfFinishedJsonFile, err := flakefinder.ReadGcsObjectAttrs(ctx, client, bucket, dirOfFinishedJSON)
 		if err == storage.ErrObjectNotExist {
 			// build still running?
 			continue

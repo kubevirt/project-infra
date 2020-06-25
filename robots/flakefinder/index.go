@@ -27,7 +27,6 @@ import (
 	"html/template"
 	"io"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	"log"
 	"os"
 	"path"
 	"sort"
@@ -95,7 +94,7 @@ func CreateReportIndex(ctx context.Context, client *storage.Client, org, repo st
 	if printIndexPageToStdOut {
 		err = WriteReportIndexPage(reportDirGcsObjects, os.Stdout, org, repo)
 	} else {
-		reportIndexObjectWriter := CreateOutputWriter(client, ctx)
+		reportIndexObjectWriter := flakefinder.CreateOutputWriter(client, ctx, ReportOutputPath)
 		err = WriteReportIndexPage(reportDirGcsObjects, reportIndexObjectWriter, org, repo)
 		if err != nil {
 			return fmt.Errorf("failed generating index page: %v", err)
@@ -105,15 +104,7 @@ func CreateReportIndex(ctx context.Context, client *storage.Client, org, repo st
 			return fmt.Errorf("failed closing index page writer: %v", err)
 		}
 	}
-
 	return nil
-}
-
-func CreateOutputWriter(client *storage.Client, ctx context.Context) io.WriteCloser {
-	reportIndexObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, "index.html"))
-	log.Printf("Report index page will be written to gs://%s/%s", flakefinder.BucketName, reportIndexObject.ObjectName())
-	reportIndexObjectWriter := reportIndexObject.NewWriter(ctx)
-	return reportIndexObjectWriter
 }
 
 func WriteReportIndexPage(reportDirGcsObjects []string, reportIndexObjectWriter io.Writer, org, repo string) error {

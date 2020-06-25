@@ -23,8 +23,6 @@ import (
 	"cloud.google.com/go/storage"
 	"context"
 	"fmt"
-	"html/template"
-	"io"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"log"
 	"os"
@@ -35,7 +33,7 @@ import (
 	"github.com/joshdk/go-junit"
 )
 
-const tpl = `
+const ReportTemplate = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -340,10 +338,10 @@ func Report(results []*Result, reportOutputWriter *storage.Writer, org string, r
 	}
 	var err error
 	if !isDryRun && reportOutputWriter != nil {
-		err = WriteReportToOutput(reportOutputWriter, parameters)
+		err = flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, reportOutputWriter)
 	}
 	if isDryRun || writeToStdout {
-		err = WriteReportToOutput(os.Stdout, parameters)
+		err = flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, os.Stdout)
 	}
 
 	if err != nil {
@@ -487,13 +485,3 @@ const (
 	Fine            = "green"
 	Unimportant     = "unimportant"
 )
-
-func WriteReportToOutput(writer io.Writer, parameters Params) error {
-	t, err := template.New("report").Parse(tpl)
-	if err != nil {
-		return fmt.Errorf("failed to load report template: %v", err)
-	}
-
-	err = t.Execute(writer, parameters)
-	return err
-}

@@ -3,6 +3,9 @@ package flakefinder
 import (
 	"context"
 	"fmt"
+	"html/template"
+	"io"
+	"log"
 	"path"
 
 	"cloud.google.com/go/storage"
@@ -43,3 +46,33 @@ func ListGcsObjects(ctx context.Context, client *storage.Client, bucketName, pre
 	logrus.Info("end of listGcsObjects(...)")
 	return objects, nil
 }
+
+func ReadGcsObjectAttrs(ctx context.Context, client *storage.Client, bucket, object string) (attrs *storage.ObjectAttrs, err error) {
+	logrus.Infof("Trying to read gcs object attrs '%s' in bucket '%s'\n", object, bucket)
+	attrs, err = client.Bucket(bucket).Object(object).Attrs(ctx)
+	if err == storage.ErrObjectNotExist {
+		return nil, err
+	}
+	if err != nil {
+		return nil, fmt.Errorf("Cannot read attrs from %s in bucket '%s'", object, bucket)
+	}
+	return
+}
+
+func WriteTemplateToOutput(tpl string, parameters interface{}, writer io.Writer) error {
+	t, err := template.New("report").Parse(tpl)
+	if err != nil {
+		return fmt.Errorf("failed to load template: %v", err)
+	}
+
+	err = t.Execute(writer, parameters)
+	return err
+}
+
+func CreateOutputWriter(client *storage.Client, ctx context.Context, outputPath string) io.WriteCloser {
+	reportIndexObject := client.Bucket(BucketName).Object(path.Join(outputPath, "index.html"))
+	log.Printf("Report index page will be written to gs://%s/%s", BucketName, reportIndexObject.ObjectName())
+	reportIndexObjectWriter := reportIndexObject.NewWriter(ctx)
+	return reportIndexObjectWriter
+}
+
