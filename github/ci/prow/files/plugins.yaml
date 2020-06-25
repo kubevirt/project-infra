@@ -259,7 +259,6 @@ triggers:
   - kubevirt/ansible-kubevirt-modules
   - kubevirt/hyperconverged-cluster-operator
   - kubevirt/vm-import-operator
-  trusted_org: kubevirt
 - repos:
   - virtblocks/virtblocks
 - repos:
