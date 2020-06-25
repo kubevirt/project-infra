@@ -244,13 +244,20 @@
         state: present
         namespace: "{{ prowNamespace }}"
         definition: "{{ lookup('template', '{{ role_path }}/templates/sinker-deployment.yaml') | from_yaml }}"
-    - name: Deploy label-sync cron job
+    - name: Deploy label-sync cron job for KubeVirt
       k8s:
         kubeconfig: '{{ automationKubeconfig }}'
         context: '{{ masterClusterContext }}'
         state: present
         namespace: "{{ prowNamespace }}"
-        definition: "{{ lookup('template', '{{ role_path }}/templates/label-sync.yaml') | from_yaml }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/label-sync-kubevirt.yaml') | from_yaml }}"
+    - name: Deploy label-sync cron job for nmstate
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/label-sync-nmstate.yaml') | from_yaml }}"
     - name: Deploy needs-rebase
       k8s:
         kubeconfig: '{{ automationKubeconfig }}'

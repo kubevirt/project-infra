@@ -31,13 +31,15 @@ spec:
       serviceAccountName: "plank"
       containers:
       - name: plank
-        image: gcr.io/k8s-prow/plank:v20200204-7e8cd997a
+        image: gcr.io/k8s-prow/plank:v20200623-9f5410055c
         args:
+        - --config-path=/etc/config/config.yaml
         - --dry-run=false
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
         - --job-config-path=/etc/job-config
         - --kubeconfig=/etc/remote_cluster_config/kubeconfig
+        - --skip-report=true
         volumeMounts:
         - name: oauth
           mountPath: /etc/github
