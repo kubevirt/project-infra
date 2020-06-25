@@ -36,7 +36,6 @@ spec:
               args:
               - --config=/etc/config/labels.yaml
               - --confirm=true
-              - --orgs=nmstate
               - --only=nmstate/kubernetes-nmstate
               - --token=/etc/github/oauth
               volumeMounts:
