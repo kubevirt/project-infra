@@ -11,6 +11,7 @@ go_library(
     importpath = "kubevirt.io/project-infra/robots/flakefinder",
     visibility = ["//visibility:public"],
     deps = [
+        "//robots/pkg/flakefinder:go_default_library",
         "//vendor/cloud.google.com/go/storage:go_default_library",
         "//vendor/github.com/google/go-github/v28/github:go_default_library",
         "//vendor/github.com/joshdk/go-junit:go_default_library",
@@ -56,6 +57,7 @@ go_test(
     ],
     embed = [":go_default_library"],
     deps = [
+        "//robots/pkg/flakefinder:go_default_library",
         "//vendor/github.com/google/go-github/v28/github:go_default_library",
         "//vendor/github.com/onsi/ginkgo:go_default_library",
         "//vendor/github.com/onsi/ginkgo/extensions/table:go_default_library",
