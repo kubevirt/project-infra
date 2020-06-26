@@ -27,6 +27,7 @@ import (
 	"html/template"
 	"io"
 	"log"
+	"os"
 	"path"
 	"sort"
 	"strings"
@@ -66,6 +67,7 @@ const indexTpl = `
 type ReportFileMergedDuration string
 
 const (
+	Hourly    ReportFileMergedDuration = "001h"
 	Day       ReportFileMergedDuration = "024h"
 	Week      ReportFileMergedDuration = "168h"
 	FourWeeks ReportFileMergedDuration = "672h"
@@ -84,23 +86,26 @@ type IndexParams struct {
 
 // CreateReportIndex creates an index.html that links to the X most recent reports in GCS "folder", sorted from most
 // recent to oldest
-func CreateReportIndex(ctx context.Context, client *storage.Client, org, repo string) (err error) {
+func CreateReportIndex(ctx context.Context, client *storage.Client, org, repo string, printIndexPageToStdOut bool) (err error) {
 	reportDirGcsObjects, err := getReportItemsFromBucketDirectory(client, ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get report items: %v", err)
 	}
 
-	reportIndexObjectWriter := CreateOutputWriter(client, ctx)
-
-	err = WriteReportIndexPage(reportDirGcsObjects, reportIndexObjectWriter, org, repo)
-	if err != nil {
-		return fmt.Errorf("failed generating index page: %v", err)
+	if printIndexPageToStdOut {
+		err = WriteReportIndexPage(reportDirGcsObjects, os.Stdout, org, repo)
+	} else {
+		reportIndexObjectWriter := CreateOutputWriter(client, ctx)
+		err = WriteReportIndexPage(reportDirGcsObjects, reportIndexObjectWriter, org, repo)
+		if err != nil {
+			return fmt.Errorf("failed generating index page: %v", err)
+		}
+		err = reportIndexObjectWriter.Close()
+		if err != nil {
+			return fmt.Errorf("failed closing index page writer: %v", err)
+		}
 	}
 
-	err = reportIndexObjectWriter.Close()
-	if err != nil {
-		return fmt.Errorf("failed closing index page writer: %v", err)
-	}
 	return nil
 }
 
@@ -146,7 +151,7 @@ func PrepareDataForTemplate(reportDirGcsObjects []string, org string, repo strin
 		date := strings.Replace(reportFileName, ReportFilePrefix, "", -1)
 		date = strings.Replace(date, ".html", "", -1)
 		mergedDuration := ReportFileMergedDuration(date[strings.LastIndex(date, "-")+1:])
-		if mergedDuration != Day && mergedDuration != Week && mergedDuration != FourWeeks {
+		if mergedDuration != Day && mergedDuration != Week && mergedDuration != FourWeeks && mergedDuration != Hourly {
 			mergedDuration = Week
 		} else {
 			date = strings.Replace(date, fmt.Sprintf("-%s", mergedDuration), "", -1)
@@ -156,6 +161,7 @@ func PrepareDataForTemplate(reportDirGcsObjects []string, org string, repo strin
 				FourWeeks: "",
 				Week:      "",
 				Day:       "",
+				Hourly:    "",
 			}}
 			reportFilesRow.ReportFiles[mergedDuration] = reportFileName
 			indexMap[date] = reportFilesRow

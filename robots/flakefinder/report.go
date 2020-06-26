@@ -20,6 +20,7 @@
 package main
 
 import (
+	"cloud.google.com/go/storage"
 	"context"
 	"fmt"
 	"html/template"
@@ -30,7 +31,6 @@ import (
 	"sort"
 	"time"
 
-	"cloud.google.com/go/storage"
 	"github.com/joshdk/go-junit"
 )
 
@@ -140,10 +140,21 @@ const tpl = `
 </head>
 <body>
 
-<h1>flakefinder report for {{ $.Org }}/{{ $.Repo }} - {{ $.Date }}</h1>
+<h1>flakefinder report for {{ $.Org }}/{{ $.Repo }}</h1>
+
+<div>
+	Data range from {{ $.StartOfReport }} till {{ $.Date }}
+</div>
+
+<div>
+{{ if $.PrNumbers }} Source PRs: {{ range $key := $.PrNumbers }}<a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{ $key }}">#{{ $key }}</a>, {{ end }}
+{{ else }}
+	No PRs merged 😞
+{{ end }}
+</div>
 
 {{ if not .Headers }}
-	<div>No failing tests! :)</div>
+	<div>No failing tests! 🙂</div>
 {{ else }}
 <table>
     <tr>
@@ -180,10 +191,6 @@ const tpl = `
 </table>
 {{ end }}
 
-<div>
-    Source PRs: {{ range $key := $.PrNumbers }}<a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{ $key }}">#{{ $key }}</a>, {{ end }}
-</div>
-
 <script>
     function popup(id) {
         var popup = document.getElementById("target" + id);
@@ -199,13 +206,14 @@ const tpl = `
 `
 
 type Params struct {
-	Data      map[string]map[string]*Details
-	Headers   []string
-	Tests     []string
-	PrNumbers []int
-	Date      string
-	Org       string
-	Repo      string
+	Data          map[string]map[string]*Details
+	Headers       []string
+	Tests         []string
+	PrNumbers     []int
+	Date          string
+	Org           string
+	Repo          string
+	StartOfReport string
 }
 
 type Details struct {
@@ -224,17 +232,22 @@ type Job struct {
 }
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
-func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string, prNumbers []int, writeToStdout bool) (err error) {
+func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string, prNumbers []int, writeToStdout, isDryRun bool, startOfReport time.Time) (err error) {
 	reportObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(time.Now(), merged)))
 	log.Printf("Report will be written to gs://%s/%s", BucketName, reportObject.ObjectName())
-	reportOutputWriter := reportObject.NewWriter(ctx)
-	err = Report(reports, reportOutputWriter, org, repo, prNumbers, writeToStdout)
+	var reportOutputWriter *storage.Writer
+	if !isDryRun {
+		reportOutputWriter = reportObject.NewWriter(ctx)
+	}
+	err = Report(reports, reportOutputWriter, org, repo, prNumbers, writeToStdout, isDryRun, startOfReport)
 	if err != nil {
 		return fmt.Errorf("failed on generating report: %v", err)
 	}
-	err = reportOutputWriter.Close()
-	if err != nil {
-		return fmt.Errorf("failed on closing report object: %v", err)
+	if !isDryRun {
+		err = reportOutputWriter.Close()
+		if err != nil {
+			return fmt.Errorf("failed on closing report object: %v", err)
+		}
 	}
 	return nil
 }
@@ -243,7 +256,7 @@ func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
 	return fmt.Sprintf(ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
 }
 
-func Report(results []*Result, reportOutputWriter *storage.Writer, org string, repo string, prNumbers []int, writeToStdout bool) error {
+func Report(results []*Result, reportOutputWriter *storage.Writer, org string, repo string, prNumbers []int, writeToStdout bool, isDryRun bool, startOfReport time.Time) error {
 	data := map[string]map[string]*Details{}
 	headers := []string{}
 	tests := []string{}
@@ -329,19 +342,20 @@ func Report(results []*Result, reportOutputWriter *storage.Writer, org string, r
 
 	testsSortedByRelevance := SortTestsByRelevance(data, tests)
 	parameters := Params{
-		Data:      data,
-		Headers:   headers,
-		Tests:     testsSortedByRelevance,
-		PrNumbers: prNumbers,
-		Date:      time.Now().Format("2006-01-02"),
-		Org:       org,
-		Repo:      repo,
+		Data:          data,
+		Headers:       headers,
+		Tests:         testsSortedByRelevance,
+		PrNumbers:     prNumbers,
+		Date:          time.Now().Format(time.RFC3339),
+		Org:           org,
+		Repo:          repo,
+		StartOfReport: startOfReport.Format(time.RFC3339),
 	}
 	var err error
-	if reportOutputWriter != nil {
+	if !isDryRun && reportOutputWriter != nil {
 		err = WriteReportToOutput(reportOutputWriter, parameters)
 	}
-	if writeToStdout {
+	if isDryRun || writeToStdout {
 		err = WriteReportToOutput(os.Stdout, parameters)
 	}
 

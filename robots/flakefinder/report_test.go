@@ -105,7 +105,7 @@ var _ = Describe("report.go", func() {
 
 			prepareBuffer(parameters)
 
-			Expect(buffer.String()).To(ContainSubstring("No failing tests! :)"))
+			Expect(buffer.String()).To(ContainSubstring("No failing tests!"))
 		})
 
 		It("shows pr ids if no failing tests", func() {
