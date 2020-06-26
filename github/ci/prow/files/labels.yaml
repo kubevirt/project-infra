@@ -471,7 +471,7 @@ repos:
         prowPlugin: label
         addedBy: anyone
       - name: priority/highest
-        color: 9999e6
+        color: fbca04
         target: both
       - name: priority/high
         color: adadeb
