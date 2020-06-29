@@ -426,7 +426,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
-    always_run: false
+    always_run: true
     optional: true
     skip_report: true
     decorate: true
