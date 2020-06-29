@@ -7,7 +7,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder@sha256:ad137520705acfd87285aa1cf9a2c7808a67c51f17fabba85356c877fac31712
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:ebb25a32fc0a2a491ac3ee05d720f701eb2f31c4c4dce0c32f2df51f62828998
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -41,7 +41,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder@sha256:ad137520705acfd87285aa1cf9a2c7808a67c51f17fabba85356c877fac31712
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:ebb25a32fc0a2a491ac3ee05d720f701eb2f31c4c4dce0c32f2df51f62828998
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -75,7 +75,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder@sha256:ad137520705acfd87285aa1cf9a2c7808a67c51f17fabba85356c877fac31712
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:ebb25a32fc0a2a491ac3ee05d720f701eb2f31c4c4dce0c32f2df51f62828998
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
