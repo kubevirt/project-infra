@@ -431,8 +431,8 @@ presubmits:
     skip_report: false
     decorate: true
     decoration_config:
-      timeout: 5h
-      grace_period: 5m
+      timeout: 3h
+      grace_period: 20m
     max_concurrency: 10
     labels:
       preset-dind-enabled: "true"
