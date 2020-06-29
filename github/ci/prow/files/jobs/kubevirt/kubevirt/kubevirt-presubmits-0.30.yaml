@@ -348,7 +348,7 @@ presubmits:
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-1.17-sriov
     optional: true
-    skip_report: true
+    skip_report: false
     spec:
       affinity:
         podAntiAffinity:
