@@ -83,7 +83,7 @@ tide:
     nmstate/kubernetes-nmstate: squash
     k8snetworkplumbingwg/kubemacpool: squash
     kubevirt/kubectl-virt-plugin: squash
-    kubevirt/node-maintenance-operator: squash
+    kubevirt/node-maintenance-operator: merge
     kubevirt/ansible-kubevirt-modules: squash
     kubevirt/hyperconverged-cluster-operator: squash
 
