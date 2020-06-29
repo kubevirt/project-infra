@@ -13,6 +13,7 @@ filters:
       - gbenhaim
       - qinqon
       - phoracek
+      - jean-edouard
     approvers:
       - slintes
       - davidvossel
@@ -24,3 +25,5 @@ filters:
       - gbenhaim
       - qinqon
       - phoracek
+      - stu-gott
+      - jean-edouard
