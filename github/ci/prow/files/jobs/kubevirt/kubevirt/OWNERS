@@ -5,12 +5,14 @@ filters:
   .*:
     approvers:
     - alonakaplan
+    - ashleyschuett
     - codificat
     - cynepco3hahue
     - danielbelenky
     - davidvossel
     - dhiller
     - fabiand
+    - jean-edouard
     - rmohr
     - schseba
     - slintes
@@ -18,6 +20,7 @@ filters:
     - vladikr
     reviewers:
     - alonakaplan
+    - ashleyschuett
     - booxter
     - cynepco3hahue
     - danielbelenky
