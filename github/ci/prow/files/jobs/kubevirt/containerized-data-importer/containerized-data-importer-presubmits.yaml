@@ -2,7 +2,7 @@ presubmits:
   kubevirt/containerized-data-importer:
   - name: pull-containerized-data-importer-e2e-k8s-1.18-hpp
     skip_branches:
-      - release-\d+\.\d+
+      - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
     always_run: false
@@ -162,7 +162,7 @@ presubmits:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-k8s-1.18-upg
     skip_branches:
-      - release-\d+\.\d+
+      - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
     always_run: false
@@ -194,7 +194,7 @@ presubmits:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-k8s-1.18-nfs
     skip_branches:
-      - release-\d+\.\d+
+      - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
     always_run: false
