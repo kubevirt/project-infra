@@ -124,7 +124,6 @@ var _ = Describe("index.go", func() {
 						"672h": "flakefinder-2019-08-24-672h.html",
 						"168h": "flakefinder-2019-08-24-168h.html",
 						"024h": "flakefinder-2019-08-24-024h.html",
-						"001h": "",
 					},
 				},
 				{
@@ -133,7 +132,6 @@ var _ = Describe("index.go", func() {
 						"672h": "",
 						"168h": "",
 						"024h": "flakefinder-2019-08-23-024h.html",
-						"001h": "",
 					},
 				},
 				{
@@ -142,7 +140,6 @@ var _ = Describe("index.go", func() {
 						"672h": "",
 						"168h": "",
 						"024h": "flakefinder-2019-08-22-024h.html",
-						"001h": "",
 					},
 				},
 				{
@@ -151,7 +148,6 @@ var _ = Describe("index.go", func() {
 						"672h": "",
 						"168h": "flakefinder-2019-07-24-168h.html",
 						"024h": "",
-						"001h": "",
 					},
 				},
 				{
@@ -160,7 +156,6 @@ var _ = Describe("index.go", func() {
 						"672h": "",
 						"168h": "flakefinder-2019-07-17-168h.html",
 						"024h": "",
-						"001h": "",
 					},
 				},
 			}))
@@ -183,7 +178,6 @@ var _ = Describe("index.go", func() {
 						"672h": "flakefinder-2019-08-24-672h.html",
 						"168h": "",
 						"024h": "flakefinder-2019-08-24-024h.html",
-						"001h": "",
 					},
 				},
 				{
@@ -192,7 +186,6 @@ var _ = Describe("index.go", func() {
 						"672h": "",
 						"168h": "flakefinder-2019-07-24.html",
 						"024h": "",
-						"001h": "",
 					},
 				},
 				{
@@ -201,7 +194,6 @@ var _ = Describe("index.go", func() {
 						"672h": "",
 						"168h": "flakefinder-2019-07-17.html",
 						"024h": "",
-						"001h": "",
 					},
 				},
 			}))

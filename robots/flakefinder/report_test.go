@@ -52,7 +52,7 @@ var _ = Describe("report.go", func() {
 		prepareWithDefaultParams := func() {
 			parameters := Params{Data: map[string]map[string]*Details{
 				"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{}}},
-			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23",
+			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, EndOfReport: "2019-08-23",
 				Org: Org, Repo: Repo,
 				PrNumbers: []int{17, 42},
 			}
@@ -98,7 +98,7 @@ var _ = Describe("report.go", func() {
 
 		It("shows no errors if no failing tests", func() {
 			parameters := Params{Data: map[string]map[string]*Details{},
-				Headers: []string{}, Tests: []string{}, Date: "2019-08-23",
+				Headers: []string{}, Tests: []string{}, EndOfReport: "2019-08-23",
 				Org: Org, Repo: Repo,
 				PrNumbers: []int{17, 42},
 			}
@@ -110,7 +110,7 @@ var _ = Describe("report.go", func() {
 
 		It("shows pr ids if no failing tests", func() {
 			parameters := Params{Data: map[string]map[string]*Details{},
-				Headers: []string{}, Tests: []string{}, Date: "2019-08-23",
+				Headers: []string{}, Tests: []string{}, EndOfReport: "2019-08-23",
 				Org: Org, Repo: Repo,
 				PrNumbers: []int{17, 42},
 			}
@@ -124,7 +124,7 @@ var _ = Describe("report.go", func() {
 		DescribeTable("title contains repo and org", func(org, repo string) {
 			parameters := Params{Data: map[string]map[string]*Details{
 				"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{}}},
-			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23", Org: org, Repo: repo}
+			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, EndOfReport: "2019-08-23", Org: org, Repo: repo}
 
 			prepareBuffer(parameters)
 
@@ -140,7 +140,7 @@ var _ = Describe("report.go", func() {
 				"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{
 					{BuildNumber: 1742, Severity: "red", PR: 1427, Job: "testblah"},
 				}}},
-			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23", Org: org, Repo: repo}
+			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, EndOfReport: "2019-08-23", Org: org, Repo: repo}
 
 			prepareBuffer(parameters)
 
@@ -156,7 +156,7 @@ var _ = Describe("report.go", func() {
 				"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{
 					{BuildNumber: 1742, Severity: "red", PR: 1427, Job: "testblah"},
 				}}},
-			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, Date: "2019-08-23", Org: org, Repo: repo}
+			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, EndOfReport: "2019-08-23", Org: org, Repo: repo}
 
 			prepareBuffer(parameters)
 

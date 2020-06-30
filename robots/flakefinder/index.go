@@ -67,7 +67,6 @@ const indexTpl = `
 type ReportFileMergedDuration string
 
 const (
-	Hourly    ReportFileMergedDuration = "001h"
 	Day       ReportFileMergedDuration = "024h"
 	Week      ReportFileMergedDuration = "168h"
 	FourWeeks ReportFileMergedDuration = "672h"
@@ -151,7 +150,7 @@ func PrepareDataForTemplate(reportDirGcsObjects []string, org string, repo strin
 		date := strings.Replace(reportFileName, ReportFilePrefix, "", -1)
 		date = strings.Replace(date, ".html", "", -1)
 		mergedDuration := ReportFileMergedDuration(date[strings.LastIndex(date, "-")+1:])
-		if mergedDuration != Day && mergedDuration != Week && mergedDuration != FourWeeks && mergedDuration != Hourly {
+		if mergedDuration != Day && mergedDuration != Week && mergedDuration != FourWeeks {
 			mergedDuration = Week
 		} else {
 			date = strings.Replace(date, fmt.Sprintf("-%s", mergedDuration), "", -1)
@@ -161,7 +160,6 @@ func PrepareDataForTemplate(reportDirGcsObjects []string, org string, repo strin
 				FourWeeks: "",
 				Week:      "",
 				Day:       "",
-				Hourly:    "",
 			}}
 			reportFilesRow.ReportFiles[mergedDuration] = reportFileName
 			indexMap[date] = reportFilesRow
