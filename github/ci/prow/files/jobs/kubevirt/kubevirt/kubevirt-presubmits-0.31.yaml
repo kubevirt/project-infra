@@ -1,0 +1,674 @@
+periodics: null
+postsubmits: {}
+presubmits:
+  kubevirt/kubevirt:
+  - always_run: false
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-k8s-1.13.3
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=k8s-1.13.3 && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-k8s-1.14
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=k8s-1.14 && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-k8s-1.16-ceph
+    optional: true
+    skip_report: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=k8s-1.16 && export KUBEVIRT_PROVIDER_EXTRA_ARGS='--enable-ceph'
+          && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-k8s-1.18
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=k8s-1.18 && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-k8s-1.17
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=k8s-1.17 && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-k8s-1.16
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=k8s-1.16 && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 10
+    name: pull-kubevirt-e2e-k8s-cnao-1.17
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - TARGET=k8s-1.17-cnao automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-os-3.11.0-crio
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=os-3.11.0-crio && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-os-3.11.0-multus
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=os-3.11.0-multus && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-okd-4.1
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=okd-4.1 && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-okd-4.2
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=okd-4.2 && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-quay-credential: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-ocp-4.3
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true
+          quay.io && export TARGET=ocp-4.3 && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 1
+    name: pull-kubevirt-e2e-windows2016
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=windows2016 && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    annotations:
+      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 20m0s
+      timeout: 3h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+      sriov-pod: "true"
+    max_concurrency: 10
+    name: pull-kubevirt-e2e-kind-1.17-sriov
+    optional: true
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: sriov-pod
+                operator: In
+                values:
+                - "true"
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          apt update && apt install gettext-base -y && wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz && tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ && export PATH=/usr/local/go/bin:$PATH && export TARGET=kind-k8s-sriov-1.17.0 && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+        - mountPath: /dev/vfio/
+          name: vfio
+      nodeSelector:
+        hardwareSupport: sriov-nic
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+      - hostPath:
+          path: /dev/vfio/
+          type: Directory
+        name: vfio
+  - always_run: true
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 10
+    name: pull-kubevirt-e2e-kind-k8s-1.17.0-ipv6
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=kind-k8s-1.17.0-ipv6 && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      nodeSelector:
+        type: bare-metal-external
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+  - always_run: true
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-check-tests-for-flakes
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    branches:
+    - release-0.31
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-k8s-1.17-rook-ceph
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=rook-ceph && automation/test.sh
+        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.31
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+    name: pull-kubevirt-generate
+    optional: true
+    skip_report: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate
+        env:
+        - name: BAZEL_VERSION
+          value: 1.2.1
+        - name: CACHE_HOST
+          value: bazel-cache.kubevirt-prow
+        - name: CACHE_PORT
+          value: "8080"
+        - name: BAZEL_REMOTE_CACHE_ENABLED
+          value: "true"
+        image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    branches:
+    - release-0.31
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+    name: pull-kubevirt-build
+    optional: true
+    skip_report: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make
+        env:
+        - name: BAZEL_VERSION
+          value: 1.2.1
+        - name: CACHE_HOST
+          value: bazel-cache.kubevirt-prow
+        - name: CACHE_PORT
+          value: "8080"
+        - name: BAZEL_REMOTE_CACHE_ENABLED
+          value: "true"
+        image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    branches:
+    - release-0.31
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+    name: pull-kubevirt-unit-test
+    optional: true
+    skip_report: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make test
+        env:
+        - name: BAZEL_VERSION
+          value: 1.2.1
+        - name: CACHE_HOST
+          value: bazel-cache.kubevirt-prow
+        - name: CACHE_PORT
+          value: "8080"
+        - name: BAZEL_REMOTE_CACHE_ENABLED
+          value: "true"
+        image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
