@@ -1,4 +1,4 @@
-.PHONY: all format build container-base-build container-base-push container-build container-push
+.PHONY: all format build container-base-build container-base-push container-build container-push test
 all: format build
 bazelbin := bazelisk
 date_prefix := `date +"v20%y%m%d-"`
@@ -10,8 +10,10 @@ format:
 build: 
 	go build .
 
+test:
+	go test
 
-container-build:
+container-build: test
 	$(bazelbin) run //releng/release-tool:release-tool-image
 
 container-push:
