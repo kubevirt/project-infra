@@ -1,4 +1,37 @@
 periodics:
+- name: periodic-kubevirt-flakefinder-hourly-rolling-window-report
+  cron: "5 * * * *"
+  decorate: true
+  spec:
+    nodeSelector:
+      type: vm
+      zone: ci
+    containers:
+      - image: index.docker.io/kubevirtci/flakefinder@sha256:90ebab2793e603c10e5996a6efcf8d123fdf4aa97f76be16ba4ee6ef8f33403e
+        env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/gcs/service-account.json
+        command:
+          - "/app/robots/flakefinder/app.binary"
+        args:
+          - --dry-run=false
+          - --token=/etc/github/oauth
+          - --merged=24h
+          - --today=1h
+          - --report_output_child_path=kubevirt/kubevirt
+        volumeMounts:
+          - name: token
+            mountPath: /etc/github
+          - name: gcs
+            mountPath: /etc/gcs
+            readOnly: true
+    volumes:
+      - name: token
+        secret:
+          secretName: oauth-token
+      - name: gcs
+        secret:
+          secretName: gcs
 - name: periodic-publish-kubevirt-flakefinder-weekly-report
   interval: 24h
   decorate: true
@@ -7,13 +40,14 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder@sha256:ad137520705acfd87285aa1cf9a2c7808a67c51f17fabba85356c877fac31712
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:90ebab2793e603c10e5996a6efcf8d123fdf4aa97f76be16ba4ee6ef8f33403e
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       command:
       - "/app/robots/flakefinder/app.binary"
       args:
+      - --dry-run=false
       - --token=/etc/github/oauth
       - --merged=168h
       - --report_output_child_path=kubevirt/kubevirt
@@ -31,20 +65,21 @@ periodics:
       secret:
         secretName: gcs
 - name: periodic-publish-kubevirt-flakefinder-daily-report
-  interval: 24h
+  cron: "25 0 * * *"
   decorate: true
   spec:
     nodeSelector:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder@sha256:ad137520705acfd87285aa1cf9a2c7808a67c51f17fabba85356c877fac31712
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:90ebab2793e603c10e5996a6efcf8d123fdf4aa97f76be16ba4ee6ef8f33403e
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       command:
       - "/app/robots/flakefinder/app.binary"
       args:
+      - --dry-run=false
       - --token=/etc/github/oauth
       - --merged=24h
       - --report_output_child_path=kubevirt/kubevirt
@@ -69,13 +104,14 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder@sha256:ad137520705acfd87285aa1cf9a2c7808a67c51f17fabba85356c877fac31712
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:90ebab2793e603c10e5996a6efcf8d123fdf4aa97f76be16ba4ee6ef8f33403e
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       command:
       - "/app/robots/flakefinder/app.binary"
       args:
+      - --dry-run=false
       - --token=/etc/github/oauth
       - --merged=672h
       - --report_output_child_path=kubevirt/kubevirt

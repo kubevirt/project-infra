@@ -27,6 +27,7 @@ import (
 	"html/template"
 	"io"
 	"log"
+	"os"
 	"path"
 	"sort"
 	"strings"
@@ -84,23 +85,26 @@ type IndexParams struct {
 
 // CreateReportIndex creates an index.html that links to the X most recent reports in GCS "folder", sorted from most
 // recent to oldest
-func CreateReportIndex(ctx context.Context, client *storage.Client, org, repo string) (err error) {
+func CreateReportIndex(ctx context.Context, client *storage.Client, org, repo string, printIndexPageToStdOut bool) (err error) {
 	reportDirGcsObjects, err := getReportItemsFromBucketDirectory(client, ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get report items: %v", err)
 	}
 
-	reportIndexObjectWriter := CreateOutputWriter(client, ctx)
-
-	err = WriteReportIndexPage(reportDirGcsObjects, reportIndexObjectWriter, org, repo)
-	if err != nil {
-		return fmt.Errorf("failed generating index page: %v", err)
+	if printIndexPageToStdOut {
+		err = WriteReportIndexPage(reportDirGcsObjects, os.Stdout, org, repo)
+	} else {
+		reportIndexObjectWriter := CreateOutputWriter(client, ctx)
+		err = WriteReportIndexPage(reportDirGcsObjects, reportIndexObjectWriter, org, repo)
+		if err != nil {
+			return fmt.Errorf("failed generating index page: %v", err)
+		}
+		err = reportIndexObjectWriter.Close()
+		if err != nil {
+			return fmt.Errorf("failed closing index page writer: %v", err)
+		}
 	}
 
-	err = reportIndexObjectWriter.Close()
-	if err != nil {
-		return fmt.Errorf("failed closing index page writer: %v", err)
-	}
 	return nil
 }
 

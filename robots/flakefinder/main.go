@@ -41,6 +41,7 @@ func flagOptions() options {
 	o := options{
 		endpoint: flagutil.NewStrings("https://api.github.com"),
 	}
+	flag.BoolVar(&o.isDryRun, "dry-run", true, "Whether report should be only printed to standard out instead of written to gcs") // TODO: incompatible change, requires setting flags on jobs
 	flag.IntVar(&o.ceiling, "ceiling", 100, "Maximum number of issues to modify, 0 for infinite")
 	flag.DurationVar(&o.merged, "merged", 24*7*time.Hour, "Filter to issues merged in the time window")
 	flag.Var(&o.endpoint, "endpoint", "GitHub's API endpoint")
@@ -50,12 +51,16 @@ func flagOptions() options {
 	flag.StringVar(&o.reportOutputChildPath, "report_output_child_path", "", fmt.Sprintf("Child path below the main reporting directory '%s' (i.e. 'master', default is '')", ReportsPath))
 	flag.StringVar(&o.org, "org", Org, fmt.Sprintf("GitHub org name (default is '%s')", Org))
 	flag.StringVar(&o.repo, "repo", Repo, fmt.Sprintf("GitHub org name (default is '%s')", Repo))
-	flag.BoolVar(&o.stdout, "stdout", false, "write generated report to stdout (default is false)")
+	flag.BoolVar(&o.today, "today", false, "Whether to create a report for the current day only (i.e. using data starting from report day 00:00Z till now)")
+	flag.BoolVar(&o.stdout, "stdout", false, "(Deprecated, use dry-run instead) write generated report to stdout")
 	flag.Parse()
 	return o
 }
 
 type options struct {
+	isDryRun bool
+
+	// Deprecated: no function
 	ceiling               int
 	endpoint              flagutil.Strings
 	token                 string
@@ -66,11 +71,15 @@ type options struct {
 	reportOutputChildPath string
 	org                   string
 	repo                  string
-	stdout                bool
+
+	// Deprecated: replaced by dry-run
+	stdout bool
+	today  bool
 }
 
 const BucketName = "kubevirt-prow"
 const ReportsPath = "reports/flakefinder"
+const PreviewPath = "preview"
 const ReportFilePrefix = "flakefinder-"
 const MaxNumberOfReportsToLinkTo = 50
 const PRBaseBranchDefault = "master"
@@ -112,19 +121,9 @@ func main() {
 
 	c := github.NewClient(tc)
 
-	// we are fetching reports from start of day to avoid working against a moving target.
-	// In general a user would expect to find all pull requests of the previous day in a 24h report, regardless of
-	// when the report has been run at the current day, which, depending on time of day when the report had been run,
-	// would not always be the case.
-	// Consider i.e. if the report is run late in the afternoon the user might wonder why the PR merged in the morning
-	// the day before was not included.
-	startOfReport := time.Now().Add(-o.merged)
-	startOfDay := startOfReport.Format("2006-01-02") + "T00:00:00Z"
-	logrus.Infof("Fetching Prs starting from %v", startOfDay)
-	startOfReport, err = time.Parse(time.RFC3339, startOfDay)
-	if err != nil {
-		log.Fatalf("Failed to parse time %+v: %+v", startOfDay, err)
-	}
+	endOfReport := time.Now()
+	startOfReport, endOfReport := GetReportInterval(o, endOfReport)
+	logrus.Infof("Fetching Prs from %v till %v", startOfReport, endOfReport)
 
 	logrus.Infof("Filtering PRs for base branch %s", PRBaseBranch)
 	prs := []*github.PullRequest{}
@@ -152,6 +151,9 @@ func main() {
 			if startOfReport.After(*pr.MergedAt) {
 				continue
 			}
+			if endOfReport.Before(*pr.MergedAt) {
+				continue
+			}
 			logrus.Infof("Adding PR %v '%v' (updated at %s)", *pr.Number, *pr.Title, pr.UpdatedAt.Format(time.RFC3339))
 			prs = append(prs, pr)
 			prNumbers = append(prNumbers, *pr.Number)
@@ -172,25 +174,80 @@ func main() {
 		reports = append(reports, r...)
 	}
 
-	err = WriteReportToBucket(ctx, client, reports, o.merged, o.org, o.repo, prNumbers, o.stdout)
+	err = WriteReportToBucket(ctx, client, reports, o.merged, o.org, o.repo, prNumbers, o.stdout, o.isDryRun, startOfReport, endOfReport)
 	if err != nil {
 		log.Fatal(fmt.Errorf("failed to write report: %v", err))
 		return
 	}
 
-	if !o.stdout {
-		err = CreateReportIndex(ctx, client, o.org, o.repo)
-		if err != nil {
-			log.Fatal(fmt.Errorf("failed to create report index page: %v", err))
-			return
-		}
+	printIndexPageToStdOut := o.isDryRun && o.stdout
+	err = CreateReportIndex(ctx, client, o.org, o.repo, printIndexPageToStdOut)
+	if err != nil {
+		log.Fatal(fmt.Errorf("failed to create report index page: %v", err))
+		return
 	}
 }
 
+func GetReportInterval(o options, till time.Time) (startOfReport, endOfReport time.Time) {
+	if o.today {
+		startOfReportToday := till.Format("2006-01-02") + "T00:00:00Z"
+		startOfReport, err := time.Parse(time.RFC3339, startOfReportToday)
+		if err != nil {
+			log.Fatalf("Failed to parse time %+v: %+v", startOfReportToday, err)
+		}
+		return startOfReport, till
+	} else {
+		startOfReport = till.Add(-o.merged)
+	}
+
+	// we normalize the start of the report against start of day vs. start of the hour to avoid working against a
+	// moving target.
+	// In general a user would expect to find all pull requests of the previous day in a 24h report, regardless of
+	// when the report has been run at the current day, which, depending on time of day when the report had been run,
+	// would not always be the case.
+	// Consider i.e. if the report is run late in the afternoon the user might wonder why the PR merged in the morning
+	// the day before was not included.
+
+	var startOfDayOrHour, endOfDayOrHour string
+
+	// in case of reports for at least a day we are fetching reports from start of previous day till end of that day
+	if o.merged.Hours() < 24 {
+		// in case of less than a day we are fetching reports from start of the hour
+		startOfDayOrHour = startOfReport.Format("2006-01-02T15:00:00Z07:00")
+		endOfDayOrHour = till.Format("2006-01-02T15:00:00Z07:00")
+	} else {
+		startOfDayOrHour = startOfReport.Format("2006-01-02") + "T00:00:00Z"
+		endOfDayOrHour = till.Format("2006-01-02") + "T00:00:00Z"
+	}
+	startOfReport, err := time.Parse(time.RFC3339, startOfDayOrHour)
+	if err != nil {
+		log.Fatalf("Failed to parse time %+v: %+v", startOfDayOrHour, err)
+	}
+	endOfReport, err = time.Parse(time.RFC3339, endOfDayOrHour)
+	if err != nil {
+		log.Fatalf("Failed to parse time %+v: %+v", endOfDayOrHour, err)
+	}
+	millisecond, err := time.ParseDuration("1ms")
+	if err != nil {
+		log.Fatalf("Failed to parse duration 1ms: %+v", err)
+	}
+	endOfReport = endOfReport.Add(-millisecond)
+	return startOfReport, endOfReport
+}
+
+// BuildReportOutputPath creates the path to which the report will get written, considering also if we are in
+// preview mode, so that existing production reports will not be overwritten. I.e considering
+// options{
+//		reportOutputChildPath: "kubevirt/kubevirt"
+//		isPreview:			   true
+// }
+// will lead to
+// "reports/flakefinder/preview/kubevirt/kubevirt"
+//
 func BuildReportOutputPath(o options) string {
 	outputPath := ReportsPath
 	if o.isPreview {
-		outputPath = filepath.Join(outputPath, "preview")
+		outputPath = filepath.Join(outputPath, PreviewPath)
 	}
 	outputPath = filepath.Join(outputPath, o.reportOutputChildPath)
 	return outputPath
