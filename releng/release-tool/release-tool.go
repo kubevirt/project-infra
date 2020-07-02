@@ -20,6 +20,11 @@ import (
 	"github.com/google/go-github/v32/github"
 )
 
+type blockerListCacheEntry struct {
+	allBlockerIssues []*github.Issue
+	allBlockerPRs    []*github.PullRequest
+}
+
 type releaseData struct {
 	repoDir   string
 	infraDir  string
@@ -47,7 +52,11 @@ type releaseData struct {
 	dryRun bool
 
 	// github cached results
-	allReleases []*github.RepositoryRelease
+	allReleases      []*github.RepositoryRelease
+	allBranches      []*github.Branch
+	blockerListCache map[string]*blockerListCacheEntry
+
+	now time.Time
 }
 
 func gitCommandStdin(stdin string, arg ...string) error {
@@ -456,28 +465,28 @@ func (r *releaseData) cutNewBranch() error {
 	return nil
 }
 
-func (r *releaseData) isRCInvalid(release *github.RepositoryRelease, branch string) (bool, error) {
+func (r *releaseData) isRCInvalid(release *github.RepositoryRelease, branch string) (bool, bool, error) {
 	isInvalid := false
-
+	blocksNewRC := false
 	releaseTime := release.CreatedAt.Time
+
+	entry, err := r.getBlockers(branch)
+	if err != nil {
+		return false, false, err
+	}
+
 	// Check for blocker issues, both closed and open.
 	// An open issue blocks the promotion of an RC
 	// An issue that has the blocker lable which gets closed after
 	// the RC was cut will result in a new RC being made.
-	blockerLabel := fmt.Sprintf("release-blocker/%s", branch)
-	issues, _, err := r.githubClient.Issues.ListByRepo(context.Background(), r.org, r.repo, &github.IssueListByRepoOptions{
-		Labels: []string{blockerLabel},
-	})
-	if err != nil {
-		return false, err
-	}
+
 	// print the issues to give feedback about what is blocking the release
-	for _, issue := range issues {
-		closedAt := *issue.ClosedAt
+	for _, issue := range entry.allBlockerIssues {
 		if *issue.State == "open" {
 			log.Printf("RC Promotion blocked [issue #%d - %s] %s", *issue.Number, *issue.URL, *issue.Title)
 			isInvalid = true
-		} else if closedAt.After(releaseTime) {
+			blocksNewRC = true
+		} else if issue.ClosedAt != nil && issue.ClosedAt.After(releaseTime) {
 			// if a blocker issue was closed after the release was cut,
 			// then we can't promote the RC, instead we have to cut a new RC.
 			log.Printf("RC Promotion invalidated by [issue #%d - %s] %s", *issue.Number, *issue.URL, *issue.Title)
@@ -486,38 +495,18 @@ func (r *releaseData) isRCInvalid(release *github.RepositoryRelease, branch stri
 	}
 
 	// Check if any blocker PRs exist for the branch
-	prs, _, err := r.githubClient.PullRequests.List(context.Background(), r.org, r.repo, &github.PullRequestListOptions{
-		Base: branch,
-		ListOptions: github.ListOptions{
-			PerPage: 10000,
-		},
-	})
-
-	for _, pr := range prs {
-		if pr.Labels == nil {
-			continue
-		}
-
-		hasBlockerLabel := false
-		for _, label := range pr.Labels {
-			if label.Name != nil && *label.Name == blockerLabel {
-				hasBlockerLabel = true
-			}
-		}
-		if !hasBlockerLabel {
-			continue
-		}
-
+	for _, pr := range entry.allBlockerPRs {
 		if pr.ClosedAt == nil || *pr.State == "open" {
 			log.Printf("BLOCKED BY [PR #%d - %s] %s", *pr.Number, *pr.URL, *pr.Title)
 			isInvalid = true
+			blocksNewRC = true
 		} else if pr.ClosedAt.After(releaseTime) {
 			log.Printf("RC Invalidated by [PR #%d - %s] %s", *pr.Number, *pr.URL, *pr.Title)
 			isInvalid = true
 		}
 	}
 
-	return isInvalid, nil
+	return isInvalid, blocksNewRC, nil
 }
 
 func (r *releaseData) isBranchBlocked(branch string) (bool, error) {
@@ -545,66 +534,46 @@ func (r *releaseData) isBranchBlocked(branch string) (bool, error) {
 }
 
 func (r *releaseData) hasOpenBlockerPRs(branch string) (bool, error) {
-	blockerLabel := fmt.Sprintf("release-blocker/%s", branch)
-	prs, _, err := r.githubClient.PullRequests.List(context.Background(), r.org, r.repo, &github.PullRequestListOptions{
-		State: "open",
-		ListOptions: github.ListOptions{
-			PerPage: 10000,
-		},
-	})
 
+	entry, err := r.getBlockers(branch)
 	if err != nil {
 		return false, err
 	}
 
-	foundBlocker := false
+	hasOpenBlockers := false
 	// print the issues to give feedback about what is blocking the release
-	for _, pr := range prs {
-		if pr.Labels == nil {
-			continue
-		}
-
-		for _, label := range pr.Labels {
-			if label.Name != nil && *label.Name == blockerLabel {
-				log.Printf("BLOCKED BY [PR #%d - %s] %s", *pr.Number, *pr.URL, *pr.Title)
-				foundBlocker = true
-			}
+	for _, pr := range entry.allBlockerPRs {
+		if pr.State != nil && *pr.State == "open" {
+			log.Printf("BLOCKED BY [PR #%d - %s] %s", *pr.Number, *pr.URL, *pr.Title)
+			hasOpenBlockers = true
 		}
 	}
 
-	return foundBlocker, nil
+	return hasOpenBlockers, nil
 }
 
 func (r *releaseData) hasOpenBlockerIssues(branch string) (bool, error) {
-	blockerLabel := fmt.Sprintf("release-blocker/%s", branch)
-	issues, _, err := r.githubClient.Issues.ListByRepo(context.Background(), r.org, r.repo, &github.IssueListByRepoOptions{
-		State:  "open",
-		Labels: []string{blockerLabel},
-	})
 
+	entry, err := r.getBlockers(branch)
 	if err != nil {
 		return false, err
 	}
 
-	if len(issues) == 0 {
-		return false, nil
-	}
-
+	hasOpenBlocker := false
 	// print the issues to give feedback about what is blocking the release
-	for _, issue := range issues {
-		log.Printf("BLOCKED BY [issue #%d - %s] %s", *issue.Number, *issue.URL, *issue.Title)
+	for _, issue := range entry.allBlockerIssues {
+		if issue.State != nil && *issue.State == "open" {
+			log.Printf("BLOCKED BY [issue #%d - %s] %s", *issue.Number, *issue.URL, *issue.Title)
+			hasOpenBlocker = true
+		}
 	}
 
-	return true, nil
+	return hasOpenBlocker, nil
 }
 
 func (r *releaseData) verifyBranch() error {
 
-	branches, _, err := r.githubClient.Repositories.ListBranches(context.Background(), r.org, r.repo, &github.BranchListOptions{
-		ListOptions: github.ListOptions{
-			PerPage: 10000,
-		},
-	})
+	branches, err := r.getBranches()
 	if err != nil {
 		return err
 	}
@@ -624,6 +593,83 @@ func (r *releaseData) verifyBranch() error {
 	}
 
 	return nil
+}
+
+func (r *releaseData) getBlockers(branch string) (*blockerListCacheEntry, error) {
+
+	blockerLabel := fmt.Sprintf("release-blocker/%s", branch)
+
+	cache, ok := r.blockerListCache[blockerLabel]
+	if ok {
+		return cache, nil
+	}
+
+	issueListOptions := &github.IssueListByRepoOptions{
+		Labels: []string{blockerLabel},
+		ListOptions: github.ListOptions{
+			PerPage: 10000,
+		},
+	}
+	prListOptions := &github.PullRequestListOptions{
+		Base: branch,
+		ListOptions: github.ListOptions{
+			PerPage: 10000,
+		},
+	}
+	if branch == "master" {
+		// there's never a reason to list all PRs/Issues (both open and closed) in the entire project for master
+		// We do care about open and closed PRS for stable branches though
+		prListOptions.State = "open"
+		issueListOptions.State = "open"
+	}
+
+	issues, _, err := r.githubClient.Issues.ListByRepo(context.Background(), r.org, r.repo, issueListOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	prs, _, err := r.githubClient.PullRequests.List(context.Background(), r.org, r.repo, prListOptions)
+
+	filteredPRs := []*github.PullRequest{}
+
+	for _, pr := range prs {
+		if pr.Labels == nil {
+			continue
+		}
+		for _, label := range pr.Labels {
+			if label.Name != nil && *label.Name == blockerLabel {
+				filteredPRs = append(filteredPRs, pr)
+				break
+			}
+		}
+	}
+
+	r.blockerListCache[blockerLabel] = &blockerListCacheEntry{
+		allBlockerIssues: issues,
+		allBlockerPRs:    filteredPRs,
+	}
+
+	return r.blockerListCache[blockerLabel], nil
+}
+
+func (r *releaseData) getBranches() ([]*github.Branch, error) {
+
+	if len(r.allBranches) != 0 {
+		return r.allBranches, nil
+	}
+
+	branches, _, err := r.githubClient.Repositories.ListBranches(context.Background(), r.org, r.repo, &github.BranchListOptions{
+		ListOptions: github.ListOptions{
+			PerPage: 10000,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	r.allBranches = branches
+
+	return r.allBranches, nil
+
 }
 
 func (r *releaseData) getReleases() ([]*github.RepositoryRelease, error) {
@@ -660,7 +706,7 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 		return fmt.Errorf("Unknown cadance [%s]", autoReleaseCadance)
 	}
 
-	now := time.Now()
+	now := r.now
 	releases, err := r.getReleases()
 	if err != nil {
 		return err
@@ -683,12 +729,14 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 	// ---------------------------------------
 	var vs []*semver.Version
 	for _, release := range releases {
-		if *release.Draft ||
-			*release.Prerelease ||
+		if (release.Draft != nil && *release.Draft) ||
+			(release.Prerelease != nil && *release.Prerelease) ||
+			strings.Contains(*release.TagName, "-rc.") ||
 			len(release.Assets) == 0 {
 
 			continue
 		}
+
 		v, err := semver.NewVersion(*release.TagName)
 		if err != nil {
 			// not an official release if it's not semver compatiable.
@@ -752,6 +800,7 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 	var rcPromotionCandidate *github.RepositoryRelease
 	rcTemplate := fmt.Sprintf("%s-rc.", nextMinorRelease)
 	for _, release := range releases {
+
 		if *release.TagName == nextMinorRelease {
 			// found official release, so rc is already already promoted
 			rcPromotionCandidate = nil
@@ -772,24 +821,27 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 	}
 
 	if rcPromotionCandidate != nil {
+		log.Printf("Most recent RC for next release series is detected as %s", *rcPromotionCandidate.TagName)
 		releaseTime := rcPromotionCandidate.CreatedAt.Time
 
 		// -------------------------------------------------------
 		// 5. detect if RC is still valid and no blockers occurred
 		// -------------------------------------------------------
-		invalidated, err := r.isRCInvalid(rcPromotionCandidate, nextMinorReleaseBranch)
+		invalidated, blocksNewRC, err := r.isRCInvalid(rcPromotionCandidate, nextMinorReleaseBranch)
 		if err != nil {
 			return err
 		}
 
 		if invalidated {
-			// -------------------------------------------------------
-			// 6. Cut new RC if last RC is invalid due to blockers
-			// -------------------------------------------------------
-			highestRC++
-			nextMinorReleaseRC = fmt.Sprintf("%s-rc.%d", rcTemplate, highestRC)
-			shouldMakeNewRC = true
-		} else if (now.UTC().Unix() - releaseTime.UTC().Unix()) > int64(86400*autoPromoteAfterDays) {
+			// ----------------------------------------------------------------------------------
+			// 6. Cut new RC if last RC is invalid due to blockers and those blockers are resolved
+			// -----------------------------------------------------------------------------------
+			if !blocksNewRC {
+				highestRC++
+				nextMinorReleaseRC = fmt.Sprintf("%s%d", rcTemplate, highestRC)
+				shouldMakeNewRC = true
+			}
+		} else if (now.UTC().Unix() - releaseTime.UTC().Unix()) >= int64(86400*autoPromoteAfterDays) {
 			// 86400 seconds in a day
 
 			// ------------------------------------------------------------------------------
@@ -797,6 +849,8 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 			// ------------------------------------------------------------------------------
 
 			shouldPromoteRC = true
+		} else {
+			log.Printf("Waiting to promote RC %s", *rcPromotionCandidate.TagName)
 		}
 	}
 
@@ -842,16 +896,24 @@ func (r *releaseData) verifyTag() error {
 		}
 	}
 
-	// ensure promoteRC tag exists
+	// ensure promoteRC tag exists and is eligible for promotion
 	if r.promoteRC != "" {
 		found := false
+		invalid := false
 		for _, release := range releases {
 			if *release.TagName == r.promoteRC {
 				found = true
+				invalid, _, err = r.isRCInvalid(release, expectedBranch)
+				if err != nil {
+					return err
+				}
+				break
 			}
 		}
 		if !found {
 			return fmt.Errorf("Unable to find promote-rc tag [%s]", r.promoteRC)
+		} else if invalid {
+			return fmt.Errorf("RC [%s] is ineligible to be promoted due to blockers.", r.promoteRC)
 		}
 	} else {
 		// if this is not a promotion, ensure the release is either an RC or a patch release.
@@ -896,11 +958,7 @@ func (r *releaseData) verifyTag() error {
 		log.Printf("Previous Tag [%s]", r.previousTag)
 	}
 
-	branches, _, err := r.githubClient.Repositories.ListBranches(context.Background(), r.org, r.repo, &github.BranchListOptions{
-		ListOptions: github.ListOptions{
-			PerPage: 10000,
-		},
-	})
+	branches, err := r.getBranches()
 	if err != nil {
 		return err
 	}
@@ -1028,6 +1086,10 @@ func main() {
 		githubTokenPath: *githubTokenFile,
 		dryRun:          *dryRun,
 		force:           *force,
+
+		blockerListCache: make(map[string]*blockerListCacheEntry),
+
+		now: time.Now(),
 	}
 
 	_, err = gitCommand("config", "--global", "user.name", r.gitUser)
