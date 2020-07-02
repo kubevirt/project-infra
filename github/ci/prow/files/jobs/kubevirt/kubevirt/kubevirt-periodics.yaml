@@ -17,7 +17,7 @@ periodics:
           - --dry-run=false
           - --token=/etc/github/oauth
           - --merged=24h
-          - --today=1h
+          - --today=true
           - --report_output_child_path=kubevirt/kubevirt
         volumeMounts:
           - name: token
