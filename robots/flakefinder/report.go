@@ -98,25 +98,12 @@ const tpl = `
             padding: 8px 8px;
             position: absolute;
             z-index: 1;
-            bottom: 125%;
             left: 50%;
             margin-left: -110px;
         }
 
         .nowrap {
             white-space: nowrap;
-        }
-
-        /* Popup arrow */
-        .popup .popuptext::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #555 transparent transparent transparent;
         }
 
         /* Toggle this class - hide and show the popup */
