@@ -290,11 +290,15 @@
       k8s:
         state: present
         namespace: "{{ prowNamespace }}"
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
         definition: "{{ lookup('template', '{{ role_path }}/templates/release-blocker_deployment.yaml') | from_yaml }}"
     - name: Deploy release-blocker-service
       k8s:
         state: present
         namespace: "{{ prowNamespace }}"
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
         definition: "{{ lookup('template', '{{ role_path }}/templates/release-blocker_service.yaml') | from_yaml }}"
     - name: Deploy prow-deck-rbac
       command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowJobsNamespace}} apply -f -"
