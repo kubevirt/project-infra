@@ -1,6 +1,6 @@
 periodics:
 - name: periodic-publish-cnao-flakefinder-weekly-report
-  interval: 24h
+  cron: "55 0 * * *"
   decorate: true
   spec:
     nodeSelector:

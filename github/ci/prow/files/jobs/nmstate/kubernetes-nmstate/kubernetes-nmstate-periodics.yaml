@@ -1,6 +1,6 @@
 periodics:
 - name: periodic-publish-knmstate-flakefinder-weekly-report
-  interval: 24h
+  cron: "5 1 * * *"
   decorate: true
   spec:
     nodeSelector:
