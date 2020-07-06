@@ -192,7 +192,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-      - image: index.docker.io/kubevirtci/indexpagecreator@sha256:c7231c5dabf1c7f168626025d60a16ca50312c5216bfddb82c1e7d96e297e19c
+      - image: index.docker.io/kubevirtci/indexpagecreator@sha256:bbdf645306c9bce0f03c7446317043656429b9bec951d5d2f102138ac3f99e61
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
