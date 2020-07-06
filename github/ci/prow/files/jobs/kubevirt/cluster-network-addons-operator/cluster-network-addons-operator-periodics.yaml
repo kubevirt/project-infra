@@ -17,6 +17,7 @@ periodics:
       - --token=/etc/github/oauth
       - --merged=168h
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
+      - --repo=cluster-network-addons-operator
       volumeMounts:
       - name: token
         mountPath: /etc/github
@@ -48,6 +49,7 @@ periodics:
       - --token=/etc/github/oauth
       - --merged=24h
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
+      - --repo=cluster-network-addons-operator
       volumeMounts:
       - name: token
         mountPath: /etc/github
@@ -79,6 +81,7 @@ periodics:
       - --token=/etc/github/oauth
       - --merged=672h
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
+      - --repo=cluster-network-addons-operator
       volumeMounts:
       - name: token
         mountPath: /etc/github
