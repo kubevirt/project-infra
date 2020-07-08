@@ -37,6 +37,7 @@ type releaseData struct {
 	tagBranch        string
 	tag              string
 	promoteRC        string
+	promoteRCTime    time.Time
 	previousTag      string
 	releaseNotesFile string
 	skipReleaseNotes bool
@@ -168,11 +169,14 @@ func (r *releaseData) generateReleaseNotes() error {
 	typeOfChanges = strings.TrimSpace(typeOfChanges)
 
 	f.WriteString(fmt.Sprintf("This release follows %s and consists of %d changes, contributed by %d people, leading to %s.\n", r.previousTag, numChanges, numContributors, typeOfChanges))
+	if r.promoteRC != "" {
+		f.WriteString(fmt.Sprintf("%s is a promotion of release candidate %s which was originally published %s", r.tag, r.promoteRC, r.promoteRCTime.Format("2006-01-02")))
+	}
 	f.WriteString("\n")
 	f.WriteString(fmt.Sprintf("The source code and selected binaries are available for download at: %s.\n", tagUrl))
 	f.WriteString("\n")
 	f.WriteString("The primary release artifact of KubeVirt is the git tree. The release tag is\n")
-	f.WriteString("signed and can be verified using [git-evtag][git-evtag].\n")
+	f.WriteString(fmt.Sprintf("signed and can be verified using `git tag -v %s`.\n", r.tag))
 	f.WriteString("\n")
 	f.WriteString(fmt.Sprintf("Pre-built containers are published on Docker Hub and can be viewed at: <https://hub.docker.com/u/%s/>.\n", r.org))
 	f.WriteString("\n")
@@ -832,6 +836,18 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 			return err
 		}
 
+		// 86400 seconds in a day
+		// we're giving it a tolarance of a couple of hours
+		// in order to account for a periodic being delayed
+		// slightly when cutting the RC, which without a slight
+		// tolerance would cause the periodic that should technically
+		// do the release to wait an additional day due to the periodic
+		// only running once dailing.
+		// 3 hour tolerance.
+		tolerance := int64(3 * 60 * 60)
+		promoteAfterSeconds := int64(86400*autoPromoteAfterDays) - tolerance
+		secondsDiff := now.UTC().Unix() - releaseTime.UTC().Unix()
+
 		if invalidated {
 			// ----------------------------------------------------------------------------------
 			// 6. Cut new RC if last RC is invalid due to blockers and those blockers are resolved
@@ -841,8 +857,7 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 				nextMinorReleaseRC = fmt.Sprintf("%s%d", rcTemplate, highestRC)
 				shouldMakeNewRC = true
 			}
-		} else if (now.UTC().Unix() - releaseTime.UTC().Unix()) >= int64(86400*autoPromoteAfterDays) {
-			// 86400 seconds in a day
+		} else if secondsDiff >= promoteAfterSeconds {
 
 			// ------------------------------------------------------------------------------
 			// 7. Detect if it's time to promote a x.y.0.rc.n release to an official release.
@@ -850,7 +865,7 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 
 			shouldPromoteRC = true
 		} else {
-			log.Printf("Waiting to promote RC %s", *rcPromotionCandidate.TagName)
+			log.Printf("Waiting to promote RC %s. %d seconds remain", *rcPromotionCandidate.TagName, promoteAfterSeconds-secondsDiff)
 		}
 	}
 
@@ -870,7 +885,7 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 
 		return nil
 	} else if shouldPromoteRC {
-		log.Printf("Auto promoting rc [%s] after [%d] days", rcPromotionCandidate, autoPromoteAfterDays)
+		log.Printf("Auto promoting rc [%s] after [%d] days", *rcPromotionCandidate.TagName, autoPromoteAfterDays)
 		r.promoteRC = *rcPromotionCandidate.TagName
 		return nil
 	}
@@ -907,6 +922,7 @@ func (r *releaseData) verifyTag() error {
 				if err != nil {
 					return err
 				}
+				r.promoteRCTime = release.CreatedAt.Time
 				break
 			}
 		}
@@ -1048,8 +1064,8 @@ func main() {
 	}
 	token := strings.TrimSpace(string(tokenBytes))
 
-	repoUrl := fmt.Sprintf("https://%s:%s@github.com/%s/%s.git", *gitUser, token, *org, *repo)
-	infraUrl := fmt.Sprintf("https://%s:%s@github.com/kubevirt/project-infra.git", *gitUser, token)
+	repoUrl := fmt.Sprintf("https://%s@github.com/%s/%s.git", token, *org, *repo)
+	infraUrl := fmt.Sprintf("https://%s@github.com/kubevirt/project-infra.git", token)
 	repoDir := fmt.Sprintf("%s/%s/https-%s", *cacheDir, *org, *repo)
 	infraDir := fmt.Sprintf("%s/%s/https-%s", *cacheDir, "kubevirt", "project-infra")
 
