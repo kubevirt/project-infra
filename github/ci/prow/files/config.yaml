@@ -77,7 +77,7 @@ tide:
     kubevirt/katacoda-scenarios: squash
     kubevirt/demo: squash
     kubevirt/ovs-cni: squash
-    kubevirt/macvtap-cni: squash
+    kubevirt/macvtap-cni: merge
     kubevirt/cluster-network-addons-operator: squash
     kubevirt/bridge-marker: squash
     nmstate/kubernetes-nmstate: squash
