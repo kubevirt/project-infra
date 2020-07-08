@@ -1138,7 +1138,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		r.tag = fmt.Sprintf("%d.%d.%d", tagSemver.Major(), tagSemver.Minor(), tagSemver.Patch())
+		r.tag = fmt.Sprintf("v%d.%d.%d", tagSemver.Major(), tagSemver.Minor(), tagSemver.Patch())
 		log.Printf("promoting rc [%s] as tag [%s]", r.promoteRC, r.tag)
 	}
 
