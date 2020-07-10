@@ -32,36 +32,3 @@ presubmits:
         resources:
           requests:
             memory: "29Gi"
-  - name: pull-node-maintenance-operator-e2e-ocp-4.4
-    skip_branches:
-    - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-    always_run: true
-    optional: true
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 6
-    labels:
-      preset-kubevirtci-quay-credential: "true"
-      preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
-      preset-shared-images: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-      - image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20191223-f0a2baa
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/bash"
-        - "-c"
-        - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && export TARGET=ocp-4.4 && automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
