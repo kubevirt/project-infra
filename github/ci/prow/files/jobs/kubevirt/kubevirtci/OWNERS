@@ -8,21 +8,25 @@ filters:
     - danielbelenky
     - davidvossel
     - dhiller
+    - jean-edouard
     - phoracek
     - qinqon
     - rmohr
     - slintes
+    - stu-gott
     - vladikr
     reviewers:
     - cynepco3hahue
     - danielbelenky
     - davidvossel
     - dhiller
+    - jean-edouard
     - ormergi
     - oshoval
     - phoracek
     - qinqon
     - rmohr
     - slintes
+    - stu-gott
     - vladikr
 options: {}
