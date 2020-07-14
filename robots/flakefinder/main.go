@@ -35,6 +35,8 @@ import (
 	"golang.org/x/oauth2"
 	"k8s.io/test-infra/prow/config/secret"
 	"k8s.io/test-infra/prow/flagutil"
+
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
 func flagOptions() options {
@@ -48,7 +50,7 @@ func flagOptions() options {
 	flag.StringVar(&o.token, "token", "", "Path to github token")
 	flag.BoolVar(&o.isPreview, "preview", false, "Whether report should be written to preview directory")
 	flag.StringVar(&o.prBaseBranch, "pr_base_branch", PRBaseBranchDefault, fmt.Sprintf("Base branch for the PRs (default: '%s')", PRBaseBranchDefault))
-	flag.StringVar(&o.reportOutputChildPath, "report_output_child_path", "", fmt.Sprintf("Child path below the main reporting directory '%s' (i.e. 'master', default is '')", ReportsPath))
+	flag.StringVar(&o.reportOutputChildPath, "report_output_child_path", "", fmt.Sprintf("Child path below the main reporting directory '%s' (i.e. 'master', default is '')", flakefinder.ReportsPath))
 	flag.StringVar(&o.org, "org", Org, fmt.Sprintf("GitHub org name (default is '%s')", Org))
 	flag.StringVar(&o.repo, "repo", Repo, fmt.Sprintf("GitHub org name (default is '%s')", Repo))
 	flag.BoolVar(&o.today, "today", false, "Whether to create a report for the current day only (i.e. using data starting from report day 00:00Z till now)")
@@ -77,16 +79,12 @@ type options struct {
 	today  bool
 }
 
-const BucketName = "kubevirt-prow"
-const ReportsPath = "reports/flakefinder"
-const PreviewPath = "preview"
-const ReportFilePrefix = "flakefinder-"
 const MaxNumberOfReportsToLinkTo = 50
 const PRBaseBranchDefault = "master"
 const Org = "kubevirt"
 const Repo = "kubevirt"
 
-var ReportOutputPath = ReportsPath
+var ReportOutputPath = flakefinder.ReportsPath
 var PRBaseBranch string
 
 func main() {
@@ -167,7 +165,7 @@ func main() {
 	}
 	reports := []*Result{}
 	for _, pr := range prs {
-		r, err := FindUnitTestFiles(ctx, client, BucketName, strings.Join([]string{o.org, o.repo}, "/"), pr, startOfReport)
+		r, err := FindUnitTestFiles(ctx, client, flakefinder.BucketName, strings.Join([]string{o.org, o.repo}, "/"), pr, startOfReport)
 		if err != nil {
 			log.Printf("failed to load JUnit file for %v: %v", pr.Number, err)
 		}
@@ -245,9 +243,9 @@ func GetReportInterval(o options, till time.Time) (startOfReport, endOfReport ti
 // "reports/flakefinder/preview/kubevirt/kubevirt"
 //
 func BuildReportOutputPath(o options) string {
-	outputPath := ReportsPath
+	outputPath := flakefinder.ReportsPath
 	if o.isPreview {
-		outputPath = filepath.Join(outputPath, PreviewPath)
+		outputPath = filepath.Join(outputPath, flakefinder.PreviewPath)
 	}
 	outputPath = filepath.Join(outputPath, o.reportOutputChildPath)
 	return outputPath

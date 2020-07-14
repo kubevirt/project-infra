@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"github.com/google/go-github/v28/github"
 	"io/ioutil"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"path"
 	"sort"
 	"strconv"
@@ -34,7 +35,6 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/joshdk/go-junit"
 	"github.com/sirupsen/logrus"
-	"google.golang.org/api/iterator"
 )
 
 const (
@@ -42,33 +42,6 @@ const (
 	finishedJSON = "finished.json"
 	startedJSON  = "started.json"
 )
-
-//listGcsObjects get the slice of gcs objects under a given path
-func listGcsObjects(ctx context.Context, client *storage.Client, bucketName, prefix, delim string) (
-	[]string, error) {
-
-	var objects []string
-	it := client.Bucket(bucketName).Objects(ctx, &storage.Query{
-		Prefix:    prefix,
-		Delimiter: delim,
-	})
-
-	for {
-		attrs, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			return objects, fmt.Errorf("error iterating: %v", err)
-		}
-
-		if attrs.Prefix != "" {
-			objects = append(objects, path.Base(attrs.Prefix))
-		}
-	}
-	logrus.Info("end of listGcsObjects(...)")
-	return objects, nil
-}
 
 func readGcsObject(ctx context.Context, client *storage.Client, bucket, object string) ([]byte, error) {
 	logrus.Infof("Trying to read gcs object '%s' in bucket '%s'\n", object, bucket)
@@ -82,23 +55,11 @@ func readGcsObject(ctx context.Context, client *storage.Client, bucket, object s
 	return ioutil.ReadAll(reader)
 }
 
-func readGcsObjectAttrs(ctx context.Context, client *storage.Client, bucket, object string) (attrs *storage.ObjectAttrs, err error) {
-	logrus.Infof("Trying to read gcs object attrs '%s' in bucket '%s'\n", object, bucket)
-	attrs, err = client.Bucket(bucket).Object(object).Attrs(ctx)
-	if err == storage.ErrObjectNotExist {
-		return nil, err
-	}
-	if err != nil {
-		return nil, fmt.Errorf("Cannot read attrs from %s in bucket '%s'", object, bucket)
-	}
-	return
-}
-
 func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest, startOfReport time.Time) ([]*Result, error) {
 
 	dirOfPrJobs := path.Join("pr-logs", "pull", strings.ReplaceAll(repo, "/", "_"), strconv.Itoa(*pr.Number))
 
-	prJobsDirs, err := listGcsObjects(ctx, client, bucket, dirOfPrJobs+"/", "/")
+	prJobsDirs, err := flakefinder.ListGcsObjects(ctx, client, bucket, dirOfPrJobs+"/", "/")
 	if err != nil {
 		return nil, fmt.Errorf("error listing gcs objects: %v", err)
 	}
@@ -119,7 +80,7 @@ func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo
 func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket string, dirOfPrJobs string, job string, pr *github.PullRequest, startOfReport time.Time) ([]*Result, error) {
 	dirOfJobs := path.Join(dirOfPrJobs, job)
 
-	prJobs, err := listGcsObjects(ctx, client, bucket, dirOfJobs+"/", "/")
+	prJobs, err := flakefinder.ListGcsObjects(ctx, client, bucket, dirOfJobs+"/", "/")
 	if err != nil {
 		return nil, fmt.Errorf("error listing gcs objects: %v", err)
 	}
@@ -133,7 +94,7 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 		dirOfStartedJSON := path.Join(buildDirPath, startedJSON)
 
 		// Fetch file attributes to check whether this test result should be included into the report
-		attrsOfFinishedJsonFile, err := readGcsObjectAttrs(ctx, client, bucket, dirOfFinishedJSON)
+		attrsOfFinishedJsonFile, err := flakefinder.ReadGcsObjectAttrs(ctx, client, bucket, dirOfFinishedJSON)
 		if err == storage.ErrObjectNotExist {
 			// build still running?
 			continue

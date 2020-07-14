@@ -3,6 +3,7 @@ package main
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"time"
 )
 
@@ -11,7 +12,7 @@ var _ = Describe("main.go", func() {
 	When("Setting up output path", func() {
 
 		BeforeEach(func() {
-			ReportOutputPath = ReportsPath
+			ReportOutputPath = flakefinder.ReportsPath
 		})
 
 		It("has default path", func() {

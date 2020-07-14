@@ -3,6 +3,7 @@ package main_test
 import (
 	"bytes"
 	"fmt"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"log"
 	"os"
 	"time"
@@ -41,7 +42,7 @@ var _ = Describe("report.go", func() {
 
 		prepareBuffer := func(parameters Params) {
 			buffer = bytes.Buffer{}
-			err := WriteReportToOutput(&buffer, parameters)
+			err := flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, &buffer)
 			Expect(err).ToNot(HaveOccurred())
 			if testOptions.printTestOutput {
 				logger := log.New(os.Stdout, "report_test.go:", log.Flags())

@@ -23,8 +23,7 @@ import (
 	"cloud.google.com/go/storage"
 	"context"
 	"fmt"
-	"html/template"
-	"io"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"log"
 	"os"
 	"path"
@@ -34,7 +33,7 @@ import (
 	"github.com/joshdk/go-junit"
 )
 
-const tpl = `
+const ReportTemplate = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -218,9 +217,9 @@ type Job struct {
 }
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
-func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string, prNumbers []int, writeToStdout, isDryRun bool, startOfReport, endOfReport time.Time) (err error) {
-	reportObject := client.Bucket(BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(endOfReport, merged)))
-	log.Printf("Report will be written to gs://%s/%s", BucketName, reportObject.ObjectName())
+func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []*Result, merged time.Duration, org, repo string, prNumbers []int, writeToStdout bool, isDryRun bool, startOfReport, endOfReport time.Time) (err error) {
+	reportObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(endOfReport, merged)))
+	log.Printf("Report will be written to gs://%s/%s", flakefinder.BucketName, reportObject.ObjectName())
 	var reportOutputWriter *storage.Writer
 	if !isDryRun {
 		reportOutputWriter = reportObject.NewWriter(ctx)
@@ -239,7 +238,7 @@ func WriteReportToBucket(ctx context.Context, client *storage.Client, reports []
 }
 
 func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
-	return fmt.Sprintf(ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
+	return fmt.Sprintf(flakefinder.ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
 }
 
 func Report(results []*Result, reportOutputWriter *storage.Writer, org string, repo string, prNumbers []int, writeToStdout bool, isDryRun bool, startOfReport, endOfReport time.Time) error {
@@ -339,10 +338,10 @@ func Report(results []*Result, reportOutputWriter *storage.Writer, org string, r
 	}
 	var err error
 	if !isDryRun && reportOutputWriter != nil {
-		err = WriteReportToOutput(reportOutputWriter, parameters)
+		err = flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, reportOutputWriter)
 	}
 	if isDryRun || writeToStdout {
-		err = WriteReportToOutput(os.Stdout, parameters)
+		err = flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, os.Stdout)
 	}
 
 	if err != nil {
@@ -486,13 +485,3 @@ const (
 	Fine            = "green"
 	Unimportant     = "unimportant"
 )
-
-func WriteReportToOutput(writer io.Writer, parameters Params) error {
-	t, err := template.New("report").Parse(tpl)
-	if err != nil {
-		return fmt.Errorf("failed to load report template: %v", err)
-	}
-
-	err = t.Execute(writer, parameters)
-	return err
-}

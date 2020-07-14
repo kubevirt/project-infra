@@ -184,3 +184,28 @@ periodics:
     - name: token
       secret:
         secretName: oauth-token
+- name: periodic-update-flakefinder-indexpage
+  interval: 24h
+  decorate: true
+  spec:
+    nodeSelector:
+      type: vm
+      zone: ci
+    containers:
+      - image: index.docker.io/kubevirtci/indexpagecreator@sha256:bbdf645306c9bce0f03c7446317043656429b9bec951d5d2f102138ac3f99e61
+        env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/gcs/service-account.json
+        command:
+          - "/app/robots/indexpagecreator/app.binary"
+        args:
+          - --dry-run=false
+        volumeMounts:
+          - name: gcs
+            mountPath: /etc/gcs
+            readOnly: true
+    volumes:
+      - name: gcs
+        secret:
+          secretName: gcs
+

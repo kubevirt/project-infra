@@ -21,5 +21,8 @@ deps-update:
 	sed -i "s|^.*data = \[\"//prow/plugins:config-src\"\],||g" vendor/k8s.io/test-infra/pkg/genyaml/BUILD.bazel
 	$(bazelbin) run //:gazelle
 
+gazelle:
+	bazel run //:gazelle -- robots/
+
 install-bazelisk:
 	go get -u github.com/bazelbuild/bazelisk
