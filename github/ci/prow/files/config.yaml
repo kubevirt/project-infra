@@ -131,6 +131,7 @@ tide:
     - do-not-merge/invalid-owners-file
     - do-not-merge/work-in-progress
     - do-not-merge/release-note-label-needed
+    - do-not-merge/invalid-commit-message
     - needs-rebase
     - "dco-signoff: no"
   pr_status_base_urls:
