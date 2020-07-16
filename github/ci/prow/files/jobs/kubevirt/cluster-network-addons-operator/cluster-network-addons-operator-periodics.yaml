@@ -14,6 +14,7 @@ periodics:
       command:
       - "/app/robots/flakefinder/app.binary"
       args:
+      - --dry-run=false
       - --token=/etc/github/oauth
       - --merged=168h
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
@@ -46,6 +47,7 @@ periodics:
       command:
       - "/app/robots/flakefinder/app.binary"
       args:
+      - --dry-run=false
       - --token=/etc/github/oauth
       - --merged=24h
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
@@ -78,6 +80,7 @@ periodics:
       command:
       - "/app/robots/flakefinder/app.binary"
       args:
+      - --dry-run=false
       - --token=/etc/github/oauth
       - --merged=672h
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
