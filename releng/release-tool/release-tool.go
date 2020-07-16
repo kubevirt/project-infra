@@ -60,17 +60,6 @@ type releaseData struct {
 	now time.Time
 }
 
-func gitCommandStdin(stdin string, arg ...string) error {
-	log.Printf("executing 'git %v", arg)
-	cmd := exec.Command("git", arg...)
-	bytes, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Printf("ERROR: git command output: %s : %s ", string(bytes), err)
-		return err
-	}
-	return nil
-}
-
 func gitCommand(arg ...string) (string, error) {
 	log.Printf("executing 'git %v", arg)
 	cmd := exec.Command("git", arg...)
@@ -234,6 +223,16 @@ func (r *releaseData) checkoutProjectInfra() error {
 		return err
 	}
 
+	_, err = gitCommand("-C", r.infraDir, "config", "user.name", r.gitUser)
+	if err != nil {
+		return err
+	}
+
+	_, err = gitCommand("-C", r.infraDir, "config", "user.email", r.gitEmail)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -267,6 +266,15 @@ func (r *releaseData) checkoutUpstream() error {
 		return err
 	}
 
+	_, err = gitCommand("-C", r.repoDir, "config", "user.name", r.gitUser)
+	if err != nil {
+		return err
+	}
+
+	_, err = gitCommand("-C", r.repoDir, "config", "user.email", r.gitEmail)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -1108,15 +1116,6 @@ func main() {
 		now: time.Now(),
 	}
 
-	_, err = gitCommand("config", "--global", "user.name", r.gitUser)
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = gitCommand("config", "--global", "user.email", r.gitEmail)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	if *autoRelease {
 		r.autoDetectData(*autoReleaseCadance, *autoPromoteAfterDays)
 	}
@@ -1124,7 +1123,7 @@ func main() {
 	// If this is a promotion, we need to set the tag to promote
 	if r.promoteRC != "" {
 		if r.tag != "" {
-			log.Fatal("--release-tag and --promote-rc can not be used together. --promote-rc detects the correct tag to make an official release out of")
+			log.Fatal("--new-release and --promote-rc can not be used together. --promote-rc detects the correct tag to make an official release out of")
 		}
 
 		re := regexp.MustCompile(`^v\d*\.\d*.\d*-rc.\d*$`)
