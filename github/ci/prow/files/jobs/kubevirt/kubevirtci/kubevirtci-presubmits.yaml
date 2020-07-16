@@ -399,6 +399,8 @@ presubmits:
     run_if_changed: "cluster-provision/k8s/.*"
     optional: true
     decorate: true
+    decoration_config:
+      timeout: 3h
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
@@ -424,6 +426,8 @@ presubmits:
     always_run: false
     optional: true
     decorate: true
+    decoration_config:
+      timeout: 3h
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
@@ -450,6 +454,8 @@ presubmits:
     run_if_changed: "cluster-provision/k8s/.*"
     optional: true
     decorate: true
+    decoration_config:
+      timeout: 3h
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
@@ -475,6 +481,8 @@ presubmits:
     always_run: false
     optional: true
     decorate: true
+    decoration_config:
+      timeout: 3h
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
@@ -501,6 +509,8 @@ presubmits:
     run_if_changed: "cluster-provision/k8s/.*"
     optional: true
     decorate: true
+    decoration_config:
+      timeout: 3h
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
@@ -526,6 +536,8 @@ presubmits:
     always_run: false
     optional: true
     decorate: true
+    decoration_config:
+      timeout: 3h
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
