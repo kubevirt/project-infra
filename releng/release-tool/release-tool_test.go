@@ -75,12 +75,20 @@ func TestAutoRelease(t *testing.T) {
 		now            time.Time
 		expectedBranch string
 		expectedTag    string
+		hasBlocker     bool
 	}{
 		{
 			name:           "Expect new branch and rc",
 			now:            time.Date(2020, time.February, 1, 1, 0, 0, 0, time.UTC),
 			expectedBranch: "release-0.2",
 			expectedTag:    "v0.2.0-rc.1",
+		},
+		{
+			name:           "Expect new branch to be blocked",
+			now:            time.Date(2020, time.February, 1, 1, 0, 0, 0, time.UTC),
+			expectedBranch: "release-0.2",
+			expectedTag:    "v0.2.0-rc.1",
+			hasBlocker:     true,
 		},
 		{
 			name:           "Expect no new branch or rc",
@@ -96,6 +104,25 @@ func TestAutoRelease(t *testing.T) {
 		r := standardSetup()
 		r.now = tc.now
 
+		if tc.hasBlocker {
+			open := "open"
+			id := int64(1)
+			num := int(1)
+			url := "someurl"
+			title := "sometitle"
+			r.blockerListCache["release-blocker/master"] = &blockerListCacheEntry{
+				allBlockerIssues: []*github.Issue{
+					{
+						ID:     &id,
+						Number: &num,
+						State:  &open,
+						URL:    &url,
+						Title:  &title,
+					},
+				},
+			}
+		}
+
 		err := r.autoDetectData("monthly", 7)
 
 		if err != nil {
@@ -105,6 +132,23 @@ func TestAutoRelease(t *testing.T) {
 		} else if tc.expectedTag != r.tag {
 			t.Errorf("Expected tag [%s] and got [%s]", tc.expectedTag, r.tag)
 		}
+
+		if r.newBranch != "" {
+			err := r.verifyBranch()
+			if err != nil {
+				t.Errorf("got unexpected error %s", err)
+			}
+
+			blocked, err := r.isBranchBlocked("master")
+			if err != nil {
+				t.Errorf("got unexpected error %s", err)
+			}
+
+			if tc.hasBlocker != blocked {
+				t.Errorf("expected blocker [%t] but got [%t]", tc.hasBlocker, blocked)
+			}
+
+		}
 	}
 
 }
@@ -112,6 +156,7 @@ func TestAutoRelease(t *testing.T) {
 func TestAutoPromoteRC(t *testing.T) {
 	v2RC1 := "v0.2.0-rc.1"
 	v2Branch := "release-0.2"
+	v2 := "v0.2.0"
 	v2RC1CreatedAt := &github.Timestamp{
 		Time: time.Date(2020, time.February, 1, 1, 0, 0, 0, time.UTC),
 	}
@@ -289,6 +334,24 @@ func TestAutoPromoteRC(t *testing.T) {
 			t.Errorf("did not expect new RC")
 		} else if r.newBranch != "" {
 			t.Errorf("did not expect new branch")
+		}
+
+		if r.tag != "" {
+			err := r.verifyTag()
+			if err != nil {
+				t.Errorf("got unexpected error %s", err)
+			} else if r.tagBranch != v2Branch {
+				t.Errorf("expected to use branch %s but got %s", v2Branch, r.tagBranch)
+			}
+		}
+
+		if tc.expectPromotion {
+			err := r.verifyPromoteRC()
+			if err != nil {
+				t.Errorf("got unexpected error %s", err)
+			} else if r.tag != v2 {
+				t.Errorf("Expected promotion of rc to tag %s but got %s", v2, r.tag)
+			}
 		}
 	}
 }

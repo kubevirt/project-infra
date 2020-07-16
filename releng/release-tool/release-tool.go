@@ -583,6 +583,28 @@ func (r *releaseData) hasOpenBlockerIssues(branch string) (bool, error) {
 	return hasOpenBlocker, nil
 }
 
+func (r *releaseData) verifyPromoteRC() error {
+	if r.tag != "" {
+		return fmt.Errorf("--new-release and --promote-rc can not be used together. --promote-rc detects the correct tag to make an official release out of")
+	}
+
+	re := regexp.MustCompile(`^v\d*\.\d*.\d*-rc.\d*$`)
+	match := re.FindString(r.promoteRC)
+	if match == "" {
+		return fmt.Errorf("--promote-rc must point to a release candidate tag in the form of v[x].[y].[z]-rc.[n]. Example v0.31.0-rc.1 is valid and will result in the promotion of official v0.31.0 release")
+	}
+
+	tagSemver, err := semver.NewVersion(match)
+	if err != nil {
+		return err
+	}
+
+	r.tag = fmt.Sprintf("v%d.%d.%d", tagSemver.Major(), tagSemver.Minor(), tagSemver.Patch())
+	log.Printf("promoting rc [%s] as tag [%s]", r.promoteRC, r.tag)
+
+	return nil
+}
+
 func (r *releaseData) verifyBranch() error {
 
 	branches, err := r.getBranches()
@@ -919,7 +941,7 @@ func (r *releaseData) verifyTag() error {
 		}
 	}
 
-	// ensure promoteRC tag exists and is eligible for promotion
+	// ensure if promoteRC tag exists that it is eligible for promotion
 	if r.promoteRC != "" {
 		found := false
 		invalid := false
@@ -952,8 +974,8 @@ func (r *releaseData) verifyTag() error {
 	var vs []*semver.Version
 
 	for _, release := range releases {
-		if *release.Draft ||
-			*release.Prerelease ||
+		if (release.Draft != nil && *release.Draft) ||
+			(release.Prerelease != nil && *release.Prerelease) ||
 			len(release.Assets) == 0 {
 
 			continue
@@ -1068,7 +1090,7 @@ func main() {
 
 	tokenBytes, err := ioutil.ReadFile(*githubTokenFile)
 	if err != nil {
-		log.Fatal(fmt.Printf("ERROR accessing github token: %s ", err))
+		log.Fatalf("ERROR accessing github token: %s ", err)
 	}
 	token := strings.TrimSpace(string(tokenBytes))
 
@@ -1122,23 +1144,11 @@ func main() {
 
 	// If this is a promotion, we need to set the tag to promote
 	if r.promoteRC != "" {
-		if r.tag != "" {
-			log.Fatal("--new-release and --promote-rc can not be used together. --promote-rc detects the correct tag to make an official release out of")
-		}
-
-		re := regexp.MustCompile(`^v\d*\.\d*.\d*-rc.\d*$`)
-		match := re.FindString(r.promoteRC)
-		if match == "" {
-			log.Fatal("--promote-rc must point to a release candidate tag in the form of v[x].[y].[z]-rc.[n]. Example v0.31.0-rc.1 is valid and will result in the promotion of official v0.31.0 release")
-		}
-
-		tagSemver, err := semver.NewVersion(match)
+		// verifies promotion RC is valid and sets the expected new tag
+		err := r.verifyPromoteRC()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("ERROR during promotion validation: %v", err)
 		}
-
-		r.tag = fmt.Sprintf("v%d.%d.%d", tagSemver.Major(), tagSemver.Minor(), tagSemver.Patch())
-		log.Printf("promoting rc [%s] as tag [%s]", r.promoteRC, r.tag)
 	}
 
 	r.printData()
@@ -1146,19 +1156,19 @@ func main() {
 	if r.newBranch != "" {
 		err := r.verifyBranch()
 		if err != nil {
-			log.Fatal(fmt.Printf("ERROR Invalid branch: %s ", err))
+			log.Fatalf("ERROR Invalid branch: %s ", err)
 		}
 
 		blocked, err := r.isBranchBlocked("master")
 		if err != nil {
-			log.Fatal(fmt.Printf("ERROR retreiving blockers for branch Branch: %s ", err))
+			log.Fatalf("ERROR retreiving blockers for branch Branch: %s ", err)
 		} else if blocked {
 			log.Fatal("ERROR Branch is blocked")
 		}
 
 		err = r.cutNewBranch()
 		if err != nil {
-			log.Fatal(fmt.Printf("ERROR Creating Branch: %s ", err))
+			log.Fatalf("ERROR Creating Branch: %s ", err)
 		}
 	}
 
@@ -1167,19 +1177,19 @@ func main() {
 		// this also sets the tag branch as expected
 		err := r.verifyTag()
 		if err != nil {
-			log.Fatal(fmt.Printf("ERROR Invalid Tag: %s ", err))
+			log.Fatalf("ERROR Invalid Tag: %s ", err)
 		}
 
 		blocked, err := r.isBranchBlocked(r.tagBranch)
 		if err != nil {
-			log.Fatal(fmt.Printf("ERROR retreiving blockers for branch Branch: %s ", err))
+			log.Fatalf("ERROR retreiving blockers for branch Branch: %s ", err)
 		} else if blocked {
-			log.Fatal(fmt.Printf("ERROR Branch %s is blocked ", r.tagBranch))
+			log.Fatalf("ERROR Branch %s is blocked ", r.tagBranch)
 		}
 
 		err = r.cutNewTag()
 		if err != nil {
-			log.Fatal(fmt.Printf("ERROR Creating Tag: %s ", err))
+			log.Fatalf("ERROR Creating Tag: %s ", err)
 		}
 	}
 }
