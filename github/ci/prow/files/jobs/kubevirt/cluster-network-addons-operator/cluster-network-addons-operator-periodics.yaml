@@ -33,7 +33,7 @@ periodics:
       secret:
         secretName: gcs
 - name: periodic-publish-cnao-flakefinder-daily-report
-  interval: 24h
+  cron: "15 1 * * *"
   decorate: true
   spec:
     nodeSelector:
