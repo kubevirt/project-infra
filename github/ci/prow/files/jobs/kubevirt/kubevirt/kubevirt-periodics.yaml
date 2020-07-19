@@ -157,10 +157,10 @@ periodics:
           git clone https://github.com/kubevirt/kubevirt.git &&
           cd kubevirt &&
           export DOCKER_PREFIX='kubevirtnightlybuilds' &&
-          export DOCKER_TAG="$(date +%Y%m%d)_$(git show --format=%h)" &&
+          export DOCKER_TAG="$(date +%Y%m%d)_$(git show -s --format=%h)" &&
           make &&
           make push &&
-          git show --format=%H > _out/commit &&
+          git show -s --format=%H > _out/commit &&
           build_date="$(date +%Y%m%d)" &&
           echo ${build_date} > _out/build_date &&
           bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}" &&
