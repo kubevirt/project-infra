@@ -28,6 +28,7 @@ type blockerListCacheEntry struct {
 type releaseData struct {
 	repoDir   string
 	infraDir  string
+	cacheDir  string
 	repoUrl   string
 	infraUrl  string
 	repo      string
@@ -60,7 +61,10 @@ type releaseData struct {
 	now time.Time
 }
 
-func gitCommand(arg ...string) (string, error) {
+// Allow mocking for tests
+var gitCommand = _gitCommand
+
+func _gitCommand(arg ...string) (string, error) {
 	log.Printf("executing 'git %v", arg)
 	cmd := exec.Command("git", arg...)
 	bytes, err := cmd.CombinedOutput()
@@ -195,19 +199,23 @@ func (r *releaseData) generateReleaseNotes() error {
 }
 
 func (r *releaseData) checkoutProjectInfra() error {
-	_, err := gitCommand("-C", r.infraDir, "status")
-	if err == nil {
-		// checkout already exists. default to checkout master
-		_, err = gitCommand("-C", r.infraDir, "checkout", "master")
-		if err != nil {
-			return err
-		}
 
-		_, err = gitCommand("-C", r.infraDir, "pull")
-		if err != nil {
-			return err
+	_, err := os.Stat(r.infraDir)
+	if err == nil {
+		_, err := gitCommand("-C", r.infraDir, "status")
+		if err == nil {
+			// checkout already exists. default to checkout master
+			_, err = gitCommand("-C", r.infraDir, "checkout", "master")
+			if err != nil {
+				return err
+			}
+
+			_, err = gitCommand("-C", r.infraDir, "pull")
+			if err != nil {
+				return err
+			}
+			return nil
 		}
-		return nil
 	}
 
 	// start fresh because checkout doesn't exist or is corrupted
@@ -237,20 +245,22 @@ func (r *releaseData) checkoutProjectInfra() error {
 }
 
 func (r *releaseData) checkoutUpstream() error {
-
-	_, err := gitCommand("-C", r.repoDir, "status")
+	_, err := os.Stat(r.repoDir)
 	if err == nil {
-		// checkout already exists. default to checkout master
-		_, err = gitCommand("-C", r.repoDir, "checkout", "master")
-		if err != nil {
-			return err
-		}
+		_, err := gitCommand("-C", r.repoDir, "status")
+		if err == nil {
+			// checkout already exists. default to checkout master
+			_, err = gitCommand("-C", r.repoDir, "checkout", "master")
+			if err != nil {
+				return err
+			}
 
-		_, err = gitCommand("-C", r.repoDir, "pull")
-		if err != nil {
-			return err
+			_, err = gitCommand("-C", r.repoDir, "pull")
+			if err != nil {
+				return err
+			}
+			return nil
 		}
-		return nil
 	}
 
 	// start fresh because checkout doesn't exist or is corrupted

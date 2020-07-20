@@ -1,15 +1,27 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/google/go-github/v32/github"
 )
 
+func standardCleanup(r *releaseData) {
+	os.RemoveAll(r.cacheDir)
+}
+
 func standardSetup() releaseData {
 	repo := "fake-repo"
 	org := "fake-org"
+	token := "fake-token"
+	cacheDir, err := ioutil.TempDir("/tmp", "release-tool-unit-test")
+	if err != nil {
+		panic(err)
+	}
 
 	truePtr := true
 	falsePtr := false
@@ -63,6 +75,14 @@ func standardSetup() releaseData {
 		allBranches:      branches,
 		blockerListCache: blockerListCache,
 		now:              now,
+		gitUser:          "fake-user",
+		gitEmail:         "fake-email@fake.fake",
+		repoUrl:          fmt.Sprintf("https://%s@github.com/%s/%s.git", token, org, repo),
+		infraUrl:         fmt.Sprintf("https://%s@github.com/kubevirt/project-infra.git", token),
+		repoDir:          fmt.Sprintf("%s/%s/https-%s", cacheDir, org, repo),
+		infraDir:         fmt.Sprintf("%s/%s/https-%s", cacheDir, "kubevirt", "project-infra"),
+		dryRun:           true,
+		cacheDir:         cacheDir,
 	}
 
 	return r
@@ -102,6 +122,7 @@ func TestAutoRelease(t *testing.T) {
 		t.Logf("test case %s", tc.name)
 
 		r := standardSetup()
+		defer standardCleanup(&r)
 		r.now = tc.now
 
 		if tc.hasBlocker {
@@ -230,6 +251,7 @@ func TestAutoPromoteRC(t *testing.T) {
 		t.Logf("test case %s", tc.name)
 
 		r := standardSetup()
+		defer standardCleanup(&r)
 		r.allReleases = append(r.allReleases, &github.RepositoryRelease{
 			TagName:   &v2RC1,
 			CreatedAt: v2RC1CreatedAt,
@@ -352,6 +374,47 @@ func TestAutoPromoteRC(t *testing.T) {
 			} else if r.tag != v2 {
 				t.Errorf("Expected promotion of rc to tag %s but got %s", v2, r.tag)
 			}
+		}
+	}
+}
+
+func TestCutNewBranch(t *testing.T) {
+
+	expectedGitCommands := []string{}
+
+	r := standardSetup()
+	defer standardCleanup(&r)
+	r.newBranch = "release-0.2"
+
+	r.dryRun = false
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [clone https://fake-token@github.com/kubevirt/project-infra.git %s/kubevirt/https-project-infra]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/kubevirt/https-project-infra config user.name fake-user]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/kubevirt/https-project-infra config user.email fake-email@fake.fake]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/kubevirt/https-project-infra checkout -b fake-org_fake-repo_release-0.2_configs]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/kubevirt/https-project-infra pull origin fake-org_fake-repo_release-0.2_configs]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [clone https://fake-token@github.com/fake-org/fake-repo.git %s/fake-org/https-fake-repo]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo config user.name fake-user]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo config user.email fake-email@fake.fake]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo checkout -b release-0.2]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo push https://fake-token@github.com/fake-org/fake-repo.git release-0.2]", r.cacheDir))
+
+	seenGitCommands := []string{}
+	// override gitCommand with mock function
+	gitCommand = func(arg ...string) (string, error) {
+		seenGitCommands = append(seenGitCommands, fmt.Sprintf("git %s", arg))
+		return "", nil
+	}
+
+	err := r.cutNewBranch()
+	if err != nil {
+		t.Errorf("got unexpected error %s", err)
+	} else if len(expectedGitCommands) != len(seenGitCommands) {
+		t.Errorf("got unexpected git commands")
+	}
+
+	for i, entry := range seenGitCommands {
+		if entry != expectedGitCommands[i] {
+			t.Errorf("expected command %s and got %s", expectedGitCommands[i], entry)
 		}
 	}
 }
