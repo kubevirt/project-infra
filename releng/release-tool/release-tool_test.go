@@ -418,3 +418,42 @@ func TestCutNewBranch(t *testing.T) {
 		}
 	}
 }
+
+func TestNewTag(t *testing.T) {
+
+	expectedGitCommands := []string{}
+
+	r := standardSetup()
+	defer standardCleanup(&r)
+	r.tag = "v0.2.0"
+	r.tagBranch = "release-0.2"
+
+	r.dryRun = false
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [clone https://fake-token@github.com/fake-org/fake-repo.git %s/fake-org/https-fake-repo]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo config user.name fake-user]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo config user.email fake-email@fake.fake]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo pull origin release-0.2]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo checkout release-0.2]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo tag -s v0.2.0 -F %s/fake-org/https-fake-repo/v0.2.0-release-notes.txt]", r.cacheDir, r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo push https://fake-token@github.com/fake-org/fake-repo.git v0.2.0]", r.cacheDir))
+
+	seenGitCommands := []string{}
+	// override gitCommand with mock function
+	gitCommand = func(arg ...string) (string, error) {
+		seenGitCommands = append(seenGitCommands, fmt.Sprintf("git %s", arg))
+		return "", nil
+	}
+
+	err := r.cutNewTag()
+	if err != nil {
+		t.Errorf("got unexpected error %s", err)
+	} else if len(expectedGitCommands) != len(seenGitCommands) {
+		t.Errorf("got unexpected git commands")
+	}
+
+	for i, entry := range seenGitCommands {
+		if entry != expectedGitCommands[i] {
+			t.Errorf("expected command %s and got %s", expectedGitCommands[i], entry)
+		}
+	}
+}
