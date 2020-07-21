@@ -24,13 +24,14 @@ postsubmits:
               privileged: true
 
     - name: release-kubernetes-nmstate
-      run_if_changed: "version/version.go"
       decorate: true
       max_concurrency: 1
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror: "true"
         preset-kubevirtci-quay-credential: "true"
+      branches:
+        - ^v\d+\.\d+\.\d+$
       spec:
         nodeSelector:
           type: vm
