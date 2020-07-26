@@ -22,8 +22,47 @@ config_updater:
           - kubevirt-prow
 
 plugins:
+  kubevirt/kubevirt-ssp-operator:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
   kubevirt/common-templates:
   - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/kubevirt-template-validator:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/node-labeller:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/cpu-nfd-plugin:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/kvm-info-nfd-plugin:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
 
   virtblocks:
   - trigger
