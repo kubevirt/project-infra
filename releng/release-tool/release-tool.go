@@ -377,7 +377,7 @@ func (r *releaseData) getReleaseNote(number int) (string, error) {
 				note = strings.TrimPrefix(note, "-")
 				// best effort at catching "none" if the label didn't catch it
 				if !strings.Contains(note, "NONE") && strings.ToLower(note) != "none" {
-					note = fmt.Sprintf("[PR %d][%s] %s", number, *pr.User.Login, note)
+					note = fmt.Sprintf("[PR #%d][%s] %s", number, *pr.User.Login, note)
 					return note, nil
 				}
 			}
