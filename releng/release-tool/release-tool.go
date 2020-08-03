@@ -331,6 +331,15 @@ func (r *releaseData) makeBranch() error {
 		if err != nil {
 			return err
 		}
+		// make sure to clear cache after successfully creating a new branch
+		// This forces the cache to be re-generated if any logic looks
+		// at the branches list again. If we don't do this after creating a
+		// new branch, then validation logic will fail later on during this
+		// execution if we are attempting to cut a branch + new tag from that
+		// branch at the same time. It will look like the branch doesn't exist
+		// because the cache is outdated. By clearing the cache the branch
+		// list will be re-generated.
+		r.allBranches = []*github.Branch{}
 	}
 
 	return nil
@@ -386,17 +395,20 @@ func (r *releaseData) forkProwJobs() error {
 	gitbranch := fmt.Sprintf("%s_%s_%s_configs", r.org, r.repo, r.newBranch)
 
 	_, err := gitCommand("-C", r.infraDir, "checkout", "-b", gitbranch)
-	// if err, then branch probably already exists
+
+	// if err, then branch likely already exists
+	// attempt to check out the branch, if that fails then
+	// return an error.
 	if err != nil {
 		_, err := gitCommand("-C", r.infraDir, "checkout", gitbranch)
 		if err != nil {
 			return err
 		}
-	}
 
-	_, err = gitCommand("-C", r.infraDir, "pull", "origin", gitbranch)
-	if err != nil {
-		return err
+		_, err = gitCommand("-C", r.infraDir, "pull", "origin", gitbranch)
+		if err != nil {
+			return err
+		}
 	}
 
 	if _, err := os.Stat(fullJobConfig); err != nil && os.IsNotExist(err) {
