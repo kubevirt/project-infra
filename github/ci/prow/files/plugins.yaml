@@ -292,6 +292,7 @@ approve:
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
+  commandHelpLink: https://go.k8s.io/bot-commands
 
 lgtm:
 - repos:
