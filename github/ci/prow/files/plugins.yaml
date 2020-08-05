@@ -279,6 +279,11 @@ external_plugins:
     events:
       - pull_request
   - name: cherrypicker
+  kubevirt/project-infra:
+  - name: rehearse
+    events:
+      - pull_request
+      - issue_comment
 
 triggers:
 - repos:
