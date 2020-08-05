@@ -1,0 +1,67 @@
+periodics:
+- name: periodic-hco-push-nightly-build-master
+  cron: "2 2 * * *"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror: "true"
+    preset-shared-images: "true"
+    preset-kubevirtci-docker-credential: "true"
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+    - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - >
+          cat $DOCKER_PASSWORD | docker login --username $(cat $DOCKER_USER) --password-stdin &&
+          git clone https://github.com/kubevirt/hyperconverged-cluster-operator.git &&
+          cd hyperconverged-cluster-operator &&
+          latest_kubevirt=$(curl -sL https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest) &&
+          latest_kubevirt_image=$(curl -sL https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${latest_kubevirt}/kubevirt-operator.yaml | grep 'OPERATOR_IMAGE' -A1 | tail -n 1 | sed 's/.*value: //g') &&
+          latest_kubevirt_commit=$(curl -sL https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${latest_kubevirt}/commit) &&
+          go mod edit -require kubevirt.io/kubevirt@${latest_kubevirt_commit} &&
+          go mod vendor &&
+          git clone https://github.com/kubevirt/kubevirt.git &&
+          (cd kubevirt; git checkout ${latest_kubevirt_commit}) &&
+          go mod edit -replace kubevirt.io/client-go=./kubevirt/staging/src/kubevirt.io/client-go &&
+          build_date="$(date +%Y%m%d)" &&
+          export IMAGE_REGISTRY=docker.io &&
+          export DOCKER_PREFIX=kubevirtnightlybuilds &&
+          export OPERATOR_IMAGE=${DOCKER_PREFIX}/hyperconverged-cluster-operator &&
+          export IMAGE_TAG="${build_date}_$(git show -s --format=%h)" &&
+          make container-build-operator &&
+          make container-push-operator &&
+          export OPERATOR_IMAGE=${IMAGE_REGISTRY}/${DOCKER_PREFIX}/hyperconverged-cluster-operator:${IMAGE_TAG} &&
+          export KUBEVIRT_IMAGE=${IMAGE_REGISTRY}/${latest_kubevirt_image} &&
+          ./hack/build-manifests.sh &&
+          REGISTRY_NAMESPACE=${DOCKER_PREFIX} CONTAINER_TAG=${IMAGE_TAG} make bundleRegistry &&
+          hco_bucket="kubevirt-prow/devel/nightly/release/kubevirt/hyperconverged-cluster-operator" &&
+          echo ${build_date} > build-date &&
+          echo ${IMAGE_REGISTRY}/${DOCKER_PREFIX}/hco-container-registry:${IMAGE_TAG} > hco-bundle &&
+          gsutil cp ./hco-bundle gs://${hco_bucket}/${build_date}/hco-bundle-image &&
+          gsutil cp ./build-date gs://${hco_bucket}/latest
+      # docker-in-docker needs privileged mode
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "8Gi"
+      volumeMounts:
+        - name: gcs
+          mountPath: /etc/gcs
+          readOnly: false
+    volumes:
+      - name: gcs
+        secret:
+          secretName: gcs
