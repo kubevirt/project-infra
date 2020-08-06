@@ -17,7 +17,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -42,7 +42,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -67,7 +67,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -92,7 +92,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -117,7 +117,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -134,17 +134,23 @@ postsubmits:
     always_run: false
     optional: true
     decorate: true
+    extra_refs:
+      - org: qinqon
+        repo: project-infra
+        base_ref: kubevirtci-release
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
+      automountServiceAccountToken: true
+      serviceaccount: kubevirtci-releaser
       nodeSelector:
         type: vm
         zone: ci
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -153,10 +159,12 @@ postsubmits:
                 cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/oauth)
                 make -C tools/releaser run WITH="
                 -jobs-namespace kubevirt-prow-jobs
-                -config-path project-infra/github/ci/prow/files/config.yaml
-                -job-config-path project-infra/github/ci/prow/files/jobs/kubevirt/kubevirtci/
+                -config-path /home/prow/go/src/github.com/kubevirt/project-infra/github/ci/prow/files/config.yaml
+                -job-config-path /home/prow/go/src/github.com/kubevirt/project-infra/github/ci/prow/files/jobs/kubevirt/kubevirtci/
                 -base-sha $PULL_BASE_SHA
-                -base-ref $PULL_BASE_REF"
+                -base-ref $PULL_BASE_REF
+                -providers k8s-1.17
+                -dry-run true"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -181,7 +189,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:8c80c98d035a0f285ad49b964e5d0b62004844f3340407367841618e80e1503c
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -207,7 +215,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:8c80c98d035a0f285ad49b964e5d0b62004844f3340407367841618e80e1503c
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
