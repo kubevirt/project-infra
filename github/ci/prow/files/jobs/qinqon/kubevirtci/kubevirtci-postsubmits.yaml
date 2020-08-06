@@ -1,0 +1,229 @@
+postsubmits:
+  qinqon/kubevirtci:
+  - name: release-k8s-1.14
+    run_if_changed: >
+      cluster-provision/cli/.*|
+      cluster-provision/centos7/.*|
+      cluster-provision/k8s/.*|
+      cluster-provision/k8s/1.14/.*
+    always_run: false
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd cluster-provision/k8s/1.14/ && ../provision.sh && ../publish.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+  - name: release-k8s-1.15
+    always_run: false
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd cluster-provision/k8s/1.15/ && ../provision.sh && ../publish.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+  - name: release-k8s-1.16
+    always_run: false
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd cluster-provision/k8s/1.16/ && ../provision.sh && ../publish.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+  - name: release-k8s-1.17
+    always_run: false
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd cluster-provision/k8s/1.17/ && ../provision.sh && ../publish.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+  - name: release-k8s-1.18
+    always_run: false
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd cluster-provision/k8s/1.18/ && ../provision.sh && ../publish.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+  - name: release-kubevirtci
+    always_run: false
+    optional: true
+    decorate: true
+    extra_refs:
+      - org: qinqon
+        repo: project-infra
+        base_ref: kubevirtci-release
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      automountServiceAccountToken: true
+      serviceaccount: kubevirtci-releaser
+      nodeSelector:
+        type: vm
+        zone: ci
+      containers:
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - >
+                cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin &&
+                make -C tools/releaser run WITH="
+                -jobs-namespace kubevirt-prow-jobs
+                -config-path /home/prow/go/src/github.com/qinqon/project-infra/github/ci/prow/files/config.yaml
+                -job-config-path /home/prow/go/src/github.com/qinqon/project-infra/github/ci/prow/files/jobs/qinqon/kubevirtci/
+                -base-sha $PULL_BASE_SHA
+                -base-ref $PULL_BASE_REF
+                -providers 'k8s-1.14 k8s-1.15 k8s-1.16 k8s-1.17 k8s-1.18'
+                -container-org quiquell
+                -github-org qinqon
+                -github-token /etc/github/oauth
+                -github-user kubevirt-bot"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: github-token
+              mountPath: /etc/github
+      volumes:
+        - name: github-token
+          secret:
+            secretName: oauth-token
+
+  - name: release-centos7
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd cluster-provision/centos7/ && ./build.sh && ./publish.sh "
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+
+  - name: release-centos8
+    always_run: false
+    optional: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:d342c448b9371180209253fe884578145457285c4c55332480fb4c19ec4db1d6
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd cluster-provision/centos8/ && ./build.sh && ./publish.sh "
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+
+
