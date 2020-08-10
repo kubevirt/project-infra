@@ -1,6 +1,6 @@
 periodics:
 - name: periodic-project-infra-retester
-  interval: 1h  # Retest at most 1 PR every hour, which should not DOS the queue.
+  interval: 3h  # Retest at most 1 PR every three hours, which should not DOS the queue.
   decorate: true
   spec:
     containers:
