@@ -7,22 +7,17 @@ filters:
     - alonakaplan
     - ashleyschuett
     - codificat
-    - cynepco3hahue
     - danielbelenky
     - davidvossel
     - dhiller
     - fabiand
     - jean-edouard
     - rmohr
-    - schseba
-    - slintes
     - stu-gott
     - vladikr
     reviewers:
     - alonakaplan
     - ashleyschuett
-    - booxter
-    - cynepco3hahue
     - danielbelenky
     - davidvossel
     - dhiller
@@ -31,15 +26,17 @@ filters:
     - omeryahud
     - phoracek
     - rmohr
-    - schseba
-    - slintes
     - stu-gott
     - vatsalparekh
     - vladikr
   cluster-up-sha.txt:
     approvers:
+    - danielbelenky
     - dhiller
     reviewers:
+    - danielbelenky
     - dhiller
-  pkg/virt-api/.*: {}
+  pkg/virt-api/.*:
+    reviewers:
+    - matthewcarleton
 options: {}
