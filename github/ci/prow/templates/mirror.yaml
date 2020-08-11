@@ -16,6 +16,11 @@ spec:
       serviceAccountName: "caches"
       nodeSelector:
         type: bare-metal-external
+        ci.kubevirt.io/cachenode: "true"
+      tolerations:
+      - key: "cachenode"
+        operator: "Exists"
+        effect: "NoSchedule"
       containers:
       - name: mirror
         image: registry:2.7.1

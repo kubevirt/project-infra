@@ -29,6 +29,11 @@ spec:
       nodeSelector:
         type: bare-metal-external
         zone: ci
+        ci.kubevirt.io/cachenode: "true"
+      tolerations:
+      - key: "cachenode"
+        operator: "Exists"
+        effect: "NoSchedule"
       containers:
       - name: greenhouse
         image: gcr.io/k8s-testimages/greenhouse@sha256:ab1a3421cc3c072a813d8543735f218ca6caa811011391a0e5b00104700e6e7b
