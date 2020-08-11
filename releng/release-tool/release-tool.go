@@ -289,18 +289,18 @@ func (r *releaseData) checkoutUpstream() error {
 }
 
 func (r *releaseData) makeTag(branch string) error {
-	_, err := gitCommand("-C", r.repoDir, "pull", "origin", branch)
-	if err != nil {
-		return err
-	}
-
 	if r.promoteRC != "" {
-		_, err = gitCommand("-C", r.repoDir, "checkout", r.promoteRC)
+		_, err := gitCommand("-C", r.repoDir, "checkout", r.promoteRC)
 		if err != nil {
 			return err
 		}
 	} else {
-		_, err = gitCommand("-C", r.repoDir, "checkout", branch)
+		_, err := gitCommand("-C", r.repoDir, "checkout", branch)
+		if err != nil {
+			return err
+		}
+
+		_, err = gitCommand("-C", r.repoDir, "pull", "origin", branch)
 		if err != nil {
 			return err
 		}
@@ -308,7 +308,7 @@ func (r *releaseData) makeTag(branch string) error {
 
 	r.generateReleaseNotes()
 
-	_, err = gitCommand("-C", r.repoDir, "tag", "-s", r.tag, "-F", r.releaseNotesFile)
+	_, err := gitCommand("-C", r.repoDir, "tag", "-s", r.tag, "-F", r.releaseNotesFile)
 
 	if !r.dryRun {
 		_, err = gitCommand("-C", r.repoDir, "push", r.repoUrl, r.tag)
