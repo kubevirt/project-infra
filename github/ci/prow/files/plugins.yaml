@@ -298,6 +298,11 @@ triggers:
   - kubevirt/hostpath-provisioner
   - kubevirt/katacoda-scenarios
   - kubevirt/common-templates
+  - kubevirt/kvm-info-nfd-plugin
+  - kubevirt/cpu-nfd-plugin
+  - kubevirt/node-labeller
+  - kubevirt/kubevirt-template-validator
+  - kubevirt/kubevirt-ssp-operator
   - kubevirt/demo
   - kubevirt/cluster-network-addons-operator
   - kubevirt/node-maintenance-operator
@@ -334,6 +339,12 @@ approve:
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
   - kubevirt/hyperconverged-cluster-operator
+  - kubevirt/common-templates
+  - kubevirt/kvm-info-nfd-plugin
+  - kubevirt/cpu-nfd-plugin
+  - kubevirt/node-labeller
+  - kubevirt/kubevirt-template-validator
+  - kubevirt/kubevirt-ssp-operator
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -361,4 +372,10 @@ lgtm:
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
   - kubevirt/hyperconverged-cluster-operator
+  - kubevirt/common-templates
+  - kubevirt/kvm-info-nfd-plugin
+  - kubevirt/cpu-nfd-plugin
+  - kubevirt/node-labeller
+  - kubevirt/kubevirt-template-validator
+  - kubevirt/kubevirt-ssp-operator
   review_acts_as_lgtm: true
