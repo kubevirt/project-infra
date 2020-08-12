@@ -86,6 +86,12 @@ tide:
     kubevirt/node-maintenance-operator: merge
     kubevirt/ansible-kubevirt-modules: squash
     kubevirt/hyperconverged-cluster-operator: squash
+    kubevirt/common-templates: squash
+    kubevirt/kvm-info-nfd-plugin: squash
+    kubevirt/cpu-nfd-plugin: squash
+    kubevirt/node-labeller: squash
+    kubevirt/kubevirt-template-validator: squash
+    kubevirt/kubevirt-ssp-operator: squash
 
   queries:
   - repos:
@@ -122,6 +128,12 @@ tide:
     - kubevirt/node-maintenance-operator
     - kubevirt/ansible-kubevirt-modules
     - kubevirt/hyperconverged-cluster-operator
+    - kubevirt/common-templates
+    - kubevirt/kvm-info-nfd-plugin
+    - kubevirt/cpu-nfd-plugin
+    - kubevirt/node-labeller
+    - kubevirt/kubevirt-template-validator
+    - kubevirt/kubevirt-ssp-operator
     labels:
     - lgtm
     - approved
