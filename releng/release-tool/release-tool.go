@@ -394,24 +394,9 @@ func (r *releaseData) forkProwJobs() error {
 
 	gitbranch := fmt.Sprintf("%s_%s_%s_configs", r.org, r.repo, r.newBranch)
 
-	_, err := gitCommand("-C", r.infraDir, "checkout", "-b", gitbranch)
+	_, err := gitCommand("-C", r.infraDir, "checkout", "-B", gitbranch)
 
-	// if err, then branch likely already exists
-	// attempt to check out the branch, if that fails then
-	// return an error.
-	if err != nil {
-		_, err := gitCommand("-C", r.infraDir, "checkout", gitbranch)
-		if err != nil {
-			return err
-		}
-
-		_, err = gitCommand("-C", r.infraDir, "pull", "origin", gitbranch)
-		if err != nil {
-			return err
-		}
-	}
-
-	if _, err := os.Stat(fullJobConfig); err != nil && os.IsNotExist(err) {
+	if _, err = os.Stat(fullJobConfig); err != nil && os.IsNotExist(err) {
 		// no job to fork for this project
 		return nil
 	}
