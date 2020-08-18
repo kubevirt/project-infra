@@ -85,3 +85,17 @@
       type: Opaque
       data:
         service-account.json: "{{ gcsServiceAccount | b64encode }}"
+- name: Create coveralls.io api token
+  k8s:
+    context: '{{ targetContext }}'
+    kubeconfig: '{{ automationKubeconfig }}'
+    state: present
+    namespace: "{{ targetNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: kubevirtci-coveralls-token
+      type: Opaque
+      data:
+        token: "{{ coverallsToken | b64encode }}"
