@@ -25,6 +25,9 @@ periodics:
         - "-c"
         - >
           cat $DOCKER_PASSWORD | docker login --username $(cat $DOCKER_USER) --password-stdin &&
+          wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz &&
+          tar -C /usr/local -xf go*.tar.gz &&
+          export PATH=/usr/local/go/bin:$PATH &&
           git clone https://github.com/kubevirt/hyperconverged-cluster-operator.git &&
           cd hyperconverged-cluster-operator &&
           latest_kubevirt=$(curl -sL https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest) &&
