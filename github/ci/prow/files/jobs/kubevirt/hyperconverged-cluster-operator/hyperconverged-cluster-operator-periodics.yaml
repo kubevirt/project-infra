@@ -15,7 +15,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+    - image: gcr.io/k8s-testimages/gcb-docker-gcloud:v20200713-e9b3d9d
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
