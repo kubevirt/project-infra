@@ -651,7 +651,10 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify"
+            - >-
+                cp /etc/bazel.bazelrc ./ci.bazelrc &&
+                make generate &&
+                make check-git-tree-state && make check-for-binaries
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
