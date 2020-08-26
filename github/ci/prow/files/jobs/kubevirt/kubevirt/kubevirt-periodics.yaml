@@ -7,7 +7,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-      - image: index.docker.io/kubevirtci/flakefinder@sha256:76bc7808037b8f04dea9a783a85b9abf62dce6c26b63c3e0b4145d0033450de9
+      - image: index.docker.io/kubevirtci/flakefinder@sha256:a039322bd563b76f92f86d7c116eda1f0d98282a963f145b272438c5e823f2e6
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
@@ -19,6 +19,7 @@ periodics:
           - --merged=24h
           - --today=true
           - --report_output_child_path=kubevirt/kubevirt
+          - --skip_results_before_start_of_report=false
         volumeMounts:
           - name: token
             mountPath: /etc/github
@@ -40,7 +41,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder@sha256:76bc7808037b8f04dea9a783a85b9abf62dce6c26b63c3e0b4145d0033450de9
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:a039322bd563b76f92f86d7c116eda1f0d98282a963f145b272438c5e823f2e6
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -51,6 +52,7 @@ periodics:
       - --token=/etc/github/oauth
       - --merged=168h
       - --report_output_child_path=kubevirt/kubevirt
+      - --skip_results_before_start_of_report=false
       volumeMounts:
       - name: token
         mountPath: /etc/github
@@ -72,7 +74,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder@sha256:76bc7808037b8f04dea9a783a85b9abf62dce6c26b63c3e0b4145d0033450de9
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:a039322bd563b76f92f86d7c116eda1f0d98282a963f145b272438c5e823f2e6
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -83,6 +85,7 @@ periodics:
       - --token=/etc/github/oauth
       - --merged=24h
       - --report_output_child_path=kubevirt/kubevirt
+      - --skip_results_before_start_of_report=false
       volumeMounts:
       - name: token
         mountPath: /etc/github
@@ -104,7 +107,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: index.docker.io/kubevirtci/flakefinder@sha256:76bc7808037b8f04dea9a783a85b9abf62dce6c26b63c3e0b4145d0033450de9
+    - image: index.docker.io/kubevirtci/flakefinder@sha256:a039322bd563b76f92f86d7c116eda1f0d98282a963f145b272438c5e823f2e6
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -115,6 +118,7 @@ periodics:
       - --token=/etc/github/oauth
       - --merged=672h
       - --report_output_child_path=kubevirt/kubevirt
+      - --skip_results_before_start_of_report=false
       volumeMounts:
       - name: token
         mountPath: /etc/github
