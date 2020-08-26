@@ -43,10 +43,15 @@ spec:
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
         - --job-config-path=/etc/job-config
+        - --gcs-credentials-file=/etc/gcs/service-account.json
+        - --status-path=gs://kubevirt-status-reconciler/status-reconciler-status
         ports:
           - name: http
             containerPort: 8888
         volumeMounts:
+        - name: gcs
+          mountPath: /etc/gcs
+          readOnly: true
         - name: oauth
           mountPath: /etc/github
           readOnly: true
@@ -72,3 +77,6 @@ spec:
       - name: plugins
         configMap:
           name: plugins
+      - name: gcs
+        secret:
+          secretName: gcs
