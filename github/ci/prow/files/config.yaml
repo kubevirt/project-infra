@@ -47,9 +47,10 @@ deck:
       required_files:
         - podinfo.json
   tide_update_period: 1s
-  rerun_auth_config:
-    github_team_ids:
-      - 3701123 # prow-job-taskforce
+  rerun_auth_configs:
+    '*':
+      github_team_ids:
+        - 3701123 # prow-job-taskforce
 
 sinker:
   resync_period: 1m
