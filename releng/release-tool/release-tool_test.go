@@ -34,8 +34,8 @@ func standardSetup() releaseData {
 		Time: time.Date(2020, time.January, 1, 7, 0, 0, 0, time.UTC),
 	}
 
-	v1RC1 := "v0.1.0-rc.1"
-	v1RC1CreatedAt := &github.Timestamp{
+	v1RC0 := "v0.1.0-rc.1"
+	v1RC0CreatedAt := &github.Timestamp{
 		Time: time.Date(2020, time.January, 1, 1, 0, 0, 0, time.UTC),
 	}
 
@@ -50,8 +50,8 @@ func standardSetup() releaseData {
 			Assets:     []*github.ReleaseAsset{{ID: &idPtr}},
 		},
 		{
-			TagName:    &v1RC1,
-			CreatedAt:  v1RC1CreatedAt,
+			TagName:    &v1RC0,
+			CreatedAt:  v1RC0CreatedAt,
 			Draft:      &falsePtr,
 			Prerelease: &truePtr,
 			Assets:     []*github.ReleaseAsset{{ID: &idPtr}},
@@ -101,13 +101,13 @@ func TestAutoRelease(t *testing.T) {
 			name:           "Expect new branch and rc",
 			now:            time.Date(2020, time.February, 1, 1, 0, 0, 0, time.UTC),
 			expectedBranch: "release-0.2",
-			expectedTag:    "v0.2.0-rc.1",
+			expectedTag:    "v0.2.0-rc.0",
 		},
 		{
 			name:           "Expect new branch to be blocked",
 			now:            time.Date(2020, time.February, 1, 1, 0, 0, 0, time.UTC),
 			expectedBranch: "release-0.2",
-			expectedTag:    "v0.2.0-rc.1",
+			expectedTag:    "v0.2.0-rc.0",
 			hasBlocker:     true,
 		},
 		{
@@ -175,10 +175,10 @@ func TestAutoRelease(t *testing.T) {
 }
 
 func TestAutoPromoteRC(t *testing.T) {
-	v2RC1 := "v0.2.0-rc.1"
+	v2RC0 := "v0.2.0-rc.0"
 	v2Branch := "release-0.2"
 	v2 := "v0.2.0"
-	v2RC1CreatedAt := &github.Timestamp{
+	v2RC0CreatedAt := &github.Timestamp{
 		Time: time.Date(2020, time.February, 1, 1, 0, 0, 0, time.UTC),
 	}
 
@@ -253,8 +253,8 @@ func TestAutoPromoteRC(t *testing.T) {
 		r := standardSetup()
 		defer standardCleanup(&r)
 		r.allReleases = append(r.allReleases, &github.RepositoryRelease{
-			TagName:   &v2RC1,
-			CreatedAt: v2RC1CreatedAt,
+			TagName:   &v2RC0,
+			CreatedAt: v2RC0CreatedAt,
 		})
 		r.allBranches = append(r.allBranches, &github.Branch{Name: &v2Branch})
 
@@ -346,11 +346,11 @@ func TestAutoPromoteRC(t *testing.T) {
 
 		if err != nil {
 			t.Errorf("got unexpected error %s", err)
-		} else if tc.expectPromotion && r.promoteRC != v2RC1 {
+		} else if tc.expectPromotion && r.promoteRC != v2RC0 {
 			t.Errorf("expected to autopromote RC")
 		} else if !tc.expectPromotion && r.promoteRC != "" {
 			t.Errorf("did not expect to autopromote RC")
-		} else if tc.expectNewRC && r.tag != "v0.2.0-rc.2" {
+		} else if tc.expectNewRC && r.tag != "v0.2.0-rc.1" {
 			t.Errorf("expected new RC")
 		} else if !tc.expectNewRC && r.tag != "" {
 			t.Errorf("did not expect new RC")

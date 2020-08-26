@@ -598,7 +598,7 @@ func (r *releaseData) verifyPromoteRC() error {
 	re := regexp.MustCompile(`^v\d*\.\d*.\d*-rc.\d*$`)
 	match := re.FindString(r.promoteRC)
 	if match == "" {
-		return fmt.Errorf("--promote-rc must point to a release candidate tag in the form of v[x].[y].[z]-rc.[n]. Example v0.31.0-rc.1 is valid and will result in the promotion of official v0.31.0 release")
+		return fmt.Errorf("--promote-rc=%s is invalid.  must point to a release candidate tag in the form of v[x].[y].[z]-rc.[n]. Example v0.31.0-rc.1 is valid and will result in the promotion of official v0.31.0 release", r.promoteRC)
 	}
 
 	tagSemver, err := semver.NewVersion(match)
@@ -801,7 +801,7 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 		if v.Patch() == 0 {
 			currentMinorRelease = fmt.Sprintf("v%d.%d.0", v.Major(), v.Minor())
 			nextMinorRelease = fmt.Sprintf("v%d.%d.0", v.Major(), v.Minor()+1)
-			nextMinorReleaseRC = fmt.Sprintf("v%d.%d.0-rc.1", v.Major(), v.Minor()+1)
+			nextMinorReleaseRC = fmt.Sprintf("v%d.%d.0-rc.0", v.Major(), v.Minor()+1)
 			nextMinorReleaseBranch = fmt.Sprintf("release-%d.%d", v.Major(), v.Minor()+1)
 
 			log.Printf("Last Minor Release Series: v%d.%d", v.Major(), v.Minor())
@@ -855,7 +855,7 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 		rcNumber, err := strconv.Atoi(strings.TrimPrefix(*release.TagName, rcTemplate))
 		if err != nil {
 			continue
-		} else if rcNumber > highestRC {
+		} else if rcNumber >= highestRC {
 			highestRC = rcNumber
 			rcPromotionCandidate = release
 		}
