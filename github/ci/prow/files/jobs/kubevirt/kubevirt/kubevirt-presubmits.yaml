@@ -511,9 +511,20 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
       preset-shared-images: "true"
+      kind-pod: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: kind-pod
+                  operator: In
+                  values:
+                  - "true"
+              topologyKey: kubernetes.io/hostname
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
