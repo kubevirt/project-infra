@@ -572,43 +572,6 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
-    name: pull-kubevirt-generate
-    optional: true
-    skip_report: true
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate
-        env:
-        - name: BAZEL_VERSION
-          value: 1.2.1
-        - name: CACHE_HOST
-          value: bazel-cache.kubevirt-prow
-        - name: CACHE_PORT
-          value: "8080"
-        - name: BAZEL_REMOTE_CACHE_ENABLED
-          value: "true"
-        image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
-        name: ""
-        resources:
-          requests:
-            memory: 4Gi
-        securityContext:
-          privileged: true
-  - always_run: true
-    branches:
-    - release-0.31
-    cluster: ibm-prow-jobs
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 1h0m0s
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
     name: pull-kubevirt-build
     optional: true
     skip_report: true
