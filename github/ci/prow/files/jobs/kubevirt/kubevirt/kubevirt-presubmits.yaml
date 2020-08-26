@@ -736,3 +736,52 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
+  - name: pull-kubevirt-goveralls
+    cluster: ibm-prow-jobs
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 10m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+    spec:
+      containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        env:
+          - name: BAZEL_VERSION
+            value: "1.2.1"
+          - name: CACHE_HOST
+            value: bazel-cache.kubevirt-prow
+          - name: CACHE_PORT
+            value: "8080"
+          - name: BAZEL_REMOTE_CACHE_ENABLED
+            value: "true"
+          - name: COVERALLS_TOKEN_FILE
+            value: /root/.docker/secrets/coveralls/token
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - "cp /etc/bazel.bazelrc ./ci.bazelrc && make goveralls"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+        volumeMounts:
+          - name: kubevirtci-coveralls
+            mountPath: /root/.docker/secrets/coveralls
+            readOnly: true
+      volumes:
+        - name: kubevirtci-coveralls
+          secret:
+            secretName: kubevirtci-coveralls-token
