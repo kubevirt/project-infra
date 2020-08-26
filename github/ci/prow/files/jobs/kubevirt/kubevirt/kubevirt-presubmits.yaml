@@ -109,7 +109,7 @@ presubmits:
     decoration_config:
       timeout: 7h
       grace_period: 5m
-    max_concurrency: 6
+    max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
@@ -142,7 +142,7 @@ presubmits:
     decoration_config:
       timeout: 7h
       grace_period: 5m
-    max_concurrency: 6
+    max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
@@ -174,7 +174,7 @@ presubmits:
     decoration_config:
       timeout: 7h
       grace_period: 5m
-    max_concurrency: 6
+    max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
@@ -206,7 +206,7 @@ presubmits:
     decoration_config:
       timeout: 7h
       grace_period: 5m
-    max_concurrency: 10
+    max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
@@ -565,7 +565,7 @@ presubmits:
     decoration_config:
       timeout: 7h
       grace_period: 5m
-    max_concurrency: 6
+    max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
