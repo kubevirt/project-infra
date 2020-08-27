@@ -394,6 +394,145 @@
         state: present
         namespace: "{{ prowNamespace }}"
         definition: "{{ lookup('template', '{{ role_path }}/templates/branch-protector.yaml') | from_yaml }}"
+    - name: Create service account for rehearsal plugin
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition:
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: prow-rehearse
+            namespace: '{{ prowJobsNamespace }}'
+    - name: Create cluster-role for rehearsal plugin
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition:
+          apiVersion: authorization.openshift.io/v1
+          kind: ClusterRole
+          metadata:
+            name: prow-rehearse
+            namespace: '{{ prowJobsNamespace }}'
+          rules:
+            - apiGroups:
+                - prow.k8s.io
+              resources:
+                - prowjobs
+              verbs:
+                - create
+    - name: Create role-binding for rehearsal plugin
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition:
+          apiVersion: authorization.openshift.io/v1
+          kind: RoleBinding
+          metadata:
+            name: prow-rehearse
+            namespace: '{{ prowNamespace }}'
+          roleRef:
+            name: prow-rehearse
+            kind: ClusterRole
+          subjects:
+            - kind: ServiceAccount
+              name: prow-rehearse
+              namespace: '{{ prowNamespace }}'
+    - name: Create service for rehearsal plugin
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: prow-rehearse
+            namespace: '{{ prowNamespace }}'
+          spec:
+            ports:
+              - port: 9900
+                protocol: TCP
+                targetPort: 9900
+            selector:
+              app: prow-rehearse
+            type: ClusterIP
+    - name: Create deployment for rehearsal plugin
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: '{{ prowNamespace }}'
+        definition:
+          apiVersion: extensions/v1beta1
+          kind: Deployment
+          metadata:
+            name: rehearse
+            labels:
+              app: rehearse
+          spec:
+            replicas: 1
+            template:
+              metadata:
+                labels:
+                  app: prow-rehearse
+              spec:
+                serviceAccountName: prow-rehearse
+                nodeSelector:
+                  type: vm
+                  zone: ci
+                terminationGracePeriodSeconds: 180
+                containers:
+                  - name: rehearse
+                    image: docker.io/kubevirtci/rehearse:v20200923-8930f83
+                    imagePullPolicy: Always
+                    args:
+                      - --dry-run=false
+                      - --github-token-path=/etc/github/oauth
+                      - --github-endpoint=http://ghproxy
+                      - --github-endpoint=https://api.github.com
+                      - --cache-dir=/var/run/cache
+                      - --jobs-config-base=github/ci/prow/files/jobs
+                      - --prow-config-path=github/ci/prow/files/config.yaml
+                      - --jobs-namespace={{ prowJobsNamespace }}
+                      - --always-run=false
+                    ports:
+                      - name: http
+                        containerPort: 9900
+                    volumeMounts:
+                      - name: hmac
+                        mountPath: /etc/webhook
+                        readOnly: true
+                      - name: oauth
+                        mountPath: /etc/github
+                        readOnly: true
+                      - name: plugins
+                        mountPath: /etc/plugins
+                        readOnly: true
+                      - name: cache
+                        mountPath: /var/run/cache
+                        readOnly: false
+                volumes:
+                  - name: hmac
+                    secret:
+                      secretName: hmac-token
+                  - name: oauth
+                    secret:
+                      secretName: oauth-token
+                  - name: plugins
+                    configMap:
+                      name: plugins
+                  - name: cache
+                    hostPath:
+                    path: /var/run/rehearse-cache
+                    type: DirectoryOrCreate
     - name: Deploy shared objects
       vars:
         targetKubeconfig: '{{ automationKubeconfig }}'
