@@ -93,6 +93,7 @@ tide:
     kubevirt/node-labeller: squash
     kubevirt/kubevirt-template-validator: squash
     kubevirt/kubevirt-ssp-operator: squash
+    kubevirt/kubevirt-csi: squash
 
   queries:
   - repos:
@@ -135,6 +136,7 @@ tide:
     - kubevirt/node-labeller
     - kubevirt/kubevirt-template-validator
     - kubevirt/kubevirt-ssp-operator
+    - kubevirt/kubevirt-csi
     labels:
     - lgtm
     - approved
@@ -251,6 +253,10 @@ branch-protection:
             master:
               protect: true
         hostpath-provisioner-operator:
+          branches:
+            master:
+              protect: true
+        kubevirt-csi:
           branches:
             master:
               protect: true
