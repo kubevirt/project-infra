@@ -770,7 +770,7 @@ presubmits:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
           - "-c"
-          - "cp /etc/bazel.bazelrc ./ci.bazelrc && make goveralls"
+          - "cp /etc/bazel.bazelrc ./ci.bazelrc && if [ ${JOB_TYPE} != 'batch' ]; then make goveralls; fi"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
