@@ -379,3 +379,6 @@ lgtm:
   - kubevirt/kubevirt-template-validator
   - kubevirt/kubevirt-ssp-operator
   review_acts_as_lgtm: true
+
+override:
+  allow_top_level_owners: true
