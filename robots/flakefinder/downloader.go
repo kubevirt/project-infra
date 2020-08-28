@@ -55,7 +55,7 @@ func readGcsObject(ctx context.Context, client *storage.Client, bucket, object s
 	return ioutil.ReadAll(reader)
 }
 
-func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest, startOfReport time.Time) ([]*Result, error) {
+func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*Result, error) {
 
 	dirOfPrJobs := path.Join("pr-logs", "pull", strings.ReplaceAll(repo, "/", "_"), strconv.Itoa(*pr.Number))
 
@@ -66,7 +66,7 @@ func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo
 
 	junits := []*Result{}
 	for _, job := range prJobsDirs {
-		junit, err := FindUnitTestFileForJob(ctx, client, bucket, dirOfPrJobs, job, pr, startOfReport)
+		junit, err := FindUnitTestFileForJob(ctx, client, bucket, dirOfPrJobs, job, pr, startOfReport, skipBeforeStartOfReport)
 		if err != nil {
 			return nil, err
 		}
@@ -77,7 +77,7 @@ func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo
 	return junits, err
 }
 
-func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket string, dirOfPrJobs string, job string, pr *github.PullRequest, startOfReport time.Time) ([]*Result, error) {
+func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket string, dirOfPrJobs string, job string, pr *github.PullRequest, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*Result, error) {
 	dirOfJobs := path.Join(dirOfPrJobs, job)
 
 	prJobs, err := flakefinder.ListGcsObjects(ctx, client, bucket, dirOfJobs+"/", "/")
@@ -102,7 +102,7 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			return nil, err
 		}
 		isBeforeStartOfReport := attrsOfFinishedJsonFile.Created.Before(startOfReport)
-		if isBeforeStartOfReport {
+		if skipBeforeStartOfReport && isBeforeStartOfReport {
 			logrus.Infof("Skipping test results before %v for %s in bucket '%s'\n", startOfReport, buildDirPath, bucket)
 			continue
 		}
