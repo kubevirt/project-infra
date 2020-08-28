@@ -1,0 +1,49 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: hook
+spec:
+  tls: null
+  rules:
+    - host: deck.prowdeploy.io
+      http:
+        paths:
+          - path: /hook
+            backend:
+              serviceName: hook
+              servicePort: 8888
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: deck
+spec:
+  tls:
+    - hosts:
+      - deck.prowdeploy.io
+  rules:
+    - host: deck.prowdeploy.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: deck
+              servicePort: 80
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: gcsweb
+spec:
+  tls:
+    - hosts:
+        - gcsweb.prowdeploy.io
+  rules:
+    - host: gcsweb.prowdeploy.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: gcsweb
+              servicePort: 80

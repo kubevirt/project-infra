@@ -22,11 +22,11 @@
 # Then launches the loop
 - name: Gathering steps
   vars:
-    kubeconfig_path: "{{ step.kubeconfig|default(default_kubeconfig_path) }}"
+    _kubeconfig_path: "{{ step.kubeconfig|default(default_kubeconfig_path) }}"
     op: "{{ step.op|default(default_crud_operation) }}"
     description: "{{ step.desc|default(op) }}"
     namespace: "{{ step.namespace|default(default_namespace) }}"
-    context: "{{ step.context|default(default_context) }}"
+    _context: "{{ step.context|default(default_context) }}"
     fatal_validation: "{{ step.fatal_validation|default(default_fatal_validation) }}"
     strict_validation: "{{ step.strict_validation|default(default_strict_validation) }}"
     manifest_inline: "{{ step.manifest_inline|default('') }}"

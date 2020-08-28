@@ -1,0 +1,10 @@
+# THis is not idempotent ...
+# So you run it twice and the second time it will fail, and there's no easy way to understand if it's legit
+- name: Delete all remote resources.
+  shell: |
+    ~/go/bin/kustomize build environments/{{ deploy_environment }} | {{ kubectl_exec }} delete -f -
+  args:
+    chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
+  environment: "{{ shell_environment }}"
+  # Here we should place a conditional to understand if the error is legit
+  failed_when: false

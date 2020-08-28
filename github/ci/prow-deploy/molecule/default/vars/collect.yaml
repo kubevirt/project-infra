@@ -1,0 +1,30 @@
+# Test Collect configuration
+kubectl_prow: "{{ kubectl_exec }} -n {{ prowNamespace }}"
+dump_resources:
+  role:
+    kind: Role
+    script: &generic_dump |
+      export DUMP_FILE=$ARTIFACTS_DIR/${RESOURCE_KIND}s/$RESOURCE_NAME
+      echo $KUBECTL_CMD describe $RESOURCE_KIND $RESOURCE_NAME >> $DUMP_FILE
+      echo "================" >> $DUMP_FILE
+      $KUBECTL_CMD describe $RESOURCE_KIND $RESOURCE_NAME >> $DUMP_FILE
+  rolebinding:
+    kind: RoleBinding
+    script: *generic_dump
+
+  pod:
+    kind: Pod
+    script: |
+      export POD_FILE=$ARTIFACTS_DIR/pods/$RESOURCE_NAME
+      echo "================" >> $POD_FILE
+      echo $KUBECTL_CMD describe pod $RESOURCE_NAME >> $POD_FILE
+      echo "================" >> $POD_FILE
+      $KUBECTL_CMD describe pod $RESOURCE_NAME >> $POD_FILE
+      echo "================" >> $POD_FILE
+      echo $KUBECTL_CMD logs $RESOURCE_NAME >> $POD_FILE
+      echo "================" >> $POD_FILE
+      $KUBECTL_CMD logs $RESOURCE_NAME >> $POD_FILE
+      echo "================" >> $POD_FILE
+      echo $KUBECTL_CMD exec $RESOURCE_NAME -- netstat -ntupa >> $POD_FILE
+      echo "================" >> $POD_FILE
+      $KUBECTL_CMD exec $RESOURCE_NAME -- netstat -ntupa >> $POD_FILE

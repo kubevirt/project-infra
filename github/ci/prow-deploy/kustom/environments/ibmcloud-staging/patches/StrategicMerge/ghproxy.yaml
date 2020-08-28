@@ -1,0 +1,9 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: ghproxy
+spec:
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ibmc-vpc-block-general-purpose

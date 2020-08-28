@@ -1,0 +1,272 @@
+# Requires kustomize v3
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+  - ../../base
+
+# Additional resources for this specific environment
+resources:
+  - resources/bootstrap.yaml
+  - resources/ghproxy-persistent-volume.yaml
+  - resources/greenhouse-persistent-volume.yaml
+  - resources/ingress-nginx-controller.yaml
+
+
+patchesStrategicMerge:
+  - patches/StrategicMerge/ghproxy.yaml
+  - patches/StrategicMerge/hook_deployment.yaml
+  - patches/StrategicMerge/nginx-ingress.yaml
+  - patches/StrategicMerge/deck_deployment_replicas.yaml
+
+patches:
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: rehearse
+    path: patches/JsonRFC6902/prow-rehearse-deployment.yaml
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: gcsweb
+    path: patches/JsonRFC6902/gcsweb-deployment.yaml
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: plank
+    path: patches/JsonRFC6902/plank_deployment.yaml
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: hook
+    path: patches/JsonRFC6902/deck_deployment.yaml
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: tide
+    path: patches/JsonRFC6902/tide_deployment.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: ingress-nginx-controller
+    path: patches/StrategicMerge/ingress-nginx-controller.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: Role
+      namespace: test-pods
+      name: deck
+    path: patches/StrategicMerge/deck_rbac.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deplyment
+      name: docker-mirror
+    path: patches/StrategicMerge/docker-mirror_deployment.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deplyment
+      name: greenhouse
+    path: patches/StrategicMerge/greenhouse-deployment.yaml
+  - target:
+      version: v1
+      kind: PersistentVolumeClaim
+      name: greenhouse
+    path: patches/StrategicMerge/greenhouse-pvc.yaml
+  # The namespace directive cannot be used at it will blindlu convert ALL
+  # namespaces to a single value. We have multiple namespaces here and we need fine-grained tuning
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      version: v1
+      kind: PersistentVolumeClaim
+      namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      version: v1
+      kind: Service
+      namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      version: v1
+      kind: ConfigMap
+      namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      version: v1
+      kind: ServiceAccount
+      namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1beta1
+      kind: Role
+      namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: Role
+      namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: Role
+      namespace: test-pods
+      name: .*
+    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: RoleBinding
+      namespace: test-pods
+      name: .*
+    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1beta1
+      kind: RoleBinding
+      namespace: test-pods
+      name: .*
+    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1beta1
+      kind: ClusterRoleBinding
+      name: prow-rehearse
+    path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1beta1
+      kind: RoleBinding
+      namespace: test-pods
+      name: .*
+    path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1beta1
+      kind: RoleBinding
+      namespace: default
+      name: .*
+    path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1beta1
+      kind: RoleBinding
+      namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1beta1
+      kind: Role
+      namespace: test-pods
+      name: .*
+    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
+  - target:
+      group: rbnac.authorization.k8s.io
+      version: v1
+      kind: Role
+      namespace: test-pods
+      name: .*
+    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
+  - target:
+      group: networking.k8s.io
+      version: v1beta1
+      kind: Ingress
+      namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      version: v1
+      kind: Secret
+      namespace: ""
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      version: v1
+      kind: ConfigMap
+      namespace: ""
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      group: batch
+      version: v1beta1
+      kind: CronJob
+      namespace: ""
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+
+
+generatorOptions:
+  disableNameSuffixHash: true
+# Remember to regenerate all configs first
+configMapGenerator:
+  - name: config
+    files:
+      - configs/config/config.yaml
+  - name: label-config
+    files:
+      - configs/labels/labels.yaml
+  - name: mirror-config
+    files:
+      - configs/docker-mirror/config.yaml
+  - name: plugins
+    files:
+      - configs/plugins/plugins.yaml
+  - name: cat-api-key
+    files:
+      - configs/cat-api/api-key
+  # Job-config can only be generated directly on the namespace
+
+secretGenerator:
+  - name: kubeconfig
+    files:
+      - secrets/kubeconfig/config
+    type: Opaque
+  - name: cookie
+    files:
+      - secrets/cookie-b64encoded/secret
+    type: Opaque
+  - name: gcs
+    files:
+      - secrets/gcs/service-account.json
+    type: Opaque
+  - name: github-oauth-config
+    files:
+      - secrets/github-oauth-config/secret
+    type: Opaque
+  - name: hmac-token
+    files:
+      - secrets/hmac-token/hmac
+    type: Opaque
+  - name: oauth-token
+    files:
+      - secrets/oauth-token/oauth
+    type: Opaque
+  - name: slack-token
+    files:
+      - secrets/slack-token/token
+    type: Opaque
+  - name: unsplash-api-key
+    files:
+      - secrets/unsplash-api/honk.txt

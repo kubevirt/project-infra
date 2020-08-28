@@ -1,0 +1,18 @@
+- hosts: localhost
+  tasks:
+    - set_fact:
+        deploy_environment: '{{ lookup("env", "DEPLOY_ENVIRONMENT") }}'
+    - fail:
+        msg: DEPLOY_ENVIRONMENT must be set
+      when: deploy_environment is undefined or deploy_environment == ""
+
+    - name: Include environment configuration
+      include_vars:
+        file: "{{ deploy_environment }}.yaml"
+
+    - name: Call deployment role own cleanup tasks.
+      include_role:
+        name: prow-deploy
+      vars:
+        main_actions:
+          - cleanup

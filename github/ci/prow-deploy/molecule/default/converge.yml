@@ -1,0 +1,35 @@
+---
+- hosts: localhost
+  tasks:
+    - set_fact:
+        deploy_environment: '{{ lookup("env", "DEPLOY_ENVIRONMENT") }}'
+    - fail:
+        msg: DEPLOY_ENVIRONMENT must be set
+      when: deploy_environment is undefined or deploy_environment == ""
+    - name: Include environment configuration
+      include_vars:
+        file: "{{ deploy_environment }}.yaml"
+
+    - name: Include collection config
+      include_vars:
+        file: "collect.yaml"
+
+    - name: Include deployment
+      block:
+        - name: include prow-deploy role for testing
+          include_role:
+            name: prow-deploy
+          vars:
+            decploy_environment: "{{ deploy_environment }}"
+            main_actions:
+              - bootstrap
+              - deploy
+
+        - name: wait for deployment to settle
+          include_tasks: retry-pod-status.yaml
+          vars:
+            retries: 20
+            delay: 10
+      always:
+        - name: collect deployment information
+          include_tasks: collect.yml

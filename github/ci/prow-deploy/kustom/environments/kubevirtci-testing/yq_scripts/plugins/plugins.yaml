@@ -1,0 +1,12 @@
+- command: update
+  path: config_updater.maps."github/ci/prow/files/config.yaml".clusters.default[0]
+  value: kubernetes-prow
+- command: update
+  path: config_updater.maps."github/ci/prow/files/jobs/**/*.yaml".clusters.default[0]
+  value: kubernetes-prow
+- command: update
+  path: config_updater.maps."github/ci/prow/files/plugins.yaml".clusters.default[0]
+  value: kubernetes-prow
+- command: update
+  path: config_updater.maps."github/ci/prow/files/labels.yaml".clusters.default[0]
+  value: kubernetes-prow

@@ -1,0 +1,10 @@
+# Force ingress controller to run on a specific node
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingress-nginx-controller
+spec:
+  template:
+    spec:
+      nodeSelector:
+        role: ingress-controller

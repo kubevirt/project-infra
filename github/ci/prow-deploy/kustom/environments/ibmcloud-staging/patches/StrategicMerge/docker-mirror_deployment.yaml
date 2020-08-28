@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-mirror
+spec:
+  template:
+    spec:
+      volumes:
+        - name: storage
+          hostPath:
+            path: /var/lib/docker-mirror/staging-kubevirt-prow
