@@ -12,11 +12,11 @@ presubmits:
         args:
         - "/checkconfig"
         - "--config-path"
-        - "github/ci/prow/files/config.yaml"
+        - "github/ci/prow-deploy/kustom/base/configs/current/config/config.yaml"
         - "--job-config-path"
         - "github/ci/prow/files/jobs"
         - "--plugin-config"
-        - "github/ci/prow/files/plugins.yaml"
+        - "github/ci/prow-deploy/kustom/base/configs/current/plugins/plugins.yaml"
         - "--strict"
         resources:
           requests:
@@ -122,3 +122,46 @@ presubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
+  - name: prow-deploy-role
+    always_run: false
+    run_if_changed: "github/ci/prow-deploy/.*"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      volumes:
+        - name: prow-deploy-config
+          secret:
+            secretName: prow-installer-test
+      hostAliases:
+        - ip: "127.0.0.1"
+          hostnames:
+            - gcsweb.prowdeploy.ci
+            - deck.prowdeploy.ci
+            - deck-prow.e8ca.engint.openshiftapps.com
+      containers:
+        - image: gabrielecerami/kubevirt-ci-testenv
+          env:
+            - name: DEPLOY_CONFIG_PATH
+              value: "/etc/prow-deploy/deploy_config.yaml"
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "source /opt/virtualenv/bin/activate && cd github/ci/prow-deploy/ &&  molecule test"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "9Gi"
+            limits:
+              memory: "9Gi"
+          volumeMounts:
+            - name: prow-deploy-config
+              mountPath: /etc/prow-deploy
+              readOnly: true
