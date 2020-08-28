@@ -67,3 +67,32 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
+  - name: kubernetes-crud-ci-role
+    always_run: false
+    run_if_changed: "github/ci/kubernetes-crud/.*"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-kubevirtci-docker-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gabrielecerami/kubevirt-ci-testenv
+          # docker run \
+          # -v /project-infra:/opt/source/project-infra
+          # -v /dev/kvm:/dev/kvm
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "source /opt/virtualenv/bin/activate && cd github/ci/kubernetes_crud/ &&  molecule test"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+            limits:
+              memory: "8Gi"
