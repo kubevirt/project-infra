@@ -1,0 +1,9 @@
+# Test provisioning
+testinfra_dir: /tmp/test-infra
+kubectl_exec: "kubectl"
+kubeconfig_path: '~/.kubeconfig'
+bootstrap_full_config: true
+hook_hostname: kubevirt-stg-aa0fc76a511b88d3d7a618e3072828e1-0000.us-south.containers.appdomain.cloud
+deck_hostname: kubevirt-stg-aa0fc76a511b88d3d7a618e3072828e1-0001.us-south.containers.appdomain.cloud
+gcsweb_hostname: kubevirt-stg-aa0fc76a511b88d3d7a618e3072828e1-0000.us-south.containers.appdomain.cloud
+prowNamespace: staging-kubevirt-prow

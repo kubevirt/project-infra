@@ -1,0 +1,52 @@
+- name: launch config rendering
+  shell: |
+    ./render-environment-configs.sh {{ deploy_environment }}
+  args:
+    chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
+
+- name: copy secrets subtree
+  copy:
+    src: "{{ secrets_subtree_source }}"
+    dest: "{{ project_infra_root}}/github/ci/prow-deploy/kustom/environments/{{ deploy_environment }}/"
+  when: secret_subtree_source is defined
+
+- name: validate Kustomize result
+  shell: |
+    ~/go/bin/kustomize build environments/{{ deploy_environment }}
+  args:
+    chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
+
+- name: Launch deployment
+  shell: |
+    ~/go/bin/kustomize build environments/{{ deploy_environment }} | {{ kubectl_exec }} apply -f -
+  args:
+    chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
+  environment: "{{ shell_environment }}"
+
+#- fail:
+#    msg: |-
+#      PROJECT_INFRA_ROOT={{ project_infra_root }}
+#      JOB_CONFIG_PATH={{ project_infra_root }}/github/ci/prow/files/jobs/
+#      PROW_CONFIG_PATH="{{ project_infra_root }}/github/ci/prow-deploy/kustom/environments/{{ deploy_environment
+#- }}/configs/config/config.yaml
+#      PLUGIN_CONFIG_PATH={{ project_infra_root }}/github/ci/prow-deploy/kustom/environments/{{ deploy_environment
+#- }}/configs/plugins/plugins.yaml
+#      KUBECONFIG={{ kubeconfig_path }}
+- name: Bootstrap the full job config (this may take a few minutes)
+  when: bootstrap_full_config|bool
+  shell: |
+    bazel run //prow/cmd/config-bootstrapper -- \
+        --dry-run=false \
+        --source-path=$PROJECT_INFRA_ROOT  \
+        --config-path=$PROW_CONFIG_PATH \
+        --plugin-config=$PLUGIN_CONFIG_PATH \
+        --job-config-path=$JOB_CONFIG_PATH
+  environment:
+    PROJECT_INFRA_ROOT: "{{ project_infra_root }}"
+    JOB_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow/files/jobs/"
+    PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/environments/{{ deploy_environment }}/configs/config/config.yaml"
+    PLUGIN_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/environments/{{ deploy_environment }}/configs/plugins/plugins.yaml"
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  args:
+    chdir: "{{ testinfra_dir }}"
+

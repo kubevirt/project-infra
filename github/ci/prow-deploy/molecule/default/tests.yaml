@@ -1,0 +1,42 @@
+# This would contain deeper tests and/or ideas for testing
+
+
+# by using ansible uri we can get more control on the reply from
+# hook, but we have to implement the computation of the X-Hub-Signature
+#- name: verify Prow hook is responding
+#  uri:
+#    url: https://deck-prow.e8ca.engint.openshiftapps.com/hook
+#    method: POST
+#    validate_certs: no
+#    headers:
+#      User-Agent: GitHub-Hookshot/f9c1b4e
+#      Content-type: application/json
+#      Accept: "*/*"
+#      X-GitHub-Delivery: 7183e400-e93c-11ea-8f1c-06414f16ddc2
+#      X-GitHub-Event: issues
+#      X-GitHub-Hook-ID: 55017755
+#      X-GitHub-Hook-Installation-Target-ID: 18700703
+#      X-GitHub-Hook-Installation-Target-Type: organization
+#      X-Hub-Signature: 6G38MhKmwr6AR9je1YbZfiSSHEMazBzItMHfA0XeiQNzNaSw/ACp05WqAIOUQR60
+#X-Hub-Signature: a2f8067387d7a6cb6927ee7637a24e5743bda76a
+#    body_format: json
+#    body: "{{ payload }}"
+#  register: hook_reply
+
+#- debug:
+#    var: hook_reply
+
+#- name: verify hook reply
+#  assert:
+#    that: hook_reply.status == 200
+
+#    - name: verify job is launched
+#    - name: verify job has not failed.
+#
+#    - name: intercept job vote
+#      # TODO: Seems prow is not using the checks API for github, so what is using ?
+#    - name: verify job vote
+
+# VERIFY LATER
+#- verify batch jobs ?
+# https://github.com/kubernetes/test-infra/blob/master/prow/build_test_update.md#how-to-manually-run-a-given-job-on-prow

@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubernetes-prow
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubernetes-prow-jobs
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: node01
+  labels:
+    type: bare-metal-external
+    zone: ci
+    role: ingress-controller
+    ci.kubevirt.io/cachenode: 'true'
+    dedicated: ghproxy
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: node02
+  labels:
+    type: vm
+    zone: ci
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: job-config
+data:
+  test_job_config.yaml: |
+    presubmits:
+      testorg/testrepo:
+        - name: test-job
+          decorate: true
+          always_run: true
+          skip_report: false
+          spec:
+            nodeSelector:
+              type: vm
+              zone: ci
+            containers:
+              - image: hello-world
+                command: ["/bin/true"]

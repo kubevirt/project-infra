@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greenhouse
+spec:
+  template:
+    spec:
+      volumes:
+        - name: cache
+          hostPath:
+            path: /var/lib/greenhouse/staging-kubevirt-prow

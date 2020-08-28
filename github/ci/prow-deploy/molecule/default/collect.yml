@@ -1,0 +1,64 @@
+- set_fact:
+    artifacts_dir: "{{ lookup('env', 'ARTIFACTS')}}"
+
+- name: Prepare artifacts dir
+  when: artifacts_dir != ""
+  block:
+    - name: Clear artifacts_dir
+      file:
+        state: absent
+        path: artifacts_dir
+    - name: Create artifacts_dir
+      file:
+        state: directory
+        path: artifacts_dir
+
+- name: Create temp dir
+  when: artifacts_dir == ""
+  block:
+    - name: create a temp dir
+      tempfile:
+        state: directory
+        prefix: "{{ prowNamespace }}-logs-"
+      register: artifacts
+
+    - name: set dir
+      set_fact:
+        artifacts_dir: "{{ artifacts.path }}"
+
+- name: Output the artifacts dir
+  debug:
+    msg: "All logs will be collected into {{ artifacts_dir }}. This directory will not be removed automatically"
+
+# Unstructured data, but it has everything
+- name: Describe all in a single yaml.
+  shell: |
+    {{ kubectl_prow }} get all -o yaml > {{ artifacts_dir }}/get_all.yaml
+  environment:
+    KUBEVIRTCI_TAG: 2010091151-ea2c81d
+
+- name: collect opened port
+  shell: |
+    ss -ntpa > {{ artifacts_dir }}/host-netstat.txt
+
+- name: collect port mapping
+  shell: |
+    {{ kubevirtci_dir }}/cluster-up/cli.sh ports > {{ artifacts_dir }}/port-map.txt
+  environment:
+    KUBEVIRTCI_TAG: 2010091151-ea2c81d
+
+- name: Compress yaml
+  archive:
+    path: "{{ artifacts_dir }}/get_all.yaml"
+    dest: "{{ artifacts_dir }}/get_all.yaml.gz"
+    remove: yes
+    format: gz
+
+# Putting relevant data in a hierarchy
+- name: include resource collection tasks
+  include_tasks: collect_resource.yml
+  loop: "{{ dump_resources|dict2items }}"
+  loop_control:
+    loop_var: resource
+    label: "{{ resource.key }}"
+

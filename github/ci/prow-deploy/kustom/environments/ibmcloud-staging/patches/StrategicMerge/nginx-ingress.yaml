@@ -1,0 +1,45 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: hook
+  namespace: default
+spec:
+  rules:
+    - host: kubevirt-stg-aa0fc76a511b88d3d7a618e3072828e1-0000.us-south.containers.appdomain.cloud
+      http:
+        paths:
+          - path: /staging-hook(/|$)(.*)
+            backend:
+              serviceName: hook
+              servicePort: 8888
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: deck
+  namespace: default
+spec:
+  rules:
+    - host: kubevirt-stg-aa0fc76a511b88d3d7a618e3072828e1-0001.us-south.containers.appdomain.cloud
+      http:
+        paths:
+          - path: /(/|$)(.*)
+            backend:
+              serviceName: deck
+              servicePort: 80
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: gcsweb
+  namespace: default
+spec:
+  rules:
+    - host: kubevirt-stg-aa0fc76a511b88d3d7a618e3072828e1-0000.us-south.containers.appdomain.cloud
+      http:
+        paths:
+          - path: /staging-gcsweb(/|$)(.*)
+            backend:
+              serviceName: gcsweb
+              servicePort: 80

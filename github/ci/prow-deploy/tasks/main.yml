@@ -1,0 +1,17 @@
+---
+- name: "load deploy config from environment"
+  include_vars: "{{ deploy_environment }}.yaml"
+
+# TODO: Get this dynamically
+- set_fact:
+    project_infra_root: /workspace/repos/project-infra-master
+
+#- name: Basic Validation
+#  include_tasks: validate.yaml
+
+- name: Launch deployment
+  when: "'deploy' in main_actions"
+  include_tasks: deploy.yaml
+- name: Launch cleanup
+  include_tasks: cleanup.yml
+  when: "'cleanup' in main_actions"

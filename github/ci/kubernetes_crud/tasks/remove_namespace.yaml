@@ -1,9 +1,9 @@
 - name: "{{ name_header }} : invoke kubectl (wait to confim deletion)"
   k8s:
     wait: true
-    wait_timeout: 180
-    kubeconfig: '{{ kubeconfig_path }}'
-    context: '{{ context }}'
+    wait_timeout: 300
+    kubeconfig: '{{ _kubeconfig_path }}'
+    context: '{{ _context }}'
     state: absent
     kind: Namespace
     name: "{{ namespace }}"

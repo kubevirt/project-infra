@@ -1,0 +1,28 @@
+# Validate host and  cluster before deploying
+
+# TODO: make sure there is at least one node with label role=ingress-controller
+# when: bootstrap not in actions
+#   make sure ther a persistent volume for GHproxy
+- name: get bazel bin path
+  command: which bazel
+  register: bazel_command
+  failed_when: false
+
+- name: Check bazel existence
+  when: not bootstrap_full_config|bool
+  assert:
+    that: bazel_command.rc == 0
+    fail_msg: Bazel is not installed. See instructions at https://docs.bazel.build/versions/master/install.html
+    success_msg: Bazel is available
+
+- name: get bmcloud bin path
+  command: which ibmcloud
+  register: ibmcloud_command
+  failed_when: false
+
+- name: Check ibmcloud existence
+  when: '"ibmcloud" in deploy_environment'
+  assert:
+    that: ibmcloud_command.rc == 0
+    fail_msg: ibmcloud client is not installed. See instructions at
+    success_msg: ibmcloud client is available

@@ -1,0 +1,10 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: greenhouse
+spec:
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: greenhouse-cache
+  storageClassName: ibmc-vpc-block-general-purpose

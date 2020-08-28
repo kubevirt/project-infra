@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rehearse
+  labels:
+    app: rehearse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prow-rehearse
+  template:
+    metadata:
+      labels:
+        app: prow-rehearse
+    spec:
+      serviceAccountName: prow-rehearse
+      nodeSelector:
+        type: vm
+        zone: ci
+      terminationGracePeriodSeconds: 180
+      containers:
+        - name: rehearse
+          image: docker.io/kubevirtci/rehearse:v20200923-8930f83
+          imagePullPolicy: Always
+          args:
+            - --dry-run=false
+            - --github-token-path=/etc/github/oauth
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
+            - --cache-dir=/var/run/cache
+            - --jobs-config-base=github/ci/prow/files/jobs
+            - --prow-config-path=github/ci/prow/files/config.yaml
+            - --always-run=false
+          ports:
+            - name: http
+              containerPort: 9900
+          volumeMounts:
+            - name: hmac
+              mountPath: /etc/webhook
+              readOnly: true
+            - name: oauth
+              mountPath: /etc/github
+              readOnly: true
+            - name: plugins
+              mountPath: /etc/plugins
+              readOnly: true
+            - name: cache
+              mountPath: /var/run/cache
+              readOnly: false
+      volumes:
+        - name: hmac
+          secret:
+            secretName: hmac-token
+        - name: oauth
+          secret:
+            secretName: oauth-token
+        - name: plugins
+          configMap:
+            name: plugins
+        - name: cache
+          emptyDir: {}

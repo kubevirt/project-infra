@@ -1,0 +1,25 @@
+# Test provisioning
+kubevirtci_dir: /tmp/kubevirtci
+kubevirtci_provider: k8s-1.19
+testinfra_dir: /tmp/test-infra
+kubevirt_num_nodes: 2
+kubevirt_num_secondary_nics: 1
+kubevirt_memory_size: 16384
+kubevirt_tag: 2010091151-ea2c81d
+kubectl_exec: "{{ kubevirtci_dir }}/cluster-up/kubectl.sh"
+kubeconfig_path: '{{ kubevirtci_dir }}/_ci-configs/{{ kubevirtci_provider }}/.kubeconfig'
+masterClusterContext: kubernetes-admin@kubernetes
+bootstrap_full_config: true
+hook_hostname: deck.prowdeploy.ci
+deck_hostname: deck-prow.e8ca.engint.openshiftapps.com
+gcsweb_hostname: gcsweb.prowdeploy.ci
+
+
+shell_environment:
+  KUBEVIRT_PROVIDER: "{{ kubevirtci_provider }}"
+  KUBEVIRT_NUM_NODES: "{{ kubevirt_num_nodes }}"
+  KUBEVIRT_NUM_SECONDARY_NICS: "{{ kubevirt_num_secondary_nics }}"
+  KUBEVIRT_MEMORY_SIZE: "{{ kubevirt_memory_size }}"
+  KUBEVIRTCI_TAG: "{{ kubevirt_tag }}"
+
+prowNamespace: kubernetes-prow

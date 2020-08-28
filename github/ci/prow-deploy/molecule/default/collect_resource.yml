@@ -1,0 +1,26 @@
+# Putting relevant data in a hierarchy
+- name: Create Resources subdirs
+  file:
+    state: directory
+    path: "{{ artifacts_dir }}/{{ resource.key }}s/"
+
+- name: "Get a list of all {{ resource.key }}s from prow namespace"
+  k8s_info:
+    kind: "{{ resource.value.kind }}"
+    namespace: "{{ prowNamespace }}"
+    kubeconfig: '{{ kubevirtci_dir }}/_ci-configs/{{ kubevirtci_provider }}/.kubeconfig'
+  register: resource_list
+
+- name: "Dump info for each {{ resource.key }}"
+  shell: "{{ resource.value.script }}"
+  environment:
+    RESOURCE_KIND: "{{ resource.key }}"
+    RESOURCE_NAME: "{{ item.metadata.name }}"
+    ARTIFACTS_DIR: "{{ artifacts_dir }}"
+    KUBECTL_CMD: "{{ kubectl_prow }}"
+  loop: "{{ resource_list.resources }}"
+  loop_control:
+    label: "{{ item.metadata.name }}"
+  # This is to avoid failing the whole task if we are unable
+  # to get a single resource.A
+  failed_when: false

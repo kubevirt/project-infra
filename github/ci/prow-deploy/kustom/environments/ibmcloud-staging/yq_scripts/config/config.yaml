@@ -1,0 +1,23 @@
+- command: update
+  path: plank.job_url_template
+  value: >-
+    https://prow.apps.ovirt.org/view/gcs/staging-kubevirt-prow/
+    {{if eq .Spec.Type "presubmit"}}pr-logs/
+    pull{{else if eq .Spec.Type "batch"}}pr-logs/
+    pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/
+    {{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/
+    {{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/
+    batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/
+- command: update
+  path: presets[2].volumes[0].hostPath.path
+  value: /var/lib/stdci/shared/kubevirt-images/staging-kubevirt-prow
+- command: update
+  path: prowjob_namespace
+  value: staging-kubevirt-prow-jobs
+- command: update
+  path: pod_namespace
+  value: staging-kubevirt-prow-job
+- command: update
+  path: plank.default_decoration_configs.*.gcs_configuration.bucket
+  value: staging-kubevirt-prow
+

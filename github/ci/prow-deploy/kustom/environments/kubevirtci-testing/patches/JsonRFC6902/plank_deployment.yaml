@@ -1,0 +1,6 @@
+- op: add
+  path: /spec/template/spec/containers/0/args/1
+  value: --github-endpoint=http://ghproxy
+- op: add
+  path: /spec/template/spec/containers/0/args/1
+  value: --github-endpoint=https://api.github.com

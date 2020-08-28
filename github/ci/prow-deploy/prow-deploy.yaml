@@ -1,0 +1,5 @@
+- hosts: localhost
+  tasks:
+    - name: include prow-deploy role
+      include_role:
+        name: prow-deploy

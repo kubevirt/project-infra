@@ -1,0 +1,74 @@
+- hosts: localhost
+  tasks:
+    - set_fact:
+        deploy_environment: '{{ lookup("env", "DEPLOY_ENVIRONMENT") }}'
+    - fail:
+        msg: DEPLOY_ENVIRONMENT must be set
+      when: deploy_environment is undefined or deploy_environment == ""
+
+    - name: Include staging config
+      include_vars:
+        file: "{{ deploy_environment }}.yaml"
+
+    - name: Shallow Clone kubevirtci repo
+      git:
+        repo: https://github.com/kubevirt/kubevirtci.git
+        dest: "{{ kubevirtci_dir }}"
+        depth: 1
+        refspec: "+refs/heads/master:refs/remotes/origin/master"
+      when: "'kubevirtci' in deploy_environment"
+
+    - name: Shallow Clone test-infra repo
+      git:
+        repo: https://github.com/kubernetes/test-infra.git
+        dest: "{{ testinfra_dir }}"
+        depth: 1
+        refspec: "+refs/heads/master:refs/remotes/origin/master"
+
+    - name: Launch kubevirtci cluster
+      command: make cluster-up
+      changed_when: false
+      args:
+        chdir: "{{ kubevirtci_dir }}"
+      environment: "{{ shell_environment }}"
+      when: "'kubevirtci' in deploy_environment"
+
+
+    - name: search for test host definitions
+      shell: |
+        grep -qE "^127.0.0.1.*gcsweb.prowdeploy.ci$" /etc/hosts && \
+        grep -qE "^127.0.0.1.*deck.prowdeploy.ci$" /etc/hosts && \
+        grep -qE "^127.0.0.1.*deck-prow.e8ca.engint.openshiftapps.com$" /etc/hosts
+      register: result_grep
+      failed_when: false
+      when: "'kubevirtci' in deploy_environment"
+
+    - debug:
+        msg: "Correct test host definition are already in place"
+      when: result_grep.rc == 0 and 'kubevirtci' in deploy_environment
+
+    - name: assign static resolution is they are missing
+      when: result_grep.rc != 0 and 'kubevirtci' in deploy_environment
+      block:
+        - name: assign static resolution
+          become: true
+          blockinfile:
+            state: present
+            path: /etc/hosts
+            block: |
+              127.0.0.1 gcsweb.prowdeploy.ci
+              127.0.0.1 deck.prowdeploy.ci
+              127.0.0.1 deck-prow.e8ca.engint.openshiftapps.com
+          register: result_hosts
+      rescue:
+        - fail:
+            msg: |
+              The molecule scenario is run on a container, and prepare cannot modify /etc/hosts.
+              If the container is run by docker directly you'll need to run it with --add-hosts option.
+              If the container is run by kubernetes, you'll have to add an hostAliases option to pod configuration.
+          when: '"Device or resource busy" in result_hosts.msg'
+        - fail:
+            msg: "The user must be able to sudo to root without password"
+          when: 'result_hosts.module_stderr is defined and "sudo: a password is required" in result_hosts.module_stderr'
+        - fail:
+            msg: Unable to assign static hosts to /etc/hosts for an unknown reason
