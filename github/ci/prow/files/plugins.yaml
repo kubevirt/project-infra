@@ -262,6 +262,13 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/kubevirt-csi:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
 external_plugins:
   kubevirt:
   - name: needs-rebase
@@ -309,6 +316,7 @@ triggers:
   - kubevirt/ansible-kubevirt-modules
   - kubevirt/hyperconverged-cluster-operator
   - kubevirt/vm-import-operator
+  - kubevirt/kubevirt-csi
 - repos:
   - virtblocks/virtblocks
 - repos:
@@ -345,6 +353,7 @@ approve:
   - kubevirt/node-labeller
   - kubevirt/kubevirt-template-validator
   - kubevirt/kubevirt-ssp-operator
+  - kubevirt/kubevirt-csi
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -378,6 +387,7 @@ lgtm:
   - kubevirt/node-labeller
   - kubevirt/kubevirt-template-validator
   - kubevirt/kubevirt-ssp-operator
+  - kubevirt/kubevirt-csi
   review_acts_as_lgtm: true
 
 override:
