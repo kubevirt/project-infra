@@ -5,7 +5,7 @@ periodics:
     extra_refs:
       - org: kubevirt
         repo: kubevirt.github.io
-        base_ref: master
+        base_ref: source
         path_alias: kubevirt.github.io
     spec:
       nodeSelector:
