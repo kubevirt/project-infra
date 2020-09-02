@@ -27,3 +27,30 @@ postsubmits:
                 memory: "1Gi"
               limits:
                 memory: "1Gi"
+    - name: publish-kubevirt-infra-multiarch-image-builder
+      always_run: false
+      run_if_changed: "images/kubevirt-infra-multiarch-image-builder/.*"
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "true"
+        preset-project-infra-kubevirtci-docker-credential: "true"
+      spec:
+        nodeSelector:
+          type: vm
+        containers:
+          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd images && ./publish_image.sh kubevirt-infra-multiarch-image-builder docker.io kubevirtci"
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "1Gi"
+              limits:
+                memory: "1Gi"
