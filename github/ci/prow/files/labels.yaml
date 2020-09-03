@@ -196,7 +196,7 @@ repos:
       - name: for/users
         color: fef2c0
         target: both
-      - name: good first issue
+      - name: good-first-issue
         color: 128A0C
         target: issues
       - name: help wanted
