@@ -3,6 +3,8 @@ presubmits:
   - name: pull-node-maintenance-operator-e2e-k8s-1.18
     skip_branches:
     - release-\d+\.\d+
+    - release-v\d+\.\d+\.\d+
+    - stable-v\d+\.\d+\.\d+
     annotations:
       fork-per-release: "true"
     always_run: true
