@@ -635,18 +635,10 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
+      preset-bazel-cache: "true"
     spec:
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
-          env:
-            - name: BAZEL_VERSION
-              value: "1.2.1"
-            - name: CACHE_HOST
-              value: bazel-cache.kubevirt-prow
-            - name: CACHE_PORT
-              value: "8080"
-            - name: BAZEL_REMOTE_CACHE_ENABLED
-              value: "true"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -674,23 +666,15 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
+      preset-bazel-cache: "true"
     spec:
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
-          env:
-            - name: BAZEL_VERSION
-              value: "1.2.1"
-            - name: CACHE_HOST
-              value: bazel-cache.kubevirt-prow
-            - name: CACHE_PORT
-              value: "8080"
-            - name: BAZEL_REMOTE_CACHE_ENABLED
-              value: "true"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make"
+            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -713,18 +697,10 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
+      preset-bazel-cache: "true"
     spec:
       containers:
         - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
-          env:
-            - name: BAZEL_VERSION
-              value: "1.2.1"
-            - name: CACHE_HOST
-              value: bazel-cache.kubevirt-prow
-            - name: CACHE_PORT
-              value: "8080"
-            - name: BAZEL_REMOTE_CACHE_ENABLED
-              value: "true"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -752,18 +728,11 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
+      preset-bazel-cache: "true"
     spec:
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
         env:
-          - name: BAZEL_VERSION
-            value: "1.2.1"
-          - name: CACHE_HOST
-            value: bazel-cache.kubevirt-prow
-          - name: CACHE_PORT
-            value: "8080"
-          - name: BAZEL_REMOTE_CACHE_ENABLED
-            value: "true"
           - name: COVERALLS_TOKEN_FILE
             value: /root/.docker/secrets/coveralls/token
         command:
@@ -785,3 +754,129 @@ presubmits:
         - name: kubevirtci-coveralls
           secret:
             secretName: kubevirtci-coveralls-token
+  - name: pull-kubevirt-apidocs
+    cluster: ibm-prow-jobs
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    skip_report: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-kubevirt-client-python
+    cluster: ibm-prow-jobs
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    skip_report: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-kubevirt-manifests
+    cluster: ibm-prow-jobs
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    skip_report: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+          # skip getting old CSVs here (no QUAY_REPOSITORY), verification might fail because of stricter rules over time; falls back to latest if not on a tag
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX=\"docker.io/kubevirt\" && make olm-verify"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-kubevirt-prom-rules-verify
+    cluster: ibm-prow-jobs
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    skip_report: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+          # skip getting old CSVs here (no QUAY_REPOSITORY), verification might fail because of stricter rules over time; falls back to latest if not on a tag
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make prom-rules-verify"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
