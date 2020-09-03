@@ -199,6 +199,9 @@ repos:
       - name: good-first-issue
         color: 128A0C
         target: issues
+        previously:
+          - name: good first issue
+            color: 128A0C
       - name: help wanted
         color: 128A0C
         target: issues
