@@ -135,6 +135,10 @@ periodics:
 - name: periodic-kubevirt-push-nightly-build-master
   cron: "2 1 * * *"
   decorate: true
+  extra_refs:
+    - org: kubevirt
+      repo: kubevirt
+      base_ref: master
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -158,8 +162,6 @@ periodics:
         - "-c"
         - >
           cat $DOCKER_PASSWORD | docker login --username $(cat $DOCKER_USER) --password-stdin &&
-          git clone https://github.com/kubevirt/kubevirt.git &&
-          cd kubevirt &&
           export DOCKER_PREFIX='kubevirtnightlybuilds' &&
           export DOCKER_TAG="$(date +%Y%m%d)_$(git show -s --format=%h)" &&
           make &&
