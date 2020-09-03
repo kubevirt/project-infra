@@ -1,0 +1,10 @@
+- name: "{{ name_header }} : invoke kubectl"
+  k8s:
+      kubeconfig: '{{ kubeconfig_path }}'
+      context: '{{ context }}'
+      state: present
+      kind: Namespace
+      name: "{{ namespace }}"
+      validate:
+          fail_on_error: "{{ fatal_validation }}"
+          strict: "{{ strict_validation }}"
