@@ -187,3 +187,30 @@ periodics:
       - name: gcs
         secret:
           secretName: gcs
+- name: periodic-kubevirt-push-nightly-conformance
+  cron: "30 2 * * *"
+  decorate: true
+  max_concurrency: 1
+  decoration_config:
+    timeout: 7h
+    grace_period: 5m
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror: "true"
+    preset-shared-images: "true"
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - "automation/conformance.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "29Gi"
