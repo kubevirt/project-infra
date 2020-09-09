@@ -269,6 +269,13 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/controller-lifecycle-operator-sdk:
+    - trigger
+    - owners-label
+    - release-note
+    - lgtm
+    - approve
+
 external_plugins:
   kubevirt:
   - name: needs-rebase
