@@ -1,0 +1,12 @@
+presets:
+- labels:
+    preset-bazel-cache: "true"
+  env:
+    - name: BAZEL_VERSION
+      value: "1.2.1"
+    - name: CACHE_HOST
+      value: bazel-cache.kubevirt-prow
+    - name: CACHE_PORT
+      value: "8080"
+    - name: BAZEL_REMOTE_CACHE_ENABLED
+      value: "true"
