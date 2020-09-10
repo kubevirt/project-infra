@@ -10,3 +10,10 @@ presets:
       value: "8080"
     - name: BAZEL_REMOTE_CACHE_ENABLED
       value: "true"
+- labels:
+    preset-kubevirt-run-unnested: "true"
+  env:
+    - name: KUBEVIRT_RUN_UNNESTED
+      value: "true"
+    - name: KUBEVIRT_CREATE_BAZELRCS
+      value: "true"

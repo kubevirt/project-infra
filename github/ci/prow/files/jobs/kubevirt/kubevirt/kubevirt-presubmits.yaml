@@ -801,23 +801,18 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-kubevirt-run-unnested: "true"
       preset-docker-mirror: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        - image: kubevirt/builder@sha256:676be4dbccc304687a7b32552b0b39b71dc13e149241f5ac272d3a23509fe7fb
           command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
+            - "/entrypoint.sh"
+            - "make apidocs"
           resources:
             requests:
-              memory: "4Gi"
+              memory: "1Gi"
   - name: pull-kubevirt-client-python
     cluster: ibm-prow-jobs
     skip_branches:
@@ -832,23 +827,18 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-kubevirt-run-unnested: "true"
       preset-docker-mirror: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        - image: kubevirt/builder@sha256:676be4dbccc304687a7b32552b0b39b71dc13e149241f5ac272d3a23509fe7fb
           command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
+            - "/entrypoint.sh"
+            - "make client-python"
           resources:
             requests:
-              memory: "4Gi"
+              memory: "1Gi"
   - name: pull-kubevirt-manifests
     cluster: ibm-prow-jobs
     skip_branches:
@@ -863,24 +853,18 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-kubevirt-run-unnested: "true"
       preset-docker-mirror: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
-          # skip getting old CSVs here (no QUAY_REPOSITORY), verification might fail because of stricter rules over time; falls back to latest if not on a tag
+        - image: kubevirt/builder@sha256:676be4dbccc304687a7b32552b0b39b71dc13e149241f5ac272d3a23509fe7fb
           command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX=\"docker.io/kubevirt\" && make olm-verify"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
+            - "/entrypoint.sh"
+            - "make manifests DOCKER_PREFIX=\"docker.io/kubevirt\" && make olm-verify"
           resources:
             requests:
-              memory: "4Gi"
+              memory: "1Gi"
   - name: pull-kubevirt-prom-rules-verify
     cluster: ibm-prow-jobs
     skip_branches:
