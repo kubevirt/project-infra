@@ -657,6 +657,9 @@ func (r *releaseData) getBlockers(branch string) (*blockerListCacheEntry, error)
 			PerPage: 10000,
 		},
 	}
+
+	prListOptions.State = "all"
+	issueListOptions.State = "all"
 	if branch == "master" {
 		// there's never a reason to list all PRs/Issues (both open and closed) in the entire project for master
 		// We do care about open and closed PRS for stable branches though
@@ -893,6 +896,7 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 				highestRC++
 				nextMinorReleaseRC = fmt.Sprintf("%s%d", rcTemplate, highestRC)
 				shouldMakeNewRC = true
+				log.Printf("Cutting new RC due to blocker %s", nextMinorReleaseRC)
 			}
 		} else if secondsDiff >= promoteAfterSeconds {
 
