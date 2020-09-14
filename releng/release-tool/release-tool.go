@@ -289,18 +289,18 @@ func (r *releaseData) checkoutUpstream() error {
 }
 
 func (r *releaseData) makeTag(branch string) error {
-	_, err := gitCommand("-C", r.repoDir, "pull", "origin", branch)
-	if err != nil {
-		return err
-	}
-
 	if r.promoteRC != "" {
-		_, err = gitCommand("-C", r.repoDir, "checkout", r.promoteRC)
+		_, err := gitCommand("-C", r.repoDir, "checkout", r.promoteRC)
 		if err != nil {
 			return err
 		}
 	} else {
-		_, err = gitCommand("-C", r.repoDir, "checkout", branch)
+		_, err := gitCommand("-C", r.repoDir, "checkout", branch)
+		if err != nil {
+			return err
+		}
+
+		_, err = gitCommand("-C", r.repoDir, "pull", "origin", branch)
 		if err != nil {
 			return err
 		}
@@ -308,7 +308,7 @@ func (r *releaseData) makeTag(branch string) error {
 
 	r.generateReleaseNotes()
 
-	_, err = gitCommand("-C", r.repoDir, "tag", "-s", r.tag, "-F", r.releaseNotesFile)
+	_, err := gitCommand("-C", r.repoDir, "tag", "-s", r.tag, "-F", r.releaseNotesFile)
 
 	if !r.dryRun {
 		_, err = gitCommand("-C", r.repoDir, "push", r.repoUrl, r.tag)
@@ -331,6 +331,15 @@ func (r *releaseData) makeBranch() error {
 		if err != nil {
 			return err
 		}
+		// make sure to clear cache after successfully creating a new branch
+		// This forces the cache to be re-generated if any logic looks
+		// at the branches list again. If we don't do this after creating a
+		// new branch, then validation logic will fail later on during this
+		// execution if we are attempting to cut a branch + new tag from that
+		// branch at the same time. It will look like the branch doesn't exist
+		// because the cache is outdated. By clearing the cache the branch
+		// list will be re-generated.
+		r.allBranches = []*github.Branch{}
 	}
 
 	return nil
@@ -368,7 +377,7 @@ func (r *releaseData) getReleaseNote(number int) (string, error) {
 				note = strings.TrimPrefix(note, "-")
 				// best effort at catching "none" if the label didn't catch it
 				if !strings.Contains(note, "NONE") && strings.ToLower(note) != "none" {
-					note = fmt.Sprintf("[PR %d][%s] %s", number, *pr.User.Login, note)
+					note = fmt.Sprintf("[PR #%d][%s] %s", number, *pr.User.Login, note)
 					return note, nil
 				}
 			}
@@ -385,21 +394,9 @@ func (r *releaseData) forkProwJobs() error {
 
 	gitbranch := fmt.Sprintf("%s_%s_%s_configs", r.org, r.repo, r.newBranch)
 
-	_, err := gitCommand("-C", r.infraDir, "checkout", "-b", gitbranch)
-	// if err, then branch probably already exists
-	if err != nil {
-		_, err := gitCommand("-C", r.infraDir, "checkout", gitbranch)
-		if err != nil {
-			return err
-		}
-	}
+	_, err := gitCommand("-C", r.infraDir, "checkout", "-B", gitbranch)
 
-	_, err = gitCommand("-C", r.infraDir, "pull", "origin", gitbranch)
-	if err != nil {
-		return err
-	}
-
-	if _, err := os.Stat(fullJobConfig); err != nil && os.IsNotExist(err) {
+	if _, err = os.Stat(fullJobConfig); err != nil && os.IsNotExist(err) {
 		// no job to fork for this project
 		return nil
 	}
@@ -601,7 +598,7 @@ func (r *releaseData) verifyPromoteRC() error {
 	re := regexp.MustCompile(`^v\d*\.\d*.\d*-rc.\d*$`)
 	match := re.FindString(r.promoteRC)
 	if match == "" {
-		return fmt.Errorf("--promote-rc must point to a release candidate tag in the form of v[x].[y].[z]-rc.[n]. Example v0.31.0-rc.1 is valid and will result in the promotion of official v0.31.0 release")
+		return fmt.Errorf("--promote-rc=%s is invalid.  must point to a release candidate tag in the form of v[x].[y].[z]-rc.[n]. Example v0.31.0-rc.1 is valid and will result in the promotion of official v0.31.0 release", r.promoteRC)
 	}
 
 	tagSemver, err := semver.NewVersion(match)
@@ -660,6 +657,9 @@ func (r *releaseData) getBlockers(branch string) (*blockerListCacheEntry, error)
 			PerPage: 10000,
 		},
 	}
+
+	prListOptions.State = "all"
+	issueListOptions.State = "all"
 	if branch == "master" {
 		// there's never a reason to list all PRs/Issues (both open and closed) in the entire project for master
 		// We do care about open and closed PRS for stable branches though
@@ -804,7 +804,7 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 		if v.Patch() == 0 {
 			currentMinorRelease = fmt.Sprintf("v%d.%d.0", v.Major(), v.Minor())
 			nextMinorRelease = fmt.Sprintf("v%d.%d.0", v.Major(), v.Minor()+1)
-			nextMinorReleaseRC = fmt.Sprintf("v%d.%d.0-rc.1", v.Major(), v.Minor()+1)
+			nextMinorReleaseRC = fmt.Sprintf("v%d.%d.0-rc.0", v.Major(), v.Minor()+1)
 			nextMinorReleaseBranch = fmt.Sprintf("release-%d.%d", v.Major(), v.Minor()+1)
 
 			log.Printf("Last Minor Release Series: v%d.%d", v.Major(), v.Minor())
@@ -858,7 +858,7 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 		rcNumber, err := strconv.Atoi(strings.TrimPrefix(*release.TagName, rcTemplate))
 		if err != nil {
 			continue
-		} else if rcNumber > highestRC {
+		} else if rcNumber >= highestRC {
 			highestRC = rcNumber
 			rcPromotionCandidate = release
 		}
@@ -896,6 +896,7 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 				highestRC++
 				nextMinorReleaseRC = fmt.Sprintf("%s%d", rcTemplate, highestRC)
 				shouldMakeNewRC = true
+				log.Printf("Cutting new RC due to blocker %s", nextMinorReleaseRC)
 			}
 		} else if secondsDiff >= promoteAfterSeconds {
 
