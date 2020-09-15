@@ -1,4 +1,16 @@
-
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  labels:
+    app: grafana
+  name: grafana-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 32Gi
+  volumeName: "storage01-pv103-32g"
 ---
 apiVersion: apps/v1beta1
 kind: StatefulSet
@@ -36,6 +48,8 @@ spec:
             - cfg:default.paths.data=/var/lib/grafana
             - cfg:default.log.level=debug
           volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/lib/grafana
             - name: config-volume
               mountPath: /etc/grafana
               readOnly: true
@@ -53,6 +67,9 @@ spec:
               memory: 100Mi            
       terminationGracePeriodSeconds: 300
       volumes:
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-data
         - name: config-volume
           secret:
             secretName: grafana-config
