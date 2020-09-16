@@ -6,7 +6,7 @@ metadata:
   name: grafana6
   labels:
     app: grafana
-    version: v5.2.1
+    version: v7.1.5
 spec:
   serviceName: "grafana"
   replicas: 1
