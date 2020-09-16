@@ -114,6 +114,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
       preset-shared-images: "true"
+      preset-mount-lib-modules: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -147,6 +148,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
       preset-shared-images: "true"
+      preset-mount-lib-modules: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -180,6 +182,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
       preset-shared-images: "true"
+      preset-mount-lib-modules: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -244,6 +247,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
       preset-shared-images: "true"
+      preset-mount-lib-modules: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -636,6 +640,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
       preset-shared-images: "true"
+      preset-mount-lib-modules: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
