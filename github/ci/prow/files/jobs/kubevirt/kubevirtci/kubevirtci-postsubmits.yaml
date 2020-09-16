@@ -1,0 +1,39 @@
+postsubmits:
+  kubevirt/kubevirtci:
+    - name: postsubmit-kubevirtci-bump-kubevirt
+      cluster: ibm-prow-jobs
+      always_run: true
+      decorate: true
+      max_concurrency: 1
+      extra_refs:
+      - org: kubevirt
+        repo: kubevirt
+        base_ref: master
+        workdir: true
+      - org: kubevirt
+        repo: project-infra
+        base_ref: master
+      spec:
+        containers:
+          - image: "kubevirt/builder@sha256:e6a76ec71f2de87c3bc648bae87ab43a113540bf57da69f07f76bd0edfd500ab"
+            env:
+            - name: KUBEVIRT_RUN_UNNESTED
+              value: "true"
+            - name: GIT_ASKPASS
+              value: "../project-infra/hack/git-askpass.sh"
+            command:
+              - "hack/autobump-kubevirtci.sh"
+              - "kubevirt-bot"
+              - "/etc/github/oauth"
+              - "kubevirt-bot"
+              - "rmohr+kubebot@redhat.com"
+            volumeMounts:
+            - name: token
+              mountPath: /etc/github
+            resources:
+              requests:
+                memory: "1Gi"
+        volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
