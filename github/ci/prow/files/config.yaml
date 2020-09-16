@@ -328,3 +328,14 @@ presets:
     - name: kubevirtci-cred
       mountPath: /etc/kubevirtci-cred
       readOnly: true
+- labels:
+    preset-mount-lib-modules: "true"
+  volumes:
+    - name: modules
+      hostPath:
+        path: /lib/modules
+        type: Directory
+  volumeMounts:
+    - name: modules
+      mountPath: /lib/modules
+      readOnly: true
