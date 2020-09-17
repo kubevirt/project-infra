@@ -1,0 +1,60 @@
+presubmits:
+  kubevirt/kubectl-virt-plugin:
+  - name: pull-kubectl-virt-plugin-check-create-release
+    skip_branches:
+    - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      containers:
+      - image: dhiller/kubectl-virt-builder@sha256:126c8ea74b9d8c16bc21d2b4af05eab6845838596bb2c8ece795e2bcf4d857c4
+        command:
+        - "/usr/local/bin/runner.sh"
+        args:
+        - "/bin/sh"
+        - "-c"
+        - ./scripts/create-latest-release.sh --dry-run
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "1Gi"
+  - name: pull-kubectl-virt-plugin-shellcheck
+    skip_branches:
+    - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      containers:
+      - image: dhiller/kubectl-virt-builder@sha256:126c8ea74b9d8c16bc21d2b4af05eab6845838596bb2c8ece795e2bcf4d857c4
+        command:
+        - "/usr/local/bin/runner.sh"
+        args:
+        - "/bin/sh"
+        - "-c"
+        - shellcheck $(find $(pwd) -type f -name '*.sh' -not -path '**/out/*' -print)
+        resources:
+          requests:
+            memory: "1Gi"
