@@ -2,7 +2,7 @@ presubmits:
   kubevirt/controller-lifecycle-operator-sdk:
   - name: pull-controller-lifecycle-operator-sdk-e2e-k8s-1.18
     always_run: true
-    optional: false
+    optional: true
     decorate: true
     decoration_config:
       timeout: 3h
@@ -27,4 +27,4 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "8Gi"
