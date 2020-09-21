@@ -198,6 +198,12 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror: "true"
     preset-shared-images: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: kubevirt
+      base_ref: master
+      path_alias: kubevirt
+      workdir: true
   spec:
     nodeSelector:
       type: bare-metal-external
