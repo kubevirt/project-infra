@@ -89,7 +89,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=ceph && automation/test.sh"
+            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.17 && export RANDOM_CR=true && export KUBEVIRT_STORAGE=ceph && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
