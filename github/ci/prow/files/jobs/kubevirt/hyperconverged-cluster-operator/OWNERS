@@ -4,17 +4,15 @@
 filters:
   .*:
     approvers:
-    - djzager
     - nunnatsa
     - orenc1
-    - rthallisey
+    - sradco
     - tiraboschi
     - yuvalturg
     reviewers:
-    - djzager
     - nunnatsa
     - orenc1
-    - rthallisey
+    - sradco
     - tiraboschi
     - yuvalturg
 options: {}
