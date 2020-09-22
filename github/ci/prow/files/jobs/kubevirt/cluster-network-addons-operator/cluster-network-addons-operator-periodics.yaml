@@ -101,3 +101,57 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
+- name: periodic-cnao-push-nightly-build-master
+  cron: "2 1 * * *"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror: "true"
+    preset-shared-images: "true"
+    preset-kubevirtci-docker-credential: "true"
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+    - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - >
+          cat $DOCKER_PASSWORD | docker login --username $(cat $DOCKER_USER) --password-stdin &&
+          git clone https://github.com/kubevirt/cluster-network-addons-operator &&
+          cd cluster-network-addons-operator &&
+          export IMAGE_REGISTRY="docker.io/kubevirtnightlybuilds" &&
+          export IMAGE_TAG="$(date +%Y%m%d)_$(git show -s --format=%h)" &&
+          make docker-build-operator &&
+          make docker-push-operator &&
+          git show -s --format=%H > _out/commit &&
+          build_date="$(date +%Y%m%d)" &&
+          echo ${build_date} > _out/build_date &&
+          echo "${IMAGE_REGISTRY}/cluster-network-addons-operator:${IMAGE_TAG}" > _out/cnao-image &&
+          bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/cluster-network-addons-operator/${build_date}" &&
+          gsutil cp ./_out/commit gs://$bucket_dir/commit &&
+          gsutil cp ./_out/cnao-image gs://$bucket_dir/cnao-image &&
+          gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/cluster-network-addons-operator/latest
+      # docker-in-docker needs privileged mode
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "8Gi"
+      volumeMounts:
+        - name: gcs
+          mountPath: /etc/gcs
+          readOnly: false
+    volumes:
+      - name: gcs
+        secret:
+          secretName: gcs
