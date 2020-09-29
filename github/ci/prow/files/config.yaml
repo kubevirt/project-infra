@@ -94,6 +94,7 @@ tide:
     kubevirt/kubevirt-template-validator: squash
     kubevirt/kubevirt-ssp-operator: squash
     kubevirt/kubevirt-csi: squash
+    kubevirt/ssp-operator: squash
 
   queries:
   - repos:
@@ -136,6 +137,7 @@ tide:
     - kubevirt/node-labeller
     - kubevirt/kubevirt-template-validator
     - kubevirt/kubevirt-ssp-operator
+    - kubevirt/ssp-operator
     - kubevirt/kubevirt-csi
     labels:
     - lgtm
