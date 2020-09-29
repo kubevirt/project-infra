@@ -22,6 +22,13 @@ config_updater:
           - kubevirt-prow
 
 plugins:
+  kubevirt/ssp-operator:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
   kubevirt/kubevirt-ssp-operator:
   - trigger
   - release-note
@@ -317,6 +324,7 @@ triggers:
   - kubevirt/node-labeller
   - kubevirt/kubevirt-template-validator
   - kubevirt/kubevirt-ssp-operator
+  - kubevirt/ssp-operator
   - kubevirt/demo
   - kubevirt/cluster-network-addons-operator
   - kubevirt/node-maintenance-operator
@@ -360,6 +368,7 @@ approve:
   - kubevirt/node-labeller
   - kubevirt/kubevirt-template-validator
   - kubevirt/kubevirt-ssp-operator
+  - kubevirt/ssp-operator
   - kubevirt/kubevirt-csi
   require_self_approval: true
   lgtm_acts_as_approve: false
@@ -394,6 +403,7 @@ lgtm:
   - kubevirt/node-labeller
   - kubevirt/kubevirt-template-validator
   - kubevirt/kubevirt-ssp-operator
+  - kubevirt/ssp-operator
   - kubevirt/kubevirt-csi
   review_acts_as_lgtm: true
 
