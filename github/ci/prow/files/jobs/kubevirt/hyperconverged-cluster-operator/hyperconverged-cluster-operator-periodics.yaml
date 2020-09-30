@@ -35,6 +35,7 @@ periodics:
           latest_kubevirt_commit=$(curl -sL https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${latest_kubevirt}/commit) &&
           go mod edit -require kubevirt.io/kubevirt@${latest_kubevirt_commit} &&
           go mod vendor &&
+          rm -rf kubevirt &&
           git clone https://github.com/kubevirt/kubevirt.git &&
           (cd kubevirt; git checkout ${latest_kubevirt_commit}) &&
           go mod edit -replace kubevirt.io/client-go=./kubevirt/staging/src/kubevirt.io/client-go &&
