@@ -195,6 +195,51 @@ branch-protection:
       repos:
         kubevirt:
           protect: true
+          branches:
+            release-0.33:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.32:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.31:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.30:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.29:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.28:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.27:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.26:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.25:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.24:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.23:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
         project-infra:
           branches:
             master:
