@@ -647,6 +647,7 @@ presubmits:
     branches:
     - release-0.33
     cluster: ibm-prow-jobs
+    context: pull-kubevirt-unit-test
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -654,7 +655,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
-    name: pull-kubevirt-unit-test
+    name: pull-kubevirt-unit-test-release-0.33
     optional: true
     skip_report: true
     spec:
