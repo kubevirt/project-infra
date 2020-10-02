@@ -430,7 +430,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 7h
+      timeout: 2h
       grace_period: 5m
     max_concurrency: 1 # we have one license
     labels:
