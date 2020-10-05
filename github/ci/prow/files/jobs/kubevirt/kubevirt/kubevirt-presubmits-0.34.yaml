@@ -585,9 +585,9 @@ presubmits:
       preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
-    name: pull-kubevirt-build
-    optional: true
-    skip_report: true
+    name: pull-kubevirt-build-release-0.34
+    optional: false
+    skip_report: false
     spec:
       containers:
       - command:

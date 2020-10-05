@@ -617,7 +617,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
-    name: pull-kubevirt-build
+    name: pull-kubevirt-build-release-0.33
     optional: true
     skip_report: true
     spec:
