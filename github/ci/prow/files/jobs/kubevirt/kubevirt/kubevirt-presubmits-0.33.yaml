@@ -610,6 +610,7 @@ presubmits:
     branches:
     - release-0.33
     cluster: ibm-prow-jobs
+    context: pull-kubevirt-build
     decorate: true
     decoration_config:
       grace_period: 5m0s
