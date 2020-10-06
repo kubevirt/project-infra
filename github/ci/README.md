@@ -163,3 +163,26 @@ bazel run //experiment/config-forker -- --job-config ~/project-infra/jobs/kubevi
 ```
 
 For more details see https://github.com/kubernetes/test-infra/blob/master/experiment/config-forker/README.md
+
+
+### Updating prow configuration manually
+
+In case the config-updater doesn't run after merging a PR into 
+project-infra (symptom is i.e the comment from kubevirt-bot that it updated the configuration is missing), we need to update the complete prow configuration 
+manually.
+
+To manually update, go to your [kubernetes/test-infra](https://github.com/kubernetes/test-infra/) directory and execute:
+
+```bash
+( CONFIG_DIR=$(cd path-to/project-infra && pwd); \
+    bazel run //prow/cmd/config-bootstrapper -- \
+        --dry-run=false \
+        --source-path=$CONFIG_DIR  \
+        --config-path=$CONFIG_DIR/github/ci/prow/files/config.yaml \
+        --plugin-config=$CONFIG_DIR/github/ci/prow/files/plugins.yaml \
+        --job-config-path=$CONFIG_DIR/github/ci/prow/files/jobs \
+        --deck-url=https://prow.apps.ovirt.org )
+```
+
+See [config-bootstrapper](https://github.com/kubernetes/test-infra/tree/master/prow/cmd/config-bootstrapper)
+
