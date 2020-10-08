@@ -265,6 +265,11 @@ branch-protection:
                 contexts:
                   - continuous-integration/travis-ci/pr
                   - coverage/coveralls
+            release-1.2:
+              protect: true
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
         user-guide:
           branches:
             master:
