@@ -113,7 +113,7 @@ presubmits:
             type: Directory
 
   - name: check-provision-k8s-1.18
-    optional: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 3h
@@ -139,7 +139,7 @@ presubmits:
             memory: "8Gi"
 
   - name: check-provision-k8s-1.19
-    optional: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 3h
@@ -165,7 +165,7 @@ presubmits:
             memory: "8Gi"
 
   - name: check-provision-k8s-1.17
-    optional: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 3h
