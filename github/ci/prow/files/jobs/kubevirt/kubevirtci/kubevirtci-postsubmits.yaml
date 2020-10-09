@@ -13,6 +13,7 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror: "true"
+        preset-kubevirtci-docker-credential: "true"
       spec:
         nodeSelector:
           type: bare-metal-external
@@ -32,11 +33,12 @@ postsubmits:
             value: /etc/gcs/service-account.json
           command:
           - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
+          - "/bin/bash"
           - "-c"
           - >
+            cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin &&
             ./publish.sh &&
-            echo "$(git tag --points-at | head -1)" > latest &&
+            echo "$(git tag --points-at HEAD | head -1)" > latest &&
             gsutil cp ./latest gs://kubevirt-prow/release/kubevirt/kubevirtci/latest
           volumeMounts:
           - name: token
