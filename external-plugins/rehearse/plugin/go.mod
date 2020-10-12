@@ -5,7 +5,6 @@ go 1.13
 require (
 	github.com/onsi/ginkgo v1.14.0
 	github.com/onsi/gomega v1.10.1
-	github.com/prometheus/common v0.9.1
 	github.com/sirupsen/logrus v1.6.0
 	k8s.io/api v0.17.3
 	k8s.io/client-go v9.0.0+incompatible

@@ -206,10 +206,10 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		return
 	}
 
-	log.Infoln("Fetching PR base ref", pr.Base.SHA)
-	err = git.FetchRef(pr.Base.SHA)
+	log.Infoln("Fetching target branch", pr.Base.Ref)
+	err = git.FetchRef(pr.Base.Ref)
 	if err != nil {
-		log.WithError(err).Error("Could not fetch pull request's base ref.")
+		log.WithError(err).Error("Could not fetch pull request's target branch.")
 		return
 	}
 	log.Infoln("Fetching PR head ref", pr.Head.SHA)
@@ -218,8 +218,14 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		log.WithError(err).Error("Could not fetch pull request's head ref.")
 		return
 	}
+	log.Infoln("Rebasing the PR on the target branch")
+	err = git.MergeAndCheckout(pr.Base.Ref, string(github.MergeRebase), pr.Head.SHA)
+	if err != nil {
+		log.WithError(err).Error("Could not rebase the PR on the target branch.")
+		return
+	}
 	log.Infoln("Getting diff")
-	changedFiles, err := git.Diff(pr.Head.SHA, pr.Base.SHA)
+	changedFiles, err := git.Diff("HEAD", pr.Base.Ref)
 	if err != nil {
 		log.WithError(err).Error("Could not calculate diff for PR.")
 		return
