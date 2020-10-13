@@ -113,6 +113,7 @@ presubmits:
             type: Directory
 
   - name: check-provision-k8s-1.18
+    always_run: true
     optional: false
     decorate: true
     decoration_config:
@@ -139,6 +140,7 @@ presubmits:
             memory: "8Gi"
 
   - name: check-provision-k8s-1.19
+    always_run: true
     optional: false
     decorate: true
     decoration_config:
@@ -165,6 +167,7 @@ presubmits:
             memory: "8Gi"
 
   - name: check-provision-k8s-1.17
+    always_run: true
     optional: false
     decorate: true
     decoration_config:
