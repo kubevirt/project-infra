@@ -32,35 +32,3 @@ presubmits:
         resources:
           requests:
             memory: "29Gi"
-  - name: pull-hco-node-placement-k8s-1.17
-    skip_branches:
-    - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 6
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
-      preset-shared-images: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-      - image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20200303-ed11c77
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-c"
-        - "hack/test-node-placement.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
