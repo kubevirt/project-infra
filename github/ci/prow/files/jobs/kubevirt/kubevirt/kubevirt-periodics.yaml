@@ -164,6 +164,7 @@ periodics:
           export DOCKER_TAG="$(date +%Y%m%d)_$(git show -s --format=%h)" &&
           make &&
           make push &&
+          make build-functests &&
           git show -s --format=%H > _out/commit &&
           build_date="$(date +%Y%m%d)" &&
           echo ${build_date} > _out/build_date &&
@@ -171,6 +172,7 @@ periodics:
           gsutil cp ./_out/manifests/release/kubevirt-operator.yaml gs://$bucket_dir/kubevirt-operator.yaml &&
           gsutil cp ./_out/manifests/release/kubevirt-cr.yaml gs://$bucket_dir/kubevirt-cr.yaml &&
           gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/ &&
+          gsutil cp ./_out/tests/tests.test gs://$bucket_dir/testing/ &&
           gsutil cp ./_out/commit gs://$bucket_dir/commit &&
           gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
       # docker-in-docker needs privileged mode
@@ -179,6 +181,50 @@ periodics:
       resources:
         requests:
           memory: "8Gi"
+      volumeMounts:
+        - name: gcs
+          mountPath: /etc/gcs
+          readOnly: false
+    volumes:
+      - name: gcs
+        secret:
+          secretName: gcs
+- name: periodic-kubevirt-clean-nightly-build-master
+  cluster: ibm-prow-jobs
+  cron: "2 15 */7 * *"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-docker-mirror: "true"
+    preset-shared-images: "true"
+  spec:
+    containers:
+    - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - >
+          set -e;
+          latest_build=$(gsutil cat gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest);
+          delete_before_seconds=$(date -d "$latest_build - 4 weeks" +%s);
+          for nightly_build_dir in $(gsutil ls gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/ | grep -E '[0-9]+\/$'); do
+            build_date=$(echo "${nightly_build_dir}" | sed -E 's#^.*/([0-9]+)/$#\1#g');
+            bd_seconds=$(date -d "$build_date" +%s);
+            if [ $bd_seconds -lt $delete_before_seconds ]; then
+              echo "Deleting $nightly_build_dir";
+              gsutil -m rm -r ${nightly_build_dir};
+            fi;
+          done
+      resources:
+        requests:
+          memory: "200Mi"
       volumeMounts:
         - name: gcs
           mountPath: /etc/gcs
