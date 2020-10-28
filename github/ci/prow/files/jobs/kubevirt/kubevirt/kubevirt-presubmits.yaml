@@ -169,12 +169,13 @@ presubmits:
     annotations:
       fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
-    always_run: false
+    always_run: true
     optional: true
+    skip_report: false
     decorate: true
     decoration_config:
-      timeout: 3h
-      grace_period: 20m
+      timeout: 4h
+      grace_period: 30m
     max_concurrency: 10
     labels:
       preset-dind-enabled: "true"
@@ -203,7 +204,7 @@ presubmits:
         - >
             apt update &&
             apt install gettext-base -y &&
-            wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz &&
+            wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz -nv -S &&
             tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ &&
             export PATH=/usr/local/go/bin:$PATH &&
             export TARGET=kind-k8s-sriov-1.17.0 &&
