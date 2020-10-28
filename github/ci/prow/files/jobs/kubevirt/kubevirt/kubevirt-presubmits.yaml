@@ -558,7 +558,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX=\"docker.io/kubevirt\" && make olm-verify"
+            - "cp /etc/bazel.bazelrc ./ci.bazelrc && echo HERE && make manifests DOCKER_PREFIX=\"docker.io/kubevirt\" && make olm-verify"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
