@@ -406,7 +406,8 @@ presubmits:
       preset-shared-images: "true"
       sriov-pod: "true"
     max_concurrency: 10
-    name: pull-kubevirt-e2e-kind-1.17-sriov
+    name: pull-kubevirt-e2e-kind-1.17-sriov-release-0.32
+    context: pull-kubevirt-e2e-kind-1.17-sriov
     optional: true
     skip_report: true
     spec:
