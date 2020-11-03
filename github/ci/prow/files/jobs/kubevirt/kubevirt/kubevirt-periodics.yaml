@@ -185,6 +185,7 @@ periodics:
         - name: gcs
           mountPath: /etc/gcs
           readOnly: false
+      restartPolicy: OnFailure
     volumes:
       - name: gcs
         secret:
