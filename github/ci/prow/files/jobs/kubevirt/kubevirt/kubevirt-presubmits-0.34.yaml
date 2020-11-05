@@ -97,6 +97,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.34
+    context: pull-kubevirt-e2e-k8s-1.19
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -106,7 +107,7 @@ presubmits:
       preset-docker-mirror: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.19
+    name: pull-kubevirt-e2e-k8s-1.19-release-0.34
     optional: true
     skip_report: true
     spec:
