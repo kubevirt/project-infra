@@ -63,6 +63,37 @@ presubmits:
               - "-c"
               - "automation/check-patch.e2e-k8s.sh"
 
+    - name: pull-kubernetes-nmstate-docs
+      cluster: ibm-prow-jobs
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+      always_run: false
+      skip_report: false
+      optional: true
+      decorate: true
+      decoration_config:
+        timeout: 1h
+        grace_period: 5m
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "false"
+        preset-shared-images: "true"
+      spec:
+        containers:
+          - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+            securityContext:
+              privileged: true
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.docs.sh"
+            resources:
+              requests:
+                memory: "4Gi"
+
     - name: pull-kubernetes-nmstate-e2e-operator-k8s
       skip_branches:
         - release-\d+\.\d+
