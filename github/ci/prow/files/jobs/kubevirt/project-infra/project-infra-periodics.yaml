@@ -209,3 +209,54 @@ periodics:
         secret:
           secretName: gcs
 
+- name: periodic-kubevirt-mirror-uploader
+  cron: "05 7 * * *"
+  max_concurrency: 1
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: master
+    workdir: true
+  - org: kubevirt
+    repo: kubevirt
+    base_ref: master
+  - org: kubevirt
+    repo: containerized-data-importer
+    base_ref: master
+  spec:
+    containers:
+      - image: "kubevirt/builder@sha256:e6a76ec71f2de87c3bc648bae87ab43a113540bf57da69f07f76bd0edfd500ab"
+        env:
+        - name: GIT_ASKPASS
+          value: ../project-infra/hack/git-askpass.sh
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /etc/gcs/service-account.json
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - mkdir ${HOME}/bazel &&
+            curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 --output ${HOME}/bazel/bazelisk &&
+            chmod a+x ${HOME}/bazel/bazelisk &&
+            export PATH=${PATH}:${HOME}/bazel &&
+            hack/git-pr.sh -c "bazelisk run //plugins/cmd/uploader:uploader -- -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ../kubevirt -r kubevirt &&
+            hack/git-pr.sh -c "bazelisk run //plugins/cmd/uploader:uploader -- -workspace ${PWD}/../containerized-data-importer/WORKSPACE -dry-run=false" -p ../containerized-data-importer -r containerized-data-importer
+        volumeMounts:
+        - name: token
+          mountPath: /etc/github
+        - name: gcs
+          mountPath: /etc/gcs
+          readOnly: true
+        resources:
+          requests:
+            memory: "200Mi"
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: gcs
+      secret:
+        secretName: gcs

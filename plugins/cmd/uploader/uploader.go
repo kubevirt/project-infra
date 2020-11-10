@@ -15,8 +15,8 @@ import (
 )
 
 type options struct {
-	dryRun bool
-	bucket string
+	dryRun        bool
+	bucket        string
 	workspacePath string
 }
 
@@ -65,7 +65,7 @@ func main() {
 		newFileUrl := mirror.GenerateFilePath(options.bucket, &artifact)
 		err := mirror.WriteToBucket(options.dryRun, ctx, client, artifact.URLs()[0], options.bucket, artifact.SHA256())
 		if err != nil {
-			log.Fatalf("failed to upload %s to %s", artifact.URLs()[0], newFileUrl)
+			log.Fatalf("failed to upload %s to %s: %s", artifact.URLs()[0], newFileUrl, err)
 		}
 		artifact.AppendURL(newFileUrl)
 	}
