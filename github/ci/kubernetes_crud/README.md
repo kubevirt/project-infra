@@ -25,7 +25,7 @@ To use the role is enough to call with some required variables
         steps: "{{ steps }}"
         # manifest vars
         memory_limit: 512Mi
-        
+
 ### The steps
 
 Steps is a list of dictionaries that will contains the details of all
@@ -100,18 +100,30 @@ Specify to apply/remove manifest
 # How to test ?
 
 This role uses molecule for testing.
-Create a python virtualenv and install molecule
+From `github/ci/kubernetes_crud/`, create a python virtualenv and install all
+the required packages:
+
+    python3 -m venv venv --system-site-packages
+    source ./venv/bin/activate
+    pip install -r requirements.txt
 
 then you can launch
 
     molecule test
-    
+
  The test will launch a kubevirtci instance, test the operation of the role, then shut down
  the instance.
  The command above calls in turn 5 other playbook that can be called singularly to perform testing step by step
- 
+
  * molecule prepare: will launch kubevirtci as test cluster.
  * molecule converge: will invoke the role to perform some operations
  * molecule verify: Will test that operations succeeded correctly
  * molecule cleanup: will revert to a clean state for the test cluster
  * molecule destroy: will shut down kubevirtci test cluster
+
+Note: if you find any issues with the test command you might need to remove
+any leftovers with this command:
+
+    molecule reset
+
+and then try the test command again.

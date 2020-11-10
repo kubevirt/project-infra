@@ -9,6 +9,8 @@ platforms:
 
 provisioner:
   name: ansible
+  group_vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
 
 scenario:
   test_sequence:
@@ -17,4 +19,3 @@ scenario:
     - verify
     - cleanup
     - destroy
-

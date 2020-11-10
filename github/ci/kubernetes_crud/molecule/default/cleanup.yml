@@ -60,4 +60,3 @@
         that: query.resources == []
         success_msg: "Namespace correctly removed"
         fail_msg: "Namespace still exists"
-
