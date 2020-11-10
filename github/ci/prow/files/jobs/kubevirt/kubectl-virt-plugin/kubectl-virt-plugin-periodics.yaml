@@ -1,0 +1,42 @@
+periodics:
+- name: periodic-kubectl-virt-plugin-publish
+  cron: "0 0 * * *"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  max_concurrency: 1
+  extra_refs:
+  - org: kubevirt
+    repo: kubectl-virt-plugin
+    base_ref: master
+    work_dir: true
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror: "true"
+    preset-shared-images: "true"
+  spec:
+    containers:
+      - image: dhiller/kubectl-virt-builder@sha256:126c8ea74b9d8c16bc21d2b4af05eab6845838596bb2c8ece795e2bcf4d857c4
+        env:
+          - name: GH_KUBECTL_VIRT_PLUGIN_USERNAME
+            value: kubevirt-bot
+        command:
+          - "/usr/local/bin/runner.sh"
+        args:
+          - "/bin/sh"
+          - "-c"
+          - export GH_KUBECTL_VIRT_PLUGIN_TOKEN=$(</etc/github/oauth) && ./scripts/create-latest-release.sh
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "1Gi"
+        volumeMounts:
+          - name: token
+            mountPath: /etc/github
+    volumes:
+      - name: token
+        secret:
+          secretName: oauth-token
