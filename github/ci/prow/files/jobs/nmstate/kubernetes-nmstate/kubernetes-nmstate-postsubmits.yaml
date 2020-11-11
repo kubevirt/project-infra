@@ -1,6 +1,8 @@
 postsubmits:
   nmstate/kubernetes-nmstate:
     - name: publish-kubernetes-nmstate
+      skip_branches:
+        - gh-pages
       always_run: true
       decorate: true
       max_concurrency: 1
