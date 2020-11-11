@@ -228,6 +228,8 @@ periodics:
     repo: containerized-data-importer
     base_ref: master
   spec:
+    securityContext:
+      runAsUser: 0
     containers:
       - image: "kubevirt/builder@sha256:e6a76ec71f2de87c3bc648bae87ab43a113540bf57da69f07f76bd0edfd500ab"
         env:
@@ -238,10 +240,10 @@ periodics:
         command: ["/bin/sh"]
         args:
           - "-c"
-          - mkdir ${HOME}/bazel &&
-            curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 --output ${HOME}/bazel/bazelisk &&
-            chmod a+x ${HOME}/bazel/bazelisk &&
-            export PATH=${PATH}:${HOME}/bazel &&
+          - bazel_dir=$(mktemp -d) &&
+            curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 --output ${bazel_dir}/bazelisk &&
+            chmod a+x ${bazel_dir}/bazelisk &&
+            export PATH=${PATH}:${bazel_dir} &&
             hack/git-pr.sh -c "bazelisk run //plugins/cmd/uploader:uploader -- -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ../kubevirt -r kubevirt &&
             hack/git-pr.sh -c "bazelisk run //plugins/cmd/uploader:uploader -- -workspace ${PWD}/../containerized-data-importer/WORKSPACE -dry-run=false" -p ../containerized-data-importer -r containerized-data-importer
         volumeMounts:
