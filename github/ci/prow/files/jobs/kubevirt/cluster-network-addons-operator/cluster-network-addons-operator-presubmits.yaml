@@ -253,3 +253,67 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-nmstate-functests.sh"
+    - name: pull-e2e-cluster-network-addons-operator-ovs-cni-functests
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+      always_run: false
+      optional: true
+      decorate: true
+      skip_report: false
+      decoration_config:
+        timeout: 3h
+        grace_period: 25m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-ovs-cni-functests.sh"
+    - name: pull-e2e-cluster-network-addons-operator-macvtap-cni-functests
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+      always_run: false
+      optional: true
+      decorate: true
+      skip_report: false
+      decoration_config:
+        timeout: 3h
+        grace_period: 25m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-macvtap-cni-functests.sh"
