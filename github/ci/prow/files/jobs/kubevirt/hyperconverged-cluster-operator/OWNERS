@@ -4,15 +4,21 @@
 filters:
   .*:
     approvers:
+    - andreyod
+    - erkanerol
     - nunnatsa
     - orenc1
     - sradco
     - tiraboschi
     - yuvalturg
+    - zcahana
     reviewers:
+    - andreyod
+    - erkanerol
     - nunnatsa
     - orenc1
     - sradco
     - tiraboschi
     - yuvalturg
+    - zcahana
 options: {}
