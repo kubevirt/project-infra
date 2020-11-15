@@ -10,6 +10,7 @@ presubmits:
       timeout: 1h
     max_concurrency: 1
     labels:
+      rehearsal.allowed: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
       preset-kubevirtci-installer-pull-token: "true"
@@ -37,7 +38,7 @@ presubmits:
         - >
             apt update &&
             apt install gettext-base -y &&
-            wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz &&
+            wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz -nv -S &&
             tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ &&
             export PATH=/usr/local/go/bin:$PATH &&
             export KUBEVIRT_PROVIDER=kind-k8s-sriov-1.17.0 &&
@@ -59,6 +60,8 @@ presubmits:
             mountPath: /sys/fs/cgroup
           - name: vfio
             mountPath: /dev/vfio/
+          - name: etcd-data-dir
+            mountPath: /mnt/kind-cluster-etcd
       volumes:
         - name: modules
           hostPath:
@@ -72,6 +75,9 @@ presubmits:
           hostPath:
             path: /dev/vfio/
             type: Directory
+        - name: etcd-data-dir
+          emptyDir:
+            medium: Memory
 
   - name: check-provision-k8s-1.18
     always_run: true

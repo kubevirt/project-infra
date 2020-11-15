@@ -178,6 +178,7 @@ presubmits:
       grace_period: 30m
     max_concurrency: 10
     labels:
+      rehearsal.allowed: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
       preset-shared-images: "true"
@@ -227,6 +228,8 @@ presubmits:
             mountPath: /sys/fs/cgroup
           - name: vfio
             mountPath: /dev/vfio/
+          - name: etcd-data-dir
+            mountPath: /mnt/kind-cluster-etcd
       volumes:
         - name: modules
           hostPath:
@@ -240,6 +243,9 @@ presubmits:
           hostPath:
             path: /dev/vfio/
             type: Directory
+        - name: etcd-data-dir
+          emptyDir:
+            medium: Memory
 
   - name: pull-kubevirt-check-tests-for-flakes
     skip_branches:
