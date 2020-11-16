@@ -1,46 +1,5 @@
 presubmits:
   kubevirt/kubevirtci:
-  - name: check-up-kind-k8s-1.17.0-ipv6
-    always_run: false
-    optional: true
-    decorate: true
-    max_concurrency: 1
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
-      preset-kubevirtci-installer-pull-token: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-c"
-        - "KUBEVIRT_PROVIDER=kind-k8s-1.17.0-ipv6 make cluster-up"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "15Gi"
-        volumeMounts:
-          #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
-          - name: modules
-            mountPath: /lib/modules
-            readOnly: true
-          - name: cgroup
-            mountPath: /sys/fs/cgroup
-      volumes:
-        - name: modules
-          hostPath:
-            path: /lib/modules
-            type: Directory
-        - name: cgroup
-          hostPath:
-            path: /sys/fs/cgroup
-            type: Directory
   - name: check-up-kind-1.17-sriov
     annotations:
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
