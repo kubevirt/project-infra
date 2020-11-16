@@ -6,7 +6,9 @@ filters:
     approvers:
     - aglitke
     - awels
+    - rgolangh
     reviewers:
     - aglitke
     - awels
+    - rgolangh
 options: {}
