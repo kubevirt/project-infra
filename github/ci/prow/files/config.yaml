@@ -354,6 +354,23 @@ presets:
     mountPath: /etc/default
     readOnly: true
 - labels:
+    preset-docker-mirror-proxy: "true"
+  env:
+  - name: DOCKER_HTTP_PROXY
+    value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+  - name: DOCKER_HTTPS_PROXY
+    value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+  - name: CA_CERT_FILE
+    value: /etc/docker-mirror-proxy/ca.crt
+  volumes:
+  - name: docker-mirror-proxy-ca-cert
+    configMap:
+      name: mirror-proxy-config
+  volumeMounts:
+  - name: docker-mirror-proxy-ca-cert
+    mountPath: /etc/docker-mirror-proxy
+    readOnly: true
+- labels:
     preset-shared-images: "true"
   volumes:
   - name: shared-iso

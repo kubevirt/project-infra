@@ -138,6 +138,20 @@
           type: Opaque
           data:
             service-account.json: "{{ gcsServiceAccount | b64encode }}"
+    - name: Create Docker mirror proxy secret
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowNamespace }}"
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: docker-mirror-proxy
+          type: Opaque
+          data:
+            ca.key: "{{ dockerMirrorProxyCA.key }}"
     - name: Deploy limit range
       command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
       args:
