@@ -23,7 +23,7 @@ spec:
         effect: "NoSchedule"
       containers:
       - name: mirror-proxy
-        image: fgimenez/docker-mirror-proxy:v0.2.0
+        image: fgimenez/docker-registry-proxy:v0.2.0
         env:
         - name: ENABLE_MANIFEST_CACHE
           value: "true"
