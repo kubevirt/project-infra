@@ -180,12 +180,19 @@
           type: Opaque
           data:
             ca.key: "{{ dockerMirrorProxyCA.key | b64encode }}"
-    - name: Create docker mirror proxy config
+    - name: Create docker mirror proxy config for proxy container
       k8s:
         kubeconfig: '{{ automationKubeconfig }}'
         context: '{{ masterClusterContext }}'
         state: present
         namespace: "{{ prowNamespace }}"
+        definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-proxy-config.yaml') | from_yaml }}"
+    - name: Create docker mirror proxy config for daemons
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ masterClusterContext }}'
+        state: present
+        namespace: "{{ prowJobsNamespace }}"
         definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-proxy-config.yaml') | from_yaml }}"
     - name: Create docker mirror proxy deployment
       command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
