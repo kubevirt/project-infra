@@ -1,0 +1,3 @@
+ansible == 2.10.3
+kubernetes == 11.0.0
+openshift == 0.11.2
