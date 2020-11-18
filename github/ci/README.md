@@ -70,6 +70,16 @@ installerPullToken: 'pullSecret: {"auths":{"cloud.openshift.com":{"auth":"test",
 
 ## Run the Playbook
 
+Create a virtual environment and activate it:
+```
+python3 -m venv venv --system-site-packages
+source ./venv/bin/activate
+```
+Now you can install ansible and the required dependencies in the virtual environment:
+```
+pip install -r requirements.txt
+```
+
 Add your master and your clients to the `inventory` file:
 
 ```
@@ -105,7 +115,7 @@ ansible-playbook -i inventory prow.yaml
 The project's secrets are stored in an encrypted format in a private GitHub repo.
 If you need access to the repo, please reach to one of the project's maintainers
 or send an email to our mailing list with an explanation why you need access to
-the project's secrets. 
+the project's secrets.
 
 #### Error: unable to load Private Key
 If you are getting an error of the following:
@@ -167,8 +177,8 @@ For more details see https://github.com/kubernetes/test-infra/blob/master/experi
 
 ### Updating prow configuration manually
 
-In case the config-updater doesn't run after merging a PR into 
-project-infra (symptom is i.e the comment from kubevirt-bot that it updated the configuration is missing), we need to update the complete prow configuration 
+In case the config-updater doesn't run after merging a PR into
+project-infra (symptom is i.e the comment from kubevirt-bot that it updated the configuration is missing), we need to update the complete prow configuration
 manually.
 
 To manually update, go to your [kubernetes/test-infra](https://github.com/kubernetes/test-infra/) directory and execute:
@@ -185,4 +195,3 @@ To manually update, go to your [kubernetes/test-infra](https://github.com/kubern
 ```
 
 See [config-bootstrapper](https://github.com/kubernetes/test-infra/tree/master/prow/cmd/config-bootstrapper)
-
