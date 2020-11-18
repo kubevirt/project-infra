@@ -81,8 +81,9 @@ presubmits:
             tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ &&
             export PATH=/usr/local/go/bin:$PATH &&
             export KUBEVIRT_PROVIDER=kind-k8s-sriov-1.17.0 &&
-            export KUBEVIRT_NUM_NODES=2 &&
-            make cluster-up
+            export KUBEVIRT_NUM_NODES=2;
+            trap "make cluster-down" EXIT ERR SIGINT SIGTERM;
+            make cluster-up;
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
