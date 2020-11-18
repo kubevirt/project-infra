@@ -151,6 +151,11 @@ periodics:
 - name: periodic-project-infra-autoowners
   interval: 24h
   decorate: true
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: master
+    work_dir: true
   spec:
     containers:
     - image: docker.io/kubevirtci/autoowners@sha256:025f8ba96ffdc6d3adf17a0058898e17a8fe814314ec3c4bd2af9812aeeda7b7
@@ -164,19 +169,15 @@ periodics:
         value: kubevirt-bot
       - name: GIT_AUTHOR_EMAIL
         value: rmohr+kubebot@redhat.com
+      - name: GIT_ASKPASS
+        value: "./hack/git-askpass.sh"
       command:
       - "/bin/sh"
       - "-c"
       - >
-        mkdir -p /tmp && cd /tmp &&
-        echo 'cat /etc/github/oauth' > /tmp/git-askpass-helper.sh &&
-        chmod +x /tmp/git-askpass-helper.sh &&
-        export GIT_ASKPASS=/tmp/git-askpass-helper.sh &&
-        git clone https://github.com/kubevirt/project-infra.git &&
-        cd project-infra &&
-        autoowners --dry-run=false --github-login=kubevirt-bot --org=kubevirt --repo=project-infra --assign=dhiller --target-dir=. --target-subdir=github/ci/prow/files --config-subdir=jobs --github-token-path=/etc/github/oauth &&
-        git commit --amend --signoff --no-edit &&
-        git push -f "https://kubevirt-bot@github.com/kubevirt-bot/project-infra.git" HEAD:autoowners
+        autoowners --dry-run=false --github-login=kubevirt-bot --github-endpoint=http://ghproxy --github-endpoint=https://api.github.com --org=kubevirt --repo=project-infra --assign=dhiller --target-dir=. --target-subdir=github/ci/prow/files --config-subdir=jobs --github-token-path=/etc/github/oauth
+        && git commit --amend --signoff --no-edit
+        && git push -f "https://kubevirt-bot@github.com/kubevirt-bot/project-infra.git" HEAD:autoowners
       volumeMounts:
       - name: token
         mountPath: /etc/github
