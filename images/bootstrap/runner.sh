@@ -15,20 +15,6 @@
 
 set -eo pipefail
 
-setup_docker_proxy(){
-    if [ ! -z "${DOCKER_HTTP_PROXY}" ]; then
-        echo "Setting docker daemon http_proxy env var to ${DOCKER_HTTP_PROXY}"
-        echo "export http_proxy=${DOCKER_HTTP_PROXY}" | \
-            tee --append /etc/default/docker
-    fi
-
-    if [ ! -z "${DOCKER_HTTPS_PROXY}" ]; then
-        echo "Setting docker daemon https_proxy env var to ${DOCKER_HTTPS_PROXY}"
-        echo "export https_proxy=${DOCKER_HTTPS_PROXY}" | \
-            tee --append /etc/default/docker
-    fi
-}
-
 setup_ca(){
     if [ -f "${CA_CERT_FILE}" ]; then
         echo "Adding ${CA_CERT_FILE} as a trusted root CA"
@@ -39,8 +25,6 @@ setup_ca(){
 }
 
 main(){
-    setup_docker_proxy
-
     setup_ca
 
     /usr/local/bin/runner_orig.sh "${@}"
