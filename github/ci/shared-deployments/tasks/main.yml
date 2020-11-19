@@ -16,3 +16,4 @@
     definition: "{{ lookup('template', '{{ role_path }}/templates/docker-daemon-mirror-config.yaml') | from_yaml }}"
   vars:
     dockerDaemonConfig: "{{ lookup('file', '{{ role_path }}/files/docker-daemon-mirror.conf') }}"
+    dockerDaemonProxyConfig: "{{ lookup('file', '{{ role_path }}/files/docker-daemon-mirror-proxy.conf') }}"
