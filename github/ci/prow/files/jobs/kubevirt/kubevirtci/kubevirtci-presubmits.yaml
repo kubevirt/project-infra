@@ -55,6 +55,7 @@ presubmits:
       preset-docker-mirror: "true"
       preset-kubevirtci-installer-pull-token: "true"
       sriov-pod: "true"
+      rehearsal.allowed: "true"
     spec:
       nodeSelector:
         hardwareSupport: sriov-nic
