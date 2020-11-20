@@ -1,0 +1,5 @@
+ansible == 2.9.6
+kubernetes == 11.0.0
+kubernetes-validate == 1.19.0
+molecule == 3.1.5
+openshift == 0.11.2
