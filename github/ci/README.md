@@ -72,7 +72,7 @@ installerPullToken: 'pullSecret: {"auths":{"cloud.openshift.com":{"auth":"test",
 
 Create a virtual environment and activate it:
 ```
-python3 -m venv venv --system-site-packages
+python3 -m venv venv
 source ./venv/bin/activate
 ```
 Now you can install ansible and the required dependencies in the virtual environment:
