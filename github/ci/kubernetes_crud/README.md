@@ -103,7 +103,7 @@ This role uses molecule for testing.
 From `github/ci/kubernetes_crud/`, create a python virtualenv and install all
 the required packages:
 
-    python3 -m venv venv --system-site-packages
+    python3 -m venv venv
     source ./venv/bin/activate
     pip install -r requirements.txt
 
