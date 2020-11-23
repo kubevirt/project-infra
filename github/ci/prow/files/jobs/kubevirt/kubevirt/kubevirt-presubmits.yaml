@@ -371,6 +371,42 @@ presubmits:
             requests:
               memory: "4Gi"
 
+  - name: pull-kubevirt-gosec-subset
+    cluster: ibm-prow-jobs
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+      rehearsal.allowed: "true"
+    always_run: true
+    skip_report: false
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make gosec"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+          env:
+            - name: GOSEC
+              value: "G304"
+
   - name: pull-kubevirt-build
     cluster: ibm-prow-jobs
     skip_branches:
