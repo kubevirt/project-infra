@@ -63,6 +63,38 @@ presubmits:
               - "-c"
               - "automation/check-patch.e2e-k8s.sh"
 
+    - name: pull-kubernetes-nmstate-e2e-handler-k8s-parallel
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+      always_run: true
+      optional: true
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "export NMSTATE_PARALLEL_ROLLOUT=true && automation/check-patch.e2e-k8s.sh"
+
     - name: pull-kubernetes-nmstate-docs
       cluster: ibm-prow-jobs
       skip_branches:
@@ -70,7 +102,7 @@ presubmits:
       annotations:
         fork-per-release: "true"
       always_run: true
-      skip_report: false
+      skip_report: true
       optional: false
       decorate: true
       decoration_config:
