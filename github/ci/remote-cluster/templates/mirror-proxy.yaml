@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-mirror-proxy
+spec:
+  selector:
+    matchLabels:
+      app: docker-mirror-proxy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: docker-mirror-proxy
+    spec:
+      terminationGracePeriodSeconds: 180
+      serviceAccountName: "caches"
+      containers:
+      - name: mirror-proxy
+        image: fgimenez/docker-registry-proxy:v0.2.0
+        env:
+        - name: ENABLE_MANIFEST_CACHE
+          value: "true"
+        volumeMounts:
+        - name: storage
+          mountPath: /docker_mirror_cache
+        - name: ca-public
+          mountPath: /ca/ca.crt
+          subPath: ca.crt
+          readOnly: true
+        - name: ca-private
+          mountPath: /ca/ca.key
+          subPath: ca.key
+          readOnly: true
+        ports:
+          - name: http
+            containerPort: 3128
+        resources:
+          requests:
+            memory: 3Gi
+          limits:
+            memory: 3Gi
+      volumes:
+      - name: ca-public
+        configMap:
+          name: mirror-proxy-config
+      - name: ca-private
+        secret:
+          secretName: docker-mirror-proxy
+      - name: storage
+        persistentVolumeClaim:
+          claimName: docker-mirror-proxy

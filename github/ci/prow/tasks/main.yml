@@ -166,45 +166,10 @@
         state: present
         namespace: "{{ prowNamespace }}"
         definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-service.yaml') | from_yaml }}"
-    - name: Create docker mirror proxy secret
-      k8s:
-        kubeconfig: '{{ automationKubeconfig }}'
-        context: '{{ masterClusterContext }}'
-        state: present
-        namespace: "{{ prowNamespace }}"
-        definition:
-          apiVersion: v1
-          kind: Secret
-          metadata:
-            name: docker-mirror-proxy
-          type: Opaque
-          data:
-            ca.key: "{{ dockerMirrorProxyCA.key | b64encode }}"
-    - name: Create docker mirror proxy config for proxy container
-      k8s:
-        kubeconfig: '{{ automationKubeconfig }}'
-        context: '{{ masterClusterContext }}'
-        state: present
-        namespace: "{{ prowNamespace }}"
-        definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-proxy-config.yaml') | from_yaml }}"
-    - name: Create docker mirror proxy config for daemons
-      k8s:
-        kubeconfig: '{{ automationKubeconfig }}'
-        context: '{{ masterClusterContext }}'
-        state: present
-        namespace: "{{ prowJobsNamespace }}"
-        definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-proxy-config.yaml') | from_yaml }}"
     - name: Create docker mirror proxy deployment
       command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
       args:
         stdin: "{{ lookup('template', '{{ role_path }}/templates/mirror-proxy.yaml')}}"
-    - name: Create docker mirror proxy service
-      k8s:
-        kubeconfig: '{{ automationKubeconfig }}'
-        context: '{{ masterClusterContext }}'
-        state: present
-        namespace: "{{ prowNamespace }}"
-        definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-proxy-service.yaml') | from_yaml }}"
     - name: Update prow config
       k8s:
         kubeconfig: '{{ automationKubeconfig }}'
