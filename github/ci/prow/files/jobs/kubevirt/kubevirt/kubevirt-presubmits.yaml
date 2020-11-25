@@ -182,7 +182,6 @@ presubmits:
       preset-docker-mirror: "true"
       preset-shared-images: "true"
       sriov-pod: "true"
-      rehearsal.allowed: "true"
     spec:
       nodeSelector:
         hardwareSupport: sriov-nic
