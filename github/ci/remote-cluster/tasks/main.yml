@@ -245,6 +245,6 @@
                storage: 450Gi
            storageClassName: ibmc-vpc-block-general-purpose
     - name: Create docker mirror proxy deployment
-      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ masterClusterContext }} -n {{prowNamespace}} apply -f -"
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ remoteClusterProwJobsContext }} -n {{prowNamespace}} apply -f -"
       args:
         stdin: "{{ lookup('template', '{{ role_path }}/templates/mirror-proxy.yaml')}}"

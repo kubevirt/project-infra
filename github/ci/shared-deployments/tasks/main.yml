@@ -19,8 +19,8 @@
     dockerDaemonProxyConfig: "{{ lookup('file', '{{ role_path }}/files/docker-daemon-mirror-proxy.conf') }}"
 - name: Create docker mirror proxy secret
   k8s:
-    kubeconfig: '{{ automationKubeconfig }}'
-    context: '{{ masterClusterContext }}'
+    kubeconfig: '{{ targetKubeconfig }}'
+    context: '{{ targetContext }}'
     state: present
     namespace: "{{ prowNamespace }}"
     definition:
@@ -33,22 +33,22 @@
         ca.key: "{{ dockerMirrorProxyCA.key | b64encode }}"
 - name: Create docker mirror proxy config for proxy container
   k8s:
-    kubeconfig: '{{ automationKubeconfig }}'
-    context: '{{ masterClusterContext }}'
+    kubeconfig: '{{ targetKubeconfig }}'
+    context: '{{ targetContext }}'
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-proxy-config.yaml') | from_yaml }}"
 - name: Create docker mirror proxy config for daemons
   k8s:
-    kubeconfig: '{{ automationKubeconfig }}'
-    context: '{{ masterClusterContext }}'
+    kubeconfig: '{{ targetKubeconfig }}'
+    context: '{{ targetContext }}'
     state: present
     namespace: "{{ prowJobsNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-proxy-config.yaml') | from_yaml }}"
 - name: Create docker mirror proxy service
   k8s:
-    kubeconfig: '{{ automationKubeconfig }}'
-    context: '{{ masterClusterContext }}'
+    kubeconfig: '{{ targetKubeconfig }}'
+    context: '{{ targetContext }}'
     state: present
     namespace: "{{ prowNamespace }}"
     definition: "{{ lookup('template', '{{ role_path }}/templates/mirror-proxy-service.yaml') | from_yaml }}"
