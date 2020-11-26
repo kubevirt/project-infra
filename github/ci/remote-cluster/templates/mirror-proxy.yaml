@@ -13,7 +13,6 @@ spec:
         app: docker-mirror-proxy
     spec:
       terminationGracePeriodSeconds: 180
-      serviceAccountName: "caches"
       containers:
       - name: mirror-proxy
         image: fgimenez/docker-registry-proxy:v0.2.0
