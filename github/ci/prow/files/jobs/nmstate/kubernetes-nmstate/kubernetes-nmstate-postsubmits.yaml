@@ -22,7 +22,7 @@ postsubmits:
           - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
             env:
             - name: GIT_ASKPASS
-              value: "../project-infra/hack/git-askpass.sh"
+              value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
             - name: GITHUB_USER
               value: kubevirt-bot
             - name: GITHUB_EMAIL
@@ -35,6 +35,13 @@ postsubmits:
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
+            volumeMounts:
+              - name: github-token
+                mountPath: /etc/github
+        volumes:
+          - name: github-token
+            secret:
+              secretName: oauth-token
 
     - name: release-kubernetes-nmstate
       decorate: true
