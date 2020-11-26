@@ -1,12 +1,19 @@
 ---
-- set_fact:
-    manifest_base: "{{ role_path }}"
-- include_role:
-    name: kubernetes_crud
+- name: Add admins to the pow job namespace
+  command: "oc --kubeconfig {{ targetKubeconfig }} --context {{ targetContext }} -n {{ targetNamespace }} apply -f -"
+  args:
+    stdin: "{{ lookup('template', '{{ role_path }}/templates/admin-rbac.yaml')}}"
+- name: Deploy job limit range
+  command: "oc --kubeconfig {{ targetKubeconfig }} --context {{ targetContext }} -n {{ targetNamespace }} apply -f -"
+  args:
+    stdin: "{{ lookup('file', '{{ role_path }}/templates/memory-job-defaults.yaml') }}"
+- name: Update the docker daemon mirror config
+  k8s:
+    kubeconfig: '{{ targetKubeconfig }}'
+    context: '{{ targetContext }}'
+    state: present
+    namespace: "{{ targetNamespace }}"
+    definition: "{{ lookup('template', '{{ role_path }}/templates/docker-daemon-mirror-config.yaml') | from_yaml }}"
   vars:
     dockerDaemonConfig: "{{ lookup('file', '{{ role_path }}/files/docker-daemon-mirror.conf') }}"
     dockerDaemonProxyConfig: "{{ lookup('file', '{{ role_path }}/files/docker-daemon-mirror-proxy.conf') }}"
-    steps: "{{ deploy_steps }}"
-    default_kubeconfig_path: "{{ targetKubeconfig }}"
-    default_context:  '{{ targetContext }}'
-    default_namespace: '{{ targetNamespace }}'

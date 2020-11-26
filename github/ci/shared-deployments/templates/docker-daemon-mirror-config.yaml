@@ -5,6 +5,6 @@ metadata:
 data:
   docker: |
 {{ dockerDaemonConfig | indent(width=4, indentfirst=True) }}
+
   docker-proxy: |
 {{ dockerDaemonProxyConfig | indent(width=4, indentfirst=True) }}
-{{ dockerDaemonConfig | indent(width=4, indentfirst=True) }}

@@ -6,5 +6,6 @@ metadata:
 spec:
   template:
     spec:
+      hostNetwork: true
       nodeSelector:
         role: ingress-controller

@@ -3,47 +3,54 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: hook
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
 spec:
-  tls: null
   rules:
-    - host: deck.prowdeploy.io
-      http:
-        paths:
-          - path: /hook
-            backend:
-              serviceName: hook
-              servicePort: 8888
+  - host: hook.prowdeploy.ci
+    http:
+      paths:
+      - path: /hook
+        backend:
+          serviceName: hook
+          servicePort: 8888
 ---
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: deck
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/app-root: ""
 spec:
-  tls:
-    - hosts:
-      - deck.prowdeploy.io
   rules:
-    - host: deck.prowdeploy.io
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: deck
-              servicePort: 80
+  - host: deck.prowdeploy.ci
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: deck
+          servicePort: 80
+  tls:
+  - hosts:
+    - deck.prowdeploy.ci
 ---
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: gcsweb
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
 spec:
-  tls:
-    - hosts:
-        - gcsweb.prowdeploy.io
   rules:
-    - host: gcsweb.prowdeploy.io
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: gcsweb
-              servicePort: 80
+  - host: gcsweb.prowdeploy.ci
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: gcsweb
+          servicePort: 80
+  tls:
+  - hosts:
+    - gcsweb.prowdeploy.ci

@@ -16,8 +16,7 @@
   value: kubernetes-prow-jobs
 - command: update
   path: pod_namespace
-  value: kubernetes-prow-job
+  value: kubernetes-prow-jobs
 - command: update
   path: plank.default_decoration_configs.*.gcs_configuration.bucket
   value: kubernetes-prow
-

@@ -1,4 +1,4 @@
-- hosts: localhost
+- hosts: instance
   tasks:
     - set_fact:
         deploy_environment: '{{ lookup("env", "DEPLOY_ENVIRONMENT") }}'
@@ -12,4 +12,3 @@
 
     - name: Include smoke tests
       include_tasks: smoke_tests.yaml
-

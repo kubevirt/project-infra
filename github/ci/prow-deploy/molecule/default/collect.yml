@@ -7,11 +7,11 @@
     - name: Clear artifacts_dir
       file:
         state: absent
-        path: artifacts_dir
+        path: '{{ artifacts_dir }}'
     - name: Create artifacts_dir
       file:
         state: directory
-        path: artifacts_dir
+        path: '{{ artifacts_dir }}'
 
 - name: Create temp dir
   when: artifacts_dir == ""
@@ -34,8 +34,12 @@
 - name: Describe all in a single yaml.
   shell: |
     {{ kubectl_prow }} get all -o yaml > {{ artifacts_dir }}/get_all.yaml
-  environment:
-    KUBEVIRTCI_TAG: 2010091151-ea2c81d
+  environment: "{{ shell_environment }}"
+
+- name: Compress yaml
+  archive:
+    path: "{{ artifacts_dir }}/get_all.yaml"
+    remove: yes
 
 - name: collect opened port
   shell: |
@@ -44,15 +48,7 @@
 - name: collect port mapping
   shell: |
     {{ kubevirtci_dir }}/cluster-up/cli.sh ports > {{ artifacts_dir }}/port-map.txt
-  environment:
-    KUBEVIRTCI_TAG: 2010091151-ea2c81d
-
-- name: Compress yaml
-  archive:
-    path: "{{ artifacts_dir }}/get_all.yaml"
-    dest: "{{ artifacts_dir }}/get_all.yaml.gz"
-    remove: yes
-    format: gz
+  environment: "{{ shell_environment }}"
 
 # Putting relevant data in a hierarchy
 - name: include resource collection tasks
@@ -61,4 +57,3 @@
   loop_control:
     loop_var: resource
     label: "{{ resource.key }}"
-
