@@ -8,14 +8,20 @@ periodics:
   max_concurrency: 1
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror: "true"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
     preset-kubevirtci-docker-credential: "true"
+    rehearsal.allowed: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: hyperconverged-cluster-operator
+      base_ref: master
+      work_dir: true
   spec:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+    - image: kubevirtci/bootstrap:v20201119-a5880e0
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -28,8 +34,6 @@ periodics:
           wget -q https://dl.google.com/go/go1.15.2.linux-amd64.tar.gz &&
           tar -C /usr/local -xf go*.tar.gz &&
           export PATH=/usr/local/go/bin:$PATH &&
-          git clone https://github.com/kubevirt/hyperconverged-cluster-operator.git &&
-          cd hyperconverged-cluster-operator &&
           latest_kubevirt=$(curl -sL https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest) &&
           latest_kubevirt_image=$(curl -sL https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${latest_kubevirt}/kubevirt-operator.yaml | grep 'OPERATOR_IMAGE' -A1 | tail -n 1 | sed 's/.*value: //g') &&
           IFS=: read kv_image kv_tag <<< ${latest_kubevirt_image} &&
