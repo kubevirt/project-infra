@@ -226,3 +226,25 @@
       import_role:
         name: prow-jobs-secrets
       no_log: true
+    - name: Create docker mirror proxy PVC
+      k8s:
+        kubeconfig: '{{ automationKubeconfig }}'
+        context: '{{ remoteClusterProwJobsContext }}'
+        state: present
+        definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+           name: docker-mirror-proxy
+           namespace: '{{ prowNamespace }}'
+          spec:
+           accessModes:
+           - ReadWriteOnce
+           resources:
+             requests:
+               storage: 450Gi
+           storageClassName: ibmc-vpc-block-general-purpose
+    - name: Create docker mirror proxy deployment
+      command: "oc --kubeconfig {{ automationKubeconfig }} --context {{ remoteClusterProwJobsContext }} -n {{prowNamespace}} apply -f -"
+      args:
+        stdin: "{{ lookup('template', '{{ role_path }}/templates/mirror-proxy.yaml')}}"
