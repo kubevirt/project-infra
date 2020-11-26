@@ -156,6 +156,13 @@ patches:
     path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
+      version: v1
+      kind: RoleBinding
+      namespace: test-pods
+      name: .*
+    path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
       version: v1beta1
       kind: RoleBinding
       namespace: test-pods
@@ -189,6 +196,12 @@ patches:
       namespace: test-pods
       name: .*
     path: patches/JsonRFC6902/prow-jobs-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      kind: Role
+      namespace: test-pods
+      name: deck
+    path: patches/JsonRFC6902/prow-jobs-rolebinding-rules.yaml
   - target:
       group: networking.k8s.io
       version: v1beta1
@@ -243,30 +256,36 @@ secretGenerator:
     files:
       - secrets/kubeconfig/config
     type: Opaque
-  - name: cookie
-    files:
-      - secrets/cookie-b64encoded/secret
-    type: Opaque
   - name: gcs
     files:
       - secrets/gcs/service-account.json
-    type: Opaque
-  - name: github-oauth-config
-    files:
-      - secrets/github-oauth-config/secret
-    type: Opaque
-  - name: hmac-token
-    files:
-      - secrets/hmac-token/hmac
     type: Opaque
   - name: oauth-token
     files:
       - secrets/oauth-token/oauth
     type: Opaque
+
   - name: slack-token
-    files:
-      - secrets/slack-token/token
+    literals:
+      - token=c606ec928e629793f4b5
     type: Opaque
   - name: unsplash-api-key
-    files:
-      - secrets/unsplash-api/honk.txt
+    literals:
+      - honk.txt=
+  - name: cookie
+    literals:
+      - secret=NkczOE1oS213cjZBUjlqZTFZYlpmaVNTSEVNYXpCekl0TUhmQTBYZWlRTnpOYVN3L0FDcDA1V3FBSU9VUVI2MAo=
+    type: Opaque
+  - name: hmac-token
+    literals:
+      - hmac=ce247fb28a0ce39122656a349922372cf9016f66
+    type: Opaque
+  - name: github-oauth-config
+    literals:
+      - |
+        secret=client_id: 67dba0364b7fadddccde
+        client_secret: 4898de28817bd96ad3911b9f145c86f00542dd55
+        redirect_url: https://prow.apps.ovirt.org/github-login/redirect
+        final_redirect_url: https://prow.apps.ovirt.org/pr
+
+    type: Opaque

@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: instance
   tasks:
     - set_fact:
         deploy_environment: '{{ lookup("env", "DEPLOY_ENVIRONMENT") }}'
@@ -20,7 +20,6 @@
           include_role:
             name: prow-deploy
           vars:
-            decploy_environment: "{{ deploy_environment }}"
             main_actions:
               - bootstrap
               - deploy

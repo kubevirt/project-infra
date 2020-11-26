@@ -10,10 +10,10 @@ kubectl_exec: "{{ kubevirtci_dir }}/cluster-up/kubectl.sh"
 kubeconfig_path: '{{ kubevirtci_dir }}/_ci-configs/{{ kubevirtci_provider }}/.kubeconfig'
 masterClusterContext: kubernetes-admin@kubernetes
 bootstrap_full_config: true
-hook_hostname: deck.prowdeploy.ci
-deck_hostname: deck-prow.e8ca.engint.openshiftapps.com
+hook_hostname: hook.prowdeploy.ci
+deck_hostname: deck.prowdeploy.ci
 gcsweb_hostname: gcsweb.prowdeploy.ci
-
+prowHmac: ce247fb28a0ce39122656a349922372cf9016f66
 
 shell_environment:
   KUBEVIRT_PROVIDER: "{{ kubevirtci_provider }}"

@@ -1,17 +1,22 @@
 ---
 driver:
-  name: delegated
+  name: docker
 
 platforms:
-  - name: instance  # must be able to `ssh host`, edit your ~/.ssh/config
-    options:
-      managed: False
+  - name: instance
+    image: kubevirtci/bootstrap:v20201119-a5880e0
+    privileged: True
+    etc_hosts:
+      "gcsweb.prowdeploy.ci": "127.0.0.1"
+      "deck.prowdeploy.ci": "127.0.0.1"
+      "hook.prowdeploy.ci": "127.0.0.1"
 
 provisioner:
   name: ansible
 
 scenario:
   test_sequence:
+    - create
     - prepare
     - converge
     - verify
