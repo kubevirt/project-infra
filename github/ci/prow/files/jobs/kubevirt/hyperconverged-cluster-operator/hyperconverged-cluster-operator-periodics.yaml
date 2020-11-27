@@ -27,7 +27,7 @@ periodics:
         value: /etc/gcs/service-account.json
       command:
         - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
+        - "/bin/bash"
         - "-c"
         - >
           cat $DOCKER_PASSWORD | docker login --username $(cat $DOCKER_USER) --password-stdin &&
