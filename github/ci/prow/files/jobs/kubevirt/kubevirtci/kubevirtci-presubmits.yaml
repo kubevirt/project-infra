@@ -32,7 +32,7 @@ presubmits:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
         - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
+        - "/bin/bash"
         - "-c"
         - >
             apt update &&
@@ -42,7 +42,7 @@ presubmits:
             export PATH=/usr/local/go/bin:$PATH &&
             export KUBEVIRT_PROVIDER=kind-k8s-sriov-1.17.0 &&
             export KUBEVIRT_NUM_NODES=2;
-            trap "make cluster-down" EXIT ERR SIGINT SIGTERM;
+            trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM;
             make cluster-up;
         # docker-in-docker needs privileged mode
         securityContext:
