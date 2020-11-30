@@ -179,7 +179,7 @@ presubmits:
     max_concurrency: 10
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
       sriov-pod: "true"
       rehearsal.allowed: "true"
@@ -197,7 +197,7 @@ presubmits:
                   - "true"
               topologyKey: kubernetes.io/hostname
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
@@ -255,13 +255,13 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -321,11 +321,11 @@ presubmits:
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -354,11 +354,11 @@ presubmits:
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -386,11 +386,11 @@ presubmits:
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -417,11 +417,11 @@ presubmits:
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -448,11 +448,11 @@ presubmits:
       grace_period: 10m
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         env:
           - name: COVERALLS_TOKEN_FILE
             value: /root/.docker/secrets/coveralls/token
@@ -490,11 +490,11 @@ presubmits:
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -521,11 +521,11 @@ presubmits:
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -552,11 +552,11 @@ presubmits:
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           # skip getting old CSVs here (no QUAY_REPOSITORY), verification might fail because of stricter rules over time; falls back to latest if not on a tag
           command:
             - "/usr/local/bin/runner.sh"
@@ -584,11 +584,11 @@ presubmits:
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           # skip getting old CSVs here (no QUAY_REPOSITORY), verification might fail because of stricter rules over time; falls back to latest if not on a tag
           command:
             - "/usr/local/bin/runner.sh"

@@ -14,13 +14,13 @@ presubmits:
     max_concurrency: 6
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -46,13 +46,13 @@ presubmits:
     max_concurrency: 6
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -78,13 +78,13 @@ presubmits:
     max_concurrency: 6
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -110,13 +110,13 @@ presubmits:
     max_concurrency: 6
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -142,13 +142,13 @@ presubmits:
     max_concurrency: 10
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -174,13 +174,13 @@ presubmits:
     max_concurrency: 6
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -206,13 +206,13 @@ presubmits:
     max_concurrency: 6
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -238,13 +238,13 @@ presubmits:
     max_concurrency: 6
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -270,13 +270,13 @@ presubmits:
     max_concurrency: 1 # we have one license
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -304,7 +304,7 @@ presubmits:
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
       sriov-pod: "true"
     spec:
@@ -321,7 +321,7 @@ presubmits:
                   - "true"
               topologyKey: kubernetes.io/hostname
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"

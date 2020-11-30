@@ -10,7 +10,7 @@ presubmits:
       timeout: 6h0m0s
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-1.11.0
@@ -21,7 +21,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=k8s-1.11.0 && automation/test.sh
-        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        image: kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -39,7 +39,7 @@ presubmits:
       timeout: 6h0m0s
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-genie-1.11.1
@@ -50,7 +50,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=k8s-genie-1.11.1 && automation/test.sh
-        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        image: kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -68,7 +68,7 @@ presubmits:
       timeout: 6h0m0s
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 10
     name: pull-kubevirt-e2e-k8s-multus-1.13.3
@@ -79,7 +79,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=k8s-multus-1.13.3 && automation/test.sh
-        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        image: kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -97,7 +97,7 @@ presubmits:
       timeout: 6h0m0s
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-kubevirt-e2e-os-3.11.0-crio
@@ -108,7 +108,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=os-3.11.0-crio && automation/test.sh
-        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        image: kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -126,7 +126,7 @@ presubmits:
       timeout: 6h0m0s
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-kubevirt-e2e-os-3.11.0-multus
@@ -137,7 +137,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=os-3.11.0-multus && automation/test.sh
-        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        image: kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -155,7 +155,7 @@ presubmits:
       timeout: 6h0m0s
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-kubevirt-e2e-os-3.11.0
@@ -166,7 +166,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=os-3.11.0 && automation/test.sh
-        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        image: kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -184,7 +184,7 @@ presubmits:
       timeout: 6h0m0s
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-kubevirt-e2e-okd-4.1.0
@@ -196,7 +196,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=okd-4.1.0 && automation/test.sh
-        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        image: kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -214,7 +214,7 @@ presubmits:
       timeout: 6h0m0s
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-kubevirt-e2e-okd-4.1.2
@@ -226,7 +226,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=okd-4.1.2 && automation/test.sh
-        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        image: kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -244,7 +244,7 @@ presubmits:
       timeout: 6h0m0s
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-windows2016
@@ -255,7 +255,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=windows2016 && automation/test.sh
-        image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        image: kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
