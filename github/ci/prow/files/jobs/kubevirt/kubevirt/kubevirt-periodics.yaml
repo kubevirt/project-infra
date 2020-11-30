@@ -176,7 +176,9 @@ periodics:
               if [ $retval -eq 0 ]; then
                   break;
               fi;
-              (( counter-- ));
+              set +e;
+              counter=$(expr $counter - 1);
+              set -e;
               sleep 120;
           done;
           make build-functests;
