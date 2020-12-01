@@ -17,3 +17,5 @@ pushd $BASE_DIR
 rm current
 ln -s $VERSION current
 cp -a $TEST_INFRA_DIR/config/prow/cluster/* $VERSION
+
+find $VERSION -name OWNERS | xargs rm
