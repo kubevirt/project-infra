@@ -5,12 +5,10 @@ filters:
   .*:
     approvers:
     - beekhof
-    - ksimon1
     - slintes
-    - yanirq
+    - n1r1
     reviewers:
     - beekhof
-    - ksimon1
     - slintes
-    - yanirq
+    - n1r1
 options: {}
