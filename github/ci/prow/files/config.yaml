@@ -325,6 +325,15 @@ branch-protection:
               protect: true
         kubectl-virt-plugin:
           protect: true
+        node-maintenance-operator:
+          branches:
+            master:
+              protect: true
+              required_status_checks:
+                contexts:
+                  # these are from OpenshiftCI!
+                  - ci/prow/images
+                  - ci/prow/openshift-e2e
     k8snetworkplumbingwg:
       repos:
         kubemacpool:
