@@ -214,11 +214,11 @@ periodics:
     grace_period: 5m
   max_concurrency: 1
   labels:
-    preset-docker-mirror: "true"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   spec:
     containers:
-    - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+    - image: kubevirtci/bootstrap:v20201119-a5880e0
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -258,7 +258,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror: "true"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -270,7 +270,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
@@ -297,12 +297,12 @@ periodics:
       work_dir: true
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror: "true"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   max_concurrency: 1
   spec:
     containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
@@ -349,12 +349,12 @@ periodics:
       work_dir: true
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror: "true"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   max_concurrency: 1
   spec:
     containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
