@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-YQ_BIN=~/go/bin/yq
+set -e
+
+YQ_BIN=/tmp/yq
 CONFIG_VERSION=${2:-"current"}
 BASE_DIR="base/configs/$CONFIG_VERSION"
 ENVIRONMENT_DIR="environments/$1"

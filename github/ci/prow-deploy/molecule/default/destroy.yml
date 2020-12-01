@@ -1,4 +1,4 @@
-- hosts: localhost
+- hosts: instance
   tasks:
     - set_fact:
         deploy_environment: '{{ lookup("env", "DEPLOY_ENVIRONMENT") }}'

@@ -1,3 +1,32 @@
+# FIXME: use an image with this binary installed
+- name: install kustomize
+  unarchive:
+    src: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.8.7/kustomize_v3.8.7_linux_amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+    mode: a+x
+
+# FIXME: use an image with this binary installed
+- name: install bazelisk
+  get_url:
+    url: https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64
+    dest: /tmp/bazelisk
+    mode: a+x
+
+# FIXME: use an image with this binary installed
+- name: install yq
+  get_url:
+    url: https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+    dest: /tmp/yq
+    mode: a+x
+
+# FIXME: use an image with this dependencies installed
+- name: install pip dependencies
+  pip:
+    name:
+      - kubernetes==11.0.0
+      - openshift==0.11.2
+
 - name: launch config rendering
   shell: |
     ./render-environment-configs.sh {{ deploy_environment }}
@@ -12,30 +41,21 @@
 
 - name: validate Kustomize result
   shell: |
-    ~/go/bin/kustomize build environments/{{ deploy_environment }}
+    /tmp/kustomize build environments/{{ deploy_environment }}
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
 
 - name: Launch deployment
   shell: |
-    ~/go/bin/kustomize build environments/{{ deploy_environment }} | {{ kubectl_exec }} apply -f -
+    /tmp/kustomize build environments/{{ deploy_environment }} | {{ kubectl_exec }} apply -f -
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
   environment: "{{ shell_environment }}"
 
-#- fail:
-#    msg: |-
-#      PROJECT_INFRA_ROOT={{ project_infra_root }}
-#      JOB_CONFIG_PATH={{ project_infra_root }}/github/ci/prow/files/jobs/
-#      PROW_CONFIG_PATH="{{ project_infra_root }}/github/ci/prow-deploy/kustom/environments/{{ deploy_environment
-#- }}/configs/config/config.yaml
-#      PLUGIN_CONFIG_PATH={{ project_infra_root }}/github/ci/prow-deploy/kustom/environments/{{ deploy_environment
-#- }}/configs/plugins/plugins.yaml
-#      KUBECONFIG={{ kubeconfig_path }}
 - name: Bootstrap the full job config (this may take a few minutes)
   when: bootstrap_full_config|bool
   shell: |
-    bazel run //prow/cmd/config-bootstrapper -- \
+    /tmp/bazelisk run //prow/cmd/config-bootstrapper -- \
         --dry-run=false \
         --source-path=$PROJECT_INFRA_ROOT  \
         --config-path=$PROW_CONFIG_PATH \
@@ -49,4 +69,3 @@
     KUBECONFIG: "{{ kubeconfig_path }}"
   args:
     chdir: "{{ testinfra_dir }}"
-

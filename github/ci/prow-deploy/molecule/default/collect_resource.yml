@@ -18,6 +18,9 @@
     RESOURCE_NAME: "{{ item.metadata.name }}"
     ARTIFACTS_DIR: "{{ artifacts_dir }}"
     KUBECTL_CMD: "{{ kubectl_prow }}"
+    KUBEVIRT_PROVIDER: "{{ kubevirtci_provider }}"
+    KUBEVIRTCI_TAG: "{{ kubevirt_tag }}"
+
   loop: "{{ resource_list.resources }}"
   loop_control:
     label: "{{ item.metadata.name }}"

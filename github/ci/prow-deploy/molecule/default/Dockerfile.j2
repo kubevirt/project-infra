@@ -1,0 +1,31 @@
+FROM {{ item.image }}
+
+RUN printf '#!/bin/bash\n\
+echo "Docker in Docker enabled, initializing..."\n\
+printf '=%.0s' {1..80}; echo\n\
+# If we have opted in to docker in docker, start the docker daemon,\n\
+service docker start\n\
+# the service can be started but the docker socket not ready, wait for ready\n\
+WAIT_N=0\n\
+MAX_WAIT=5\n\
+while true; do\n\
+    # docker ps -q should only work if the daemon is ready\n\
+    docker ps -q > /dev/null 2>&1 && break\n\
+    if [[ ${WAIT_N} -lt ${MAX_WAIT} ]]; then\n\
+        WAIT_N=$((WAIT_N+1))\n\
+        echo "Waiting for docker to be ready, sleeping for ${WAIT_N} seconds."\n\
+        sleep ${WAIT_N}\n\
+    else\n\
+        echo "Reached maximum attempts, not waiting any longer..."\n\
+        break\n\
+    fi\n\
+done\n\
+printf '=%.0s' {1..80}; echo\n\
+echo "Done setting up docker in docker."'\
+  >> /usr/local/bin/start_dind.sh
+
+RUN chmod a+x /usr/local/bin/start_dind.sh
+
+ENTRYPOINT []
+
+CMD ["bash"]
