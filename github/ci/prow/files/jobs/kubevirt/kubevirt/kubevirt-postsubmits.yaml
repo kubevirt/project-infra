@@ -1,0 +1,36 @@
+postsubmits:
+  kubevirt/kubevirt:
+  - name: push-release-kubevirt-images
+    branches:
+    - ^release-\d+\.\d+
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          DOCKER_TAG="$(git tag --points-at HEAD | head -1)" make bazel-push-images
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
