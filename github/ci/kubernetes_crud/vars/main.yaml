@@ -1,4 +1,0 @@
-default_fatal_validation: yes
-default_strict_validation: yes
-
-default_crud_operation: apply_manifest

@@ -1,0 +1,49 @@
+# We need to retry a set of tasks, but block does not support retries,
+# so we need to build our own retry paradigm. using recursion
+- block:
+    - name: Increment the retry count
+      set_fact:
+        retry_count: "{{  1 if retry_count is undefined else retry_count | int + 1 }}"
+
+    - name: Get a list of all pods from prow namespace
+      k8s_info:
+        kind: Pod
+        namespace: "{{ prowNamespace }}"
+        kubeconfig: '{{ kubeconfig_path }}'
+      register: pod_list
+
+    - name: verify list of pods is not empty
+      assert:
+        quiet: true
+        that: pod_list.resources != []
+        success_msg: "Namespace correctly contain pods"
+        fail_msg: "No pods in namespace"
+
+    - name: verify all pods in prow namespace are running
+      assert:
+        quiet: true
+        that:
+          - item.status.containerStatuses[0].ready
+          - item.status.containerStatuses[0].started
+          - item.status.containerStatuses[0].restartCount == 0
+        fail_msg: "Pod {{ item.spec.containers.0.name }} is in status {{ item.status.phase }}"
+        success_msg: "Pod {{ item.spec.containers.0.name }} is correctly Running"
+      loop: "{{ pod_list.resources }}"
+      loop_control:
+        label: "{{ item.spec.containers.0.name }}"
+  rescue:
+    - name: fail if we hit max retry count
+      fail:
+        msg: "Timeout reached and not all Pods are running"
+      when: "retry_count | int == {{ retries }}"
+    - name: Message for the retry.
+      debug:
+        msg: FAILED ATTEMPT {{ retry_count }}/{{ retries }}. Retrying in {{ delay }} seconds
+    - name: Pause
+      pause:
+        seconds: "{{ delay }}"
+    - include_tasks: retry-pod-status.yaml
+
+# DO NOT put anything at the end of this file.
+# Since the file is called recursively, anything added here will be run
+# the same number of time we needed to recurse the file.

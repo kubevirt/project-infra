@@ -7,5 +7,4 @@ github/ci/*.retry
 testaccount.json
 bazel-*
 .idea
-token
 images/autoowners/autoowners

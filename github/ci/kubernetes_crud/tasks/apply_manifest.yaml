@@ -1,11 +1,13 @@
 - name: "{{ name_header }} : Render manifest source file"
   include_tasks: _manifest_source.yaml
+  vars:
+    kubeconfig: '{{ _kubeconfig_path }}'
 
 - name: "{{ name_header }} : invoke kubectl"
   no_log: not show_sensitive
   k8s:
-    kubeconfig: '{{ kubeconfig_path }}'
-    context: '{{ context }}'
+    kubeconfig: '{{ _kubeconfig_path }}'
+    context: '{{ _context }}'
     state: present
     namespace: "{{ namespace }}"
     validate:

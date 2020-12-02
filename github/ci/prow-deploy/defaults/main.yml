@@ -1,0 +1,9 @@
+main_actions:
+  - deploy
+
+deploy_config_path: '{{ lookup("env", "DEPLOY_CONFIG_PATH")|default("/etc/prow-deploy/deploy_config.yaml", True) }}'
+
+
+# IBM
+cluster: ibm
+

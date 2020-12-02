@@ -1,0 +1,421 @@
+config_updater:
+  maps:
+    github/ci/prow/files/config.yaml:
+      name: config
+      clusters:
+        default:
+          - kubevirt-prow
+    github/ci/prow/files/jobs/**/*.yaml:
+      name: job-config
+      clusters:
+        default:
+          - kubevirt-prow
+    github/ci/prow/files/plugins.yaml:
+      name: plugins
+      clusters:
+        default:
+          - kubevirt-prow
+    github/ci/prow/files/labels.yaml:
+      name: label-config
+      clusters:
+        default:
+          - kubevirt-prow
+
+plugins:
+  kubevirt/must-gather:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/ssp-operator:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/kubevirt-ssp-operator:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/common-templates:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/kubevirt-template-validator:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/node-labeller:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/cpu-nfd-plugin:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/kvm-info-nfd-plugin:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  virtblocks:
+  - trigger
+  - dco
+
+  kubevirt:
+  - size
+  - label
+  - hold
+  - assign
+  - blunderbuss
+  - lifecycle
+  - verify-owners
+  - skip
+  - override
+  - wip
+  - pony
+  - dog
+  - cat
+  - dco
+  - invalidcommitmsg
+
+  kubevirt/kubevirt:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/bridge-marker:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/ovs-cni:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/macvtap-cni:
+  - trigger
+  - owners-label
+  - lgtm
+  - approve
+  - release-note
+
+  kubevirt/machine-remediation-operator:
+  - trigger
+  - lgtm
+  - approve
+
+  kubevirt/containerized-data-importer:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/kubevirt-ansible:
+  - release-note
+
+  kubevirt/project-infra:
+  - trigger
+  - lgtm
+  - approve
+  - config-updater
+
+  kubevirt/kubevirtci:
+  - trigger
+  - lgtm
+  - approve
+
+  kubevirt/kubevirt.github.io:
+  - approve
+  - lgtm
+  - owners-label
+  - trigger
+
+  kubevirt/katacoda-scenarios:
+  - approve
+  - lgtm
+  - owners-label
+  - trigger
+
+  kubevirt/demo:
+  - approve
+  - lgtm
+  - owners-label
+  - trigger
+
+  kubevirt/kubevirt-tutorial:
+  - approve
+  - lgtm
+  - owners-label
+  - trigger
+
+  kubevirt/cloud-image-builder:
+  - approve
+  - lgtm
+  - owners-label
+  - trigger
+
+  kubevirt/community:
+  - approve
+  - lgtm
+  - owners-label
+
+  kubevirt/hostpath-provisioner:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/cluster-network-addons-operator:
+  - trigger
+  - owners-label
+  - release-note
+  - lgtm
+  - approve
+
+  nmstate/kubernetes-nmstate:
+  - size
+  - label
+  - hold
+  - lgtm
+  - approve
+  - release-note
+  - owners-label
+  - assign
+  - blunderbuss
+  - lifecycle
+  - verify-owners
+  - skip
+  - override
+  - wip
+  - pony
+  - dog
+  - cat
+  - dco
+  - trigger
+
+  k8snetworkplumbingwg/kubemacpool:
+  - size
+  - label
+  - hold
+  - lgtm
+  - approve
+  - release-note
+  - assign
+  - blunderbuss
+  - lifecycle
+  - verify-owners
+  - skip
+  - override
+  - wip
+  - pony
+  - dog
+  - cat
+  - dco
+  - trigger
+
+  kubevirt/kubectl-virt-plugin:
+  - trigger
+  - lgtm
+  - approve
+
+  kubevirt/node-maintenance-operator:
+  - trigger
+  - owners-label
+  - release-note
+  - lgtm
+  - approve
+
+  kubevirt/ansible-kubevirt-modules:
+  - trigger
+  - owners-label
+  - release-note
+  - lgtm
+  - approve
+
+  kubevirt/hyperconverged-cluster-operator:
+  - trigger
+  - owners-label
+  - release-note
+  - lgtm
+  - approve
+
+  kubevirt/vm-import-operator:
+  - trigger
+  - owners-label
+  - release-note
+  - lgtm
+  - approve
+
+  kubevirt/kubevirt-csi:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
+  kubevirt/controller-lifecycle-operator-sdk:
+    - trigger
+    - owners-label
+    - release-note
+    - lgtm
+    - approve
+
+external_plugins:
+  kubevirt:
+  - name: needs-rebase
+    events:
+      - pull_request
+  - name: cherrypicker
+  - name: release-blocker
+  k8snetworkplumbingwg/kubemacpool:
+  - name: needs-rebase
+    events:
+      - pull_request
+  - name: cherrypicker
+  nmstate/kubernetes-nmstate:
+  - name: needs-rebase
+    events:
+      - pull_request
+  - name: cherrypicker
+  kubevirt/project-infra:
+  - name: rehearse
+    events:
+      - pull_request
+      - issue_comment
+
+triggers:
+- repos:
+  - kubevirt/project-infra
+  - kubevirt/machine-remediation-operator
+  - kubevirt/kubevirtci
+  - kubevirt/kubevirt
+  - kubevirt/kubevirt.github.io
+  - kubevirt/cloud-image-builder
+  - kubevirt/kubevirt-tutorial
+  - kubevirt/containerized-data-importer
+  - kubevirt/hostpath-provisioner
+  - kubevirt/katacoda-scenarios
+  - kubevirt/common-templates
+  - kubevirt/kvm-info-nfd-plugin
+  - kubevirt/cpu-nfd-plugin
+  - kubevirt/node-labeller
+  - kubevirt/kubevirt-template-validator
+  - kubevirt/kubevirt-ssp-operator
+  - kubevirt/ssp-operator
+  - kubevirt/must-gather
+  - kubevirt/demo
+  - kubevirt/cluster-network-addons-operator
+  - kubevirt/node-maintenance-operator
+  - kubevirt/ansible-kubevirt-modules
+  - kubevirt/hyperconverged-cluster-operator
+  - kubevirt/vm-import-operator
+  - kubevirt/kubevirt-csi
+- repos:
+  - virtblocks/virtblocks
+- repos:
+  - nmstate/kubernetes-nmstate
+- repos:
+  - k8snetworkplumbingwg/kubemacpool
+
+
+approve:
+- repos:
+  - kubevirt/project-infra
+  - kubevirt/machine-remediation-operator
+  - kubevirt/kubevirtci
+  - kubevirt/kubevirt.github.io
+  - kubevirt/cloud-image-builder
+  - kubevirt/community
+  - kubevirt/kubevirt-tutorial
+  - kubevirt/kubevirt
+  - kubevirt/bridge-marker
+  - kubevirt/containerized-data-importer
+  - kubevirt/hostpath-provisioner
+  - kubevirt/katacoda-scenarios
+  - kubevirt/demo
+  - kubevirt/cluster-network-addons-operator
+  - nmstate/kubernetes-nmstate
+  - k8snetworkplumbingwg/kubemacpool
+  - kubevirt/kubectl-virt-plugin
+  - kubevirt/node-maintenance-operator
+  - kubevirt/ansible-kubevirt-modules
+  - kubevirt/hyperconverged-cluster-operator
+  - kubevirt/common-templates
+  - kubevirt/kvm-info-nfd-plugin
+  - kubevirt/cpu-nfd-plugin
+  - kubevirt/node-labeller
+  - kubevirt/kubevirt-template-validator
+  - kubevirt/kubevirt-ssp-operator
+  - kubevirt/ssp-operator
+  - kubevirt/must-gather
+  - kubevirt/kubevirt-csi
+  require_self_approval: true
+  lgtm_acts_as_approve: false
+  ignore_review_state: true
+  commandHelpLink: https://go.k8s.io/bot-commands
+
+lgtm:
+- repos:
+  - kubevirt/machine-remediation-operator
+  - kubevirt/project-infra
+  - kubevirt/kubevirtci
+  - kubevirt/kubevirt.github.io
+  - kubevirt/cloud-image-builder
+  - kubevirt/community
+  - kubevirt/kubevirt-tutorial
+  - kubevirt/kubevirt
+  - kubevirt/bridge-marker
+  - kubevirt/containerized-data-importer
+  - kubevirt/hostpath-provisioner
+  - kubevirt/katacoda-scenarios
+  - kubevirt/demo
+  - kubevirt/cluster-network-addons-operator
+  - nmstate/kubernetes-nmstate
+  - k8snetworkplumbingwg/kubemacpool
+  - kubevirt/kubectl-virt-plugin
+  - kubevirt/node-maintenance-operator
+  - kubevirt/ansible-kubevirt-modules
+  - kubevirt/hyperconverged-cluster-operator
+  - kubevirt/common-templates
+  - kubevirt/kvm-info-nfd-plugin
+  - kubevirt/cpu-nfd-plugin
+  - kubevirt/node-labeller
+  - kubevirt/kubevirt-template-validator
+  - kubevirt/kubevirt-ssp-operator
+  - kubevirt/ssp-operator
+  - kubevirt/must-gather
+  - kubevirt/kubevirt-csi
+  review_acts_as_lgtm: true
+
+override:
+  allow_top_level_owners: true

@@ -1,0 +1,387 @@
+plank:
+  # Mixes jinja2 style template with go template
+  job_url_template: >-
+    https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/
+    {{if eq .Spec.Type "presubmit"}}pr-logs/
+    pull{{else if eq .Spec.Type "batch"}}pr-logs/
+    pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/
+    {{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/
+    {{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/
+    batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/
+  job_url_prefix_config:
+    '*':  https://prow.apps.ovirt.org/view/gcs/
+  pod_pending_timeout: 60m
+  default_decoration_configs:
+    '*':
+      timeout: 2h
+      grace_period: 15s
+      utility_images:
+        clonerefs: "gcr.io/k8s-prow/clonerefs:v20200623-9f5410055c"
+        initupload: "gcr.io/k8s-prow/initupload:v20200623-9f5410055c"
+        entrypoint: "gcr.io/k8s-prow/entrypoint:v20200623-9f5410055c"
+        sidecar: "gcr.io/k8s-prow/sidecar:v20200623-9f5410055c"
+      gcs_configuration:
+        bucket: kubevirt-prow
+        path_strategy: "explicit"
+      gcs_credentials_secret: "gcs"
+
+deck:
+  spyglass:
+    size_limit: 500000000 # 500MB
+    gcs_browser_prefix: https://gcsweb.apps.ovirt.org/gcs/
+    lenses:
+    - lens:
+        name: metadata
+      required_files:
+      - started.json|finished.json
+      optional_files:
+      - podinfo.json
+    - lens:
+        name: buildlog
+      required_files:
+        - build-log.txt
+    - lens:
+        name: junit
+      required_files:
+        - artifacts/junit.*\.xml
+    - lens:
+        name: coverage
+      required_files:
+        - artifacts/filtered.cov
+      optional_files:
+        - artifacts/filtered.html
+    - lens:
+        name: podinfo
+      required_files:
+        - podinfo.json
+  tide_update_period: 1s
+  rerun_auth_configs:
+    '*':
+      github_team_ids:
+        - 3701123 # prow-job-taskforce
+
+sinker:
+  resync_period: 1m
+  max_prowjob_age: 48h
+  max_pod_age: 30m
+  terminated_pod_ttl: 2h
+
+prowjob_namespace: kubevirt-prow-jobs
+pod_namespace: kubevirt-prow-jobs
+log_level: debug
+
+tide:
+  sync_period: 2m
+  merge_method:
+    kubevirt/containerized-data-importer: squash
+    kubevirt/kubevirt: merge
+    kubevirt/machine-remediation-operator: squash
+    kubevirt/project-infra: squash
+    kubevirt/kubevirtci: squash
+    kubevirt/kubevirt.github.io: squash
+    kubevirt/cloud-image-builder: squash
+    kubevirt/kubevirt-tutorial: squash
+    kubevirt/community: squash
+    kubevirt/hostpath-provisioner: squash
+    kubevirt/katacoda-scenarios: squash
+    kubevirt/demo: squash
+    kubevirt/ovs-cni: squash
+    kubevirt/macvtap-cni: squash
+    kubevirt/cluster-network-addons-operator: squash
+    kubevirt/bridge-marker: squash
+    nmstate/kubernetes-nmstate: squash
+    k8snetworkplumbingwg/kubemacpool: squash
+    kubevirt/kubectl-virt-plugin: squash
+    kubevirt/node-maintenance-operator: merge
+    kubevirt/ansible-kubevirt-modules: squash
+    kubevirt/hyperconverged-cluster-operator: squash
+    kubevirt/common-templates: squash
+    kubevirt/kvm-info-nfd-plugin: squash
+    kubevirt/cpu-nfd-plugin: squash
+    kubevirt/node-labeller: squash
+    kubevirt/kubevirt-template-validator: squash
+    kubevirt/kubevirt-ssp-operator: squash
+    kubevirt/kubevirt-csi: squash
+    kubevirt/ssp-operator: squash
+    kubevirt/must-gather: squash
+
+  queries:
+  - repos:
+    - kubevirt/project-infra
+    - kubevirt/machine-remediation-operator
+    - kubevirt/kubevirtci
+    - kubevirt/kubevirt.github.io
+    - kubevirt/cloud-image-builder
+    - kubevirt/kubevirt-tutorial
+    - kubevirt/community
+    - kubevirt/katacoda-scenarios
+    - kubevirt/demo
+    - kubevirt/kubectl-virt-plugin
+    labels:
+    - lgtm
+    - approved
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/work-in-progress
+    - needs-rebase
+    - "dco-signoff: no"
+  - repos:
+    - kubevirt/kubevirt
+    - kubevirt/containerized-data-importer
+    - kubevirt/hostpath-provisioner
+    - kubevirt/ovs-cni
+    - kubevirt/macvtap-cni
+    - kubevirt/cluster-network-addons-operator
+    - kubevirt/bridge-marker
+    - nmstate/kubernetes-nmstate
+    - k8snetworkplumbingwg/kubemacpool
+    - kubevirt/node-maintenance-operator
+    - kubevirt/ansible-kubevirt-modules
+    - kubevirt/hyperconverged-cluster-operator
+    - kubevirt/common-templates
+    - kubevirt/kvm-info-nfd-plugin
+    - kubevirt/cpu-nfd-plugin
+    - kubevirt/node-labeller
+    - kubevirt/kubevirt-template-validator
+    - kubevirt/kubevirt-ssp-operator
+    - kubevirt/ssp-operator
+    - kubevirt/must-gather
+    - kubevirt/kubevirt-csi
+    labels:
+    - lgtm
+    - approved
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/work-in-progress
+    - do-not-merge/release-note-label-needed
+    - do-not-merge/invalid-commit-message
+    - needs-rebase
+    - "dco-signoff: no"
+  pr_status_base_urls:
+    '*': https://prow.apps.ovirt.org/pr
+  context_options:
+    orgs:
+     kubevirt:
+      repos:
+        dashboard:
+          skip-unknown-contexts: true
+          from-branch-protection: true
+
+slack_reporter_configs:
+  '*':
+    job_types_to_report:
+      - postsubmit
+      - periodic
+      - batch
+    job_states_to_report:
+      - failure
+      - error
+    channel: kubevirt-ci-monitoring
+    # The template shown below is the default
+    report_template: >-
+      Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>
+
+  'kubevirt/kubevirt-tutorial':
+    job_types_to_report:
+      - postsubmit
+      - periodic
+      - batch
+    job_states_to_report:
+      - failure
+      - error
+    channel: eko
+    # The template shown below is the default
+    report_template: >-
+      Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>
+
+branch-protection:
+  required_status_checks:
+    contexts:
+    - dco
+  orgs:
+    kubevirt:
+      repos:
+        kubevirt:
+          protect: true
+          branches:
+            release-0.33:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.32:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.31:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.30:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.29:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.28:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.27:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.26:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.25:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.24:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+            release-0.23:
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+        project-infra:
+          branches:
+            master:
+              protect: true
+        kubevirtci:
+          branches:
+            master:
+              protect: true
+        containerized-data-importer:
+          branches:
+            master:
+              protect: true
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+        hyperconverged-cluster-operator:
+          branches:
+            master:
+              protect: true
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
+                  - coverage/coveralls
+        user-guide:
+          branches:
+            master:
+              protect: true
+              required_pull_request_reviews:
+                dismiss_stale_reviews: true
+                required_approving_review_count: 1
+              required_status_checks:
+                strict: true
+        cluster-network-addons-operator:
+          branches:
+            master:
+              protect: true
+            release-0.27:
+              protect: true
+            release-0.39:
+              protect: true
+        ovs-cni:
+          branches:
+            master:
+              protect: true
+        macvtap-cni:
+          branches:
+            master:
+              protect: true
+        common-templates:
+          branches:
+            master:
+              protect: true
+        hostpath-provisioner:
+          branches:
+            master:
+              protect: true
+        hostpath-provisioner-operator:
+          branches:
+            master:
+              protect: true
+        kubevirt-csi:
+          branches:
+            master:
+              protect: true
+        kubectl-virt-plugin:
+          protect: true
+    k8snetworkplumbingwg:
+      repos:
+        kubemacpool:
+          branches:
+            master:
+              protect: true
+    nmstate:
+      repos:
+        kubernetes-nmstate:
+          branches:
+            master:
+              protect: true
+            release-0.15:
+              protect: true
+
+push_gateway:
+  endpoint: pushgateway
+
+presets:
+- labels:
+    preset-dind-enabled: "true"
+  env:
+  - name: DOCKER_IN_DOCKER_ENABLED
+    value: "true"
+  volumes:
+  - name: docker-graph
+    emptyDir: {}
+  volumeMounts:
+  - name: docker-graph
+    mountPath: /docker-graph
+- labels:
+    preset-docker-mirror: "true"
+  volumes:
+  - name: docker-config
+    configMap:
+      name: docker-daemon-mirror-config
+  volumeMounts:
+  - name: docker-config
+    mountPath: /etc/default
+    readOnly: true
+- labels:
+    preset-shared-images: "true"
+  volumes:
+  - name: shared-iso
+    hostPath:
+      # Referenced by environments/ibmcloud-staging/yq_scripts/config/config.yaml
+      path: /var/lib/stdci/shared/kubevirt-images/kubevirt-prow
+      type: DirectoryOrCreate
+  volumeMounts:
+  - name: shared-iso
+    mountPath: /var/lib/stdci/shared/kubevirt-images/
+- labels:
+    preset-kubevirtci-docker-credential: "true"
+  env:
+    - name: DOCKER_USER
+      value: /etc/kubevirtci-cred/username
+    - name: DOCKER_PASSWORD
+      value: /etc/kubevirtci-cred/password
+  volumes:
+    - name: kubevirtci-cred
+      secret:
+        defaultMode: 0400
+        secretName: kubevirtci-docker-credential
+  volumeMounts:
+    - name: kubevirtci-cred
+      mountPath: /etc/kubevirtci-cred
+      readOnly: true

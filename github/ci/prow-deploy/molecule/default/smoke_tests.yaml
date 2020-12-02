@@ -1,0 +1,64 @@
+- name: collect port mapping for http
+  shell: |
+    {{ kubevirtci_dir }}/cluster-up/cli.sh ports http
+  register: http_port
+  environment: "{{ shell_environment }}"
+  when: "'kubevirtci' in deploy_environment"
+
+- name: collect port mapping for https
+  shell: |
+    {{ kubevirtci_dir }}/cluster-up/cli.sh ports https
+  register: https_port
+  environment: "{{ shell_environment }}"
+  when: "'kubevirtci' in deploy_environment"
+
+- set_fact:
+    http_port:
+      stdout: 80
+    https_port:
+      stdout: 443
+  when: "'kubevirtci' not in deploy_environment"
+
+- name: Query GCS interface
+  uri:
+    url: "https://{{ gcsweb_hostname }}:{{ https_port.stdout }}/healthz"
+    validate_certs: no
+    return_content: yes
+  register: gcs_response
+
+- name: verify GCS interface response is healthy
+  assert:
+    that:
+      - gcs_response.status == 200
+      - gcs_response.content == "ok"
+    fail_msg: "GCSWEB responded with unhealhty status"
+    success_msg: "GCSWEB is reporting correct functionality"
+  failed_when: false
+
+- name: Query deck interface
+  uri:
+    url: "https://{{ deck_hostname }}:{{ https_port.stdout }}"
+    method: GET
+    validate_certs: no
+    return_content: yes
+  register: deck_response
+
+- name: verify Deck response is healthy
+  assert:
+    that:
+      - deck_response.status == 200
+      - '"DOCTYPE html" in deck_response.content'
+      - '"Prow Status" in deck_response.content'
+    fail_msg: "Deck responded with unhealhty status"
+    success_msg: "Deck is reporting correct functionality"
+
+# phony is very strict with certificate validation, and there's no
+# way to disable it. For the sake of sanity, hook must not be exposed
+# to port https while testing.
+- name: verify Prow hook is responding
+  shell: >
+    cd {{ testinfra_dir }}/prow/cmd/
+    go run ./phony
+    --address="http://{{ hook_hostname }}:{{ http_port.stdout }}/hook"
+    --hmac {{ prowHmac }}
+  changed_when: false

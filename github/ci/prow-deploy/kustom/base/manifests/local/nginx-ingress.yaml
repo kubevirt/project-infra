@@ -1,0 +1,68 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: hook
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: public-iks-k8s-nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  namespace: default
+spec:
+  tls:
+    - hosts:
+      - kubevirt-stg-aa0fc76a511b88d3d7a618e3072828e1-0000.us-south.containers.appdomain.cloud
+  rules:
+    - host: kubevirt-stg-aa0fc76a511b88d3d7a618e3072828e1-0000.us-south.containers.appdomain.cloud
+      http:
+         paths:
+           - path: /hook(/|$)(.*)
+             backend:
+               serviceName: hook
+               servicePort: 8888
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: deck
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: public-iks-k8s-nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/app-root: /
+  namespace: default
+spec:
+  tls:
+    - hosts:
+        # you MIGHT think this hostname is the same as the one above, but it's NOT, they differ for at list a digit.
+        - kubevirt-stg-aa0fc76a511b88d3d7a618e3072828e1-0002.us-south.containers.appdomain.cloud
+  rules:
+    - host: kubevirt-stg-aa0fc76a511b88d3d7a618e3072828e1-0002.us-south.containers.appdomain.cloud
+      http:
+         paths:
+           - path: /(/|$)(.*)
+             backend:
+               serviceName: deck
+               servicePort: 80
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: gcsweb
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: public-iks-k8s-nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  namespace: default
+spec:
+  tls:
+    - hosts:
+      - kubevirt-stg-aa0fc76a511b88d3d7a618e3072828e1-0000.us-south.containers.appdomain.cloud
+  rules:
+    - host: kubevirt-stg-aa0fc76a511b88d3d7a618e3072828e1-0000.us-south.containers.appdomain.cloud
+      http:
+         paths:
+           - path: /gcsweb(/|$)(.*)
+             backend:
+               serviceName: gcsweb
+               servicePort: 80

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-blocker
+  labels:
+    app: release-blocker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: release-blocker
+  template:
+    metadata:
+      labels:
+        app: release-blocker
+    spec:
+      nodeSelector:
+        type: vm
+        zone: ci
+      terminationGracePeriodSeconds: 180
+      containers:
+      - name: release-blocker
+        image: index.docker.io/kubevirtci/release-blocker@sha256:aa89a48eca962ba63f089e7f923d56540c85fbbe34ccc324c3c733137195f0e4
+        imagePullPolicy: Always
+        args:
+        - --dry-run=false
+        - --github-endpoint=http://ghproxy
+        - --github-endpoint=https://api.github.com
+        ports:
+          - name: http
+            containerPort: 8888
+        volumeMounts:
+        - name: hmac
+          mountPath: /etc/webhook
+          readOnly: true
+        - name: oauth
+          mountPath: /etc/github
+          readOnly: true
+        - name: plugins
+          mountPath: /etc/plugins
+          readOnly: true
+      volumes:
+      - name: hmac
+        secret:
+          secretName: hmac-token
+      - name: oauth
+        secret:
+          secretName: oauth-token
+      - name: plugins
+        configMap:
+          name: plugins
