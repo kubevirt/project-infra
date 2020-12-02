@@ -1,6 +1,6 @@
 periodics:
 - name: periodic-hco-push-nightly-build-master
-  cron: "2 2 * * *"
+  cron: "0 * * * *"
   decorate: true
   decoration_config:
     timeout: 1h
