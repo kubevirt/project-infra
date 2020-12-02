@@ -10,7 +10,7 @@ presubmits:
       optional: false
       decorate: true
       decoration_config:
-        timeout: 3h
+        timeout: 4h
         grace_period: 5m
       max_concurrency: 6
       labels:
