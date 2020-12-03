@@ -40,14 +40,14 @@ Command line tool to handle yaml files
 Version 3 of kustomize is needed.
 
     GOBIN=$(pwd)/ GO111MODULE=on go get sigs.k8s.io/kustomize/kustomize/v3
-    
+
 Or you can follow instructions at https://kubectl.docs.kubernetes.io/installation/kustomize/source/
 
 The install yq. Please be aware that there is another yq written in python
 with the same goal, but it doesn't support patch scripting and it's not usable here.
 
     GO111MODULE=on go get github.com/mikefarah/yq/v3
-    
+
 yq (the one in go, not the one in python)
 
 ### Generate configuration
@@ -60,21 +60,21 @@ There's a script in the base kustom directory to automate this.
 
     kustom/render-environment-configs.sh <environment>
 
-Will apply patches to the configuration as defined in the patch script for the environment in 
+Will apply patches to the configuration as defined in the patch script for the environment in
 
-    kustom/environments/$environment/yq_scripts
-    
+    kustom/overlays/$environment/yq_scripts
+
 then renders the yaml configurations, then copy them to the environment directory at
 
-    kustom/environments/$environment/configs
+    kustom/overlays/$environment/configs
 
 ### Copy the secrets
 
-Before being able to generate the secrets with kustomize, we need to copy them in the 
-proper environment directory at
+Before being able to generate the secrets with kustomize, we need to copy them in the
+proper overlay directory at
 
-    kustom/environments/$environment/secrets
-    
+    kustom/overlays/$overlay/secrets
+
 All the secrets needed are contained under the directory
 
     kustom/secrets-boilerplate
@@ -86,10 +86,10 @@ ignored explicity with a .gitignore.
 
 ### Generate manifests
 
-When configuration and secrets are in place in the environment specific directories,
-we can finally call kustomize to generate environment specific manifests:
+When configuration and secrets are in place in the overlay specific directories,
+we can finally call kustomize to generate overlay specific manifests:
 
-    ~/go/bin/kustomize build kustom/environments/$environment > prow-deploy.yaml
+    ~/go/bin/kustomize build kustom/overlays/$overlay > prow-deploy.yaml
 
 WARNING: There is a version of kustomize that is embedded in kubectl, but it's not the version
 required by this deployment, so don't use it.
@@ -125,23 +125,23 @@ Will contain the manifests created specifically for the kubevirt prow deployment
 Will contain the base yaml configuration files for the deployments. They are under
 a timestamped directory to make config versioning easier.
 
-- environments
+- overlays
 
-Will contain the environment specific configurations and patches.
+Will contain the overlay specific configurations and patches.
 
-- environments/$environment/configs
+- overlays/$overlay/configs
 
 Will contain the rendered configurations
 
-- environments/$environment/secrets
+- overlays/$overlay/secrets
 
 Will contain the copied secrets.
 
-- environment/$environment/yq_scripts
+- overlays/$overlay/yq_scripts
 
 Contains patch scripts for the yq tool, to modify base configuration files
 
-- environment/$environment/patches
+- overlays/$overlay/patches
 
 Contains the patches to modify base manifests, divided per patch type.
 
@@ -153,7 +153,7 @@ So the patches are focusing on namespaces and changing paths.
 The option "namespace" offered by customize cannot be used here, as it works
 well only when there's a single namespace to be considered, and overrides ALL
 namespaces present.
-The option "prefix" is used in staging environmenmt, but it's not enough as some
+The option "prefix" is used in staging overlay, but it's not enough as some
 resources configuration retain the old names.
 
 
@@ -169,7 +169,7 @@ the staging cluster to upload the manifests.
 ## Role structure
 
     molecule/default
-    
+
 Contains the main scenario for local or automated testing.
 
 Beside invoking kustomize, the role performs small setup/cleanup
@@ -178,66 +178,76 @@ tasks, primarily passing variables around.
 ## How to test the role
 
 The role is tested using molecule.
-Molecule will take care of all the test task. The kubevirtci cluster will require at 
+Molecule will take care of all the test task. The kubevirtci cluster will require at
 least 16G of memory to run properly.
-The user needs to be able to sudo to root without password.
-From the role root directory launch
+As a prerrequisite you need two environment variables to be defined:
+export GITHUB_TOKEN=/home/fgimenez/workspace/redhat/secrets/phaino/gh/oauth
+export GOOGLE_APPLICATION_CREDENTIALS=/home/fgimenez/workspace/redhat/secrets/phaino/gcs/service-account.json
 
-    molecule prepare
-   
+* `GITHUB_TOKEN`: should contain the path of a valid github account token, any token would do,
+no need to have any specific permissions.
+* `GOOGLE_APPLICATION_CREDENTIALS` with the path of a Google Cloud Platform JSON credentials file; as with
+the github token there are no specific requirements in terms of permissions.
+
+With these environment variables exported you need to create a virtual environment, from `github/ci/prow-deploy` run:
+
+    $ python3 -m venv venv
+
+Now you can activate the virtual environment and install the dependencies:
+
+    $ source ./venv/bin/activate
+    $ pip install -r requirements.txt
+
+Then you can run:
+
+    $ molecule prepare
+
 To launch the kubevirtci cluster and prepare the nodes
 properly. This is a protected action, it cannot be done twice.
 The natural flow is that you can prepare again an instance only
 after you destroy it, so if you need to prepare again but no destroy
 has been issued, you need to call
 
-    molecule reset
-    
+    $ molecule reset
+
 To tell molecule to start from scratch.
-
-
-For prow deployment, a real github token is a major requirement. Many
-service will try to access github using the token before starting.
-Create a github token for your account, with at most read:user scope. Any
-additional permission will make the test environment interfere with the production
-repositories, like adding automatic comments.
-Fill the secret as plain text in 
-
-    kustom/environments/$environment/secrets/oauth-token/oauth
 
 Then start deployment with
 
-    molecule converge
-    
+    $ molecule converge
+
 This will launch the prow deployment itself, will wait for the deployment
 to settle and then will collect some information in the
 artifacts dir.
 
-    molecule verify
-    
+    $ molecule verify
+
 Will launch a set of tests to verify that the deployment
-works correctly. At the moment only smoke tests are available
-Some tests are using test-infra commands, which
-by default is located in
+works correctly. At the moment only smoke tests are available.
 
-    /workspace/test-infra
+You can enter the test instance and access the deployed cluster with:
 
-    molecule verify -- -e testinfra_dir=/path/to/test-infra
+    $ molecule login
+    # export KUBECONFIG=/workspace/repos/project-infra-master/github/ci/prow-deploy/kustom/overlays/kubevirtci-testing/secrets/kubeconfig
 
-Will let you specify a different directory
+then you can execute kubectl commands as usual:
 
-    molecule cleanup 
-    
-Will remove prow-namespace, so that prow can be eventually
+    # kubectl get pods --all-namespaces
+
+Additional molecule commands:
+
+    molecule cleanup
+
+will remove prow-namespace, so that prow can be eventually
 deployed again in the same cluster
 
     molecule destroy
-    
-Will tear down the kubevirt ci cluster completely
+
+will tear down the kubevirt ci cluster completely
 
     molecule test
-    
-Will launch all the above step automatically in sequence.
+
+will launch all the above step automatically in sequence.
 
 
 ## How to debug the services in live cluster
@@ -286,7 +296,7 @@ the code correctly, so the release must be updated.
 A script at
 
     files/debug_prepare.sh
-    
+
 will do this automatically
 it is enough to launch it inside the pod, as in the following example
 
@@ -300,7 +310,7 @@ The script will replace repository to a viable version, update the packaging too
 install basic tools, and clone the test-infra code inside the container.
 Once the script has finished, we can run a interactive shell, change to the parent directory of
 the service, then launch the service
- 
+
     ./cluster-up/kubectl.sh -n kubevirt-prow exec -it $POD -- sh
     # cd /srv/test-infra/prow/cmd
     # go run ./$COMMAND

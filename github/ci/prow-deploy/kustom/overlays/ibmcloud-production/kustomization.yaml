@@ -1,16 +1,12 @@
 # Requires kustomize v3
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namePrefix: staging-
 
-
-bases:
+resources:
   - ../../base
-  # Additional resources for this specific environment but with different global settings
-  - resources/bootstrap/
-
-patchesStrategicMerge:
-  - patches/StrategicMerge/nginx-ingress.yaml
+  # templated resources
+  - resources/admin-rbac.yaml
+  - resources/docker-mirror-proxy_configmap.yaml
 
 patches:
   - target:
@@ -69,11 +65,6 @@ patches:
       kind: Deplyment
       name: greenhouse
     path: patches/StrategicMerge/greenhouse-deployment.yaml
-  - target:
-      version: v1
-      kind: PersistentVolumeClaim
-      name: greenhouse
-    path: patches/StrategicMerge/greenhouse-pvc.yaml
   - target:
       version: v1
       kind: PersistentVolumeClaim
@@ -242,7 +233,7 @@ configMapGenerator:
       - configs/labels/labels.yaml
   - name: mirror-config
     files:
-      - configs/docker-mirror/config.yaml
+      - config.yaml=configs/mirror/mirror.yaml
   - name: plugins
     files:
       - configs/plugins/plugins.yaml

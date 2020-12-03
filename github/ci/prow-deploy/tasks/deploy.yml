@@ -33,21 +33,15 @@
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
 
-- name: copy secrets subtree
-  copy:
-    src: "{{ secrets_subtree_source }}"
-    dest: "{{ project_infra_root}}/github/ci/prow-deploy/kustom/environments/{{ deploy_environment }}/"
-  when: secret_subtree_source is defined
-
 - name: validate Kustomize result
   shell: |
-    /tmp/kustomize build environments/{{ deploy_environment }}
+    /tmp/kustomize build overlays/{{ deploy_environment }}
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
 
 - name: Launch deployment
   shell: |
-    /tmp/kustomize build environments/{{ deploy_environment }} | {{ kubectl_exec }} apply -f -
+    /tmp/kustomize build overlays/{{ deploy_environment }} | {{ kubectl_exec }} apply -f -
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
   environment: "{{ shell_environment }}"
@@ -63,9 +57,9 @@
         --job-config-path=$JOB_CONFIG_PATH
   environment:
     PROJECT_INFRA_ROOT: "{{ project_infra_root }}"
-    JOB_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow/files/jobs/"
-    PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/environments/{{ deploy_environment }}/configs/config/config.yaml"
-    PLUGIN_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/environments/{{ deploy_environment }}/configs/plugins/plugins.yaml"
+    JOB_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/files/jobs/"
+    PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
+    PLUGIN_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/plugins/plugins.yaml"
     KUBECONFIG: "{{ kubeconfig_path }}"
   args:
     chdir: "{{ testinfra_dir }}"

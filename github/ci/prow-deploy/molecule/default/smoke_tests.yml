@@ -21,7 +21,7 @@
 
 - name: Query GCS interface
   uri:
-    url: "https://{{ gcsweb_hostname }}:{{ https_port.stdout }}/healthz"
+    url: "https://{{ gcswebUrl }}:{{ https_port.stdout }}/healthz"
     validate_certs: no
     return_content: yes
   register: gcs_response
@@ -33,11 +33,10 @@
       - gcs_response.content == "ok"
     fail_msg: "GCSWEB responded with unhealhty status"
     success_msg: "GCSWEB is reporting correct functionality"
-  failed_when: false
 
 - name: Query deck interface
   uri:
-    url: "https://{{ deck_hostname }}:{{ https_port.stdout }}"
+    url: "https://{{ deckUrl }}:{{ https_port.stdout }}"
     method: GET
     validate_certs: no
     return_content: yes
@@ -59,6 +58,6 @@
   shell: >
     cd {{ testinfra_dir }}/prow/cmd/
     go run ./phony
-    --address="http://{{ hook_hostname }}:{{ http_port.stdout }}/hook"
+    --address="http://{{ hookUrl }}:{{ http_port.stdout }}/hook"
     --hmac {{ prowHmac }}
   changed_when: false

@@ -20,4 +20,3 @@
 - command: update
   path: plank.default_decoration_configs.*.gcs_configuration.bucket
   value: staging-kubevirt-prow
-

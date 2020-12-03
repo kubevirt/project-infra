@@ -1,0 +1,36 @@
+- name: set configs dir
+  set_fact:
+    configs_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/'
+
+- name: Create configs dir
+  file:
+    path: '{{ configs_dir }}'
+    state: directory
+
+- name: set mirror-proxy-config directory
+  set_fact:
+    mirror_proxy_config_dir: '{{ configs_dir}}/mirror-proxy'
+
+- name: create mirror-proxy-config directory
+  file:
+    path: '{{ mirror_proxy_config_dir }}'
+    state: directory
+
+- name: create mirror-proxy-config
+  copy:
+    content: '{{ dockerMirrorProxyCA.crt }}'
+    dest: '{{ mirror_proxy_config_dir }}/ca.crt'
+
+- name: set cat-api directory
+  set_fact:
+    cat_api_config_dir: '{{ configs_dir}}/cat-api'
+
+- name: cat-api-config directory
+  file:
+    path: '{{ cat_api_config_dir }}'
+    state: directory
+
+- name: create cat-api-config
+  copy:
+    content: '{{ catApiKey | default("")}}'
+    dest: '{{ cat_api_config_dir }}/api-key'

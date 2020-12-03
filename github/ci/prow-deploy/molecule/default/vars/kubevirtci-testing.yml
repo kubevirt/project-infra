@@ -8,12 +8,7 @@ kubevirt_memory_size: 16384
 kubevirt_tag: 2010091151-ea2c81d
 kubectl_exec: "{{ kubevirtci_dir }}/cluster-up/kubectl.sh"
 kubeconfig_path: '{{ kubevirtci_dir }}/_ci-configs/{{ kubevirtci_provider }}/.kubeconfig'
-masterClusterContext: kubernetes-admin@kubernetes
 bootstrap_full_config: true
-hook_hostname: hook.prowdeploy.ci
-deck_hostname: deck.prowdeploy.ci
-gcsweb_hostname: gcsweb.prowdeploy.ci
-prowHmac: ce247fb28a0ce39122656a349922372cf9016f66
 
 shell_environment:
   KUBEVIRT_PROVIDER: "{{ kubevirtci_provider }}"
@@ -21,5 +16,3 @@ shell_environment:
   KUBEVIRT_NUM_SECONDARY_NICS: "{{ kubevirt_num_secondary_nics }}"
   KUBEVIRT_MEMORY_SIZE: "{{ kubevirt_memory_size }}"
   KUBEVIRTCI_TAG: "{{ kubevirt_tag }}"
-
-prowNamespace: kubernetes-prow
