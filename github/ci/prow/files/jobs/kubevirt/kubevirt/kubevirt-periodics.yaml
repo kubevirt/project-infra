@@ -143,7 +143,7 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-    preset-kubevirtci-docker-credential: "true"
+    preset-kubevirtci-quay-credential: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -157,14 +157,15 @@ periodics:
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
+      - name: DOCKER_PREFIX
+        value: quay.io/kubevirt
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
         - >
           set -e;
-          docker login --username $(cat $DOCKER_USER) --password-stdin < $DOCKER_PASSWORD;
-          export DOCKER_PREFIX='kubevirtnightlybuilds';
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io;
           export DOCKER_TAG="$(date +%Y%m%d)_$(git show -s --format=%h)";
           make;
           counter=3;
