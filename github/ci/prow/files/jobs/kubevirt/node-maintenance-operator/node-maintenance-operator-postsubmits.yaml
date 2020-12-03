@@ -1,0 +1,65 @@
+postsubmits:
+  kubevirt/node-maintenance-operator:
+  - name: push-latest-node-maintenance-operator
+    branches:
+    - master
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - |
+            cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+            make container-build container-push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: push-tagged-node-maintenance-operator
+    branches:
+    # branches also handle tags
+    - ^v\d+\.\d+\.\d+$
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - |
+            cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+            export IMAGE_TAG="$(git tag --points-at HEAD | head -1)" && export OPERATOR_VERSION_NEXT="${IMAGE_TAG#v}" && make release-manifests container-build container-push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
