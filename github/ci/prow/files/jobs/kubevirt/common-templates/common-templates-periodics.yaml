@@ -1,0 +1,51 @@
+periodics:
+- name: periodic-common-templates-nightly-image-builder
+  cron: "*/30 * * * *"
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-quay-credential: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: kubevirtci
+      base_ref: master
+      work_dir: true
+    - org: kubevirt
+      repo: common-templates
+      base_ref: containerdisk-automation
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+    - image: kubevirtci/bootstrap:v20201119-a5880e0
+      command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/bash"
+        - "-c"
+        - |
+          #build the container image if necessary and push it to interal ci registry
+          make cluster-up
+          LATEST=$(curl -L https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest)
+          cluster-up/kubectl.sh apply -f https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${LATEST}/kubevirt-operator.yaml
+          cluster-up/kubectl.sh kubectl apply -f https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${LATEST}/kubevirt-cr.yaml
+          cluster-up/kubectl.sh wait -n kubevirt kv kubevirt --for condition=Available --timeout 10m
+          #Run the script from common-templates
+          cd ${PWD}/../common-templates/dvtemplates;
+          ./fedora_new_image.sh
+          docker build . -t localhost:5000/disk && docker push localhost:5000/disk
+          # Run tests
+          #
+          # If testing passes push the new image to the final Image registry
+      securityContext:
+        privileged: true
+        runAsUser: 0
+      resources:
+        requests:
+          memory: "8Gi"
