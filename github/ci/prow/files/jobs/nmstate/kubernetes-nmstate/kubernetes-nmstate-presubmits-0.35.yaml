@@ -90,10 +90,8 @@ presubmits:
               - "export NMSTATE_PARALLEL_ROLLOUT=true && automation/check-patch.e2e-k8s.sh"
 
     - name: pull-kubernetes-nmstate-e2e-operator-k8s-0.35
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+      branches:
+        - release-0.35
       always_run: true
       optional: false
       decorate: true
