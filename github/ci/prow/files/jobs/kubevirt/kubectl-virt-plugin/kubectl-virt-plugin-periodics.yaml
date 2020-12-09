@@ -11,22 +11,29 @@ periodics:
     repo: kubectl-virt-plugin
     base_ref: master
     work_dir: true
+  - org: kubevirt
+    repo: project-infra
+    base_ref: master
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror: "true"
     preset-shared-images: "true"
   spec:
     containers:
-      - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:e9bbc789dc7fa4d9e6b326c37713f7f46a2b26cf822f1638461a0cc811e96fe0
+      - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:554db95bb081e1ca404fc22cb140e868df9231b7d5578a74ead1bbda0f151545
         env:
-          - name: GH_KUBECTL_VIRT_PLUGIN_USERNAME
+          - name: GIT_ASKPASS
+            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
+          - name: GITHUB_USER
             value: kubevirt-bot
+          - name: GITHUB_EMAIL
+            value: rmohr+kubebot@redhat.com
         command:
           - "/usr/local/bin/runner.sh"
         args:
           - "/bin/sh"
           - "-c"
-          - export GH_KUBECTL_VIRT_PLUGIN_TOKEN=$(</etc/github/oauth) && ./scripts/create-latest-release.sh
+          - ./scripts/create-latest-release.sh
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
