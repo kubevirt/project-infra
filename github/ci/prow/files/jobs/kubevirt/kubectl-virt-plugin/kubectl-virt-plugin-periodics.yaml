@@ -17,7 +17,7 @@ periodics:
     preset-shared-images: "true"
   spec:
     containers:
-      - image: dhiller/kubectl-virt-builder@sha256:126c8ea74b9d8c16bc21d2b4af05eab6845838596bb2c8ece795e2bcf4d857c4
+      - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:e9bbc789dc7fa4d9e6b326c37713f7f46a2b26cf822f1638461a0cc811e96fe0
         env:
           - name: GH_KUBECTL_VIRT_PLUGIN_USERNAME
             value: kubevirt-bot
