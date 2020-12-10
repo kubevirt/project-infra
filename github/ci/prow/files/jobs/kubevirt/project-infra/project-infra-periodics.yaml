@@ -73,6 +73,40 @@ periodics:
       secret:
         secretName: oauth-token
 
+- name: periodic-test-infra-close-build-watcher-triage
+  interval: 1h
+  decorate: true
+  spec:
+    nodeSelector:
+      type: vm
+      zone: ci
+    containers:
+    - image: gcr.io/k8s-prow/commenter:v20200623-9f5410055c
+      command:
+      - /app/robots/commenter/app.binary
+      args:
+      - |-
+        --query=org:kubevirt
+        -label:lifecycle/frozen
+        label:triage/build-watcher
+      - --updated=336h
+      - --token=/etc/github/oauth
+      - |-
+        --comment=Issues triaged by the build watcher close after 14d of inactivity.
+        Reopen the issue with `/reopen`.
+
+        /close
+      - --template
+      - --ceiling=10
+      - --confirm
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+
 - name: periodic-test-infra-rotten
   interval: 1h
   decorate: true
