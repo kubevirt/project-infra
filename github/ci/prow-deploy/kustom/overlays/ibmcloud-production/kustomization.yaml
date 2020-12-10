@@ -56,15 +56,20 @@ patches:
   - target:
       group: apps
       version: v1
-      kind: Deplyment
+      kind: Deployment
       name: docker-mirror
     path: patches/StrategicMerge/docker-mirror_deployment.yaml
   - target:
       group: apps
       version: v1
-      kind: Deplyment
+      kind: Deployment
       name: greenhouse
     path: patches/StrategicMerge/greenhouse-deployment.yaml
+  - target:
+      version: v1
+      kind: PersistentVolumeClaim
+      name: greenhouse
+    path: patches/StrategicMerge/greenhouse-pvc.yaml
   - target:
       version: v1
       kind: PersistentVolumeClaim
@@ -146,6 +151,13 @@ patches:
     path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
+      version: v1
+      kind: RoleBinding
+      namespace: test-pods
+      name: .*
+    path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
       version: v1beta1
       kind: RoleBinding
       namespace: test-pods
@@ -171,13 +183,6 @@ patches:
       kind: RoleBinding
       namespace: default
       name: .*
-    path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1beta1
-      kind: RoleBinding
-      namespace: default
-      name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
@@ -193,6 +198,12 @@ patches:
       namespace: test-pods
       name: .*
     path: patches/JsonRFC6902/prow-jobs-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      kind: Role
+      namespace: test-pods
+      name: deck
+    path: patches/JsonRFC6902/prow-jobs-rolebinding-rules.yaml
   - target:
       group: networking.k8s.io
       version: v1beta1
@@ -251,63 +262,67 @@ configMapGenerator:
   # data:
   # ACTIVATED with  ibmcloud ks ingress alb update -c <cluster>
 secretGenerator:
-  - name: kubeconfig
+  - name: oauth-token
     files:
-      - secrets/kubeconfig/config
-    type: Opaque
-  - name: cookie
-    files:
-      - secrets/cookie-b64encoded/secret
+      - oauth=secrets/oauth-token
     type: Opaque
   - name: gcs
     files:
-      - secrets/gcs/service-account.json
-    type: Opaque
-  - name: github-oauth-config
-    files:
-      - secrets/github-oauth-config/secret
-    type: Opaque
-  - name: hmac-token
-    files:
-      - secrets/hmac-token/hmac
-    type: Opaque
-  - name: oauth-token
-    files:
-      - secrets/oauth-token/oauth
+      - secrets/gcs-service-account.json
     type: Opaque
   - name: slack-token
     files:
-      - secrets/slack-token/token
+      - token=secrets/slack-token
+    type: Opaque
+  - name: cookie
+    files:
+      - secret=secrets/cookie
+    type: Opaque
+  - name: hmac-token
+    files:
+      - hmac=secrets/hmac-token
+    type: Opaque
+  - name: github-oauth-config
+    files:
+      - secret=secrets/github-oauth-config
+    type: Opaque
+  - name: kubeconfig
+    files:
+      - config=secrets/kubeconfig
     type: Opaque
   - name: unsplash-api-key
+    literals:
+      - honk.txt=
+  - name: docker-mirror-proxy
     files:
-      - secrets/unsplash-api/honk.txt
+      - ca.key=secrets/docker-proxy-ca.key
+    type: Opaque
 
   # These secrets are shared with other deployments
   # Maybe move to a different base directory ?
   - name: kubevirtci-docker-credential
     # username=dockerUser
     # password=dockerPass
-    env: secrets/kubevirtci-docker-credential/env
+    env: secrets/kubevirtci-docker-credential
     type: Opaque
 
   - name: kubevirtci-quay-credential
     # username=quayUser
     # password=quayPass
-    env: secrets/kubevirtci-quay-credential/env
+    env: secrets/kubevirtci-quay-credential
     type: Opaque
   - name: kubevirtci-installer-pull-token
     files:
       # installerPullToken
-      - secrets/kubevirtci-installer-pull-token/token
+      - token=secrets/kubevirtci-installer-pull-token
     type: Opaque
   - name: commenter-oauth-token
     # githubCommenterToken
     files:
-      - secrets/commenter-oauth-token/oauth
+      - oauth=secrets/commenter-oauth-token
     type: Opaque
   - name: kubevirtci-coveralls-token
     files:
       # coverallsToken
-      - secrets/kubevirtci-coveralls-token/token
+      - token=secrets/kubevirtci-coveralls-token
     type: Opaque

@@ -63,13 +63,13 @@ patches:
   - target:
       group: apps
       version: v1
-      kind: Deplyment
+      kind: Deployment
       name: docker-mirror
     path: patches/StrategicMerge/docker-mirror_deployment.yaml
   - target:
       group: apps
       version: v1
-      kind: Deplyment
+      kind: Deployment
       name: greenhouse
     path: patches/StrategicMerge/greenhouse-deployment.yaml
   - target:
