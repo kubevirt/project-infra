@@ -42,7 +42,7 @@
     - name: Pause
       pause:
         seconds: "{{ delay }}"
-    - include_tasks: retry-pod-status.yaml
+    - include_tasks: retry-pod-status.yml
 
 # DO NOT put anything at the end of this file.
 # Since the file is called recursively, anything added here will be run

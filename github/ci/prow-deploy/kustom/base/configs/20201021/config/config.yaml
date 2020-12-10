@@ -1,13 +1,5 @@
 plank:
-  # Mixes jinja2 style template with go template
-  job_url_template: >-
-    https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/
-    {{if eq .Spec.Type "presubmit"}}pr-logs/
-    pull{{else if eq .Spec.Type "batch"}}pr-logs/
-    pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/
-    {{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/
-    {{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/
-    batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/
+  job_url_template: 'https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
   job_url_prefix_config:
     '*':  https://prow.apps.ovirt.org/view/gcs/
   pod_pending_timeout: 60m
@@ -21,7 +13,7 @@ plank:
         entrypoint: "gcr.io/k8s-prow/entrypoint:v20200623-9f5410055c"
         sidecar: "gcr.io/k8s-prow/sidecar:v20200623-9f5410055c"
       gcs_configuration:
-        bucket: kubevirt-prow
+        bucket: "kubevirt-prow"
         path_strategy: "explicit"
       gcs_credentials_secret: "gcs"
 
@@ -86,7 +78,7 @@ tide:
     kubevirt/katacoda-scenarios: squash
     kubevirt/demo: squash
     kubevirt/ovs-cni: squash
-    kubevirt/macvtap-cni: squash
+    kubevirt/macvtap-cni: merge
     kubevirt/cluster-network-addons-operator: squash
     kubevirt/bridge-marker: squash
     nmstate/kubernetes-nmstate: squash
@@ -182,8 +174,7 @@ slack_reporter_configs:
       - error
     channel: kubevirt-ci-monitoring
     # The template shown below is the default
-    report_template: >-
-      Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>
+    report_template: 'Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>'
 
   'kubevirt/kubevirt-tutorial':
     job_types_to_report:
@@ -195,8 +186,19 @@ slack_reporter_configs:
       - error
     channel: eko
     # The template shown below is the default
-    report_template: >-
-      Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>
+    report_template: 'Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>'
+
+  'kubevirt/kubevirt.github.io':
+    job_types_to_report:
+      - postsubmit
+      - periodic
+      - batch
+    job_states_to_report:
+      - failure
+      - error
+    channel: eko
+    # The template shown below is the default
+    report_template: 'Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>'
 
 branch-protection:
   required_status_checks:
@@ -273,8 +275,12 @@ branch-protection:
               protect: true
               required_status_checks:
                 contexts:
-                  - continuous-integration/travis-ci/pr
                   - coverage/coveralls
+            release-1.2:
+              protect: true
+              required_status_checks:
+                contexts:
+                  - continuous-integration/travis-ci/pr
         user-guide:
           branches:
             master:
@@ -318,6 +324,15 @@ branch-protection:
               protect: true
         kubectl-virt-plugin:
           protect: true
+        node-maintenance-operator:
+          branches:
+            master:
+              protect: true
+              required_status_checks:
+                contexts:
+                  # these are from OpenshiftCI!
+                  - ci/prow/images
+                  - ci/prow/openshift-e2e
     k8snetworkplumbingwg:
       repos:
         kubemacpool:
@@ -359,12 +374,33 @@ presets:
     mountPath: /etc/default
     readOnly: true
 - labels:
+    preset-docker-mirror-proxy: "true"
+  env:
+  - name: CA_CERT_FILE
+    value: /etc/docker-mirror-proxy/ca.crt
+  volumes:
+  - name: docker-mirror-proxy-ca-cert
+    configMap:
+      name: mirror-proxy-config
+  - name: docker-config
+    configMap:
+      name: docker-daemon-mirror-config
+      items:
+      - key: "docker-proxy"
+        path: "docker"
+  volumeMounts:
+  - name: docker-mirror-proxy-ca-cert
+    mountPath: /etc/docker-mirror-proxy
+    readOnly: true
+  - name: docker-config
+    mountPath: /etc/default
+    readOnly: true
+- labels:
     preset-shared-images: "true"
   volumes:
   - name: shared-iso
     hostPath:
-      # Referenced by environments/ibmcloud-staging/yq_scripts/config/config.yaml
-      path: /var/lib/stdci/shared/kubevirt-images/kubevirt-prow
+      path: /var/lib/stdci/shared/kubevirt-images/
       type: DirectoryOrCreate
   volumeMounts:
   - name: shared-iso

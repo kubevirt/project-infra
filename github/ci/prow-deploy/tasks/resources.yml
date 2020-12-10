@@ -1,0 +1,8 @@
+---
+- name: set resources base path
+  set_fact:
+    resources_base_path: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/resources/'
+- name: create admin rbac
+  template:
+    src: ../kustom/base/manifests/local/admin-rbac.yaml
+    dest: '{{ resources_base_path }}/admin-rbac.yaml'

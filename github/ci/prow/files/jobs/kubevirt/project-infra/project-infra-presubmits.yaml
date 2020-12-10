@@ -139,8 +139,6 @@ presubmits:
             value: /etc/gcs/service-account.json
           - name: GITHUB_TOKEN
             value: /etc/github/oauth
-          - name: DEPLOY_ENVIRONMENT
-            value: kubevirtci-testing
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"

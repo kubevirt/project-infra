@@ -1,11 +1,20 @@
-# Requires kustomize v3
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-bases:
+resources:
   - ../../base
-  # Additional resources for this specific environment but with different global settings
-  - resources/bootstrap/
+  - resources/bootstrap.yaml
+  - resources/ghproxy-persistent-volume.yaml
+  - resources/greenhouse-persistent-volume.yaml
+  - resources/ingress-nginx-controller.yaml
+  # templated resources
+  - resources/admin-rbac.yaml
+
+patchesStrategicMerge:
+  - patches/StrategicMerge/ghproxy.yaml
+  - patches/StrategicMerge/hook_deployment.yaml
+  - patches/StrategicMerge/nginx-ingress.yaml
+  - patches/StrategicMerge/deck_deployment_replicas.yaml
 
 patches:
   - target:
@@ -39,19 +48,18 @@ patches:
       name: tide
     path: patches/JsonRFC6902/tide_deployment.yaml
   - target:
-      group: rbac.authorization.k8s.io
-      version: v1beta1
-      kind: Role
-      namespace: test-pods
-      name: deck
-    path: patches/StrategicMerge/deck_role.yaml
+      group: apps
+      version: v1
+      kind: Deployment
+      name: ingress-nginx-controller
+    path: patches/StrategicMerge/ingress-nginx-controller.yaml
   - target:
       group: rbac.authorization.k8s.io
       version: v1
-      kind: RoleBinding
+      kind: Role
       namespace: test-pods
       name: deck
-    path: patches/StrategicMerge/deck_rolebinding.yaml
+    path: patches/StrategicMerge/deck_rbac.yaml
   - target:
       group: apps
       version: v1
@@ -67,10 +75,8 @@ patches:
   - target:
       version: v1
       kind: PersistentVolumeClaim
-      name: ghproxy
-    path: patches/StrategicMerge/ghproxy.yaml
-  # The namespace directive cannot be used as it will blindly convert ALL
-  # namespaces to a single value. We have multiple namespaces here and we need fine-grained tuning
+      name: greenhouse
+    path: patches/StrategicMerge/greenhouse-pvc.yaml
   - target:
       group: apps
       version: v1
@@ -145,7 +151,7 @@ patches:
     path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
-      version: v1beta1
+      version: v1
       kind: RoleBinding
       namespace: test-pods
       name: .*
@@ -155,15 +161,8 @@ patches:
       version: v1beta1
       kind: RoleBinding
       namespace: test-pods
-      name: deck
-    path: patches/JsonRFC6902/rolebinding-subject-prow-name-deck.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1beta1
-      kind: RoleBinding
-      namespace: test-pods
-      name: tide
-    path: patches/JsonRFC6902/rolebinding-subject-prow-name-tide.yaml
+      name: .*
+    path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
       version: v1beta1
@@ -193,6 +192,12 @@ patches:
       name: .*
     path: patches/JsonRFC6902/prow-jobs-namespace.yaml
   - target:
+      group: rbac.authorization.k8s.io
+      kind: Role
+      namespace: test-pods
+      name: deck
+    path: patches/JsonRFC6902/prow-jobs-rolebinding-rules.yaml
+  - target:
       group: networking.k8s.io
       version: v1beta1
       kind: Ingress
@@ -219,10 +224,9 @@ patches:
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
 
-
 generatorOptions:
   disableNameSuffixHash: true
-# Remember to regenerate all configs first
+
 configMapGenerator:
   - name: config
     files:
@@ -232,81 +236,50 @@ configMapGenerator:
       - configs/labels/labels.yaml
   - name: mirror-config
     files:
-      - configs/docker-mirror/config.yaml
+      - config.yaml=configs/mirror/mirror.yaml
   - name: plugins
     files:
       - configs/plugins/plugins.yaml
+  - name: mirror-proxy-config
+    files:
+      - configs/mirror-proxy/ca.crt
   - name: cat-api-key
     files:
       - configs/cat-api/api-key
-  # Job-config can only be generated directly on the namespace
 
-  # THis connfigmap can be used to increase ingress replicas.
-  # apiVersion: v1
-  #  kind: ConfigMap
-  # metadata:
-  #   name: ibm-ingress-deploy-config
-  #   namespace: kube-system
-  # data:
-  # ACTIVATED with  ibmcloud ks ingress alb update -c <cluster>
 secretGenerator:
-  - name: kubeconfig
+  - name: oauth-token
     files:
-      - secrets/kubeconfig/config
-    type: Opaque
-  - name: cookie
-    files:
-      - secrets/cookie-b64encoded/secret
+      - oauth=secrets/oauth-token
     type: Opaque
   - name: gcs
     files:
-      - secrets/gcs/service-account.json
-    type: Opaque
-  - name: github-oauth-config
-    files:
-      - secrets/github-oauth-config/secret
-    type: Opaque
-  - name: hmac-token
-    files:
-      - secrets/hmac-token/hmac
-    type: Opaque
-  - name: oauth-token
-    files:
-      - secrets/oauth-token/oauth
+      - secrets/gcs-service-account.json
     type: Opaque
   - name: slack-token
     files:
-      - secrets/slack-token/token
+      - token=secrets/slack-token
+    type: Opaque
+  - name: cookie
+    files:
+      - secret=secrets/cookie
+    type: Opaque
+  - name: hmac-token
+    files:
+      - hmac=secrets/hmac-token
+    type: Opaque
+  - name: github-oauth-config
+    files:
+      - secret=secrets/github-oauth-config
+    type: Opaque
+  - name: kubeconfig
+    files:
+      - config=secrets/kubeconfig
     type: Opaque
   - name: unsplash-api-key
+    literals:
+      - honk.txt=
+  - name: docker-mirror-proxy
     files:
-      - secrets/unsplash-api/honk.txt
-
-  # These secrets are shared with other deployments
-  # Maybe move to a different base directory ?
-  - name: kubevirtci-docker-credential
-    # username=dockerUser
-    # password=dockerPass
-    env: secrets/kubevirtci-docker-credential/env
-    type: Opaque
-
-  - name: kubevirtci-quay-credential
-    # username=quayUser
-    # password=quayPass
-    env: secrets/kubevirtci-quay-credential/env
-    type: Opaque
-  - name: kubevirtci-installer-pull-token
-    files:
-      # installerPullToken
-      - secrets/kubevirtci-installer-pull-token/token
-    type: Opaque
-  - name: commenter-oauth-token
-    # githubCommenterToken
-    files:
-      - secrets/commenter-oauth-token/oauth
-    type: Opaque
-  - name: kubevirtci-coveralls-token
-    files:
-      # coverallsToken
-      - secrets/kubevirtci-coveralls-token/token
+      - ca.key=secrets/docker-proxy-ca.key
     type: Opaque
