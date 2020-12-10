@@ -99,3 +99,17 @@
       type: Opaque
       data:
         token: "{{ coverallsToken | b64encode }}"
+- name: Create PGP bot key secret
+  k8s:
+    context: '{{ targetContext }}'
+    kubeconfig: '{{ automationKubeconfig }}'
+    state: present
+    namespace: "{{ targetNamespace }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: pgp-bot-key
+      type: Opaque
+      data:
+        token: "{{ kubevirtBotPGP.privateKey | b64encode }}"
