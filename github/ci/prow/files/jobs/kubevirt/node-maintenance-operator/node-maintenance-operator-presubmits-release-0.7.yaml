@@ -14,13 +14,13 @@ presubmits:
     max_concurrency: 6
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20191223-f0a2baa
+      - image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"

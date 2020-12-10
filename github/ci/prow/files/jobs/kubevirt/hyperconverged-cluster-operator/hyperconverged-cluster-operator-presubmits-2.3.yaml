@@ -11,7 +11,7 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-hyperconverged-cluster-operator-e2e-k8s-1.15.1
@@ -22,7 +22,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=k8s-1.15.1 && automation/test.sh
-        image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20191223-f0a2baa
+        image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
         name: ""
         resources:
           requests:
