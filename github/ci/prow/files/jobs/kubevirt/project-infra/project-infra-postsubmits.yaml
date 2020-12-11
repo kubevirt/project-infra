@@ -127,9 +127,6 @@ postsubmits:
       - org: fgimenez
         repo: project-infra
         base_ref: add-prow-deployment-job
-      - org: kubevirt
-        repo: secrets
-        base_ref: master
       spec:
         securityContext:
           runAsUser: 0
@@ -142,26 +139,29 @@ postsubmits:
             value: /etc/github/oauth
           - name: DEPLOY_ENVIRONMENT
             value: ibmcloud-production
-          - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
             - |
+              # base_dir=github/ci/prow-deploy
+              base_dir=../../fgimenez/project-infra/github/ci/prow-deploy
+
               # unencrypt and put in place secrets
+              target_dir=$(mktemp -d)
+              git clone https://kubevirt-bot:$(cat ${GITHUB_TOKEN})@github.com/kubevirt/secrets ${target_dir}
               gpg --allow-secret-key-import --import /etc/pgp/token
-              gpg --decrypt ${PWD}/../secrets/secrets.tar.asc > secrets.tar
+              gpg --decrypt ${target_dir}/secrets.tar.asc > secrets.tar
               tar -xvf secrets.tar
-              mkdir -p github/ci/prow-deploy/vars/${DEPLOY_ENVIRONMENT}
-              mv main.yml github/ci/prow-deploy/vars/${DEPLOY_ENVIRONMENT}/secrets.yml
+              mkdir -p ${base_dir}/vars/${DEPLOY_ENVIRONMENT}
+              mv main.yml ${base_dir}/vars/${DEPLOY_ENVIRONMENT}/secrets.yml
 
               # install kubectl
               curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
               chmod a+x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
 
-              # cd github/ci/prow-deploy/
-              cd ../../fgimenez/project-infra/github/ci/prow-deploy/
+              # install deps and run playbook
+              cd ${base_dir}
               apt-get update && apt-get install -y python3-venv --no-install-recommends
               python3 -m venv venv
               source venv/bin/activate
@@ -171,7 +171,7 @@ postsubmits:
               [local]
               localhost ansible_connection=local
               EOF
-              ansible-playbook -i inventory prow-deploy.yml
+              ansible-playbook -i inventory prow-deploy.yaml
           resources:
             requests:
               memory: "8Gi"
