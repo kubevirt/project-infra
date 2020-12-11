@@ -142,6 +142,8 @@ postsubmits:
             value: /etc/github/oauth
           - name: DEPLOY_ENVIRONMENT
             value: ibmcloud-production
+          - name: GIT_ASKPASS
+            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
