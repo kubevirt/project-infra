@@ -1,0 +1,3 @@
+testinfra_dir: /tmp/test-infra
+kubectl_exec: /usr/local/bin/kubectl
+bootstrap_full_config: true

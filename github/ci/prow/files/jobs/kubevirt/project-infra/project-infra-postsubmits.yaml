@@ -154,6 +154,10 @@ postsubmits:
               mkdir -p github/ci/prow-deploy/vars/${DEPLOY_ENVIRONMENT}
               mv main.yml github/ci/prow-deploy/vars/${DEPLOY_ENVIRONMENT}/secrets.yml
 
+              # install kubectl
+              curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+              chmod a+x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
+
               # cd github/ci/prow-deploy/
               cd ../../fgimenez/project-infra/github/ci/prow-deploy/
               apt-get update && apt-get install -y python3-venv --no-install-recommends

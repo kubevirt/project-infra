@@ -4,10 +4,8 @@
     project_infra_root: /workspace/repos/project-infra-master
 
 - name: load deploy config from environment
-  include_vars: "{{ deploy_environment }}.yml"
-
-- name: load secret vars
-  include_vars: "./{{ deploy_environment }}/secrets.yml"
+  include_vars:
+    dir: "./{{ deploy_environment }}"
 
 - name: prepare docker proxy CA if needed
   when: dockerMirrorProxyCA is not defined

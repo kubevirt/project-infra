@@ -1,14 +1,15 @@
 # Test provisioning
+testinfra_dir: /tmp/test-infra
+kubectl_exec: "{{ kubevirtci_dir }}/cluster-up/kubectl.sh"
+bootstrap_full_config: true
+
 kubevirtci_dir: /tmp/kubevirtci
 kubevirtci_provider: k8s-1.19
-testinfra_dir: /tmp/test-infra
 kubevirt_num_nodes: 2
 kubevirt_num_secondary_nics: 1
 kubevirt_memory_size: 16384
 kubevirt_tag: 2010091151-ea2c81d
-kubectl_exec: "{{ kubevirtci_dir }}/cluster-up/kubectl.sh"
 kubeconfig_path: '{{ kubevirtci_dir }}/_ci-configs/{{ kubevirtci_provider }}/.kubeconfig'
-bootstrap_full_config: true
 
 shell_environment:
   KUBEVIRT_PROVIDER: "{{ kubevirtci_provider }}"
