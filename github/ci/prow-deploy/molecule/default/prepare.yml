@@ -11,9 +11,6 @@
     - name: set local project infra root
       set_fact:
         local_project_infra_root: '{{ playbook_dir}}/../../../../../'
-    - name: set project infra root
-      set_fact:
-        project_infra_root: /workspace/repos/project-infra-master
 
     - name: create project-infra dir
       file:

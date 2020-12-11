@@ -4,5 +4,6 @@
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
   tasks:
-    - name: include prow-deploy tasks
-      include_tasks: ./tasks/main.yml
+    - name: include prow-deploy role
+      include_role:
+        name: prow-deploy

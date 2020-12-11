@@ -2,6 +2,8 @@
 testinfra_dir: /tmp/test-infra
 kubectl_exec: "{{ kubevirtci_dir }}/cluster-up/kubectl.sh"
 bootstrap_full_config: true
+project_infra_root: /workspace/repos/project-infra-master
+
 
 kubevirtci_dir: /tmp/kubevirtci
 kubevirtci_provider: k8s-1.19

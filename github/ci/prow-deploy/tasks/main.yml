@@ -1,7 +1,13 @@
 ---
-- name: set project-infra root
+- name: set deploy environment
   set_fact:
-    project_infra_root: /workspace/repos/project-infra-master
+    deploy_environment: '{{ lookup("env", "DEPLOY_ENVIRONMENT") }}'
+  when: deploy_environment is undefined
+
+- name: Check deploy_environment
+  fail:
+    msg: DEPLOY_ENVIRONMENT must be set
+  when: deploy_environment is undefined or deploy_environment == ""
 
 - name: load deploy config from environment
   include_vars:
@@ -72,11 +78,19 @@
   include_tasks: resources.yml
 
 - name: set kubectl context if needed
-  shell: |
-    {{ kubectl_exec }} config use-context {{ remoteClusterProwJobsContext }}
   when: remoteClusterProwJobsContext is defined
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
+  block:
+    - name: switch context
+      shell: |
+        {{ kubectl_exec }} config use-context {{ remoteClusterProwJobsContext }}
+        {{ kubectl_exec }} config current-context
+
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: result
+
+    - debug:
+        var: result
 
 - name: Launch deployment
   when: "'deploy' in main_actions"

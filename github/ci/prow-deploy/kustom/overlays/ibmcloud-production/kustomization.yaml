@@ -6,7 +6,6 @@ resources:
   - ../../base
   # templated resources
   - resources/admin-rbac.yaml
-  - resources/docker-mirror-proxy_configmap.yaml
 
 patches:
   - target:
@@ -212,7 +211,7 @@ patches:
 
 generatorOptions:
   disableNameSuffixHash: true
-# Remember to regenerate all configs first
+
 configMapGenerator:
   - name: config
     files:
@@ -226,19 +225,13 @@ configMapGenerator:
   - name: plugins
     files:
       - configs/plugins/plugins.yaml
+  - name: mirror-proxy-config
+    files:
+      - configs/mirror-proxy/ca.crt
   - name: cat-api-key
     files:
       - configs/cat-api/api-key
-  # Job-config can only be generated directly on the namespace
 
-  # THis connfigmap can be used to increase ingress replicas.
-  # apiVersion: v1
-  #  kind: ConfigMap
-  # metadata:
-  #   name: ibm-ingress-deploy-config
-  #   namespace: kube-system
-  # data:
-  # ACTIVATED with  ibmcloud ks ingress alb update -c <cluster>
 secretGenerator:
   - name: oauth-token
     files:
@@ -276,8 +269,6 @@ secretGenerator:
       - ca.key=secrets/docker-proxy-ca.key
     type: Opaque
 
-  # These secrets are shared with other deployments
-  # Maybe move to a different base directory ?
   - name: kubevirtci-docker-credential
     # username=dockerUser
     # password=dockerPass

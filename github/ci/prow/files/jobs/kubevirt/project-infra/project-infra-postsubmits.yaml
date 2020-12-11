@@ -171,7 +171,7 @@ postsubmits:
               [local]
               localhost ansible_connection=local
               EOF
-              ansible-playbook -i inventory prow-deploy.yaml
+              ANSIBLE_ROLES_PATH=$(pwd)/.. ansible-playbook -i inventory prow-deploy.yaml
           resources:
             requests:
               memory: "8Gi"

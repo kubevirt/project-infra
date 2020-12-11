@@ -157,6 +157,8 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+    nodeSelector:
+      type: bare-metal-external
     spec:
       securityContext:
         runAsUser: 0
