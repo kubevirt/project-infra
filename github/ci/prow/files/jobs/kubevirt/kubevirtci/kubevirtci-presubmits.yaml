@@ -11,7 +11,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-kubevirtci-installer-pull-token: "true"
       sriov-pod: "true"
       rehearsal.allowed: "true"
@@ -29,7 +29,7 @@ presubmits:
                       - "true"
               topologyKey: kubernetes.io/hostname
       containers:
-      - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"

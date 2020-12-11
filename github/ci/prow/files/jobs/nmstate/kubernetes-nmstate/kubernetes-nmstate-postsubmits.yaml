@@ -12,14 +12,14 @@ postsubmits:
         base_ref: master
       labels:
         preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
+        preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
       spec:
         nodeSelector:
           type: vm
           zone: ci
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
             env:
             - name: GIT_ASKPASS
               value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
@@ -48,7 +48,7 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
+        preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
       branches:
         - ^v\d+\.\d+\.\d+$
@@ -57,7 +57,7 @@ postsubmits:
           type: vm
           zone: ci
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
