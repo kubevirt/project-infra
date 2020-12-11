@@ -283,3 +283,32 @@ secretGenerator:
     files:
       - ca.key=secrets/docker-proxy-ca.key
     type: Opaque
+
+  - name: kubevirtci-docker-credential
+    # username=dockerUser
+    # password=dockerPass
+    envs:
+    - secrets/kubevirtci-docker-credential
+    type: Opaque
+
+  - name: kubevirtci-quay-credential
+    # username=quayUser
+    # password=quayPass
+    envs:
+    - secrets/kubevirtci-quay-credential
+    type: Opaque
+  - name: kubevirtci-installer-pull-token
+    files:
+      # installerPullToken
+      - token=secrets/kubevirtci-installer-pull-token
+    type: Opaque
+  - name: commenter-oauth-token
+    # githubCommenterToken
+    files:
+      - oauth=secrets/commenter-oauth-token
+    type: Opaque
+  - name: kubevirtci-coveralls-token
+    files:
+      # coverallsToken
+      - token=secrets/kubevirtci-coveralls-token
+    type: Opaque

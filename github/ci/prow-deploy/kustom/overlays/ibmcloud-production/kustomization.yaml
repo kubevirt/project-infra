@@ -303,13 +303,15 @@ secretGenerator:
   - name: kubevirtci-docker-credential
     # username=dockerUser
     # password=dockerPass
-    env: secrets/kubevirtci-docker-credential
+    envs:
+    - secrets/kubevirtci-docker-credential
     type: Opaque
 
   - name: kubevirtci-quay-credential
     # username=quayUser
     # password=quayPass
-    env: secrets/kubevirtci-quay-credential
+    envs:
+    - secrets/kubevirtci-quay-credential
     type: Opaque
   - name: kubevirtci-installer-pull-token
     files:
