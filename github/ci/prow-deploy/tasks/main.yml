@@ -73,6 +73,11 @@
 - name: create templated resources
   include_tasks: resources.yml
 
+- name: set kubectl context if needed
+  shell: |
+    {{ kubectl_exec }} config use-context {{ remoteClusterProwJobsContext }}
+  when: remoteClusterProwJobsContext is defined
+
 - name: Launch deployment
   when: "'deploy' in main_actions"
   include_tasks: deploy.yml

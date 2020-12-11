@@ -122,7 +122,11 @@ postsubmits:
       - ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
       labels:
         preset-docker-mirror-proxy: "true"
+      skip_report: true
       extra_refs:
+      - org: fgimenez
+        repo: project-infra
+        base_ref: add-prow-deployment-job
       - org: kubevirt
         repo: secrets
         base_ref: master
@@ -150,7 +154,8 @@ postsubmits:
               mkdir -p github/ci/prow-deploy/vars/${DEPLOY_ENVIRONMENT}
               mv main.yml github/ci/prow-deploy/vars/${DEPLOY_ENVIRONMENT}/secrets.yml
 
-              cd github/ci/prow-deploy/
+              # cd github/ci/prow-deploy/
+              cd ../../fgimenez/project-infra/github/ci/prow-deploy/
               apt-get update && apt-get install -y python3-venv --no-install-recommends
               python3 -m venv venv
               source venv/bin/activate
