@@ -75,6 +75,8 @@
   shell: |
     {{ kubectl_exec }} config use-context {{ remoteClusterProwJobsContext }}
   when: remoteClusterProwJobsContext is defined
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
 
 - name: Launch deployment
   when: "'deploy' in main_actions"
