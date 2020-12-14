@@ -422,11 +422,19 @@ presubmits:
             topologyKey: kubernetes.io/hostname
       containers:
       - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - |
-          apt update && apt install gettext-base -y && wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz && tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ && export PATH=/usr/local/go/bin:$PATH && export TARGET=kind-k8s-sriov-1.17.0 && automation/test.sh
+        - "/usr/local/bin/runner.sh"
+        - "/bin/bash"
+        - "-c"
+        - >
+            apt update &&
+            apt install gettext-base -y &&
+            wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz -nv -S &&
+            tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ &&
+            export PATH=/usr/local/go/bin:$PATH &&
+            export KUBEVIRT_PROVIDER=kind-k8s-sriov-1.17.0 &&
+            export TARGET=kind-k8s-sriov-1.17.0;
+            trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM;
+            automation/test.sh;
         image: kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
