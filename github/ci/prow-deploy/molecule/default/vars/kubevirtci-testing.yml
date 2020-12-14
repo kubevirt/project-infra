@@ -4,7 +4,6 @@ kubectl_exec: "{{ kubevirtci_dir }}/cluster-up/kubectl.sh"
 bootstrap_full_config: true
 project_infra_root: /workspace/repos/project-infra-master
 
-
 kubevirtci_dir: /tmp/kubevirtci
 kubevirtci_provider: k8s-1.19
 kubevirt_num_nodes: 2
@@ -12,6 +11,7 @@ kubevirt_num_secondary_nics: 1
 kubevirt_memory_size: 16384
 kubevirt_tag: 2010091151-ea2c81d
 kubeconfig_path: '{{ kubevirtci_dir }}/_ci-configs/{{ kubevirtci_provider }}/.kubeconfig'
+secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/kubevirtci-testing/secrets/'
 
 shell_environment:
   KUBEVIRT_PROVIDER: "{{ kubevirtci_provider }}"

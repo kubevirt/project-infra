@@ -5,7 +5,7 @@ metadata:
   name: hook
   annotations:
     kubernetes.io/tls-acme: "true"
-    kubernetes.io/ingress.class: public-iks-k8s-nginx
+    kubernetes.io/ingress.class: iks-nginx
     nginx.ingress.kubernetes.io/rewrite-target: /$2
   namespace: default
 spec:
@@ -27,7 +27,7 @@ metadata:
   name: deck
   annotations:
     kubernetes.io/tls-acme: "true"
-    kubernetes.io/ingress.class: public-iks-k8s-nginx
+    kubernetes.io/ingress.class: iks-nginx
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/app-root: /
   namespace: default
@@ -51,7 +51,7 @@ metadata:
   name: gcsweb
   annotations:
     kubernetes.io/tls-acme: "true"
-    kubernetes.io/ingress.class: public-iks-k8s-nginx
+    kubernetes.io/ingress.class: iks-nginx
     nginx.ingress.kubernetes.io/rewrite-target: /$2
   namespace: default
 spec:

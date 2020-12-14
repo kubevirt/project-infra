@@ -60,11 +60,6 @@ patches:
   - target:
       version: v1
       kind: PersistentVolumeClaim
-      name: greenhouse
-    path: patches/StrategicMerge/greenhouse-pvc.yaml
-  - target:
-      version: v1
-      kind: PersistentVolumeClaim
       name: ghproxy
     path: patches/StrategicMerge/ghproxy.yaml
   # namespaces
