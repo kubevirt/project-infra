@@ -5,7 +5,8 @@ presubmits:
     - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-    always_run: true
+    always_run: false
+    run_if_changed: "scripts/.*"
     optional: false
     decorate: true
     decoration_config:
@@ -18,7 +19,7 @@ presubmits:
       preset-shared-images: "true"
     spec:
       containers:
-      - image: dhiller/kubectl-virt-builder@sha256:126c8ea74b9d8c16bc21d2b4af05eab6845838596bb2c8ece795e2bcf4d857c4
+      - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:94d64b3c4015c0f01239610d7c22e9baf84e67467a457942acf7fbbfbd3a38cf
         command:
         - "/usr/local/bin/runner.sh"
         args:
@@ -48,7 +49,7 @@ presubmits:
       preset-shared-images: "true"
     spec:
       containers:
-      - image: dhiller/kubectl-virt-builder@sha256:126c8ea74b9d8c16bc21d2b4af05eab6845838596bb2c8ece795e2bcf4d857c4
+      - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:94d64b3c4015c0f01239610d7c22e9baf84e67467a457942acf7fbbfbd3a38cf
         command:
         - "/usr/local/bin/runner.sh"
         args:
@@ -59,8 +60,8 @@ presubmits:
           requests:
             memory: "1Gi"
   - name: build-kubectl-virt-plugin-images
-    branches:
-      - master
+    skip_branches:
+      - release-\d+\.\d+
     always_run: false
     run_if_changed: "images/.*"
     decorate: true
