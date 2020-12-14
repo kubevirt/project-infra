@@ -163,7 +163,7 @@ presubmits:
       rehearsal.allowed: "true"
       sriov-pod: "true"
     max_concurrency: 10
-    name: pull-kubevirt-e2e-kind-1.17-sriov
+    name: pull-kubevirt-e2e-kind-1.17-sriov-release-0.36
     optional: true
     skip_report: true
     spec:
