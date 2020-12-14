@@ -58,3 +58,39 @@ presubmits:
         resources:
           requests:
             memory: "1Gi"
+  - name: build-kubectl-virt-plugin-images
+    branches:
+      - master
+    always_run: false
+    run_if_changed: "images/.*"
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
+        - name: gcs
+          secret:
+            secretName: gcs
+      containers:
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "cd images && make build_all"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: token
+              mountPath: /etc/github
+          resources:
+            requests:
+              memory: "1Gi"
