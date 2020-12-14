@@ -18,7 +18,7 @@ RUN set -x && \
     source /etc/profile.d/gimme.sh && \
     git clone https://github.com/kubernetes/test-infra.git && \
     cd /test-infra && \
-    git checkout fd0699b906b0593a33ba2bddd3b1ae8822f42dd8 && \
+    git checkout def51b2596d3a0a7b19d49596d5afc4ab3354855 && \
     cd /test-infra/robots/pr-creator && \
     go install && \
     cd /test-infra/releng/config-forker && \
