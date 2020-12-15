@@ -47,7 +47,7 @@ patches:
       version: v1
       group: apps
       kind: Deployment
-      name: hook
+      name: deck
     path: patches/JsonRFC6902/deck_deployment.yaml
   - target:
       version: v1
