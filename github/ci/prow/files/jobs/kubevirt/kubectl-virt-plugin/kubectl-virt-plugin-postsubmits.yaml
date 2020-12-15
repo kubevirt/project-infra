@@ -1,0 +1,43 @@
+postsubmits:
+  kubevirt/kubectl-virt-plugin:
+    - name: publish-kubectl-virt-plugin-images
+      branches:
+      - master
+      always_run: false
+      run_if_changed: "images/.*"
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-kubevirtci-quay-credential: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
+        - name: gcs
+          secret:
+            secretName: gcs
+        containers:
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
+          command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/bash"
+          - "-c"
+          - |
+            set -e
+            docker login --username $(<$QUAY_USER) --password-stdin=true quay.io <$QUAY_PASSWORD
+            cd images
+            make push_all
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - name: token
+            mountPath: /etc/github
+          resources:
+            requests:
+              memory: "1Gi"
