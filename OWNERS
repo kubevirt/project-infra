@@ -4,11 +4,7 @@ filters:
       - davidvossel
       - rmohr
       - stu-gott
-      - booxter
       - vladikr
-      - slintes
-      - cynepco3hahue
-      - danielBelenky
       - dhiller
       - gbenhaim
       - qinqon
@@ -20,8 +16,6 @@ filters:
       - davidvossel
       - vladikr
       - rmohr
-      - cynepco3hahue
-      - danielBelenky
       - dhiller
       - gbenhaim
       - qinqon
@@ -29,3 +23,6 @@ filters:
       - stu-gott
       - jean-edouard
       - fgimenez
+    emeritus_approvers:
+      - cynepco3hahue
+      - danielBelenky
