@@ -200,7 +200,7 @@ patches:
     path: patches/JsonRFC6902/prow-jobs-rolebinding-rules.yaml
   - target:
       group: networking.k8s.io
-      version: v1beta1
+      version: v1
       kind: Ingress
       namespace: default
       name: .*

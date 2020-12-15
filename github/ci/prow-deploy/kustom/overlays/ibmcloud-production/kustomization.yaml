@@ -4,8 +4,10 @@ kind: Kustomization
 
 resources:
   - ../../base
+  - resources/ingress-class.yaml
   # templated resources
   - resources/admin-rbac.yaml
+
 
 patches:
   - target:
@@ -32,6 +34,12 @@ patches:
       kind: Deployment
       name: deck
     path: patches/JsonRFC6902/deck_deployment.yaml
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: hook
+    path: patches/JsonRFC6902/hook_deployment.yaml
   - target:
       version: v1
       group: apps
@@ -178,7 +186,7 @@ patches:
     path: patches/JsonRFC6902/prow-jobs-rolebinding-rules.yaml
   - target:
       group: networking.k8s.io
-      version: v1beta1
+      version: v1
       kind: Ingress
       namespace: default
       name: .*

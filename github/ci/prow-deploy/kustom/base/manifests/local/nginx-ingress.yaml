@@ -3,10 +3,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: hook
-  annotations:
-    kubernetes.io/ingress.class: public-iks-k8s-nginx
   namespace: default
 spec:
+  ingressClassName: public-iks-k8s-nginx
   tls:
     - hosts:
       - prow.apps.ovirt.org
@@ -26,10 +25,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: deck
-  annotations:
-    kubernetes.io/ingress.class: public-iks-k8s-nginx
   namespace: default
 spec:
+  ingressClassName: public-iks-k8s-nginx
   tls:
     - hosts:
         - prow.apps.ovirt.org
@@ -49,10 +47,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: gcsweb
-  annotations:
-    kubernetes.io/ingress.class: public-iks-k8s-nginx
   namespace: default
 spec:
+  ingressClassName: public-iks-k8s-nginx
   tls:
     - hosts:
       - gcsweb.apps.ovirt.org
