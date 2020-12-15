@@ -20,7 +20,7 @@ periodics:
     preset-shared-images: "true"
   spec:
     containers:
-      - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:554db95bb081e1ca404fc22cb140e868df9231b7d5578a74ead1bbda0f151545
+      - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:49045b159c711cf307bdabeb5fd8889dae26a44753ec8c74a3e32fa3ba5fcde1
         env:
           - name: GIT_ASKPASS
             value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"

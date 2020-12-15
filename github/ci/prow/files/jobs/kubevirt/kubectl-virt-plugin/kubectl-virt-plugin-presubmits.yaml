@@ -19,7 +19,7 @@ presubmits:
       preset-shared-images: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:94d64b3c4015c0f01239610d7c22e9baf84e67467a457942acf7fbbfbd3a38cf
+      - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:49045b159c711cf307bdabeb5fd8889dae26a44753ec8c74a3e32fa3ba5fcde1
         command:
         - "/usr/local/bin/runner.sh"
         args:
@@ -49,13 +49,13 @@ presubmits:
       preset-shared-images: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:94d64b3c4015c0f01239610d7c22e9baf84e67467a457942acf7fbbfbd3a38cf
+      - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:49045b159c711cf307bdabeb5fd8889dae26a44753ec8c74a3e32fa3ba5fcde1
         command:
         - "/usr/local/bin/runner.sh"
         args:
         - "/bin/sh"
         - "-c"
-        - shellcheck $(find $(pwd) -type f -name '*.sh' -not -path '**/out/*' -print)
+        - shellcheck -x $(find $(pwd) -type f -name '*.sh' -not -path '**/out/*' -print)
         resources:
           requests:
             memory: "1Gi"
