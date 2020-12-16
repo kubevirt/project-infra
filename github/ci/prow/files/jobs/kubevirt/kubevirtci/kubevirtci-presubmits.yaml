@@ -18,16 +18,6 @@ presubmits:
     spec:
       nodeSelector:
         hardwareSupport: sriov-nic
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: sriov-pod
-                    operator: In
-                    values:
-                      - "true"
-              topologyKey: kubernetes.io/hostname
       containers:
       - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
         command:
@@ -50,6 +40,9 @@ presubmits:
         resources:
           requests:
             memory: "15Gi"
+            prow/sriov: "1"
+          limits:
+            prow/sriov: "1"
         volumeMounts:
           #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
           - name: modules
