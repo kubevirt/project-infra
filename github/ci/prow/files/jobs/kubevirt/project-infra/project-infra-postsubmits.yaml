@@ -123,10 +123,6 @@ postsubmits:
       labels:
         preset-docker-mirror-proxy: "true"
       skip_report: false
-      extra_refs:
-      - org: fgimenez
-        repo: project-infra
-        base_ref: add-prow-deployment-job
       spec:
         securityContext:
           runAsUser: 0
@@ -144,8 +140,7 @@ postsubmits:
             - "/bin/bash"
             - "-c"
             - |
-              # base_dir=github/ci/prow-deploy
-              base_dir=../../fgimenez/project-infra/github/ci/prow-deploy
+              base_dir=github/ci/prow-deploy
 
               # unencrypt and put in place secrets
               target_dir=$(mktemp -d)
