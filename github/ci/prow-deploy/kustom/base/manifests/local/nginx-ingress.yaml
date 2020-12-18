@@ -1,25 +1,4 @@
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: hook
-  namespace: default
-spec:
-  ingressClassName: public-iks-k8s-nginx
-  tls:
-    - hosts:
-      - hook.apps.ovirt.org
-  rules:
-    - host: hook.apps.ovirt.org
-      http:
-         paths:
-           - path: /
-             pathType: Prefix
-             backend:
-               service:
-                 name: hook
-                 port:
-                   number: 8888
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -29,19 +8,26 @@ metadata:
 spec:
   ingressClassName: public-iks-k8s-nginx
   tls:
-    - hosts:
-        - prow.apps.ovirt.org
+  - hosts:
+    - prow.kubevirt.io
   rules:
-    - host: prow.apps.ovirt.org
-      http:
-         paths:
-           - path: /
-             pathType: Prefix
-             backend:
-               service:
-                 name: deck
-                 port:
-                   number: 80
+  - host: prow.kubevirt.io
+    http:
+      paths:
+      - path: /hook
+        pathType: Prefix
+        backend:
+          service:
+            name: hook
+            port:
+              number: 8888
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: deck
+            port:
+              number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -51,16 +37,16 @@ metadata:
 spec:
   ingressClassName: public-iks-k8s-nginx
   tls:
-    - hosts:
-      - gcsweb.apps.ovirt.org
+  - hosts:
+    - gcsweb.kubevirt.io
   rules:
-    - host: gcsweb.apps.ovirt.org
-      http:
-         paths:
-           - path: /
-             pathType: Prefix
-             backend:
-               service:
-                 name: gcsweb
-                 port:
-                   number: 80
+  - host: gcsweb.kubevirt.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: gcsweb
+            port:
+              number: 80

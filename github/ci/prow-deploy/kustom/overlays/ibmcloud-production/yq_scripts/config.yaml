@@ -1,7 +1,7 @@
 - command: update
   path: plank.job_url_template
   value: >-
-    https://deck.prowdeploy.ci/view/gcs/kubernetes-prow/
+    https://prow.kubevirt.io/view/gcs/kubernetes-prow/
     {{if eq .Spec.Type "presubmit"}}pr-logs/
     pull{{else if eq .Spec.Type "batch"}}pr-logs/
     pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/
@@ -9,17 +9,5 @@
     {{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/
     batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/
 - command: update
-  path: presets[2].volumes[0].hostPath.path
-  value: /var/lib/stdci/shared/kubevirt-images/kubernetes-prow
-- command: update
-  path: prowjob_namespace
-  value: kubernetes-prow-jobs
-- command: update
-  path: pod_namespace
-  value: kubernetes-prow-jobs
-- command: update
-  path: plank.default_decoration_configs.*.gcs_configuration.bucket
-  value: kubernetes-prow
-- command: update
   path: deck.spyglass.gcs_browser_prefix
-  value: https://gcsweb.prowdeploy.ci/gcs/
+  value: https://gcsweb.kubevirt.io/gcs/
