@@ -15,13 +15,13 @@ presubmits:
       max_concurrency: 6
       labels:
         preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
+        preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       spec:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
@@ -140,13 +140,13 @@ presubmits:
       max_concurrency: 6
       labels:
         preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
+        preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       spec:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
@@ -172,13 +172,13 @@ presubmits:
       max_concurrency: 6
       labels:
         preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
+        preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       spec:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
@@ -204,13 +204,13 @@ presubmits:
       max_concurrency: 6
       labels:
         preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
+        preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       spec:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
@@ -268,13 +268,13 @@ presubmits:
       max_concurrency: 6
       labels:
         preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
+        preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       spec:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
@@ -300,13 +300,13 @@ presubmits:
       max_concurrency: 6
       labels:
         preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
+        preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       spec:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:

@@ -47,13 +47,13 @@ presubmits:
     decorate: true
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
         type: vm
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -73,13 +73,13 @@ presubmits:
     decorate: true
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
         type: vm
       containers:
-        - image: gcr.io/k8s-testimages/bootstrap:v20201106-b01d6e7
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -127,21 +127,25 @@ presubmits:
     decorate: true
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-kubevirtci-docker-credential: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: gabrielecerami/kubevirt-ci-testenv
-          # docker run \
-          # -v /project-infra:/opt/source/project-infra
-          # -v /dev/kvm:/dev/kvm
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
-            - "source /opt/virtualenv/bin/activate && cd github/ci/kubernetes_crud/ &&  molecule test"
+            - |
+              cd github/ci/kubernetes_crud/
+              apt-get update && apt-get install -y python3-venv --no-install-recommends
+              python3 -m venv venv
+              source venv/bin/activate
+              pip install wheel
+              pip install -r requirements.txt
+              molecule test
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
