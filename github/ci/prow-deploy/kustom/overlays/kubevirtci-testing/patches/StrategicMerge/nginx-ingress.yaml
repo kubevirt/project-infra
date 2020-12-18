@@ -1,56 +1,53 @@
 ---
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: hook
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-spec:
-  rules:
-  - host: hook.prowdeploy.ci
-    http:
-      paths:
-      - path: /hook
-        backend:
-          serviceName: hook
-          servicePort: 8888
----
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: deck
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/app-root: ""
 spec:
+  ingressClassName: nginx
   rules:
   - host: deck.prowdeploy.ci
     http:
       paths:
-      - path: /
+      - path: /hook
+        pathType: Prefix
         backend:
-          serviceName: deck
-          servicePort: 80
+          service:
+            name: hook
+            port:
+              number: 8888
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: deck
+            port:
+              number: 80
   tls:
   - hosts:
     - deck.prowdeploy.ci
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: gcsweb
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/rewrite-target: "/"
 spec:
+  ingressClassName: nginx
   rules:
   - host: gcsweb.prowdeploy.ci
     http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: gcsweb
-          servicePort: 80
+          service:
+            name: gcsweb
+            port:
+              number: 80
   tls:
   - hosts:
     - gcsweb.prowdeploy.ci

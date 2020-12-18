@@ -46,6 +46,13 @@
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
   environment: "{{ shell_environment }}"
 
+- name: Shallow Clone test-infra repo
+  git:
+    repo: https://github.com/kubernetes/test-infra.git
+    dest: "{{ testinfra_dir }}"
+    depth: 1
+    refspec: "+refs/heads/master:refs/remotes/origin/master"
+
 - name: Bootstrap the full job config (this may take a few minutes)
   when: bootstrap_full_config|bool
   shell: |

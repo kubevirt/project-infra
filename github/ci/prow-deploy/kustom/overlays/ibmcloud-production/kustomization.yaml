@@ -4,9 +4,10 @@ kind: Kustomization
 
 resources:
   - ../../base
+  - resources/ingress-class.yaml
   # templated resources
   - resources/admin-rbac.yaml
-  - resources/docker-mirror-proxy_configmap.yaml
+
 
 patches:
   - target:
@@ -31,8 +32,14 @@ patches:
       version: v1
       group: apps
       kind: Deployment
-      name: hook
+      name: deck
     path: patches/JsonRFC6902/deck_deployment.yaml
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: hook
+    path: patches/JsonRFC6902/hook_deployment.yaml
   - target:
       version: v1
       group: apps
@@ -47,22 +54,15 @@ patches:
       name: deck
     path: patches/StrategicMerge/deck_role.yaml
   - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: RoleBinding
-      namespace: test-pods
-      name: deck
-    path: patches/StrategicMerge/deck_rolebinding.yaml
-  - target:
       group: apps
       version: v1
-      kind: Deplyment
+      kind: Deployment
       name: docker-mirror
     path: patches/StrategicMerge/docker-mirror_deployment.yaml
   - target:
       group: apps
       version: v1
-      kind: Deplyment
+      kind: Deployment
       name: greenhouse
     path: patches/StrategicMerge/greenhouse-deployment.yaml
   - target:
@@ -70,8 +70,7 @@ patches:
       kind: PersistentVolumeClaim
       name: ghproxy
     path: patches/StrategicMerge/ghproxy.yaml
-  # The namespace directive cannot be used as it will blindly convert ALL
-  # namespaces to a single value. We have multiple namespaces here and we need fine-grained tuning
+  # namespaces
   - target:
       group: apps
       version: v1
@@ -146,7 +145,7 @@ patches:
     path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
-      version: v1beta1
+      version: v1
       kind: RoleBinding
       namespace: test-pods
       name: .*
@@ -156,20 +155,6 @@ patches:
       version: v1beta1
       kind: RoleBinding
       namespace: test-pods
-      name: deck
-    path: patches/JsonRFC6902/rolebinding-subject-prow-name-deck.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1beta1
-      kind: RoleBinding
-      namespace: test-pods
-      name: tide
-    path: patches/JsonRFC6902/rolebinding-subject-prow-name-tide.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1beta1
-      kind: RoleBinding
-      namespace: default
       name: .*
     path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
   - target:
@@ -194,8 +179,14 @@ patches:
       name: .*
     path: patches/JsonRFC6902/prow-jobs-namespace.yaml
   - target:
+      group: rbac.authorization.k8s.io
+      kind: Role
+      namespace: test-pods
+      name: deck
+    path: patches/JsonRFC6902/prow-jobs-rolebinding-rules.yaml
+  - target:
       group: networking.k8s.io
-      version: v1beta1
+      version: v1
       kind: Ingress
       namespace: default
       name: .*
@@ -223,7 +214,7 @@ patches:
 
 generatorOptions:
   disableNameSuffixHash: true
-# Remember to regenerate all configs first
+
 configMapGenerator:
   - name: config
     files:
@@ -237,77 +228,75 @@ configMapGenerator:
   - name: plugins
     files:
       - configs/plugins/plugins.yaml
+  - name: mirror-proxy-config
+    files:
+      - configs/mirror-proxy/ca.crt
   - name: cat-api-key
     files:
       - configs/cat-api/api-key
-  # Job-config can only be generated directly on the namespace
 
-  # THis connfigmap can be used to increase ingress replicas.
-  # apiVersion: v1
-  #  kind: ConfigMap
-  # metadata:
-  #   name: ibm-ingress-deploy-config
-  #   namespace: kube-system
-  # data:
-  # ACTIVATED with  ibmcloud ks ingress alb update -c <cluster>
 secretGenerator:
-  - name: kubeconfig
+  - name: oauth-token
     files:
-      - secrets/kubeconfig/config
-    type: Opaque
-  - name: cookie
-    files:
-      - secrets/cookie-b64encoded/secret
+      - oauth=secrets/oauth-token
     type: Opaque
   - name: gcs
     files:
-      - secrets/gcs/service-account.json
-    type: Opaque
-  - name: github-oauth-config
-    files:
-      - secrets/github-oauth-config/secret
-    type: Opaque
-  - name: hmac-token
-    files:
-      - secrets/hmac-token/hmac
-    type: Opaque
-  - name: oauth-token
-    files:
-      - secrets/oauth-token/oauth
+      - secrets/gcs-service-account.json
     type: Opaque
   - name: slack-token
     files:
-      - secrets/slack-token/token
+      - token=secrets/slack-token
+    type: Opaque
+  - name: cookie
+    files:
+      - secret=secrets/cookie
+    type: Opaque
+  - name: hmac-token
+    files:
+      - hmac=secrets/hmac-token
+    type: Opaque
+  - name: github-oauth-config
+    files:
+      - secret=secrets/github-oauth-config
+    type: Opaque
+  - name: kubeconfig
+    files:
+      - config=secrets/kubeconfig
     type: Opaque
   - name: unsplash-api-key
+    literals:
+      - honk.txt=
+  - name: docker-mirror-proxy
     files:
-      - secrets/unsplash-api/honk.txt
+      - ca.key=secrets/docker-proxy-ca.key
+    type: Opaque
 
-  # These secrets are shared with other deployments
-  # Maybe move to a different base directory ?
   - name: kubevirtci-docker-credential
     # username=dockerUser
     # password=dockerPass
-    env: secrets/kubevirtci-docker-credential/env
+    envs:
+    - secrets/kubevirtci-docker-credential
     type: Opaque
 
   - name: kubevirtci-quay-credential
     # username=quayUser
     # password=quayPass
-    env: secrets/kubevirtci-quay-credential/env
+    envs:
+    - secrets/kubevirtci-quay-credential
     type: Opaque
   - name: kubevirtci-installer-pull-token
     files:
       # installerPullToken
-      - secrets/kubevirtci-installer-pull-token/token
+      - token=secrets/kubevirtci-installer-pull-token
     type: Opaque
   - name: commenter-oauth-token
     # githubCommenterToken
     files:
-      - secrets/commenter-oauth-token/oauth
+      - oauth=secrets/commenter-oauth-token
     type: Opaque
   - name: kubevirtci-coveralls-token
     files:
       # coverallsToken
-      - secrets/kubevirtci-coveralls-token/token
+      - token=secrets/kubevirtci-coveralls-token
     type: Opaque

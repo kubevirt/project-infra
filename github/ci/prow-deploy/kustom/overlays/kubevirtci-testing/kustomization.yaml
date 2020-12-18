@@ -18,6 +18,14 @@ patchesStrategicMerge:
 
 patches:
   - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: ingress-nginx-controller
+    path: patches/StrategicMerge/ingress-nginx-controller.yaml
+
+
+  - target:
       version: v1
       group: apps
       kind: Deployment
@@ -39,7 +47,7 @@ patches:
       version: v1
       group: apps
       kind: Deployment
-      name: hook
+      name: deck
     path: patches/JsonRFC6902/deck_deployment.yaml
   - target:
       version: v1
@@ -48,28 +56,22 @@ patches:
       name: tide
     path: patches/JsonRFC6902/tide_deployment.yaml
   - target:
-      group: apps
-      version: v1
-      kind: Deployment
-      name: ingress-nginx-controller
-    path: patches/StrategicMerge/ingress-nginx-controller.yaml
-  - target:
       group: rbac.authorization.k8s.io
       version: v1
       kind: Role
       namespace: test-pods
       name: deck
-    path: patches/StrategicMerge/deck_rbac.yaml
+    path: patches/StrategicMerge/deck_role.yaml
   - target:
       group: apps
       version: v1
-      kind: Deplyment
+      kind: Deployment
       name: docker-mirror
     path: patches/StrategicMerge/docker-mirror_deployment.yaml
   - target:
       group: apps
       version: v1
-      kind: Deplyment
+      kind: Deployment
       name: greenhouse
     path: patches/StrategicMerge/greenhouse-deployment.yaml
   - target:
@@ -77,6 +79,12 @@ patches:
       kind: PersistentVolumeClaim
       name: greenhouse
     path: patches/StrategicMerge/greenhouse-pvc.yaml
+  - target:
+      version: v1
+      kind: PersistentVolumeClaim
+      name: ghproxy
+    path: patches/StrategicMerge/ghproxy.yaml
+  # namespaces
   - target:
       group: apps
       version: v1
@@ -169,13 +177,6 @@ patches:
       kind: RoleBinding
       namespace: default
       name: .*
-    path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1beta1
-      kind: RoleBinding
-      namespace: default
-      name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
@@ -199,7 +200,7 @@ patches:
     path: patches/JsonRFC6902/prow-jobs-rolebinding-rules.yaml
   - target:
       group: networking.k8s.io
-      version: v1beta1
+      version: v1
       kind: Ingress
       namespace: default
       name: .*
@@ -282,4 +283,33 @@ secretGenerator:
   - name: docker-mirror-proxy
     files:
       - ca.key=secrets/docker-proxy-ca.key
+    type: Opaque
+
+  - name: kubevirtci-docker-credential
+    # username=dockerUser
+    # password=dockerPass
+    envs:
+    - secrets/kubevirtci-docker-credential
+    type: Opaque
+
+  - name: kubevirtci-quay-credential
+    # username=quayUser
+    # password=quayPass
+    envs:
+    - secrets/kubevirtci-quay-credential
+    type: Opaque
+  - name: kubevirtci-installer-pull-token
+    files:
+      # installerPullToken
+      - token=secrets/kubevirtci-installer-pull-token
+    type: Opaque
+  - name: commenter-oauth-token
+    # githubCommenterToken
+    files:
+      - oauth=secrets/commenter-oauth-token
+    type: Opaque
+  - name: kubevirtci-coveralls-token
+    files:
+      # coverallsToken
+      - token=secrets/kubevirtci-coveralls-token
     type: Opaque

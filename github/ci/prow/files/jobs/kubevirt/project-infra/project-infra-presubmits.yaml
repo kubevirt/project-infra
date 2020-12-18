@@ -156,11 +156,13 @@ presubmits:
               memory: "8Gi"
   - name: prow-deploy-test
     always_run: false
-    run_if_changed: "github/ci/prow-deploy/.*"
+    run_if_changed: "github/ci/prow-deploy/.*|github/ci/prow/files/.*"
     decorate: true
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+    nodeSelector:
+      type: bare-metal-external
     spec:
       securityContext:
         runAsUser: 0

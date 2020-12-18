@@ -1,7 +1,7 @@
 - command: update
   path: plank.job_url_template
   value: >-
-    https://prow.apps.ovirt.org/view/gcs/kubernetes-prow/
+    https://deck.prowdeploy.ci/view/gcs/kubernetes-prow/
     {{if eq .Spec.Type "presubmit"}}pr-logs/
     pull{{else if eq .Spec.Type "batch"}}pr-logs/
     pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/
@@ -20,3 +20,6 @@
 - command: update
   path: plank.default_decoration_configs.*.gcs_configuration.bucket
   value: kubernetes-prow
+- command: update
+  path: deck.spyglass.gcs_browser_prefix
+  value: https://gcsweb.prowdeploy.ci/gcs/

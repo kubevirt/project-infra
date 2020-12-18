@@ -1,13 +1,17 @@
 ---
-- name: set project-infra root
+- name: set deploy environment
   set_fact:
-    project_infra_root: /workspace/repos/project-infra-master
+    deploy_environment: '{{ lookup("env", "DEPLOY_ENVIRONMENT") }}'
+  when: deploy_environment is undefined
+
+- name: Check deploy_environment
+  fail:
+    msg: DEPLOY_ENVIRONMENT must be set
+  when: deploy_environment is undefined or deploy_environment == ""
 
 - name: load deploy config from environment
-  include_vars: "{{ deploy_environment }}.yml"
-
-- name: load secret vars
-  include_vars: "./{{ deploy_environment }}/secrets.yml"
+  include_vars:
+    dir: "./{{ deploy_environment }}"
 
 - name: prepare docker proxy CA if needed
   when: dockerMirrorProxyCA is not defined
@@ -72,6 +76,21 @@
 
 - name: create templated resources
   include_tasks: resources.yml
+
+- name: set kubectl context if needed
+  when: remoteClusterProwJobsContext is defined
+  block:
+    - name: switch context
+      shell: |
+        {{ kubectl_exec }} config use-context {{ remoteClusterProwJobsContext }}
+        {{ kubectl_exec }} config current-context
+
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: result
+
+    - debug:
+        var: result
 
 - name: Launch deployment
   when: "'deploy' in main_actions"

@@ -114,3 +114,80 @@ postsubmits:
                 memory: "1Gi"
               limits:
                 memory: "1Gi"
+    - name: prow-deployment
+      always_run: false
+      decorate: true
+      branches:
+      # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+      - ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+      labels:
+        preset-docker-mirror-proxy: "true"
+      skip_report: false
+      spec:
+        securityContext:
+          runAsUser: 0
+        containers:
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
+          env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/gcs/service-account.json
+          - name: GITHUB_TOKEN
+            value: /etc/github/oauth
+          - name: DEPLOY_ENVIRONMENT
+            value: ibmcloud-production
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - |
+              base_dir=github/ci/prow-deploy
+
+              # unencrypt and put in place secrets
+              target_dir=$(mktemp -d)
+              git clone https://kubevirt-bot:$(cat ${GITHUB_TOKEN})@github.com/kubevirt/secrets ${target_dir}
+              gpg --allow-secret-key-import --import /etc/pgp/token
+              gpg --decrypt ${target_dir}/secrets.tar.asc > secrets.tar
+              tar -xvf secrets.tar
+              mkdir -p ${base_dir}/vars/${DEPLOY_ENVIRONMENT}
+              mv main.yml ${base_dir}/vars/${DEPLOY_ENVIRONMENT}/secrets.yml
+
+              # install kubectl
+              curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+              chmod a+x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
+
+              # install deps and run playbook
+              cd ${base_dir}
+              apt-get update && apt-get install -y python3-venv --no-install-recommends
+              python3 -m venv venv
+              source venv/bin/activate
+              pip install wheel
+              pip install -r requirements.txt
+              cat << EOF > inventory
+              [local]
+              localhost ansible_connection=local
+              EOF
+              ANSIBLE_ROLES_PATH=$(pwd)/.. ansible-playbook -i inventory prow-deploy.yaml
+          resources:
+            requests:
+              memory: "8Gi"
+            limits:
+              memory: "8Gi"
+          volumeMounts:
+          - name: token
+            mountPath: /etc/github
+          - name: gcs
+            mountPath: /etc/gcs
+            readOnly: true
+          - name: pgp-bot-key
+            mountPath: /etc/pgp
+            readOnly: true
+        volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
+        - name: pgp-bot-key
+          secret:
+            secretName: pgp-bot-key
+        - name: gcs
+          secret:
+            secretName: gcs

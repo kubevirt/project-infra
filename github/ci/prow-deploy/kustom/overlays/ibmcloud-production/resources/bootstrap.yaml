@@ -11,7 +11,7 @@ metadata:
 apiVersion: v1
 kind: Node
 metadata:
-  name: 10.240.128.11
+  name: 10.240.128.6
   labels:
     type: bare-metal-external
     zone: ci

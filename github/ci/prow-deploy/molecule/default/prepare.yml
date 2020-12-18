@@ -11,9 +11,6 @@
     - name: set local project infra root
       set_fact:
         local_project_infra_root: '{{ playbook_dir}}/../../../../../'
-    - name: set project infra root
-      set_fact:
-        project_infra_root: /workspace/repos/project-infra-master
 
     - name: create project-infra dir
       file:
@@ -40,13 +37,6 @@
         depth: 1
         refspec: "+refs/heads/master:refs/remotes/origin/master"
       when: "'kubevirtci' in deploy_environment"
-
-    - name: Shallow Clone test-infra repo
-      git:
-        repo: https://github.com/kubernetes/test-infra.git
-        dest: "{{ testinfra_dir }}"
-        depth: 1
-        refspec: "+refs/heads/master:refs/remotes/origin/master"
 
     - name: Launch kubevirtci cluster
       command: make cluster-up

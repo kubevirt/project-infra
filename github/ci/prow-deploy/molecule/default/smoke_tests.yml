@@ -58,6 +58,6 @@
   shell: >
     cd {{ testinfra_dir }}/prow/cmd/
     go run ./phony
-    --address="http://{{ hookUrl }}:{{ http_port.stdout }}/hook"
+    --address="http://{{ deckUrl }}:{{ http_port.stdout }}/hook"
     --hmac {{ prowHmac }}
   changed_when: false
