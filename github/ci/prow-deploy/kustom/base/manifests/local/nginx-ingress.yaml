@@ -7,9 +7,10 @@ metadata:
   namespace: default
 spec:
   ingressClassName: public-iks-k8s-nginx
-  tls:
-  - hosts:
-    - prow.kubevirt.io
+  # TLS section commented out until we have the secrets in place
+  #tls:
+  #- hosts:
+  #  - prow.kubevirt.io
   rules:
   - host: prow.kubevirt.io
     http:
@@ -36,9 +37,10 @@ metadata:
   namespace: default
 spec:
   ingressClassName: public-iks-k8s-nginx
-  tls:
-  - hosts:
-    - gcsweb.kubevirt.io
+  # TLS section commented out until we have the secrets in place
+  #tls:
+  #- hosts:
+  #  - gcsweb.kubevirt.io
   rules:
   - host: gcsweb.kubevirt.io
     http:
