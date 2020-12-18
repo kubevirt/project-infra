@@ -8,12 +8,12 @@ spec:
   ingressClassName: public-iks-k8s-nginx
   tls:
     - hosts:
-      - prow.apps.ovirt.org
+      - hook.apps.ovirt.org
   rules:
-    - host: prow.apps.ovirt.org
+    - host: hook.apps.ovirt.org
       http:
          paths:
-           - path: /hook
+           - path: /
              pathType: Prefix
              backend:
                service:

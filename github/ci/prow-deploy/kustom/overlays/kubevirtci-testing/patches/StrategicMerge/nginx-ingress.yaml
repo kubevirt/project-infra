@@ -9,7 +9,7 @@ spec:
   - host: hook.prowdeploy.ci
     http:
       paths:
-      - path: /hook
+      - path: /
         pathType: Prefix
         backend:
           service:
