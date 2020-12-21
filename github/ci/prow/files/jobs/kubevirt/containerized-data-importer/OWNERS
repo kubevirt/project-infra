@@ -6,6 +6,7 @@ filters:
     approvers:
     - aglitke
     - awels
+    - maya-r
     - mhenriks
     reviewers:
     - aglitke
