@@ -53,7 +53,7 @@ func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
 }
 
 func GetArtifacts(workspace *build.File) (artifacts []Artifact, err error) {
-	for _, ruleName := range []string{"http_archive", "http_file"} {
+	for _, ruleName := range []string{"http_archive", "http_file", "rpm"} {
 		rules := workspace.Rules(ruleName)
 		for _, rule := range rules {
 			artifacts = append(artifacts, Artifact{

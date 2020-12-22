@@ -14,6 +14,13 @@ http_archive(
     urls = ["https://github.com/rmohr/rules_container_rpm/archive/v0.0.5.tar.gz"],
 )
 
+rpm(
+    name = "io_bazel_rules_container_rpm1",
+    sha256 = "151261f1b81649de6e36f027c945722bff31176f1340682679cade2839e4b1e1",
+    strip_prefix = "rules_container_rpm-0.0.5",
+    urls = ["https://github.com/rmohr/rules_container_rpm/archive/v0.0.5.tar.gz"],
+)
+
 http_archive(
     name = "io_bazel_rules_container_rpm1",
     sha256 = "151261f1b81649de6e36f027c945722bff31176f1340682679cade2839e4b1e1",
@@ -48,12 +55,12 @@ func Test(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(artifacts) != 4 {
-		t.Fatalf("expect 4 artifacts, found %v", len(artifacts))
+	if len(artifacts) != 5 {
+		t.Fatalf("expect 5 artifacts, found %v", len(artifacts))
 	}
 
 	invalid := FilterArtifactsWithoutMirror(artifacts, regexp.MustCompile(`^https://kubevirt.storage.googleapis.com/.+`))
-	if len(invalid) != 2 {
-		t.Fatalf("expect 2 invalid artifacts, found %v", len(artifacts))
+	if len(invalid) != 3 {
+		t.Fatalf("expect 3 invalid artifacts, found %v", len(invalid))
 	}
 }
