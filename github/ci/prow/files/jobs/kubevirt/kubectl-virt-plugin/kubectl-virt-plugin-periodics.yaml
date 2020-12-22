@@ -1,0 +1,49 @@
+periodics:
+- name: periodic-kubectl-virt-plugin-publish
+  cron: "0 0 * * *"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  max_concurrency: 1
+  extra_refs:
+  - org: kubevirt
+    repo: kubectl-virt-plugin
+    base_ref: master
+    work_dir: true
+  - org: kubevirt
+    repo: project-infra
+    base_ref: master
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror: "true"
+    preset-shared-images: "true"
+  spec:
+    containers:
+      - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:49045b159c711cf307bdabeb5fd8889dae26a44753ec8c74a3e32fa3ba5fcde1
+        env:
+          - name: GIT_ASKPASS
+            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
+          - name: GITHUB_USER
+            value: kubevirt-bot
+          - name: GITHUB_EMAIL
+            value: rmohr+kubebot@redhat.com
+        command:
+          - "/usr/local/bin/runner.sh"
+        args:
+          - "/bin/sh"
+          - "-c"
+          - ./scripts/create-latest-release.sh
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "1Gi"
+        volumeMounts:
+          - name: token
+            mountPath: /etc/github
+    volumes:
+      - name: token
+        secret:
+          secretName: oauth-token
