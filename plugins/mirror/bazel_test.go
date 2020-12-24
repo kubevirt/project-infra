@@ -6,7 +6,8 @@ import (
 
 	"github.com/bazelbuild/buildtools/build"
 )
-	var data = []byte(`
+
+var data = []byte(`
 http_archive(
     name = "io_bazel_rules_container_rpm",
     sha256 = "151261f1b81649de6e36f027c945722bff31176f1340682679cade2839e4b1e1",

@@ -23,6 +23,10 @@ func (a *Artifact) URLs() []string {
 	return a.rule.AttrStrings("urls")
 }
 
+func (a *Artifact) Name() string {
+	return a.rule.AttrString("name")
+}
+
 func (a *Artifact) SHA256() string {
 	return a.rule.AttrString("sha256")
 }
@@ -49,7 +53,7 @@ func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
 		fmt.Println(build.FormatString(workspace))
 		return nil
 	}
-	return ioutil.WriteFile(path, build.Format(workspace), 0666 )
+	return ioutil.WriteFile(path, build.Format(workspace), 0666)
 }
 
 func GetArtifacts(workspace *build.File) (artifacts []Artifact, err error) {
@@ -58,13 +62,13 @@ func GetArtifacts(workspace *build.File) (artifacts []Artifact, err error) {
 		for _, rule := range rules {
 			artifacts = append(artifacts, Artifact{
 				rule: rule,
-			} )
+			})
 		}
 	}
 	return artifacts, err
 }
 
-func FilterArtifactsWithoutMirror(artifacts []Artifact, regexp *regexp.Regexp) (noMirror []Artifact)  {
+func FilterArtifactsWithoutMirror(artifacts []Artifact, regexp *regexp.Regexp) (noMirror []Artifact) {
 	for _, artifact := range artifacts {
 		var mirror string
 		if len(artifact.URLs()) == 0 {
@@ -83,30 +87,41 @@ func FilterArtifactsWithoutMirror(artifacts []Artifact, regexp *regexp.Regexp) (
 	return noMirror
 }
 
-func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, url string, bucket string, name string) (err error) {
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	reportObject := client.Bucket(bucket).Object(name)
+func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, artifact Artifact, bucket string) (err error) {
+	reportObject := client.Bucket(bucket).Object(artifact.SHA256())
 	reader, err := reportObject.NewReader(ctx)
-	if err != nil && err != storage.ErrObjectNotExist{
+	if err != nil && err != storage.ErrObjectNotExist {
 		return fmt.Errorf("error checking if object exists: %v", err)
 	} else if err == nil {
 		// object already exists
 		reader.Close()
-		log.Printf("File %s already exists, will not upload again\n", name)
+		log.Printf("File %s already exists, will not upload again\n", artifact.SHA256())
 		return nil
 	}
-	log.Printf("File will be written to gs://%s/%s", bucket, reportObject.ObjectName())
+	for _, uri := range artifact.URLs() {
+		resp, err := http.Get(uri)
+		if err != nil {
+			log.Printf("Could not connect to source, continuing with next URL: %v", err)
+			continue
+		}
+		defer resp.Body.Close()
 
-	if dryRun {
-		return nil
+		log.Printf("File will be written to gs://%s/%s", bucket, reportObject.ObjectName())
+
+		if dryRun {
+			return nil
+		}
+		reportOutputWriter := reportObject.NewWriter(ctx)
+		defer reportOutputWriter.Close()
+		_, err = io.Copy(reportOutputWriter, resp.Body)
+		if err == nil {
+			return nil
+		} else {
+			log.Printf("Could not upload artifact from %s, continuing with next URL: %v", uri, err)
+			continue
+		}
 	}
-	reportOutputWriter := reportObject.NewWriter(ctx)
-	defer reportOutputWriter.Close()
-	_, err = io.Copy(reportOutputWriter, resp.Body)
-	return err
+	return fmt.Errorf("artifact download urls exhausted, failed to upload %s", artifact.Name())
 }
 
 func GenerateFilePath(bucket string, artifact *Artifact) string {
