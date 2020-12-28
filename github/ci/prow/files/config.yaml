@@ -281,6 +281,8 @@ branch-protection:
               required_status_checks:
                 contexts:
                   - continuous-integration/travis-ci/pr
+            release-1.3:
+              protect: true
         user-guide:
           branches:
             master:
