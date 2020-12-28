@@ -336,7 +336,38 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-
+  - name: pull-kubevirt-verify-rpms
+    cluster: ibm-prow-jobs
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    skip_report: false
+    optional: true
+    run_if_changed: "WORKSPACE"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make verify-rpm-deps"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
   - name: pull-kubevirt-gosec
     cluster: ibm-prow-jobs
     skip_branches:
