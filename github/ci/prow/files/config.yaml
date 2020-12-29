@@ -93,7 +93,7 @@ tide:
     kubevirt/node-labeller: squash
     kubevirt/kubevirt-template-validator: squash
     kubevirt/kubevirt-ssp-operator: squash
-    kubevirt/kubevirt-csi: squash
+    kubevirt/csi-driver: squash
     kubevirt/ssp-operator: squash
     kubevirt/must-gather: squash
 
@@ -140,7 +140,7 @@ tide:
     - kubevirt/kubevirt-ssp-operator
     - kubevirt/ssp-operator
     - kubevirt/must-gather
-    - kubevirt/kubevirt-csi
+    - kubevirt/csi-driver
     labels:
     - lgtm
     - approved
@@ -320,7 +320,7 @@ branch-protection:
           branches:
             master:
               protect: true
-        kubevirt-csi:
+        csi-driver:
           branches:
             master:
               protect: true
