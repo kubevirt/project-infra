@@ -1,6 +1,6 @@
 postsubmits:
-  kubevirt/kubevirt-csi:
-    - name: publish-kubevirt-csi
+  kubevirt/csi-driver:
+    - name: publish-csi-driver
       branches:
         - master
       decorate: true

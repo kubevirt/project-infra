@@ -276,7 +276,7 @@ plugins:
   - lgtm
   - approve
 
-  kubevirt/kubevirt-csi:
+  kubevirt/csi-driver:
   - trigger
   - release-note
   - owners-label
@@ -339,7 +339,7 @@ triggers:
   - kubevirt/ansible-kubevirt-modules
   - kubevirt/hyperconverged-cluster-operator
   - kubevirt/vm-import-operator
-  - kubevirt/kubevirt-csi
+  - kubevirt/csi-driver
 - repos:
   - virtblocks/virtblocks
 - repos:
@@ -378,7 +378,7 @@ approve:
   - kubevirt/kubevirt-ssp-operator
   - kubevirt/ssp-operator
   - kubevirt/must-gather
-  - kubevirt/kubevirt-csi
+  - kubevirt/csi-driver
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -414,7 +414,7 @@ lgtm:
   - kubevirt/kubevirt-ssp-operator
   - kubevirt/ssp-operator
   - kubevirt/must-gather
-  - kubevirt/kubevirt-csi
+  - kubevirt/csi-driver
   review_acts_as_lgtm: true
 
 override:
