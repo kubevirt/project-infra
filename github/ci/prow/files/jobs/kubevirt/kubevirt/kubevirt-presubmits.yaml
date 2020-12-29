@@ -1,5 +1,38 @@
 presubmits:
   kubevirt/kubevirt:
+  - name: pull-kubevirt-e2e-k8s-1.20
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    optional: true
+    skip_report: true
+    decorate: true
+    decoration_config:
+      timeout: 7h
+      grace_period: 5m
+    max_concurrency: 11
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "export TARGET=k8s-1.20 && automation/test.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "29Gi"
   - name: pull-kubevirt-e2e-k8s-1.19
     skip_branches:
       - release-\d+\.\d+
