@@ -1,0 +1,117 @@
+#!/bin/bash
+
+readonly IP=169.255.0.0
+readonly SUBNET_MASK=24
+readonly GW_IP=169.255.0.1
+readonly CONTAINER_NETNS_LINK="/var/run/netns/$CNI_CONTAINERID"
+readonly LOGFILE=/var/log/pfcni.log
+
+function main() {
+    case "$CNI_COMMAND" in
+        ADD)
+            log "Received ADD command. CNI_ARGS: $CNI_ARGS"
+            setup_netns
+            # add_veth_pair
+            flip_vfs_to_default_drivers
+            setns_sriov_ifs
+            gen_result_config
+            ;;
+        DELETE)
+            log "Received DELETE command."
+            ip netns del "$CNI_CONTAINERID" ||:
+            ;;
+    esac
+}
+
+function flip_vfs_to_default_drivers() {
+    for file in $(find /sys/devices/ -name *sriov_totalvfs*); do
+        pfroot=$(dirname $file)
+
+        # flip all available VFs to default driver
+        echo 0 > $pfroot/sriov_numvfs
+        cat $file > $pfroot/sriov_numvfs
+    done
+}
+
+function from_cni_args() {
+    local var_name="${1:?}"
+    sed -nE "s/.+?${var_name}=([^;]*?)(;.+?|$)/\1/p" <<< "$CNI_ARGS"
+}
+
+function setup_netns() {
+    mkdir -p /var/run/netns
+    ln -sfT "$CNI_NETNS" "$CONTAINER_NETNS_LINK"
+}
+
+function setns_sriov_ifs() {
+  local sriov_vfs=( /sys/class/net/*/device/virtfn* )
+  local ifs_arr ifs_name
+  for vf in "${sriov_vfs[@]}"; do
+    ifs_arr=( "$vf"/net/* )
+    for ifs in "${ifs_arr[@]}"; do
+        ifs_name="${ifs%%\/net\/*}"
+        ifs_name="${ifs##*\/}"
+        log "Adding vf: $ifs_name to netns $CNI_CONTAINERID"
+        ip link set "$ifs_name" netns "$CNI_CONTAINERID"
+    done
+  done
+
+  local sriov_pfs=( /sys/class/net/*/device/sriov_numvfs )
+  local ifs_name
+  for ifs in "${sriov_pfs[@]}"; do
+    ifs_name="${ifs%%/device/*}"
+    ifs_name="${ifs_name##*/}"
+        log "Adding pf: $ifs_name to netns $CNI_CONTAINERID"
+    ip link set "$ifs_name" netns "$CNI_CONTAINERID"
+  done
+
+}
+
+add_veth_pair() {
+    local container_name
+    container_name="$(from_cni_args K8S_POD_NAME)"
+    local host_if="veth-1-${container_name}"
+    local container_if="veth-2-${container_name}"
+    ip link add "$container_if" type veth peer name "$host_if"
+    ip link set "$host_if" up
+    ip link set "$container_if" netns "$CNI_CONTAINERID"
+    ip netns exec "$CNI_CONTAINERID" ip link set "$container_if" down
+    ip netns exec "$CNI_CONTAINERID" ip link set "$container_if" name \
+        "$CNI_IFNAME"
+    ip netns exec "$CNI_CONTAINERID" ip link set "$container_if" up
+    ip netns exec "$CNI_CONTAINERID" ip addr add "$IP/$SUBNET_MASK" \
+        dev "$container_if"
+}
+
+function gen_result_config() {
+  local mac
+  mac="$(
+    ip netns exec "$CNI_CONTAINERID" ip link show "$CNI_IFNAME" | \
+        grep link | awk '{print $2}')"
+
+  tee -a "$LOGFILE" <<-EOF
+    {
+        "cniVersion": "0.3.1",
+        "interfaces": [
+          {
+            "name":"$CNI_IFNAME",
+            "mac": "$mac",
+            "sandbox": "$CNI_NETNS"
+          }
+        ],
+        "ips": [
+          {
+            "version": "4",
+            "address": "$IP/$SUBNET_MASK",
+            "interface": 0
+          }
+        ]
+    }
+EOF
+}
+
+function log {
+    echo "[$(date --rfc-3339=seconds)]: $*" >> "$LOGFILE"
+}
+
+main "$@"
