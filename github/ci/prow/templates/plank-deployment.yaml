@@ -53,6 +53,11 @@ spec:
         - name: remote-cluster-kubeconfig
           mountPath: /etc/remote_cluster_config
           readOnly: true
+        resources:
+          requests:
+            memory: 1Gi
+          limits:
+            memory: 1Gi
       volumes:
       - name: oauth
         secret:
