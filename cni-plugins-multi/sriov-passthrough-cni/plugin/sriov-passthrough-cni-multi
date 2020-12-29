@@ -4,7 +4,7 @@ readonly IP=169.255.0.0
 readonly SUBNET_MASK=24
 readonly GW_IP=169.255.0.1
 readonly CONTAINER_NETNS_LINK="/var/run/netns/$CNI_CONTAINERID"
-readonly LOGFILE=/var/log/pfcni.log
+readonly LOGFILE=/var/log/pfcni_multi.log
 
 function main() {
     case "$CNI_COMMAND" in
@@ -12,7 +12,6 @@ function main() {
             log "Received ADD command. CNI_ARGS: $CNI_ARGS"
             setup_netns
             # add_veth_pair
-            flip_vfs_to_default_drivers
             setns_sriov_ifs
             gen_result_config
             ;;
@@ -21,16 +20,6 @@ function main() {
             ip netns del "$CNI_CONTAINERID" ||:
             ;;
     esac
-}
-
-function flip_vfs_to_default_drivers() {
-    for file in $(find /sys/devices/ -name *sriov_totalvfs*); do
-        pfroot=$(dirname $file)
-
-        # flip all available VFs to default driver
-        echo 0 > $pfroot/sriov_numvfs
-        cat $file > $pfroot/sriov_numvfs
-    done
 }
 
 function from_cni_args() {
@@ -44,27 +33,34 @@ function setup_netns() {
 }
 
 function setns_sriov_ifs() {
-  local sriov_vfs=( /sys/class/net/*/device/virtfn* )
-  local ifs_arr ifs_name
-  for vf in "${sriov_vfs[@]}"; do
-    ifs_arr=( "$vf"/net/* )
-    for ifs in "${ifs_arr[@]}"; do
-        ifs_name="${ifs%%\/net\/*}"
-        ifs_name="${ifs##*\/}"
-        log "Adding vf: $ifs_name to netns $CNI_CONTAINERID"
-        ip link set "$ifs_name" netns "$CNI_CONTAINERID"
-    done
-  done
-
+  NUM_PF=1
   local sriov_pfs=( /sys/class/net/*/device/sriov_numvfs )
+  if [ $sriov_pfs == "/sys/class/net/*/device/sriov_numvfs" ]; then
+      log "FATAL: No sriov PFs found"
+      exit 1
+  fi
+
   local ifs_name
+  PF_COUNTER=0
   for ifs in "${sriov_pfs[@]}"; do
     ifs_name="${ifs%%/device/*}"
     ifs_name="${ifs_name##*/}"
-        log "Adding pf: $ifs_name to netns $CNI_CONTAINERID"
-    ip link set "$ifs_name" netns "$CNI_CONTAINERID"
+    if ip link set "$ifs_name" netns "$CNI_CONTAINERID"; then
+      if timeout 5s bash -c "until ip netns exec $CNI_CONTAINERID ip link show $ifs_name > /dev/null; do sleep 1; done"; then
+        log "Added pf: $ifs_name to netns $CNI_CONTAINERID"
+        PF_COUNTER=$((PF_COUNTER+1))
+        if [[ $PF_COUNTER -eq $NUM_PF ]]; then
+          log "Allocated requested number of PFs"
+          break
+        fi
+      fi
+    fi
   done
 
+  if [[ $PF_COUNTER -lt $NUM_PF ]]; then
+    log "FATAL: Could not allocate enough PFs"
+    exit 1
+  fi
 }
 
 add_veth_pair() {

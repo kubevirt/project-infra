@@ -1,0 +1,50 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: multi-sriov-cni
+  namespace: multus-cni-ns
+  labels:
+    app: multi-sriov-cni
+spec:
+  template:
+    metadata:
+      labels:
+        app: multi-sriov-cni
+    spec:
+      hostNetwork: true
+      serviceAccountName: multus
+      nodeSelector:
+        sriov-nic: 'true'
+      containers:
+        - name: kube-sriov-passthrough-cni-multi
+          command: ["install-plugin"]
+          args: ["/host/opt/cni/bin"]
+          image: 'quay.io/oshoval/prow_cni_multi:latest'
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "50Mi"
+            limits:
+              cpu: "100m"
+              memory: "50Mi"
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: cnibin
+              mountPath: /host/opt/cni/bin
+      volumes:
+        - name: cnibin
+          hostPath:
+            path: /opt/cni/bin
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: sriov-passthrough-cni-multi
+  namespace: multus-cni-ns
+spec:
+  config: |
+    {
+      "cniVersion": "0.3.0",
+      "type": "sriov-passthrough-cni-multi"
+    }
