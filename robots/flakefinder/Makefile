@@ -10,4 +10,4 @@ test:
 
 push:
 	$(bazelbin) run //robots/flakefinder:push
-	bash -x ./update-jobs-with-latest-flakefinder-image.sh
+	bash -x ../../hack/update-jobs-with-latest-image.sh kubevirtci/flakefinder

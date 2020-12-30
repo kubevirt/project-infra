@@ -1,4 +1,15 @@
 #!/bin/bash
+
+# FIXME: this file is an interim workaround until the changes done in
+# https://github.com/dhiller/ci-tools.git have been merged
+
+get_image_tag() {
+    local current_commit today
+    current_commit="$(git rev-parse HEAD)"
+    today="$(date +%Y%m%d)"
+    echo "v${today}-${current_commit:0:7}"
+}
+
 CWD=$(pwd)
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)
 set -euo pipefail
@@ -26,7 +37,8 @@ IMAGE_NAME="quay.io/kubevirtci/autoowners"
 cd "$SCRIPT_DIR"
 eval $(go env|grep GOPATH)
 cp "$GOPATH/bin/autoowners" .
-docker build "$SCRIPT_DIR" -t "$IMAGE_NAME"
-docker push "$IMAGE_NAME:latest"
+image_tag=$(get_image_tag)
+docker build "$SCRIPT_DIR" -t "$IMAGE_NAME:$image_tag"
+docker push "$IMAGE_NAME:$image_tag"
 sha_id=$(docker images --digests "$IMAGE_NAME" | grep 'latest ' | awk '{ print $3 }')
 echo "Pushed autoowners as image $IMAGE_NAME with digest $sha_id"
