@@ -3,7 +3,7 @@ CWD=$(pwd)
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)
 set -euo pipefail
 
-cat $DOCKER_PASSWORD | docker login --username $(cat $DOCKER_USER) --password-stdin
+cat $QUAY_PASSWORD | docker login quay.io --username $(cat $QUAY_USER) --password-stdin
 
 export GIMME_GO_VERSION="1.13"
 eval $(gimme)
@@ -12,14 +12,16 @@ WORK_DIR_PARENT="/tmp/github.com/openshift"
 mkdir -p "$WORK_DIR_PARENT"
 cd "$WORK_DIR_PARENT"
 WORK_DIR="$WORK_DIR_PARENT/ci-tools"
-[ ! -d "$WORK_DIR" ] && git clone https://github.com/openshift/ci-tools.git
+[ ! -d "$WORK_DIR" ] && git clone https://github.com/dhiller/ci-tools.git
 
 cd "$WORK_DIR"
+git checkout add-signoff-to-autoowners-2
+git pull
 export GOPROXY=off
 export GOFLAGS=-mod=vendor
 make install
 
-IMAGE_NAME="kubevirtci/autoowners"
+IMAGE_NAME="quay.io/kubevirtci/autoowners"
 
 cd "$SCRIPT_DIR"
 eval $(go env|grep GOPATH)
