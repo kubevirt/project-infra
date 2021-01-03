@@ -208,3 +208,47 @@ presubmits:
       - name: gcs
         secret:
           secretName: gcs
+  - name: cert-manager-deploy-test
+    always_run: false
+    run_if_changed: "github/ci/services/cert-manager.*"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    nodeSelector:
+      type: bare-metal-external
+    skip_report: true
+    spec:
+      securityContext:
+        runAsUser: 0
+      containers:
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - |
+              # install bazelisk
+              curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64
+              chmod +x ./bazelisk && mv ./bazelisk /usr/local/bin/bazelisk
+
+              # install kind
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64
+              chmod +x ./kind && mv ./kind /usr/local/bin/kind
+
+              # create test cluster
+              kind create cluster
+              kind get kubeconfig > $(pwd)/kubeconfig
+              export KUBECONFIG=$(pwd)/kubeconfig
+
+              ./github/ci/services/cert-manager/hack/deploy.sh testing
+
+              bazelisk test //github/ci/services/cert-manager/e2e:go_default_test --test_output=all --test_arg=-test.v
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "16Gi"
+            limits:
+              memory: "16Gi"

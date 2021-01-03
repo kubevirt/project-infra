@@ -16,6 +16,7 @@ import (
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/tools/cache"
+
 	"kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/client"
 )
 
