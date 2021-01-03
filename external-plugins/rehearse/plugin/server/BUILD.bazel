@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["eventsserver.go"],
+    importpath = "kubevirt.io/project-infra/external-plugins/rehearse/plugin/server",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/k8s.io/test-infra/prow/github:go_default_library"],
+)
