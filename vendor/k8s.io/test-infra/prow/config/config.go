@@ -51,6 +51,7 @@ import (
 	"k8s.io/test-infra/prow/git/v2"
 	"k8s.io/test-infra/prow/github"
 	"k8s.io/test-infra/prow/kube"
+	"k8s.io/test-infra/prow/logrusutil"
 	"k8s.io/test-infra/prow/pod-utils/decorate"
 	"k8s.io/test-infra/prow/pod-utils/downwardapi"
 )
@@ -104,9 +105,9 @@ type ProwConfig struct {
 	Plank            Plank            `json:"plank,omitempty"`
 	Sinker           Sinker           `json:"sinker,omitempty"`
 	Deck             Deck             `json:"deck,omitempty"`
-	BranchProtection BranchProtection `json:"branch-protection,omitempty"`
-	Gerrit           Gerrit           `json:"gerrit,omitempty"`
-	GitHubReporter   GitHubReporter   `json:"github_reporter,omitempty"`
+	BranchProtection BranchProtection `json:"branch-protection"`
+	Gerrit           Gerrit           `json:"gerrit"`
+	GitHubReporter   GitHubReporter   `json:"github_reporter"`
 	// Deprecated: this option will be removed in May 2020.
 	SlackReporter        *SlackReporter       `json:"slack_reporter,omitempty"`
 	SlackReporterConfigs SlackReporterConfigs `json:"slack_reporter_configs,omitempty"`
@@ -482,6 +483,10 @@ type Plank struct {
 	// JobURLPrefixConfig is the host and path prefix under which job details
 	// will be viewable. Use `org/repo`, `org` or `*`as key and an url as value
 	JobURLPrefixConfig map[string]string `json:"job_url_prefix_config,omitempty"`
+
+	// JobURLPrefixDisableAppendStorageProvider disables that the storageProvider is
+	// automatically appended to the JobURLPrefix
+	JobURLPrefixDisableAppendStorageProvider bool `json:"jobURLPrefixDisableAppendStorageProvider,omitempty"`
 }
 
 func (p Plank) GetDefaultDecorationConfigs(repo string) *prowapi.DecorationConfig {
@@ -496,7 +501,20 @@ func (p Plank) GetDefaultDecorationConfigs(repo string) *prowapi.DecorationConfi
 	return def
 }
 
+// GetJobURLPrefix gets the job url prefix from the config
+// for the given refs. As we're deprecating the "gcs/" suffix
+// (to allow using multiple storageProviders within a repo)
+// we always trim the suffix here. Thus, every caller can assume
+// the job url prefix does not have a storageProvider suffix.
 func (p Plank) GetJobURLPrefix(refs *prowapi.Refs) string {
+	jobURLPrefix := p.getJobURLPrefix(refs)
+	if strings.HasSuffix(jobURLPrefix, "gcs/") {
+		return strings.TrimSuffix(jobURLPrefix, "gcs/")
+	}
+	return strings.TrimSuffix(jobURLPrefix, "gcs")
+}
+
+func (p Plank) getJobURLPrefix(refs *prowapi.Refs) string {
 	if refs == nil {
 		return p.JobURLPrefixConfig["*"]
 	}
@@ -558,6 +576,8 @@ type Sinker struct {
 	// garbage collected.
 	// Defaults to matching MaxPodAge.
 	TerminatedPodTTL *metav1.Duration `json:"terminated_pod_ttl,omitempty"`
+	// ExcludeClusters are build clusters that don't want to be managed by sinker
+	ExcludeClusters []string `json:"exclude_clusters,omitempty"`
 }
 
 // LensConfig names a specific lens, and optionally provides some configuration for it.
@@ -623,6 +643,9 @@ type Spyglass struct {
 	// If left empty, the link will be not be shown. Otherwise, a GCS path (with no
 	// prefix or scheme) will be appended to GCSBrowserPrefix and shown to the user.
 	GCSBrowserPrefix string `json:"gcs_browser_prefix,omitempty"`
+	// GCSBrowserPrefixes are used to generate a link to a human-usable GCS browser.
+	// They are mapped by org, org/repo or '*' which is the default value.
+	GCSBrowserPrefixes GCSBrowserPrefixes `json:"gcs_browser_prefixes,omitempty"`
 	// If set, Announcement is used as a Go HTML template string to be displayed at the top of
 	// each spyglass page. Using HTML in the template is acceptable.
 	// Currently the only variable available is .ArtifactPath, which contains the GCS path for the job artifacts.
@@ -634,6 +657,20 @@ type Spyglass struct {
 	// TestGridRoot is the root URL to the TestGrid frontend, e.g. "https://testgrid.k8s.io/".
 	// If left blank, TestGrid links will not appear.
 	TestGridRoot string `json:"testgrid_root,omitempty"`
+}
+
+type GCSBrowserPrefixes map[string]string
+
+func (p GCSBrowserPrefixes) GetGCSBrowserPrefix(org, repo string) string {
+	if prefix, exists := p[fmt.Sprintf("%s/%s", org, repo)]; exists {
+		return prefix
+	}
+
+	if prefix, exists := p[org]; exists {
+		return prefix
+	}
+
+	return p["*"]
 }
 
 // Deck holds config for deck.
@@ -659,6 +696,111 @@ type Deck struct {
 	// accepts a key of: `org/repo`, `org` or `*` (wildcard) to define what GitHub org (or repo) a particular
 	// config applies to and a value of: `RerunAuthConfig` struct to define the users/groups authorized to rerun jobs.
 	RerunAuthConfigs RerunAuthConfigs `json:"rerun_auth_configs,omitempty"`
+	// SkipStoragePathValidation skips validation that restricts artifact requests to specific buckets.
+	// By default, buckets listed in the GCSConfiguration are automatically allowed.
+	// Additional locations can be allowed via `AdditionalAllowedBuckets` fields.
+	// When unspecified (nil), it defaults to true (until ~Jan 2021).
+	SkipStoragePathValidation *bool `json:"skip_storage_path_validation,omitempty"`
+	// AdditionalAllowedBuckets is a list of storage buckets to allow in artifact requests
+	// (in addition to those listed in the GCSConfiguration).
+	// Setting this field requires "SkipStoragePathValidation" also be set to `false`.
+	AdditionalAllowedBuckets []string `json:"additional_allowed_buckets,omitempty"`
+	// AllKnownStorageBuckets contains all storage buckets configured in all of the
+	// job configs.
+	AllKnownStorageBuckets sets.String `json:"-"`
+}
+
+// Validate performs validation and sanitization on the Deck object.
+func (d *Deck) Validate() error {
+	if len(d.AdditionalAllowedBuckets) > 0 && !d.ShouldValidateStorageBuckets() {
+		return fmt.Errorf("deck.skip_storage_path_validation is enabled despite deck.additional_allowed_buckets being configured: %v", d.AdditionalAllowedBuckets)
+	}
+
+	// TODO(@clarketm): Remove "rerun_auth_config" validation in July 2020
+	if d.RerunAuthConfig != nil {
+		logrus.Warning("rerun_auth_config will be deprecated in July 2020, and it will be replaced with rerun_auth_configs['*'].")
+
+		if d.RerunAuthConfigs != nil {
+			return errors.New("rerun_auth_config and rerun_auth_configs['*'] are mutually exclusive")
+		}
+
+		d.RerunAuthConfigs = RerunAuthConfigs{"*": *d.RerunAuthConfig}
+	}
+
+	// Note: The RerunAuthConfigs logic isn't deprecated, only the above RerunAuthConfig stuff is
+	if d.RerunAuthConfigs != nil {
+		for k, config := range d.RerunAuthConfigs {
+			if err := config.Validate(); err != nil {
+				return fmt.Errorf("rerun_auth_configs[%s]: %v", k, err)
+			}
+		}
+	}
+
+	return nil
+}
+
+var warnInRepoStorageBucketValidation time.Time
+
+// ValidateStorageBucket validates a storage bucket (unless the `Deck.SkipStoragePathValidation` field is true).
+// The bucket name must be included in any of the following:
+//    1) Any job's `.DecorationConfig.GCSConfiguration.Bucket` (except jobs defined externally via InRepoConfig)
+//    2) `Plank.DefaultDecorationConfigs.GCSConfiguration.Bucket`
+//    3) `Deck.AdditionalAllowedBuckets`
+func (c *Config) ValidateStorageBucket(bucketName string) error {
+	if len(c.InRepoConfig.Enabled) > 0 && len(c.Deck.AdditionalAllowedBuckets) == 0 {
+		logrusutil.ThrottledWarnf(&warnInRepoStorageBucketValidation, 1*time.Hour,
+			"skipping storage-path validation because `in_repo_config` is enabled, but `deck.additional_allowed_buckets` empty. "+
+				"(Note: Validation will be enabled by default in January 2021. "+
+				"To disable this message, populate `deck.additional_allowed_buckets` with at least one storage bucket. "+
+				"When `deck.additional_allowed_buckets` is populated, this message will be disabled.)")
+		return nil
+	}
+
+	if !c.Deck.ShouldValidateStorageBuckets() {
+		return nil
+	}
+
+	if !c.Deck.AllKnownStorageBuckets.Has(bucketName) {
+		return fmt.Errorf("bucket %q not in allowed list (%v); you may allow it by including it in `deck.additional_allowed_buckets`", bucketName, c.Deck.AllKnownStorageBuckets.List())
+	}
+	return nil
+}
+
+// ShouldValidateStorageBuckets returns whether or not the Deck's storage path should be validated.
+// Validation could be either disabled by default or explicitly turned off.
+func (d *Deck) ShouldValidateStorageBuckets() bool {
+	if d.SkipStoragePathValidation == nil {
+		// TODO(e-blackwelder): validate storage paths by default (~Jan 2021)
+		return false
+	}
+	return !*d.SkipStoragePathValidation
+}
+
+func calculateStorageBuckets(c *Config) sets.String {
+	knownBuckets := sets.NewString(c.Deck.AdditionalAllowedBuckets...)
+	for _, dc := range c.Plank.DefaultDecorationConfigs {
+		knownBuckets.Insert(dc.GCSConfiguration.Bucket)
+	}
+	for _, j := range c.Periodics {
+		if j.DecorationConfig != nil && j.DecorationConfig.GCSConfiguration != nil {
+			knownBuckets.Insert(j.DecorationConfig.GCSConfiguration.Bucket)
+		}
+	}
+	for _, jobs := range c.PresubmitsStatic {
+		for _, j := range jobs {
+			if j.DecorationConfig != nil && j.DecorationConfig.GCSConfiguration != nil {
+				knownBuckets.Insert(j.DecorationConfig.GCSConfiguration.Bucket)
+			}
+		}
+	}
+	for _, jobs := range c.PostsubmitsStatic {
+		for _, j := range jobs {
+			if j.DecorationConfig != nil && j.DecorationConfig.GCSConfiguration != nil {
+				knownBuckets.Insert(j.DecorationConfig.GCSConfiguration.Bucket)
+			}
+		}
+	}
+	return knownBuckets
 }
 
 // ExternalAgentLog ensures an external agent like Jenkins can expose
@@ -731,11 +873,14 @@ type GitHubOptions struct {
 
 // ManagedWebhookInfo contains metadata about the repo/org which is onboarded.
 type ManagedWebhookInfo struct {
-	TokenCreatedAfter time.Time `json:"tokenCreatedAfter"`
+	TokenCreatedAfter time.Time `json:"token_created_after"`
 }
 
-// ManagedWebhooks contains information about all the repos/orgs which are onboraded with private tokens.
-type ManagedWebhooks map[string]ManagedWebhookInfo
+// ManagedWebhooks contains information about all the repos/orgs which are onboarded with auto-generated tokens.
+type ManagedWebhooks struct {
+	RespectLegacyGlobalToken bool                          `json:"respect_legacy_global_token"`
+	OrgRepoConfig            map[string]ManagedWebhookInfo `json:"org_repo_config"`
+}
 
 // SlackReporter represents the config for the Slack reporter. The channel can be overridden
 // on the job via the .reporter_config.slack.channel property
@@ -954,8 +1099,7 @@ func yamlToConfig(path string, nc interface{}) error {
 		jc = &v.JobConfig
 	}
 	for rep := range jc.PresubmitsStatic {
-		var fix func(*Presubmit)
-		fix = func(job *Presubmit) {
+		fix := func(job *Presubmit) {
 			job.SourcePath = path
 		}
 		for i := range jc.PresubmitsStatic[rep] {
@@ -963,8 +1107,7 @@ func yamlToConfig(path string, nc interface{}) error {
 		}
 	}
 	for rep := range jc.PostsubmitsStatic {
-		var fix func(*Postsubmit)
-		fix = func(job *Postsubmit) {
+		fix := func(job *Postsubmit) {
 			job.SourcePath = path
 		}
 		for i := range jc.PostsubmitsStatic[rep] {
@@ -1024,7 +1167,7 @@ func (c *Config) mergeJobConfig(jc JobConfig) error {
 //	- Presubmits
 //	- Postsubmits
 // 	- Periodics
-//	- PodPresets
+//	- Presets
 func mergeJobConfigs(a, b JobConfig) (JobConfig, error) {
 	// Merge everything
 	// *** Presets ***
@@ -1185,20 +1328,28 @@ func (c *Config) finalizeJobConfig() error {
 	return nil
 }
 
-// validateComponentConfig validates the infrastructure component configuration
+// validateComponentConfig validates the various infrastructure components' configurations.
 func (c *Config) validateComponentConfig() error {
 	for k, v := range c.Plank.JobURLPrefixConfig {
 		if _, err := url.Parse(v); err != nil {
 			return fmt.Errorf(`Invalid value for Planks job_url_prefix_config["%s"]: %v`, k, err)
 		}
+		// TODO(@sbueringer): Remove in September 2020
+		if strings.HasSuffix(v, "gcs/") {
+			logrus.Warning(strings.Join([]string{
+				"configuring the 'gcs/' storage provider suffix in the job url prefix is now deprecated, ",
+				"please configure the job url prefix without the suffix as it's now appended automatically. Handling of the old ",
+				"configuration will be removed in September 2020",
+			}, ""))
+		}
 	}
 
 	var validationErrs []error
 
-	if c.ManagedWebhooks != nil {
-		for repoName, repoValue := range c.ManagedWebhooks {
+	if c.ManagedWebhooks.OrgRepoConfig != nil {
+		for repoName, repoValue := range c.ManagedWebhooks.OrgRepoConfig {
 			if repoValue.TokenCreatedAfter.After(time.Now()) {
-				validationErrs = append(validationErrs, fmt.Errorf("tokenCreatedAfter %s can be no later than current time for repo/org %s", repoValue.TokenCreatedAfter, repoName))
+				validationErrs = append(validationErrs, fmt.Errorf("token_created_after %s can be no later than current time for repo/org %s", repoValue.TokenCreatedAfter, repoName))
 			}
 		}
 		if len(validationErrs) > 0 {
@@ -1226,23 +1377,8 @@ func (c *Config) validateComponentConfig() error {
 		}
 	}
 
-	// TODO(@clarketm): Remove in July 2020
-	if c.Deck.RerunAuthConfig != nil {
-		logrus.Warning("rerun_auth_config will be deprecated in July 2020, and it will be replaced with rerun_auth_configs['*'].")
-
-		if c.Deck.RerunAuthConfigs != nil {
-			return errors.New("rerun_auth_config and rerun_auth_configs['*'] are mutually exclusive")
-		}
-
-		c.Deck.RerunAuthConfigs = RerunAuthConfigs{"*": *c.Deck.RerunAuthConfig}
-	}
-
-	if c.Deck.RerunAuthConfigs != nil {
-		for k, config := range c.Deck.RerunAuthConfigs {
-			if err := config.Validate(); err != nil {
-				return fmt.Errorf("rerun_auth_configs[%s]: %v", k, err)
-			}
-		}
+	if err := c.Deck.Validate(); err != nil {
+		return err
 	}
 
 	return nil
@@ -1261,13 +1397,16 @@ func validateJobBase(v JobBase, jobType prowapi.ProwJobType, podNamespace string
 	if err := validateAgent(v, podNamespace); err != nil {
 		return err
 	}
-	if err := validatePodSpec(jobType, v.Spec); err != nil {
+	if err := validatePodSpec(jobType, v.Spec, v.DecorationConfig != nil); err != nil {
 		return err
 	}
 	if err := ValidatePipelineRunSpec(jobType, v.ExtraRefs, v.PipelineRunSpec); err != nil {
 		return err
 	}
 	if err := validateLabels(v.Labels); err != nil {
+		return err
+	}
+	if err := validateAnnotation(v.Annotations); err != nil {
 		return err
 	}
 	if v.Spec == nil || len(v.Spec.Containers) == 0 {
@@ -1279,7 +1418,12 @@ func validateJobBase(v JobBase, jobType prowapi.ProwJobType, podNamespace string
 	if err := v.UtilityConfig.Validate(); err != nil {
 		return err
 	}
-	return validateDecoration(v.Spec.Containers[0], v.DecorationConfig)
+	for i := range v.Spec.Containers {
+		if err := validateDecoration(v.Spec.Containers[i], v.DecorationConfig); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // validatePresubmits validates the presubmits for one repo
@@ -1435,6 +1579,8 @@ func (c *Config) ValidateJobConfig() error {
 		}
 	}
 
+	c.Deck.AllKnownStorageBuckets = calculateStorageBuckets(c)
+
 	return utilerrors.NewAggregate(errs)
 }
 
@@ -1565,6 +1711,19 @@ func parseProwConfig(c *Config) error {
 				c.Deck.Spyglass.Viewers[re][i] = rename
 			}
 		}
+	}
+
+	if c.Deck.Spyglass.GCSBrowserPrefixes == nil {
+		c.Deck.Spyglass.GCSBrowserPrefixes = make(map[string]string)
+	}
+
+	_, exists := c.Deck.Spyglass.GCSBrowserPrefixes["*"]
+	if exists && c.Deck.Spyglass.GCSBrowserPrefix != "" {
+		return fmt.Errorf("both gcs_browser_prefixes and gcs_browser_prefix['*'] are specified.")
+	}
+
+	if !exists {
+		c.Deck.Spyglass.GCSBrowserPrefixes["*"] = c.Deck.Spyglass.GCSBrowserPrefix
 	}
 
 	if c.PushGateway.Interval == nil {
@@ -1743,6 +1902,15 @@ func validateLabels(labels map[string]string) error {
 	return nil
 }
 
+func validateAnnotation(a map[string]string) error {
+	for key := range a {
+		if errs := validation.IsQualifiedName(key); len(errs) > 0 {
+			return fmt.Errorf("invalid annotation key %q: %v", key, errs)
+		}
+	}
+	return nil
+}
+
 func validateAgent(v JobBase, podNamespace string) error {
 	k := string(prowapi.KubernetesAgent)
 	j := string(prowapi.JenkinsAgent)
@@ -1849,7 +2017,7 @@ func ValidatePipelineRunSpec(jobType prowapi.ProwJobType, extraRefs []prowapi.Re
 	return nil
 }
 
-func validatePodSpec(jobType prowapi.ProwJobType, spec *v1.PodSpec) error {
+func validatePodSpec(jobType prowapi.ProwJobType, spec *v1.PodSpec, decorationEnabled bool) error {
 	if spec == nil {
 		return nil
 	}
@@ -1860,22 +2028,46 @@ func validatePodSpec(jobType prowapi.ProwJobType, spec *v1.PodSpec) error {
 		errs = append(errs, errors.New("pod spec may not use init containers"))
 	}
 
-	if n := len(spec.Containers); n != 1 {
+	if n := len(spec.Containers); n < 1 {
 		// We must return here to not cause an out of bounds panic in the remaining validation
-		return utilerrors.NewAggregate(append(errs, fmt.Errorf("pod spec must specify exactly 1 container, found: %d", n)))
+		return utilerrors.NewAggregate(append(errs, fmt.Errorf("pod spec must specify at least 1 container, found: %d", n)))
 	}
 
-	envNames := sets.String{}
-	for _, env := range spec.Containers[0].Env {
-		if envNames.Has(env.Name) {
-			errs = append(errs, fmt.Errorf("env var named %q is defined more than once", env.Name))
-		}
-		envNames.Insert(env.Name)
+	if n := len(spec.Containers); n > 1 && !decorationEnabled {
+		return utilerrors.NewAggregate(append(errs, fmt.Errorf("pod utility decoration must be enabled to use multiple containers: %d", n)))
+	}
 
-		for _, prowEnv := range downwardapi.EnvForType(jobType) {
-			if env.Name == prowEnv {
-				// TODO(fejta): consider allowing this
-				errs = append(errs, fmt.Errorf("env %s is reserved", env.Name))
+	if len(spec.Containers) > 1 {
+		containerNames := sets.String{}
+		for _, container := range spec.Containers {
+			if container.Name == "" {
+				errs = append(errs, fmt.Errorf("container does not have name. all containers must have names when defining multiple containers"))
+			}
+
+			if containerNames.Has(container.Name) {
+				errs = append(errs, fmt.Errorf("container named %q is defined more than once", container.Name))
+			}
+			containerNames.Insert(container.Name)
+
+			if decorate.PodUtilsContainerNames().Has(container.Name) {
+				errs = append(errs, fmt.Errorf("container name %s is a reserved for decoration. please specify a different container name that does not conflict with pod utility container names", container.Name))
+			}
+		}
+	}
+
+	for i := range spec.Containers {
+		envNames := sets.String{}
+		for _, env := range spec.Containers[i].Env {
+			if envNames.Has(env.Name) {
+				errs = append(errs, fmt.Errorf("env var named %q is defined more than once", env.Name))
+			}
+			envNames.Insert(env.Name)
+
+			for _, prowEnv := range downwardapi.EnvForType(jobType) {
+				if env.Name == prowEnv {
+					// TODO(fejta): consider allowing this
+					errs = append(errs, fmt.Errorf("env %s is reserved", env.Name))
+				}
 			}
 		}
 	}
@@ -1887,25 +2079,21 @@ func validatePodSpec(jobType prowapi.ProwJobType, spec *v1.PodSpec) error {
 		}
 		volumeNames.Insert(volume.Name)
 
-		for _, prowVolume := range decorate.VolumeMounts() {
-			if volume.Name == prowVolume {
-				errs = append(errs, fmt.Errorf("volume %s is a reserved for decoration", volume.Name))
-			}
+		if decorate.VolumeMounts().Has(volume.Name) {
+			errs = append(errs, fmt.Errorf("volume %s is a reserved for decoration", volume.Name))
 		}
 	}
 
-	for _, mount := range spec.Containers[0].VolumeMounts {
-		if !volumeNames.Has(mount.Name) {
-			errs = append(errs, fmt.Errorf("volumeMount named %q is undefined", mount.Name))
-		}
-		for _, prowMount := range decorate.VolumeMounts() {
-			if mount.Name == prowMount {
-				errs = append(errs, fmt.Errorf("volumeMount name %s is reserved for decoration", prowMount))
+	for i := range spec.Containers {
+		for _, mount := range spec.Containers[i].VolumeMounts {
+			if !volumeNames.Has(mount.Name) && !decorate.VolumeMounts().Has(mount.Name) {
+				errs = append(errs, fmt.Errorf("volumeMount named %q is undefined", mount.Name))
 			}
-		}
-		for _, prowMountPath := range decorate.VolumeMountPaths() {
-			if mount.MountPath == prowMountPath {
-				errs = append(errs, fmt.Errorf("mount %s at %s conflicts with decoration mount at %s", mount.Name, mount.MountPath, prowMountPath))
+			if decorate.VolumeMountsOnTestContainer().Has(mount.Name) {
+				errs = append(errs, fmt.Errorf("volumeMount name %s is reserved for decoration", mount.Name))
+			}
+			if decorate.VolumeMountPathsOnTestContainer().Has(mount.MountPath) {
+				errs = append(errs, fmt.Errorf("mount %s at %s conflicts with decoration mount", mount.Name, mount.MountPath))
 			}
 		}
 	}

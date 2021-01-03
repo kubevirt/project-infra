@@ -19,6 +19,7 @@ package gcs
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/url"
@@ -28,8 +29,8 @@ import (
 	"sync"
 
 	"cloud.google.com/go/storage"
+	"github.com/fvbommel/sortorder"
 	"google.golang.org/api/iterator"
-	"vbom.ml/util/sortorder"
 
 	"github.com/GoogleCloudPlatform/testgrid/metadata"
 	"github.com/GoogleCloudPlatform/testgrid/metadata/junit"
@@ -51,92 +52,95 @@ type Finished struct {
 
 // Build points to a build stored under a particular gcs prefix.
 type Build struct {
-	Bucket         *storage.BucketHandle
-	Prefix         string
-	BucketPath     string
-	originalPrefix string
+	Path              Path
+	originalPrefix    string
+	suitesConcurrency int // override the max number of concurrent suite downloads
 }
 
 func (build Build) String() string {
-	return "gs://" + build.BucketPath + "/" + build.Prefix
-}
-
-// Builds is a slice of builds.
-type Builds []Build
-
-func (b Builds) Len() int      { return len(b) }
-func (b Builds) Swap(i, j int) { b[i], b[j] = b[j], b[i] }
-
-// Expect builds to be in monotonically increasing order.
-// So build8 < build9 < build10 < build888
-func (b Builds) Less(i, j int) bool {
-	return sortorder.NaturalLess(b[i].originalPrefix, b[j].originalPrefix)
+	return build.Path.String()
 }
 
 // ListBuilds returns the array of builds under path, sorted in monotonically decreasing order.
-func ListBuilds(parent context.Context, client *storage.Client, path Path) (Builds, error) {
+func ListBuilds(parent context.Context, lister Lister, path Path, after *Path) ([]Build, error) {
 	ctx, cancel := context.WithCancel(parent)
 	defer cancel()
-	p := path.Object()
-	if !strings.HasSuffix(p, "/") {
-		p += "/"
+	var offset string
+	if after != nil {
+		offset = after.Object()
 	}
-	bkt := client.Bucket(path.Bucket())
-	it := bkt.Objects(ctx, &storage.Query{
-		Delimiter: "/",
-		Prefix:    p,
-	})
-	var all Builds
+	it := lister.Objects(ctx, path, "/", offset)
+	var all []Build
 	for {
 		objAttrs, err := it.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {
-			return nil, fmt.Errorf("failed to list objects: %v", err)
+			return nil, fmt.Errorf("list objects: %w", err)
 		}
 
-		// if this is a link under directory, resolve the build value
+		// if this is a link under directory/, resolve the build value
+		// This is used for PR type jobs which we store in a PR specific prefix.
+		// The directory prefix contains a link header to the result
+		// under the PR specific prefix.
 		if link := objAttrs.Metadata["x-goog-meta-link"]; len(link) > 0 {
 			// links created by bootstrap.py have a space
 			link = strings.TrimSpace(link)
 			u, err := url.Parse(link)
 			if err != nil {
-				return nil, fmt.Errorf("could not parse link for key %s: %v", objAttrs.Name, err)
+				return nil, fmt.Errorf("parse %s link: %v", objAttrs.Name, err)
 			}
 			if !strings.HasSuffix(u.Path, "/") {
 				u.Path += "/"
 			}
 			var linkPath Path
 			if err := linkPath.SetURL(u); err != nil {
-				return nil, fmt.Errorf("could not make GCS path for key %s: %v", objAttrs.Name, err)
+				return nil, fmt.Errorf("bad %s link path %s: %w", objAttrs.Name, u, err)
 			}
 			all = append(all, Build{
-				Bucket:         bkt,
-				Prefix:         linkPath.Object(),
-				BucketPath:     path.Bucket(),
+				Path:           linkPath,
 				originalPrefix: objAttrs.Name,
 			})
 			continue
 		}
 
-		if len(objAttrs.Prefix) == 0 {
-			continue
+		if objAttrs.Prefix == "" {
+			continue // not a symlink to a directory
+		}
+
+		loc := "gs://" + path.Bucket() + "/" + objAttrs.Prefix
+		path, err := NewPath(loc)
+		if err != nil {
+			return nil, fmt.Errorf("bad path %q: %w", loc, err)
 		}
 
 		all = append(all, Build{
-			Bucket:         bkt,
-			Prefix:         objAttrs.Prefix,
-			BucketPath:     path.Bucket(),
+			Path:           *path,
 			originalPrefix: objAttrs.Prefix,
 		})
 	}
-	sort.Sort(sort.Reverse(all))
+
+	sort.SliceStable(all, func(i, j int) bool {
+		// ! because we want the latest (aka largest) items first.
+		return !sortorder.NaturalLess(all[i].originalPrefix, all[j].originalPrefix)
+	})
+
+	if offset != "" {
+		// GCS will return 200 2000 30 for a prefix of 100
+		// testgrid expects this as 2000 200 (dropping 30)
+		for i, b := range all {
+			if sortorder.NaturalLess(b.originalPrefix, offset) {
+				return all[:i], nil
+			}
+		}
+	}
+
 	return all, nil
 }
 
 // junit_CONTEXT_TIMESTAMP_THREAD.xml
-var re = regexp.MustCompile(`.+/junit(_[^_]+)?(_\d+-\d+)?(_\d+)?\.xml$`)
+var re = regexp.MustCompile(`.+/junit((_[^_]+)?(_\d+-\d+)?(_\d+)?|.+)?\.xml$`)
 
 // dropPrefix removes the _ in _CONTEXT to help keep the regexp simple
 func dropPrefix(name string) string {
@@ -148,7 +152,7 @@ func dropPrefix(name string) string {
 
 // parseSuitesMeta returns the metadata for this junit file (nil for a non-junit file).
 //
-// Expected format: junit_context_20180102-1256-07.xml
+// Expected format: junit_context_20180102-1256_07.xml
 // Results in {
 //   "Context": "context",
 //   "Timestamp": "20180102-1256",
@@ -159,97 +163,91 @@ func parseSuitesMeta(name string) map[string]string {
 	if mat == nil {
 		return nil
 	}
+	c, ti, th := dropPrefix(mat[2]), dropPrefix(mat[3]), dropPrefix(mat[4])
+	if c == "" && ti == "" && th == "" {
+		c = mat[1]
+	}
 	return map[string]string{
-		"Context":   dropPrefix(mat[1]),
-		"Timestamp": dropPrefix(mat[2]),
-		"Thread":    dropPrefix(mat[3]),
+		"Context":   c,
+		"Timestamp": ti,
+		"Thread":    th,
 	}
 
 }
 
 // readJSON will decode the json object stored in GCS.
-func readJSON(ctx context.Context, obj *storage.ObjectHandle, i interface{}) error {
-	reader, err := obj.NewReader(ctx)
-	if err == storage.ErrObjectNotExist {
+func readJSON(ctx context.Context, opener Opener, p Path, i interface{}) error {
+	reader, err := opener.Open(ctx, p)
+	if errors.Is(err, storage.ErrObjectNotExist) {
 		return err
 	}
 	if err != nil {
-		return fmt.Errorf("open: %v", err)
+		return fmt.Errorf("open: %w", err)
 	}
+	defer reader.Close()
 	if err = json.NewDecoder(reader).Decode(i); err != nil {
-		return fmt.Errorf("decode: %v", err)
+		return fmt.Errorf("decode: %w", err)
+	}
+	if err := reader.Close(); err != nil {
+		return fmt.Errorf("close: %w", err)
 	}
 	return nil
 }
 
 // Started parses the build's started metadata.
-func (build Build) Started(ctx context.Context) (*Started, error) {
-	uri := build.Prefix + "started.json"
+func (build Build) Started(ctx context.Context, opener Opener) (*Started, error) {
+	path, err := build.Path.ResolveReference(&url.URL{Path: "started.json"})
+	if err != nil {
+		return nil, fmt.Errorf("resolve: %w", err)
+	}
 	var started Started
-	err := readJSON(ctx, build.Bucket.Object(uri), &started)
-	if err == storage.ErrObjectNotExist {
+	err = readJSON(ctx, opener, *path, &started)
+	if errors.Is(err, storage.ErrObjectNotExist) {
 		started.Pending = true
 		return &started, nil
 	}
 	if err != nil {
-		return nil, fmt.Errorf("read %s: %v", uri, err)
+		return nil, fmt.Errorf("read: %w", err)
 	}
 	return &started, nil
 }
 
 // Finished parses the build's finished metadata.
-func (build Build) Finished(ctx context.Context) (*Finished, error) {
-	uri := build.Prefix + "finished.json"
+func (build Build) Finished(ctx context.Context, opener Opener) (*Finished, error) {
+	path, err := build.Path.ResolveReference(&url.URL{Path: "finished.json"})
+	if err != nil {
+		return nil, fmt.Errorf("resolve: %w", err)
+	}
 	var finished Finished
-	err := readJSON(ctx, build.Bucket.Object(uri), &finished)
-	if err == storage.ErrObjectNotExist {
+	err = readJSON(ctx, opener, *path, &finished)
+	if errors.Is(err, storage.ErrObjectNotExist) {
 		finished.Running = true
 		return &finished, nil
 	}
 	if err != nil {
-		return nil, fmt.Errorf("read %s: %v", uri, err)
+		return nil, fmt.Errorf("read: %w", err)
 	}
 	return &finished, nil
 }
 
 // Artifacts writes the object name of all paths under the build's artifact dir to the output channel.
-func (build Build) Artifacts(ctx context.Context, artifacts chan<- string) error {
-	pref := build.Prefix
-	objs := build.Bucket.Objects(ctx, &storage.Query{Prefix: pref})
+func (build Build) Artifacts(ctx context.Context, lister Lister, artifacts chan<- string) error {
+	objs := lister.Objects(ctx, build.Path, "", "") // no delim or offset so we get all objects.
 	for {
 		obj, err := objs.Next()
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
-			return fmt.Errorf("failed to list %s: %v", pref, err)
+			return fmt.Errorf("list %s: %w", build.Path, err)
 		}
 		select {
 		case <-ctx.Done():
-			return fmt.Errorf("interrupted listing %s", pref)
+			return ctx.Err()
 		case artifacts <- obj.Name:
 		}
 	}
 	return nil
-}
-
-// readSuites parses the <testsuite> or <testsuites> object in obj
-func readSuites(ctx context.Context, obj *storage.ObjectHandle) (*junit.Suites, error) {
-	reader, err := obj.NewReader(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("open: %v", err)
-	}
-
-	buf, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return nil, fmt.Errorf("read: %v", err)
-	}
-
-	suites, err := junit.Parse(buf)
-	if err != nil {
-		return nil, fmt.Errorf("parse: %v", err)
-	}
-	return &suites, nil
 }
 
 // SuitesMeta holds testsuites xml and metadata from the filename
@@ -259,63 +257,103 @@ type SuitesMeta struct {
 	Path     string
 }
 
+func readSuites(ctx context.Context, opener Opener, p Path) (*junit.Suites, error) {
+	r, err := opener.Open(ctx, p)
+	if err != nil {
+		return nil, fmt.Errorf("open: %w", err)
+	}
+	defer r.Close()
+	buf, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, fmt.Errorf("read: %w", err)
+	}
+	suitesMeta, err := junit.Parse(buf)
+	if err != nil {
+		return nil, fmt.Errorf("parse: %w", err)
+	}
+	return &suitesMeta, nil
+}
+
 // Suites takes a channel of artifact names, parses those representing junit suites, writing the result to the suites channel.
 //
 // Note that junit suites are parsed in parallel, so there are no guarantees about suites ordering.
-func (build Build) Suites(parent context.Context, artifacts <-chan string, suites chan<- SuitesMeta) error {
-
+func (build Build) Suites(parent context.Context, opener Opener, artifacts <-chan string, suites chan<- SuitesMeta) error {
 	var wg sync.WaitGroup
+	var work int
+
 	ec := make(chan error)
 	ctx, cancel := context.WithCancel(parent)
+
+	// semaphore sets a ceiling of size go-routines slots
+	size := build.suitesConcurrency
+	if size == 0 {
+		size = 5
+	}
+	semaphore := make(chan int, size)
+	defer close(semaphore) // close after all goroutines are done
+	defer wg.Wait()        // ensure all goroutines exit before returning
 	defer cancel()
+
 	for art := range artifacts {
 		meta := parseSuitesMeta(art)
 		if meta == nil {
 			continue // not a junit file ignore it, ignore it
 		}
-		wg.Add(1)
 		// concurrently parse each file because there may be a lot of them, and
 		// each takes a non-trivial amount of time waiting for the network.
+		work++
+		wg.Add(1)
+
 		go func(art string, meta map[string]string) {
+			semaphore <- 1 // wait for free slot
 			defer wg.Done()
-			suitesData, err := readSuites(ctx, build.Bucket.Object(art))
+			defer func() { <-semaphore }() // free up slot
+			if art != "" && art[0] != '/' {
+				art = "/" + art
+			}
+			path, err := build.Path.ResolveReference(&url.URL{Path: art})
 			if err != nil {
 				select {
 				case <-ctx.Done():
-				case ec <- err:
+				case ec <- fmt.Errorf("resolve %q: %w", art, err):
 				}
 				return
 			}
 			out := SuitesMeta{
-				Suites:   *suitesData,
 				Metadata: meta,
-				Path:     "gs://" + build.BucketPath + "/" + art,
+				Path:     path.String(),
 			}
+			s, err := readSuites(ctx, opener, *path)
+			if err != nil {
+				select {
+				case <-ctx.Done():
+				case ec <- fmt.Errorf("read %s suites: %w", *path, err):
+				}
+				return
+			}
+			out.Suites = *s
 			select {
 			case <-ctx.Done():
+				return
 			case suites <- out:
+			}
+
+			select {
+			case <-ctx.Done():
+			case ec <- nil:
 			}
 		}(art, meta)
 	}
 
-	go func() {
-		wg.Wait()
+	for ; work > 0; work-- {
 		select {
-		case ec <- nil: // tell parent we exited cleanly
-		case <-ctx.Done(): // parent already exited
+		case <-ctx.Done():
+			return fmt.Errorf("timeout: %w", ctx.Err())
+		case err := <-ec:
+			if err != nil {
+				return err
+			}
 		}
-		close(ec) // no one will send t
-	}()
-
-	// TODO(fejta): refactor to return the suites chan, so we can control channel closure
-	// Until then don't return until all go functions return
-	select {
-	case <-ctx.Done(): // parent context marked as finished.
-		wg.Wait()
-		return ctx.Err()
-	case err := <-ec: // finished listing
-		cancel()
-		wg.Wait()
-		return err
 	}
+	return nil
 }

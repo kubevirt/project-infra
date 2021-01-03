@@ -13,6 +13,7 @@ go_library(
         "//vendor/github.com/sirupsen/logrus:go_default_library",
         "//vendor/k8s.io/api/core/v1:go_default_library",
         "//vendor/k8s.io/apimachinery/pkg/apis/meta/v1:go_default_library",
+        "//vendor/k8s.io/apimachinery/pkg/util/sets:go_default_library",
         "//vendor/k8s.io/apimachinery/pkg/util/validation:go_default_library",
         "//vendor/k8s.io/test-infra/prow/apis/prowjobs/v1:go_default_library",
         "//vendor/k8s.io/test-infra/prow/clonerefs:go_default_library",

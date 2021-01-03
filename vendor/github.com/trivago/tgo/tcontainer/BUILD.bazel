@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "arrays.go",
+        "bytepool.go",
+        "marshalmap.go",
+        "trie.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/trivago/tgo/tcontainer",
+    importpath = "github.com/trivago/tgo/tcontainer",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/github.com/trivago/tgo/treflect:go_default_library"],
+)

@@ -47,19 +47,19 @@ type TideContextPolicy struct {
 
 // TideOrgContextPolicy overrides the policy for an org, and any repo overrides.
 type TideOrgContextPolicy struct {
-	TideContextPolicy
-	Repos map[string]TideRepoContextPolicy `json:"repos,omitempty"`
+	TideContextPolicy `json:",inline"`
+	Repos             map[string]TideRepoContextPolicy `json:"repos,omitempty"`
 }
 
 // TideRepoContextPolicy overrides the policy for repo, and any branch overrides.
 type TideRepoContextPolicy struct {
-	TideContextPolicy
-	Branches map[string]TideContextPolicy `json:"branches,omitempty"`
+	TideContextPolicy `json:",inline"`
+	Branches          map[string]TideContextPolicy `json:"branches,omitempty"`
 }
 
 // TideContextPolicyOptions holds the default policy, and any org overrides.
 type TideContextPolicyOptions struct {
-	TideContextPolicy
+	TideContextPolicy `json:",inline"`
 	// GitHub Orgs
 	Orgs map[string]TideOrgContextPolicy `json:"orgs,omitempty"`
 }
@@ -215,7 +215,7 @@ type TideQuery struct {
 
 // Query returns the corresponding github search string for the tide query.
 func (tq *TideQuery) Query() string {
-	toks := []string{"is:pr", "state:open"}
+	toks := []string{"is:pr", "state:open", "archived:false"}
 	for _, o := range tq.Orgs {
 		toks = append(toks, fmt.Sprintf("org:\"%s\"", o))
 	}

@@ -1,0 +1,30 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "claim_strings.go",
+        "claims.go",
+        "doc.go",
+        "ecdsa.go",
+        "ecdsa_utils.go",
+        "errors.go",
+        "hmac.go",
+        "keyfunc.go",
+        "map_claims.go",
+        "none.go",
+        "parser.go",
+        "parser_option.go",
+        "rsa.go",
+        "rsa_pss.go",
+        "rsa_utils.go",
+        "signing_method.go",
+        "signing_option.go",
+        "time.go",
+        "token.go",
+        "validation_helper.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/dgrijalva/jwt-go/v4",
+    importpath = "github.com/dgrijalva/jwt-go/v4",
+    visibility = ["//visibility:public"],
+)

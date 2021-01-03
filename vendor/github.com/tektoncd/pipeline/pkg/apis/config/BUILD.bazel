@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "default.go",
         "doc.go",
+        "feature_flags.go",
         "store.go",
         "zz_generated.deepcopy.go",
     ],

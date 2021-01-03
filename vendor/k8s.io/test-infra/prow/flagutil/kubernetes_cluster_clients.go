@@ -23,10 +23,12 @@ import (
 	"net/url"
 	"os"
 
+	utilerrors "k8s.io/apimachinery/pkg/util/errors"
 	"k8s.io/client-go/kubernetes"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 	ctrlruntimeclient "sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	prow "k8s.io/test-infra/prow/client/clientset/versioned"
 	prowv1 "k8s.io/test-infra/prow/client/clientset/versioned/typed/prowjobs/v1"
@@ -38,8 +40,7 @@ import (
 // and other resources on the infrastructure cluster, as well as Pods
 // on build clusters.
 type KubernetesOptions struct {
-	buildCluster string
-	kubeconfig   string
+	kubeconfig string
 
 	DeckURI string
 
@@ -54,8 +55,7 @@ type KubernetesOptions struct {
 
 // AddFlags injects Kubernetes options into the given FlagSet.
 func (o *KubernetesOptions) AddFlags(fs *flag.FlagSet) {
-	fs.StringVar(&o.buildCluster, "build-cluster", "", "Path to kube.Cluster YAML file. If empty, uses the local cluster. All clusters are used as build clusters. Cannot be combined with --kubeconfig.")
-	fs.StringVar(&o.kubeconfig, "kubeconfig", "", "Path to .kube/config file. If empty, uses the local cluster. All contexts other than the default are used as build clusters. Cannot be combined with --build-cluster.")
+	fs.StringVar(&o.kubeconfig, "kubeconfig", "", "Path to .kube/config file. If empty, uses the local cluster. All contexts other than the default are used as build clusters.")
 	fs.StringVar(&o.DeckURI, "deck-url", "", "Deck URI for read-only access to the infrastructure cluster.")
 }
 
@@ -77,27 +77,18 @@ func (o *KubernetesOptions) Validate(dryRun bool) error {
 		}
 	}
 
-	if o.kubeconfig != "" && o.buildCluster != "" {
-		return errors.New("must provide only --build-cluster OR --kubeconfig")
-	}
-
 	return nil
 }
 
 // resolve loads all of the clients we need and caches them for future calls.
-func (o *KubernetesOptions) resolve(dryRun bool) (err error) {
+func (o *KubernetesOptions) resolve(dryRun bool) error {
 	if o.resolved {
 		return nil
 	}
 
-	o.dryRun = dryRun
-	if dryRun {
-		return nil
-	}
-
-	clusterConfigs, err := kube.LoadClusterConfigs(o.kubeconfig, o.buildCluster)
+	clusterConfigs, err := kube.LoadClusterConfigs(o.kubeconfig)
 	if err != nil {
-		return fmt.Errorf("load --kubeconfig=%q --build-cluster=%q configs: %v", o.kubeconfig, o.buildCluster, err)
+		return fmt.Errorf("load --kubeconfig=%q configs: %v", o.kubeconfig, err)
 	}
 	o.clusterConfigs = clusterConfigs
 
@@ -115,6 +106,11 @@ func (o *KubernetesOptions) resolve(dryRun bool) (err error) {
 	pjClient, err := prow.NewForConfig(&localCfg)
 	if err != nil {
 		return err
+	}
+
+	o.dryRun = dryRun
+	if dryRun {
+		return nil
 	}
 
 	o.prowJobClientset = pjClient
@@ -161,6 +157,11 @@ func (o *KubernetesOptions) InfrastructureClusterConfig(dryRun bool) (*rest.Conf
 
 // InfrastructureClusterClient returns a Kubernetes client for the infrastructure cluster.
 func (o *KubernetesOptions) InfrastructureClusterClient(dryRun bool) (kubernetesClient kubernetes.Interface, err error) {
+	return o.ClusterClientForContext(kube.InClusterContext, dryRun)
+}
+
+// ClusterClientForContext returns a Kubernetes client for the given context name.
+func (o *KubernetesOptions) ClusterClientForContext(context string, dryRun bool) (kubernetesClient kubernetes.Interface, err error) {
 	if err := o.resolve(dryRun); err != nil {
 		return nil, err
 	}
@@ -169,7 +170,11 @@ func (o *KubernetesOptions) InfrastructureClusterClient(dryRun bool) (kubernetes
 		return nil, errors.New("no dry-run kubernetes client is supported in dry-run mode")
 	}
 
-	return o.kubernetesClientsByContext[kube.InClusterContext], nil
+	client, exists := o.kubernetesClientsByContext[context]
+	if !exists {
+		return nil, fmt.Errorf("context %q does not exist in the provided config", context)
+	}
+	return client, nil
 }
 
 // BuildClusterClients returns Pod clients for build clusters.
@@ -206,25 +211,59 @@ func (o *KubernetesOptions) BuildClusterCoreV1Clients(dryRun bool) (v1Clients ma
 	return clients, nil
 }
 
+// BuildClusterManagers returns a manager per buildCluster.
+// Per default, LeaderElection and the metrics listener are disabled, as we assume
+// that there is another manager for ProwJobs that handles that.
+func (o *KubernetesOptions) BuildClusterManagers(dryRun bool, opts ...func(*manager.Options)) (map[string]manager.Manager, error) {
+	if err := o.resolve(dryRun); err != nil {
+		return nil, err
+	}
+
+	options := manager.Options{
+		LeaderElection:     false,
+		MetricsBindAddress: "0",
+		DryRunClient:       o.dryRun,
+	}
+	for _, opt := range opts {
+		opt(&options)
+	}
+
+	res := map[string]manager.Manager{}
+	var errs []error
+	for buildCluserName, buildClusterConfig := range o.clusterConfigs {
+		// We pass a pointer, need to capture it here. Dragons will fall if this is changed.
+		cfg := buildClusterConfig
+		mgr, err := manager.New(&cfg, options)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("failed to construct manager for cluster %s: %w", buildCluserName, err))
+			continue
+		}
+		res[buildCluserName] = mgr
+	}
+
+	return res, utilerrors.NewAggregate(errs)
+}
+
 // BuildClusterUncachedRuntimeClients returns ctrlruntimeclients for the build cluster in a non-caching implementation.
 func (o *KubernetesOptions) BuildClusterUncachedRuntimeClients(dryRun bool) (map[string]ctrlruntimeclient.Client, error) {
 	if err := o.resolve(dryRun); err != nil {
 		return nil, err
 	}
 
-	if o.dryRun {
-		return nil, errors.New("no dry-run pod client is supported for build clusters in dry-run mode")
-	}
-
+	var errs []error
 	clients := map[string]ctrlruntimeclient.Client{}
 	for name := range o.clusterConfigs {
 		cfg := o.clusterConfigs[name]
 		client, err := ctrlruntimeclient.New(&cfg, ctrlruntimeclient.Options{})
 		if err != nil {
-			return nil, fmt.Errorf("failed to construct client for cluster %q: %v", name, err)
+			errs = append(errs, fmt.Errorf("failed to construct client for cluster %q: %w", name, err))
+			continue
+		}
+		if o.dryRun {
+			client = ctrlruntimeclient.NewDryRunClient(client)
 		}
 		clients[name] = client
 	}
 
-	return clients, nil
+	return clients, utilerrors.NewAggregate(errs)
 }
