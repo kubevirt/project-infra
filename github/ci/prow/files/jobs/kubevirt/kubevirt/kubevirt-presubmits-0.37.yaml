@@ -1,0 +1,595 @@
+periodics: null
+postsubmits: {}
+presubmits:
+  kubevirt/kubevirt:
+  - always_run: false
+    branches:
+    - release-0.37
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.20
+    optional: true
+    skip_report: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=k8s-1.20 && automation/test.sh
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.37
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.19
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=k8s-1.19 && automation/test.sh
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.37
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.18
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=k8s-1.18 && automation/test.sh
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.37
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.17
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=k8s-1.17 && automation/test.sh
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.37
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-cnao-1.19
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - TARGET=k8s-1.19-cnao automation/test.sh
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.37
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 2h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 1
+    name: pull-kubevirt-e2e-windows2016
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=windows2016 && automation/test.sh
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    annotations:
+      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
+    branches:
+    - release-0.37
+    decorate: true
+    decoration_config:
+      grace_period: 30m0s
+      timeout: 4h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+      rehearsal.allowed: "true"
+      sriov-pod: "true"
+    max_concurrency: 10
+    name: pull-kubevirt-e2e-kind-1.17-sriov
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: sriov-pod
+                operator: In
+                values:
+                - "true"
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -c
+        - |
+          apt update && apt install gettext-base -y && wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz -nv -S && tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ && export PATH=/usr/local/go/bin:$PATH && export KUBEVIRT_PROVIDER=kind-k8s-sriov-1.17.0 && export TARGET=kind-k8s-sriov-1.17.0; trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM; automation/test.sh;
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+        - mountPath: /dev/vfio/
+          name: vfio
+      nodeSelector:
+        hardwareSupport: sriov-nic
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+      - hostPath:
+          path: /dev/vfio/
+          type: Directory
+        name: vfio
+  - always_run: true
+    branches:
+    - release-0.37
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-check-tests-for-flakes
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.37
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 6
+    name: pull-kubevirt-e2e-k8s-1.17-rook-ceph
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=rook-ceph && automation/test.sh
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.37
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-generate
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: false
+    branches:
+    - release-0.37
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-verify-rpms
+    optional: true
+    run_if_changed: WORKSPACE
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make verify-rpm-deps
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: false
+    annotations:
+      rehearsal.allowed: "true"
+    branches:
+    - release-0.37
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-gosec
+    optional: true
+    skip_report: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make gosec
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    branches:
+    - release-0.37
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-build
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    branches:
+    - release-0.37
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-unit-test
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make test
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: false
+    branches:
+    - release-0.37
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 10m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-goveralls
+    optional: true
+    skip_report: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && if [ ${JOB_TYPE} != 'batch' ]; then
+          make goveralls; fi
+        env:
+        - name: COVERALLS_TOKEN_FILE
+          value: /root/.docker/secrets/coveralls/token
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /root/.docker/secrets/coveralls
+          name: kubevirtci-coveralls
+          readOnly: true
+      volumes:
+      - name: kubevirtci-coveralls
+        secret:
+          secretName: kubevirtci-coveralls-token
+  - always_run: true
+    branches:
+    - release-0.37
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-apidocs
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    branches:
+    - release-0.37
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-client-python
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    branches:
+    - release-0.37
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-manifests
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX="docker.io/kubevirt"
+          && make olm-verify
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    branches:
+    - release-0.37
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-prom-rules-verify
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make prom-rules-verify
+        image: kubevirtci/bootstrap:v20201119-a5880e0
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
