@@ -21,8 +21,8 @@ presubmits:
         resources:
           requests:
             memory: "500Mi"
-  - name: pull-project-infra-test-flakefinder
-    run_if_changed: robots/flakefinder/.*
+  - name: pull-project-infra-test-robots
+    run_if_changed: robots/.*
     optional: false
     decorate: true
     spec:
@@ -37,10 +37,9 @@ presubmits:
           - name: XDG_CACHE_HOME
             value: "/tmp/.cache"
         command:
-          - go
-        args:
-          - test
-          - ./...
+          - "/bin/bash"
+          - "-c"
+          - "cd robots && go test ./..."
   - name: build-kubevirt-infra-bootstrap-image
     always_run: false
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
