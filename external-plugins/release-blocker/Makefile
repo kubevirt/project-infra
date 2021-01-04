@@ -14,4 +14,4 @@ test:
 
 push:
 	$(bazelbin) run //external-plugins/release-blocker:push
-	bash -x ./update-job-with-latest-release-blocker-image.sh
+	bash -x ../../hack/update-jobs-with-latest-image.sh kubevirtci/release-blocker
