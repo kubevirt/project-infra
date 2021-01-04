@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["portforwarder.go"],
+    importpath = "kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/portforwarder",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//github/ci/services/common/k8s/pkg/client:go_default_library",
+        "//vendor/k8s.io/client-go/tools/portforward:go_default_library",
+        "//vendor/k8s.io/client-go/transport/spdy:go_default_library",
+    ],
+)

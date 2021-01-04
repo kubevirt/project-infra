@@ -18,7 +18,12 @@ func main() {
 		log.Fatalf("Please specify a selector with -selector")
 	}
 
-	if *kind == "deployment" {
+	switch *kind {
+	case "deployment":
 		wait.ForDeploymentReady(*namespace, *selector)
+	case "statefulset":
+		wait.ForStatefulsetReady(*namespace, *selector)
+	default:
+		log.Fatalf("Unknown resource kind, %q", *kind)
 	}
 }

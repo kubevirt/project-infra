@@ -2,8 +2,10 @@ package wait
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
+	"net"
 	"strings"
 	"sync"
 	"time"
@@ -40,7 +42,7 @@ func (s *stopChan) closeOnce() {
 func ForDeploymentReady(namespace, name string) {
 	clientset, err := client.NewClientset()
 	if err != nil {
-		log.Fatalf("Cloud not create clientset %v", err)
+		log.Fatalf("Could not create clientset %v", err)
 	}
 
 	stop := newStopChan()
@@ -65,7 +67,7 @@ func ForDeploymentReady(namespace, name string) {
 func ForCertificateReady(namespace, name string) {
 	clientset, err := client.NewCertManagerClientset()
 	if err != nil {
-		log.Fatalf("Cloud not create clientset %v", err)
+		log.Fatalf("Could not create clientset %v", err)
 	}
 
 	stop := newStopChan()
@@ -107,7 +109,7 @@ func isCertificateReady(certificate *certmanagerv1.Certificate) bool {
 func ForNamespaceDeleted(namespace string) {
 	clientset, err := client.NewClientset()
 	if err != nil {
-		log.Fatalf("Cloud not create clientset %v", err)
+		log.Fatalf("Could not create clientset %v", err)
 	}
 
 	watcher, err := clientset.
@@ -119,7 +121,7 @@ func ForNamespaceDeleted(namespace string) {
 				LabelSelector: fmt.Sprintf("name=%s", namespace),
 			})
 	if err != nil {
-		log.Fatalf("Cloud not watch namespace %v", err)
+		log.Fatalf("Could not watch namespace %v", err)
 	}
 
 	for {
@@ -137,7 +139,7 @@ func ForNamespaceDeleted(namespace string) {
 func ForHTTP01IngressCreated(namespace, hostname string) {
 	clientset, err := client.NewClientset()
 	if err != nil {
-		log.Fatalf("Cloud not create clientset %v", err)
+		log.Fatalf("Could not create clientset %v", err)
 	}
 
 	stop := newStopChan()
@@ -178,4 +180,57 @@ func isHTTP01Ingress(ingress *networkingv1.Ingress, hostname string) bool {
 		}
 	}
 	return false
+}
+
+func ForStatefulsetReady(namespace, name string) {
+	clientset, err := client.NewClientset()
+	if err != nil {
+		log.Fatalf("Could not create clientset %v", err)
+	}
+
+	stop := newStopChan()
+
+	watchlist := cache.NewListWatchFromClient(clientset.AppsV1().RESTClient(), "statefulsets", namespace, fields.Everything())
+	_, controller := cache.NewInformer(watchlist, &appsv1.StatefulSet{}, poll, cache.ResourceEventHandlerFuncs{
+		UpdateFunc: func(o, n interface{}) {
+			newStatefulset := n.(*appsv1.StatefulSet)
+
+			if newStatefulset.Name != name {
+				return
+			}
+			if isStatefulsetReady(newStatefulset) {
+				stop.closeOnce()
+				return
+			}
+		},
+	})
+	controller.Run(stop.c)
+}
+
+func isStatefulsetReady(statefulset *appsv1.StatefulSet) bool {
+	return statefulset.Status.UpdatedReplicas == *statefulset.Spec.Replicas &&
+		statefulset.Status.Replicas == *statefulset.Spec.Replicas &&
+		statefulset.Status.ReadyReplicas == *statefulset.Spec.Replicas &&
+		statefulset.Status.ObservedGeneration >= statefulset.Generation
+}
+
+func ForPortOpen(host, port string) error {
+	timeout := time.After(20 * time.Second)
+	tick := time.Tick(1 * time.Second)
+
+	for {
+		select {
+		case <-timeout:
+			return errors.New(fmt.Sprintf("Port %s was not open in time", port))
+		case <-tick:
+			conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, port), time.Second)
+			if err != nil {
+				return err
+			}
+			if conn != nil {
+				defer conn.Close()
+				return nil
+			}
+		}
+	}
 }
