@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "kubevirt.io/project-infra/github/ci/services/common/k8s/cmd/wait",
+    visibility = ["//visibility:public"],
+    deps = ["//github/ci/services/common/k8s/pkg/wait:go_default_library"],
+)
+
+go_binary(
+    name = "wait",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)

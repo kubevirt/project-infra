@@ -137,13 +137,16 @@ var ErrNotFoundTest = fmt.Errorf("not found error which should only be used in t
 
 // IsNotExist will return true if the error shows that the object does not exist.
 func IsNotExist(err error) bool {
-	if os.IsNotExist(err) || err == storage.ErrObjectNotExist {
+	if os.IsNotExist(err) {
 		return true
 	}
-	if err == ErrNotFoundTest {
+	if errors.Is(err, ErrNotFoundTest) {
 		return true
 	}
 	if errors.Is(err, os.ErrNotExist) {
+		return true
+	}
+	if errors.Is(err, storage.ErrObjectNotExist) {
 		return true
 	}
 	return gcerrors.Code(err) == gcerrors.NotFound
@@ -240,17 +243,25 @@ func (o *opener) RangeReader(ctx context.Context, path string, offset, length in
 	return reader, nil
 }
 
+var PreconditionFailedObjectAlreadyExists = fmt.Errorf("object already exists")
+
 // Writer returns a writer that overwrites the path.
 func (o *opener) Writer(ctx context.Context, p string, opts ...WriterOptions) (io.WriteCloser, error) {
+	options := &WriterOptions{}
+	for _, opt := range opts {
+		opt.Apply(options)
+	}
 	if strings.HasPrefix(p, providers.GS+"://") {
 		g, err := o.openGCS(p)
 		if err != nil {
 			return nil, fmt.Errorf("bad gcs path: %v", err)
 		}
-		writer := g.NewWriter(ctx)
-		for _, opt := range opts {
-			opt.Apply(writer, nil)
+		if options.PreconditionDoesNotExist != nil && *options.PreconditionDoesNotExist {
+			g = g.If(storage.Conditions{DoesNotExist: true})
 		}
+
+		writer := g.NewWriter(ctx)
+		options.apply(writer, nil)
 		return writer, nil
 	}
 	if strings.HasPrefix(p, "/") {
@@ -267,9 +278,24 @@ func (o *opener) Writer(ctx context.Context, p string, opts ...WriterOptions) (i
 		return nil, err
 	}
 	var wOpts blob.WriterOptions
-	for _, opt := range opts {
-		opt.Apply(nil, &wOpts)
+	options.apply(nil, &wOpts)
+
+	if options.PreconditionDoesNotExist != nil && *options.PreconditionDoesNotExist {
+		wOpts.BeforeWrite = func(asFunc func(interface{}) bool) error {
+			_, err := o.Reader(ctx, p)
+			if err != nil {
+				// we got an error, but not object not exists
+				if !IsNotExist(err) {
+					return err
+				}
+				// Precondition fulfilled, return nil
+				return nil
+			}
+			// Precondition failed, we got no err because object already exists
+			return PreconditionFailedObjectAlreadyExists
+		}
 	}
+
 	writer, err := bucket.NewWriter(ctx, relativePath, &wOpts)
 	if err != nil {
 		return nil, err
@@ -388,12 +414,19 @@ func (o *opener) Iterator(ctx context.Context, prefix, delimiter string) (Object
 			return nil, errors.New("no gcs client configured")
 		}
 		bkt := o.gcsClient.Bucket(bucketName)
+		query := &storage.Query{
+			Prefix:    relativePath,
+			Delimiter: delimiter,
+			Versions:  false,
+		}
+		if delimiter == "" {
+			// query.SetAttrSelection cannot be used in directory-like mode (when delimiter != "").
+			if err := query.SetAttrSelection([]string{"Name"}); err != nil {
+				return nil, err
+			}
+		}
 		return gcsObjectIterator{
-			Iterator: bkt.Objects(ctx, &storage.Query{
-				Prefix:    relativePath,
-				Delimiter: delimiter,
-				Versions:  false,
-			}),
+			Iterator: bkt.Objects(ctx, query),
 		}, nil
 	}
 

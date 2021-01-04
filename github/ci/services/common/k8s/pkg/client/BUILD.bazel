@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["client.go"],
+    importpath = "kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/client",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/jetstack/cert-manager/pkg/client/clientset/versioned:go_default_library",
+        "//vendor/k8s.io/client-go/kubernetes:go_default_library",
+        "//vendor/k8s.io/client-go/rest:go_default_library",
+        "//vendor/k8s.io/client-go/tools/clientcmd:go_default_library",
+    ],
+)

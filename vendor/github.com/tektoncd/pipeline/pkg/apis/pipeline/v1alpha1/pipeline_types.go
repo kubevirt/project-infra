@@ -39,8 +39,14 @@ type PipelineSpec struct {
 	// Workspaces declares a set of named workspaces that are expected to be
 	// provided by a PipelineRun.
 	// +optional
-	Workspaces []WorkspacePipelineDeclaration `json:"workspaces,omitempty"`
+	Workspaces []PipelineWorkspaceDeclaration `json:"workspaces,omitempty"`
+	// Results are values that this pipeline can output once run
+	// +optional
+	Results []PipelineResult `json:"results,omitempty"`
 }
+
+// PipelineResult used to describe the results of a pipeline
+type PipelineResult = v1beta1.PipelineResult
 
 // Check that Pipeline may be validated and defaulted.
 // TaskKind defines the type of Task used by the pipeline.
@@ -161,15 +167,27 @@ func (pt PipelineTask) Deps() []string {
 		for _, rd := range cond.Resources {
 			deps = append(deps, rd.From...)
 		}
+		for _, param := range cond.Params {
+			expressions, ok := v1beta1.GetVarSubstitutionExpressionsForParam(param)
+			if ok {
+				resultRefs := v1beta1.NewResultRefs(expressions)
+				for _, resultRef := range resultRefs {
+					deps = append(deps, resultRef.PipelineTask)
+				}
+			}
+		}
 	}
 	// Add any dependents from task results
 	for _, param := range pt.Params {
-		if resultRefs, err := v1beta1.NewResultRefs(param); err == nil {
+		expressions, ok := v1beta1.GetVarSubstitutionExpressionsForParam(param)
+		if ok {
+			resultRefs := v1beta1.NewResultRefs(expressions)
 			for _, resultRef := range resultRefs {
 				deps = append(deps, resultRef.PipelineTask)
 			}
 		}
 	}
+
 	return deps
 }
 

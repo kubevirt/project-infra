@@ -7,6 +7,7 @@ go_library(
         "destination.go",
         "doc.go",
         "knative_reference.go",
+        "kresource_type.go",
         "podspec_types.go",
         "register.go",
         "source_types.go",
@@ -22,6 +23,7 @@ go_library(
         "//vendor/k8s.io/apimachinery/pkg/runtime:go_default_library",
         "//vendor/k8s.io/apimachinery/pkg/runtime/schema:go_default_library",
         "//vendor/knative.dev/pkg/apis:go_default_library",
-        "//vendor/knative.dev/pkg/apis/duck:go_default_library",
+        "//vendor/knative.dev/pkg/apis/duck/ducktypes:go_default_library",
+        "//vendor/knative.dev/pkg/kmeta:go_default_library",
     ],
 )

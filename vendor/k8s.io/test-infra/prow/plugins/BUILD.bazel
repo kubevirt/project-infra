@@ -28,11 +28,14 @@ go_library(
         "//vendor/k8s.io/test-infra/prow/config:go_default_library",
         "//vendor/k8s.io/test-infra/prow/git/v2:go_default_library",
         "//vendor/k8s.io/test-infra/prow/github:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/jira:go_default_library",
         "//vendor/k8s.io/test-infra/prow/kube:go_default_library",
         "//vendor/k8s.io/test-infra/prow/labels:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/logrusutil:go_default_library",
         "//vendor/k8s.io/test-infra/prow/pluginhelp:go_default_library",
         "//vendor/k8s.io/test-infra/prow/repoowners:go_default_library",
         "//vendor/k8s.io/test-infra/prow/slack:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/version:go_default_library",
         "//vendor/sigs.k8s.io/yaml:go_default_library",
     ],
 )
@@ -72,9 +75,11 @@ filegroup(
         "//prow/plugins/help:all-srcs",
         "//prow/plugins/hold:all-srcs",
         "//prow/plugins/invalidcommitmsg:all-srcs",
+        "//prow/plugins/jira:all-srcs",
         "//prow/plugins/label:all-srcs",
         "//prow/plugins/lgtm:all-srcs",
         "//prow/plugins/lifecycle:all-srcs",
+        "//prow/plugins/merge-method-comment:all-srcs",
         "//prow/plugins/mergecommitblocker:all-srcs",
         "//prow/plugins/milestone:all-srcs",
         "//prow/plugins/milestoneapplier:all-srcs",
@@ -86,7 +91,6 @@ filegroup(
         "//prow/plugins/projectmanager:all-srcs",
         "//prow/plugins/releasenote:all-srcs",
         "//prow/plugins/require-matching-label:all-srcs",
-        "//prow/plugins/requiresig:all-srcs",
         "//prow/plugins/retitle:all-srcs",
         "//prow/plugins/shrug:all-srcs",
         "//prow/plugins/sigmention:all-srcs",
@@ -94,6 +98,7 @@ filegroup(
         "//prow/plugins/skip:all-srcs",
         "//prow/plugins/slackevents:all-srcs",
         "//prow/plugins/stage:all-srcs",
+        "//prow/plugins/trick-or-treat:all-srcs",
         "//prow/plugins/trigger:all-srcs",
         "//prow/plugins/updateconfig:all-srcs",
         "//prow/plugins/verify-owners:all-srcs",
@@ -102,4 +107,10 @@ filegroup(
         "//prow/plugins/yuks:all-srcs",
     ],
     tags = ["automanaged"],
+)
+
+filegroup(
+    name = "fixtures",
+    srcs = glob(["*.yaml"]),
+    visibility = ["//visibility:private"],
 )

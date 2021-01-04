@@ -8,6 +8,9 @@ go_library(
         "doc.go",
         "git.go",
         "github.go",
+        "github_enablement.go",
+        "instrumentation.go",
+        "jira.go",
         "k8s_client.go",
         "kubernetes_cluster_clients.go",
         "storage.go",
@@ -17,7 +20,10 @@ go_library(
     importpath = "k8s.io/test-infra/prow/flagutil",
     visibility = ["//visibility:public"],
     deps = [
+        "//vendor/github.com/dgrijalva/jwt-go/v4:go_default_library",
         "//vendor/github.com/sirupsen/logrus:go_default_library",
+        "//vendor/k8s.io/apimachinery/pkg/util/errors:go_default_library",
+        "//vendor/k8s.io/apimachinery/pkg/util/sets:go_default_library",
         "//vendor/k8s.io/client-go/kubernetes:go_default_library",
         "//vendor/k8s.io/client-go/kubernetes/typed/core/v1:go_default_library",
         "//vendor/k8s.io/client-go/rest:go_default_library",
@@ -29,9 +35,11 @@ go_library(
         "//vendor/k8s.io/test-infra/prow/git/v2:go_default_library",
         "//vendor/k8s.io/test-infra/prow/github:go_default_library",
         "//vendor/k8s.io/test-infra/prow/io:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/jira:go_default_library",
         "//vendor/k8s.io/test-infra/prow/kube:go_default_library",
         "//vendor/k8s.io/utils/pointer:go_default_library",
         "//vendor/sigs.k8s.io/controller-runtime/pkg/client:go_default_library",
+        "//vendor/sigs.k8s.io/controller-runtime/pkg/manager:go_default_library",
     ],
 )
 

@@ -34,6 +34,7 @@ go_library(
         "//vendor/k8s.io/test-infra/prow/github:go_default_library",
         "//vendor/k8s.io/test-infra/prow/interrupts:go_default_library",
         "//vendor/k8s.io/test-infra/prow/kube:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/logrusutil:go_default_library",
         "//vendor/k8s.io/test-infra/prow/pod-utils/decorate:go_default_library",
         "//vendor/k8s.io/test-infra/prow/pod-utils/downwardapi:go_default_library",
         "//vendor/sigs.k8s.io/yaml:go_default_library",
@@ -56,4 +57,10 @@ filegroup(
         "//prow/config/secret:all-srcs",
     ],
     tags = ["automanaged"],
+)
+
+filegroup(
+    name = "fixtures",
+    srcs = glob(["*.yaml"]),
+    visibility = ["//visibility:private"],
 )

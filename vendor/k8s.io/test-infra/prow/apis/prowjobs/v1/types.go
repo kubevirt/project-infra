@@ -83,6 +83,16 @@ const (
 	DefaultClusterAlias = "default"
 )
 
+const (
+	// StartedStatusFile is the JSON file that stores information about the build
+	// at the start ob the build. See testgrid/metadata/job.go for more details.
+	StartedStatusFile = "started.json"
+
+	// FinishedStatusFile is the JSON file that stores information about the build
+	// after its completion. See testgrid/metadata/job.go for more details.
+	FinishedStatusFile = "finished.json"
+)
+
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
@@ -193,7 +203,7 @@ type RerunAuthConfig struct {
 
 // IsSpecifiedUser returns true if AllowAnyone is set to true or if the given user is
 // specified as a permitted GitHubUser
-func (rac *RerunAuthConfig) IsAuthorized(user string, cli prowgithub.RerunClient) (bool, error) {
+func (rac *RerunAuthConfig) IsAuthorized(org, user string, cli prowgithub.RerunClient) (bool, error) {
 	if rac == nil {
 		return false, nil
 	}
@@ -219,7 +229,7 @@ func (rac *RerunAuthConfig) IsAuthorized(user string, cli prowgithub.RerunClient
 		}
 	}
 	for _, ght := range rac.GitHubTeamIDs {
-		member, err := cli.TeamHasMember(ght, user)
+		member, err := cli.TeamHasMember(org, ght, user)
 		if err != nil {
 			return false, fmt.Errorf("GitHub failed to fetch members of team %v, verify that you have the correct team number and access token: %v", ght, err)
 		}
@@ -232,7 +242,7 @@ func (rac *RerunAuthConfig) IsAuthorized(user string, cli prowgithub.RerunClient
 		if err != nil {
 			return false, fmt.Errorf("GitHub failed to fetch team with slug %s and org %s: %v", ghts.Slug, ghts.Org, err)
 		}
-		member, err := cli.TeamHasMember(team.ID, user)
+		member, err := cli.TeamHasMember(org, team.ID, user)
 		if err != nil {
 			return false, fmt.Errorf("GitHub failed to fetch members of team %v: %v", team, err)
 		}
@@ -273,7 +283,9 @@ type ReporterConfig struct {
 }
 
 type SlackReporterConfig struct {
-	Channel string `json:"channel"`
+	Channel           string         `json:"channel,omitempty"`
+	JobStatesToReport []ProwJobState `json:"job_states_to_report,omitempty"`
+	ReportTemplate    string         `json:"report_template,omitempty"`
 }
 
 // Duration is a wrapper around time.Duration that parses times in either
@@ -425,6 +437,9 @@ func (d *DecorationConfig) ApplyDefault(def *DecorationConfig) *DecorationConfig
 	if merged.GCSCredentialsSecret == "" {
 		merged.GCSCredentialsSecret = def.GCSCredentialsSecret
 	}
+	if merged.S3CredentialsSecret == "" {
+		merged.S3CredentialsSecret = def.S3CredentialsSecret
+	}
 	if len(merged.SSHKeySecrets) == 0 {
 		merged.SSHKeySecrets = def.SSHKeySecrets
 	}
@@ -436,6 +451,9 @@ func (d *DecorationConfig) ApplyDefault(def *DecorationConfig) *DecorationConfig
 	}
 	if merged.CookiefileSecret == "" {
 		merged.CookiefileSecret = def.CookiefileSecret
+	}
+	if merged.OauthTokenSecret == nil {
+		merged.OauthTokenSecret = def.OauthTokenSecret
 	}
 
 	return &merged

@@ -2,12 +2,17 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["genyaml.go"],
+    srcs = [
+        "genyaml.go",
+        "populate_struct.go",
+    ],
+    data = ["//prow/plugins:config-src"],
     importmap = "kubevirt.io/project-infra/vendor/k8s.io/test-infra/pkg/genyaml",
     importpath = "k8s.io/test-infra/pkg/genyaml",
     visibility = ["//visibility:public"],
     deps = [
         "//vendor/github.com/clarketm/json:go_default_library",
+        "//vendor/github.com/sirupsen/logrus:go_default_library",
         "//vendor/gopkg.in/yaml.v3:go_default_library",
         "//vendor/k8s.io/apimachinery/pkg/util/sets:go_default_library",
     ],
