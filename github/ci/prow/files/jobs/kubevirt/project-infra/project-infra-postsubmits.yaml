@@ -218,8 +218,8 @@ postsubmits:
               chmod +x ./bazelisk && mv ./bazelisk /usr/local/bin/bazelisk
 
               # install yq
-              curl -LO https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
-              chmod a+x yq_linux_amd64 && mv yq_linux_amd64 /usr/local/bin/yq
+              curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+              chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
               # unencrypt and put in place secrets
               target_dir=$(mktemp -d)
@@ -231,6 +231,69 @@ postsubmits:
               export KUBECONFIG=${target_dir}/kubeconfig
 
               ./github/ci/services/cert-manager/hack/deploy.sh production
+          resources:
+            requests:
+              memory: "8Gi"
+            limits:
+              memory: "8Gi"
+          volumeMounts:
+          - name: token
+            mountPath: /etc/github
+          - name: pgp-bot-key
+            mountPath: /etc/pgp
+            readOnly: true
+        volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
+        - name: pgp-bot-key
+          secret:
+            secretName: pgp-bot-key
+    - name: ci-search-deployment
+      always_run: false
+      decorate: true
+      run_if_changed: "github/ci/services/ci-search.*"
+      branches:
+      - ^master$
+      labels:
+        preset-docker-mirror-proxy: "true"
+      skip_report: false
+      spec:
+        securityContext:
+          runAsUser: 0
+        containers:
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
+          env:
+          - name: GITHUB_TOKEN
+            value: /etc/github/oauth
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - |
+              # install bazelisk
+              curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64
+              chmod +x ./bazelisk && mv ./bazelisk /usr/local/bin/bazelisk
+
+              # install yq
+              curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+              chmod +x ./yq && mv ./yq /usr/local/bin/yq
+
+              # unencrypt secrets
+              target_dir=$(mktemp -d)
+              git clone https://kubevirt-bot:$(cat ${GITHUB_TOKEN})@github.com/kubevirt/secrets ${target_dir}
+              gpg --allow-secret-key-import --import /etc/pgp/token
+              gpg --decrypt ${target_dir}/secrets.tar.asc > secrets.tar
+              tar -xvf secrets.tar
+
+              # put in place kubeconfig
+              yq r main.yml 'kubeconfig' > ${target_dir}/kubeconfig
+              export KUBECONFIG=${target_dir}/kubeconfig
+
+              # put in place bugzilla api key
+              yq r main.yml 'bugzilla.apiKey' > github/ci/services/ci-search/secrets/production/bugzilla-credentials
+
+              ./github/ci/services/ci-search/hack/deploy.sh production
           resources:
             requests:
               memory: "8Gi"
