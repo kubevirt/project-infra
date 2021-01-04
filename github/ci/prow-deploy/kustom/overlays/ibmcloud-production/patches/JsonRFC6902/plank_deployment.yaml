@@ -1,6 +1,3 @@
 - op: add
-  path: /spec/template/spec/containers/0/args/1
-  value: --github-endpoint=http://ghproxy
-- op: add
-  path: /spec/template/spec/containers/0/args/1
-  value: --github-endpoint=https://api.github.com
+  path: /spec/template/spec/containers/0/resources
+  value: {"requests": {"memory": "1Gi"}, "limits": {"memory": "1Gi"}}

@@ -15,6 +15,7 @@ patchesStrategicMerge:
   - patches/StrategicMerge/hook_deployment.yaml
   - patches/StrategicMerge/nginx-ingress.yaml
   - patches/StrategicMerge/deck_deployment_replicas.yaml
+  - patches/StrategicMerge/plank_deployment_replicas.yaml
 
 patches:
   - target:
