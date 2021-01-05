@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "go_default_test",
+    srcs = ["e2e_test.go"],
+    deps = [
+        "//github/ci/services/common/k8s/pkg/client:go_default_library",
+        "//github/ci/services/common/k8s/pkg/portforwarder:go_default_library",
+        "//github/ci/services/common/k8s/pkg/wait:go_default_library",
+        "//vendor/github.com/onsi/ginkgo:go_default_library",
+        "//vendor/github.com/onsi/gomega:go_default_library",
+        "//vendor/k8s.io/client-go/kubernetes:go_default_library",
+    ],
+)

@@ -1,0 +1,34 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: search
+  namespace: ci-search
+spec:
+  template:
+    spec:
+      nodeSelector: null
+      tolerations: null
+      containers:
+      - name: web
+        image: registry.svc.ci.openshift.org/ci/ci-search:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 3Gi
+          limits:
+            memory: 8Gi
+        command:
+        - /usr/bin/search
+        - --v=5
+        - --debug-listen=localhost:6060
+        - --config=/etc/ci-search/config.yaml
+        - --interval=10m
+        - --path=/var/lib/ci-search/
+        - --deck-uri=https://prow.kubevirt.io
+        - --bugzilla-url=https://bugzilla.redhat.com/rest
+        - --bugzilla-search=OPEN version:4.7,4.6,4.5,4.4,4.3,4.2 product="Container Native Virtualization (CNV)" AND delta_ts>-2w
+        - --bugzilla-token-file=/etc/bugzilla/api
+      volumes:
+      - name: bugzilla-token
+        secret:
+          secretName: bugzilla-credentials

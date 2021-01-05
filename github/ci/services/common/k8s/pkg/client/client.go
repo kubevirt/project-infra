@@ -11,7 +11,7 @@ import (
 )
 
 func NewClientset() (*kubernetes.Clientset, error) {
-	config, err := getConfig()
+	config, err := GetConfig()
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,7 @@ func NewClientset() (*kubernetes.Clientset, error) {
 }
 
 func NewCertManagerClientset() (*certmanagerclientset.Clientset, error) {
-	config, err := getConfig()
+	config, err := GetConfig()
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func NewCertManagerClientset() (*certmanagerclientset.Clientset, error) {
 	return certmanagerclientset.NewForConfig(config)
 }
 
-func getConfig() (*restclient.Config, error) {
+func GetConfig() (*restclient.Config, error) {
 	usr, err := user.Current()
 	if err != nil {
 		return nil, err
