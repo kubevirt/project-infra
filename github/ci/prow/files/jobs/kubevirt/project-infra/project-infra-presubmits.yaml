@@ -160,9 +160,9 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    nodeSelector:
-      type: bare-metal-external
     spec:
+      nodeSelector:
+        type: bare-metal-external
       securityContext:
         runAsUser: 0
       containers:
@@ -214,10 +214,10 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    nodeSelector:
-      type: bare-metal-external
     skip_report: true
     spec:
+      nodeSelector:
+        type: bare-metal-external
       securityContext:
         runAsUser: 0
       containers:
