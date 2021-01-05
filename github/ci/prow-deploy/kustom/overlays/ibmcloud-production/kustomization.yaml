@@ -8,6 +8,8 @@ resources:
   # templated resources
   - resources/admin-rbac.yaml
 
+patchesStrategicMerge:
+  - patches/StrategicMerge/plank_deployment_replicas.yaml
 
 patches:
   - target:
