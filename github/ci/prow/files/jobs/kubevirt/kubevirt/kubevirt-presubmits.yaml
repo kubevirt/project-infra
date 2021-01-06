@@ -272,14 +272,14 @@ presubmits:
           hostPath:
             path: /dev/vfio/
             type: Directory
-  - name: pull-kubevirt-e2e-kind-1.17-sriov
+  - name: pull-kubevirt-e2e-kind-1.17-sriov-multi
     skip_branches:
     - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
-    always_run: true
-    optional: false
+      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni-multi
+    always_run: false
+    optional: true
     decorate: true
     decoration_config:
       timeout: 4h
@@ -289,11 +289,11 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      sriov-pod: "true"
+      #sriov-pod: "true" # we control this lane by extended resources (prow/sriov)
       rehearsal.allowed: "true"
     spec:
       nodeSelector:
-        hardwareSupport: sriov-nic
+        hardwareSupport: sriov-nic-multi
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -326,6 +326,9 @@ presubmits:
         resources:
           requests:
             memory: "29Gi"
+            prow/sriov: "1"
+          limits:
+            prow/sriov: "1"
         volumeMounts:
           #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
           - name: modules
