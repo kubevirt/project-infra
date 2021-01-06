@@ -272,6 +272,82 @@ presubmits:
           hostPath:
             path: /dev/vfio/
             type: Directory
+  - name: pull-kubevirt-e2e-kind-1.17-sriov
+    skip_branches:
+    - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 30m
+    max_concurrency: 10
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+      sriov-pod: "true"
+      rehearsal.allowed: "true"
+    spec:
+      nodeSelector:
+        hardwareSupport: sriov-nic
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: sriov-pod
+                  operator: In
+                  values:
+                  - "true"
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/bash"
+        - "-c"
+        - >
+            apt update &&
+            apt install gettext-base -y &&
+            wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz -nv -S &&
+            tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ &&
+            export PATH=/usr/local/go/bin:$PATH &&
+            export KUBEVIRT_PROVIDER=kind-k8s-sriov-1.17.0 &&
+            export TARGET=kind-k8s-sriov-1.17.0;
+            trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM;
+            automation/test.sh;
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "29Gi"
+        volumeMounts:
+          #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
+          - name: modules
+            mountPath: /lib/modules
+            readOnly: true
+          - name: cgroup
+            mountPath: /sys/fs/cgroup
+          - name: vfio
+            mountPath: /dev/vfio/
+      volumes:
+        - name: modules
+          hostPath:
+            path: /lib/modules
+            type: Directory
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: Directory
+        - name: vfio
+          hostPath:
+            path: /dev/vfio/
+            type: Directory
 
   - name: pull-kubevirt-check-tests-for-flakes
     skip_branches:
