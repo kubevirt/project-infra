@@ -14,7 +14,7 @@ spec:
       hostNetwork: true
       serviceAccountName: multus
       nodeSelector:
-        sriov-nic: 'true'
+        sriov-nic-multi: 'true'
       containers:
         - name: kube-sriov-passthrough-cni-multi
           command: ["install-plugin"]
