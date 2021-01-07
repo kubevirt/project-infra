@@ -59,6 +59,34 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-workflow-k8s.sh"
+    - name: pull-cluster-network-addons-operator-unit-test
+      branches:
+        - release-0.44
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "4Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.unit-test.sh"
     - name: pull-e2e-cluster-network-addons-operator-kubemacpool-functests
       branches:
         - release-0.44
