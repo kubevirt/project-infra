@@ -336,7 +336,7 @@ periodics:
         secret:
           secretName: gcs
 # FIXME: temporary job, to be deleted when the releases are done by prow
-- name: periodic-kubevirt-update-release-0.35-testing-manifests
+- name: periodic-kubevirt-update-release-0.36-testing-manifests
   cluster: ibm-prow-jobs
   cron: "45 0 * * *"
   decorate: true
@@ -364,7 +364,7 @@ periodics:
           - "/bin/sh"
           - "-c"
           - >
-            release_xy="0.35" &&
+            release_xy="0.36" &&
             export release_version="$(
                 curl --fail -s https://api.github.com/repos/kubevirt/kubevirt/releases |
                 jq -r '(.[].tag_name | select( test("-(rc|alpha|beta)") | not ) )' |
