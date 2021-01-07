@@ -12,7 +12,7 @@ function main() {
             log "Received ADD command. CNI_ARGS: $CNI_ARGS"
             setup_netns
             # add_veth_pair
-            flip_vfs_to_default_drivers
+            reset_vfs
             setns_sriov_ifs
             gen_result_config
             ;;
@@ -23,13 +23,12 @@ function main() {
     esac
 }
 
-function flip_vfs_to_default_drivers() {
+function reset_vfs() {
     for file in $(find /sys/devices/ -name *sriov_totalvfs*); do
         pfroot=$(dirname $file)
 
-        # flip all available VFs to default driver
+        # reset all available VFs to zero
         echo 0 > $pfroot/sriov_numvfs
-        cat $file > $pfroot/sriov_numvfs
     done
 }
 
