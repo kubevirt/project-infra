@@ -19,7 +19,7 @@
     ARTIFACTS_DIR: "{{ artifacts_dir }}"
     KUBECTL_CMD: "{{ kubectl_prow }}"
     KUBEVIRT_PROVIDER: "{{ kubevirtci_provider }}"
-    KUBEVIRTCI_TAG: "{{ kubevirt_tag }}"
+    KUBEVIRTCI_TAG: "{{ kubevirtci_tag }}"
 
   loop: "{{ resource_list.resources }}"
   loop_control:

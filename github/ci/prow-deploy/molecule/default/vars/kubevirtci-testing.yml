@@ -9,7 +9,7 @@ kubevirtci_provider: k8s-1.19
 kubevirt_num_nodes: 2
 kubevirt_num_secondary_nics: 1
 kubevirt_memory_size: 16384
-kubevirt_tag: 2101060913-2e49157
+kubevirtci_tag: 2101060913-2e49157
 kubeconfig_path: '{{ kubevirtci_dir }}/_ci-configs/{{ kubevirtci_provider }}/.kubeconfig'
 secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/kubevirtci-testing/secrets/'
 
@@ -18,4 +18,4 @@ shell_environment:
   KUBEVIRT_NUM_NODES: "{{ kubevirt_num_nodes }}"
   KUBEVIRT_NUM_SECONDARY_NICS: "{{ kubevirt_num_secondary_nics }}"
   KUBEVIRT_MEMORY_SIZE: "{{ kubevirt_memory_size }}"
-  KUBEVIRTCI_TAG: "{{ kubevirt_tag }}"
+  KUBEVIRTCI_TAG: "{{ kubevirtci_tag }}"
