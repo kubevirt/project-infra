@@ -209,7 +209,7 @@ presubmits:
           secretName: gcs
   - name: cert-manager-deploy-test
     always_run: false
-    run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|vendor/.*"
+    run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|vendor/.*|WORKSPACE"
     decorate: true
     labels:
       preset-dind-enabled: "true"
@@ -237,8 +237,6 @@ presubmits:
 
               # create test cluster
               kind create cluster
-              kind get kubeconfig > $(pwd)/kubeconfig
-              export KUBECONFIG=$(pwd)/kubeconfig
 
               ./github/ci/services/cert-manager/hack/deploy.sh testing
 
@@ -253,7 +251,7 @@ presubmits:
               memory: "16Gi"
   - name: ci-search-deploy-test
     always_run: false
-    run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*|vendor/.*"
+    run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*|vendor/.*|WORKSPACE"
     decorate: true
     labels:
       preset-dind-enabled: "true"
@@ -281,8 +279,6 @@ presubmits:
 
               # create test cluster
               kind create cluster
-              kind get kubeconfig > $(pwd)/kubeconfig
-              export KUBECONFIG=$(pwd)/kubeconfig
 
               ./github/ci/services/ci-search/hack/deploy.sh testing
 
