@@ -307,19 +307,19 @@ periodics:
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - >
-            release_xy="0.34" &&
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
+          - |
+            set -e
+            release_xy="0.34"
             export release_version="$(
                 curl --fail -s https://api.github.com/repos/kubevirt/kubevirt/releases |
                 jq -r '(.[].tag_name | select( test("-(rc|alpha|beta)") | not ) )' |
                 sort -rV | grep "v$release_xy" | head -1
-            )" &&
-            git checkout "${release_version}" &&
-            make manifests &&
+            )"
+            git checkout "${release_version}"
+            make manifests
+            gsutil -m rm -r gs://kubevirt-prow/devel/release/kubevirt/kubevirt/${release_version}
             gsutil cp -r _out/manifests/testing gs://kubevirt-prow/devel/release/kubevirt/kubevirt/${release_version}/manifests/
         # docker-in-docker needs privileged mode
         securityContext:
@@ -336,7 +336,7 @@ periodics:
         secret:
           secretName: gcs
 # FIXME: temporary job, to be deleted when the releases are done by prow
-- name: periodic-kubevirt-update-release-0.35-testing-manifests
+- name: periodic-kubevirt-update-release-0.36-testing-manifests
   cluster: ibm-prow-jobs
   cron: "45 0 * * *"
   decorate: true
@@ -359,19 +359,19 @@ periodics:
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - >
-            release_xy="0.35" &&
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
+          - |
+            set -e
+            release_xy="0.36"
             export release_version="$(
                 curl --fail -s https://api.github.com/repos/kubevirt/kubevirt/releases |
                 jq -r '(.[].tag_name | select( test("-(rc|alpha|beta)") | not ) )' |
                 sort -rV | grep "v$release_xy" | head -1
-            )" &&
-            git checkout "${release_version}" &&
-            make manifests &&
+            )"
+            git checkout "${release_version}"
+            make manifests
+            gsutil -m rm -r gs://kubevirt-prow/devel/release/kubevirt/kubevirt/${release_version}
             gsutil cp -r _out/manifests/testing gs://kubevirt-prow/devel/release/kubevirt/kubevirt/${release_version}/manifests/
         # docker-in-docker needs privileged mode
         securityContext:
