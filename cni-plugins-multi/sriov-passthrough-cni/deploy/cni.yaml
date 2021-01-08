@@ -18,8 +18,9 @@ spec:
       containers:
         - name: kube-sriov-passthrough-cni-multi
           command: ["install-plugin"]
-          args: ["/host/opt/cni/bin"]
-          image: 'quay.io/oshoval/prow_cni_multi:latest'
+          args: ["/host/opt/cni/bin", "/host/etc/cni/net.d"]
+          image: 'quay.io/oshoval/prow_cni_multi:test'
+          imagePullPolicy: "Always"
           resources:
             requests:
               cpu: "100m"
@@ -30,9 +31,14 @@ spec:
           securityContext:
             privileged: true
           volumeMounts:
+            - name: cni
+              mountPath: /host/etc/cni/net.d
             - name: cnibin
               mountPath: /host/opt/cni/bin
       volumes:
+        - name: cni
+          hostPath:
+            path: /etc/cni/net.d
         - name: cnibin
           hostPath:
             path: /opt/cni/bin

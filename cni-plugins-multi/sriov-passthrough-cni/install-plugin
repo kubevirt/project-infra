@@ -1,15 +1,20 @@
 #!/bin/bash -xe
 
 # Usage:
-# ./install_plugin CNI_BIN_DST
+# ./install_plugin CNI_BIN_DST CNI_CONF_DST
 
 readonly CNI_BIN_SRC=/plugin-src/sriov-passthrough-cni-multi
+readonly CNI_CONF_SRC=/plugin-src/90-sriov-passthrough-cni-multi.conf
 
 function install_plugin() {
     local cni_bin_dst="${1:?}"
+    local cni_conf_dst="${2:?}"
 
     cp "$CNI_BIN_SRC" "$cni_bin_dst"
     chmod 755 "$cni_bin_dst"
+
+    cp "$CNI_CONF_SRC" "$cni_conf_dst"
+    chmod 644 "$cni_conf_dst"
 }
 
 install_plugin "$@"
