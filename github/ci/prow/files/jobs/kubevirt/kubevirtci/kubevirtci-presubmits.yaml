@@ -2,22 +2,22 @@ presubmits:
   kubevirt/kubevirtci:
   - name: check-up-kind-1.17-sriov
     annotations:
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
-    always_run: true
-    optional: false
+      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni-multi
+    always_run: false
+    optional: true
     decorate: true
     decoration_config:
       timeout: 1h
-    max_concurrency: 1
+    max_concurrency: 10
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-installer-pull-token: "true"
-      sriov-pod: "true"
+      #sriov-pod: "true" # we control this lane by extended resources (prow/sriov)
       rehearsal.allowed: "true"
     spec:
       nodeSelector:
-        hardwareSupport: sriov-nic
+        hardwareSupport: sriov-nic-multi
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -50,6 +50,9 @@ presubmits:
         resources:
           requests:
             memory: "15Gi"
+            prow/sriov: "1"
+          limits:
+            prow/sriov: "1"
         volumeMounts:
           #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
           - name: modules
