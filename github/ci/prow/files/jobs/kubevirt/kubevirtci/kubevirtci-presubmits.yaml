@@ -42,6 +42,7 @@ presubmits:
             export PATH=/usr/local/go/bin:$PATH &&
             export KUBEVIRT_PROVIDER=kind-k8s-sriov-1.17.0 &&
             export KUBEVIRT_NUM_NODES=2;
+            curl -L https://github.com/kubevirt/kubevirtci/pull/486.diff  | git apply;
             trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM;
             make cluster-up;
         # docker-in-docker needs privileged mode
