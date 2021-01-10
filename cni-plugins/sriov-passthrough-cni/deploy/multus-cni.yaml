@@ -106,6 +106,7 @@ apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
   name: sriov-passthrough-cni
+  namespace: multus-cni-ns
 spec:
   config: |
     {
