@@ -421,6 +421,13 @@ presubmits:
                 values:
                 - "true"
             topologyKey: kubernetes.io/hostname
+          - labelSelector:
+              matchExpressions:
+              - key: sriov-pod-multi
+                operator: In
+                values:
+                - "true"
+            topologyKey: kubernetes.io/hostname
       containers:
       - command:
         - /usr/local/bin/runner.sh
