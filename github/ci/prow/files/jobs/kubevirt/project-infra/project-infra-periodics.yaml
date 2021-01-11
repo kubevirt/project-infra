@@ -204,9 +204,21 @@ periodics:
         value: kubevirt-bot
       - name: GIT_COMMITTER_EMAIL
         value: rmohr+kubebot@redhat.com
-      command: [ "/bin/sh", "-c" ]
+      command:
+        - "autoowners"
       args:
-      - autoowners --dry-run=false --self-approve=true --github-login=kubevirt-bot --github-endpoint=http://ghproxy --github-endpoint=https://api.github.com --org=kubevirt --repo=project-infra --target-dir=. --target-subdir=github/ci/prow/files --config-subdir=jobs --github-token-path=/etc/github/oauth --git-signoff=true
+      - --dry-run=false
+      - --self-approve=true
+      - --github-login=kubevirt-bot
+      - --github-endpoint=http://ghproxy
+      - --github-endpoint=https://api.github.com
+      - --org=kubevirt
+      - --repo=project-infra
+      - --target-dir=.
+      - --target-subdir=github/ci/prow/files
+      - --config-subdir=jobs
+      - --github-token-path=/etc/github/oauth
+      - --git-signoff=true
       volumeMounts:
       - name: token
         mountPath: /etc/github
