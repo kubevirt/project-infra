@@ -385,6 +385,10 @@ presubmits:
                 operator: In
                 values:
                 - "true"
+              - key: sriov-pod-multi
+                operator: In
+                values:
+                - "true"
             topologyKey: kubernetes.io/hostname
       containers:
       - command:
