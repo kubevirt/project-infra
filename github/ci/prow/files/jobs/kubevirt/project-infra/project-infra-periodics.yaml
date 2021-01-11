@@ -192,7 +192,7 @@ periodics:
     work_dir: true
   spec:
     containers:
-    - image: quay.io/kubevirtci/autoowners@sha256:2e430feb766966faa21233176fb095971dc869faeb60fba5f517230aa2820484
+    - image: quay.io/kubevirtci/autoowners@sha256:8e0d1d3171afcda91e2948e361ba19b637578af17a09b78d04b09aa424e38828
       env:
       - name: GIT_ASKPASS
         value: "./hack/git-askpass.sh"
