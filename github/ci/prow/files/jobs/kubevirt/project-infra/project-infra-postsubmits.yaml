@@ -293,7 +293,7 @@ postsubmits:
               yq r main.yml 'kubeconfig' > ~/.kube/config
 
               # put in place bugzilla api key
-              yq r main.yml 'bugzilla.apiKey' > github/ci/services/ci-search/secrets/production/bugzilla-credentials
+              yq r main.yml 'bugzilla.apiKey' > github/ci/services/ci-search/secrets/production/bugzilla-credentials/api
 
               ./github/ci/services/ci-search/hack/deploy.sh production
           resources:
