@@ -28,6 +28,8 @@ spec:
         - --bugzilla-url=https://bugzilla.redhat.com/rest
         - --bugzilla-search=OPEN version:4.7,4.6,4.5,4.4,4.3,4.2 product="Container Native Virtualization (CNV)" AND delta_ts>-2w
         - --bugzilla-token-file=/etc/bugzilla/api
+      securityContext:
+        fsGroup: 1000
       volumes:
       - name: bugzilla-token
         secret:
