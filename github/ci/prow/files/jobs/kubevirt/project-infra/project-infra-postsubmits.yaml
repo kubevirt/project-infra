@@ -204,7 +204,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: kubevirtci/bootstrap:v20201119-a5880e0
+        - image: kubevirtci/bootstrap:v20210112-b29dfd7
           env:
           - name: GITHUB_TOKEN
             value: /etc/github/oauth
@@ -213,10 +213,6 @@ postsubmits:
             - "/bin/bash"
             - "-c"
             - |
-              # install bazelisk
-              curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64
-              chmod +x ./bazelisk && mv ./bazelisk /usr/local/bin/bazelisk
-
               # install yq
               curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
               chmod +x ./yq && mv ./yq /usr/local/bin/yq
@@ -264,7 +260,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: kubevirtci/bootstrap:v20201119-a5880e0
+        - image: kubevirtci/bootstrap:v20210112-b29dfd7
           env:
           - name: GITHUB_TOKEN
             value: /etc/github/oauth
@@ -273,10 +269,6 @@ postsubmits:
             - "/bin/bash"
             - "-c"
             - |
-              # install bazelisk
-              curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64
-              chmod +x ./bazelisk && mv ./bazelisk /usr/local/bin/bazelisk
-
               # install yq
               curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
               chmod +x ./yq && mv ./yq /usr/local/bin/yq
