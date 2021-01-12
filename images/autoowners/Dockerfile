@@ -7,18 +7,10 @@ RUN mkdir -p /go/src/github.com/openshift/ && \
     cd ci-tools/ && \
     export GOPROXY=off && \
     export GOFLAGS=-mod=vendor && \
-    go install ./cmd/autoowners/...
+    env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/autoowners ./cmd/autoowners/...
 
-FROM centos:7
+FROM gcr.io/k8s-prow/git:v20200605-44f6c96
 
 COPY --from=builder /go/bin/autoowners /usr/bin/autoowners
-
-RUN yum install -y git
-
-# change ownership to allow access
-# when selinux is enabled
-RUN mkdir -p /etc/github && \
-    chgrp -R 0 /etc/github && \
-    chmod -R g+rwX /etc/github
 
 ENTRYPOINT ["/usr/bin/autoowners"]
