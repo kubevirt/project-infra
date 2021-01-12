@@ -16,5 +16,12 @@ FROM gcr.io/k8s-testimages/bootstrap:v20201106-b01d6e7
 
 RUN cp /usr/local/bin/runner.sh /usr/local/bin/runner_orig.sh
 
+RUN  curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 && \
+     chmod +x ./bazelisk && mv ./bazelisk /usr/local/bin/bazelisk && \
+     cd /usr/local/bin && ln -s bazelisk bazel
+
+# Cache the most commonly used bazel versions inside the image
+RUN USE_BAZEL_VERSION=3.4.1 bazel version
+
 COPY "runner.sh" \
   "/usr/local/bin/"
