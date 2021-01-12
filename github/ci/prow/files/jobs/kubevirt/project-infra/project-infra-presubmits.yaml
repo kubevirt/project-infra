@@ -208,7 +208,7 @@ presubmits:
         secret:
           secretName: gcs
   - name: cert-manager-deploy-test
-    always_run: false
+    optional: false
     run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|vendor/.*|WORKSPACE"
     decorate: true
     labels:
@@ -245,7 +245,7 @@ presubmits:
             limits:
               memory: "16Gi"
   - name: ci-search-deploy-test
-    always_run: false
+    optional: false
     run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*|vendor/.*|WORKSPACE"
     decorate: true
     labels:
