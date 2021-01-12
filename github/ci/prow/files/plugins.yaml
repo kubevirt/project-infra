@@ -290,6 +290,12 @@ plugins:
     - lgtm
     - approve
 
+  kubevirt/user-guide:
+  - approve
+  - lgtm
+  - owners-label
+  - trigger
+
 external_plugins:
   kubevirt:
   - name: needs-rebase
@@ -379,6 +385,7 @@ approve:
   - kubevirt/ssp-operator
   - kubevirt/must-gather
   - kubevirt/csi-driver
+  - kubevirt/user-guide
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -415,6 +422,7 @@ lgtm:
   - kubevirt/ssp-operator
   - kubevirt/must-gather
   - kubevirt/csi-driver
+  - kubevirt/user-guide
   review_acts_as_lgtm: true
 
 override:

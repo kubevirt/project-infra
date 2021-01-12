@@ -98,6 +98,7 @@ tide:
     kubevirt/csi-driver: squash
     kubevirt/ssp-operator: squash
     kubevirt/must-gather: squash
+    kubevirt/user-guide: squash
 
   queries:
   - repos:
@@ -111,6 +112,7 @@ tide:
     - kubevirt/katacoda-scenarios
     - kubevirt/demo
     - kubevirt/kubectl-virt-plugin
+    - kubevirt/user-guide
     labels:
     - lgtm
     - approved
@@ -285,15 +287,6 @@ branch-protection:
                   - continuous-integration/travis-ci/pr
             release-1.3:
               protect: true
-        user-guide:
-          branches:
-            master:
-              protect: true
-              required_pull_request_reviews:
-                dismiss_stale_reviews: true
-                required_approving_review_count: 1
-              required_status_checks:
-                strict: true
         cluster-network-addons-operator:
           branches:
             master:
