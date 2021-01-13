@@ -214,7 +214,6 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    skip_report: true
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -251,7 +250,6 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    skip_report: true
     spec:
       nodeSelector:
         type: bare-metal-external
