@@ -261,6 +261,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+  annotations:
+    testgrid-dashboards: kubevirt-periodics
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -387,3 +389,102 @@ periodics:
       - name: gcs
         secret:
           secretName: gcs
+- name: periodic-kubevirt-e2e-k8s-latest
+  annotations:
+    testgrid-dashboards: kubevirt-periodics
+  cron: "0 6,14,22 * * *"
+  decorate: true
+  decoration_config:
+    timeout: 7h
+    grace_period: 5m
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirt
+    base_ref: master
+    work_dir: true
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
+        command:
+          - |
+            /usr/local/bin/runner.sh \
+              /bin/sh -c \
+              "export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '1p') && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "29Gi"
+- name: periodic-kubevirt-e2e-k8s-prev
+  annotations:
+    testgrid-dashboards: kubevirt-periodics
+  cron: "0 6,14,22 * * *"
+  decorate: true
+  decoration_config:
+    timeout: 7h
+    grace_period: 5m
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirt
+    base_ref: master
+    work_dir: true
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
+        command:
+          - |
+            /usr/local/bin/runner.sh \
+              /bin/sh -c  \
+              "export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '2p') && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "29Gi"
+- name: periodic-kubevirt-e2e-k8s-prev-prev
+  annotations:
+    testgrid-dashboards: kubevirt-periodics
+  cron: "0 6,14,22 * * *"
+  decorate: true
+  decoration_config:
+    timeout: 7h
+    grace_period: 5m
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirt
+    base_ref: master
+    work_dir: true
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
+        command:
+          - |
+            /usr/local/bin/runner.sh \
+              /bin/sh -c \
+              "export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '3p') && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "29Gi"

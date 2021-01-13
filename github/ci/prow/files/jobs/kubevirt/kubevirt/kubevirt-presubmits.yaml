@@ -417,7 +417,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
       rehearsal.allowed: "true"
-      testgrid-dashboards: kubevirt-presubmits
     always_run: false
     skip_report: true
     optional: true
@@ -513,7 +512,6 @@ presubmits:
       - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
     always_run: false
     skip_report: true
     optional: true
