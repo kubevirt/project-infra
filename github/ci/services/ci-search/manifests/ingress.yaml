@@ -7,10 +7,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - ci-search.kubevirt.io
+    - search.ci.kubevirt.io
     secretName: ci-search-tls
   rules:
-  - host: ci-search.kubevirt.io
+  - host: search.ci.kubevirt.io
     http:
       paths:
       - path: /

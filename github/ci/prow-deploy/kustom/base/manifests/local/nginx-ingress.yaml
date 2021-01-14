@@ -7,12 +7,11 @@ metadata:
   namespace: default
 spec:
   ingressClassName: public-iks-k8s-nginx
-  # TLS section commented out until we have the secrets in place
-  #tls:
-  #- hosts:
-  #  - prow.kubevirt.io
+  tls:
+  - hosts:
+    - prow.ci.kubevirt.io
   rules:
-  - host: prow.kubevirt.io
+  - host: prow.ci.kubevirt.io
     http:
       paths:
       - path: /hook
@@ -37,12 +36,11 @@ metadata:
   namespace: default
 spec:
   ingressClassName: public-iks-k8s-nginx
-  # TLS section commented out until we have the secrets in place
-  #tls:
-  #- hosts:
-  #  - gcsweb.kubevirt.io
+  tls:
+  - hosts:
+    - gcsweb.ci.kubevirt.io
   rules:
-  - host: gcsweb.kubevirt.io
+  - host: gcsweb.ci.kubevirt.io
     http:
       paths:
       - path: /
