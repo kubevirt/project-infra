@@ -235,6 +235,13 @@ presubmits:
                   values:
                   - "true"
               topologyKey: kubernetes.io/hostname
+            - labelSelector:
+                matchExpressions:
+                - key: sriov-pod-multi
+                  operator: In
+                  values:
+                  - "true"
+              topologyKey: kubernetes.io/hostname
       containers:
       - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
