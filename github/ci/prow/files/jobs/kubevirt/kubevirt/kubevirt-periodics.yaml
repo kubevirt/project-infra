@@ -392,7 +392,7 @@ periodics:
 - name: periodic-kubevirt-e2e-k8s-latest
   annotations:
     testgrid-dashboards: kubevirt-periodics
-  cron: "0 6,14,22 * * *"
+  cron: "0 22 * * *"
   decorate: true
   decoration_config:
     timeout: 7h
@@ -425,7 +425,7 @@ periodics:
 - name: periodic-kubevirt-e2e-k8s-prev
   annotations:
     testgrid-dashboards: kubevirt-periodics
-  cron: "0 6,14,22 * * *"
+  cron: "0 22 * * *"
   decorate: true
   decoration_config:
     timeout: 7h
@@ -458,7 +458,7 @@ periodics:
 - name: periodic-kubevirt-e2e-k8s-prev-prev
   annotations:
     testgrid-dashboards: kubevirt-periodics
-  cron: "0 6,14,22 * * *"
+  cron: "0 22 * * *"
   decorate: true
   decoration_config:
     timeout: 7h
