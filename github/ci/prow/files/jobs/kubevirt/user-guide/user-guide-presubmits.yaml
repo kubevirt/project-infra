@@ -1,0 +1,21 @@
+---
+presubmits:
+  kubevirt/user-guide:
+    - name: user-guide-presubmit-build
+      decorate: true
+      always_run: true
+      skip_report: false
+      spec:
+        nodeSelector:
+          region: primary
+        containers:
+          - image: docker.io/library/python
+            command: ["/bin/sh", "-c"]
+            args: ["echo &&
+                    mkdir -p /opt/buildhome/python3 &&
+                    source /opt/buildhome/python3/bin/activate &&
+                    pip3 install mkdocs mkdocs-awesome-pages-plugin &&
+                    echo '*** BEGIN mkdocs.yml ***' &&
+                    cat /opt/build/repo/mkdocs.yml &&
+                    echo '*** END mkdocs.yml ***' &&
+                    mkdocs build -f mkdocs.yml -d site"]
