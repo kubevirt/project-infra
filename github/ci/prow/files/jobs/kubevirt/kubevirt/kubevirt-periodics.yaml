@@ -411,11 +411,11 @@ periodics:
       type: bare-metal-external
     containers:
       - image: kubevirtci/bootstrap:v20201119-a5880e0
-        command:
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
           - |
-            /usr/local/bin/runner.sh \
-              /bin/sh -c \
-              "export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '1p') && automation/test.sh"
+            export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '1p')
+            automation/test.sh
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
@@ -444,11 +444,11 @@ periodics:
       type: bare-metal-external
     containers:
       - image: kubevirtci/bootstrap:v20201119-a5880e0
-        command:
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
           - |
-            /usr/local/bin/runner.sh \
-              /bin/sh -c  \
-              "export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '2p') && automation/test.sh"
+            export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '1p')
+            automation/test.sh
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
@@ -477,11 +477,11 @@ periodics:
       type: bare-metal-external
     containers:
       - image: kubevirtci/bootstrap:v20201119-a5880e0
-        command:
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
           - |
-            /usr/local/bin/runner.sh \
-              /bin/sh -c \
-              "export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '3p') && automation/test.sh"
+            export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '1p')
+            automation/test.sh
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
