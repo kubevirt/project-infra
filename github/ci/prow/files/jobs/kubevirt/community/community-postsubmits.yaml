@@ -1,0 +1,43 @@
+postsubmits:
+  kubevirt/community:
+    - name: postsubmit-community-update-kubevirt-devstats-repo-sql
+      branches:
+        - master
+      cluster: ibm-prow-jobs
+      always_run: false
+      run_if_changed: "sigs.yaml"
+      extra_refs:
+        - org: kubevirt
+          repo: project-infra
+          base_ref: master
+        - org: cncf
+          repo: devstats
+          base_ref: master
+      decorate: true
+      spec:
+        containers:
+          - image: kubevirt/builder@sha256:e6a76ec71f2de87c3bc648bae87ab43a113540bf57da69f07f76bd0edfd500ab
+            env:
+              - name: GIT_ASKPASS
+                value: /go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh
+            command: [ "/bin/sh" , "-c" ]
+            args:
+              - |
+                set -e
+                REPO_DIR=$(cd ../../cncf/devstats && pwd)
+                TARGET_DIR=$REPO_DIR/scripts/kubevirt/
+                mkdir -p $TARGET_DIR
+                pip3 install ruamel.yaml
+                ../project-infra/hack/git-pr.sh -c "python3 $(pwd)/hack/generate-devstats-repo-sql.py --repo-groups-sql $TARGET_DIR/repo_groups.sql" -p $REPO_DIR -o cncf -r devstats -b update-kubevirt-devstats-repo-sql
+            volumeMounts:
+              - name: token
+                mountPath: /etc/github
+            resources:
+              requests:
+                memory: "1Gi"
+              limits:
+                memory: "1Gi"
+        volumes:
+          - name: token
+            secret:
+              secretName: oauth-token
