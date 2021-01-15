@@ -10,7 +10,7 @@ import (
 	"k8s.io/test-infra/prow/config"
 	"k8s.io/test-infra/prow/pluginhelp"
 
-	"kubevirt.io/project-infra/external-plugins/rehearse/handler"
+	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/handler"
 
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/rest"
@@ -23,7 +23,7 @@ import (
 	"k8s.io/test-infra/prow/interrupts"
 	"k8s.io/test-infra/prow/pluginhelp/externalplugins"
 
-	"kubevirt.io/project-infra/external-plugins/rehearse/server"
+	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/server"
 )
 
 type options struct {

@@ -12,7 +12,7 @@ go_library(
         "//vendor/k8s.io/test-infra/prow/config:go_default_library",
         "//vendor/k8s.io/test-infra/prow/git/v2:go_default_library",
         "//vendor/k8s.io/test-infra/prow/github:go_default_library",
-        "@io_k8s_test_infra//prow/pjutil:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/pjutil:go_default_library",
     ],
 )
 
@@ -31,7 +31,7 @@ go_test(
         "//vendor/k8s.io/api/core/v1:go_default_library",
         "//vendor/k8s.io/test-infra/prow/apis/prowjobs/v1:go_default_library",
         "//vendor/k8s.io/test-infra/prow/config:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/git/localgit:go_default_library",
         "//vendor/k8s.io/test-infra/prow/git/v2:go_default_library",
-        "@io_k8s_test_infra//prow/git/localgit:go_default_library",
     ],
 )

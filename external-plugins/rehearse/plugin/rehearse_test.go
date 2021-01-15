@@ -3,7 +3,7 @@ package main_test
 import (
 	"encoding/json"
 
-	"kubevirt.io/project-infra/external-plugins/rehearse/handler"
+	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/handler"
 
 	"k8s.io/client-go/testing"
 	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
