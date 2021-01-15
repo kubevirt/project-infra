@@ -327,3 +327,19 @@ presubmits:
               memory: "16Gi"
             limits:
               memory: "16Gi"
+  - name: pull-project-infra-check-testgrid-config
+    run_if_changed: '^(github/ci/prow/files/jobs/.*)|(github/ci/testgrid/gen-config\.yaml)$'
+    decorate: true
+    annotations:
+      testgrid-create-test-group: "false"
+    spec:
+      containers:
+      - image: gcr.io/k8s-prow/transfigure
+        command:
+        - /transfigure.sh
+        args:
+        - test
+        - github/ci/prow/files/config.yaml
+        - github/ci/prow/files/jobs
+        - github/ci/gen-config.yaml
+        - config/testgrids/kubevirt

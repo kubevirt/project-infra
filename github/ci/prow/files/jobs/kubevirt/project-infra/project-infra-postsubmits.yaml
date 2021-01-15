@@ -334,3 +334,28 @@ postsubmits:
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
+    - name: post-project-infra-upload-testgrid-config
+      run_if_changed: '^(github/ci/prow/files/jobs/.*)|(github/ci/testgrid/gen-config\.yaml)$'
+      branches:
+      - master
+      decorate: true
+      annotations:
+        testgrid-dashboards: kubevirt
+      spec:
+        containers:
+        - image: gcr.io/k8s-prow/transfigure
+          command:
+          - /transfigure.sh
+          args:
+          - /etc/github/oauth
+          - github/ci/prow/files/config.yaml
+          - github/ci/prow/files/jobs
+          - github/ci/gen-config.yaml
+          - config/testgrids/kubevirt
+          volumeMounts:
+          - name: token
+            mountPath: /etc/github
+        volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
