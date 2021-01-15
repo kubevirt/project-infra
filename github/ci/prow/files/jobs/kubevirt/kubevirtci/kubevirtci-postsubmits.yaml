@@ -9,11 +9,11 @@ postsubmits:
       extra_refs:
       - org: kubevirt
         repo: project-infra
-        base_ref: master   
+        base_ref: master
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror: "true"
-        preset-kubevirtci-docker-credential: "true"
+        preset-kubevirtci-quay-credential: "true"
       spec:
         nodeSelector:
           type: bare-metal-external
@@ -36,7 +36,7 @@ postsubmits:
           - "/bin/bash"
           - "-c"
           - >
-            cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin &&
+            cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io &&
             ./publish.sh &&
             echo "$(git tag --points-at HEAD | head -1)" > latest &&
             gsutil cp ./latest gs://kubevirt-prow/release/kubevirt/kubevirtci/latest
