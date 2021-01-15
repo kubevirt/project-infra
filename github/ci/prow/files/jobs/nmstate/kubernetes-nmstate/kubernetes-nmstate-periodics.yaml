@@ -1,6 +1,8 @@
 periodics:
 - name: periodic-publish-knmstate-flakefinder-weekly-report
   cron: "5 1 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   spec:
     nodeSelector:
@@ -36,6 +38,8 @@ periodics:
         secretName: gcs
 - name: periodic-publish-knmstate-flakefinder-daily-report
   cron: "45 0 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   spec:
     nodeSelector:
@@ -71,6 +75,8 @@ periodics:
         secretName: gcs
 - name: periodic-publish-knmstate-flakefinder-four-weekly-report
   interval: 168h
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   spec:
     nodeSelector:

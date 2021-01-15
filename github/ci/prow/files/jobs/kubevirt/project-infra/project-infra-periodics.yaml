@@ -2,6 +2,8 @@ periodics:
 - name: periodic-project-infra-retester
   interval: 1h  # Retest at most 1 PR every hour, which should not DOS the queue.
   decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
   spec:
     containers:
     - image: gcr.io/k8s-prow/commenter:v20200623-9f5410055c
@@ -40,6 +42,8 @@ periodics:
         secretName:  commenter-oauth-token
 - name: periodic-test-infra-close
   interval: 1h
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   spec:
     nodeSelector:
@@ -75,6 +79,8 @@ periodics:
 
 - name: periodic-test-infra-close-build-watcher-triage
   interval: 1h
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   spec:
     nodeSelector:
@@ -109,6 +115,8 @@ periodics:
 
 - name: periodic-test-infra-rotten
   interval: 1h
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   spec:
     nodeSelector:
@@ -147,6 +155,8 @@ periodics:
 
 - name: periodic-test-infra-stale
   interval: 1h
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   spec:
     nodeSelector:
@@ -184,6 +194,8 @@ periodics:
         secretName: oauth-token
 - name: periodic-project-infra-autoowners
   interval: 24h
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   extra_refs:
   - org: kubevirt
@@ -220,6 +232,8 @@ periodics:
         secretName: oauth-token
 - name: periodic-update-flakefinder-indexpage
   interval: 24h
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   spec:
     nodeSelector:
@@ -246,6 +260,8 @@ periodics:
 - name: periodic-kubevirt-mirror-uploader
   cron: "05 7 * * *"
   max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -299,6 +315,8 @@ periodics:
 - name: periodic-kubevirtci-cluster-patchversion-updater
   interval: 24h
   max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -340,6 +358,8 @@ periodics:
 - name: periodic-kubevirtci-cluster-minorversion-updater
   interval: 24h
   max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   decoration_config:
     timeout: 1h

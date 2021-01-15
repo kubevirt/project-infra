@@ -4,6 +4,8 @@ postsubmits:
       skip_branches:
         - gh-pages
       always_run: true
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       extra_refs:
@@ -44,6 +46,8 @@ postsubmits:
               secretName: oauth-token
 
     - name: release-kubernetes-nmstate
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       labels:

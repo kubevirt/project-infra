@@ -201,7 +201,7 @@ presubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-  - name: prow-deploy-test
+  - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/.*|github/ci/prow/files/.*"
     decorate: true
@@ -255,7 +255,7 @@ presubmits:
       - name: gcs
         secret:
           secretName: gcs
-  - name: cert-manager-deploy-test
+  - name: pull-project-infra-cert-manager-deploy-test
     optional: false
     run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|vendor/.*|WORKSPACE"
     decorate: true
@@ -291,7 +291,7 @@ presubmits:
               memory: "16Gi"
             limits:
               memory: "16Gi"
-  - name: ci-search-deploy-test
+  - name: pull-project-infra-ci-search-deploy-test
     optional: false
     run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*|vendor/.*|WORKSPACE"
     decorate: true
@@ -343,3 +343,15 @@ presubmits:
         - github/ci/prow/files/jobs
         - github/ci/testgrid/gen-config.yaml
         - config/testgrids/kubevirt
+        volumeMounts:
+        # aiming to prevent error:
+        # FATAL: $USER is not set, and unable to look up name of current user: (error: 0): Success
+        # https://cs.opensource.google/bazel/bazel/+/master:src/main/cpp/blaze_util_posix.cc;l=751;drc=759170fc56c34356a46fb35ab1f108c8535d861f
+        - name: passwd
+          mountPath: /etc/passwd
+          readOnly: true
+      volumes:
+      - name: passwd
+        hostPath:
+          path: /etc/passwd
+          type: File

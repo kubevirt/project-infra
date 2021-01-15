@@ -3,6 +3,8 @@ postsubmits:
     - name: publish-hco-test-utils-image
       always_run: false
       run_if_changed: "tests/build/.*"
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       labels:

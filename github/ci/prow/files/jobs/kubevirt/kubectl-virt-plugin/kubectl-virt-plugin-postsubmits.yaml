@@ -5,6 +5,8 @@ postsubmits:
       - master
       always_run: false
       run_if_changed: "images/.*"
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       labels:

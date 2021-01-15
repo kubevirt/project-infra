@@ -2,6 +2,8 @@ periodics:
 - name: periodic-hco-push-nightly-build-master
   cron: "2 2 * * *"
   decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
   decoration_config:
     timeout: 1h
     grace_period: 5m

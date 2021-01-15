@@ -2,6 +2,8 @@ periodics:
 - name: periodic-kubevirt-flakefinder-hourly-rolling-window-report
   cron: "5 * * * *"
   decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
   spec:
     nodeSelector:
       type: vm
@@ -36,6 +38,8 @@ periodics:
 - name: periodic-publish-kubevirt-flakefinder-weekly-report
   cron: "45 0 * * *"
   decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
   spec:
     nodeSelector:
       type: vm
@@ -69,6 +73,8 @@ periodics:
 - name: periodic-publish-kubevirt-flakefinder-daily-report
   cron: "25 0 * * *"
   decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
   spec:
     nodeSelector:
       type: vm
@@ -102,6 +108,8 @@ periodics:
 - name: periodic-publish-kubevirt-flakefinder-four-weekly-report
   interval: 168h
   decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
   spec:
     nodeSelector:
       type: vm
@@ -135,6 +143,8 @@ periodics:
 - name: periodic-kubevirt-push-nightly-build-master
   cron: "2 1 * * *"
   decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -210,6 +220,8 @@ periodics:
   cluster: ibm-prow-jobs
   cron: "2 15 */7 * *"
   decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -254,6 +266,8 @@ periodics:
   cron: "30 2 * * *"
   decorate: true
   max_concurrency: 1
+  annotations:
+    testgrid-dashboards: kubevirt-periodics
   decoration_config:
     timeout: 7h
     grace_period: 5m
@@ -289,6 +303,8 @@ periodics:
 - name: periodic-kubevirt-update-release-0.34-testing-manifests
   cluster: ibm-prow-jobs
   cron: "45 0 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -341,6 +357,8 @@ periodics:
 - name: periodic-kubevirt-update-release-0.36-testing-manifests
   cluster: ibm-prow-jobs
   cron: "45 0 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -392,6 +410,7 @@ periodics:
 - name: periodic-kubevirt-e2e-k8s-latest
   annotations:
     testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
   cron: "0 22 * * *"
   decorate: true
   decoration_config:
@@ -406,6 +425,7 @@ periodics:
     repo: kubevirt
     base_ref: master
     work_dir: true
+  skip_report: true
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -425,6 +445,7 @@ periodics:
 - name: periodic-kubevirt-e2e-k8s-prev
   annotations:
     testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
   cron: "0 22 * * *"
   decorate: true
   decoration_config:
@@ -439,6 +460,7 @@ periodics:
     repo: kubevirt
     base_ref: master
     work_dir: true
+  skip_report: true
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -458,6 +480,7 @@ periodics:
 - name: periodic-kubevirt-e2e-k8s-prev-prev
   annotations:
     testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
   cron: "0 22 * * *"
   decorate: true
   decoration_config:
@@ -472,6 +495,7 @@ periodics:
     repo: kubevirt
     base_ref: master
     work_dir: true
+  skip_report: true
   spec:
     nodeSelector:
       type: bare-metal-external
