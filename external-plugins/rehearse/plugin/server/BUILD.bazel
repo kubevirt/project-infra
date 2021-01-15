@@ -5,5 +5,8 @@ go_library(
     srcs = ["eventsserver.go"],
     importpath = "kubevirt.io/project-infra/external-plugins/rehearse/plugin/server",
     visibility = ["//visibility:public"],
-    deps = ["//vendor/k8s.io/test-infra/prow/github:go_default_library"],
+    deps = [
+        "//external-plugins/rehearse/plugin/handler:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/github:go_default_library",
+    ],
 )

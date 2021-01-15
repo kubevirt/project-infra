@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"k8s.io/test-infra/prow/github"
-	"kubevirt.io/project-infra/external-plugins/rehearse/handler"
+	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/handler"
 )
 
 type GitHubEventsServer struct {

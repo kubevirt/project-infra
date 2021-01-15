@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"os"
 	"os/exec"
 	"reflect"
@@ -261,7 +263,7 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		rehearsalName := strings.Join([]string{"rehearsal", job.Spec.Job}, "-")
 		job.Spec.Job = rehearsalName
 		job.Spec.Context = rehearsalName
-		_, err := h.prowClient.Create(&job)
+		_, err := h.prowClient.Create(context.Background(), &job, metav1.CreateOptions{})
 		if err != nil {
 			log.WithError(err).Errorf("Failed to create prow job: %s", job.Spec.Job)
 		}

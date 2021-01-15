@@ -82,6 +82,8 @@ github.com/bazelbuild/buildtools/build
 github.com/bazelbuild/buildtools/tables
 # github.com/beorn7/perks v1.0.1
 github.com/beorn7/perks/quantile
+# github.com/bwmarrin/snowflake v0.0.0
+github.com/bwmarrin/snowflake
 # github.com/cespare/xxhash/v2 v2.1.1
 github.com/cespare/xxhash/v2
 # github.com/clarketm/json v1.13.4
@@ -266,6 +268,8 @@ github.com/prometheus/common/model
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
+# github.com/satori/go.uuid v1.2.0
+github.com/satori/go.uuid
 # github.com/shurcooL/githubv4 v0.0.0-20191102174205-af46314aec7b
 github.com/shurcooL/githubv4
 # github.com/shurcooL/graphql v0.0.0-20181231061246-d48a9a75455f
@@ -777,6 +781,7 @@ k8s.io/client-go/plugin/pkg/client/auth/openstack
 k8s.io/client-go/rest
 k8s.io/client-go/rest/watch
 k8s.io/client-go/restmapper
+k8s.io/client-go/testing
 k8s.io/client-go/third_party/forked/golang/template
 k8s.io/client-go/tools/auth
 k8s.io/client-go/tools/cache
@@ -819,17 +824,22 @@ k8s.io/test-infra/prow/bugzilla
 k8s.io/test-infra/prow/client/clientset/versioned
 k8s.io/test-infra/prow/client/clientset/versioned/scheme
 k8s.io/test-infra/prow/client/clientset/versioned/typed/prowjobs/v1
+k8s.io/test-infra/prow/client/clientset/versioned/typed/prowjobs/v1/fake
 k8s.io/test-infra/prow/clonerefs
 k8s.io/test-infra/prow/commentpruner
 k8s.io/test-infra/prow/config
 k8s.io/test-infra/prow/config/secret
+k8s.io/test-infra/prow/crier/reporters/github
 k8s.io/test-infra/prow/entrypoint
 k8s.io/test-infra/prow/flagutil
 k8s.io/test-infra/prow/gcsupload
 k8s.io/test-infra/prow/gerrit/client
 k8s.io/test-infra/prow/git
+k8s.io/test-infra/prow/git/localgit
 k8s.io/test-infra/prow/git/v2
 k8s.io/test-infra/prow/github
+k8s.io/test-infra/prow/github/fakegithub
+k8s.io/test-infra/prow/github/report
 k8s.io/test-infra/prow/initupload
 k8s.io/test-infra/prow/interrupts
 k8s.io/test-infra/prow/io
@@ -838,6 +848,7 @@ k8s.io/test-infra/prow/jira
 k8s.io/test-infra/prow/kube
 k8s.io/test-infra/prow/labels
 k8s.io/test-infra/prow/logrusutil
+k8s.io/test-infra/prow/pjutil
 k8s.io/test-infra/prow/pkg/layeredsets
 k8s.io/test-infra/prow/pluginhelp
 k8s.io/test-infra/prow/pluginhelp/externalplugins
@@ -881,6 +892,7 @@ sigs.k8s.io/controller-runtime/pkg/leaderelection
 sigs.k8s.io/controller-runtime/pkg/log
 sigs.k8s.io/controller-runtime/pkg/manager
 sigs.k8s.io/controller-runtime/pkg/metrics
+sigs.k8s.io/controller-runtime/pkg/reconcile
 sigs.k8s.io/controller-runtime/pkg/recorder
 sigs.k8s.io/controller-runtime/pkg/runtime/inject
 sigs.k8s.io/controller-runtime/pkg/scheme
