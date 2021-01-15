@@ -337,6 +337,10 @@ branch-protection:
                   # these are from OpenshiftCI!
                   - ci/prow/images
                   - ci/prow/openshift-e2e
+        community:
+          branches:
+            master:
+              protect: true
     k8snetworkplumbingwg:
       repos:
         kubemacpool:
