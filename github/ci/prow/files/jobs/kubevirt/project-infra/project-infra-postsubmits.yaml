@@ -350,7 +350,7 @@ postsubmits:
           - /etc/github/oauth
           - github/ci/prow/files/config.yaml
           - github/ci/prow/files/jobs
-          - github/ci/gen-config.yaml
+          - github/ci/testgrid/gen-config.yaml
           - config/testgrids/kubevirt
           volumeMounts:
           - name: token
