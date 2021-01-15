@@ -1,5 +1,5 @@
 # Test Collect configuration
-kubectl_prow: "{{ kubectl_exec }} -n {{ prowNamespace }}"
+kubectl_prow: "kubectl -n {{ prowNamespace }}"
 dump_resources:
   role:
     kind: Role

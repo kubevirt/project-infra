@@ -6,4 +6,4 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: local
+  storageClassName: standard

@@ -169,7 +169,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: kubevirtci/bootstrap:v20201119-a5880e0
+        - image: kubevirtci/bootstrap:v20210112-b29dfd7
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json

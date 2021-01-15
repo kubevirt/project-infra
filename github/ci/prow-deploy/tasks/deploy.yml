@@ -41,22 +41,19 @@
 
 - name: Launch deployment
   shell: |
-    /tmp/kustomize build overlays/{{ deploy_environment }} | {{ kubectl_exec }} apply -f -
+    /tmp/kustomize build overlays/{{ deploy_environment }} | kubectl apply -f -
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
-  environment: "{{ shell_environment }}"
 
 - name: Shallow Clone test-infra repo
   git:
     repo: https://github.com/kubernetes/test-infra.git
     dest: "{{ testinfra_dir }}"
-    depth: 1
-    refspec: "+refs/heads/master:refs/remotes/origin/master"
+    version: e88598c4a7f86e0564a2d8b46ce5f729247791e6
 
 - name: Bootstrap the full job config (this may take a few minutes)
-  when: bootstrap_full_config|bool
   shell: |
-    /tmp/bazelisk run //prow/cmd/config-bootstrapper -- \
+    /tmp/bazelisk run --jobs 4 //prow/cmd/config-bootstrapper -- \
         --dry-run=false \
         --source-path=$PROJECT_INFRA_ROOT  \
         --config-path=$PROW_CONFIG_PATH \

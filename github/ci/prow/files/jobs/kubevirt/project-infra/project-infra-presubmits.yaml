@@ -239,15 +239,17 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "22Gi"
+              memory: "29Gi"
             limits:
-              memory: "22Gi"
+              memory: "29Gi"
           volumeMounts:
           - name: token
             mountPath: /etc/github
           - name: gcs
             mountPath: /etc/gcs
             readOnly: true
+          - name: molecule-docker
+            mountPath: /tmp/prow-deploy-molecule
       volumes:
       - name: token
         secret:
@@ -255,6 +257,8 @@ presubmits:
       - name: gcs
         secret:
           secretName: gcs
+      - name: molecule-docker
+        emptyDir: {}
   - name: pull-project-infra-cert-manager-deploy-test
     optional: false
     run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|vendor/.*|WORKSPACE"

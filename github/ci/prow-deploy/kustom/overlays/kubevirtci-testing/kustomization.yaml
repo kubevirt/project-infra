@@ -4,8 +4,6 @@ kind: Kustomization
 resources:
   - ../../base
   - resources/bootstrap.yaml
-  - resources/ghproxy-persistent-volume.yaml
-  - resources/greenhouse-persistent-volume.yaml
   - resources/ingress-nginx-controller.yaml
   # templated resources
   - resources/admin-rbac.yaml

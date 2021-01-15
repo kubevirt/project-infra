@@ -2,7 +2,7 @@
 # So you run it twice and the second time it will fail, and there's no easy way to understand if it's legit
 - name: Delete all remote resources.
   shell: |
-    ~/go/bin/kustomize build overlays/{{ deploy_environment }} | {{ kubectl_exec }} delete -f -
+    ~/go/bin/kustomize build overlays/{{ deploy_environment }} | kubectl delete -f -
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
   environment: "{{ shell_environment }}"

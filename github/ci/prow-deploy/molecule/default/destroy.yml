@@ -9,9 +9,6 @@
         file: "{{ deploy_environment }}.yml"
 
     - name: Tear down kubevirtci cluster
-      command: make cluster-down
+      command: kind delete cluster
       changed_when: false
-      args:
-        chdir: "{{ kubevirtci_dir }}"
-      environment: "{{ shell_environment }}"
       when: "'kubevirtci' in deploy_environment"
