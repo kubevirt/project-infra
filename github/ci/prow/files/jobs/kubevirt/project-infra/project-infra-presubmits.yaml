@@ -40,6 +40,26 @@ presubmits:
           - "/bin/bash"
           - "-c"
           - "cd robots && go test ./..."
+  - name: pull-project-infra-test-rehearse
+    run_if_changed: external-plugins/rehearse/.*
+    optional: false
+    decorate: true
+    spec:
+      nodeSelector:
+        type: vm
+        zone: ci
+      containers:
+      - image: golang:1.13
+        env:
+          - name: GO111MODULE
+            value: "on"
+          - name: XDG_CACHE_HOME
+            value: "/tmp/.cache"
+        command: [ "/bin/bash",  "-c" ]
+        args:
+          - |
+            cd external-plugins/rehearse/plugin
+            go test ./...
   - name: build-kubevirt-infra-bootstrap-image
     always_run: false
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
