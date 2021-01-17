@@ -17,7 +17,7 @@ presubmits:
       rehearsal.allowed: "true"
     spec:
       nodeSelector:
-        hardwareSupport: sriov-nic
+        kubernetes.io/hostname: ovirt-srv17.phx.ovirt.org
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
