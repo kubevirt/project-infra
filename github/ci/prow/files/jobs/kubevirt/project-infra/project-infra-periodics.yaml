@@ -212,6 +212,7 @@ periodics:
       - "autoowners"
       args:
       - --dry-run=false
+      - --assign=kubevirt/prow-job-taskforce
       - --self-approve=true
       - --github-login=kubevirt-bot
       - --github-endpoint=http://ghproxy
