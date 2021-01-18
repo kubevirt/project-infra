@@ -15,7 +15,7 @@ periodics:
         region: primary
       containers:
         - image: docker.io/library/python:3.7
-          command: ["/bin/sh", "-c"]
+          command: ["/bin/bash", "-c"]
           args:
           - |
               python3.7 -m venv /tmp/userguide
