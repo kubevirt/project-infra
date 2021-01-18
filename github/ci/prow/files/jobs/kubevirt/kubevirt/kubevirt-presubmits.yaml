@@ -260,6 +260,7 @@ presubmits:
         resources:
           requests:
             memory: "29Gi"
+            cpu: "2"
             prow/sriov: "1"
           limits:
             prow/sriov: "1"
