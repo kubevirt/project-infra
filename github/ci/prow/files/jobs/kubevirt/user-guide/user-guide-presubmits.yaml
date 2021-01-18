@@ -9,7 +9,7 @@ presubmits:
         nodeSelector:
           region: primary
         containers:
-          - image: docker.io/library/python
+          - image: docker.io/library/python:3.7
             command: ["/bin/sh", "-c"]
             args: ["echo &&
                     mkdir -p /opt/buildhome/python3 &&
