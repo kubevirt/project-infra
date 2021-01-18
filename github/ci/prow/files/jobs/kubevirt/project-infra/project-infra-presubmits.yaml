@@ -342,7 +342,7 @@ presubmits:
         - github/ci/prow/files/config.yaml
         - github/ci/prow/files/jobs
         - github/ci/testgrid/gen-config.yaml
-        - config/testgrids/kubevirt
+        - kubevirt
         volumeMounts:
         # aiming to prevent error:
         # FATAL: $USER is not set, and unable to look up name of current user: (error: 0): Success

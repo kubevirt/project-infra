@@ -367,7 +367,7 @@ postsubmits:
           - github/ci/prow/files/config.yaml
           - github/ci/prow/files/jobs
           - github/ci/testgrid/gen-config.yaml
-          - config/testgrids/kubevirt
+          - kubevirt
           volumeMounts:
           - name: token
             mountPath: /etc/github
