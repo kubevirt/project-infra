@@ -13,6 +13,8 @@ postsubmits:
         - org: cncf
           repo: devstats
           base_ref: master
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       spec:
         containers:
