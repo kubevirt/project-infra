@@ -1,0 +1,148 @@
+---
+presubmits:
+  nmstate/kubernetes-nmstate:
+    - name: pull-kubernetes-nmstate-unit-test-0.37
+      branches:
+        - release-0.37
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "false"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: vm
+          zone: ci
+        containers:
+          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+            securityContext:
+              privileged: true
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.unit-test.sh"
+
+    - name: pull-kubernetes-nmstate-e2e-handler-k8s-0.37
+      branches:
+        - release-0.37
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-k8s.sh"
+
+    - name: pull-kubernetes-nmstate-e2e-handler-k8s-parallel-0.37
+      branches:
+        - release-0.37
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "export NMSTATE_PARALLEL_ROLLOUT=true && automation/check-patch.e2e-k8s.sh"
+
+    - name: pull-kubernetes-nmstate-docs-0.37
+      cluster: ibm-prow-jobs
+      branches:
+        - release-0.37
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 1h
+        grace_period: 5m
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "false"
+        preset-shared-images: "true"
+      spec:
+        containers:
+          - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+            securityContext:
+              privileged: true
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.docs.sh"
+            resources:
+              requests:
+                memory: "4Gi"
+
+    - name: pull-kubernetes-nmstate-e2e-operator-k8s-0.37
+      branches:
+        - release-0.37
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-operator-k8s.sh"
