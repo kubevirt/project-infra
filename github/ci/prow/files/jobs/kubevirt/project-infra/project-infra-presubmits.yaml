@@ -343,15 +343,5 @@ presubmits:
         - github/ci/prow/files/jobs
         - github/ci/testgrid/gen-config.yaml
         - kubevirt
-        volumeMounts:
-        # aiming to prevent error:
-        # FATAL: $USER is not set, and unable to look up name of current user: (error: 0): Success
-        # https://cs.opensource.google/bazel/bazel/+/master:src/main/cpp/blaze_util_posix.cc;l=751;drc=759170fc56c34356a46fb35ab1f108c8535d861f
-        - name: passwd
-          mountPath: /etc/passwd
-          readOnly: true
-      volumes:
-      - name: passwd
-        hostPath:
-          path: /etc/passwd
-          type: File
+        securityContext:
+          runAsUser: 0
