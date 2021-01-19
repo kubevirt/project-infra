@@ -368,10 +368,5 @@ postsubmits:
           - github/ci/prow/files/jobs
           - github/ci/testgrid/gen-config.yaml
           - kubevirt
-          volumeMounts:
-          - name: token
-            mountPath: /etc/github
-        volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
+          securityContext:
+            runAsUser: 0
