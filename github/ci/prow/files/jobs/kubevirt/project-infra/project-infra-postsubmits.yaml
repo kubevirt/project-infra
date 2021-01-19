@@ -370,3 +370,10 @@ postsubmits:
           - kubevirt
           securityContext:
             runAsUser: 0
+          volumeMounts:
+          - name: token
+            mountPath: /etc/github
+        volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
