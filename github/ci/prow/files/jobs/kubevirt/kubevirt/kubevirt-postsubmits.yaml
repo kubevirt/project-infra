@@ -8,6 +8,8 @@ postsubmits:
     always_run: true
     optional: false
     skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
     decorate: true
     decoration_config:
       timeout: 1h

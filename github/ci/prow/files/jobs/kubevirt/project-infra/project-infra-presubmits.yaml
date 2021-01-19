@@ -201,7 +201,7 @@ presubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-  - name: prow-deploy-test
+  - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/.*|github/ci/prow/files/.*"
     decorate: true
@@ -255,7 +255,7 @@ presubmits:
       - name: gcs
         secret:
           secretName: gcs
-  - name: cert-manager-deploy-test
+  - name: pull-project-infra-cert-manager-deploy-test
     optional: false
     run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|vendor/.*|WORKSPACE"
     decorate: true
@@ -291,7 +291,7 @@ presubmits:
               memory: "16Gi"
             limits:
               memory: "16Gi"
-  - name: ci-search-deploy-test
+  - name: pull-project-infra-ci-search-deploy-test
     optional: false
     run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*|vendor/.*|WORKSPACE"
     decorate: true
@@ -327,3 +327,21 @@ presubmits:
               memory: "16Gi"
             limits:
               memory: "16Gi"
+  - name: pull-project-infra-check-testgrid-config
+    run_if_changed: '^(github/ci/prow/files/jobs/.*)|(github/ci/testgrid/gen-config\.yaml)$'
+    decorate: true
+    annotations:
+      testgrid-create-test-group: "false"
+    spec:
+      containers:
+      - image: gcr.io/k8s-prow/transfigure
+        command:
+        - /transfigure.sh
+        args:
+        - test
+        - github/ci/prow/files/config.yaml
+        - github/ci/prow/files/jobs
+        - github/ci/testgrid/gen-config.yaml
+        - kubevirt
+        securityContext:
+          runAsUser: 0

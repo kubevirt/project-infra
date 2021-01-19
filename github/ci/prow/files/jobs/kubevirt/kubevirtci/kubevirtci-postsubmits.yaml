@@ -4,6 +4,8 @@ postsubmits:
       branches:
       - master
       always_run: true
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       extra_refs:

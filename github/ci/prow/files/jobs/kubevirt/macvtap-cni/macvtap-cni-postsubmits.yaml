@@ -4,6 +4,8 @@ postsubmits:
       branches:
       - master
       always_run: true
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       labels:
@@ -26,6 +28,8 @@ postsubmits:
               privileged: true
     - name: release-macvtap-cni
       run_if_changed: "^version/version.go"
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       labels:

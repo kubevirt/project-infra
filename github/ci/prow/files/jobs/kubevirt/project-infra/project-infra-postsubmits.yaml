@@ -3,6 +3,8 @@ postsubmits:
     - name: publish-rehearse-image
       always_run: false
       run_if_changed: "external-plugins/rehearse/.*"
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       labels:
@@ -33,6 +35,8 @@ postsubmits:
     - name: publish-kubevirt-infra-bootstrap-image
       always_run: false
       run_if_changed: "images/kubevirt-infra-bootstrap/.*"
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       labels:
@@ -60,6 +64,8 @@ postsubmits:
     - name: publish-bootstrap-image
       always_run: false
       run_if_changed: "images/bootstrap/.*"
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       labels:
@@ -87,6 +93,8 @@ postsubmits:
     - name: publish-kubekins-e2e-image
       always_run: false
       run_if_changed: "images/kubekins-e2e/.*"
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       labels:
@@ -117,6 +125,8 @@ postsubmits:
     - name: publish-kubevirt-userguide-image
       always_run: false
       run_if_changed: "images/kubevirt-userguide/.*"
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       labels:
@@ -144,8 +154,10 @@ postsubmits:
                 memory: "1Gi"
               limits:
                 memory: "1Gi"
-    - name: prow-deployment
+    - name: post-project-infra-prow-deployment
       always_run: false
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       branches:
       # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
@@ -221,8 +233,10 @@ postsubmits:
         - name: gcs
           secret:
             secretName: gcs
-    - name: cert-manager-deployment
+    - name: post-project-infra-cert-manager-deployment
       always_run: false
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       run_if_changed: "github/ci/services/cert-manager.*"
       branches:
@@ -276,8 +290,10 @@ postsubmits:
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
-    - name: ci-search-deployment
+    - name: post-project-infra-ci-search-deployment
       always_run: false
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       run_if_changed: "github/ci/services/ci-search.*"
       branches:
@@ -334,3 +350,23 @@ postsubmits:
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
+    - name: post-project-infra-upload-testgrid-config
+      run_if_changed: '^(github/ci/prow/files/jobs/.*)|(github/ci/testgrid/gen-config\.yaml)$'
+      branches:
+      - master
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      spec:
+        containers:
+        - image: gcr.io/k8s-prow/transfigure
+          command:
+          - /transfigure.sh
+          args:
+          - /etc/github/oauth
+          - github/ci/prow/files/config.yaml
+          - github/ci/prow/files/jobs
+          - github/ci/testgrid/gen-config.yaml
+          - kubevirt
+          securityContext:
+            runAsUser: 0

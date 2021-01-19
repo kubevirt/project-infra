@@ -2,6 +2,8 @@ periodics:
   - name: periodic-publish-kubemacpool-flakefinder-weekly-report
     cron: "50 0 * * *"
     decorate: true
+    annotations:
+      testgrid-create-test-group: "false"
     spec:
       nodeSelector:
         type: vm
@@ -36,6 +38,8 @@ periodics:
             secretName: gcs
   - name: periodic-publish-kubemacpool-flakefinder-daily-report
     cron: "30 0 * * *"
+    annotations:
+      testgrid-create-test-group: "false"
     decorate: true
     spec:
       nodeSelector:
@@ -71,6 +75,8 @@ periodics:
             secretName: gcs
   - name: periodic-publish-kubemacpool-flakefinder-four-weekly-report
     interval: 168h
+    annotations:
+      testgrid-create-test-group: "false"
     decorate: true
     spec:
       nodeSelector:

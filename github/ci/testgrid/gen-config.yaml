@@ -1,0 +1,9 @@
+dashboards:
+- name: kubevirt-presubmits
+- name: kubevirt-periodics
+
+dashboard_groups:
+- name: kubevirt
+  dashboard_names:
+  - kubevirt-presubmits
+  - kubevirt-periodics

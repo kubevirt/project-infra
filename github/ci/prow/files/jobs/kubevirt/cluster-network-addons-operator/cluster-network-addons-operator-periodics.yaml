@@ -1,6 +1,8 @@
 periodics:
 - name: periodic-publish-cnao-flakefinder-weekly-report
   cron: "55 0 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   spec:
     nodeSelector:
@@ -35,6 +37,8 @@ periodics:
         secretName: gcs
 - name: periodic-publish-cnao-flakefinder-daily-report
   cron: "15 1 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   spec:
     nodeSelector:
@@ -69,6 +73,8 @@ periodics:
         secretName: gcs
 - name: periodic-publish-cnao-flakefinder-four-weekly-report
   interval: 168h
+  annotations:
+    testgrid-create-test-group: "false"
   decorate: true
   spec:
     nodeSelector:

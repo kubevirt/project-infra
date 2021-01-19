@@ -2,6 +2,8 @@ postsubmits:
   kubevirt/cluster-network-addons-operator:
     - name: release-cluster-network-addons-operator
       run_if_changed: "^version/version.go"
+      annotations:
+        testgrid-create-test-group: "false"
       decorate: true
       max_concurrency: 1
       labels:
