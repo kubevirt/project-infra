@@ -79,7 +79,7 @@ container_pull(
     name = "release-tool-base",
     registry = "index.docker.io",
     repository = "kubevirtci/release-tool-base",
-    tag = "v20200630-7042ca83147056a92bdf4752e53e8164fc432486",
+    tag = "v20210120-b86882c9314933ba1a0c77965ed9d54a747f7957",
 )
 
 load(
