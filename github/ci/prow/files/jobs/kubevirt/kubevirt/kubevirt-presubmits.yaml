@@ -259,7 +259,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "20Gi"
+            memory: "29Gi"
             cpu: "2"
             prow/sriov: "1"
           limits:
