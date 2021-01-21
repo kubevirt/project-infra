@@ -368,6 +368,9 @@ postsubmits:
           - github/ci/prow/files/jobs
           - github/ci/testgrid/gen-config.yaml
           - kubevirt
+          - test-infra
+          - kubevirt-bot
+          - rmohr+kubebot@redhat.com
           securityContext:
             runAsUser: 0
           volumeMounts:
