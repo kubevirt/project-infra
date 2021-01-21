@@ -37,3 +37,41 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
+  - name: push-kubevirt-sonar-scanner
+    branches:
+    - master
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-docker-mirror-proxy: "true"
+    spec:
+      containers:
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          export SONAR_SCANNER_VERSION=4.4.0.2170
+          export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
+          curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
+          unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
+          export PATH=$SONAR_SCANNER_HOME/bin:$PATH
+          export SONAR_SCANNER_OPTS="-server"
+
+          sonar-scanner \
+            -Dsonar.organization=kubevirt \
+            -Dsonar.projectKey=kubevirt_kubevirt \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=https://sonarcloud.io
+        resources:
+          requests:
+            memory: "8Gi"
