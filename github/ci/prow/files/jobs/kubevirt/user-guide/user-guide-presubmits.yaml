@@ -13,8 +13,8 @@ presubmits:
             command: ["/bin/sh", "-c"]
             args:
             - |
-                python3.7 -m venv /userguide
-                . /userguide/bin/activate
+                python3.7 -m venv /tmp/userguide
+                . /tmp/userguide/bin/activate
                 pip3 install mkdocs mkdocs-awesome-pages-plugin mkdocs-htmlproofer-plugin
                 echo '*** BEGIN mkdocs.yml ***'
                 cat mkdocs.yml
