@@ -207,7 +207,7 @@ presubmits:
     - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni-multi
+      k8s.v1.cni.cncf.io/networks: '[{"interface":"net1","name":"sriov-passthrough-cni-multi","namespace":"multus-cni-ns"}, {"interface":"net2","name":"sriov-passthrough-cni-multi","namespace":"multus-cni-ns"}]'
       testgrid-dashboards: kubevirt-presubmits
     always_run: false
     optional: true
@@ -261,9 +261,9 @@ presubmits:
           requests:
             memory: "29Gi"
             cpu: "2"
-            prow/sriov: "1"
+            prow/sriov: "2"
           limits:
-            prow/sriov: "1"
+            prow/sriov: "2"
         volumeMounts:
           #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
           - name: modules
