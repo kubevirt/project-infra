@@ -432,7 +432,7 @@ periodics:
                 -github-endpoint=https://api.github.com \
                 -config-path $REPO_DIR/github/ci/prow/files/orgs.yaml \
                 -github-token-path /etc/github/oauth \
-                -confirm=false
+                -confirm=true
         volumeMounts:
         - name: token
           mountPath: /etc/github
