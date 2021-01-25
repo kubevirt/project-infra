@@ -53,7 +53,11 @@
 
 - name: Bootstrap the full job config (this may take a few minutes)
   shell: |
-    /tmp/bazelisk run --jobs 4 //prow/cmd/config-bootstrapper -- \
+    /tmp/bazelisk run \
+        --discard_analysis_cache \
+        --notrack_incremental_state \
+        --nokeep_state_after_build \
+        //prow/cmd/config-bootstrapper -- \
         --dry-run=false \
         --source-path=$PROJECT_INFRA_ROOT  \
         --config-path=$PROW_CONFIG_PATH \
