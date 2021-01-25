@@ -1,0 +1,707 @@
+orgs:
+  kubevirt:
+    admins:
+      - caniszczyk
+      - codificat
+      - danielBelenky
+      - davidvossel
+      - dhiller
+      - fabiand
+      - kubevirt-bot
+      - rmohr
+      - stoniko
+      - thelinuxfoundation
+    billing_email: fdeutsch@redhat.com
+    company: ""
+    default_repository_permission: read
+    description: Managing virtualization workloads on Kubernetes
+    email: ""
+    has_organization_projects: true
+    has_repository_projects: true
+    location: ""
+    members:
+      - AdamJ
+      - adityaramteke
+      - aglitke
+      - ahadas
+      - akrejcir
+      - AlonaKaplan
+      - alonSadan
+      - alosadagrande
+      - andreabolognani
+      - andreyod
+      - arnongilboa
+      - ArthurSens
+      - AsherShoshan
+      - ashleyschuett
+      - awels
+      - bardielle
+      - beanh66
+      - beekhof
+      - booxter
+      - borod108
+      - brybacki
+      - crobinso
+      - cynepco3hahue
+      - dalia-frank
+      - danielerez
+      - dankenigsberg
+      - dcritch
+      - djzager
+      - dollierp
+      - doron-fediuck
+      - dshchedr
+      - duyanyan
+      - e-minguez
+      - EdDev
+      - eedri
+      - eglynn
+      - eldan
+      - enp0s3
+      - erkanerol
+      - ezrasilvera
+      - fdupont-redhat
+      - fedepaol
+      - fgimenez
+      - fromanirh
+      - gabrielecerami
+      - gbenhaim
+      - gonzolino
+      - gouyang
+      - gsr-shanks
+      - guy9050
+      - hritvi
+      - hroyrh
+      - idanshaby
+      - ifireball
+      - igoihman
+      - ILpinto
+      - InbarRose
+      - iranzo
+      - irosenzw
+      - isaacdorfman
+      - itamarh
+      - j-griffith
+      - jakub-dzon
+      - jean-edouard
+      - jelkosz
+      - jerry7z
+      - jhernand
+      - JinjunXiong
+      - jniederm
+      - jordigilh
+      - jparrill
+      - jtomasek
+      - kbidarkar
+      - kgoldbla
+      - krsacme
+      - ksimon1
+      - kubevirt-commenter-bot
+      - kwiesmueller
+      - lukas-bednar
+      - lveyde
+      - machacekondra
+      - maiqueb
+      - mansam
+      - marceloamaral
+      - mareklibra
+      - MarSik
+      - masayag
+      - matthewcarleton
+      - maya-r
+      - mazzystr
+      - mfranczy
+      - mhenriks
+      - michalskrivanek
+      - mlsorensen
+      - mmazur
+      - mmirecki
+      - mshitrit
+      - myakove
+      - mykaul
+      - n1r1
+      - nellyc
+      - nertpinx
+      - ngavrilo
+      - nirarg
+      - nunnatsa
+      - ohadlevy
+      - omeryahud
+      - openshift-ci-robot
+      - openshift-merge-robot
+      - orenc1
+      - ormergi
+      - oshoval
+      - pcbailey
+      - petrkotas
+      - phoracek
+      - pkliczewski
+      - ptrnull
+      - qinqon
+      - qwang1
+      - RamLavi
+      - ravidbro
+      - rawagner
+      - rgolangh
+      - rhrazdil
+      - rnetser
+      - rollandf
+      - ronensdeor
+      - rthallisey
+      - sandrobonazzola
+      - sarahbx
+      - SchSeba
+      - scollier
+      - screeley44
+      - serenamarie125
+      - sgarbour
+      - shiywang
+      - shwetaap
+      - simon3z
+      - slintes
+      - sradco
+      - sreichar
+      - stbenjam
+      - stu-gott
+      - suomiy
+      - tareqalayan
+      - thetechnick
+      - tiraboschi
+      - tomob
+      - vatsalparekh
+      - vladikr
+      - vojtechszocs
+      - xpivarc
+      - yanirq
+      - yossisegev
+      - yuvalif
+      - yuvalturg
+      - zcahana
+      - zhlhahaha
+      - zleng667
+      - zvikorn
+    members_can_create_repositories: false
+    name: KubeVirt
+    repos:
+      ansible-kubevirt-modules:
+        allow_merge_commit: false
+        allow_rebase_merge: false
+        description: Ansible modules for managing KubeVirt objects in Kubernetes clusters
+        has_projects: true
+      api-reference:
+        allow_rebase_merge: false
+        description: API documentation
+        has_projects: false
+        has_wiki: false
+        homepage: http://www.kubevirt.io/api-reference/
+      blog:
+        allow_merge_commit: false
+        allow_squash_merge: false
+        archived: true
+        description: A web application to build your blog on GitHub
+        has_issues: false
+        has_projects: false
+        has_wiki: false
+        homepage: https://blog.kubevirt.io
+      bridge-marker:
+        has_projects: false
+        has_wiki: false
+      cdi-api-reference:
+        description: Containerized Data Importer API Reference
+        has_projects: true
+      cdi-operator:
+        has_projects: true
+      client-go:
+        description: Go client for kubevirt
+        has_projects: true
+      client-python:
+        description: An auto-generated python SDK to interact with KubeVirt resources
+        has_projects: false
+      cloud-image-builder:
+        description: Scripts and playbooks for creating and testing cloud images containing Kubernetes and KubeVirt
+        has_projects: true
+      cloud-provider-kubevirt:
+        description: Kubernetes cloud-provider for KubeVirt
+        has_projects: false
+        has_wiki: false
+      cluster-api-provider-external:
+        description: The external provider implementation of the Cluster Management API.
+        has_projects: true
+      cluster-network-addons-operator:
+        description: Deploy additional networking components on top of your Kubernetes cluster
+        has_projects: false
+        has_wiki: false
+      cockpit:
+        archived: true
+        description: There's code a goin' on
+        has_issues: false
+        has_projects: true
+        homepage: http://www.cockpit-project.org/
+      cockpit-demo:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        archived: true
+        description: This is a demonstration of how KubeVirt could be displayed in Cockpit
+        has_projects: false
+        has_wiki: false
+      common-templates:
+        description: Templates for running VMs on KubeVirt
+        has_projects: true
+      community:
+        allow_rebase_merge: false
+        description: Community content
+        has_projects: false
+        has_wiki: false
+      containerized-data-importer:
+        description: Data Import Service for kubernetes, designed with kubevirt in mind.
+        has_projects: true
+      controller-lifecycle-operator-sdk:
+        has_projects: true
+      cpu-nfd-plugin:
+        description: NFD plugin, which list all supported cpu models on host.
+        has_projects: true
+      csi-driver:
+        description: KubeVirt CSI driver
+        has_projects: true
+      demo:
+        allow_rebase_merge: false
+        description: Easy to use KubeVirt demo based on minikube.
+        has_projects: false
+        has_wiki: false
+      device-plugin-manager:
+        allow_merge_commit: false
+        allow_squash_merge: false
+        description: 'Incubating: A framework for writing Kubernetes Device Plugins'
+        has_projects: false
+        has_wiki: false
+      external-storage:
+        description: External storage plugins, provisioners, and helper libraries
+        has_issues: false
+        has_projects: true
+      gluster-kubernetes:
+        description: GlusterFS Native Storage Service for Kubernetes
+        has_issues: false
+        has_projects: true
+      hostpath-provisioner:
+        has_projects: true
+      hostpath-provisioner-operator:
+        has_projects: true
+      hyperconverged-cluster-operator:
+        allow_merge_commit: false
+        allow_rebase_merge: false
+        description: Operator pattern for managing multi-operator products
+        has_projects: true
+      k8s-start:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        description: k8s playground
+        has_projects: false
+        has_wiki: false
+      katacoda-scenarios:
+        allow_rebase_merge: false
+        description: Training scenarios for https://katacoda.com/kubevirt
+        has_projects: true
+      krew-index:
+        description: Plugin index for https://github.com/kubernetes-sigs/krew. This repo is for plugin maintainers.
+        has_issues: false
+        has_projects: true
+        homepage: https://index.krew.dev
+      kubectl-virt-plugin:
+        description: Holds all scripts to create packages and manifest file required for publishing the virtctl binary as a krew package for kubectl.
+        has_projects: true
+      kubernetes-device-plugins:
+        archived: true
+        description: 'Incubating: A number of Kubernetes device-plugins developed and useful for KubeVirt'
+        has_projects: false
+        has_wiki: false
+      kubevirt:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        description: Kubernetes Virtualization API and runtime in order to define and manage virtual machines.
+        has_projects: false
+        homepage: https://kubevirt.io
+      kubevirt-ansible:
+        allow_rebase_merge: false
+        description: Set of Ansible roles & playbooks for KubeVirt deployment
+        has_projects: true
+      kubevirt-operator:
+        archived: true
+        description: 'Incubating: The KubeVirt Operator'
+        has_projects: true
+      kubevirt-ssp-operator:
+        has_projects: true
+      kubevirt-tekton-tasks:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        default_branch: main
+        description: VM specific tasks for Tekton Pipelines
+        has_projects: true
+      kubevirt-template-validator:
+        description: validating webhook to check templates sent to the cluster.
+        has_projects: true
+      kubevirt-tutorial:
+        description: Demo that guides users through an end to end KubeVirt experience.
+        has_projects: true
+        homepage: https://www.kubevirt.io/
+      kubevirt.github.io:
+        allow_rebase_merge: false
+        default_branch: source
+        description: KubeVirt website repo, documentation at https://kubevirt.io/user-guide/
+        has_projects: false
+        has_wiki: false
+        homepage: https://kubevirt.io
+      kubevirtci:
+        description: Contains cluster definitions and client tools to quickly spin up and destroy ephemeral and scalable k8s and ocp clusters for testing
+        has_projects: true
+      kvm-info-nfd-plugin:
+        description: Plugin for Kubernetes Node Feature Discovery for high(er) level KVM featues
+        has_projects: true
+      libvirt:
+        allow_rebase_merge: false
+        description: DEPRECATED Vanilla dockerized libvirt image, used as a base for kubevirt
+        has_projects: false
+        has_wiki: false
+      machine-remediation:
+        description: 'Incubating: Deploy all components to recognize unhealthy machines and apply different remediation strategies on it'
+        has_projects: true
+      macvtap-cni:
+        has_projects: false
+        has_wiki: false
+      manageiq-providers-kubevirt:
+        archived: true
+        description: ManageIQ plugin for the Kubevirt provider.
+        has_issues: false
+        has_projects: true
+        has_wiki: false
+      must-gather:
+        description: A client tool for gathering KubeVirt informations in a Kubernetes or OpenShift cluster
+        has_projects: true
+      node-labeller:
+        has_projects: true
+      node-maintenance-operator:
+        description: A Kubernetes Operator to manage node maintenance through NodeMaintenance custom resources
+        has_projects: true
+      origin-web-console:
+        default_branch: cnv-3.10
+        description: Web Console for the OpenShift Application Platform
+        has_issues: false
+        has_projects: true
+        has_wiki: false
+        homepage: https://www.openshift.org/
+      origin-web-console-server:
+        default_branch: cnv-3.10
+        has_issues: false
+        has_projects: true
+      ovs-cni:
+        allow_rebase_merge: false
+        description: Open vSwitch CNI plugin
+        has_projects: false
+        has_wiki: false
+      project-infra:
+        allow_rebase_merge: false
+        description: Project infrastructure administrative tools
+        has_projects: false
+        has_wiki: false
+      qe-tools:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        description: Different Ginkgo reporters for QE purposes
+        has_projects: true
+      run:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        description: This repository is backing run.kubevirt.io.
+        has_projects: false
+        has_wiki: false
+      secrets:
+        description: A repo to store all our secrets for automation
+        has_projects: true
+        private: true
+      ssp-operator:
+        description: Kubevirt SSP Operator
+        has_projects: true
+      storage-demo:
+        description: 'Incubating: Container images for a kubevirt storage demo environment'
+        has_projects: true
+      test-infra-containers:
+        description: All containers which are useful for testing (tgtd, cinder, ceph, gluster, ...)
+        has_projects: true
+      user-guide:
+        description: This user guide will walk you through installation and various features.
+        has_projects: false
+        has_wiki: false
+        homepage: https://kubevirt.io/user-guide
+      v2v-job:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        archived: true
+        description: A job to allow importing a VM from a support virt-v2v source into KubeVirt.
+        has_projects: false
+        has_wiki: false
+      vAdvisor:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        archived: true
+        description: VM monitoring application based on WSGI, libvirt, flask and gevent, inspired by cAdvisor.
+        has_projects: false
+        has_wiki: false
+      vm-import-operator:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        description: Operator for importing VMs from RHV to KubeVirt
+        has_projects: true
+      vmctl:
+        description: Use KubeVirt VMs with Deployments, Replica Sets, …
+        has_projects: true
+      web-ui:
+        description: OpenShift Cluster Console UI
+        has_projects: true
+        has_wiki: false
+        homepage: https://www.openshift.org
+      web-ui-components:
+        allow_merge_commit: false
+        allow_rebase_merge: false
+        archived: true
+        description: https://kubevirt.io/web-ui-components
+        has_projects: true
+      web-ui-design:
+        description: ' Images and Markdown documenting proposed user workflows for the UI'
+        has_projects: true
+      web-ui-operator:
+        description: Operator for web-ui
+        has_projects: true
+    teams:
+      QE:
+        description: ""
+        maintainers:
+          - nellyc
+        members:
+          - kbidarkar
+          - myakove
+          - gouyang
+          - gsr-shanks
+          - lukas-bednar
+          - tareqalayan
+          - duyanyan
+          - InbarRose
+          - shiywang
+          - vatsalparekh
+          - ngavrilo
+          - ILpinto
+          - adityaramteke
+          - yossisegev
+          - dshchedr
+          - dollierp
+        privacy: closed
+        repos:
+          kubevirt-ansible: write
+          qe-tools: write
+      kubectl-virt-plugin:
+        description: ""
+        maintainers:
+          - dhiller
+        privacy: secret
+        repos:
+          kubectl-virt-plugin: admin
+      kubevirt_maintainers:
+        description: kubevirt/kubevirt only maintainers
+        maintainers:
+          - rmohr
+        privacy: closed
+        repos:
+          cpu-nfd-plugin: admin
+          kubevirt: admin
+          node-labeller: read
+      maintainers:
+        description: ""
+        maintainers:
+          - fabiand
+          - davidvossel
+          - codificat
+          - rmohr
+          - danielBelenky
+          - kubevirt-bot
+        members:
+          - vladikr
+          - slintes
+          - cynepco3hahue
+          - stu-gott
+          - nellyc
+          - kubevirt-commenter-bot
+        privacy: closed
+        repos:
+          api-reference: write
+          blog: read
+          client-go: admin
+          client-python: write
+          cloud-image-builder: read
+          cockpit-demo: write
+          common-templates: admin
+          community: write
+          containerized-data-importer: write
+          demo: write
+          device-plugin-manager: write
+          hostpath-provisioner-operator: admin
+          k8s-start: write
+          krew-index: admin
+          kubectl-virt-plugin: admin
+          kubernetes-device-plugins: write
+          kubevirt: admin
+          kubevirt-ansible: write
+          kubevirt-ssp-operator: read
+          kubevirt-tutorial: write
+          kubevirt.github.io: write
+          kubevirtci: write
+          libvirt: write
+          node-maintenance-operator: write
+          ovs-cni: read
+          project-infra: write
+          qe-tools: read
+          run: write
+          storage-demo: write
+          user-guide: write
+          v2v-job: write
+          vAdvisor: write
+      member:
+        description: Allow people to assign tasks to themselves
+        maintainers:
+          - rmohr
+          - danielBelenky
+        members:
+          - booxter
+          - MarSik
+          - masayag
+          - j-griffith
+          - eedri
+          - slintes
+          - gonzolino
+          - phoracek
+          - SchSeba
+          - awels
+        privacy: closed
+        repos:
+          cloud-provider-kubevirt: write
+          kubernetes-device-plugins: read
+          kubevirt: write
+      must-gather:
+        description: ""
+        maintainers:
+          - rmohr
+        members:
+          - pkliczewski
+          - mmirecki
+          - yuvalturg
+        privacy: closed
+        repos:
+          must-gather: admin
+      network-operator-maintainers:
+        description: Maintainers of the network cluster operators
+        maintainers:
+          - davidvossel
+        members:
+          - phoracek
+          - SchSeba
+          - mmirecki
+        privacy: closed
+        repos:
+          bridge-marker: write
+          cluster-network-addons-operator: admin
+      olm-maintainers:
+        description: 'maintainers of the KubeVirt project olm manifests '
+        maintainers:
+          - davidvossel
+        members:
+          - rthallisey
+        privacy: closed
+        repos:
+          hyperconverged-cluster-operator: admin
+      openshift-ci:
+        description: Openshift CI bots. Add the team with write access to your repo to allow openshift CI to work.
+        maintainers:
+          - rmohr
+        members:
+          - openshift-ci-robot
+          - openshift-merge-robot
+        privacy: closed
+        repos:
+          common-templates: write
+          hyperconverged-cluster-operator: write
+          kubevirt-ssp-operator: write
+          must-gather: write
+          node-maintenance-operator: write
+          ssp-operator: write
+      ovirt-bot:
+        description: ""
+        maintainers:
+          - rmohr
+        privacy: secret
+        repos:
+          kubevirt: admin
+          kubevirt-ansible: write
+      prow-job-taskforce:
+        description: This team is authorized to interact with ProwJobs
+        maintainers:
+          - dhiller
+          - rmohr
+          - danielBelenky
+        members:
+          - fgimenez
+          - phoracek
+        privacy: closed
+      sig-security:
+        description: ""
+        maintainers:
+          - fabiand
+          - stoniko
+        privacy: closed
+      ssp-maintainers:
+        description: ""
+        maintainers:
+          - danielBelenky
+        members:
+          - omeryahud
+        privacy: closed
+        repos:
+          kubevirt-ssp-operator: read
+          ssp-operator: read
+      team-ux-review:
+        description: ""
+        maintainers:
+          - fabiand
+        members:
+          - serenamarie125
+          - beanh66
+        privacy: closed
+      web-ui-maintainers:
+        description: ""
+        maintainers:
+          - fabiand
+        members:
+          - vojtechszocs
+          - jelkosz
+          - jtomasek
+          - rawagner
+          - suomiy
+          - jniederm
+          - pcbailey
+          - mareklibra
+        privacy: closed
+        repos:
+          origin-web-console: admin
+          origin-web-console-server: admin
+          web-ui: write
+          web-ui-components: write
+          web-ui-operator: write
+      website-maintainers:
+        description: ""
+        maintainers:
+          - fabiand
+          - codificat
+        members:
+          - matthewcarleton
+          - mazzystr
+          - AdamJ
+        privacy: closed
+        repos:
+          cloud-image-builder: admin
+          community: admin
