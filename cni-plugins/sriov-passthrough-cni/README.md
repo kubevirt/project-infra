@@ -23,7 +23,6 @@ plugin on all the relevant K8s nodes.
 ├── Dockerfile      # The Dockerfile that we use to pack the plugin in.
 ├── install-plugin  # The script that actually installs the plugin.
 ├── plugin  # The plugin itself.
-│   ├── 90-sriov-passthrough-cni.conf
 │   └── sriov-passthrough-cni
 └── README.md
 ```

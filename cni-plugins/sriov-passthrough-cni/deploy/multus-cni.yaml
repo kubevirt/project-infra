@@ -156,7 +156,7 @@ spec:
               mountPath: /usr/src/multus-cni/images/
         - name: kube-sriov-passthrough-cni
           command: ["install-plugin"]
-          args: ["/host/opt/cni/bin", "/host/etc/cni/net.d"]
+          args: ["/host/opt/cni/bin"]
           image: 'quay.io/pod_utils/sriov-passthrough-cni:v1.0'
           resources:
             requests:
@@ -168,8 +168,6 @@ spec:
           securityContext:
             privileged: true
           volumeMounts:
-            - name: cni
-              mountPath: /host/etc/cni/net.d
             - name: cnibin
               mountPath: /host/opt/cni/bin
       volumes:
