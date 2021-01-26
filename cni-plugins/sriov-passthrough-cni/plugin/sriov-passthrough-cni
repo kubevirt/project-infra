@@ -11,7 +11,6 @@ function main() {
         ADD)
             log "Received ADD command. CNI_ARGS: $CNI_ARGS"
             setup_netns
-            # add_veth_pair
             flip_vfs_to_default_drivers
             setns_sriov_ifs
             gen_result_config
@@ -31,11 +30,6 @@ function flip_vfs_to_default_drivers() {
         echo 0 > $pfroot/sriov_numvfs
         cat $file > $pfroot/sriov_numvfs
     done
-}
-
-function from_cni_args() {
-    local var_name="${1:?}"
-    sed -nE "s/.+?${var_name}=([^;]*?)(;.+?|$)/\1/p" <<< "$CNI_ARGS"
 }
 
 function setup_netns() {
@@ -65,22 +59,6 @@ function setns_sriov_ifs() {
     ip link set "$ifs_name" netns "$CNI_CONTAINERID"
   done
 
-}
-
-add_veth_pair() {
-    local container_name
-    container_name="$(from_cni_args K8S_POD_NAME)"
-    local host_if="veth-1-${container_name}"
-    local container_if="veth-2-${container_name}"
-    ip link add "$container_if" type veth peer name "$host_if"
-    ip link set "$host_if" up
-    ip link set "$container_if" netns "$CNI_CONTAINERID"
-    ip netns exec "$CNI_CONTAINERID" ip link set "$container_if" down
-    ip netns exec "$CNI_CONTAINERID" ip link set "$container_if" name \
-        "$CNI_IFNAME"
-    ip netns exec "$CNI_CONTAINERID" ip link set "$container_if" up
-    ip netns exec "$CNI_CONTAINERID" ip addr add "$IP/$SUBNET_MASK" \
-        dev "$container_if"
 }
 
 function gen_result_config() {
