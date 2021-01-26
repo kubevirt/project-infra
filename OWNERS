@@ -2,26 +2,19 @@ filters:
   ".*":
     reviewers:
       - davidvossel
-      - rmohr
-      - stu-gott
       - vladikr
+      - rmohr
       - dhiller
-      - gbenhaim
-      - qinqon
       - phoracek
-      - jean-edouard
+      - aglitke
       - fgimenez
     approvers:
-      - slintes
       - davidvossel
       - vladikr
       - rmohr
       - dhiller
-      - gbenhaim
-      - qinqon
       - phoracek
-      - stu-gott
-      - jean-edouard
+      - aglitke
       - fgimenez
     emeritus_approvers:
       - cynepco3hahue
