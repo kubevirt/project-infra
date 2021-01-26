@@ -1,7 +1,7 @@
 # SR-IOV passthrough CNI
 
 This is a CNI ([container network interface](https://github.com/containernetworking/cni))
-plugin that passes all physical and virtual functions of a SR-IOV nic into the
+plugin that passes one physical SR-IOV nic into the
 namespace of a pod that requests it.
 
 ## Where it used

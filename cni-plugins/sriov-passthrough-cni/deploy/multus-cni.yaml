@@ -157,7 +157,7 @@ spec:
         - name: kube-sriov-passthrough-cni
           command: ["install-plugin"]
           args: ["/host/opt/cni/bin"]
-          image: 'quay.io/pod_utils/sriov-passthrough-cni:v1.0'
+          image: 'quay.io/kubevirtci/sriov-passthrough-cni:v1.1'
           resources:
             requests:
               cpu: "100m"

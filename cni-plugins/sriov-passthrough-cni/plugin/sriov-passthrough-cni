@@ -5,14 +5,14 @@ readonly SUBNET_MASK=24
 readonly GW_IP=169.255.0.1
 readonly CONTAINER_NETNS_LINK="/var/run/netns/$CNI_CONTAINERID"
 readonly LOGFILE=/var/log/pfcni.log
+readonly PF_COUNT=1
 
 function main() {
     case "$CNI_COMMAND" in
         ADD)
             log "Received ADD command. CNI_ARGS: $CNI_ARGS"
             setup_netns
-            flip_vfs_to_default_drivers
-            setns_sriov_ifs
+            setns_sriov_pfs
             gen_result_config
             ;;
         DELETE)
@@ -22,43 +22,36 @@ function main() {
     esac
 }
 
-function flip_vfs_to_default_drivers() {
-    for file in $(find /sys/devices/ -name *sriov_totalvfs*); do
-        pfroot=$(dirname $file)
-
-        # flip all available VFs to default driver
-        echo 0 > $pfroot/sriov_numvfs
-        cat $file > $pfroot/sriov_numvfs
-    done
-}
-
 function setup_netns() {
     mkdir -p /var/run/netns
     ln -sfT "$CNI_NETNS" "$CONTAINER_NETNS_LINK"
 }
 
-function setns_sriov_ifs() {
-  local sriov_vfs=( /sys/class/net/*/device/virtfn* )
-  local ifs_arr ifs_name
-  for vf in "${sriov_vfs[@]}"; do
-    ifs_arr=( "$vf"/net/* )
-    for ifs in "${ifs_arr[@]}"; do
-        ifs_name="${ifs%%\/net\/*}"
-        ifs_name="${ifs##*\/}"
-        log "Adding vf: $ifs_name to netns $CNI_CONTAINERID"
-        ip link set "$ifs_name" netns "$CNI_CONTAINERID"
-    done
+function setns_sriov_pfs() {
+  local pf_array=()
+  local -r sriov_pfs=( $(find /sys/class/net/*/device/sriov_numvfs) )
+  if [ "${#sriov_pfs[@]}" -eq 0 ]; then
+    log "FATAL: No sriov PFs found"
+    exit 1
+  fi
+
+  for pf in "${sriov_pfs[@]}"; do
+    local pf_name="${pf%%/device/*}"
+    pf_name="${pf_name##*/}"
+    if ip link set "$pf_name" netns "$CNI_CONTAINERID"; then
+      if timeout 5s bash -c "until ip netns exec $CNI_CONTAINERID ip link show $pf_name > /dev/null; do sleep 1; done"; then
+        log "Added $pf_name to netns $CNI_CONTAINERID"
+        pf_array+=("$pf_name")
+        if [ "${#pf_array[@]}" -eq "$PF_COUNT" ]; then
+          log "Allocated requested number of PFs"
+          return 0
+        fi
+      fi
+    fi
   done
 
-  local sriov_pfs=( /sys/class/net/*/device/sriov_numvfs )
-  local ifs_name
-  for ifs in "${sriov_pfs[@]}"; do
-    ifs_name="${ifs%%/device/*}"
-    ifs_name="${ifs_name##*/}"
-        log "Adding pf: $ifs_name to netns $CNI_CONTAINERID"
-    ip link set "$ifs_name" netns "$CNI_CONTAINERID"
-  done
-
+  log "FATAL: Could not allocate enough PFs"
+  exit 1
 }
 
 function gen_result_config() {
