@@ -1,11 +1,5 @@
 - hosts: instance
   tasks:
-    - name: download kind
-      get_url:
-        url: https://github.com/kubernetes-sigs/kind/releases/download/v0.9.0/kind-linux-amd64
-        dest: /usr/local/bin/kind
-        mode: a+x
-
     - name: set deploy environment
       set_fact:
         deploy_environment: 'kubevirtci-testing'
@@ -56,15 +50,7 @@
               nodeRegistration:
                 name: node01
                 kubeletExtraArgs:
-                  system-reserved: memory=16Gi
-          - role: worker
-            kubeadmConfigPatches:
-            - |
-              kind: JoinConfiguration
-              nodeRegistration:
-                name: node02
-                kubeletExtraArgs:
-                  system-reserved: memory=16Gi
+                  system-reserved: memory=8Gi
     - name: Launch cluster
       shell: |
         kind delete cluster

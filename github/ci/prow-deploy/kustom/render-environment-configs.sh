@@ -21,7 +21,7 @@ if [ ! -d "$OVERLAY_DIR" ]; then
     exit 1
 fi
 
-YQ_BIN=/tmp/yq
+YQ_BIN=yq
 CONFIGS=( "config/config.yaml" "plugins/plugins.yaml" "labels/labels.yaml" "mirror/mirror.yaml")
 
 echo "Rendering from base configs at $BASE_DIR"

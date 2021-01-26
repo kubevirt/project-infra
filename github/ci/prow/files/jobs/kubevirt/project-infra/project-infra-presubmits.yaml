@@ -203,7 +203,7 @@ presubmits:
               memory: "8Gi"
   - name: pull-project-infra-prow-deploy-test
     always_run: false
-    run_if_changed: "github/ci/prow-deploy/.*|github/ci/prow/files/.*"
+    run_if_changed: "github/ci/prow-deploy/.*"
     decorate: true
     labels:
       preset-dind-enabled: "true"
@@ -224,16 +224,17 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
-            - "cd github/ci/prow-deploy/ &&
-               apt-get update && apt-get install -y python3-venv --no-install-recommends &&
-               python3 -m venv venv &&
-               source venv/bin/activate &&
-               pip install wheel &&
-               pip install -r requirements.txt &&
-               molecule test &&
-               tmp=$(mktemp -d) &&
-               docker cp instance:$ARTIFACTS $tmp &&
-               cp -ar $tmp/artifacts/* $ARTIFACTS"
+            - |
+              cd github/ci/prow-deploy/
+              apt-get update && apt-get install -y python3-venv --no-install-recommends
+              python3 -m venv venv
+              source venv/bin/activate
+              pip install wheel
+              pip install -r requirements.txt
+              molecule test
+              tmp=$(mktemp -d)
+              docker cp instance:$ARTIFACTS $tmp
+              cp -ar $tmp/artifacts/* $ARTIFACTS
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true

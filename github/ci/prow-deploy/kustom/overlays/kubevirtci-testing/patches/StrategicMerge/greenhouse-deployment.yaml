@@ -5,6 +5,9 @@ metadata:
 spec:
   template:
     spec:
+      nodeSelector:
+        type: vm
+        zone: ci
       volumes:
         - name: cache
           hostPath:

@@ -1,32 +1,3 @@
-# FIXME: use an image with this binary installed
-- name: install kustomize
-  unarchive:
-    src: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.8.7/kustomize_v3.8.7_linux_amd64.tar.gz
-    dest: /tmp
-    remote_src: yes
-    mode: a+x
-
-# FIXME: use an image with this binary installed
-- name: install bazelisk
-  get_url:
-    url: https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64
-    dest: /tmp/bazelisk
-    mode: a+x
-
-# FIXME: use an image with this binary installed
-- name: install yq
-  get_url:
-    url: https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
-    dest: /tmp/yq
-    mode: a+x
-
-# FIXME: use an image with this dependencies installed
-- name: install pip dependencies
-  pip:
-    name:
-      - kubernetes==11.0.0
-      - openshift==0.11.2
-
 - name: launch config rendering
   shell: |
     ./render-environment-configs.sh {{ deploy_environment }}
@@ -35,13 +6,13 @@
 
 - name: validate Kustomize result
   shell: |
-    /tmp/kustomize build overlays/{{ deploy_environment }}
+    kustomize build overlays/{{ deploy_environment }}
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
 
 - name: Launch deployment
   shell: |
-    /tmp/kustomize build overlays/{{ deploy_environment }} | kubectl apply -f -
+    kustomize build overlays/{{ deploy_environment }} | kubectl apply -f -
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
 
@@ -53,16 +24,12 @@
 
 - name: Bootstrap the full job config (this may take a few minutes)
   shell: |
-    /tmp/bazelisk run \
-        --discard_analysis_cache \
-        --notrack_incremental_state \
-        --nokeep_state_after_build \
-        //prow/cmd/config-bootstrapper -- \
-        --dry-run=false \
-        --source-path=$PROJECT_INFRA_ROOT  \
-        --config-path=$PROW_CONFIG_PATH \
-        --plugin-config=$PLUGIN_CONFIG_PATH \
-        --job-config-path=$JOB_CONFIG_PATH
+    config-bootstrapper \
+      --dry-run=false \
+      --source-path=$PROJECT_INFRA_ROOT \
+      --config-path=$PROW_CONFIG_PATH \
+      --plugin-config=$PLUGIN_CONFIG_PATH \
+      --job-config-path=$JOB_CONFIG_PATH
   environment:
     PROJECT_INFRA_ROOT: "{{ project_infra_root }}"
     JOB_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/files/jobs/"
