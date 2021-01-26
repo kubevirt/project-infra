@@ -409,40 +409,33 @@ periodics:
   - org: kubevirt
     repo: project-infra
     base_ref: master
-  - org: kubernetes
-    repo: test-infra
-    base_ref: master
     workdir: true
   interval: 1h
   max_concurrency: 1
   spec:
-    securityContext:
-      runAsUser: 0
     containers:
-      - image: kubevirtci/bootstrap:v20210112-b29dfd7
-        command: [ "/bin/sh", "-c" ]
-        args:
-          - |
-              set -e
-              TEST_INFRA_DIR=$(cd ../.. && cd kubernetes/test-infra && pwd)
-              REPO_DIR=$(cd ../.. && cd kubevirt/project-infra && pwd)
-              cd $TEST_INFRA_DIR
-              bazel run //prow/cmd/peribolos -- \
-                -github-endpoint=http://ghproxy \
-                -github-endpoint=https://api.github.com \
-                -config-path $REPO_DIR/github/ci/prow/files/orgs.yaml \
-                -github-token-path /etc/github/oauth \
-                -fix-org-members=true \
-                -fix-teams=true \
-                -fix-team-members=true \
-                -fix-team-repos=true \
-                -confirm=true
-        volumeMounts:
-        - name: token
-          mountPath: /etc/github
-        resources:
-          requests:
-            memory: "200Mi"
+    - name: peribolos
+      image: gcr.io/k8s-prow/peribolos:v20210115-603a3a062d
+      command:
+      - /app/prow/cmd/peribolos/app.binary
+      args:
+      - --github-endpoint=http://ghproxy
+      - --github-endpoint=https://api.github.com
+      - --config-path=github/ci/prow/files/orgs.yaml
+      - --github-token-path=/etc/github/oauth
+      - --fix-org=true
+      - --fix-org-members=true
+      - --fix-teams=true
+      - --fix-team-members=true
+      - --fix-team-repos=true
+      - --fix-repos=true
+      - --confirm=true
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+      resources:
+        requests:
+          memory: "200Mi"
     volumes:
     - name: token
       secret:
