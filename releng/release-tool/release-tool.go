@@ -171,7 +171,7 @@ func (r *releaseData) generateReleaseNotes() error {
 	f.WriteString("The primary release artifact of KubeVirt is the git tree. The release tag is\n")
 	f.WriteString(fmt.Sprintf("signed and can be verified using `git tag -v %s`.\n", r.tag))
 	f.WriteString("\n")
-	f.WriteString(fmt.Sprintf("Pre-built containers are published on Docker Hub and can be viewed at: <https://hub.docker.com/u/%s/>.\n", r.org))
+	f.WriteString(fmt.Sprintf("Pre-built containers are published on Quay and can be viewed at: <https://quay.io/%s/>.\n", r.org))
 	f.WriteString("\n")
 
 	if len(releaseNotes) > 0 {
