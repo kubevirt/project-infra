@@ -25,7 +25,40 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.18 && export KUBEVIRT_STORAGE=hpp && automation/test.sh"
+            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.18 && export KUBEVIRT_STORAGE=hpp && CDI_E2E_SKIP=Destructive &&automation/test.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "29Gi"
+  kubevirt/containerized-data-importer:
+  - name: pull-containerized-data-importer-e2e-k8s-1.18-hpp-destructive
+    skip_branches:
+      - release-v\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 5h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/bootstrap:v20200801-23e4b0e
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.18 && export KUBEVIRT_STORAGE=hpp && CDI_E2E_FOCUS=Destructive &&automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -57,7 +90,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=hpp && automation/test.sh"
+            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=hpp && CDI_E2E_SKIP=Destructive && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -89,7 +122,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.17 && export RANDOM_CR=true && export KUBEVIRT_STORAGE=ceph && automation/test.sh"
+            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.17 && export RANDOM_CR=true && export KUBEVIRT_STORAGE=ceph && CDI_E2E_SKIP=Destructive && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -121,7 +154,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=ember_lvm && export SNAPSHOT_SC=ember-csi-lvm && export BLOCK_SC=ember-csi-lvm && automation/test.sh"
+            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=ember_lvm && export SNAPSHOT_SC=ember-csi-lvm && export BLOCK_SC=ember-csi-lvm && CDI_E2E_SKIP=Destructive && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -153,7 +186,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.18 && export KUBEVIRT_STORAGE=hpp && export MULTI_UPGRADE=true && automation/test.sh"
+            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.18 && export KUBEVIRT_STORAGE=hpp && export MULTI_UPGRADE=true && CDI_E2E_SKIP=Destructive && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -185,7 +218,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.18 && export KUBEVIRT_STORAGE=nfs && automation/test.sh"
+            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.18 && export KUBEVIRT_STORAGE=nfs && CDI_E2E_SKIP=Destructive && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
