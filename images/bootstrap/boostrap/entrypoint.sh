@@ -17,15 +17,5 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# get test-infra for latest bootstrap etc
-git clone https://github.com/kubernetes/test-infra
-
-BOOTSTRAP_UPLOAD_BUCKET_PATH=${BOOTSTRAP_UPLOAD_BUCKET_PATH:-"gs://kubernetes-jenkins/logs"}
-
 # actually start bootstrap and the job, under the runner (which handles dind etc.)
-/usr/local/bin/runner.sh \
-    ./test-infra/jenkins/bootstrap.py \
-        --job="${JOB_NAME}" \
-        --service-account="${GOOGLE_APPLICATION_CREDENTIALS}" \
-        --upload="${BOOTSTRAP_UPLOAD_BUCKET_PATH}" \
-        "$@"
+/usr/local/bin/runner.sh "$@"

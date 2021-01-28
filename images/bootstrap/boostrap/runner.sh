@@ -29,7 +29,8 @@ cleanup_dind() {
     if [[ "${DOCKER_IN_DOCKER_ENABLED:-false}" == "true" ]]; then
         echo "Cleaning up after docker"
         docker ps -aq | xargs -r docker rm -f || true
-        service docker stop || true
+        kill "$(</var/run/docker.pid)" || true
+        wait "$(</var/run/docker.pid)" || true
     fi
 }
 
@@ -62,7 +63,7 @@ if [[ "${DOCKER_IN_DOCKER_ENABLED}" == "true" ]]; then
     echo "Docker in Docker enabled, initializing..."
     printf '=%.0s' {1..80}; echo
     # If we have opted in to docker in docker, start the docker daemon,
-    service docker start
+    /usr/bin/dockerd -p /var/run/docker.pid --data-root=/docker-graph >/var/log/dockerd.log 2>&1 &
     # the service can be started but the docker socket not ready, wait for ready
     WAIT_N=0
     MAX_WAIT=5
