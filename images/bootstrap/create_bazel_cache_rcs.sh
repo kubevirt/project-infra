@@ -19,7 +19,7 @@ CACHE_PORT="${CACHE_PORT:-8080}"
 
 # get the installed version of a debian package
 package_to_version () {
-    dpkg-query --showformat='${Version}' --show "$1"
+    rpm -q --qf "%{VERSION}" "$1"
 }
 
 # look up a binary with `command -v $1` and return the debian package it belongs to
@@ -33,7 +33,7 @@ command_to_package () {
     # `dpkg-query --search $file-pattern` outputs lines with the format: "$package: $file-path"
     # where $file-path belongs to $package
     # https://manpages.debian.org/jessie/dpkg/dpkg-query.1.en.html
-    dpkg-query --search "${binary_path}" | cut -d':' -f1
+    rpm -q --queryformat "%{NAME}" --whatprovides "${binary_path}"
 }
 
 # get the installed package version relating to a binary
@@ -54,7 +54,7 @@ hash_toolchains () {
     python_version=$(command_to_version python)
     # the rpm packaging rules use rpmbuild
     local rpmbuild_version
-    rpmbuild_version=$(command_to_version rpmbuild)
+    rpmbuild_version=$(command_to_version rpm)
     # combine all tool versions into a hash
     # NOTE: if we change the set of tools considered we should
     # consider prepending the hash with a """schema version""" for completeness
