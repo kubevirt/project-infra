@@ -18,14 +18,13 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210129-9f1d6a8
-          env:
-          - name: KUBEVIRT_RUN_UNNESTED
-            value: "true"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -55,14 +54,13 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210129-9f1d6a8
-          env:
-          - name: KUBEVIRT_RUN_UNNESTED
-            value: "true"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -92,14 +90,13 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210129-9f1d6a8
-          env:
-          - name: KUBEVIRT_RUN_UNNESTED
-            value: "true"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -129,14 +126,13 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210129-9f1d6a8
-          env:
-          - name: KUBEVIRT_RUN_UNNESTED
-            value: "true"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -165,14 +161,13 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20210129-9f1d6a8
-        env:
-        - name: KUBEVIRT_RUN_UNNESTED
-          value: "true"
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -201,14 +196,13 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20210129-9f1d6a8
-        env:
-        - name: KUBEVIRT_RUN_UNNESTED
-          value: "true"
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -236,8 +230,8 @@ presubmits:
     max_concurrency: 10
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      preset-bazel-unnested: "true"
       sriov-pod: "true"
       rehearsal.allowed: "true"
     spec:
@@ -262,9 +256,6 @@ presubmits:
               topologyKey: kubernetes.io/hostname
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20210129-9f1d6a8
-        env:
-        - name: KUBEVIRT_RUN_UNNESTED
-          value: "true"
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
@@ -359,14 +350,13 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210129-9f1d6a8
-          env:
-          - name: KUBEVIRT_RUN_UNNESTED
-            value: "true"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
