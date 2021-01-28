@@ -17,22 +17,18 @@
 CACHE_HOST="${CACHE_HOST:-bazel-cache.kubevirt-prow.svc.cluster.local}"
 CACHE_PORT="${CACHE_PORT:-8080}"
 
-# get the installed version of a debian package
+# get the installed version of a rpm package
 package_to_version () {
     rpm -q --qf "%{VERSION}" "$1"
 }
 
-# look up a binary with `command -v $1` and return the debian package it belongs to
+# look up a binary with `command -v $1` and return the rpm package it belongs to
 command_to_package () {
-    # NOTE: we resolve symlinks first because debian packages can provide alternatives
-    # by `update-alternatives` in postinit scripts, which updates a common
-    # symlink for a provided file to the backing entry.
-    # https://wiki.debian.org/DebianAlternatives
+    # NOTE: First resolve symlinks so that we are sure that we really get the package
+    # which provides the binary.
     local binary_path
     binary_path=$(readlink -f "$(command -v "$1")")
-    # `dpkg-query --search $file-pattern` outputs lines with the format: "$package: $file-path"
-    # where $file-path belongs to $package
-    # https://manpages.debian.org/jessie/dpkg/dpkg-query.1.en.html
+    # Get the name of the package from where the binary comes from
     rpm -q --queryformat "%{NAME}" --whatprovides "${binary_path}"
 }
 
@@ -60,6 +56,7 @@ hash_toolchains () {
     # consider prepending the hash with a """schema version""" for completeness
     local tool_versions
     tool_versions="CC:${cc_version},PY:${python_version},RPM:${rpmbuild_version}"
+    echo "${tool_versions}" 1>&2;
     echo "${tool_versions}" | md5sum | cut -d" " -f1
 }
 
