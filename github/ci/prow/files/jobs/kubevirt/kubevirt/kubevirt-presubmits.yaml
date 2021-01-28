@@ -207,7 +207,7 @@ presubmits:
     - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
+      k8s.v1.cni.cncf.io/networks: '[{"interface":"net1","name":"sriov-passthrough-cni","namespace":"multus-cni-ns"}]'
       testgrid-dashboards: kubevirt-presubmits
     always_run: true
     optional: false
