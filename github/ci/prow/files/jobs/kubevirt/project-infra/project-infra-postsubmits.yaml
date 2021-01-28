@@ -114,7 +114,7 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin=true quay.io
                 cd images
                 ./publish_image.sh kubekins-e2e quay.io kubevirtci
             # docker-in-docker needs privileged mode
