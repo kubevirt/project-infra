@@ -76,7 +76,12 @@ if [[ "${DOCKER_IN_DOCKER_ENABLED}" == "true" ]]; then
     echo "Docker in Docker enabled, initializing..."
     printf '=%.0s' {1..80}; echo
     # If we have opted in to docker in docker, start the docker daemon,
-    /usr/bin/dockerd -p /var/run/docker.pid --data-root=/docker-graph >/var/log/dockerd.log 2>&1 &
+    /usr/bin/dockerd \
+        -p /var/run/docker.pid \
+        --data-root=/docker-graph \
+        --init-path /usr/libexec/docker/docker-init \
+        --userland-proxy-path /usr/libexec/docker/docker-proxy \
+            >/var/log/dockerd.log 2>&1 &
     # the service can be started but the docker socket not ready, wait for ready
     WAIT_N=0
     MAX_WAIT=5
