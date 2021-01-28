@@ -75,9 +75,7 @@ RUN dnf install -y \
         moby-engine && \
     dnf -y clean all
 
-# Move Docker's storage location
-RUN echo 'DOCKER_OPTS="${DOCKER_OPTS} --data-root=/docker-graph"' | \
-    tee --append /etc/default/docker
+# Create directory for docker storage location
 # NOTE this should be mounted and persisted as a volume ideally (!)
 # We will make a fallback one now just in case
 RUN mkdir /docker-graph
