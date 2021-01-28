@@ -73,16 +73,6 @@ make_bazel_rc () {
     # this is the default for recent releases but we set it explicitly
     # since this is the only hash our cache supports
     echo "startup --host_jvm_args=-Dbazel.DigestFunction=sha256"
-    # use remote caching for all the things
-    # Only set this flag for older bazel versions, it is now enabled by 
-    # default and the flag was removed.
-    #
-    # NOTE: This is an exceptional case (version comparison)
-    # shellcheck disable=SC2072
-    # https://github.com/koalaman/shellcheck/wiki/SC2072#exceptions
-    if [[ "${BAZEL_VERSION:-}" < '0.25' ]]; then
-       echo "build --experimental_remote_spawn_cache"
-    fi
     # don't fail if the cache is unavailable
     echo "build --remote_local_fallback"
     # point bazel at our http cache ...
@@ -93,12 +83,6 @@ make_bazel_rc () {
     local cache_url
     cache_url="http://${CACHE_HOST}:${CACHE_PORT}/${cache_id}"
     echo "build --remote_http_cache=${cache_url}"
-    # specifically for bazel 0.15.0 we want to set this flag
-    # our docker image now sets BAZEL_VERSION with the bazel version as installed
-    # https://github.com/bazelbuild/bazel/issues/5047#issuecomment-401295174
-    if [[ "${BAZEL_VERSION:-}" = "0.15.0" ]]; then
-        echo "build --remote_max_connections=200"
-    fi
 }
 
 # https://docs.bazel.build/versions/master/user-manual.html#bazelrc
