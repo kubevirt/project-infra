@@ -85,6 +85,16 @@ RUN mkdir /docker-graph
 # END: DOCKER IN DOCKER SETUP
 #
 
+
+# Cache the most commonly used bazel versions in the container
+RUN  curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 && \
+     chmod +x ./bazelisk && mv ./bazelisk /usr/local/bin/bazelisk && \
+     cd /usr/local/bin && ln -s bazelisk bazel
+
+# Cache the most commonly used bazel versions inside the image
+RUN USE_BAZEL_VERSION=3.4.1 bazel version && \
+  USE_BAZEL_VERSION=4.0.0 bazel version
+
 # note the runner is also responsible for making docker in docker function if
 # env DOCKER_IN_DOCKER_ENABLED is set and similarly responsible for generating
 # .bazelrc files if bazel remote caching is enabled 
