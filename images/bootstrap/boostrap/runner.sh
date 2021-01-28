@@ -23,6 +23,15 @@ if [[ "${BAZEL_REMOTE_CACHE_ENABLED}" == "true" ]]; then
     /usr/local/bin/create_bazel_cache_rcs.sh
 fi
 
+# setup custom certificates for the container registry mirror
+setup_ca(){
+    if [ -f "${CA_CERT_FILE}" ]; then
+        echo "Adding ${CA_CERT_FILE} as a trusted root CA"
+        cp "${CA_CERT_FILE}" /etc/pki/ca-trust/source/anchors/
+
+        update-ca-trust
+    fi
+}
 
 # runs custom docker data root cleanup binary and debugs remaining resources
 cleanup_dind() {
@@ -37,6 +46,9 @@ cleanup_dind() {
 early_exit_handler() {
     cleanup_dind
 }
+
+# setup certificates before anything gets started
+setup_ca
 
 # optionally enable ipv6 docker
 export DOCKER_IN_DOCKER_IPV6_ENABLED=${DOCKER_IN_DOCKER_IPV6_ENABLED:-false}
