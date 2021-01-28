@@ -72,6 +72,8 @@ RUN wget -q https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.ta
 # Install packages
 
 RUN dnf install -y \
+        kmod \
+        procps-ng \
         moby-engine && \
     dnf -y clean all
 
