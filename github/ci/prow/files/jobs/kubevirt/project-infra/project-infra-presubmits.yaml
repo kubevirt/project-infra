@@ -405,6 +405,10 @@ presubmits:
             -github-endpoint=https://api.github.com \
             -config-path $REPO_DIR/github/ci/prow/files/orgs.yaml \
             -github-token-path /etc/github/oauth \
+            -fix-org-members=true \
+            -fix-teams=true \
+            -fix-team-members=true \
+            -fix-team-repos=true \
             -confirm=false
         volumeMounts:
         - name: token
