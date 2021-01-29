@@ -225,6 +225,7 @@ presubmits:
             - "/bin/bash"
             - "-c"
             - |
+              set -e
               cd github/ci/prow-deploy/
               molecule test
               tmp=$(mktemp -d)

@@ -179,24 +179,15 @@ tasks, primarily passing variables around.
 
 The role is tested using molecule.
 Molecule will take care of all the test task.
-As a prerrequisite you need two files:
-* `github token`: should contain the path of a valid github account token, any token would do,
+As a prerrequisite you need two environment variables defined:
+* `GITHUB_TOKEN`: should contain the path of a valid github account token, any token would do,
 no need to have any specific permissions.
-* `google application credentials` with the path of a Google Cloud Platform JSON credentials file; as with
+* `GOOGLE_APPLICATION_CREDENTIALS` with the path of a Google Cloud Platform JSON credentials file; as with
 the github token there are no specific requirements in terms of permissions.
 
-Having these files located in your host you can run the tests executing:
+Having these environment variables defined you can run the tests executing from `github/ci/prow-deploy`:
 
-    $ docker run \
-      -v /path/to/project-infra/github/ci/prow-deploy:/app \
-      -v /path/to/github/token:/etc/github-token \
-      -v /path/to/google/application/credentials:/etc/google-application-credentials \
-      -e GITHUB_TOKEN=/etc/github-token \
-      -e GOOGLE_APPLICATION_CREDENTIALS=/etc/google-application-credentials \
-      --entrypoint /bin/bash \
-      -w /app \
-      -t quay.io/kubevirtci/prow-deploy:v20210129-94779ee \
-      molecule test
+    $ local-tests.sh
 
 ## How to debug the services in live cluster
 
