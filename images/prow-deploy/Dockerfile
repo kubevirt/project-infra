@@ -5,6 +5,8 @@ RUN git clone https://github.com/kubernetes/test-infra.git && \
   git checkout e88598c4a7f86e0564a2d8b46ce5f729247791e6 && \
   bazelisk build //prow/cmd/config-bootstrapper && \
   cp bazel-bin/prow/cmd/config-bootstrapper/linux_amd64_stripped/config-bootstrapper /usr/local/bin && \
+  bazelisk build //prow/cmd/phony && \
+  cp bazel-bin/prow/cmd/phony/linux_amd64_stripped/phony /usr/local/bin && \
   bazelisk clean --expunge && \
   cd .. && rm -rf test-infra && \
   rm -rf ~/.cache.bazel
