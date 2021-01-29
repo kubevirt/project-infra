@@ -25,6 +25,10 @@ RUN curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0
   chmod a+x ./kind && \
   mv ./kind /usr/local/bin
 
+RUN curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" && \
+  chmod a+x ./kubectl && \
+  mv ./kubectl /usr/local/bin
+
 COPY requirements.txt .
 
 RUN pip install -r requirements.txt
