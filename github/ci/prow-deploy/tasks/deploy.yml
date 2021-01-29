@@ -26,12 +26,12 @@
   shell: |
     config-bootstrapper \
       --dry-run=false \
-      --source-path=$PROJECT_INFRA_ROOT \
+      --source-path=$CONFIG_ROOT \
       --config-path=$PROW_CONFIG_PATH \
       --plugin-config=$PLUGIN_CONFIG_PATH \
       --job-config-path=$JOB_CONFIG_PATH
   environment:
-    PROJECT_INFRA_ROOT: "{{ project_infra_root }}"
+    CONFIG_ROOT: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs"
     JOB_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/files/jobs/"
     PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
     PLUGIN_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/plugins/plugins.yaml"
