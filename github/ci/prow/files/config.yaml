@@ -335,6 +335,14 @@ branch-protection:
           branches:
             master:
               protect: true
+        user-guide:
+          branches:
+            master:
+              protect: true
+            gh-pages:
+              protect: true
+            source:
+              protect: true
     k8snetworkplumbingwg:
       repos:
         kubemacpool:
