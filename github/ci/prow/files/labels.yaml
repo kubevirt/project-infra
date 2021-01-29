@@ -219,6 +219,12 @@ default:
       target: prs
       prowPlugin: trigger
       addedBy: prow
+    - color: 15dd18
+      description: Indicates a non-member PR verified by an org member that is safe to test. # This is the opposite of needs-ok-to-test and should be mutually exclusive.
+      name: ok-to-test
+      target: prs
+      prowPlugin: trigger
+      addedBy: prow
 repos:
   kubevirt/kubevirt:
     labels:
@@ -312,12 +318,6 @@ repos:
       - name: topic/testing
         color: c5def5
         target: both
-      - color: 15dd18
-        description: Indicates a non-member PR verified by an org member that is safe to test. # This is the opposite of needs-ok-to-test and should be mutually exclusive.
-        name: ok-to-test
-        target: prs
-        prowPlugin: trigger
-        addedBy: prow
       - color: e11d21
         description: Categorizes PRs as related to changing build files of virt-* components
         name: kind/build-change
