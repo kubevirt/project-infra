@@ -34,9 +34,9 @@
 # way to disable it. For the sake of sanity, hook must not be exposed
 # to port https while testing.
 - name: verify Prow hook is responding
-  shell: >
-    cd {{ testinfra_dir }}/prow/cmd/
-    go run ./phony
-    --address="http://{{ deckUrl }}/hook"
-    --hmac {{ prowHmac }}
+  shell: |
+    go get k8s.io/test-infra/prow/cmd/phony
+    phony \
+      --address="http://{{ deckUrl }}/hook" \
+      --hmac {{ prowHmac }}
   changed_when: false

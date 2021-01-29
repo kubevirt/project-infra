@@ -185,9 +185,65 @@ no need to have any specific permissions.
 * `GOOGLE_APPLICATION_CREDENTIALS` with the path of a Google Cloud Platform JSON credentials file; as with
 the github token there are no specific requirements in terms of permissions.
 
-Having these environment variables defined you can run the tests executing from `github/ci/prow-deploy`:
+With these environment variables exported you need to create a virtual environment, from `github/ci/prow-deploy` run:
 
-    $ local-tests.sh
+    $ python3 -m venv venv
+
+Now you can activate the virtual environment and install the dependencies:
+
+    $ source ./venv/bin/activate
+    $ pip install -r requirements.txt
+
+Then you can run:
+
+    $ molecule prepare
+
+To launch the kubevirtci cluster and prepare the nodes
+properly. This is a protected action, it cannot be done twice.
+The natural flow is that you can prepare again an instance only
+after you destroy it, so if you need to prepare again but no destroy
+has been issued, you need to call
+
+    $ molecule reset
+
+To tell molecule to start from scratch.
+
+Then start deployment with
+
+    $ molecule converge
+
+This will launch the prow deployment itself, will wait for the deployment
+to settle and then will collect some information in the
+artifacts dir.
+
+    $ molecule verify
+
+Will launch a set of tests to verify that the deployment
+works correctly. At the moment only smoke tests are available.
+
+You can enter the test instance and access the deployed cluster with:
+
+    $ molecule login
+    # export KUBECONFIG=/workspace/repos/project-infra-master/github/ci/prow-deploy/kustom/overlays/kubevirtci-testing/secrets/kubeconfig
+
+then you can execute kubectl commands as usual:
+
+    # kubectl get pods --all-namespaces
+
+Additional molecule commands:
+
+    molecule cleanup
+
+will remove prow-namespace, so that prow can be eventually
+deployed again in the same cluster
+
+    molecule destroy
+
+will tear down the kubevirt ci cluster completely
+
+    molecule test
+
+will launch all the above step automatically in sequence.
 
 ## How to debug the services in live cluster
 

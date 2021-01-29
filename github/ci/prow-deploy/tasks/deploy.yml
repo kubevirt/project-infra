@@ -22,12 +22,6 @@
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
 
-- name: Shallow Clone test-infra repo
-  git:
-    repo: https://github.com/kubernetes/test-infra.git
-    dest: "{{ testinfra_dir }}"
-    version: e88598c4a7f86e0564a2d8b46ce5f729247791e6
-
 - name: Bootstrap the full job config
   shell: |
     config-bootstrapper \
@@ -42,5 +36,3 @@
     PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
     PLUGIN_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/plugins/plugins.yaml"
     KUBECONFIG: "{{ kubeconfig_path }}"
-  args:
-    chdir: "{{ testinfra_dir }}"

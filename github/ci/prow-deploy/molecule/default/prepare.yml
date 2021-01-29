@@ -50,7 +50,7 @@
               nodeRegistration:
                 name: node01
                 kubeletExtraArgs:
-                  system-reserved: memory=8Gi
+                  system-reserved: memory=16Gi
     - name: Launch cluster
       shell: |
         kind delete cluster
