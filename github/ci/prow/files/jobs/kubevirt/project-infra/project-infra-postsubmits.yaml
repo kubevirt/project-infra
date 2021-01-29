@@ -156,6 +156,38 @@ postsubmits:
                 memory: "1Gi"
               limits:
                 memory: "1Gi"
+    - name: publish-prow-deploy-image
+      always_run: false
+      run_if_changed: "images/prow-deploy/.*"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-kubevirtci-quay-credential: "true"
+      spec:
+        nodeSelector:
+          type: vm
+        containers:
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cd images
+                ./publish_image.sh prow-deploy quay.io kubevirtci
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "8Gi"
+              limits:
+                memory: "8Gi"
     - name: post-project-infra-prow-deployment
       always_run: false
       annotations:
