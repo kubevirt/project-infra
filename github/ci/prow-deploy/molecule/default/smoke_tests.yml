@@ -35,8 +35,7 @@
 # to port https while testing.
 - name: verify Prow hook is responding
   shell: |
-    go get k8s.io/test-infra/prow/cmd/phony
-    phony \
+    /usr/local/bin/phony \
       --address="http://{{ deckUrl }}/hook" \
       --hmac {{ prowHmac }}
   changed_when: false

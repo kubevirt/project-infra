@@ -214,7 +214,7 @@ presubmits:
       securityContext:
         runAsUser: 0
       containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20210129-94779ee
+        - image: quay.io/kubevirtci/prow-deploy:v20210129-a239273
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
