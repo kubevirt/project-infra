@@ -1,3 +1,9 @@
+- name: install pip dependencies
+  pip:
+    name:
+      - kubernetes==11.0.0
+      - openshift==0.11.2
+
 - name: launch config rendering
   shell: |
     ./render-environment-configs.sh {{ deploy_environment }}
@@ -22,7 +28,7 @@
     dest: "{{ testinfra_dir }}"
     version: e88598c4a7f86e0564a2d8b46ce5f729247791e6
 
-- name: Bootstrap the full job config (this may take a few minutes)
+- name: Bootstrap the full job config
   shell: |
     config-bootstrapper \
       --dry-run=false \
