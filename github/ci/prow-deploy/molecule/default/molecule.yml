@@ -4,12 +4,14 @@ driver:
 
 platforms:
   - name: instance
-    image: kubevirtci/bootstrap:v20201119-a5880e0
+    image: quay.io/kubevirtci/prow-deploy:v20210129-a239273
     privileged: True
     etc_hosts:
       "gcsweb.prowdeploy.ci": "127.0.0.1"
       "deck.prowdeploy.ci": "127.0.0.1"
       "hook.prowdeploy.ci": "127.0.0.1"
+    volumes:
+      - /tmp/prow-deploy-molecule:/docker-graph
 
 provisioner:
   name: ansible

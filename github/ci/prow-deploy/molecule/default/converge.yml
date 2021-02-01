@@ -27,7 +27,7 @@
           include_tasks: retry-pod-status.yml
           vars:
             retries: 20
-            delay: 10
+            delay: 15
       always:
         - name: collect deployment information
           include_tasks: collect.yml

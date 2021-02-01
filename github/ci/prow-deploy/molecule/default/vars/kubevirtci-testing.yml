@@ -1,21 +1,8 @@
 # Test provisioning
 testinfra_dir: /tmp/test-infra
-kubectl_exec: "{{ kubevirtci_dir }}/cluster-up/kubectl.sh"
-bootstrap_full_config: true
 project_infra_root: /workspace/repos/project-infra-master
 
-kubevirtci_dir: /tmp/kubevirtci
-kubevirtci_provider: k8s-1.19
-kubevirt_num_nodes: 2
-kubevirt_num_secondary_nics: 1
-kubevirt_memory_size: 16384
-kubevirtci_tag: 2101060913-2e49157
-kubeconfig_path: '{{ kubevirtci_dir }}/_ci-configs/{{ kubevirtci_provider }}/.kubeconfig'
+kubeconfig_path: '/root/.kube/config'
 secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/kubevirtci-testing/secrets/'
 
-shell_environment:
-  KUBEVIRT_PROVIDER: "{{ kubevirtci_provider }}"
-  KUBEVIRT_NUM_NODES: "{{ kubevirt_num_nodes }}"
-  KUBEVIRT_NUM_SECONDARY_NICS: "{{ kubevirt_num_secondary_nics }}"
-  KUBEVIRT_MEMORY_SIZE: "{{ kubevirt_memory_size }}"
-  KUBEVIRTCI_TAG: "{{ kubevirtci_tag }}"
+kind_cluster_config: '/workspace/cluster.yaml'

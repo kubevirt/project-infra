@@ -34,7 +34,6 @@
 - name: Describe all in a single yaml.
   shell: |
     {{ kubectl_prow }} get all -o yaml > {{ artifacts_dir }}/get_all.yaml
-  environment: "{{ shell_environment }}"
 
 - name: Compress yaml
   archive:
@@ -44,11 +43,6 @@
 - name: collect opened port
   shell: |
     ss -ntpa > {{ artifacts_dir }}/host-netstat.txt
-
-- name: collect port mapping
-  shell: |
-    {{ kubevirtci_dir }}/cluster-up/cli.sh ports > {{ artifacts_dir }}/port-map.txt
-  environment: "{{ shell_environment }}"
 
 # Putting relevant data in a hierarchy
 - name: include resource collection tasks

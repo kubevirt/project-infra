@@ -202,7 +202,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/prow-deploy:v20210129-a239273
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
@@ -226,17 +226,8 @@ postsubmits:
               mkdir -p ${base_dir}/vars/${DEPLOY_ENVIRONMENT}
               mv main.yml ${base_dir}/vars/${DEPLOY_ENVIRONMENT}/secrets.yml
 
-              # install kubectl
-              curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-              chmod a+x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
-
-              # install deps and run playbook
+              # run playbook
               cd ${base_dir}
-              apt-get update && apt-get install -y python3-venv --no-install-recommends
-              python3 -m venv venv
-              source venv/bin/activate
-              pip install wheel
-              pip install -r requirements.txt
               cat << EOF > inventory
               [local]
               localhost ansible_connection=local

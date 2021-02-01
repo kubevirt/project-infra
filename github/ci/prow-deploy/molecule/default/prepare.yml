@@ -30,20 +30,32 @@
         /usr/local/bin/start_dind.sh
       changed_when: false
 
-    - name: Shallow Clone kubevirtci repo
-      git:
-        repo: https://github.com/kubevirt/kubevirtci.git
-        dest: "{{ kubevirtci_dir }}"
-        depth: 1
-        refspec: "+refs/heads/master:refs/remotes/origin/master"
-      when: "'kubevirtci' in deploy_environment"
-
-    - name: Launch kubevirtci cluster
-      command: make cluster-up
+    - name: create cluster config
+      copy:
+        dest: '{{ kind_cluster_config }}'
+        content: |
+          kind: Cluster
+          apiVersion: kind.x-k8s.io/v1alpha4
+          nodes:
+          - role: control-plane
+          - role: worker
+            extraPortMappings:
+            - containerPort: 80
+              hostPort: 80
+            - containerPort: 443
+              hostPort: 443
+            kubeadmConfigPatches:
+            - |
+              kind: JoinConfiguration
+              nodeRegistration:
+                name: node01
+                kubeletExtraArgs:
+                  system-reserved: memory=16Gi
+    - name: Launch cluster
+      shell: |
+        kind delete cluster
+        kind create cluster --config {{ kind_cluster_config }}
       changed_when: false
-      args:
-        chdir: "{{ kubevirtci_dir }}"
-      environment: "{{ shell_environment }}"
       when: "'kubevirtci' in deploy_environment"
 
     - name: set secrets dir

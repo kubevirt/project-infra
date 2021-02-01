@@ -242,7 +242,7 @@ presubmits:
       securityContext:
         runAsUser: 0
       containers:
-        - image: kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/prow-deploy:v20210129-a239273
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
@@ -252,30 +252,29 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
-            - "cd github/ci/prow-deploy/ &&
-               apt-get update && apt-get install -y python3-venv --no-install-recommends &&
-               python3 -m venv venv &&
-               source venv/bin/activate &&
-               pip install wheel &&
-               pip install -r requirements.txt &&
-               molecule test &&
-               tmp=$(mktemp -d) &&
-               docker cp instance:$ARTIFACTS $tmp &&
-               cp -ar $tmp/artifacts/* $ARTIFACTS"
+            - |
+              set -e
+              cd github/ci/prow-deploy/
+              molecule test
+              tmp=$(mktemp -d)
+              docker cp instance:$ARTIFACTS $tmp
+              cp -ar $tmp/artifacts/* $ARTIFACTS
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
             requests:
-              memory: "22Gi"
+              memory: "29Gi"
             limits:
-              memory: "22Gi"
+              memory: "29Gi"
           volumeMounts:
           - name: token
             mountPath: /etc/github
           - name: gcs
             mountPath: /etc/gcs
             readOnly: true
+          - name: molecule-docker
+            mountPath: /tmp/prow-deploy-molecule
       volumes:
       - name: token
         secret:
@@ -283,6 +282,8 @@ presubmits:
       - name: gcs
         secret:
           secretName: gcs
+      - name: molecule-docker
+        emptyDir: {}
   - name: pull-project-infra-cert-manager-deploy-test
     optional: false
     run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|vendor/.*|WORKSPACE"

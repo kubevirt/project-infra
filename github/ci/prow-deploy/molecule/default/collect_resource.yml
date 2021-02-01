@@ -8,7 +8,7 @@
   k8s_info:
     kind: "{{ resource.value.kind }}"
     namespace: "{{ prowNamespace }}"
-    kubeconfig: '{{ kubevirtci_dir }}/_ci-configs/{{ kubevirtci_provider }}/.kubeconfig'
+    kubeconfig: '{{ kubeconfig_path }}'
   register: resource_list
 
 - name: "Dump info for each {{ resource.key }}"
@@ -17,9 +17,7 @@
     RESOURCE_KIND: "{{ resource.key }}"
     RESOURCE_NAME: "{{ item.metadata.name }}"
     ARTIFACTS_DIR: "{{ artifacts_dir }}"
-    KUBECTL_CMD: "{{ kubectl_prow }}"
-    KUBEVIRT_PROVIDER: "{{ kubevirtci_provider }}"
-    KUBEVIRTCI_TAG: "{{ kubevirtci_tag }}"
+    KUBECTL_CMD: "kubectl"
 
   loop: "{{ resource_list.resources }}"
   loop_control:

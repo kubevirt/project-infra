@@ -178,12 +178,8 @@ tasks, primarily passing variables around.
 ## How to test the role
 
 The role is tested using molecule.
-Molecule will take care of all the test task. The kubevirtci cluster will require at
-least 16G of memory to run properly.
-As a prerrequisite you need two environment variables to be defined:
-export GITHUB_TOKEN=/home/fgimenez/workspace/redhat/secrets/phaino/gh/oauth
-export GOOGLE_APPLICATION_CREDENTIALS=/home/fgimenez/workspace/redhat/secrets/phaino/gcs/service-account.json
-
+Molecule will take care of all the test task.
+As a prerrequisite you need two environment variables defined:
 * `GITHUB_TOKEN`: should contain the path of a valid github account token, any token would do,
 no need to have any specific permissions.
 * `GOOGLE_APPLICATION_CREDENTIALS` with the path of a Google Cloud Platform JSON credentials file; as with
@@ -248,7 +244,6 @@ will tear down the kubevirt ci cluster completely
     molecule test
 
 will launch all the above step automatically in sequence.
-
 
 ## How to debug the services in live cluster
 
