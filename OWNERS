@@ -8,6 +8,7 @@ filters:
       - phoracek
       - aglitke
       - fgimenez
+      - qinqon
     approvers:
       - davidvossel
       - vladikr
@@ -16,6 +17,7 @@ filters:
       - phoracek
       - aglitke
       - fgimenez
+      - qinqon
     emeritus_approvers:
       - cynepco3hahue
       - danielBelenky
