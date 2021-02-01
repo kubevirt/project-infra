@@ -1,7 +1,7 @@
 # SR-IOV passthrough CNI
 
 This is a CNI ([container network interface](https://github.com/containernetworking/cni))
-plugin that passes all physical and virtual functions of a SR-IOV nic into the
+plugin that passes one physical SR-IOV nic into the
 namespace of a pod that requests it.
 
 ## Where it used
@@ -23,7 +23,6 @@ plugin on all the relevant K8s nodes.
 ├── Dockerfile      # The Dockerfile that we use to pack the plugin in.
 ├── install-plugin  # The script that actually installs the plugin.
 ├── plugin  # The plugin itself.
-│   ├── 90-sriov-passthrough-cni.conf
 │   └── sriov-passthrough-cni
 └── README.md
 ```
