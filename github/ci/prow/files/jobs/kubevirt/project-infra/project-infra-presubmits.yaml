@@ -382,30 +382,25 @@ presubmits:
     decoration_config:
       timeout: 1h
       grace_period: 5m
-    extra_refs:
-    - org: kubernetes
-      repo: test-infra
-      base_ref: master
-      workdir: true
     max_concurrency: 1
     spec:
-      securityContext:
-        runAsUser: 0
       containers:
-      - image: kubevirtci/bootstrap:v20210112-b29dfd7
-        command: [ "/bin/sh", "-c" ]
+      - name: peribolos
+        image: gcr.io/k8s-prow/peribolos:v20210115-603a3a062d
+        command:
+        - /app/prow/cmd/peribolos/app.binary
         args:
-        - |
-          set -e
-          TEST_INFRA_DIR=$(cd ../.. && cd kubernetes/test-infra && pwd)
-          REPO_DIR=$(cd ../.. && cd kubevirt/project-infra && pwd)
-          cd $TEST_INFRA_DIR
-          bazel run //prow/cmd/peribolos -- \
-            -github-endpoint=http://ghproxy \
-            -github-endpoint=https://api.github.com \
-            -config-path $REPO_DIR/github/ci/prow/files/orgs.yaml \
-            -github-token-path /etc/github/oauth \
-            -confirm=false
+        - --github-endpoint=http://ghproxy
+        - --github-endpoint=https://api.github.com
+        - --config-path=github/ci/prow/files/orgs.yaml
+        - --github-token-path=/etc/github/oauth
+        - --fix-org=true
+        - --fix-org-members=true
+        - --fix-teams=true
+        - --fix-team-members=true
+        - --fix-team-repos=true
+        - --fix-repos=true
+        - --confirm=false
         volumeMounts:
         - name: token
           mountPath: /etc/github

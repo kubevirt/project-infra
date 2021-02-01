@@ -22,16 +22,13 @@ orgs:
       - AdamJ
       - adityaramteke
       - aglitke
-      - ahadas
       - akrejcir
       - AlonaKaplan
-      - alonSadan
       - alosadagrande
       - andreabolognani
       - andreyod
       - arnongilboa
       - ArthurSens
-      - AsherShoshan
       - ashleyschuett
       - awels
       - bardielle
@@ -42,7 +39,7 @@ orgs:
       - brybacki
       - crobinso
       - cynepco3hahue
-      - dalia-frank
+      - danielBelenky
       - danielerez
       - dankenigsberg
       - dcritch
@@ -54,8 +51,6 @@ orgs:
       - e-minguez
       - EdDev
       - eedri
-      - eglynn
-      - eldan
       - enp0s3
       - erkanerol
       - ezrasilvera
@@ -71,9 +66,11 @@ orgs:
       - guy9050
       - hritvi
       - hroyrh
+      - ibesso-rh
       - idanshaby
       - ifireball
       - igoihman
+      - iholder-redhat
       - ILpinto
       - InbarRose
       - iranzo
@@ -84,7 +81,6 @@ orgs:
       - jakub-dzon
       - jean-edouard
       - jelkosz
-      - jerry7z
       - jhernand
       - JinjunXiong
       - jniederm
@@ -92,7 +88,6 @@ orgs:
       - jparrill
       - jtomasek
       - kbidarkar
-      - kgoldbla
       - krsacme
       - ksimon1
       - kubevirt-commenter-bot
@@ -121,7 +116,6 @@ orgs:
       - n1r1
       - nellyc
       - nertpinx
-      - ngavrilo
       - nirarg
       - nunnatsa
       - ohadlevy
@@ -167,6 +161,7 @@ orgs:
       - thetechnick
       - tiraboschi
       - tomob
+      - vasiliy-ul
       - vatsalparekh
       - vladikr
       - vojtechszocs
@@ -177,7 +172,6 @@ orgs:
       - yuvalturg
       - zcahana
       - zhlhahaha
-      - zleng667
       - zvikorn
     members_can_create_repositories: false
     name: KubeVirt
@@ -485,7 +479,6 @@ orgs:
           - InbarRose
           - shiywang
           - vatsalparekh
-          - ngavrilo
           - ILpinto
           - adityaramteke
           - yossisegev
