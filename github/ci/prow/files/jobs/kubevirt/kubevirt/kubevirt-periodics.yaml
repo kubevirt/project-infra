@@ -337,7 +337,9 @@ periodics:
             )"
             git checkout "${release_version}"
             make manifests
-            gsutil -m rm -r gs://kubevirt-prow/devel/release/kubevirt/kubevirt/${release_version}
+            if [ $(gsutil ls 'gs://kubevirt-prow/devel/release/kubevirt/kubevirt/'|grep ${release_version}|wc -l) -gt 0 ]; then
+              gsutil -m rm -r gs://kubevirt-prow/devel/release/kubevirt/kubevirt/${release_version}
+            fi
             gsutil cp -r _out/manifests/testing gs://kubevirt-prow/devel/release/kubevirt/kubevirt/${release_version}/manifests/
         # docker-in-docker needs privileged mode
         securityContext:
@@ -391,7 +393,9 @@ periodics:
             )"
             git checkout "${release_version}"
             make manifests
-            gsutil -m rm -r gs://kubevirt-prow/devel/release/kubevirt/kubevirt/${release_version}
+            if [ $(gsutil ls 'gs://kubevirt-prow/devel/release/kubevirt/kubevirt/'|grep ${release_version}|wc -l) -gt 0 ]; then
+              gsutil -m rm -r gs://kubevirt-prow/devel/release/kubevirt/kubevirt/${release_version}
+            fi
             gsutil cp -r _out/manifests/testing gs://kubevirt-prow/devel/release/kubevirt/kubevirt/${release_version}/manifests/
         # docker-in-docker needs privileged mode
         securityContext:
