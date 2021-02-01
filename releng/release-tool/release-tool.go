@@ -394,7 +394,18 @@ func (r *releaseData) forkProwJobs() error {
 
 	gitbranch := fmt.Sprintf("%s_%s_%s_configs", r.org, r.repo, r.newBranch)
 
-	_, err := gitCommand("-C", r.infraDir, "checkout", "-B", gitbranch)
+	_, err := gitCommand("-C", r.infraDir, "checkout", "-b", gitbranch)
+	if err != nil {
+		_, err = gitCommand("-C", r.infraDir, "checkout", "-B", gitbranch)
+		if err != nil {
+			return err
+		}
+
+		_, err = gitCommand("-C", r.infraDir, "pull", "origin", gitbranch)
+		if err != nil {
+			return err
+		}
+	}
 
 	if _, err = os.Stat(fullJobConfig); err != nil && os.IsNotExist(err) {
 		// no job to fork for this project
@@ -442,13 +453,12 @@ func (r *releaseData) forkProwJobs() error {
 			"--branch", "master",
 			"--github-token-path", r.githubTokenPath,
 			"--title", fmt.Sprintf("Release configs for %s/%s release branch %s", r.org, r.repo, r.newBranch),
-			"--match-title", fmt.Sprintf("Release configs for %s/%s release branch %s", r.org, r.repo, r.newBranch),
 			"--body", "adds new release configs",
 			"--source", fmt.Sprintf("kubevirt:%s", gitbranch),
 			"--confirm",
 		)
 		bytes, err := cmd.CombinedOutput()
-		if err != nil {
+		if err != nil && !strings.Contains(string(bytes), "A pull request already exists") {
 			log.Printf("ERROR: pr-creator command output: %s : %s ", string(bytes), err)
 			return err
 		}

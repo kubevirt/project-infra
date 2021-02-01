@@ -19,7 +19,7 @@ RUN set -x && \
     # we need https://github.com/kubernetes/test-infra/pull/20535 merged
     git clone https://github.com/rmohr/test-infra.git && \
     cd /test-infra && \
-    git checkout 4cf6b44c611e528555998ebb3839ae90c00061fb && \
+    git checkout a398e0a4d605a5a523e96f5c6fb44859eaeb7d42 && \
     cd /test-infra/robots/pr-creator && \
     go install && \
     cd /test-infra/releng/config-forker && \
