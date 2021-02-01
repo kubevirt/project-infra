@@ -33,7 +33,7 @@ postsubmits:
           commit=$(git show -s --format=%H)
           make build
           cd ../user-guide-gh-pages
-          find . -mindepth 1 -maxdepth 1 -regextype egrep -not -regex '\./(\.git.*|\.nojekyll)' -print | xargs rm -rf
+          find . -mindepth 1 -maxdepth 1 -regextype egrep -not -regex '\./(\.git.*|\.nojekyll)' -print0 | xargs -0 rm -rf
           cp -R ../user-guide/site/* .
           git add -A
           git commit --signoff -m "Postsubmit site update from $commit"
