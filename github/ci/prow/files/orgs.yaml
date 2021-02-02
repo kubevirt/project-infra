@@ -512,7 +512,6 @@ orgs:
           - davidvossel
           - codificat
           - rmohr
-          - danielBelenky
           - kubevirt-bot
         members:
           - vladikr
@@ -559,7 +558,6 @@ orgs:
         description: Allow people to assign tasks to themselves
         maintainers:
           - rmohr
-          - danielBelenky
         members:
           - booxter
           - MarSik
@@ -636,9 +634,8 @@ orgs:
         maintainers:
           - dhiller
           - rmohr
-          - danielBelenky
-        members:
           - fgimenez
+        members:
           - phoracek
         privacy: closed
       sig-security:
