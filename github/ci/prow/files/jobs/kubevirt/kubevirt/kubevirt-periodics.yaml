@@ -473,7 +473,7 @@ periodics:
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
           - |
-            export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '1p')
+            export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '2p')
             automation/test.sh
         # docker-in-docker needs privileged mode
         securityContext:
@@ -508,7 +508,7 @@ periodics:
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
           - |
-            export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '1p')
+            export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '3p')
             automation/test.sh
         # docker-in-docker needs privileged mode
         securityContext:
