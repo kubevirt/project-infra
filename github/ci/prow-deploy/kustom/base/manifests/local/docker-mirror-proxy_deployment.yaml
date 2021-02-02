@@ -76,5 +76,5 @@ spec:
         secret:
           secretName: docker-mirror-proxy
       - name: storage
-        hostPath:
-          path: /var/lib/docker-mirror/proxy
+        persistentVolumeClaim:
+          claimName: docker-mirror-proxy
