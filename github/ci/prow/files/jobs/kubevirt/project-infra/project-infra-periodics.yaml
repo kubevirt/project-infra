@@ -441,3 +441,57 @@ periodics:
     - name: token
       secret:
         secretName: oauth-token
+- name: periodic-kubevirt-org-member-2fa-validator
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 24h
+    grace_period: 5m
+  interval: 1h
+  max_concurrency: 1
+  spec:
+    containers:
+    - image: kubevirtci/bootstrap:v20201119-a5880e0
+      env:
+      - name: GH_CLI_VERSION
+        value: 1.5.0
+      - name: GITHUB_TOKEN_PATH
+        value: /etc/github/oauth
+      command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+      args:
+      - |
+        set -e
+
+        # install gh cli
+        gh_cli_dir=$(mktemp -d)
+        (
+          cd  "$gh_cli_dir/"
+          curl -sSL "https://github.com/cli/cli/releases/download/v${GH_CLI_VERSION}/gh_${GH_CLI_VERSION}_linux_amd64.tar.gz" -o "gh_${GH_CLI_VERSION}_linux_amd64.tar.gz"
+          tar xvf "gh_${GH_CLI_VERSION}_linux_amd64.tar.gz" > /dev/null 2>&1
+        )
+        export PATH="$gh_cli_dir/gh_${GH_CLI_VERSION}_linux_amd64/bin:$PATH"
+        if ! command -V gh; then
+          echo "gh cli not installed successfully"
+          exit 1
+        fi
+        gh config set prompt disabled
+
+        gh auth login --with-token <$GITHUB_TOKEN_PATH
+        no_of_org_members_with_2fa_disabled="$(gh api 'orgs/kubevirt/members?filter=2fa_disabled' | jq -r '. | length')"
+        if [ "$no_of_org_members_with_2fa_disabled" -gt 0 ]; then
+          echo "KubeVirt org members with 2fa disabled:"
+          gh api --paginate 'orgs/kubevirt/members?filter=2fa_disabled' | jq -r '.[].login'
+          exit 1
+        fi
+        echo "No KubeVirt org members with 2fa disabled found"
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+      resources:
+        requests:
+          memory: "200Mi"
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
