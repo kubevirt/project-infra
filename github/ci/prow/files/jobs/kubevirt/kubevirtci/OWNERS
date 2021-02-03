@@ -4,10 +4,9 @@
 filters:
   .*:
     approvers:
-    - cynepco3hahue
-    - danielbelenky
     - davidvossel
     - dhiller
+    - fgimenez
     - jean-edouard
     - phoracek
     - qinqon
@@ -16,10 +15,9 @@ filters:
     - stu-gott
     - vladikr
     reviewers:
-    - cynepco3hahue
-    - danielbelenky
     - davidvossel
     - dhiller
+    - fgimenez
     - jean-edouard
     - ormergi
     - oshoval
