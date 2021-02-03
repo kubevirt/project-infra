@@ -27,28 +27,29 @@ ENV IMAGE=${IMAGE_ARG}
 
 # Install packages
 RUN dnf install -y dnf-plugins-core && \
-    dnf -y install \
-        java-11-openjdk-devel \
-        cpio \
-        patch \
-        make \
-        git \
-        mercurial \
-        sudo \
-        gcc \
-        gcc-c++ \
-        glibc-static \
-        libstdc++-static \
-        glibc-devel \
-        findutils \
-        rsync-daemon \
-        rsync \
-        protobuf-compiler \
-        python3-devel \
-        redhat-rpm-config \
-        jq \
-        wget && \
-    dnf -y clean all
+  dnf -y install \
+    cpio \
+    findutils \
+    gcc \
+    gcc-c++ \
+    git \
+    glibc-devel \
+    glibc-static \
+    java-11-openjdk-devel \
+    jq \
+    libstdc++-static \
+    libvirt-devel \
+    make \
+    mercurial \
+    patch \
+    protobuf-compiler \
+    python3-devel \
+    redhat-rpm-config \
+    rsync \
+    rsync-daemon \
+    sudo \
+    wget && \
+  dnf -y clean all
 
 # Install gcloud
 ENV PATH=/google-cloud-sdk/bin:/workspace:${PATH} \
@@ -98,7 +99,7 @@ RUN USE_BAZEL_VERSION=3.4.1 bazel version && \
 
 # note the runner is also responsible for making docker in docker function if
 # env DOCKER_IN_DOCKER_ENABLED is set and similarly responsible for generating
-# .bazelrc files if bazel remote caching is enabled 
+# .bazelrc files if bazel remote caching is enabled
 COPY ["entrypoint.sh", "runner.sh", "create_bazel_cache_rcs.sh", \
         "/usr/local/bin/"]
 
