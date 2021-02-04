@@ -13,6 +13,14 @@ spec:
         app: docker-mirror-proxy
     spec:
       terminationGracePeriodSeconds: 180
+      serviceAccountName: "caches"
+      nodeSelector:
+        type: bare-metal-external
+        ci.kubevirt.io/cachenode: "true"
+      tolerations:
+      - key: "cachenode"
+        operator: "Exists"
+        effect: "NoSchedule"
       containers:
       - name: mirror-proxy
         image: rpardini/docker-registry-proxy:0.6.2

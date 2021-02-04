@@ -23,10 +23,32 @@ spec:
         effect: "NoSchedule"
       containers:
       - name: mirror-proxy
-        image: fgimenez/docker-registry-proxy:v0.2.0
+        image: rpardini/docker-registry-proxy:0.6.2
         env:
         - name: ENABLE_MANIFEST_CACHE
           value: "true"
+        - name: ALLOW_PUSH
+          value: "true"
+        - name: PROXY_CONNECT_TIMEOUT
+          value: "600s"
+        - name: PROXY_CONNECT_READ_TIMEOUT
+          value: "600s"
+        - name: PROXY_CONNECT_CONNECT_TIMEOUT
+          value: "600s"
+        - name: PROXY_CONNECT_SEND_TIMEOUT
+          value: "600s"
+        - name: SEND_TIMEOUT
+          value: "600s"
+        - name: CLIENT_BODY_TIMEOUT
+          value: "600s"
+        - name: CLIENT_HEADER_TIMEOUT
+          value: "600s"
+        - name: PROXY_READ_TIMEOUT
+          value: "600s"
+        - name: PROXY_CONNECT_TIMEOUT
+          value: "600s"
+        - name: PROXY_SEND_TIMEOUT
+          value: "600s"
         volumeMounts:
         - name: storage
           mountPath: /docker_mirror_cache
