@@ -207,7 +207,7 @@ presubmits:
     - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni-multi
+      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
       testgrid-dashboards: kubevirt-presubmits
     always_run: false
     optional: true
@@ -225,7 +225,7 @@ presubmits:
       rehearsal.allowed: "true"
     spec:
       nodeSelector:
-        kubernetes.io/hostname: ovirt-srv17.phx.ovirt.org
+        kubernetes.io/hostname: ovirt-srv24.phx.ovirt.org
         #sriov-nic-multi: "true"
       affinity:
         podAntiAffinity:
