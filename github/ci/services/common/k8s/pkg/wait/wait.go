@@ -61,7 +61,7 @@ func ForDeploymentReady(namespace, name string) {
 			}
 		},
 	})
-	controller.Run(stop.c)
+	waitForControllerWithTimeout(controller, stop, name, namespace)
 }
 
 func ForCertificateReady(namespace, name string) {
@@ -86,7 +86,7 @@ func ForCertificateReady(namespace, name string) {
 			}
 		},
 	})
-	controller.Run(stop.c)
+	waitForControllerWithTimeout(controller, stop, name, namespace)
 }
 
 func isDeploymentReady(deployment *appsv1.Deployment) bool {
@@ -165,7 +165,7 @@ func ForHTTP01IngressCreated(namespace, hostname string) {
 			}
 		},
 	})
-	controller.Run(stop.c)
+	waitForControllerWithTimeout(controller, stop, hostname, namespace)
 }
 
 func isHTTP01Ingress(ingress *networkingv1.Ingress, hostname string) bool {
@@ -204,7 +204,7 @@ func ForStatefulsetReady(namespace, name string) {
 			}
 		},
 	})
-	controller.Run(stop.c)
+	waitForControllerWithTimeout(controller, stop, name, namespace)
 }
 
 func isStatefulsetReady(statefulset *appsv1.StatefulSet) bool {
@@ -231,6 +231,24 @@ func ForPortOpen(host, port string) error {
 				defer conn.Close()
 				return nil
 			}
+		}
+	}
+}
+
+func waitForControllerWithTimeout(controller cache.Controller, stop *stopChan, name, namespace string) {
+	go controller.Run(stop.c)
+
+	timeout := time.After(30 * time.Second)
+	tick := time.Tick(5 * time.Second)
+	for {
+		select {
+		case <-timeout:
+			stop.closeOnce()
+			log.Fatalf("Resource %q in namespace %q not ready in time\n", name, namespace)
+		case <-tick:
+			log.Printf("Waiting for resource %q to be ready in namespace %q...\n", name, namespace)
+		case <-stop.c:
+			return
 		}
 	}
 }
