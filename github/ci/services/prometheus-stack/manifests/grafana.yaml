@@ -1,0 +1,2727 @@
+---
+# Source: grafana/templates/podsecuritypolicy.yaml
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: grafana
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default,runtime/default'
+    seccomp.security.alpha.kubernetes.io/defaultProfileName:  'docker/default'
+    apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+    apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    # Default set from Docker, without DAC_OVERRIDE or CHOWN
+    - FOWNER
+    - FSETID
+    - KILL
+    - SETGID
+    - SETUID
+    - SETPCAP
+    - NET_BIND_SERVICE
+    - NET_RAW
+    - SYS_CHROOT
+    - MKNOD
+    - AUDIT_WRITE
+    - SETFCAP
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'csi'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    rule: 'RunAsAny'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+  readOnlyRootFilesystem: false
+---
+# Source: grafana/templates/tests/test-podsecuritypolicy.yaml
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: grafana-test
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  allowPrivilegeEscalation: true
+  privileged: false
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  fsGroup:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
+  volumes:
+  - configMap
+  - downwardAPI
+  - emptyDir
+  - projected
+  - csi
+  - secret
+---
+# Source: grafana/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+  name: grafana
+  namespace: default
+---
+# Source: grafana/templates/tests/test-serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+  name: grafana-test
+  namespace: default
+---
+# Source: grafana/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+data:
+  admin-user: "YWRtaW4="
+  admin-password: "cEc4bGV4SXhHZWJ0RmwzelNCekdpV2RXUlZLaGxXUDNJejNpY2J2Sw=="
+  ldap-toml: ""
+---
+# Source: grafana/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  grafana.ini: |
+    [analytics]
+    check_for_updates = true
+    [grafana_net]
+    url = https://grafana.net
+    [log]
+    mode = console
+    [paths]
+    data = /var/lib/grafana/data
+    logs = /var/log/grafana
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning
+
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - access: proxy
+      isDefault: true
+      name: Prometheus
+      type: prometheus
+      url: http://prometheus-operator-prometheus:9090/
+    - access: proxy
+      editable: false
+      isDefault: false
+      name: Loki
+      type: loki
+      url: http://loki:3100/
+  dashboardproviders.yaml: |
+    apiVersion: 1
+    providers:
+    - disableDeletion: false
+      editable: true
+      folder: ""
+      name: default
+      options:
+        path: /var/lib/grafana/dashboards/default
+      orgId: 1
+      type: file
+  download_dashboards.sh: |
+    #!/usr/bin/env sh
+    set -euf
+    mkdir -p /var/lib/grafana/dashboards/default
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/3131/revisions/1/download" | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g'\
+    > "/var/lib/grafana/dashboards/default/kubernetes-all-nodes.json"
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/6417/revisions/1/download" | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g'\
+    > "/var/lib/grafana/dashboards/default/kubernetes-cluster.json"
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/12842/revisions/2/download" | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g'\
+    > "/var/lib/grafana/dashboards/default/kubernetes-pod-overview.json"
+---
+# Source: grafana/templates/dashboards-json-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-default
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+    dashboard-provider: default
+data:
+  tide.json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": "-- Grafana --",
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "gnetId": null,
+      "graphTooltip": 0,
+      "id": 3,
+      "links": [],
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "hiddenSeries": false,
+          "id": 4,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.3.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "avg(pooledprs and ((time() - updatetime) < 240)) by (org, repo, branch)",
+              "interval": "",
+              "legendFormat": "{{org}}/{{repo}}:{{branch}}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Tide Pool Sizes",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 8
+          },
+          "hiddenSeries": false,
+          "id": 2,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.3.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "avg(pooledprs{org=\"kubevirt\",repo=\"kubevirt\",branch=\"master\"} and ((time() - updatetime) < 240)) or vector(0)",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "Pool Size",
+              "queryType": "randomWalk",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(rate(merges_sum{org=\"kubevirt\",repo=\"kubevirt\",branch=\"master\"}[1d])) * 86400",
+              "interval": "",
+              "legendFormat": "Daily merge rate",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Tide Daily Merge Rate: kubevirt/kubevirt:master",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
+      "schemaVersion": 26,
+      "style": "dark",
+      "tags": [],
+      "templating": {
+        "list": []
+      },
+      "time": {
+        "from": "now-7d",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "",
+      "title": "Daily Merge Rate",
+      "uid": "YmvRI6BGz",
+      "version": 6
+    }
+  bazel-cache.json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": "-- Grafana --",
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "gnetId": null,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "panels": [
+        {
+          "aliasColors": {
+            "Action Cache Hit Rate": "#629E51",
+            "Action Cache hits": "#3F6833",
+            "Action Cache misses": "#C15C17",
+            "CAS Hit Rate": "#1F78C1",
+            "CAS hits": "#447EBC",
+            "CAS misses": "#EF843C",
+            "Content Addressed Storage hits": "#447EBC",
+            "Content Addressed Storage misses": "#890F02"
+          },
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "description": "Cache hit rates for Kubernetes's https://github.com/kubernetes/test-infra/tree/master/greenhouse deployment",
+          "fill": 1,
+          "gridPos": {
+            "h": 12,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 2,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "Action Cache hits",
+              "yaxis": 2
+            },
+            {
+              "alias": "Content Addressed Storage hits",
+              "yaxis": 2
+            },
+            {
+              "alias": "Content Addressed Storage Hit Rate",
+              "fill": 0,
+              "linewidth": 3,
+              "yaxis": 1,
+              "zindex": 1
+            },
+            {
+              "alias": "Action Cache misses",
+              "yaxis": 2
+            },
+            {
+              "alias": "Content Addressed Storage misses",
+              "yaxis": 2
+            },
+            {
+              "alias": "Action Cache Hit Rate",
+              "fill": 0,
+              "linewidth": 3,
+              "yaxis": 1,
+              "zindex": 2
+            }
+          ],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "expr": "increase(bazel_cache_action_hits[30m])",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "intervalFactor": 4,
+              "legendFormat": "Action Cache hits",
+              "metric": "bazel_cache_action_hits",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 1200,
+              "tags": []
+            },
+            {
+              "expr": "increase(bazel_cache_cas_hits[30m])",
+              "format": "time_series",
+              "intervalFactor": 4,
+              "legendFormat": "Content Addressed Storage hits",
+              "metric": "bazel_cache_cas_hits",
+              "refId": "B",
+              "step": 1200
+            },
+            {
+              "expr": "increase(bazel_cache_action_misses[30m])",
+              "format": "time_series",
+              "intervalFactor": 4,
+              "legendFormat": "Action Cache misses",
+              "metric": "bazel_cache_action_misses",
+              "refId": "C",
+              "step": 1200
+            },
+            {
+              "expr": "increase(bazel_cache_cas_misses[30m])",
+              "format": "time_series",
+              "intervalFactor": 4,
+              "legendFormat": "Content Addressed Storage misses",
+              "metric": "bazel_cache_cas_misses",
+              "refId": "D",
+              "step": 1200
+            },
+            {
+              "expr": "clamp_min(increase(bazel_cache_action_hits[30m]) / (increase(bazel_cache_action_hits[30m]) + increase(bazel_cache_action_misses[30m])) * 100, 0)",
+              "format": "time_series",
+              "intervalFactor": 4,
+              "legendFormat": "Action Cache Hit Rate",
+              "refId": "E",
+              "step": 1200
+            },
+            {
+              "expr": "clamp_min(increase(bazel_cache_cas_hits[30m]) / (increase(bazel_cache_cas_hits[30m]) + increase(bazel_cache_cas_misses[30m])) * 100, 0)",
+              "format": "time_series",
+              "intervalFactor": 4,
+              "legendFormat": "Content Addressed Storage Hit Rate",
+              "refId": "F",
+              "step": 1200
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Bazel Remote Cache Hits / Misses (thirty minute increase)",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percent",
+              "label": "hit rate (last thirty minutes)",
+              "logBase": 1,
+              "max": "100",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "none",
+              "label": "hits, misses (request increase in the last thirty minutes)",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "datasource": "Prometheus",
+          "format": "none",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 6,
+            "x": 0,
+            "y": 12
+          },
+          "id": 7,
+          "interval": null,
+          "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+          },
+          "tableColumn": "",
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "expr": "bazel_cache_cas_hits",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "intervalFactor": 2,
+              "legendFormat": "",
+              "metric": "bazel_cache_cas_hits",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 14400,
+              "tags": []
+            }
+          ],
+          "thresholds": "",
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Content Cache Hits (CAS)",
+          "type": "singlestat",
+          "valueFontSize": "80%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "delta"
+        },
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "datasource": "Prometheus",
+          "format": "none",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 6,
+            "x": 6,
+            "y": 12
+          },
+          "id": 8,
+          "interval": null,
+          "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+          },
+          "tableColumn": "",
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "expr": "bazel_cache_cas_misses",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "intervalFactor": 2,
+              "metric": "bazel_cache_hits",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 14400,
+              "tags": []
+            }
+          ],
+          "thresholds": "",
+          "title": "Content Cache Misses (CAS)",
+          "type": "singlestat",
+          "valueFontSize": "80%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "delta"
+        },
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "datasource": "Prometheus",
+          "format": "none",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 6,
+            "x": 12,
+            "y": 12
+          },
+          "id": 5,
+          "interval": null,
+          "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+          },
+          "tableColumn": "",
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "expr": "bazel_cache_action_hits",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "intervalFactor": 2,
+              "legendFormat": "",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 14400,
+              "tags": []
+            }
+          ],
+          "thresholds": "",
+          "title": "Action Cache Hits",
+          "type": "singlestat",
+          "valueFontSize": "80%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "delta"
+        },
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "datasource": "Prometheus",
+          "format": "none",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 6,
+            "x": 18,
+            "y": 12
+          },
+          "id": 6,
+          "interval": null,
+          "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+          },
+          "tableColumn": "",
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "expr": "bazel_cache_action_misses",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "intervalFactor": 2,
+              "legendFormat": "",
+              "metric": "",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 14400,
+              "tags": []
+            }
+          ],
+          "thresholds": "",
+          "title": "Action Cache Misses",
+          "type": "singlestat",
+          "valueFontSize": "80%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "delta"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "description": "Disk usage for Kubernetes's https://github.com/kubernetes/test-infra/tree/master/greenhouse deployment",
+          "fill": 1,
+          "gridPos": {
+            "h": 13,
+            "w": 24,
+            "x": 0,
+            "y": 15
+          },
+          "id": 1,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "free",
+              "yaxis": 2
+            },
+            {
+              "alias": "used",
+              "yaxis": 2
+            },
+            {
+              "alias": "total disk size",
+              "yaxis": 2
+            },
+            {
+              "alias": "percent free",
+              "fill": 0,
+              "linewidth": 3,
+              "yaxis": 1,
+              "zindex": 1
+            }
+          ],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "expr": "bazel_cache_disk_free",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "intervalFactor": 2,
+              "legendFormat": "free",
+              "metric": "bazel_cache_disk_free",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 600,
+              "tags": []
+            },
+            {
+              "expr": "bazel_cache_disk_used",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "legendFormat": "used",
+              "metric": "bazel_cache_disk_used",
+              "refId": "B",
+              "step": 600
+            },
+            {
+              "expr": "bazel_cache_disk_total",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "legendFormat": "total disk size",
+              "metric": "bazel_cache_disk_total",
+              "refId": "C",
+              "step": 600
+            },
+            {
+              "expr": "bazel_cache_disk_free / bazel_cache_disk_total * 100",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "legendFormat": "percent free",
+              "refId": "D",
+              "step": 600
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Bazel Remote Cache Disk Usage",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percent",
+              "label": "",
+              "logBase": 1,
+              "max": "100",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "decgbytes",
+              "label": "",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "fill": 1,
+          "gridPos": {
+            "h": 10,
+            "w": 24,
+            "x": 0,
+            "y": 28
+          },
+          "id": 4,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "last evicted entry access age (hours)",
+              "yaxis": 2
+            }
+          ],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "expr": "bazel_cache_last_evicted_access_age",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "intervalFactor": 2,
+              "legendFormat": "last evicted entry access age (hours)",
+              "metric": "bazel_cache_last_evicted_access_age",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 600,
+              "tags": []
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Last Evicted Entry Access Age",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "none",
+              "label": "",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            },
+            {
+              "format": "none",
+              "label": "hours",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
+      "refresh": "1m",
+      "schemaVersion": 16,
+      "style": "dark",
+      "tags": [],
+      "templating": {
+        "list": []
+      },
+      "time": {
+        "from": "now-7d",
+        "to": "now"
+      },
+      "timepicker": {
+        "refresh_intervals": [
+          "5s",
+          "10s",
+          "30s",
+          "1m",
+          "5m",
+          "15m",
+          "30m",
+          "1h",
+          "2h",
+          "1d"
+        ],
+        "time_options": [
+          "5m",
+          "15m",
+          "1h",
+          "6h",
+          "12h",
+          "24h",
+          "2d",
+          "7d",
+          "30d"
+        ]
+      },
+      "timezone": "browser",
+      "title": "Bazel Cache",
+      "uid": "vZXedDrmk",
+      "version": 2
+    }
+  github-cache.json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": "-- Grafana --",
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "description": "Metrics from the GitHub API reverse proxy HTTP cache in the Prow cluster.",
+      "editable": true,
+      "gnetId": null,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "description": "Count of cache requests of each cache mode over the last hour.",
+          "fill": 1,
+          "gridPos": {
+            "h": 6,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "height": "",
+          "id": 1,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": 220,
+            "sort": "avg",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "expr": "sum(increase(ghcache_responses[1h])) by (mode)",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "intervalFactor": 2,
+              "legendFormat": "{{mode}}",
+              "metric": "ghcache_responses",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 600,
+              "tags": []
+            },
+            {
+              "expr": "sum(increase(ghcache_responses{mode=~\"COALESCED|REVALIDATED\"}[1h]))",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "legendFormat": "(No Cost)",
+              "metric": "ghcache_responses",
+              "refId": "B",
+              "step": 600
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Cache Requests (per hour)",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "description": "Percentage of cacheable requests that are fulfilled for free.\nNo cost modes are \"COALESCED\" and \"REVALIDATED\".\nCacheable modes include the no cost modes, \"CHANGED\" and \"MISS\".",
+          "fill": 1,
+          "gridPos": {
+            "h": 5,
+            "w": 24,
+            "x": 0,
+            "y": 6
+          },
+          "id": 6,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": 220,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "expr": "sum(increase(ghcache_responses{mode=~\"COALESCED|REVALIDATED\"}[1h])) \n/ sum(increase(ghcache_responses{mode=~\"COALESCED|REVALIDATED|MISS|CHANGED\"}[1h]))",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "intervalFactor": 2,
+              "legendFormat": "Efficiency",
+              "metric": "ghcache_responses",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 600,
+              "tags": []
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Cache Efficiency",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percentunit",
+              "label": "% Cacheable Request Fulfilled for Free",
+              "logBase": 1,
+              "max": "1",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "description": "The number of API calls the kubevirt-bot has used against its rate limit of 5000 per hour.\nNote that this is slightly different from a sliding window of API calls made in the past hour which could pass 5000 if the time period straddles a ratelimit reset time.",
+          "fill": 1,
+          "gridPos": {
+            "h": 6,
+            "w": 24,
+            "x": 0,
+            "y": 11
+          },
+          "id": 9,
+          "interval": "1m",
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": 220,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "Ratelimit tokens used. (weekly avg)",
+              "fill": 0,
+              "linewidth": 2
+            }
+          ],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "Tokens used",
+              "dsType": "influxdb",
+              "expr": "github_token_count{login=\"kubevirt-bot\"}",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "auto"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "previous"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "Tokens used",
+              "measurement": "github_token_count",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "login",
+                  "operator": "=",
+                  "value": "kubevirt-bot"
+                }
+              ]
+            }
+          ],
+          "thresholds": [
+            {
+              "colorMode": "custom",
+              "fill": true,
+              "fillColor": "rgba(216, 189, 0, 0.2)",
+              "line": false,
+              "op": "gt",
+              "value": 3000
+            },
+            {
+              "colorMode": "custom",
+              "fill": true,
+              "fillColor": "rgba(233, 62, 62, 0.17)",
+              "line": false,
+              "op": "gt",
+              "value": 4000
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "kubevirt-bot GitHub API(v3) Token Usage",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": "API Ratelimit Tokens Used",
+              "logBase": 1,
+              "max": "5001",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "decimals": 2,
+          "description": "",
+          "fill": 1,
+          "gridPos": {
+            "h": 4,
+            "w": 16,
+            "x": 0,
+            "y": 17
+          },
+          "id": 3,
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": 50,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": true,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "GB Used",
+              "lines": false,
+              "yaxis": 2
+            },
+            {
+              "alias": "GB Free",
+              "lines": false,
+              "yaxis": 2
+            }
+          ],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "expr": "avg(ghcache_disk_used/(ghcache_disk_used+ghcache_disk_free)) without(instance)",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "intervalFactor": 2,
+              "legendFormat": "% Used",
+              "metric": "ghcache_disk_used",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 1200,
+              "tags": []
+            },
+            {
+              "dsType": "influxdb",
+              "expr": "avg(ghcache_disk_used) without(instance)",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "hide": false,
+              "intervalFactor": 2,
+              "legendFormat": "GB Used",
+              "metric": "ghcache_disk_used",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "B",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 1200,
+              "tags": []
+            },
+            {
+              "dsType": "influxdb",
+              "expr": "avg(ghcache_disk_free) without(instance)",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "hide": false,
+              "intervalFactor": 2,
+              "legendFormat": "GB Free",
+              "metric": "ghcache_disk_free",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "C",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 1200,
+              "tags": []
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Disk Usage",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percentunit",
+              "label": null,
+              "logBase": 1,
+              "max": "1",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "decgbytes",
+              "label": null,
+              "logBase": 1,
+              "max": "105",
+              "min": "0",
+              "show": false
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "datasource": "Prometheus",
+          "decimals": null,
+          "description": "The number of no cost requests in the last hour.\nThis includes both \"COALESCED\" and \"REVALIDATED\" modes.",
+          "format": "none",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 16,
+            "y": 17
+          },
+          "id": 8,
+          "interval": null,
+          "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+          },
+          "tableColumn": "",
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "expr": "sum(increase(ghcache_responses{mode=~\"COALESCED|REVALIDATED\"}[1h]))",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "intervalFactor": 2,
+              "metric": "ghcache_responses",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 14400,
+              "tags": []
+            }
+          ],
+          "thresholds": "",
+          "title": "API Tokens Saved: Last hour",
+          "type": "singlestat",
+          "valueFontSize": "100%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "current"
+        },
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "datasource": "Prometheus",
+          "description": "The number of no cost requests in the last 7 days.\nThis includes both \"COALESCED\" and \"REVALIDATED\" modes.",
+          "format": "short",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 20,
+            "y": 17
+          },
+          "id": 5,
+          "interval": null,
+          "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+          },
+          "tableColumn": "",
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "expr": "sum(increase(ghcache_responses{mode=~\"COALESCED|REVALIDATED\"}[7d]))",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "intervalFactor": 2,
+              "metric": "ghcache_responses",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "step": 14400,
+              "tags": []
+            }
+          ],
+          "thresholds": "",
+          "title": "API Tokens Saved: Last 7 days",
+          "type": "singlestat",
+          "valueFontSize": "100%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "current"
+        }
+      ],
+      "refresh": "1m",
+      "schemaVersion": 16,
+      "style": "dark",
+      "tags": [],
+      "templating": {
+        "list": []
+      },
+      "time": {
+        "from": "now-7d",
+        "to": "now"
+      },
+      "timepicker": {
+        "refresh_intervals": [
+          "5s",
+          "10s",
+          "30s",
+          "1m",
+          "5m",
+          "15m",
+          "30m",
+          "1h",
+          "2h",
+          "1d"
+        ],
+        "time_options": [
+          "5m",
+          "15m",
+          "1h",
+          "6h",
+          "12h",
+          "24h",
+          "2d",
+          "7d",
+          "30d"
+        ]
+      },
+      "timezone": "",
+      "title": "GitHub Cache",
+      "uid": "WTFpRK9mz",
+      "version": 14
+    }
+---
+# Source: grafana/templates/tests/test-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-test
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  run.sh: |-
+    @test "Test Health" {
+      url="http://grafana/api/health"
+
+      code=$(wget --server-response --spider --timeout 10 --tries 1 ${url} 2>&1 | awk '/^  HTTP/{print $2}')
+      [ "$code" == "200" ]
+    }
+---
+# Source: grafana/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+  finalizers:
+    - kubernetes.io/pvc-protection
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "10Gi"
+---
+# Source: grafana/templates/clusterrole.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+  name: grafana-clusterrole
+rules: []
+---
+# Source: grafana/templates/clusterrolebinding.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: grafana-clusterrolebinding
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+subjects:
+  - kind: ServiceAccount
+    name: grafana
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: grafana-clusterrole
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: grafana/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: grafana
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:      ['extensions']
+  resources:      ['podsecuritypolicies']
+  verbs:          ['use']
+  resourceNames:  [grafana]
+---
+# Source: grafana/templates/tests/test-role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: grafana-test
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:      ['policy']
+  resources:      ['podsecuritypolicies']
+  verbs:          ['use']
+  resourceNames:  [grafana-test]
+---
+# Source: grafana/templates/rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: grafana
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: grafana
+subjects:
+- kind: ServiceAccount
+  name: grafana
+  namespace: default
+---
+# Source: grafana/templates/tests/test-rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: grafana-test
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: grafana-test
+subjects:
+- kind: ServiceAccount
+  name: grafana-test
+  namespace: default
+---
+# Source: grafana/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - name: service
+      port: 80
+      protocol: TCP
+      targetPort: 3000
+
+  selector:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+---
+# Source: grafana/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: default
+  labels:
+    helm.sh/chart: grafana-6.3.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/version: "7.4.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: grafana
+      app.kubernetes.io/instance: grafana
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: grafana
+        app.kubernetes.io/instance: grafana
+      annotations:
+        checksum/config: c61f2a90a9617c0a1740ca3cd3730e72cc2231a59ef9e174e4bb64e7f10a9f8f
+        checksum/dashboards-json-config: e536057b94a6a1aeb4981c43a460b94979dcf25c1ffc1ca3a9c43bd4ec952021
+        checksum/sc-dashboard-provider-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+        checksum/secret: 1b568d9d7b86888ddd42b33c506efadd719d0ade78c3e7f7bb5bd674a8b495ee
+    spec:
+
+      serviceAccountName: grafana
+      securityContext:
+        fsGroup: 472
+        runAsGroup: 472
+        runAsUser: 472
+      initContainers:
+        - name: init-chown-data
+          image: "busybox:1.31.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          command: ["chown", "-R", "472:472", "/var/lib/grafana"]
+          resources:
+            {}
+          volumeMounts:
+            - name: storage
+              mountPath: "/var/lib/grafana"
+        - name: download-dashboards
+          image: "curlimages/curl:7.73.0"
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh"]
+          args: [ "-c", "mkdir -p /var/lib/grafana/dashboards/default && /bin/sh /etc/grafana/download_dashboards.sh" ]
+          resources:
+            {}
+          env:
+          volumeMounts:
+            - name: config
+              mountPath: "/etc/grafana/download_dashboards.sh"
+              subPath: download_dashboards.sh
+            - name: storage
+              mountPath: "/var/lib/grafana"
+      containers:
+        - name: grafana
+          image: "grafana/grafana:7.4.0"
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: config
+              mountPath: "/etc/grafana/grafana.ini"
+              subPath: grafana.ini
+            - name: storage
+              mountPath: "/var/lib/grafana"
+            - name: config
+              mountPath: "/etc/grafana/provisioning/datasources/datasources.yaml"
+              subPath: datasources.yaml
+            - name: config
+              mountPath: "/etc/grafana/provisioning/dashboards/dashboardproviders.yaml"
+              subPath: dashboardproviders.yaml
+          ports:
+            - name: service
+              containerPort: 80
+              protocol: TCP
+            - name: grafana
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: grafana
+                  key: admin-user
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana
+                  key: admin-password
+
+            - name: "GF_EXPLORE_ENABLED"
+              value: "true"
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 60
+            timeoutSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+      volumes:
+        - name: config
+          configMap:
+            name: grafana
+        - name: dashboards-default
+          configMap:
+            name: grafana-dashboards-default
+        - name: storage
+          persistentVolumeClaim:
+            claimName: grafana
