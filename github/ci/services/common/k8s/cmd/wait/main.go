@@ -26,7 +26,7 @@ func main() {
 	case "daemonset":
 		wait.ForDaemonsetReady(*namespace, *selector)
 	case "crd":
-		wait.ForCRDReady(*namespace, *selector)
+		wait.ForCRDCreated(*selector)
 
 	default:
 		log.Fatalf("Unknown resource kind, %q", *kind)
