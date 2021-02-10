@@ -168,6 +168,35 @@ var _ = Describe("report.go", func() {
 			Entry("is test/blah", "test", "blah"),
 		)
 
+		It("shows job header table", func() {
+			parameters := Params{Data: map[string]map[string]*Details{
+				"t1": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*Job{
+					{BuildNumber: 1742, Severity: "red", PR: 1427, Job: "testblah"},
+				}}},
+			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, EndOfReport: "2019-08-23", Org: "kubevirt", Repo: "kubevirt",
+				FailuresForJobs: map[int]*JobFailures{
+					1742: {
+						BuildNumber: 1742,
+						PR: 17,
+						Job: "k8s-1.18-whatever",
+						Failures: 66,
+					},
+					4217:  {
+						BuildNumber: 4217,
+						PR: 42,
+						Job: "k8s-1.19-whocares",
+						Failures: 66,
+					},
+				},
+			}
+
+			prepareBuffer(parameters)
+
+			Expect(buffer.String()).To(ContainSubstring("4217"))
+			Expect(buffer.String()).To(ContainSubstring("k8s-1.18-whatever"))
+			Expect(buffer.String()).To(ContainSubstring("k8s-1.19-whocares"))
+		})
+
 	})
 
 	When("sorting test data", func() {
