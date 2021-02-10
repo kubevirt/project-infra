@@ -21,6 +21,7 @@ require (
 	google.golang.org/api v0.32.0
 	honnef.co/go/tools v0.1.0 // indirect
 	k8s.io/api v0.19.3
+	k8s.io/apiextensions-apiserver v0.19.2
 	k8s.io/apimachinery v0.19.3
 	k8s.io/client-go v11.0.1-0.20190805182717-6502b5e7b1b5+incompatible
 	k8s.io/test-infra v0.0.0-20201214190528-57362ae63e51
