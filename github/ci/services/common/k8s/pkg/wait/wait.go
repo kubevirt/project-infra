@@ -298,7 +298,7 @@ func isDaemonsetReady(resource *appsv1.DaemonSet) bool {
 func waitForControllerWithTimeout(controller cache.Controller, stop *stopChan, name, namespace string) {
 	go controller.Run(stop.c)
 
-	timeout := time.After(30 * time.Second)
+	timeout := time.After(100 * time.Second)
 	tick := time.Tick(5 * time.Second)
 	for {
 		select {
@@ -308,6 +308,7 @@ func waitForControllerWithTimeout(controller cache.Controller, stop *stopChan, n
 		case <-tick:
 			log.Printf("Waiting for resource %q to be ready in namespace %q...\n", name, namespace)
 		case <-stop.c:
+			log.Printf("Resource %q in namespace %q is ready\n", name, namespace)
 			return
 		}
 	}
