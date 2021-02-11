@@ -9,9 +9,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"k8s.io/client-go/kubernetes"
 
-	"kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/client"
 	"kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/portforwarder"
 	"kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/wait"
 )
@@ -20,22 +18,10 @@ const (
 	testNamespace = "sippy"
 )
 
-var (
-	clientset *kubernetes.Clientset
-)
-
 func TestSippyDeployment(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "sippy deployment suite")
 }
-
-var _ = BeforeSuite(func() {
-	var err error
-
-	// initilize clientset
-	clientset, err = client.NewClientset()
-	Expect(err).NotTo(HaveOccurred())
-})
 
 var _ = Describe("sippy deployment", func() {
 	It("creates a responding HTTP service", func() {
@@ -65,7 +51,7 @@ var _ = Describe("sippy deployment", func() {
 		defer res.Body.Close()
 		scanner := bufio.NewScanner(res.Body)
 
-		expected := "CI Release kubevirt/kubevirt Health Summary"
+		expected := "<title>Release CI Health Dashboard</title>"
 		found := false
 		for scanner.Scan() {
 			if strings.Contains(scanner.Text(), expected) {
