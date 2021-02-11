@@ -431,6 +431,63 @@ postsubmits:
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
+    - name: post-project-infra-prometheus-stack-deployment
+      always_run: false
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      run_if_changed: "github/ci/services/prometheus-stack.*"
+      branches:
+      - ^master$
+      labels:
+        preset-docker-mirror-proxy: "true"
+      spec:
+        securityContext:
+          runAsUser: 0
+        containers:
+        - image: kubevirtci/bootstrap:v20210112-b29dfd7
+          env:
+          - name: GITHUB_TOKEN
+            value: /etc/github/oauth
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - |
+              # install yq
+              curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+              chmod +x ./yq && mv ./yq /usr/local/bin/yq
+
+              # unencrypt secrets
+              target_dir=$(mktemp -d)
+              git clone https://kubevirt-bot:$(cat ${GITHUB_TOKEN})@github.com/kubevirt/secrets ${target_dir}
+              gpg --allow-secret-key-import --import /etc/pgp/token
+              gpg --decrypt ${target_dir}/secrets.tar.asc > secrets.tar
+              tar -xvf secrets.tar
+
+              # put in place kubeconfig
+              mkdir -p ~/.kube
+              yq r main.yml 'kubeconfig' > ~/.kube/config
+
+              ./github/ci/services/prometheus-stack/hack/deploy.sh production
+          resources:
+            requests:
+              memory: "8Gi"
+            limits:
+              memory: "8Gi"
+          volumeMounts:
+          - name: token
+            mountPath: /etc/github
+          - name: pgp-bot-key
+            mountPath: /etc/pgp
+            readOnly: true
+        volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
+        - name: pgp-bot-key
+          secret:
+            secretName: pgp-bot-key
     - name: post-project-infra-upload-testgrid-config
       run_if_changed: '^(github/ci/prow/files/jobs/.*)|(github/ci/testgrid/gen-config\.yaml)$'
       branches:
