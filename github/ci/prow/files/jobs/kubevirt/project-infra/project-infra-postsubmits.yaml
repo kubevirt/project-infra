@@ -469,6 +469,11 @@ postsubmits:
               mkdir -p ~/.kube
               yq r main.yml 'kubeconfig' > ~/.kube/config
 
+              # put in place grafana credentials
+              yq r main.yml 'grafanaUser' > ./github/ci/services/prometheus-stack/secrets/production/grafana/admin-user
+              yq r main.yml 'grafanaPassword' > ./github/ci/services/prometheus-stack/secrets/production/grafana/admin-password
+              yq r main.yml 'grafanaLDAPTOML' > ./github/ci/services/prometheus-stack/secrets/production/grafana/ldap-toml
+
               ./github/ci/services/prometheus-stack/hack/deploy.sh production
           resources:
             requests:

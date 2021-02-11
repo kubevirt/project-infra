@@ -114,24 +114,6 @@ metadata:
   name: grafana-test
   namespace: default
 ---
-# Source: grafana/templates/secret.yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: grafana
-  namespace: default
-  labels:
-    helm.sh/chart: grafana-6.3.0
-    app.kubernetes.io/name: grafana
-    app.kubernetes.io/instance: grafana
-    app.kubernetes.io/version: "7.4.0"
-    app.kubernetes.io/managed-by: Helm
-type: Opaque
-data:
-  admin-user: "YWRtaW4="
-  admin-password: "cEc4bGV4SXhHZWJ0RmwzelNCekdpV2RXUlZLaGxXUDNJejNpY2J2Sw=="
-  ldap-toml: ""
----
 # Source: grafana/templates/configmap.yaml
 apiVersion: v1
 kind: ConfigMap
@@ -157,6 +139,9 @@ data:
     logs = /var/log/grafana
     plugins = /var/lib/grafana/plugins
     provisioning = /etc/grafana/provisioning
+    [auth.anonymous]
+    enabled = true
+    org_name = KubeVirt community
 
   datasources.yaml: |
     apiVersion: 1
