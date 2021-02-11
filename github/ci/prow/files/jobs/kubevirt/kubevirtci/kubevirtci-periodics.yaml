@@ -1,0 +1,69 @@
+periodics:
+- name: periodic-kubevirtci-sync-crio-repository-weekly
+  cron: "25 0 * * 1"
+  decorate: true
+  annotations:
+      testgrid-create-test-group: "false"
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-shared-images: "true"
+  spec:
+    containers:
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
+        env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/gcs/service-account.json
+          - name: OS
+            value: CentOS_8_Stream
+          - name: BUCKET_DIR
+            value: kubevirtci-crio-mirror
+          - name: LOCAL_MIRROR_DIR
+            value: opensuse-mirror
+          - name: BASE_REPOID
+            value: devel_kubic_libcontainers_stable
+          - name: CRIO_VERSIONS
+            value: "1.20"
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - |
+            set -e;
+
+            sync_crio_repo_for_version () {
+              if [ -z "$1" ]
+              then
+                  CRIO_SUBDIR=""
+                  REPOID=$BASE_REPOID
+              else
+                  CRIO_SUBDIR=":cri-o:$1"
+                  REPOID=$BASE_REPOID_cri-o_$1
+              fi
+              curl -L -o $REPOID.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable$CRIO_SUBDIR/$OS/devel:kubic:libcontainers:stable$CRIO_SUBDIR.repo
+              reposync -c $REPOID.repo -p ./$LOCAL_MIRROR_DIR -n --repoid=$REPOID
+            }
+
+            # First sync the shared stable repository
+            sync_crio_repo_for_version
+
+            # Loop over comma-separated list of cri-o versions
+            for i in $(echo $CRIO_VERSIONS | sed "s/,/ /g")
+            do
+              sync_crio_repo_for_version $i
+            done
+
+            gsutil rsync -d -r $LOCAL_MIRROR_DIR gs://BUCKET_DIR
+        resources:
+          requests:
+            memory: "2Gi"
+        volumeMounts:
+          - name: gcs
+            mountPath: /etc/gcs
+            readOnly: false
+    volumes:
+      - name: gcs
+        secret:
+          secretName: gcs
