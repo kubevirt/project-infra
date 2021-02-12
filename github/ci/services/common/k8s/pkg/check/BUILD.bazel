@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["check.go"],
+    importpath = "kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/check",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//github/ci/services/common/k8s/pkg/client:go_default_library",
+        "//github/ci/services/common/k8s/pkg/portforwarder:go_default_library",
+        "//github/ci/services/common/k8s/pkg/wait:go_default_library",
+        "//vendor/github.com/onsi/gomega:go_default_library",
+        "//vendor/k8s.io/apimachinery/pkg/apis/meta/v1:go_default_library",
+        "//vendor/k8s.io/client-go/kubernetes:go_default_library",
+    ],
+)
