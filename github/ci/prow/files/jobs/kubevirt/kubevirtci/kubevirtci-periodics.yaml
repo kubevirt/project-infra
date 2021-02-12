@@ -32,6 +32,8 @@ periodics:
           - "-c"
           - |
             set -e;
+            apt-get update
+            apt-get install yum-utils -y
 
             sync_crio_repo_for_version () {
               if [ -z "$1" ]
