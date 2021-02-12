@@ -42,7 +42,7 @@ periodics:
                   REPOID=$BASE_REPOID
               else
                   CRIO_SUBDIR=":cri-o:$1"
-                  REPOID=$BASE_REPOID_cri-o_$1
+                  REPOID="${BASE_REPOID}_cri-o_$1"
               fi
               curl -L -o $REPOID.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable$CRIO_SUBDIR/$OS/devel:kubic:libcontainers:stable$CRIO_SUBDIR.repo
               reposync -c $REPOID.repo -p ./$LOCAL_MIRROR_DIR -n --repoid=$REPOID
