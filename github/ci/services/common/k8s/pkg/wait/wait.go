@@ -89,23 +89,6 @@ func ForCertificateReady(namespace, name string) {
 	waitForControllerWithTimeout(controller, stop, name, namespace)
 }
 
-func isDeploymentReady(deployment *appsv1.Deployment) bool {
-	return deployment.Status.UpdatedReplicas == *deployment.Spec.Replicas &&
-		deployment.Status.Replicas == *deployment.Spec.Replicas &&
-		deployment.Status.AvailableReplicas == *deployment.Spec.Replicas &&
-		deployment.Status.ObservedGeneration >= deployment.Generation
-}
-
-func isCertificateReady(certificate *certmanagerv1.Certificate) bool {
-	for _, condition := range certificate.Status.Conditions {
-		if condition.Type == certmanagerv1.CertificateConditionReady &&
-			condition.Status == cmmeta.ConditionTrue {
-			return true
-		}
-	}
-	return false
-}
-
 func ForNamespaceDeleted(namespace string) {
 	clientset, err := client.NewClientset()
 	if err != nil {
@@ -168,20 +151,6 @@ func ForHTTP01IngressCreated(namespace, hostname string) {
 	waitForControllerWithTimeout(controller, stop, hostname, namespace)
 }
 
-func isHTTP01Ingress(ingress *networkingv1.Ingress, hostname string) bool {
-	for _, rule := range ingress.Spec.Rules {
-		if rule.Host != hostname {
-			continue
-		}
-		for _, ingressPath := range rule.IngressRuleValue.HTTP.Paths {
-			if strings.Contains(ingressPath.Path, ".well-known/acme-challenge/") {
-				return true
-			}
-		}
-	}
-	return false
-}
-
 func ForStatefulsetReady(namespace, name string) {
 	clientset, err := client.NewClientset()
 	if err != nil {
@@ -207,13 +176,6 @@ func ForStatefulsetReady(namespace, name string) {
 	waitForControllerWithTimeout(controller, stop, name, namespace)
 }
 
-func isStatefulsetReady(statefulset *appsv1.StatefulSet) bool {
-	return statefulset.Status.UpdatedReplicas == *statefulset.Spec.Replicas &&
-		statefulset.Status.Replicas == *statefulset.Spec.Replicas &&
-		statefulset.Status.ReadyReplicas == *statefulset.Spec.Replicas &&
-		statefulset.Status.ObservedGeneration >= statefulset.Generation
-}
-
 func ForPortOpen(host, port string) error {
 	timeout := time.After(20 * time.Second)
 	tick := time.Tick(1 * time.Second)
@@ -235,10 +197,108 @@ func ForPortOpen(host, port string) error {
 	}
 }
 
+func ForDaemonsetReady(namespace, name string) {
+	clientset, err := client.NewClientset()
+	if err != nil {
+		log.Fatalf("Could not create clientset %v", err)
+	}
+
+	stop := newStopChan()
+
+	watchlist := cache.NewListWatchFromClient(clientset.AppsV1().RESTClient(), "daemonsets", namespace, fields.Everything())
+	_, controller := cache.NewInformer(watchlist, &appsv1.DaemonSet{}, poll, cache.ResourceEventHandlerFuncs{
+		UpdateFunc: func(o, n interface{}) {
+			newResource := n.(*appsv1.DaemonSet)
+
+			if newResource.Name != name {
+				return
+			}
+			if isDaemonsetReady(newResource) {
+				stop.closeOnce()
+				return
+			}
+		},
+	})
+	waitForControllerWithTimeout(controller, stop, name, namespace)
+}
+
+func ForCRDCreated(name string) {
+	client, err := client.NewApiextensionsV1Client()
+	if err != nil {
+		log.Fatalf("Could not create dynamic client %v", err)
+	}
+
+	crdsIface := client.CustomResourceDefinitions()
+	timeout := time.After(30 * time.Second)
+	tick := time.Tick(5 * time.Second)
+	for {
+		select {
+		case <-timeout:
+			log.Fatalf("CRD %q not created in time\n", name)
+		case <-tick:
+			crds, err := crdsIface.List(context.TODO(),
+				metav1.ListOptions{
+					FieldSelector: fmt.Sprintf("metadata.name=%s", name),
+				})
+			if err != nil {
+				log.Printf("Error querying CRDs: %v", err)
+			}
+			if len(crds.Items) == 1 && crds.Items[0].Name == name {
+				log.Printf("CRD %q ready\n", name)
+				return
+			}
+			log.Printf("Waiting CRD %q to be created...\n", name)
+		}
+	}
+}
+
+func isDeploymentReady(deployment *appsv1.Deployment) bool {
+	return deployment.Status.UpdatedReplicas == *deployment.Spec.Replicas &&
+		deployment.Status.Replicas == *deployment.Spec.Replicas &&
+		deployment.Status.AvailableReplicas == *deployment.Spec.Replicas &&
+		deployment.Status.ObservedGeneration >= deployment.Generation
+}
+
+func isCertificateReady(certificate *certmanagerv1.Certificate) bool {
+	for _, condition := range certificate.Status.Conditions {
+		if condition.Type == certmanagerv1.CertificateConditionReady &&
+			condition.Status == cmmeta.ConditionTrue {
+			return true
+		}
+	}
+	return false
+}
+
+func isHTTP01Ingress(ingress *networkingv1.Ingress, hostname string) bool {
+	for _, rule := range ingress.Spec.Rules {
+		if rule.Host != hostname {
+			continue
+		}
+		for _, ingressPath := range rule.IngressRuleValue.HTTP.Paths {
+			if strings.Contains(ingressPath.Path, ".well-known/acme-challenge/") {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isStatefulsetReady(statefulset *appsv1.StatefulSet) bool {
+	return statefulset.Status.UpdatedReplicas == *statefulset.Spec.Replicas &&
+		statefulset.Status.Replicas == *statefulset.Spec.Replicas &&
+		statefulset.Status.ReadyReplicas == *statefulset.Spec.Replicas &&
+		statefulset.Status.ObservedGeneration >= statefulset.Generation
+}
+
+func isDaemonsetReady(resource *appsv1.DaemonSet) bool {
+	return resource.Status.CurrentNumberScheduled == resource.Status.DesiredNumberScheduled &&
+		resource.Status.ObservedGeneration >= resource.Generation
+}
+
 func waitForControllerWithTimeout(controller cache.Controller, stop *stopChan, name, namespace string) {
 	go controller.Run(stop.c)
 
-	timeout := time.After(30 * time.Second)
+	timeout := time.After(100 * time.Second)
 	tick := time.Tick(5 * time.Second)
 	for {
 		select {
@@ -248,6 +308,7 @@ func waitForControllerWithTimeout(controller cache.Controller, stop *stopChan, n
 		case <-tick:
 			log.Printf("Waiting for resource %q to be ready in namespace %q...\n", name, namespace)
 		case <-stop.c:
+			log.Printf("Resource %q in namespace %q is ready\n", name, namespace)
 			return
 		}
 	}

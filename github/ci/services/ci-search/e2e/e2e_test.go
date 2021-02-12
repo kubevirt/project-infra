@@ -9,9 +9,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"k8s.io/client-go/kubernetes"
 
-	"kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/client"
 	"kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/portforwarder"
 	"kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/wait"
 )
@@ -20,22 +18,10 @@ const (
 	testNamespace = "ci-search"
 )
 
-var (
-	clientset *kubernetes.Clientset
-)
-
 func TestCISearchDeployment(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "ci-search deployment suite")
 }
-
-var _ = BeforeSuite(func() {
-	var err error
-
-	// initilize clientset
-	clientset, err = client.NewClientset()
-	Expect(err).NotTo(HaveOccurred())
-})
 
 var _ = Describe("ci-search deployment", func() {
 	It("creates a responding HTTP service", func() {

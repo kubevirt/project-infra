@@ -23,6 +23,11 @@ func main() {
 		wait.ForDeploymentReady(*namespace, *selector)
 	case "statefulset":
 		wait.ForStatefulsetReady(*namespace, *selector)
+	case "daemonset":
+		wait.ForDaemonsetReady(*namespace, *selector)
+	case "crd":
+		wait.ForCRDCreated(*selector)
+
 	default:
 		log.Fatalf("Unknown resource kind, %q", *kind)
 	}
