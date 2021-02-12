@@ -17,6 +17,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: search
+            name: kuberhealthy
             port:
               number: 80
