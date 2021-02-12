@@ -57,7 +57,7 @@ periodics:
               sync_crio_repo_for_version $i
             done
 
-            gsutil rsync -d -r $LOCAL_MIRROR_DIR gs://BUCKET_DIR
+            gsutil rsync -d -r $LOCAL_MIRROR_DIR gs://$BUCKET_DIR
         resources:
           requests:
             memory: "2Gi"
