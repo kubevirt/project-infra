@@ -75,6 +75,10 @@ const ReportTemplate = `
         .center {
             text-align:center
         }
+        .right {
+            text-align: right;
+			width: 100%;
+        }
 
         /* Popup container - can be anything you want */
         .popup {
@@ -99,6 +103,19 @@ const ReportTemplate = `
             z-index: 1;
             left: 50%;
             margin-left: -110px;
+        }
+
+        .popup .popuptextjoblist {
+            visibility: hidden;
+            width: 350px;
+            background-color: #FFFFFF;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 8px;
+            position: absolute;
+            z-index: 1;
+            left: 100%;
+            margin-left: -350px;
         }
 
         .nowrap {
@@ -141,6 +158,25 @@ const ReportTemplate = `
 {{ if not .Headers }}
 	<div>No failing tests! 🙂</div>
 {{ else }}
+<div id="failuresForJobs" onClick="popup(this.id)" class="popup right" >
+	<u>list of job runs</u>
+	<div class="popuptextjoblist right" id="targetfailuresForJobs">
+		<table width="100%">
+			{{ range $key, $jobFailures := $.FailuresForJobs }}<tr class="unimportant">
+				<td>
+					<a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/{{ $.Org }}_{{ $.Repo }}/{{.PR}}/{{.Job}}/{{.BuildNumber}}"><span title="job build number">{{.BuildNumber}}</span></a>
+				</td>
+				<td>
+					<a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{.PR}}"><span title="pr number">#{{.PR}}</span></a>
+				</td>
+				<td>
+					<div class="tests_failed"><span title="test failures">{{ .Failures }}</span></div>
+				</td>
+			</tr>{{ end }}
+		</table>
+	</div>
+</div>
+
 <table>
     <tr>
         <td></td>
@@ -191,14 +227,15 @@ const ReportTemplate = `
 `
 
 type Params struct {
-	StartOfReport string
-	EndOfReport   string
-	Headers       []string
-	Tests         []string
-	Data          map[string]map[string]*Details
-	PrNumbers     []int
-	Org           string
-	Repo          string
+	StartOfReport   string
+	EndOfReport     string
+	Headers         []string
+	Tests           []string
+	Data            map[string]map[string]*Details
+	PrNumbers       []int
+	Org             string
+	Repo            string
+	FailuresForJobs map[int]*JobFailures
 }
 
 type Details struct {
@@ -214,6 +251,13 @@ type Job struct {
 	Severity    string
 	PR          int
 	Job         string
+}
+
+type JobFailures struct {
+	BuildNumber int
+	PR          int
+	Job         string
+	Failures    int
 }
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
@@ -245,7 +289,7 @@ func Report(results []*Result, reportOutputWriter *storage.Writer, org string, r
 	data := map[string]map[string]*Details{}
 	headers := []string{}
 	tests := []string{}
-	buildNumberMap := map[int]struct{}{}
+	failuresForJobs := map[int]*JobFailures{}
 	headerMap := map[string]struct{}{}
 
 	for _, result := range results {
@@ -254,7 +298,18 @@ func Report(results []*Result, reportOutputWriter *storage.Writer, org string, r
 		for _, suite := range result.JUnit {
 			for _, test := range suite.Tests {
 				if test.Status == junit.StatusFailed || test.Status == junit.StatusError {
-					buildNumberMap[result.BuildNumber] = struct{}{}
+
+					_, exists := failuresForJobs[result.BuildNumber]
+					if !exists {
+						failuresForJobs[result.BuildNumber] = &JobFailures{
+							BuildNumber: result.BuildNumber,
+							PR: result.PR,
+							Job: result.Job,
+							Failures: 0,
+						}
+					}
+					failuresForJobs[result.BuildNumber].Failures = failuresForJobs[result.BuildNumber].Failures + 1
+
 					testEntry := data[test.Name]
 					if testEntry == nil {
 						tests = append(tests, test.Name)
@@ -278,7 +333,7 @@ func Report(results []*Result, reportOutputWriter *storage.Writer, org string, r
 
 	// second enrich failed tests with additional information
 	for _, result := range results {
-		if _, exists := buildNumberMap[result.BuildNumber]; !exists {
+		if _, exists := failuresForJobs[result.BuildNumber]; !exists {
 			// if not in the map now, then skip it
 			continue
 		}
@@ -305,7 +360,7 @@ func Report(results []*Result, reportOutputWriter *storage.Writer, org string, r
 	// third, calculate the severity
 	// second enrich failed tests with additional information
 	for _, result := range results {
-		if _, exists := buildNumberMap[result.BuildNumber]; !exists {
+		if _, exists := failuresForJobs[result.BuildNumber]; !exists {
 			// if not in the map now, then skip it
 			continue
 		}
@@ -327,14 +382,15 @@ func Report(results []*Result, reportOutputWriter *storage.Writer, org string, r
 
 	testsSortedByRelevance := SortTestsByRelevance(data, tests)
 	parameters := Params{
-		Data:          data,
-		Headers:       headers,
-		Tests:         testsSortedByRelevance,
-		PrNumbers:     prNumbers,
-		EndOfReport:   endOfReport.Format(time.RFC3339),
-		Org:           org,
-		Repo:          repo,
-		StartOfReport: startOfReport.Format(time.RFC3339),
+		Data:            data,
+		Headers:         headers,
+		Tests:           testsSortedByRelevance,
+		PrNumbers:       prNumbers,
+		EndOfReport:     endOfReport.Format(time.RFC3339),
+		Org:             org,
+		Repo:            repo,
+		StartOfReport:   startOfReport.Format(time.RFC3339),
+		FailuresForJobs: failuresForJobs,
 	}
 	var err error
 	if !isDryRun && reportOutputWriter != nil {
