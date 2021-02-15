@@ -12,7 +12,7 @@ periodics:
     preset-shared-images: "true"
   spec:
     containers:
-      - image: kubevirtci/bootstrap:v20201119-a5880e0
+      - image: quay.io/kubevirtci/bootstrap:v20210204-9196102
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
@@ -32,8 +32,7 @@ periodics:
           - "-c"
           - |
             set -e;
-            apt-get update
-            apt-get install yum-utils -y
+            dnf install dnf-utils -y
 
             sync_crio_repo_for_version () {
               if [ -z "$1" ]
@@ -45,7 +44,7 @@ periodics:
                   REPOID="${BASE_REPOID}_cri-o_$1"
               fi
               curl -L -o $REPOID.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable$CRIO_SUBDIR/$OS/devel:kubic:libcontainers:stable$CRIO_SUBDIR.repo
-              reposync -c $REPOID.repo -p ./$LOCAL_MIRROR_DIR -n --repoid=$REPOID
+              reposync -c $REPOID.repo -p ./$LOCAL_MIRROR_DIR -n --repoid=$REPOID --download-metadata
             }
 
             # First sync the shared stable repository
