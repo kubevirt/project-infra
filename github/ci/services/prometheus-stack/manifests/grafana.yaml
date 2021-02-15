@@ -141,7 +141,7 @@ data:
     provisioning = /etc/grafana/provisioning
     [auth.anonymous]
     enabled = true
-    org_name = KubeVirt community
+    org_name = Main Org.
 
   datasources.yaml: |
     apiVersion: 1
