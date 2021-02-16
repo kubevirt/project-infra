@@ -36,3 +36,10 @@
     PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
     PLUGIN_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/plugins/plugins.yaml"
     KUBECONFIG: "{{ kubeconfig_path }}"
+
+- name: Patch SRIOV nodes
+  shell: |
+    {{ project_infra_root }}/hack/patch_node.sh {{ item.name }} {{ item.capacity }}
+  loop: "{{ SRIOVNodes }}"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"

@@ -6,3 +6,9 @@ kubeconfig_path: '/root/.kube/config'
 secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/kubevirtci-testing/secrets/'
 
 kind_cluster_config: '/workspace/cluster.yaml'
+
+node_name: node01
+
+SRIOVNodes:
+- name: '{{ node_name }}'
+  capacity: 2

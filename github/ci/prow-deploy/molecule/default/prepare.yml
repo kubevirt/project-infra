@@ -48,7 +48,7 @@
             - |
               kind: JoinConfiguration
               nodeRegistration:
-                name: node01
+                name: '{{ node_name }}'
                 kubeletExtraArgs:
                   system-reserved: memory=16Gi
     - name: Launch cluster

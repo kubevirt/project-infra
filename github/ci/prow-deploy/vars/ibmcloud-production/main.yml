@@ -7,3 +7,5 @@ kubeconfig_path: '{{ secrets_dir }}/kubeconfig'
 
 shell_environment:
   KUBECONFIG: "{{ kubeconfig_path }}"
+
+SRIOVNodes: []

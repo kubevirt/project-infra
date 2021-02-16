@@ -39,3 +39,10 @@
       --address="http://{{ deckUrl }}/hook" \
       --hmac {{ prowHmac }}
   changed_when: false
+
+- name: verify SRIOV nodes patched
+  shell: |
+    timeout 60s bash -c "until kubectl get node {{ item.name }} -oyaml | grep prow/sriov | grep {{ item.capacity }} | wc -l | grep 2; do sleep 1; done"
+  loop: "{{ SRIOVNodes }}"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
