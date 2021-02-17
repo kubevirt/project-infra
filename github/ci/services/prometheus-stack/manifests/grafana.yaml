@@ -172,27 +172,6 @@ data:
     #!/usr/bin/env sh
     set -euf
     mkdir -p /var/lib/grafana/dashboards/default
-    curl -skf \
-    --connect-timeout 60 \
-    --max-time 60 \
-    -H "Accept: application/json" \
-    -H "Content-Type: application/json;charset=UTF-8" \
-      "https://grafana.com/api/dashboards/3131/revisions/1/download" | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g'\
-    > "/var/lib/grafana/dashboards/default/kubernetes-all-nodes.json"
-    curl -skf \
-    --connect-timeout 60 \
-    --max-time 60 \
-    -H "Accept: application/json" \
-    -H "Content-Type: application/json;charset=UTF-8" \
-      "https://grafana.com/api/dashboards/6417/revisions/1/download" | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g'\
-    > "/var/lib/grafana/dashboards/default/kubernetes-cluster.json"
-    curl -skf \
-    --connect-timeout 60 \
-    --max-time 60 \
-    -H "Accept: application/json" \
-    -H "Content-Type: application/json;charset=UTF-8" \
-      "https://grafana.com/api/dashboards/12842/revisions/2/download" | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g'\
-    > "/var/lib/grafana/dashboards/default/kubernetes-pod-overview.json"
 ---
 # Source: grafana/templates/dashboards-json-configmap.yaml
 apiVersion: v1
