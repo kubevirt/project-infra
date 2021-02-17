@@ -1,6 +1,32 @@
 ---
 default:
   labels:
+    - color: 8fc951
+      description: Indicates an issue or PR is ready to be actively worked on.
+      name: triage/accepted
+      target: both
+      prowPlugin: label
+      addedBy: org members
+    - color: d455d0
+      description: Indicates an issue is a duplicate of other open issue.
+      name: triage/duplicate
+      target: both
+      addedBy: anyone
+    - color: d455d0
+      description: Indicates an issue needs more information in order to work on it.
+      name: triage/needs-information
+      target: both
+      addedBy: anyone
+    - color: d455d0
+      description: Indicates an issue can not be reproduced as described.
+      name: triage/not-reproducible
+      target: both
+      addedBy: anyone
+    - color: d455d0
+      description: Indicates an issue that can not or will not be resolved.
+      name: triage/unresolved
+      target: both
+      addedBy: anyone
     - color: 8452c9
       name: triage/build-watcher
       target: issues
