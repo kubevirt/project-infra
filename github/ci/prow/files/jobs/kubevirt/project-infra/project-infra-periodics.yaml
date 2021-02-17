@@ -277,7 +277,7 @@ periodics:
     base_ref: master
   - org: kubevirt
     repo: containerized-data-importer
-    base_ref: master
+    base_ref: main
   spec:
     securityContext:
       runAsUser: 0
