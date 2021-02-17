@@ -1,4 +1,4 @@
-# ci-search
+# Prometheus stack
 
 Customization and deployment of a prometheus-based monitoring stack, including
 [prometheus operator], [alertmanager], [grafana] and [loki]. It uses internally
