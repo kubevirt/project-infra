@@ -3,10 +3,8 @@
 set -euo pipefail
 
 decrypt_secrets(){
-    local github_token_path="${1}"
-
     target_dir=$(mktemp -d)
-    git clone https://kubevirt-bot:$(cat ${github_token_path})@github.com/kubevirt/secrets ${target_dir}
+    git clone https://kubevirt-bot@github.com/kubevirt/secrets ${target_dir}
     gpg --allow-secret-key-import --import /etc/pgp/token
     gpg --decrypt ${target_dir}/secrets.tar.asc > secrets.tar
     tar -xvf secrets.tar
@@ -21,5 +19,7 @@ extract_secret(){
     local key="${1}"
     local path="${2}"
 
-    yq r main.yml "${key}" | tr -d "\n" > "${path}"
+    mkdir -p $(dirname "${path}")
+    # only remove new line at the end
+    yq r main.yml "${key}" | awk 'NR>1{print PREV} {PREV=$0} END{printf("%s",$0)}' > "${path}"
 }
