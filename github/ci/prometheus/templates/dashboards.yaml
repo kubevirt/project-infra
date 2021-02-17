@@ -3530,7 +3530,7 @@ data:
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Average time to merge",
+          "title": "Average days to merge",
           "tooltip": {
             "shared": true,
             "sort": 0,
