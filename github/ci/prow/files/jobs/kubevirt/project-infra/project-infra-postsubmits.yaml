@@ -206,8 +206,8 @@ postsubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-          - name: GITHUB_TOKEN
-            value: /etc/github/oauth
+          - name: GIT_ASKPASS
+            value: "./hack/git-askpass.sh"
           - name: DEPLOY_ENVIRONMENT
             value: ibmcloud-production
           command:
@@ -217,12 +217,9 @@ postsubmits:
             - |
               base_dir=github/ci/prow-deploy
 
-              # unencrypt and put in place secrets
-              target_dir=$(mktemp -d)
-              git clone https://kubevirt-bot:$(cat ${GITHUB_TOKEN})@github.com/kubevirt/secrets ${target_dir}
-              gpg --allow-secret-key-import --import /etc/pgp/token
-              gpg --decrypt ${target_dir}/secrets.tar.asc > secrets.tar
-              tar -xvf secrets.tar
+              source ./hack/manage-secrets.sh
+              decrypt_secrets
+
               mkdir -p ${base_dir}/vars/${DEPLOY_ENVIRONMENT}
               mv main.yml ${base_dir}/vars/${DEPLOY_ENVIRONMENT}/secrets.yml
 
@@ -273,8 +270,8 @@ postsubmits:
         containers:
         - image: kubevirtci/bootstrap:v20210112-b29dfd7
           env:
-          - name: GITHUB_TOKEN
-            value: /etc/github/oauth
+          - name: GIT_ASKPASS
+            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -284,16 +281,9 @@ postsubmits:
               curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
               chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
-              # unencrypt secrets
-              target_dir=$(mktemp -d)
-              git clone https://kubevirt-bot:$(cat ${GITHUB_TOKEN})@github.com/kubevirt/secrets ${target_dir}
-              gpg --allow-secret-key-import --import /etc/pgp/token
-              gpg --decrypt ${target_dir}/secrets.tar.asc > secrets.tar
-              tar -xvf secrets.tar
-
-              # put in place kubeconfig
-              mkdir -p ~/.kube
-              yq r main.yml 'kubeconfig' > ~/.kube/config
+              source ./hack/manage-secrets.sh
+              decrypt_secrets
+              extract_secret 'kubeconfig' ~/.kube/config
 
               ./github/ci/services/cert-manager/hack/deploy.sh production
           resources:
@@ -330,8 +320,8 @@ postsubmits:
         containers:
         - image: kubevirtci/bootstrap:v20210112-b29dfd7
           env:
-          - name: GITHUB_TOKEN
-            value: /etc/github/oauth
+          - name: GIT_ASKPASS
+            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -341,19 +331,10 @@ postsubmits:
               curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
               chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
-              # unencrypt secrets
-              target_dir=$(mktemp -d)
-              git clone https://kubevirt-bot:$(cat ${GITHUB_TOKEN})@github.com/kubevirt/secrets ${target_dir}
-              gpg --allow-secret-key-import --import /etc/pgp/token
-              gpg --decrypt ${target_dir}/secrets.tar.asc > secrets.tar
-              tar -xvf secrets.tar
-
-              # put in place kubeconfig
-              mkdir -p ~/.kube
-              yq r main.yml 'kubeconfig' > ~/.kube/config
-
-              # put in place bugzilla api key
-              yq r main.yml 'bugzilla.apiKey' > github/ci/services/ci-search/secrets/production/bugzilla-credentials/api
+              source ./hack/manage-secrets.sh
+              decrypt_secrets
+              extract_secret 'kubeconfig' ~/.kube/config
+              extract_secret 'bugzilla.apiKey' github/ci/services/ci-search/secrets/production/bugzilla-credentials/api
 
               ./github/ci/services/ci-search/hack/deploy.sh production
           resources:
@@ -390,8 +371,8 @@ postsubmits:
         containers:
         - image: kubevirtci/bootstrap:v20210112-b29dfd7
           env:
-          - name: GITHUB_TOKEN
-            value: /etc/github/oauth
+          - name: GIT_ASKPASS
+            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -401,16 +382,9 @@ postsubmits:
               curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
               chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
-              # unencrypt secrets
-              target_dir=$(mktemp -d)
-              git clone https://kubevirt-bot:$(cat ${GITHUB_TOKEN})@github.com/kubevirt/secrets ${target_dir}
-              gpg --allow-secret-key-import --import /etc/pgp/token
-              gpg --decrypt ${target_dir}/secrets.tar.asc > secrets.tar
-              tar -xvf secrets.tar
-
-              # put in place kubeconfig
-              mkdir -p ~/.kube
-              yq r main.yml 'kubeconfig' > ~/.kube/config
+              source ./hack/manage-secrets.sh
+              decrypt_secrets
+              extract_secret 'kubeconfig' ~/.kube/config
 
               ./github/ci/services/sippy/hack/deploy.sh production
           resources:
@@ -447,8 +421,8 @@ postsubmits:
         containers:
         - image: kubevirtci/bootstrap:v20210112-b29dfd7
           env:
-          - name: GITHUB_TOKEN
-            value: /etc/github/oauth
+          - name: GIT_ASKPASS
+            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -458,21 +432,13 @@ postsubmits:
               curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
               chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
-              # unencrypt secrets
-              target_dir=$(mktemp -d)
-              git clone https://kubevirt-bot:$(cat ${GITHUB_TOKEN})@github.com/kubevirt/secrets ${target_dir}
-              gpg --allow-secret-key-import --import /etc/pgp/token
-              gpg --decrypt ${target_dir}/secrets.tar.asc > secrets.tar
-              tar -xvf secrets.tar
+              source ./hack/manage-secrets.sh
+              decrypt_secrets
 
-              # put in place kubeconfig
-              mkdir -p ~/.kube
-              yq r main.yml 'kubeconfig' > ~/.kube/config
-
-              # put in place grafana credentials
-              yq r main.yml 'grafanaUser' | tr -d "\n" > ./github/ci/services/prometheus-stack/secrets/production/grafana/admin-user
-              yq r main.yml 'grafanaPassword' | tr -d "\n" > ./github/ci/services/prometheus-stack/secrets/production/grafana/admin-password
-              yq r main.yml 'grafanaLDAPTOML' | tr -d "\n" > ./github/ci/services/prometheus-stack/secrets/production/grafana/ldap-toml
+              extract_secret 'kubeconfig' ~/.kube/config
+              extract_secret 'grafanaUser' ./github/ci/services/prometheus-stack/secrets/production/grafana/admin-user
+              extract_secret 'grafanaPassword' ./github/ci/services/prometheus-stack/secrets/production/grafana/admin-password
+              extract_secret 'grafanaLDAPTOML' ./github/ci/services/prometheus-stack/secrets/production/grafana/ldap-toml
 
               ./github/ci/services/prometheus-stack/hack/deploy.sh production
           resources:
@@ -509,8 +475,8 @@ postsubmits:
         containers:
         - image: kubevirtci/bootstrap:v20210112-b29dfd7
           env:
-          - name: GITHUB_TOKEN
-            value: /etc/github/oauth
+          - name: GIT_ASKPASS
+            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -520,16 +486,10 @@ postsubmits:
               curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
               chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
-              # unencrypt secrets
-              target_dir=$(mktemp -d)
-              git clone https://kubevirt-bot:$(cat ${GITHUB_TOKEN})@github.com/kubevirt/secrets ${target_dir}
-              gpg --allow-secret-key-import --import /etc/pgp/token
-              gpg --decrypt ${target_dir}/secrets.tar.asc > secrets.tar
-              tar -xvf secrets.tar
+              source ./hack/manage-secrets.sh
+              decrypt_secrets
 
-              # put in place kubeconfig
-              mkdir -p ~/.kube
-              yq r main.yml 'kubeconfig' > ~/.kube/config
+              extract_secret 'kubeconfig' ~/.kube/config
 
               ./github/ci/services/kuberhealthy/hack/deploy.sh production
           resources:
