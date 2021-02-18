@@ -1,0 +1,14 @@
+apiVersion: v1
+metadata:
+  name: crier
+  namespace: test-pods
+kind: Role
+rules:
+  - apiGroups:
+      - "prow.k8s.io"
+    resources:
+      - prowjobs
+    verbs:
+      - get
+      - list
+      - watch

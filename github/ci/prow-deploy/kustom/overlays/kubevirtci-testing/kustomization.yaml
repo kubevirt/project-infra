@@ -13,7 +13,6 @@ patchesStrategicMerge:
   - patches/StrategicMerge/hook_deployment.yaml
   - patches/StrategicMerge/nginx-ingress.yaml
   - patches/StrategicMerge/deck_deployment_replicas.yaml
-  - patches/StrategicMerge/plank_deployment_replicas.yaml
 
 patches:
   - target:
@@ -40,12 +39,6 @@ patches:
       version: v1
       group: apps
       kind: Deployment
-      name: plank
-    path: patches/JsonRFC6902/plank_deployment.yaml
-  - target:
-      version: v1
-      group: apps
-      kind: Deployment
       name: deck
     path: patches/JsonRFC6902/deck_deployment.yaml
   - target:
@@ -61,6 +54,13 @@ patches:
       namespace: test-pods
       name: deck
     path: patches/StrategicMerge/deck_role.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: Role
+      namespace: test-pods
+      name: crier
+    path: patches/StrategicMerge/crier_role.yaml
   - target:
       group: apps
       version: v1
