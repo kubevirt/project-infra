@@ -11,6 +11,8 @@ postsubmits:
       repo: project-infra
       base_ref: master
     spec:
+      securityContext:
+        runAsUser: 0
       containers:
       - image: docker.io/library/python:3.7
         env:
@@ -24,10 +26,14 @@ postsubmits:
         args:
         - |
           set -e
-          git config --global user.email "$GIT_AUTHOR_EMAIL"
-          git config --global user.name "$GIT_AUTHOR_NAME"
           commit=$(git show -s --format=%H)
-          (cd .. && git clone --branch gh-pages "https://kubevirt-bot@github.com/kubevirt/user-guide.git" user-guide-gh-pages)
+          (
+            cd ..
+            git clone --branch gh-pages "https://kubevirt-bot@github.com/kubevirt/user-guide.git" user-guide-gh-pages
+            cd user-guide-gh-pages
+            git config user.email "$GIT_AUTHOR_EMAIL"
+            git config user.name "$GIT_AUTHOR_NAME"
+          )
           USER_GUIDE_WORK_DIR=$(cd ../user-guide-gh-pages && pwd)
           make build
           USER_GUIDE_BUILD_DIR=$(pwd)/site
