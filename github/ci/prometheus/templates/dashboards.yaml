@@ -3480,11 +3480,17 @@ data:
           "description": "",
           "fieldConfig": {
             "defaults": {
-              "custom": {}
+              "color": {},
+              "custom": {},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": []
+              },
+              "unit": "d"
             },
             "overrides": []
           },
-          "fill": 1,
+          "fill": 0,
           "fillGradient": 0,
           "gridPos": {
             "h": 10,
@@ -3514,23 +3520,49 @@ data:
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
-          "seriesOverrides": [],
+          "seriesOverrides": [
+            {
+              "$$hashKey": "object:524",
+              "alias": "time to merge avg + std",
+              "fillBelowTo": "time to merge avg - std",
+              "lines": false
+            },
+            {
+              "$$hashKey": "object:529",
+              "alias": "time to merge avg - std",
+              "lines": false
+            }
+          ],
           "spaceLength": 10,
           "stack": false,
           "steppedLine": false,
           "targets": [
             {
-              "expr": "cihealth_avg_time_to_merge_days  ",
+              "expr": "cihealth_avg_time_to_merge_days + cihealth_std_time_to_merge_days",
               "interval": "",
-              "legendFormat": "",
+              "legendFormat": "time to merge avg + std",
               "refId": "A"
+            },
+            {
+              "expr": "clamp_min(cihealth_avg_time_to_merge_days - cihealth_std_time_to_merge_days, 0)  ",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "time to merge avg - std",
+              "refId": "B"
+            },
+            {
+              "expr": "cihealth_avg_time_to_merge_days",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "time to merge avg",
+              "refId": "C"
             }
           ],
           "thresholds": [],
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Average days to merge",
+          "title": "Average time to merge",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -3546,7 +3578,8 @@ data:
           },
           "yaxes": [
             {
-              "format": "short",
+              "$$hashKey": "object:109",
+              "format": "d",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -3554,6 +3587,7 @@ data:
               "show": true
             },
             {
+              "$$hashKey": "object:110",
               "format": "short",
               "label": null,
               "logBase": 1,
@@ -3579,7 +3613,7 @@ data:
             },
             "overrides": []
           },
-          "fill": 1,
+          "fill": 0,
           "fillGradient": 0,
           "gridPos": {
             "h": 8,
@@ -3609,16 +3643,42 @@ data:
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
-          "seriesOverrides": [],
+          "seriesOverrides": [
+            {
+              "$$hashKey": "object:584",
+              "alias": "merge queue length avg + std",
+              "fillBelowTo": "merge queue length avg - std",
+              "lines": false
+            },
+            {
+              "$$hashKey": "object:589",
+              "alias": "merge queue length avg - std",
+              "lines": false
+            }
+          ],
           "spaceLength": 10,
           "stack": false,
           "steppedLine": false,
           "targets": [
             {
-              "expr": "cihealth_avg_merge_queue_lenght_total    ",
+              "expr": "cihealth_avg_merge_queue_lenght_total + cihealth_std_merge_queue_lenght_total ",
               "interval": "",
-              "legendFormat": "",
+              "legendFormat": "merge queue length avg + std",
               "refId": "A"
+            },
+            {
+              "expr": "clamp_min(cihealth_avg_merge_queue_lenght_total - cihealth_std_merge_queue_lenght_total, 0)  ",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "merge queue length avg - std",
+              "refId": "B"
+            },
+            {
+              "expr": "cihealth_avg_merge_queue_lenght_total  ",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "merge queue length avg",
+              "refId": "C"
             }
           ],
           "thresholds": [],
@@ -3641,6 +3701,7 @@ data:
           },
           "yaxes": [
             {
+              "$$hashKey": "object:222",
               "format": "short",
               "label": null,
               "logBase": 1,
@@ -3649,7 +3710,8 @@ data:
               "show": true
             },
             {
-              "format": "short",
+              "$$hashKey": "object:223",
+              "format": "Time",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -3663,6 +3725,7 @@ data:
           }
         }
       ],
+      "refresh": false,
       "schemaVersion": 27,
       "style": "dark",
       "tags": [],
@@ -3677,5 +3740,5 @@ data:
       "timezone": "",
       "title": "Merge Queue",
       "uid": "WZU1-LPGz",
-      "version": 2
+      "version": 4
     }
