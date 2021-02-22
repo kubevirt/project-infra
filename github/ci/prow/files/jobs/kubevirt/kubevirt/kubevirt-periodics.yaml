@@ -411,6 +411,62 @@ periodics:
       - name: gcs
         secret:
           secretName: gcs
+# FIXME: temporary job, to be deleted when the releases are done by prow
+- name: periodic-kubevirt-update-release-0.38-testing-manifests
+  cluster: ibm-prow-jobs
+  cron: "45 0 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+    - org: kubevirt
+      repo: kubevirt
+      base_ref: master
+      work_dir: true
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  max_concurrency: 1
+  spec:
+    containers:
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
+        env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/gcs/service-account.json
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
+          - |
+            set -e
+            release_xy="0.38"
+            export release_version="$(
+                curl --fail -s https://api.github.com/repos/kubevirt/kubevirt/releases |
+                jq -r '(.[].tag_name | select( test("-(rc|alpha|beta)") | not ) )' |
+                sort -rV | grep "v$release_xy" | head -1
+            )"
+            git checkout "${release_version}"
+            make manifests
+            if [ $(gsutil ls 'gs://kubevirt-prow/devel/release/kubevirt/kubevirt/'|grep ${release_version}|wc -l) -gt 0 ]; then
+              gsutil -m rm -r gs://kubevirt-prow/devel/release/kubevirt/kubevirt/${release_version}
+            fi
+            gsutil cp -r _out/manifests/testing gs://kubevirt-prow/devel/release/kubevirt/kubevirt/${release_version}/manifests/
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "4Gi"
+        volumeMounts:
+          - name: gcs
+            mountPath: /etc/gcs
+            readOnly: false
+    volumes:
+      - name: gcs
+        secret:
+          secretName: gcs
 - name: periodic-kubevirt-e2e-k8s-latest
   annotations:
     testgrid-dashboards: kubevirt-periodics
