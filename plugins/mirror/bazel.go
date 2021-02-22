@@ -2,12 +2,16 @@ package mirror
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"hash"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"regexp"
 
@@ -112,18 +116,29 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 
 		log.Printf("File will be written to gs://%s/%s", bucket, reportObject.ObjectName())
 
+		var reportOutputWriter io.WriteCloser
 		if dryRun {
-			return nil
-		}
-		reportOutputWriter := reportObject.NewWriter(ctx)
-		defer reportOutputWriter.Close()
-		_, err = io.Copy(reportOutputWriter, resp.Body)
-		if err == nil {
-			return nil
+			reportOutputWriter, err = os.Open("/dev/null")
+			if err != nil {
+				return fmt.Errorf("Failed to open /dev/null: %v", err)
+			}
 		} else {
+			reportOutputWriter = reportObject.NewWriter(ctx)
+		}
+		defer reportOutputWriter.Close()
+
+		sha := sha256.New()
+		body := io.TeeReader(resp.Body, sha)
+		_, err = io.Copy(reportOutputWriter, body)
+		if err != nil {
 			log.Printf("Could not upload artifact from %s, continuing with next URL: %v", uri, err)
 			continue
 		}
+		if toHex(sha) != artifact.SHA256() {
+			log.Printf("Could not upload artifact from %s, continuing with next URL: Expected shasum %v, got %v", uri, artifact.SHA256(), toHex(sha))
+			continue
+		}
+		return nil
 	}
 	return fmt.Errorf("artifact download urls exhausted, failed to upload %s", artifact.Name())
 }
@@ -132,4 +147,8 @@ func GenerateFilePath(bucket string, artifact *Artifact) string {
 	u, _ := url.Parse("https://storage.googleapis.com")
 	u.Path = path.Join(u.Path, bucket, artifact.SHA256())
 	return u.String()
+}
+
+func toHex(hasher hash.Hash) string {
+	return hex.EncodeToString(hasher.Sum(nil))
 }
