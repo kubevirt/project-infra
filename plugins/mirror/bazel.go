@@ -105,6 +105,10 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 			continue
 		}
 		defer resp.Body.Close()
+		if resp.StatusCode < 200 || resp.StatusCode > 299 {
+			log.Printf("Could not upload artifact from %s, continuing with next URL: Status Code: %v", uri, resp.StatusCode)
+			continue
+		}
 
 		log.Printf("File will be written to gs://%s/%s", bucket, reportObject.ObjectName())
 
