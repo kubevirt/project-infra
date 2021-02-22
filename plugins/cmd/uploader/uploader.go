@@ -68,7 +68,11 @@ func main() {
 
 func verify(options options, artifacts []mirror.Artifact) {
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx, option.WithoutAuthentication())
+	var opts []option.ClientOption
+	if options.dryRun {
+		opts = append(opts, option.WithoutAuthentication())
+	}
+	client, err := storage.NewClient(ctx, opts...)
 	if err != nil {
 		log.Fatalf("Failed to create new storage client: %v.\n", err)
 	}
