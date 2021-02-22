@@ -1,6 +1,32 @@
 ---
 default:
   labels:
+    - color: 8fc951
+      description: Indicates an issue or PR is ready to be actively worked on.
+      name: triage/accepted
+      target: both
+      prowPlugin: label
+      addedBy: org members
+    - color: d455d0
+      description: Indicates an issue is a duplicate of other open issue.
+      name: triage/duplicate
+      target: both
+      addedBy: anyone
+    - color: d455d0
+      description: Indicates an issue needs more information in order to work on it.
+      name: triage/needs-information
+      target: both
+      addedBy: anyone
+    - color: d455d0
+      description: Indicates an issue can not be reproduced as described.
+      name: triage/not-reproducible
+      target: both
+      addedBy: anyone
+    - color: d455d0
+      description: Indicates an issue that can not or will not be resolved.
+      name: triage/unresolved
+      target: both
+      addedBy: anyone
     - color: 8452c9
       name: triage/build-watcher
       target: issues
@@ -17,6 +43,12 @@ default:
       prowPlugin: release-note
       addedBy: prow
     - color: c2e0c6
+      description: Denotes a PR that introduces potentially breaking changes that require user action. # These actions will be specifically called out when it comes time to generate release notes.
+      name: release-note-action-required
+      target: prs
+      prowPlugin: releasenote
+      addedBy: prow
+    - color: c2e0c6
       description: Denotes a PR that doesn't merit a release note.  # will be ignored when it comes time to generate release notes.
       name: release-note-none
       target: prs
@@ -28,6 +60,12 @@ default:
       target: prs
       prowPlugin: hold
       addedBy: anyone
+    - color: e11d21
+      description: Indicates that a PR should not merge because it is a work in progress.
+      name: do-not-merge/work-in-progress
+      target: prs
+      prowPlugin: wip
+      addedBy: prow
     - color: BDBDBD
       description: Indicates a PR cannot be merged because it has merge conflicts with HEAD.
       name: needs-rebase
@@ -177,6 +215,42 @@ default:
       previously:
         - name: topic/virtualization
           color: c5def5
+    - color: e11d21
+      description: Indicates the PR's author has not DCO signed all their commits.
+      name: "dco-signoff: no"
+      target: prs
+      prowPlugin: dco
+      addedBy: prow
+    - color: bfe5bf
+      description: Indicates the PR's author has DCO signed all their commits.
+      name: "dco-signoff: yes"
+      target: prs
+      prowPlugin: dco
+      addedBy: prow
+    - color: 15dd18
+      description: Indicates that a PR is ready to be merged.
+      name: lgtm
+      target: prs
+      prowPlugin: lgtm
+      addedBy: reviewers or members
+    - color: 0ffa16
+      description: Indicates a PR has been approved by an approver from all required OWNERS files.
+      name: approved
+      target: prs
+      prowPlugin: approve
+      addedBy: approvers
+    - color: b60205
+      description: Indicates a PR that requires an org member to verify it is safe to test. # This is to prevent spam/abuse of our CI system, and can be circumvented by becoming an org member. Org members can remove this label with the `/ok-to-test` command.
+      name: needs-ok-to-test
+      target: prs
+      prowPlugin: trigger
+      addedBy: prow
+    - color: 15dd18
+      description: Indicates a non-member PR verified by an org member that is safe to test. # This is the opposite of needs-ok-to-test and should be mutually exclusive.
+      name: ok-to-test
+      target: prs
+      prowPlugin: trigger
+      addedBy: prow
 repos:
   kubevirt/kubevirt:
     labels:
@@ -270,30 +344,6 @@ repos:
       - name: topic/testing
         color: c5def5
         target: both
-      - color: 15dd18
-        description: Indicates that a PR is ready to be merged.
-        name: lgtm
-        target: prs
-        prowPlugin: lgtm
-        addedBy: reviewers or members
-      - color: 0ffa16
-        description: Indicates a PR has been approved by an approver from all required OWNERS files.
-        name: approved
-        target: prs
-        prowPlugin: approve
-        addedBy: approvers
-      - color: b60205
-        description: Indicates a PR that requires an org member to verify it is safe to test. # This is to prevent spam/abuse of our CI system, and can be circumvented by becoming an org member. Org members can remove this label with the `/ok-to-test` command.
-        name: needs-ok-to-test
-        target: prs
-        prowPlugin: trigger
-        addedBy: prow
-      - color: 15dd18
-        description: Indicates a non-member PR verified by an org member that is safe to test. # This is the opposite of needs-ok-to-test and should be mutually exclusive.
-        name: ok-to-test
-        target: prs
-        prowPlugin: trigger
-        addedBy: prow
       - color: e11d21
         description: Categorizes PRs as related to changing build files of virt-* components
         name: kind/build-change
@@ -305,58 +355,6 @@ repos:
         name: release-blocker
         target: both
         prowPlugin: release-blocker
-        addedBy: prow
-  kubevirt/project-infra:
-    labels:
-      - color: 15dd18
-        description: Indicates that a PR is ready to be merged.
-        name: lgtm
-        target: prs
-        prowPlugin: lgtm
-        addedBy: reviewers or members
-      - color: 0ffa16
-        description: Indicates a PR has been approved by an approver from all required OWNERS files.
-        name: approved
-        target: prs
-        prowPlugin: approve
-        addedBy: approvers
-      - color: b60205
-        description: Indicates a PR that requires an org member to verify it is safe to test. # This is to prevent spam/abuse of our CI system, and can be circumvented by becoming an org member. Org members can remove this label with the `/ok-to-test` command.
-        name: needs-ok-to-test
-        target: prs
-        prowPlugin: trigger
-        addedBy: prow
-      - color: 15dd18
-        description: Indicates a non-member PR verified by an org member that is safe to test. # This is the opposite of needs-ok-to-test and should be mutually exclusive.
-        name: ok-to-test
-        target: prs
-        prowPlugin: trigger
-        addedBy: prow
-  kubevirt/kubevirtci:
-    labels:
-      - color: 15dd18
-        description: Indicates that a PR is ready to be merged.
-        name: lgtm
-        target: prs
-        prowPlugin: lgtm
-        addedBy: reviewers or members
-      - color: 0ffa16
-        description: Indicates a PR has been approved by an approver from all required OWNERS files.
-        name: approved
-        target: prs
-        prowPlugin: approve
-        addedBy: approvers
-      - color: b60205
-        description: Indicates a PR that requires an org member to verify it is safe to test. # This is to prevent spam/abuse of our CI system, and can be circumvented by becoming an org member. Org members can remove this label with the `/ok-to-test` command.
-        name: needs-ok-to-test
-        target: prs
-        prowPlugin: trigger
-        addedBy: prow
-      - color: 15dd18
-        description: Indicates a non-member PR verified by an org member that is safe to test. # This is the opposite of needs-ok-to-test and should be mutually exclusive.
-        name: ok-to-test
-        target: prs
-        prowPlugin: trigger
         addedBy: prow
   kubevirt/kubevirt.github.io:
     labels:
@@ -372,32 +370,6 @@ repos:
         target: both
         addedBy: anyone
         prowPlugin: label
-  kubevirt/katacoda-scenarios:
-    labels:
-      - color: 15dd18
-        description: Indicates that a PR is ready to be merged.
-        name: lgtm
-        target: prs
-        prowPlugin: lgtm
-        addedBy: reviewers or members
-      - color: 0ffa16
-        description: Indicates a PR has been approved by an approver from all required OWNERS files.
-        name: approved
-        target: prs
-        prowPlugin: approve
-        addedBy: approvers
-      - color: b60205
-        description: Indicates a PR that requires an org member to verify it is safe to test. # This is to prevent spam/abuse of our CI system, and can be circumvented by becoming an org member. Org members can remove this label with the `/ok-to-test` command.
-        name: needs-ok-to-test
-        target: prs
-        prowPlugin: trigger
-        addedBy: prow
-      - color: 15dd18
-        description: Indicates a non-member PR verified by an org member that is safe to test. # This is the opposite of needs-ok-to-test and should be mutually exclusive.
-        name: ok-to-test
-        target: prs
-        prowPlugin: trigger
-        addedBy: prow
   kubevirt/kubevirt-tutorial:
     labels:
       - color: 80e591
@@ -426,46 +398,6 @@ repos:
         target: prs
         addedBy: openshift-ci
         prowPlugin: label
-  kubevirt/demo:
-    labels:
-      - color: 15dd18
-        description: Indicates that a PR is ready to be merged.
-        name: lgtm
-        target: prs
-        prowPlugin: lgtm
-        addedBy: reviewers or members
-      - color: 0ffa16
-        description: Indicates a PR has been approved by an approver from all required OWNERS files.
-        name: approved
-        target: prs
-        prowPlugin: approve
-        addedBy: approvers
-      - color: b60205
-        description: Indicates a PR that requires an org member to verify it is safe to test. # This is to prevent spam/abuse of our CI system, and can be circumvented by becoming an org member. Org members can remove this label with the `/ok-to-test` command.
-        name: needs-ok-to-test
-        target: prs
-        prowPlugin: trigger
-        addedBy: prow
-      - color: 15dd18
-        description: Indicates a non-member PR verified by an org member that is safe to test. # This is the opposite of needs-ok-to-test and should be mutually exclusive.
-        name: ok-to-test
-        target: prs
-        prowPlugin: trigger
-        addedBy: prow
-  kubevirt/kubectl-virt-plugin:
-    labels:
-      - color: 15dd18
-        description: Indicates that a PR is ready to be merged.
-        name: lgtm
-        target: prs
-        prowPlugin: lgtm
-        addedBy: reviewers or members
-      - color: 0ffa16
-        description: Indicates a PR has been approved by an approver from all required OWNERS files.
-        name: approved
-        target: prs
-        prowPlugin: approve
-        addedBy: approvers
   nmstate/kubernetes-nmstate:
     labels:
       - name: kind/documentation
@@ -520,27 +452,3 @@ repos:
       - name: help wanted
         color: 128A0C
         target: issues
-      - color: 15dd18
-        description: Indicates that a PR is ready to be merged.
-        name: lgtm
-        target: prs
-        prowPlugin: lgtm
-        addedBy: reviewers or members
-      - color: 0ffa16
-        description: Indicates a PR has been approved by an approver from all required OWNERS files.
-        name: approved
-        target: prs
-        prowPlugin: approve
-        addedBy: approvers
-      - color: b60205
-        description: Indicates a PR that requires an org member to verify it is safe to test. # This is to prevent spam/abuse of our CI system, and can be circumvented by becoming an org member. Org members can remove this label with the `/ok-to-test` command.
-        name: needs-ok-to-test
-        target: prs
-        prowPlugin: trigger
-        addedBy: prow
-      - color: 15dd18
-        description: Indicates a non-member PR verified by an org member that is safe to test. # This is the opposite of needs-ok-to-test and should be mutually exclusive.
-        name: ok-to-test
-        target: prs
-        prowPlugin: trigger
-        addedBy: prow
