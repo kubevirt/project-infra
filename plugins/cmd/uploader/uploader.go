@@ -15,9 +15,10 @@ import (
 )
 
 type options struct {
-	dryRun        bool
-	bucket        string
-	workspacePath string
+	dryRun          bool
+	bucket          string
+	workspacePath   string
+	continueOnError bool
 }
 
 func (o *options) Validate() error {
@@ -31,6 +32,7 @@ func gatherOptions() options {
 	o := options{}
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	fs.BoolVar(&o.dryRun, "dry-run", true, "Dry run for testing. Uses API tokens but does not mutate.")
+	fs.BoolVar(&o.continueOnError, "continue-on-error", false, "Try to upload as many artifacts as possible. Exit code will still be non-zero in case of errors")
 	fs.StringVar(&o.bucket, "bucket", "builddeps", "bucket where to upload")
 	fs.StringVar(&o.workspacePath, "workspace", "", "path to the workspace file")
 	fs.Parse(os.Args[1:])
@@ -61,11 +63,17 @@ func main() {
 	}
 	invalid := mirror.FilterArtifactsWithoutMirror(artifacts, regexp.MustCompile(`^https://storage.googleapis.com/.+`))
 
+	failed := false
 	for _, artifact := range invalid {
 		newFileUrl := mirror.GenerateFilePath(options.bucket, &artifact)
 		err := mirror.WriteToBucket(options.dryRun, ctx, client, artifact, options.bucket)
 		if err != nil {
-			log.Fatalf("failed to upload %s to %s: %s", artifact.Name(), newFileUrl, err)
+			log.Printf("failed to upload %s to %s: %s", artifact.Name(), newFileUrl, err)
+			if options.continueOnError {
+				failed = true
+			} else {
+				os.Exit(1)
+			}
 		}
 		artifact.AppendURL(newFileUrl)
 	}
@@ -73,5 +81,9 @@ func main() {
 	err = mirror.WriteWorkspace(options.dryRun, workspace, options.workspacePath)
 	if err != nil {
 		log.Fatalf("could not write workspace file: %v", err)
+	}
+
+	if failed {
+		os.Exit(1)
 	}
 }
