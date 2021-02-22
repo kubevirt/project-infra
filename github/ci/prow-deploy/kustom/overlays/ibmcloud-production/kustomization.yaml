@@ -8,9 +8,6 @@ resources:
   # templated resources
   - resources/admin-rbac.yaml
 
-patchesStrategicMerge:
-  - patches/StrategicMerge/plank_deployment_replicas.yaml
-
 patches:
   - target:
       version: v1
@@ -24,12 +21,6 @@ patches:
       kind: Deployment
       name: gcsweb
     path: patches/JsonRFC6902/gcsweb-deployment.yaml
-  - target:
-      version: v1
-      group: apps
-      kind: Deployment
-      name: plank
-    path: patches/JsonRFC6902/plank_deployment.yaml
   - target:
       version: v1
       group: apps
