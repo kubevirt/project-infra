@@ -74,21 +74,23 @@ func GetArtifacts(workspace *build.File) (artifacts []Artifact, err error) {
 
 func FilterArtifactsWithoutMirror(artifacts []Artifact, regexp *regexp.Regexp) (noMirror []Artifact) {
 	for _, artifact := range artifacts {
-		var mirror string
 		if len(artifact.URLs()) == 0 {
 			continue
 		}
-		for _, url := range artifact.URLs() {
-			if regexp.MatchString(url) {
-				mirror = url
-				break
-			}
-		}
-		if mirror == "" {
+		if mirror := getMirror(artifact, regexp); mirror == "" {
 			noMirror = append(noMirror, artifact)
 		}
 	}
 	return noMirror
+}
+
+func getMirror(artifact Artifact, regexp *regexp.Regexp) string {
+	for _, urlStr := range artifact.URLs() {
+		if regexp.MatchString(urlStr) {
+			return urlStr
+		}
+	}
+	return ""
 }
 
 func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, artifact Artifact, bucket string) (err error) {
@@ -118,7 +120,7 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 
 		var reportOutputWriter io.WriteCloser
 		if dryRun {
-			reportOutputWriter, err = os.Open("/dev/null")
+			reportOutputWriter, err = os.OpenFile("/dev/null", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
 				return fmt.Errorf("Failed to open /dev/null: %v", err)
 			}
@@ -141,6 +143,26 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 		return nil
 	}
 	return fmt.Errorf("artifact download urls exhausted, failed to upload %s", artifact.Name())
+}
+
+func VerifyArtifact(ctx context.Context, client *storage.Client, artifact Artifact, bucket string) (err error) {
+	reportObject := client.Bucket(bucket).Object(artifact.SHA256())
+	reader, err := reportObject.NewReader(ctx)
+	if err == storage.ErrObjectNotExist {
+		return fmt.Errorf("artifact %v: object is not cached: %v", artifact.Name(), err)
+	} else if err != nil {
+		return fmt.Errorf("artifact %v: error checking if object exists: %v", artifact.Name(), err)
+	}
+	defer reader.Close()
+	sha := sha256.New()
+	if _, err := io.Copy(sha, reader); err != nil {
+		return fmt.Errorf("artifact %v: failed to download the object: %v", artifact.Name(), err)
+
+	}
+	if toHex(sha) != artifact.SHA256() {
+		return fmt.Errorf("artifact %v: expected shasum %v, got %v", artifact.Name(), artifact.SHA256(), toHex(sha))
+	}
+	return nil
 }
 
 func GenerateFilePath(bucket string, artifact *Artifact) string {
