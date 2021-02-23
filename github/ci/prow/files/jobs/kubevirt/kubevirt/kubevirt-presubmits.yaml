@@ -261,8 +261,7 @@ presubmits:
         - "/bin/bash"
         - "-c"
         - >
-            apt update &&
-            apt install gettext-base -y &&
+            dnf install -y gettext &&
             wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz -nv -S &&
             tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ &&
             export PATH=/usr/local/go/bin:$PATH &&
