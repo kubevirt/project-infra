@@ -14,7 +14,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-e2e-k8s-1.13.3
+    name: pull-kubevirt-e2e-k8s-1.13.3-0.30
+    context: pull-kubevirt-e2e-k8s-1.13.3
     optional: true
     spec:
       containers:
@@ -44,7 +45,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-e2e-k8s-1.14
+    name: pull-kubevirt-e2e-k8s-1.14-0.30
+    context: pull-kubevirt-e2e-k8s-1.14
     optional: true
     spec:
       containers:
@@ -74,7 +76,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-e2e-k8s-1.15-ceph
+    name: pull-kubevirt-e2e-k8s-1.15-ceph-0.30
+    context: pull-kubevirt-e2e-k8s-1.15-ceph
     spec:
       containers:
       - command:
@@ -104,7 +107,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-e2e-k8s-1.16
+    name: pull-kubevirt-e2e-k8s-1.16-0.30
+    context: pull-kubevirt-e2e-k8s-1.16
     spec:
       containers:
       - command:
@@ -133,7 +137,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 10
-    name: pull-kubevirt-e2e-k8s-1.17
+    name: pull-kubevirt-e2e-k8s-1.17-0.30
+    context: pull-kubevirt-e2e-k8s-1.17
     spec:
       containers:
       - command:
@@ -162,7 +167,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-e2e-k8s-cnao-1.17
+    name: pull-kubevirt-e2e-k8s-cnao-1.17-0.30
+    context: pull-kubevirt-e2e-k8s-cnao-1.17
     spec:
       containers:
       - command:
@@ -191,7 +197,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-e2e-os-3.11.0-crio
+    name: pull-kubevirt-e2e-os-3.11.0-crio-0.30
+    context: pull-kubevirt-e2e-os-3.11.0-crio
     optional: true
     spec:
       containers:
@@ -221,7 +228,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-e2e-os-3.11.0-multus
+    name: pull-kubevirt-e2e-os-3.11.0-multus-0.30
+    context: pull-kubevirt-e2e-os-3.11.0-multus
     optional: true
     spec:
       containers:
@@ -251,7 +259,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-e2e-okd-4.1
+    name: pull-kubevirt-e2e-okd-4.1-0.30
+    context: pull-kubevirt-e2e-okd-4.1
     optional: true
     spec:
       containers:
@@ -281,7 +290,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-e2e-okd-4.2
+    name: pull-kubevirt-e2e-okd-4.2-0.30
+    context: pull-kubevirt-e2e-okd-4.2
     optional: true
     spec:
       containers:
@@ -312,7 +322,8 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-e2e-ocp-4.3
+    name: pull-kubevirt-e2e-ocp-4.3-0.30
+    context: pull-kubevirt-e2e-ocp-4.3
     optional: true
     spec:
       containers:
@@ -343,7 +354,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 1
-    name: pull-kubevirt-e2e-windows2016
+    name: pull-kubevirt-e2e-windows2016-0.30
+    context: pull-kubevirt-e2e-windows2016
     spec:
       containers:
       - command:
@@ -446,7 +458,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 10
-    name: pull-kubevirt-e2e-kind-k8s-1.17.0-ipv6
+    name: pull-kubevirt-e2e-kind-k8s-1.17.0-ipv6-0.30
+    context: pull-kubevirt-e2e-kind-k8s-1.17.0-ipv6
     spec:
       containers:
       - command:
@@ -490,7 +503,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-check-tests-for-flakes
+    name: pull-kubevirt-check-tests-for-flakes-0.30
+    context: pull-kubevirt-check-tests-for-flakes
     optional: true
     spec:
       containers:
@@ -520,7 +534,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-e2e-k8s-1.17-rook-ceph
+    name: pull-kubevirt-e2e-k8s-1.17-rook-ceph-0.30
+    context: pull-kubevirt-e2e-k8s-1.17-rook-ceph
     optional: true
     spec:
       containers:

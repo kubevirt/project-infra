@@ -14,7 +14,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.19
+    name: pull-kubevirt-e2e-k8s-1.19-0.36
+    context: pull-kubevirt-e2e-k8s-1.19
     spec:
       containers:
       - command:
@@ -43,7 +44,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.18
+    name: pull-kubevirt-e2e-k8s-1.18-0.36
+    context: pull-kubevirt-e2e-k8s-1.18
     spec:
       containers:
       - command:
@@ -72,7 +74,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.17
+    name: pull-kubevirt-e2e-k8s-1.17-0.36
+    context: pull-kubevirt-e2e-k8s-1.17
     spec:
       containers:
       - command:
@@ -101,7 +104,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-cnao-1.19
+    name: pull-kubevirt-e2e-k8s-cnao-1.19-0.36
+    context: pull-kubevirt-e2e-k8s-cnao-1.19
     spec:
       containers:
       - command:
@@ -130,7 +134,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 1
-    name: pull-kubevirt-e2e-windows2016
+    name: pull-kubevirt-e2e-windows2016-0.36
+    context: pull-kubevirt-e2e-windows2016
     spec:
       containers:
       - command:
@@ -164,6 +169,7 @@ presubmits:
       sriov-pod: "true"
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-1.17-sriov-release-0.36
+    context: pull-kubevirt-e2e-kind-1.17-sriov-release
     optional: true
     skip_report: true
     spec:
@@ -233,7 +239,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-check-tests-for-flakes
+    name: pull-kubevirt-check-tests-for-flakes-0.36
+    context: pull-kubevirt-check-tests-for-flakes
     optional: true
     spec:
       containers:
@@ -263,7 +270,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    name: pull-kubevirt-e2e-k8s-1.17-rook-ceph
+    name: pull-kubevirt-e2e-k8s-1.17-rook-ceph-0.36
+    context: pull-kubevirt-e2e-k8s-1.17-rook-ceph
     spec:
       containers:
       - command:
@@ -292,7 +300,8 @@ presubmits:
       preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-generate
+    name: pull-kubevirt-generate-0.36
+    context: pull-kubevirt-generate
     spec:
       containers:
       - command:
@@ -321,7 +330,8 @@ presubmits:
       preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-gosec
+    name: pull-kubevirt-gosec-0.36
+    context: pull-kubevirt-gosec
     optional: true
     skip_report: true
     spec:
@@ -350,7 +360,8 @@ presubmits:
       preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-build
+    name: pull-kubevirt-build-0.36
+    context: pull-kubevirt-build
     spec:
       containers:
       - command:
@@ -377,7 +388,8 @@ presubmits:
       preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-unit-test
+    name: pull-kubevirt-unit-test-0.36
+    context: pull-kubevirt-unit-test
     spec:
       containers:
       - command:
@@ -404,7 +416,8 @@ presubmits:
       preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-goveralls
+    name: pull-kubevirt-goveralls-0.36
+    context: pull-kubevirt-goveralls
     optional: true
     skip_report: true
     spec:
@@ -445,7 +458,8 @@ presubmits:
       preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-apidocs
+    name: pull-kubevirt-apidocs-0.36
+    context: pull-kubevirt-apidocs
     spec:
       containers:
       - command:
@@ -472,7 +486,8 @@ presubmits:
       preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-client-python
+    name: pull-kubevirt-client-python-0.36
+    context: pull-kubevirt-client-python
     spec:
       containers:
       - command:
@@ -499,7 +514,8 @@ presubmits:
       preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-manifests
+    name: pull-kubevirt-manifests-0.36
+    context: pull-kubevirt-manifests
     spec:
       containers:
       - command:
@@ -527,7 +543,8 @@ presubmits:
       preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-prom-rules-verify
+    name: pull-kubevirt-prom-rules-verify-0.36
+    context: pull-kubevirt-prom-rules-verify
     spec:
       containers:
       - command:
