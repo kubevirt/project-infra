@@ -1,0 +1,78 @@
+presubmits:
+  kubevirt/csi-driver:
+    - name: pull-csi-driver-e2e-k8s-1.20
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+        testgrid-dashboards: kubevirt-presubmits
+      always_run: true
+      optional: true
+      skip_report: true
+      decorate: true
+      decoration_config:
+        timeout: 7h
+        grace_period: 5m
+      max_concurrency: 11
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "export TARGET=k8s-1.20 && make test-functional"
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+    - name: pull-csi-driver-goveralls
+      cluster: ibm-prow-jobs
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+      always_run: false
+      skip_report: true
+      optional: true
+      decorate: true
+      decoration_config:
+        timeout: 1h
+        grace_period: 10m
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "true"
+        preset-bazel-cache: "true"
+      spec:
+        containers:
+          - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+            env:
+              - name: COVERALLS_TOKEN_FILE
+                value: /root/.docker/secrets/coveralls/token
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "cp /etc/bazel.bazelrc ./ci.bazelrc && if [ ${JOB_TYPE} != 'batch' ]; then make goveralls; fi"
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "8Gi"
+            volumeMounts:
+              - name: kubevirtci-coveralls
+                mountPath: /root/.docker/secrets/coveralls
+                readOnly: true
+        volumes:
+          - name: kubevirtci-coveralls
+            secret:
+              secretName: kubevirtci-coveralls-token
