@@ -230,8 +230,8 @@ presubmits:
     max_concurrency: 10
     labels:
       preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-unnested: "true"
       sriov-pod: "true"
       rehearsal.allowed: "true"
     spec:
@@ -255,13 +255,14 @@ presubmits:
                   - "true"
               topologyKey: kubernetes.io/hostname
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210129-9f1d6a8
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
         - "-c"
         - >
-            dnf install -y gettext &&
+            apt update &&
+            apt install gettext-base -y &&
             wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz -nv -S &&
             tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ &&
             export PATH=/usr/local/go/bin:$PATH &&
