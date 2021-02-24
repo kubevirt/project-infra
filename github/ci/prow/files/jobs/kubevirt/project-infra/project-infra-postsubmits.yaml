@@ -519,7 +519,7 @@ postsubmits:
       decorate: true
       spec:
         containers:
-        - image: gcr.io/k8s-prow/transfigure
+        - image: gcr.io/k8s-prow/transfigure:v20210224-afd05eb414
           command:
           - /transfigure.sh
           args:
