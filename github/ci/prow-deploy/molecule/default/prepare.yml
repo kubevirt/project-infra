@@ -32,7 +32,7 @@
 
     - name: create cluster config
       copy:
-        dest: '{{ kind_cluster_config }}'
+        dest: '{{ kind.cluster_config }}'
         content: |
           kind: Cluster
           apiVersion: kind.x-k8s.io/v1alpha4
@@ -54,7 +54,7 @@
     - name: Launch cluster
       shell: |
         kind delete cluster
-        kind create cluster --config {{ kind_cluster_config }} --image quay.io/kubevirtci/kind:v1.19.1
+        kind create cluster --config {{ kind.cluster_config }} --image quay.io/kubevirtci/kind:{{ kind.image_tag }}
       changed_when: false
       when: "'kubevirtci' in deploy_environment"
 
