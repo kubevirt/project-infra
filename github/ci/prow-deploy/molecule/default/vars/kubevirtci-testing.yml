@@ -5,7 +5,10 @@ project_infra_root: /workspace/repos/project-infra-master
 kubeconfig_path: '/root/.kube/config'
 secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/kubevirtci-testing/secrets/'
 
-kind_cluster_config: '/workspace/cluster.yaml'
+kind:
+  cluster_config: '/workspace/cluster.yaml'
+  image_tag: v1.19.1
+
 
 node_name: node01
 
