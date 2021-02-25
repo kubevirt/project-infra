@@ -16,6 +16,7 @@ main(){
     bazelisk run //github/ci/services/common/k8s/cmd/wait -- -namespace monitoring -selector grafana -kind deployment
     bazelisk run //github/ci/services/common/k8s/cmd/wait -- -namespace monitoring -selector loki -kind statefulset
     bazelisk run //github/ci/services/common/k8s/cmd/wait -- -namespace monitoring -selector loki-promtail -kind daemonset
+    bazelisk run //github/ci/services/common/k8s/cmd/wait -- -namespace monitoring -selector node-exporter-prometheus-node-exporter -kind daemonset
 }
 
 main "${@}"
