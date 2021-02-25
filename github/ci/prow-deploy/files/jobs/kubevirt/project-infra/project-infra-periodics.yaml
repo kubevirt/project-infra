@@ -220,7 +220,7 @@ periodics:
       - --org=kubevirt
       - --repo=project-infra
       - --target-dir=.
-      - --target-subdir=github/ci/prow/files
+      - --target-subdir=github/ci/prow-deploy/files
       - --config-subdir=jobs
       - --github-token-path=/etc/github/oauth
       - --git-signoff=true
@@ -422,7 +422,7 @@ periodics:
       args:
       - --github-endpoint=http://ghproxy
       - --github-endpoint=https://api.github.com
-      - --config-path=github/ci/prow/files/orgs.yaml
+      - --config-path=github/ci/prow-deploy/files/orgs.yaml
       - --github-token-path=/etc/github/oauth
       - --fix-org=true
       - --fix-org-members=true
