@@ -12,11 +12,11 @@ presubmits:
         args:
         - "/checkconfig"
         - "--config-path"
-        - "github/ci/prow/files/config.yaml"
+        - "github/ci/prow-deploy/files/config.yaml"
         - "--job-config-path"
-        - "github/ci/prow/files/jobs"
+        - "github/ci/prow-deploy/files/jobs"
         - "--plugin-config"
-        - "github/ci/prow/files/plugins.yaml"
+        - "github/ci/prow-deploy/files/plugins.yaml"
         - "--strict"
         resources:
           requests:
@@ -231,7 +231,7 @@ presubmits:
               memory: "8Gi"
   - name: pull-project-infra-prow-deploy-test
     always_run: false
-    run_if_changed: "github/ci/prow-deploy/.*|github/ci/prow/files/.*"
+    run_if_changed: "github/ci/prow-deploy/.*|github/ci/prow-deploy/files/.*"
     decorate: true
     labels:
       preset-dind-enabled: "true"
@@ -465,7 +465,7 @@ presubmits:
             limits:
               memory: "16Gi"
   - name: pull-project-infra-check-testgrid-config
-    run_if_changed: '^(github/ci/prow/files/jobs/.*)|(github/ci/testgrid/gen-config\.yaml)$'
+    run_if_changed: '^(github/ci/prow-deploy/files/jobs/.*)|(github/ci/testgrid/gen-config\.yaml)$'
     decorate: true
     annotations:
       testgrid-create-test-group: "false"
@@ -476,14 +476,14 @@ presubmits:
         - /transfigure.sh
         args:
         - test
-        - github/ci/prow/files/config.yaml
-        - github/ci/prow/files/jobs
+        - github/ci/prow-deploy/files/config.yaml
+        - github/ci/prow-deploy/files/jobs
         - github/ci/testgrid/gen-config.yaml
         - kubevirt
         securityContext:
           runAsUser: 0
   - name: pull-kubevirt-org-github-config-updater
-    run_if_changed: '^github/ci/prow/files/orgs\.yaml$'
+    run_if_changed: '^github/ci/prow-deploy/files/orgs\.yaml$'
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
@@ -500,7 +500,7 @@ presubmits:
         args:
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
-        - --config-path=github/ci/prow/files/orgs.yaml
+        - --config-path=github/ci/prow-deploy/files/orgs.yaml
         - --github-token-path=/etc/github/oauth
         - --fix-org=true
         - --fix-org-members=true
@@ -520,7 +520,7 @@ presubmits:
         secret:
           secretName: oauth-token
   - name: pull-prow-kubevirt-labels-update-precheck
-    run_if_changed: '^github/ci/prow/files/labels\.yaml$'
+    run_if_changed: '^github/ci/prow-deploy/files/labels\.yaml$'
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
@@ -537,7 +537,7 @@ presubmits:
         image: gcr.io/k8s-prow/label_sync:v20200623-9f5410055c
         command: [ "/app/label_sync/app.binary" ]
         args:
-        - --config=github/ci/prow/files/labels.yaml
+        - --config=github/ci/prow-deploy/files/labels.yaml
         - --confirm=false
         - --orgs=kubevirt
         - --token=/etc/github/oauth
@@ -551,7 +551,7 @@ presubmits:
         secret:
           secretName: oauth-token
   - name: pull-prow-nmstate-labels-update-precheck
-    run_if_changed: '^github/ci/prow/files/labels\.yaml$'
+    run_if_changed: '^github/ci/prow-deploy/files/labels\.yaml$'
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
@@ -568,7 +568,7 @@ presubmits:
         image: gcr.io/k8s-prow/label_sync:v20200623-9f5410055c
         command: [ "/app/label_sync/app.binary" ]
         args:
-        - --config=github/ci/prow/files/labels.yaml
+        - --config=github/ci/prow-deploy/files/labels.yaml
         - --confirm=false
         - --only=nmstate/kubernetes-nmstate
         - --token=/etc/github/oauth

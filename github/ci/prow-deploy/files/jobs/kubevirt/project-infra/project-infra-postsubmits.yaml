@@ -511,7 +511,7 @@ postsubmits:
           secret:
             secretName: pgp-bot-key
     - name: post-project-infra-upload-testgrid-config
-      run_if_changed: '^(github/ci/prow/files/jobs/.*)|(github/ci/testgrid/gen-config\.yaml)$'
+      run_if_changed: '^(github/ci/prow-deploy/files/jobs/.*)|(github/ci/testgrid/gen-config\.yaml)$'
       branches:
       - master
       annotations:
@@ -524,8 +524,8 @@ postsubmits:
           - /transfigure.sh
           args:
           - /etc/github/oauth
-          - github/ci/prow/files/config.yaml
-          - github/ci/prow/files/jobs
+          - github/ci/prow-deploy/files/config.yaml
+          - github/ci/prow-deploy/files/jobs
           - github/ci/testgrid/gen-config.yaml
           - kubevirt
           - test-infra
