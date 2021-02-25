@@ -48,7 +48,9 @@ RUN dnf install -y dnf-plugins-core && \
     rsync \
     rsync-daemon \
     sudo \
-    wget && \
+    wget \
+    gettext \
+    iproute &&\
   dnf -y clean all
 
 # Install gcloud
