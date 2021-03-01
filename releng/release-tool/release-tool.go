@@ -388,13 +388,24 @@ func (r *releaseData) getReleaseNote(number int) (string, error) {
 
 func (r *releaseData) forkProwJobs() error {
 	version := strings.TrimPrefix(r.newBranch, "release-")
-	outputConfig := fmt.Sprintf("github/ci/prow/files/jobs/%s/%s/%s-presubmits-%s.yaml", r.org, r.repo, r.repo, version)
+	outputConfig := fmt.Sprintf("github/ci/prow-deploy/files/jobs/%s/%s/%s-presubmits-%s.yaml", r.org, r.repo, r.repo, version)
 	fullOutputConfig := fmt.Sprintf("%s/%s", r.infraDir, outputConfig)
-	fullJobConfig := fmt.Sprintf("%s/github/ci/prow/files/jobs/%s/%s/%s-presubmits.yaml", r.infraDir, r.org, r.repo, r.repo)
+	fullJobConfig := fmt.Sprintf("%s/github/ci/prow-deploy/files/jobs/%s/%s/%s-presubmits.yaml", r.infraDir, r.org, r.repo, r.repo)
 
 	gitbranch := fmt.Sprintf("%s_%s_%s_configs", r.org, r.repo, r.newBranch)
 
-	_, err := gitCommand("-C", r.infraDir, "checkout", "-B", gitbranch)
+	_, err := gitCommand("-C", r.infraDir, "checkout", "-b", gitbranch)
+	if err != nil {
+		_, err = gitCommand("-C", r.infraDir, "checkout", "-B", gitbranch)
+		if err != nil {
+			return err
+		}
+
+		_, err = gitCommand("-C", r.infraDir, "pull", "origin", gitbranch)
+		if err != nil {
+			return err
+		}
+	}
 
 	if _, err = os.Stat(fullJobConfig); err != nil && os.IsNotExist(err) {
 		// no job to fork for this project
@@ -442,13 +453,12 @@ func (r *releaseData) forkProwJobs() error {
 			"--branch", "master",
 			"--github-token-path", r.githubTokenPath,
 			"--title", fmt.Sprintf("Release configs for %s/%s release branch %s", r.org, r.repo, r.newBranch),
-			"--match-title", fmt.Sprintf("Release configs for %s/%s release branch %s", r.org, r.repo, r.newBranch),
 			"--body", "adds new release configs",
 			"--source", fmt.Sprintf("kubevirt:%s", gitbranch),
 			"--confirm",
 		)
 		bytes, err := cmd.CombinedOutput()
-		if err != nil {
+		if err != nil && !strings.Contains(string(bytes), "A pull request already exists") {
 			log.Printf("ERROR: pr-creator command output: %s : %s ", string(bytes), err)
 			return err
 		}
