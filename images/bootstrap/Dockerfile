@@ -99,6 +99,9 @@ RUN  curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/downloa
 RUN USE_BAZEL_VERSION=3.4.1 bazel version && \
   USE_BAZEL_VERSION=4.0.0 bazel version
 
+# create mixin directories
+RUN mkdir -p /etc/setup.mixin.d/ && mkdir -p /etc/teardown.mixin.d/
+
 # note the runner is also responsible for making docker in docker function if
 # env DOCKER_IN_DOCKER_ENABLED is set and similarly responsible for generating
 # .bazelrc files if bazel remote caching is enabled
