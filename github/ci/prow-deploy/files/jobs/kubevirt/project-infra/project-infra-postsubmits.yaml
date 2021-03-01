@@ -63,7 +63,7 @@ postsubmits:
                 memory: "1Gi"
     - name: publish-bootstrap-image
       always_run: false
-      run_if_changed: "images/bootstrap/.*"
+      run_if_changed: "images/.*"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
