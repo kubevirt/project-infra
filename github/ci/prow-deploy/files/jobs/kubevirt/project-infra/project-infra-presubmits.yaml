@@ -306,7 +306,7 @@ presubmits:
               chmod +x ./kind && mv ./kind /usr/local/bin/kind
 
               # create test cluster
-              kind create cluster
+              kind create cluster --image quay.io/kubevirtci/kind:v1.19.1
 
               ./github/ci/services/cert-manager/hack/deploy.sh testing
 
@@ -342,7 +342,7 @@ presubmits:
               chmod +x ./kind && mv ./kind /usr/local/bin/kind
 
               # create test cluster
-              kind create cluster
+              kind create cluster --image quay.io/kubevirtci/kind:v1.19.1
 
               ./github/ci/services/ci-search/hack/deploy.sh testing
 
@@ -378,7 +378,7 @@ presubmits:
               chmod +x ./kind && mv ./kind /usr/local/bin/kind
 
               # create test cluster
-              kind create cluster
+              kind create cluster --image quay.io/kubevirtci/kind:v1.19.1
 
               ./github/ci/services/sippy/hack/deploy.sh testing
 
@@ -414,7 +414,7 @@ presubmits:
               chmod +x ./kind && mv ./kind /usr/local/bin/kind
 
               # create test cluster
-              kind create cluster
+              kind create cluster --image quay.io/kubevirtci/kind:v1.19.1
 
               ./github/ci/services/prometheus-stack/hack/deploy.sh testing
 
@@ -450,7 +450,7 @@ presubmits:
               chmod +x ./kind && mv ./kind /usr/local/bin/kind
 
               # create test cluster
-              kind create cluster
+              kind create cluster --image quay.io/kubevirtci/kind:v1.19.1
 
               ./github/ci/services/kuberhealthy/hack/deploy.sh testing
 
