@@ -367,6 +367,8 @@ presets:
   env:
   - name: DOCKER_IN_DOCKER_ENABLED
     value: "true"
+  - name: DOCKER_IN_DOCKER_IPV6_ENABLED
+    value: "true"
   volumes:
   - name: docker-graph
     emptyDir: {}
