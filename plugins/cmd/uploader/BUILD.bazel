@@ -9,6 +9,7 @@ go_library(
         "//plugins/mirror:go_default_library",
         "//vendor/cloud.google.com/go/storage:go_default_library",
         "//vendor/github.com/bazelbuild/buildtools/build:go_default_library",
+        "//vendor/google.golang.org/api/option:go_default_library",
     ],
 )
 
