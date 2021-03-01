@@ -388,9 +388,9 @@ func (r *releaseData) getReleaseNote(number int) (string, error) {
 
 func (r *releaseData) forkProwJobs() error {
 	version := strings.TrimPrefix(r.newBranch, "release-")
-	outputConfig := fmt.Sprintf("github/ci/prow/files/jobs/%s/%s/%s-presubmits-%s.yaml", r.org, r.repo, r.repo, version)
+	outputConfig := fmt.Sprintf("github/ci/prow-deploy/files/jobs/%s/%s/%s-presubmits-%s.yaml", r.org, r.repo, r.repo, version)
 	fullOutputConfig := fmt.Sprintf("%s/%s", r.infraDir, outputConfig)
-	fullJobConfig := fmt.Sprintf("%s/github/ci/prow/files/jobs/%s/%s/%s-presubmits.yaml", r.infraDir, r.org, r.repo, r.repo)
+	fullJobConfig := fmt.Sprintf("%s/github/ci/prow-deploy/files/jobs/%s/%s/%s-presubmits.yaml", r.infraDir, r.org, r.repo, r.repo)
 
 	gitbranch := fmt.Sprintf("%s_%s_%s_configs", r.org, r.repo, r.newBranch)
 
