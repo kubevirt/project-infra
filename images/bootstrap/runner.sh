@@ -118,11 +118,17 @@ fi
 SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct || true)
 export SOURCE_DATE_EPOCH
 
+# run setup mixins
+for file in $(find /etc/setup.mixin.d/ -maxdepth 1 -name '*.sh' -print -quit); do source $file; done
+
 # actually start bootstrap and the job
 set -o xtrace
 "$@"
 EXIT_VALUE=$?
 set +o xtrace
+
+# run teardown mixins
+for file in $(find /etc/teardown.mixin.d/ -maxdepth 1 -name '*.sh' -print -quit); do source $file; done
 
 # cleanup after job
 if [[ "${DOCKER_IN_DOCKER_ENABLED}" == "true" ]]; then
