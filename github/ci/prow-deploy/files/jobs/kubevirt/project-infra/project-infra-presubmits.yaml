@@ -104,6 +104,7 @@ presubmits:
             - "/bin/bash"
             - "-c"
             - "cd images && ./publish_image.sh -b bootstrap docker.io kubevirtci"
+            - "cd images && ./publish_image.sh -b golang docker.io kubevirtci"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
