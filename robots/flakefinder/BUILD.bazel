@@ -38,7 +38,7 @@ container_push(
     image = ":app",
     registry = "quay.io",
     repository = "kubevirtci/flakefinder",
-    tag="$(container_tag)",
+    tag = "$(container_tag)",
 )
 
 go_binary(
