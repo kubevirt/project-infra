@@ -35,7 +35,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "34Gi"
   - name: pull-kubevirt-e2e-k8s-1.19
     skip_branches:
       - release-\d+\.\d+
@@ -71,7 +71,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "34Gi"
   - name: pull-kubevirt-e2e-k8s-1.18
     skip_branches:
       - release-\d+\.\d+
@@ -107,7 +107,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "34Gi"
   - name: pull-kubevirt-e2e-k8s-1.17
     skip_branches:
       - release-\d+\.\d+
@@ -143,7 +143,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "34Gi"
   - name: pull-kubevirt-e2e-k8s-cnao-1.19
     skip_branches:
     - release-\d+\.\d+
@@ -178,7 +178,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "29Gi"
+            memory: "34Gi"
   - name: pull-kubevirt-e2e-windows2016
     skip_branches:
     - release-\d+\.\d+
@@ -213,7 +213,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "29Gi"
+            memory: "34Gi"
   - name: pull-kubevirt-e2e-kind-1.17-sriov
     skip_branches:
     - release-\d+\.\d+
@@ -275,7 +275,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "29Gi"
+            memory: "34Gi"
         volumeMounts:
           #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
           - name: modules
@@ -331,7 +331,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "34Gi"
   - name: pull-kubevirt-e2e-k8s-1.17-rook-ceph
     skip_branches:
       - release-\d+\.\d+
@@ -367,7 +367,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "34Gi"
   - name: pull-kubevirt-generate
     cluster: ibm-prow-jobs
     skip_branches:
