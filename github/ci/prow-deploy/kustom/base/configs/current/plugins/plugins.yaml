@@ -1,6 +1,6 @@
 config_updater:
   maps:
-    github/ci/prow-deploy/files/config.yaml:
+    github/ci/prow-deploy/kustom/base/configs/current/config/config.yaml:
       name: config
       clusters:
         default:
@@ -10,12 +10,12 @@ config_updater:
       clusters:
         default:
           - kubevirt-prow
-    github/ci/prow-deploy/files/plugins.yaml:
+    github/ci/prow-deploy/kustom/base/configs/current/plugins/plugins.yaml:
       name: plugins
       clusters:
         default:
           - kubevirt-prow
-    github/ci/prow-deploy/files/labels.yaml:
+    github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml:
       name: label-config
       clusters:
         default:
