@@ -224,3 +224,128 @@ presubmits:
           resources:
             requests:
               memory: "29Gi"
+  - name: pull-cdi-unit-test
+    cluster: ibm-prow-jobs
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test-unit"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-cdi-generate-verify
+    cluster: ibm-prow-jobs
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make generate-verify"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-cdi-apidocs
+    cluster: ibm-prow-jobs
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make apidocs"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-cdi-linter
+    cluster: ibm-prow-jobs
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test-lint"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+
