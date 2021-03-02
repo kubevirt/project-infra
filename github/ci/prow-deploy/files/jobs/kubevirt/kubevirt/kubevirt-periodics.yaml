@@ -163,7 +163,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20210302-726f008
+    - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -236,7 +236,7 @@ periodics:
     preset-shared-images: "true"
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20210302-726f008
+    - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -292,7 +292,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210302-726f008
+      - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
@@ -326,7 +326,7 @@ periodics:
   max_concurrency: 1
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210302-726f008
+      - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
@@ -382,7 +382,7 @@ periodics:
   max_concurrency: 1
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210302-726f008
+      - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
