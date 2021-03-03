@@ -504,9 +504,9 @@ presubmits:
         - --github-token-path=/etc/github/oauth
         - --fix-org=true
         - --fix-org-members=true
-        - --fix-teams=true
-        - --fix-team-members=true
-        - --fix-team-repos=true
+        - --fix-teams=false
+        - --fix-team-members=false
+        - --fix-team-repos=false
         - --fix-repos=true
         - --confirm=false
         volumeMounts:
