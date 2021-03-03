@@ -6,9 +6,9 @@ go_library(
     importpath = "kubevirt.io/project-infra/releng/release-tool",
     visibility = ["//visibility:private"],
     deps = [
-        "//vendor/github.com/Masterminds/semver:go_default_library",
-        "//vendor/github.com/google/go-github/v32/github:go_default_library",
-        "//vendor/golang.org/x/oauth2:go_default_library",
+        "@com_github_google_go_github_v32//github:go_default_library",
+        "@com_github_masterminds_semver//:go_default_library",
+        "@org_golang_x_oauth2//:go_default_library",
     ],
 )
 
@@ -49,5 +49,5 @@ go_test(
     name = "go_default_test",
     srcs = ["release-tool_test.go"],
     embed = [":go_default_library"],
-    deps = ["//vendor/github.com/google/go-github/v32/github:go_default_library"],
+    deps = ["@com_github_google_go_github_v32//github:go_default_library"],
 )

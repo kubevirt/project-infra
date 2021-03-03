@@ -7,7 +7,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//github/ci/services/common/k8s/pkg/client:go_default_library",
-        "//vendor/k8s.io/client-go/tools/portforward:go_default_library",
-        "//vendor/k8s.io/client-go/transport/spdy:go_default_library",
+        "@io_k8s_client_go//tools/portforward:go_default_library",
+        "@io_k8s_client_go//transport/spdy:go_default_library",
     ],
 )

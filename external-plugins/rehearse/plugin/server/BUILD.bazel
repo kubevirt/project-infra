@@ -7,6 +7,6 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//external-plugins/rehearse/plugin/handler:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/github:go_default_library",
+        "@io_k8s_test_infra//prow/github:go_default_library",
     ],
 )
