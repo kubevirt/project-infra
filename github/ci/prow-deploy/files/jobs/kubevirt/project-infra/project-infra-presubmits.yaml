@@ -58,8 +58,7 @@ presubmits:
         command: [ "/bin/bash",  "-c" ]
         args:
           - |
-            cd external-plugins/rehearse/plugin
-            go test ./...
+            bazelisk test //external-plugins/rehearse/... --test_output=all --test_arg=-test.v
   - name: build-kubevirt-infra-bootstrap-image
     always_run: false
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
