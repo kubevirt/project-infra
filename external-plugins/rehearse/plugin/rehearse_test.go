@@ -3,22 +3,20 @@ package main_test
 import (
 	"encoding/json"
 
-	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/handler"
-
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/sirupsen/logrus"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/testing"
 	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
+	"k8s.io/test-infra/prow/client/clientset/versioned/typed/prowjobs/v1/fake"
+	"k8s.io/test-infra/prow/config"
+	"k8s.io/test-infra/prow/git/localgit"
+	git2 "k8s.io/test-infra/prow/git/v2"
 	"k8s.io/test-infra/prow/github"
 	"k8s.io/test-infra/prow/github/fakegithub"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	v1 "k8s.io/api/core/v1"
-	"k8s.io/test-infra/prow/config"
-
-	"github.com/sirupsen/logrus"
-	"k8s.io/test-infra/prow/client/clientset/versioned/typed/prowjobs/v1/fake"
-	"k8s.io/test-infra/prow/git/localgit"
-	git2 "k8s.io/test-infra/prow/git/v2"
+	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/handler"
 )
 
 var _ = Describe("Rehearse", func() {
@@ -706,7 +704,7 @@ var _ = Describe("Rehearse", func() {
 
 		Context("ok-to-test label is set", func() {
 
-			It("Should generate Prow jobs for the changes configs with ok-to-test label", func() {
+			It("Should generate Prow jobs for the changed configs with ok-to-test label", func() {
 
 				By("Creating a fake git repo", func() {
 					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
@@ -1766,7 +1764,7 @@ var _ = Describe("Rehearse", func() {
 
 		Context("ok-to-test label is set", func() {
 
-			It("Should generate Prow jobs for the changes configs", func() {
+			It("Should generate Prow jobs for the changed configs", func() {
 
 				By("Creating a fake git repo", func() {
 					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"os"
 	"os/exec"
 	"reflect"
@@ -13,10 +12,10 @@ import (
 	"strconv"
 	"strings"
 
-	v1 "k8s.io/test-infra/prow/client/clientset/versioned/typed/prowjobs/v1"
-
 	"github.com/sirupsen/logrus"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
+	v1 "k8s.io/test-infra/prow/client/clientset/versioned/typed/prowjobs/v1"
 	"k8s.io/test-infra/prow/config"
 	gitv2 "k8s.io/test-infra/prow/git/v2"
 	"k8s.io/test-infra/prow/github"
@@ -221,7 +220,7 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		return
 	}
 	log.Infoln("Rebasing the PR on the target branch")
-	err = git.MergeAndCheckout(pr.Base.Ref, string(github.MergeRebase), pr.Head.SHA)
+	err = git.MergeAndCheckout(pr.Base.Ref, string(github.MergeSquash), pr.Head.SHA)
 	if err != nil {
 		log.WithError(err).Error("Could not rebase the PR on the target branch.")
 		return
