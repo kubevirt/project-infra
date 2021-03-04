@@ -24,7 +24,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -60,7 +60,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -96,7 +96,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -132,7 +132,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -167,7 +167,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -202,7 +202,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -320,7 +320,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -356,7 +356,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -387,7 +387,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -419,7 +419,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -451,7 +451,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -483,7 +483,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -515,7 +515,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -546,7 +546,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+      - image: kubevirtci/bootstrap:v20201119-a5880e0
         env:
           - name: COVERALLS_TOKEN_FILE
             value: /root/.docker/secrets/coveralls/token
@@ -588,7 +588,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -619,7 +619,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -650,7 +650,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           # skip getting old CSVs here (no QUAY_REPOSITORY), verification might fail because of stricter rules over time; falls back to latest if not on a tag
           command:
             - "/usr/local/bin/runner.sh"
@@ -682,7 +682,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: kubevirtci/bootstrap:v20201119-a5880e0
           # skip getting old CSVs here (no QUAY_REPOSITORY), verification might fail because of stricter rules over time; falls back to latest if not on a tag
           command:
             - "/usr/local/bin/runner.sh"
