@@ -311,9 +311,13 @@
     "(M|m)ellanox",
     "MinAvailable",
     "(M|m)ini(K|k)ube",
+<<<<<<< HEAD
     "Moby",
     "(block)?(M|m)ulti(Q|q)ueue",
+=======
+>>>>>>> ed15c559... Update yaspeller dictionary file
     "Moby",
+    "(block)?(M|m)ulti(Q|q)ueue",
     "(Mutating|Validating)AdmissionWebhook",
     "macOS",
     "macAddress",
@@ -355,7 +359,6 @@
     "nav(bar)?",
     "noarch",
     "node(Affinity|Drain|Port|Selector)(s|’s|'s)?",
-    "nodejs",
     "noVNC",
     "ns",
     "OCI",
@@ -517,7 +520,6 @@
     "unschedulable",
     "untrusted",
     "upload(P|p)roxy(URL)?(Override)?",
-    "userguide",
     "userspace",
     "userguide",
     "VCL",
