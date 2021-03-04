@@ -220,6 +220,8 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		return
 	}
 	log.Infoln("Rebasing the PR on the target branch")
+	git.Config("user.email", "kubevirtbot@redhat.com")
+	git.Config("user.name", "Kubevirt Bot")
 	err = git.MergeAndCheckout(pr.Base.Ref, string(github.MergeSquash), pr.Head.SHA)
 	if err != nil {
 		log.WithError(err).Error("Could not rebase the PR on the target branch.")
