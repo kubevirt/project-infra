@@ -75,13 +75,16 @@ func EnsureProviderExists(providerDir string, release *github.RepositoryRelease)
 		// First smaller existing provider. Copy the provider.
 		sourceDir := filepath.Join(providerDir, fmt.Sprintf("%s.%s", rel.Major, rel.Minor))
 		targetDir := filepath.Join(providerDir, fmt.Sprintf("%s.%s", semver.Major, semver.Minor))
-		// proper recursive copy of dirs is complicated, let `cp` do that.
-		err := exec.Command("cp", "-a", sourceDir, targetDir).Run()
-		if err != nil {
-			return err
+
+		if _, err := os.Stat(targetDir); os.IsNotExist(err) {
+			// proper recursive copy of dirs is complicated, let `cp` do that.
+			err := exec.Command("cp", "-a", sourceDir, targetDir).Run()
+			if err != nil {
+				return err
+			}
+			logrus.Infof("Added provider %s.%s with version %v", semver.Major, semver.Minor, semver.String())
+			// Bump the new provider to the right version
 		}
-		logrus.Infof("Added provider %s.%s with version %v", semver.Major, semver.Minor, semver.String())
-		// Bump the new provider to the right version
 		err = bumpRelease(providerDir, release)
 		if err != nil {
 			return err

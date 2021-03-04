@@ -94,7 +94,7 @@ func createProviderEnv(dir string, releases []querier.SemVer) {
 func createRelease(dir string, semver querier.SemVer) {
 	path := filepath.Join(dir, fmt.Sprintf("%s.%s", semver.Major, semver.Minor))
 	err := os.Mkdir(path, os.ModePerm)
-	if err != nil {
+	if err != nil && !os.IsExist(err) {
 		panic(err)
 	}
 	err = ioutil.WriteFile(filepath.Join(path, "version"), []byte(fmt.Sprintf("%s.%s.%s", semver.Major, semver.Minor, semver.Patch)), os.ModePerm)
@@ -169,6 +169,7 @@ func TestEnsureProviderExists(t *testing.T) {
 		wantErr  bool
 	}{
 		{
+			name:    "expect a v1.10 provider to be added",
 			release: release("v1.10.3", true),
 			existing: []querier.SemVer{
 				newSemVer("1", "2", "1"),
@@ -179,6 +180,22 @@ func TestEnsureProviderExists(t *testing.T) {
 			wanted: []querier.SemVer{
 				newSemVer("1", "16", "5"),
 				newSemVer("1", "10", "3"),
+				newSemVer("1", "9", "4"),
+				newSemVer("1", "3", "2"),
+				newSemVer("1", "2", "1"),
+			},
+		},
+		{
+			name:    "expect the latest 1.16 provider to be updated from 1.16.5 to 1.16.7",
+			release: release("v1.16.7", true),
+			existing: []querier.SemVer{
+				newSemVer("1", "2", "1"),
+				newSemVer("1", "3", "2"),
+				newSemVer("1", "9", "4"),
+				newSemVer("1", "16", "5"),
+			},
+			wanted: []querier.SemVer{
+				newSemVer("1", "16", "7"),
 				newSemVer("1", "9", "4"),
 				newSemVer("1", "3", "2"),
 				newSemVer("1", "2", "1"),
