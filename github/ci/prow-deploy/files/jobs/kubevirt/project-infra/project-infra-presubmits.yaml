@@ -49,16 +49,15 @@ presubmits:
         type: vm
         zone: ci
       containers:
-      - image: golang:1.13
-        env:
-          - name: GO111MODULE
-            value: "on"
-          - name: XDG_CACHE_HOME
-            value: "/tmp/.cache"
-        command: [ "/bin/bash",  "-c" ]
-        args:
-          - |
-            bazelisk test //external-plugins/rehearse/... --test_output=all --test_arg=-test.v
+      - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          bazelisk test //external-plugins/rehearse/... --test_output=all --test_arg=-test.v
+        securityContext:
+          runAsUser: 0
   - name: build-kubevirt-infra-bootstrap-image
     always_run: false
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
