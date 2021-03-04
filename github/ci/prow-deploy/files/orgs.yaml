@@ -6,6 +6,7 @@ orgs:
       - davidvossel
       - dhiller
       - fabiand
+      - fgimenez
       - kubevirt-bot
       - rmohr
       - stoniko
@@ -58,7 +59,6 @@ orgs:
       - ezrasilvera
       - fdupont-redhat
       - fedepaol
-      - fgimenez
       - fromanirh
       - gabrielecerami
       - gbenhaim
