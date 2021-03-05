@@ -80,7 +80,7 @@ presubmits:
       testgrid-dashboards: kubevirt-presubmits
     always_run: true
     optional: true
-    skip_report: false
+    skip_report: true
     decorate: true
     decoration_config:
       timeout: 7h
@@ -157,7 +157,7 @@ presubmits:
       testgrid-dashboards: kubevirt-presubmits
     always_run: true
     optional: true
-    skip_report: false
+    skip_report: true
     decorate: true
     decoration_config:
       timeout: 7h
@@ -234,7 +234,7 @@ presubmits:
       testgrid-dashboards: kubevirt-presubmits
     always_run: true
     optional: true
-    skip_report: false
+    skip_report: true
     decorate: true
     decoration_config:
       timeout: 7h
@@ -311,6 +311,7 @@ presubmits:
     always_run: true
     optional: true
     decorate: true
+    skip_report: true
     decoration_config:
       timeout: 7h
       grace_period: 5m
@@ -471,6 +472,7 @@ presubmits:
     always_run: true
     optional: true
     decorate: true
+    skip_report: true
     decoration_config:
       timeout: 4h
       grace_period: 30m
