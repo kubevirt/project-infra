@@ -1,0 +1,53 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "flake_issues.go",
+        "main.go",
+    ],
+    importpath = "kubevirt.io/project-infra/robots/cmd/flake-issue-creator",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//robots/pkg/flakefinder:go_default_library",
+        "@com_github_google_go_github_v28//github:go_default_library",
+        "@com_google_cloud_go_storage//:go_default_library",
+        "@io_k8s_test_infra//prow/config/secret:go_default_library",
+        "@io_k8s_test_infra//prow/flagutil:go_default_library",
+        "@org_golang_x_oauth2//:go_default_library",
+    ],
+)
+
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+
+go_image(
+    name = "app",
+    embed = [":go_default_library"],
+)
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+
+container_push(
+    name = "push",
+    format = "Docker",
+    image = ":app",
+    registry = "quay.io",
+    repository = "kubevirtci/flake-issue-creator",
+    tag = "$(container_tag)",
+)
+
+go_binary(
+    name = "flake-issue-creator",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["main_suite_test.go"],
+    embed = [":go_default_library"],
+    deps = [
+        "@com_github_onsi_ginkgo//:go_default_library",
+        "@com_github_onsi_gomega//:go_default_library",
+    ],
+)

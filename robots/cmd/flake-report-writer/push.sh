@@ -8,5 +8,5 @@ get_image_tag() {
     echo "v${today}-${current_commit:0:7}"
 }
 
-bazel run --define container_tag="$(get_image_tag)" //robots/flakefinder:push
-bash -x ../../hack/update-jobs-with-latest-image.sh quay.io/kubevirtci/flakefinder
+bazel run --define container_tag="$(get_image_tag)" //robots/cmd/flakefinder:push
+bash -x ../../../hack/update-jobs-with-latest-image.sh quay.io/kubevirtci/flakefinder

@@ -5,7 +5,7 @@ format:
 	gofmt -w .
 
 test:
-	bazel test //robots/flakefinder:*
+	bazel test //robots/cmd/flake-issue-creator:*
 
 push:
 	push.sh

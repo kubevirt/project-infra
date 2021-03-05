@@ -1,0 +1,11 @@
+.PHONY: all clean format test push
+all: format test push
+
+format:
+	gofmt -w .
+
+test:
+	bazel test //robots/cmd/flake-report-writer:*
+
+push:
+	push.sh

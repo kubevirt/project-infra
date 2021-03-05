@@ -1,12 +1,13 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 
 go_library(
     name = "go_default_library",
     srcs = ["main.go"],
-    importpath = "kubevirt.io/project-infra/robots/kubevirtci-bumper",
+    importpath = "kubevirt.io/project-infra/robots/cmd/release-querier",
     visibility = ["//visibility:private"],
     deps = [
-        "//robots/pkg/kubevirtci:go_default_library",
         "//robots/pkg/querier:go_default_library",
         "@com_github_google_go_github//github:go_default_library",
         "@com_github_sirupsen_logrus//:go_default_library",
@@ -14,8 +15,21 @@ go_library(
     ],
 )
 
+go_image(
+    name = "app",
+    embed = [":go_default_library"],
+)
+
 go_binary(
-    name = "kubevirtci-bumper",
+    name = "release-querier",
     embed = [":go_default_library"],
     visibility = ["//visibility:public"],
+)
+
+container_push(
+    name = "push",
+    format = "Docker",
+    image = ":app",
+    registry = "index.docker.io",
+    repository = "kubevirtci/release-querier",
 )

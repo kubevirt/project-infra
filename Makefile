@@ -1,16 +1,17 @@
 limiter     := limiter
-flakefinder := robots/flakefinder
-querier := robots/release-querier
-kubevirtci := robots/kubevirtci-bumper
+flake-report-writer := robots/cmd/flake-report-writer
+flake-issue-creator := robots/cmd/flake-issue-creator
+querier := robots/cmd/release-querier
+kubevirtci := robots/cmd/kubevirtci-bumper
 bazelbin := bazelisk
 
-.PHONY: all clean deps-update $(limiter) $(flakefinder) $(querier) $(kubevirtci)
-all: deps-update $(limiter) $(flakefinder) $(querier) $(kubevirtci)
+.PHONY: all clean deps-update $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
+all: deps-update $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
 
 clean:
 	$(bazelbin) clean
 
-$(limiter) $(flakefinder) $(querier) $(kubevirtci): deps-update
+$(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator): deps-update
 	$(MAKE) --directory=$@
 
 deps-update:

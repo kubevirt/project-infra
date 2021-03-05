@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 
-	. "kubevirt.io/project-infra/robots/flakefinder"
+	. "kubevirt.io/project-infra/robots/cmd/flake-report-writer"
 )
 
 var _ = Describe("index.go", func() {

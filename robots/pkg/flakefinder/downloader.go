@@ -17,7 +17,7 @@
  *
  */
 
-package main
+package flakefinder
 
 import (
 	"context"
@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"github.com/google/go-github/v28/github"
 	"io/ioutil"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"path"
 	"sort"
 	"strconv"
@@ -43,30 +42,18 @@ const (
 	startedJSON  = "started.json"
 )
 
-func readGcsObject(ctx context.Context, client *storage.Client, bucket, object string) ([]byte, error) {
-	logrus.Infof("Trying to read gcs object '%s' in bucket '%s'\n", object, bucket)
-	o := client.Bucket(bucket).Object(object)
-	reader, err := o.NewReader(ctx)
-	if err == storage.ErrObjectNotExist {
-		return nil, err
-	} else if err != nil {
-		return nil, fmt.Errorf("cannot read object '%s': %v", object, err)
-	}
-	return ioutil.ReadAll(reader)
-}
-
-func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*Result, error) {
+func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*JobResult, error) {
 
 	dirOfPrJobs := path.Join("pr-logs", "pull", strings.ReplaceAll(repo, "/", "_"), strconv.Itoa(*pr.Number))
 
-	prJobsDirs, err := flakefinder.ListGcsObjects(ctx, client, bucket, dirOfPrJobs+"/", "/")
+	prJobsDirs, err := ListGcsObjects(ctx, client, bucket, dirOfPrJobs+"/", "/")
 	if err != nil {
 		return nil, fmt.Errorf("error listing gcs objects: %v", err)
 	}
 
-	junits := []*Result{}
+	junits := []*JobResult{}
 	for _, job := range prJobsDirs {
-		junit, err := FindUnitTestFileForJob(ctx, client, bucket, dirOfPrJobs, job, pr, startOfReport, skipBeforeStartOfReport)
+		junit, err := findUnitTestFileForJob(ctx, client, bucket, dirOfPrJobs, job, pr, startOfReport, skipBeforeStartOfReport)
 		if err != nil {
 			return nil, err
 		}
@@ -77,24 +64,24 @@ func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo
 	return junits, err
 }
 
-func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket string, dirOfPrJobs string, job string, pr *github.PullRequest, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*Result, error) {
+func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket string, dirOfPrJobs string, job string, pr *github.PullRequest, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*JobResult, error) {
 	dirOfJobs := path.Join(dirOfPrJobs, job)
 
-	prJobs, err := flakefinder.ListGcsObjects(ctx, client, bucket, dirOfJobs+"/", "/")
+	prJobs, err := ListGcsObjects(ctx, client, bucket, dirOfJobs+"/", "/")
 	if err != nil {
 		return nil, fmt.Errorf("error listing gcs objects: %v", err)
 	}
 	builds := sortBuilds(prJobs)
 	profilePath := ""
 	buildNumber := 0
-	reports := []*Result{}
+	reports := []*JobResult{}
 	for _, build := range builds {
 		buildDirPath := path.Join(dirOfJobs, strconv.Itoa(build))
 		dirOfFinishedJSON := path.Join(buildDirPath, finishedJSON)
 		dirOfStartedJSON := path.Join(buildDirPath, startedJSON)
 
 		// Fetch file attributes to check whether this test result should be included into the report
-		attrsOfFinishedJsonFile, err := flakefinder.ReadGcsObjectAttrs(ctx, client, bucket, dirOfFinishedJSON)
+		attrsOfFinishedJsonFile, err := ReadGcsObjectAttrs(ctx, client, bucket, dirOfFinishedJSON)
 		if err == storage.ErrObjectNotExist {
 			// build still running?
 			continue
@@ -136,11 +123,23 @@ func FindUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			if err != nil {
 				return nil, err
 			}
-			reports = append(reports, &Result{Job: job, JUnit: report, BuildNumber: buildNumber, PR: *pr.Number})
+			reports = append(reports, &JobResult{Job: job, JUnit: report, BuildNumber: buildNumber, PR: *pr.Number})
 		}
 	}
 
 	return reports, nil
+}
+
+func readGcsObject(ctx context.Context, client *storage.Client, bucket, object string) ([]byte, error) {
+	logrus.Infof("Trying to read gcs object '%s' in bucket '%s'\n", object, bucket)
+	o := client.Bucket(bucket).Object(object)
+	reader, err := o.NewReader(ctx)
+	if err == storage.ErrObjectNotExist {
+		return nil, err
+	} else if err != nil {
+		return nil, fmt.Errorf("cannot read object '%s': %v", object, err)
+	}
+	return ioutil.ReadAll(reader)
 }
 
 // sortBuilds converts all build from str to int and sorts all builds in descending order and
@@ -162,13 +161,6 @@ func sortBuilds(strBuilds []string) []int {
 type StartedStatus struct {
 	Timestamp int
 	Repos     map[string]string
-}
-
-type Result struct {
-	Job         string
-	JUnit       []junit.Suite
-	BuildNumber int
-	PR          int
 }
 
 func IsLatestCommit(jsonText []byte, pr *github.PullRequest) bool {
