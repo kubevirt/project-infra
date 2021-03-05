@@ -98,8 +98,10 @@ presubmits:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
           env:
-            KUBEVIRT_QUARANTINE: true
-            TARGET: k8s-1.19
+            - name: KUBEVIRT_QUARANTINE
+              value: "true"
+            - name: TARGET
+              value: k8s-1.19
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -173,8 +175,10 @@ presubmits:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
           env:
-            KUBEVIRT_QUARANTINE: true
-            TARGET: k8s-1.18
+            - name: KUBEVIRT_QUARANTINE
+              value: "true"
+            - name: TARGET
+              value: k8s-1.18
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -248,8 +252,10 @@ presubmits:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
           env:
-            KUBEVIRT_QUARANTINE: true
-            TARGET: k8s-1.17
+            - name: KUBEVIRT_QUARANTINE
+              value: "true"
+            - name: TARGET
+              value: k8s-1.17
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -321,8 +327,10 @@ presubmits:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
         env:
-          KUBEVIRT_QUARANTINE: true
-          TARGET: k8s-1.19-cnao
+          - name: KUBEVIRT_QUARANTINE
+            value: "true"
+          - name: TARGET
+            value: k8s-1.19-cnao
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -496,8 +504,10 @@ presubmits:
       containers:
       - image: kubevirtci/bootstrap:v20201119-a5880e0
         env:
-          KUBEVIRT_QUARANTINE: true
-          TARGET: kind-k8s-sriov-1.17.0
+          - name: KUBEVIRT_QUARANTINE
+            value: "true"
+          - name: TARGET
+            value: kind-k8s-sriov-1.17.0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
