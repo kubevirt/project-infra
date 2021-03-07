@@ -344,7 +344,7 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     annotations:
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
+      k8s.v1.cni.cncf.io/networks: '[{"interface":"net1","name":"sriov-passthrough-cni","namespace":"multus-cni-ns"}]'
     branches:
     - release-0.34
     decorate: true
