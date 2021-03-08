@@ -370,6 +370,8 @@ orgs:
         has_issues: false
         has_projects: true
         has_wiki: false
+      monitoring:
+        description: KubeVirt monitoring dashboards
       must-gather:
         description: A client tool for gathering KubeVirt informations in a Kubernetes or OpenShift cluster
         has_projects: true
@@ -577,6 +579,11 @@ orgs:
           cloud-provider-kubevirt: write
           kubernetes-device-plugins: read
           kubevirt: write
+      monitoring-maintainers:
+        maintainers:
+          - sradco
+        repos:
+          monitoring: admin
       must-gather:
         description: ""
         maintainers:
