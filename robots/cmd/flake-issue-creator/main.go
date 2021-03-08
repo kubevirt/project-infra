@@ -36,6 +36,8 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
+const DefaultIssueLabels = "triage/build-watcher,type/bug"
+
 func flagOptions() options {
 	o := options{
 		endpoint: flagutil.NewStrings("https://api.github.com"),
@@ -47,7 +49,7 @@ func flagOptions() options {
 	flag.StringVar(&o.prBaseBranch, "pr_base_branch", PRBaseBranchDefault, "Base branch for the PRs")
 	flag.StringVar(&o.org, "org", Org, "GitHub org name")
 	flag.StringVar(&o.repo, "repo", Repo, "GitHub org name")
-	flag.StringVar(&o.createFlakeIssuesLabels, "flake-issue-labels", "triage/build-watcher,type/bug", "Labels to attach to created issues")
+	flag.StringVar(&o.createFlakeIssuesLabels, "flake-issue-labels", DefaultIssueLabels, "Labels to attach to created issues")
 	flag.IntVar(&o.createFlakeIssuesThreshold, "flake-issue-threshold", 0, "Maximum number of issues to create, 0 for all")
 	flag.IntVar(&o.suspectedClusterFailureThreshold, "suspected-cluster-failure-threshold", 50, "Minimum number of test failures in one job to aggregate all test failures into one issue, 0 for never")
 	flag.Parse()
@@ -115,3 +117,8 @@ func main() {
 	reportData := flakefinder.CreateFlakeReportData(reportBaseData.JobResults, reportBaseData.PRNumbers, reportBaseData.EndOfReport, o.org, o.repo, reportBaseData.StartOfReport)
 	fmt.Printf("reportData: %+v", reportData)
 }
+
+func CreateProwJobURL(failingPR int, failingTestLane string, clusterFailureBuildNumber int) string {
+	return fmt.Sprintf("https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/%d/%s/%d", failingPR, failingTestLane, clusterFailureBuildNumber)
+}
+

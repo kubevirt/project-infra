@@ -33,7 +33,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestFlakefinder(t *testing.T) {
+func TestFlakeIssueCreator(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Flakefinder Main Suite")
+	RunSpecs(t, "FlakeIssueCreator Main Suite")
 }
