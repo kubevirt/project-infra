@@ -1,6 +1,6 @@
 presubmits:
   kubevirt/kubevirt:
-  - name: pull-kubevirt-e2e-k8s-1.20
+  - name: pull-csi-driver-e2e-k8s-1.20
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -780,7 +780,7 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-kubevirt-goveralls
+  - name: pull-csi-driver-goveralls
     cluster: ibm-prow-jobs
     skip_branches:
       - release-\d+\.\d+
