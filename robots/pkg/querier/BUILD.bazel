@@ -5,12 +5,12 @@ go_library(
     srcs = ["queries.go"],
     importpath = "kubevirt.io/project-infra/robots/pkg/querier",
     visibility = ["//visibility:public"],
-    deps = ["//vendor/github.com/google/go-github/github:go_default_library"],
+    deps = ["@com_github_google_go_github//github:go_default_library"],
 )
 
 go_test(
     name = "go_default_test",
     srcs = ["queries_test.go"],
     embed = [":go_default_library"],
-    deps = ["//vendor/github.com/google/go-github/github:go_default_library"],
+    deps = ["@com_github_google_go_github//github:go_default_library"],
 )

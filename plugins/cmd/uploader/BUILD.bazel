@@ -7,9 +7,9 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//plugins/mirror:go_default_library",
-        "//vendor/cloud.google.com/go/storage:go_default_library",
-        "//vendor/github.com/bazelbuild/buildtools/build:go_default_library",
-        "//vendor/google.golang.org/api/option:go_default_library",
+        "@com_github_bazelbuild_buildtools//build:go_default_library",
+        "@com_google_cloud_go_storage//:go_default_library",
+        "@org_golang_google_api//option:go_default_library",
     ],
 )
 

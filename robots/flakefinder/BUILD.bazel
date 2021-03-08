@@ -12,14 +12,14 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//robots/pkg/flakefinder:go_default_library",
-        "//vendor/cloud.google.com/go/storage:go_default_library",
-        "//vendor/github.com/google/go-github/v28/github:go_default_library",
-        "//vendor/github.com/joshdk/go-junit:go_default_library",
-        "//vendor/github.com/sirupsen/logrus:go_default_library",
-        "//vendor/golang.org/x/oauth2:go_default_library",
-        "//vendor/google.golang.org/api/iterator:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/config/secret:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/flagutil:go_default_library",
+        "@com_github_google_go_github_v28//github:go_default_library",
+        "@com_github_joshdk_go_junit//:go_default_library",
+        "@com_github_sirupsen_logrus//:go_default_library",
+        "@com_google_cloud_go_storage//:go_default_library",
+        "@io_k8s_test_infra//prow/config/secret:go_default_library",
+        "@io_k8s_test_infra//prow/flagutil:go_default_library",
+        "@org_golang_google_api//iterator:go_default_library",
+        "@org_golang_x_oauth2//:go_default_library",
     ],
 )
 
@@ -38,7 +38,7 @@ container_push(
     image = ":app",
     registry = "quay.io",
     repository = "kubevirtci/flakefinder",
-    tag="$(container_tag)",
+    tag = "$(container_tag)",
 )
 
 go_binary(
@@ -59,9 +59,9 @@ go_test(
     embed = [":go_default_library"],
     deps = [
         "//robots/pkg/flakefinder:go_default_library",
-        "//vendor/github.com/google/go-github/v28/github:go_default_library",
-        "//vendor/github.com/onsi/ginkgo:go_default_library",
-        "//vendor/github.com/onsi/ginkgo/extensions/table:go_default_library",
-        "//vendor/github.com/onsi/gomega:go_default_library",
+        "@com_github_google_go_github_v28//github:go_default_library",
+        "@com_github_onsi_ginkgo//:go_default_library",
+        "@com_github_onsi_ginkgo//extensions/table:go_default_library",
+        "@com_github_onsi_gomega//:go_default_library",
     ],
 )

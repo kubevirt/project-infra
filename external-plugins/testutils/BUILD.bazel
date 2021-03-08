@@ -6,9 +6,9 @@ go_library(
     importpath = "kubevirt.io/project-infra/external-plugins/testutils",
     visibility = ["//visibility:public"],
     deps = [
-        "//vendor/k8s.io/apimachinery/pkg/util/sets:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/github:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/repoowners:go_default_library",
-        "//vendor/sigs.k8s.io/yaml:go_default_library",
+        "@io_k8s_apimachinery//pkg/util/sets:go_default_library",
+        "@io_k8s_sigs_yaml//:go_default_library",
+        "@io_k8s_test_infra//prow/github:go_default_library",
+        "@io_k8s_test_infra//prow/repoowners:go_default_library",
     ],
 )
