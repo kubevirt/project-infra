@@ -15,7 +15,7 @@ postsubmits:
         nodeSelector:
           type: vm
         containers:
-          - image: kubevirtci/bootstrap:v20201119-a5880e0
+          - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -23,7 +23,9 @@ postsubmits:
               - >-
                 cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER)
                 --password-stdin && cd images &&
-                ./publish_image.sh rehearse docker.io kubevirtci
+                source ./publish_image.sh
+                image_tag="$(get_image_tag)"
+                bazelisk run --define tag=${image_tag} //external-plugins/rehearse/plugin:push
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
