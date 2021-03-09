@@ -5,8 +5,7 @@ presubmits:
     - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-    always_run: false
-    run_if_changed: ^(build/.*|cmd/.*|deploy/crds/.*|deploy/operator.yaml|hack/.*|pkg/.*|tests/.*|Makefile|go\.mod|go\.sum)$
+    always_run: true
     optional: false
     decorate: true
     decoration_config:

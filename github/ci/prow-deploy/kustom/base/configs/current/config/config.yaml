@@ -277,7 +277,7 @@ branch-protection:
               required_status_checks:
                 contexts:
                   - coverage/coveralls
-                  - "Sanity Checks/Sanity Checks"
+                  - "Sanity Checks / Sanity Checks"
             release-1.2:
               protect: true
               required_status_checks:
