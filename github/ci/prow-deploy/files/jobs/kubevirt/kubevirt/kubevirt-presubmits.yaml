@@ -78,7 +78,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: true
+    always_run: false
     optional: true
     skip_report: true
     decorate: true
@@ -155,7 +155,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: true
+    always_run: false
     optional: true
     skip_report: true
     decorate: true
@@ -232,7 +232,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: true
+    always_run: false
     optional: true
     skip_report: true
     decorate: true
@@ -308,7 +308,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: true
+    always_run: false
     optional: true
     decorate: true
     skip_report: true
@@ -469,7 +469,7 @@ presubmits:
       fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
       testgrid-dashboards: kubevirt-presubmits
-    always_run: true
+    always_run: false
     optional: true
     decorate: true
     skip_report: true
