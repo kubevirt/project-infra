@@ -29,8 +29,8 @@ spec:
             - --github-endpoint=http://ghproxy
             - --github-endpoint=https://api.github.com
             - --cache-dir=/var/run/cache
-            - --jobs-config-base=github/ci/prow/files/jobs
-            - --prow-config-path=github/ci/prow/files/config.yaml
+            - --jobs-config-base=github/ci/prow-deploy/files/jobs
+            - --prow-config-path=github/ci/prow-deploy/kustom/base/configs/current/config/config.yaml
             - --always-run=false
           ports:
             - name: http
