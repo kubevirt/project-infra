@@ -121,7 +121,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to fetch labels for %s/%s: %v.\n", o.org, o.repo, err)
 	}
-	flakeIssuesLabels := GetFlakeIssuesLabels(o.createFlakeIssuesLabels, labels, o.org, o.repo)
+
+	flakeIssuesLabels, err := GetFlakeIssuesLabels(o.createFlakeIssuesLabels, labels, o.org, o.repo)
+	if err != nil {
+		log.Fatalf("Failed to get flake issue labels: %v.\n", err)
+	}
 
 	storageClient, err := storage.NewClient(ctx)
 	if err != nil {
@@ -143,7 +147,7 @@ func main() {
 
 }
 
-func GetFlakeIssuesLabels(createFlakeIssuesLabels string, labels []prowgithub.Label, org, repo string) (issueLabels []prowgithub.Label) {
+func GetFlakeIssuesLabels(createFlakeIssuesLabels string, labels []prowgithub.Label, org, repo string) (issueLabels []prowgithub.Label, err error) {
 	configuredIssueLabels := strings.Split(createFlakeIssuesLabels, ",")
 	sort.Strings(configuredIssueLabels)
 	for _, label := range labels {
@@ -157,7 +161,7 @@ func GetFlakeIssuesLabels(createFlakeIssuesLabels string, labels []prowgithub.La
 		}
 	}
 	if len(configuredIssueLabels) > 0 {
-		log.Fatalf("labels %+v not found for %s/%s.\n", configuredIssueLabels, org, repo)
+		return nil, fmt.Errorf("labels %+v not found for %s/%s.\n", configuredIssueLabels, org, repo)
 	}
 	return
 }

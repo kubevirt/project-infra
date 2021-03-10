@@ -21,9 +21,9 @@ package main_test
 
 import (
 	"fmt"
-	"github.com/golang/mock/gomock"
+	. "github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega"
 	gh "k8s.io/test-infra/prow/github"
 
 	. "kubevirt.io/project-infra/robots/cmd/flake-issue-creator"
@@ -74,30 +74,30 @@ var _ = Describe("cluster_failure.go", func() {
 
 		It("returns nil on empty values", func() {
 			issues, clusterFailureBuildNumbers := NewClusterFailureIssues(Params{}, clusterFailures, issueLabels)
-			Expect(issues).To(BeNil())
-			Expect(clusterFailureBuildNumbers).To(BeNil())
+			gomega.Expect(issues).To(gomega.BeNil())
+			gomega.Expect(clusterFailureBuildNumbers).To(gomega.BeNil())
 		})
 
 		It("creates cluster failure on failures within threshold", func() {
 			issues, clusterFailureBuildNumbers := NewClusterFailureIssues(params, clusterFailures, issueLabels)
-			Expect(issues).To(Not(BeNil()))
-			Expect(clusterFailureBuildNumbers).To(BeEquivalentTo([]int{clusterFailureBuildNumber}))
+			gomega.Expect(issues).To(gomega.Not(gomega.BeNil()))
+			gomega.Expect(clusterFailureBuildNumbers).To(gomega.BeEquivalentTo([]int{clusterFailureBuildNumber}))
 		})
 
 		It("does not create cluster failure on failures below threshold", func() {
 			issues, clusterFailureBuildNumbers := NewClusterFailureIssues(params, 11, issueLabels)
-			Expect(issues).To(BeNil())
-			Expect(clusterFailureBuildNumbers).To(BeNil())
+			gomega.Expect(issues).To(gomega.BeNil())
+			gomega.Expect(clusterFailureBuildNumbers).To(gomega.BeNil())
 		})
 
 		It("creates an issue with a title that describes the failed lane", func() {
 			issues, _ := NewClusterFailureIssues(params, clusterFailures, issueLabels)
-			Expect(issues[0].Title).To(ContainSubstring(fmt.Sprintf("[flaky ci] %s temporary cluster failure", failingTestLane)))
+			gomega.Expect(issues[0].Title).To(gomega.ContainSubstring(fmt.Sprintf("[flaky ci] %s temporary cluster failure", failingTestLane)))
 		})
 
 		It("creates an issue with links to the failed job", func() {
 			issues, _ := NewClusterFailureIssues(params, clusterFailures, issueLabels)
-			Expect(issues[0].Body).To(ContainSubstring(fmt.Sprintf("Test lane failed on %d tests: %s", clusterFailures, CreateProwJobURL(failingPR, failingTestLane, clusterFailureBuildNumber))))
+			gomega.Expect(issues[0].Body).To(gomega.ContainSubstring(fmt.Sprintf("Test lane failed on %d tests: %s", clusterFailures, CreateProwJobURL(failingPR, failingTestLane, clusterFailureBuildNumber))))
 		})
 
 		It("creates an issue with labels", func() {
@@ -109,7 +109,7 @@ var _ = Describe("cluster_failure.go", func() {
 				}
 				return result
 			}()
-			Expect(labels).To(BeEquivalentTo([]string{buildWatcher, typeBug}))
+			gomega.Expect(labels).To(gomega.BeEquivalentTo([]string{buildWatcher, typeBug}))
 		})
 
 	})
@@ -118,11 +118,11 @@ var _ = Describe("cluster_failure.go", func() {
 
 		const existingIssueId = 42
 
-		var ctrl *gomock.Controller
+		var ctrl *Controller
 		var mockGithubClient *MockClient
 
 		BeforeEach(func() {
-			ctrl = gomock.NewController(GinkgoT())
+			ctrl = NewController(GinkgoT())
 			mockGithubClient = NewMockClient(ctrl)
 		})
 
@@ -131,60 +131,68 @@ var _ = Describe("cluster_failure.go", func() {
 		})
 
 		It("creates issues", func() {
-			mockGithubClient.EXPECT().FindIssues(gomock.Any(), gomock.Any(), gomock.Any()).Times(1)
-			mockGithubClient.EXPECT().CreateIssue(gomock.Eq("kubevirt"),gomock.Eq("kubevirt"),gomock.Any(),gomock.Any(),gomock.Eq(0),gomock.Any(),gomock.Any(),).Times(1)
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Times(1)
+			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(1)
 
 			issues, err := CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, false)
-			Expect(err).To(BeNil())
-			Expect(issues).To(Not(BeNil()))
+			gomega.Expect(err).To(gomega.BeNil())
+			gomega.Expect(issues).To(gomega.Not(gomega.BeNil()))
 		})
 
 		It("does not create issues on dry run", func() {
-			mockGithubClient.EXPECT().FindIssues(gomock.Any(), gomock.Any(), gomock.Any()).Times(1)
-			mockGithubClient.EXPECT().CreateIssue(gomock.Eq("kubevirt"),gomock.Eq("kubevirt"),gomock.Any(),gomock.Any(),gomock.Eq(0),gomock.Any(),gomock.Any(),).Times(0)
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Times(1)
+			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(0)
 
 			issues, err := CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, true)
-			Expect(err).To(BeNil())
-			Expect(issues).To(Not(BeNil()))
+			gomega.Expect(err).To(gomega.BeNil())
+			gomega.Expect(issues).To(gomega.Not(gomega.BeNil()))
 		})
 
 		It("does not create issues when previous exist", func() {
 			foundIssues := []gh.Issue{{ID: existingIssueId}}
-			mockGithubClient.EXPECT().FindIssues(gomock.Any(), gomock.Any(), gomock.Any()).Return(foundIssues, nil).Times(1)
-			mockGithubClient.EXPECT().CreateComment(gomock.Eq("kubevirt"), gomock.Eq("kubevirt"), existingIssueId, gomock.Any())
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(foundIssues, nil).Times(1)
+			mockGithubClient.EXPECT().CreateComment(Eq("kubevirt"), Eq("kubevirt"), existingIssueId, Any())
 
-			mockGithubClient.EXPECT().CreateIssue(gomock.Eq("kubevirt"), gomock.Eq("kubevirt"), gomock.Any(), gomock.Any(), gomock.Eq(0), gomock.Any(), gomock.Any()).Times(0)
+			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(0)
 
-			CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, false)
+			issues, err := CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, false)
+			gomega.Expect(err).To(gomega.BeNil())
+			gomega.Expect(issues).To(gomega.Not(gomega.BeNil()))
 		})
 
 		It("adds comment when previous issue exists", func() {
 			foundIssues := []gh.Issue{{ID: existingIssueId}}
-			mockGithubClient.EXPECT().FindIssues(gomock.Any(), gomock.Any(), gomock.Any()).Return(foundIssues, nil).Times(1)
-			mockGithubClient.EXPECT().CreateComment(gomock.Eq("kubevirt"), gomock.Eq("kubevirt"), existingIssueId, gomock.Any()).Times(1)
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(foundIssues, nil).Times(1)
+			mockGithubClient.EXPECT().CreateComment(Eq("kubevirt"), Eq("kubevirt"), existingIssueId, Any()).Times(1)
 
-			CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, false)
+			issues, err := CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, false)
+			gomega.Expect(err).To(gomega.BeNil())
+			gomega.Expect(issues).To(gomega.Not(gomega.BeNil()))
 		})
 
 		It("reopens previous issue if exists", func() {
 			foundIssues := []gh.Issue{{ID: existingIssueId, State: "closed"}}
 
-			mockGithubClient.EXPECT().FindIssues(gomock.Any(), gomock.Any(), gomock.Any()).Return(foundIssues, nil).Times(1)
-			mockGithubClient.EXPECT().CreateComment(gomock.Eq("kubevirt"), gomock.Eq("kubevirt"), existingIssueId, gomock.Any()).Times(1)
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(foundIssues, nil).Times(1)
+			mockGithubClient.EXPECT().CreateComment(Eq("kubevirt"), Eq("kubevirt"), existingIssueId, Any()).Times(1)
 
-			mockGithubClient.EXPECT().ReopenIssue(gomock.Eq("kubevirt"), gomock.Eq("kubevirt"), existingIssueId).Times(1)
+			mockGithubClient.EXPECT().ReopenIssue(Eq("kubevirt"), Eq("kubevirt"), existingIssueId).Times(1)
 
-			CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, false)
+			issues, err := CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, false)
+			gomega.Expect(err).To(gomega.BeNil())
+			gomega.Expect(issues).To(gomega.Not(gomega.BeNil()))
 		})
 
 		It("does not modify previous issues on dry run", func() {
 			foundIssues := []gh.Issue{{ID: existingIssueId, State: "closed"}}
 
-			mockGithubClient.EXPECT().FindIssues(gomock.Any(), gomock.Any(), gomock.Any()).Return(foundIssues, nil).Times(1)
-			mockGithubClient.EXPECT().CreateComment(gomock.Eq("kubevirt"), gomock.Eq("kubevirt"), existingIssueId, gomock.Any()).Times(0)
-			mockGithubClient.EXPECT().ReopenIssue(gomock.Eq("kubevirt"), gomock.Eq("kubevirt"), existingIssueId).Times(0)
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(foundIssues, nil).Times(1)
+			mockGithubClient.EXPECT().CreateComment(Eq("kubevirt"), Eq("kubevirt"), existingIssueId, Any()).Times(0)
+			mockGithubClient.EXPECT().ReopenIssue(Eq("kubevirt"), Eq("kubevirt"), existingIssueId).Times(0)
 
-			CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, true)
+			issues, err := CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, true)
+			gomega.Expect(err).To(gomega.BeNil())
+			gomega.Expect(issues).To(gomega.Not(gomega.BeNil()))
 		})
 
 	})
