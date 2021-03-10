@@ -15,7 +15,7 @@ postsubmits:
         nodeSelector:
           type: vm
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+          - image: kubevirtci/bootstrap:v20210126-a12b6c0
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
