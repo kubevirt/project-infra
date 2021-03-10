@@ -42,12 +42,10 @@ presubmits:
           - "cd robots && go test ./..."
   - name: pull-project-infra-test-rehearse
     run_if_changed: external-plugins/rehearse/.*
+    cluster: ibm-prow-jobs
     optional: false
     decorate: true
     spec:
-      nodeSelector:
-        type: vm
-        zone: ci
       containers:
       - image: kubevirtci/bootstrap:v20210126-a12b6c0
         command:
@@ -58,6 +56,11 @@ presubmits:
           bazelisk test //external-plugins/rehearse/... --test_output=all --test_arg=-test.v
         securityContext:
           runAsUser: 0
+        resources:
+          requests:
+            memory: "8Gi"
+          limits:
+            memory: "8Gi"
   - name: build-kubevirt-infra-bootstrap-image
     always_run: false
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
