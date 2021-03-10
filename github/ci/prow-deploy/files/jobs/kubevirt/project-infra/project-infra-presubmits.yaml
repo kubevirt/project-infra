@@ -55,7 +55,7 @@ presubmits:
         - "/bin/sh"
         - "-c"
         - |
-          bazelisk test --define tag=test //external-plugins/rehearse/... --test_output=all --test_arg=-test.v
+          bazelisk test //external-plugins/rehearse/... --test_output=all --test_arg=-test.v
         securityContext:
           runAsUser: 0
   - name: build-kubevirt-infra-bootstrap-image

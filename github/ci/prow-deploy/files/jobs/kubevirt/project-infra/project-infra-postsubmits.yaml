@@ -20,12 +20,9 @@ postsubmits:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
-              - >-
-                cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER)
-                --password-stdin && cd images &&
-                source ./publish_image.sh
-                image_tag="$(get_image_tag)"
-                bazelisk run --define tag=${image_tag} //external-plugins/rehearse/plugin:push
+              - |
+                cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin
+                bazelisk run --workspace_status_command hack/print-workspace-status.sh //external-plugins/rehearse/plugin:push
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
