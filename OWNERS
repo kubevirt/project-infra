@@ -1,21 +1,23 @@
 filters:
   ".*":
     reviewers:
-      - davidvossel
-      - vladikr
-      - rmohr
-      - dhiller
-      - phoracek
       - aglitke
+      - davidvossel
+      - dhiller
       - fgimenez
+      - phoracek
+      - rmohr
+      - tiraboschi
+      - vladikr
     approvers:
-      - davidvossel
-      - vladikr
-      - rmohr
-      - dhiller
-      - phoracek
       - aglitke
+      - davidvossel
+      - dhiller
       - fgimenez
+      - phoracek
+      - rmohr
+      - tiraboschi
+      - vladikr
     emeritus_approvers:
       - cynepco3hahue
       - danielBelenky
