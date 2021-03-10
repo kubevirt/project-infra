@@ -114,7 +114,7 @@ var _ = Describe("cluster_failure.go", func() {
 
 	})
 
-	When("creating cluster failure issues", func() {
+	When("opening cluster failure issues", func() {
 
 		const existingIssueId = 42
 
@@ -130,7 +130,7 @@ var _ = Describe("cluster_failure.go", func() {
 			ctrl.Finish()
 		})
 
-		It("creates issues", func() {
+		It("opens issues", func() {
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Times(1)
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(1)
 
@@ -139,7 +139,7 @@ var _ = Describe("cluster_failure.go", func() {
 			gomega.Expect(issues).To(gomega.Not(gomega.BeNil()))
 		})
 
-		It("does not create issues on dry run", func() {
+		It("does not open issues on dry run", func() {
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Times(1)
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(0)
 
@@ -148,7 +148,7 @@ var _ = Describe("cluster_failure.go", func() {
 			gomega.Expect(issues).To(gomega.Not(gomega.BeNil()))
 		})
 
-		It("does not create issues when previous exist", func() {
+		It("does not open issues when previous exist", func() {
 			foundIssues := []gh.Issue{{ID: existingIssueId}}
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(foundIssues, nil).Times(1)
 			mockGithubClient.EXPECT().CreateComment(Eq("kubevirt"), Eq("kubevirt"), existingIssueId, Any())

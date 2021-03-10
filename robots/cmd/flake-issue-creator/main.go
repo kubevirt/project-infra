@@ -25,8 +25,6 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"sort"
-	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -39,7 +37,11 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
-const DefaultIssueLabels = "triage/build-watcher,kind/bug"
+const (
+	DefaultIssueLabels  = "triage/build-watcher,kind/bug"
+	DefaultIssueTitlePrefix  = "[flaky ci]"
+	DeckPRLogURLPattern = "https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/%d/%s/%d"
+)
 
 func flagOptions() options {
 	o := options{
@@ -143,30 +145,7 @@ func main() {
 	fmt.Printf("clusterFailureBuildNumbers: %+v", clusterFailureBuildNumbers)
 
 	// TODO: create issues for flaky tests
-	//CreateFlakyTestIssues(reportData, o.suspectedClusterFailureThreshold, )
+	CreateFlakyTestIssues(reportData, clusterFailureBuildNumbers, flakeIssuesLabels, pghClient, o.isDryRun)
 
-}
-
-func GetFlakeIssuesLabels(createFlakeIssuesLabels string, labels []prowgithub.Label, org, repo string) (issueLabels []prowgithub.Label, err error) {
-	configuredIssueLabels := strings.Split(createFlakeIssuesLabels, ",")
-	sort.Strings(configuredIssueLabels)
-	for _, label := range labels {
-		for _, configuredLabel := range configuredIssueLabels {
-			if configuredLabel == label.Name {
-				issueLabels = append(issueLabels, label)
-				index := sort.SearchStrings(configuredIssueLabels, configuredLabel)
-				configuredIssueLabels = append(configuredIssueLabels[:index], configuredIssueLabels[index+1:]...)
-				break
-			}
-		}
-	}
-	if len(configuredIssueLabels) > 0 {
-		return nil, fmt.Errorf("labels %+v not found for %s/%s.\n", configuredIssueLabels, org, repo)
-	}
-	return
-}
-
-func CreateProwJobURL(failingPR int, failingTestLane string, clusterFailureBuildNumber int) string {
-	return fmt.Sprintf("https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/%d/%s/%d", failingPR, failingTestLane, clusterFailureBuildNumber)
 }
 

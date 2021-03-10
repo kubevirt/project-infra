@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"k8s.io/test-infra/prow/github"
 	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
-	"log"
 	"strings"
 )
 
@@ -31,46 +30,11 @@ func CreateClusterFailureIssues(reportData Params, suspectedClusterFailureThresh
 	var issues []github.Issue
 	issues, clusterFailureBuildNumbers = NewClusterFailureIssues(reportData, suspectedClusterFailureThreshold, labels)
 
-	labelNames := extractLabelNames(labels)
-
-	for _, issue := range issues {
-		labelSearch := createSearchByLabelsExpression(labels)
-		findIssues, err := client.FindIssues(fmt.Sprintf("%s \"%s\"", labelSearch, issue.Title), "updated-desc", false)
-		if err != nil {
-			return nil, err
-		}
-		if len(findIssues) > 0 {
-			log.Printf("Issues found: %+v", findIssues)
-			latestExistingIssue := findIssues[0]
-			if latestExistingIssue.State == "closed" {
-				log.Printf("Reopen issue: %+v", latestExistingIssue)
-				if !dryRun {
-					err := client.ReopenIssue(reportData.Org, reportData.Repo, latestExistingIssue.ID)
-					if err != nil {
-						return nil, err
-					}
-				}
-			}
-			log.Printf("Create comment on issue %d: %s", latestExistingIssue.ID, issue.Body)
-			if !dryRun {
-				err := client.CreateComment(reportData.Org, reportData.Repo, latestExistingIssue.ID, issue.Body)
-				if err != nil {
-					return nil, err
-				}
-			}
-			continue
-		}
-
-		var createdIssue int
-		log.Printf("Create issue: %+v", issue)
-		if !dryRun {
-			createdIssue, err = client.CreateIssue(reportData.Org, reportData.Repo, issue.Title, issue.Body, 0, labelNames, nil)
-			if err != nil {
-				return nil, err
-			}
-		}
-		log.Printf("Created issue %d %+v", createdIssue, issue)
+	err = CreateIssues(reportData.Org, reportData.Repo, labels, issues, client, dryRun)
+	if err != nil {
+		return nil, err
 	}
+
 	return clusterFailureBuildNumbers, nil
 }
 
