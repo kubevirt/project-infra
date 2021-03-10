@@ -25,6 +25,8 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"sort"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -32,11 +34,12 @@ import (
 	"golang.org/x/oauth2"
 	"k8s.io/test-infra/prow/config/secret"
 	"k8s.io/test-infra/prow/flagutil"
+	prowgithub "k8s.io/test-infra/prow/github"
 
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
-const DefaultIssueLabels = "triage/build-watcher,type/bug"
+const DefaultIssueLabels = "triage/build-watcher,kind/bug"
 
 func flagOptions() options {
 	o := options{
@@ -75,6 +78,7 @@ const Org = "kubevirt"
 const Repo = "kubevirt"
 
 var PRBaseBranch string
+var ctx context.Context
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
@@ -99,13 +103,25 @@ func main() {
 		}
 	}
 
-	ctx := context.Background()
+	ctx = context.Background()
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: string(secretAgent.GetSecret(o.token))},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
 	ghClient := github.NewClient(tc)
+
+	var sa secret.Agent
+	if err := sa.Start([]string{o.token}); err != nil {
+		log.Fatalf("failed to start secrets agent: %w", err)
+	}
+	pghClient := prowgithub.NewClient(sa.GetTokenGenerator(o.token), sa.Censor, prowgithub.DefaultGraphQLEndpoint, prowgithub.DefaultAPIEndpoint)
+
+	labels, err := pghClient.GetRepoLabels(o.org, o.repo)
+	if err != nil {
+		log.Fatalf("Failed to fetch labels for %s/%s: %v.\n", o.org, o.repo, err)
+	}
+	flakeIssuesLabels := GetFlakeIssuesLabels(o.createFlakeIssuesLabels, labels, o.org, o.repo)
 
 	storageClient, err := storage.NewClient(ctx)
 	if err != nil {
@@ -115,7 +131,35 @@ func main() {
 	reportBaseData := flakefinder.GetReportBaseData(ctx, ghClient, storageClient, flakefinder.NewReportBaseDataOptions(PRBaseBranch, false, o.merged, o.org, o.repo, false))
 
 	reportData := flakefinder.CreateFlakeReportData(reportBaseData.JobResults, reportBaseData.PRNumbers, reportBaseData.EndOfReport, o.org, o.repo, reportBaseData.StartOfReport)
-	fmt.Printf("reportData: %+v", reportData)
+
+	clusterFailureBuildNumbers, err := CreateClusterFailureIssues(reportData, o.suspectedClusterFailureThreshold, flakeIssuesLabels, pghClient, o.isDryRun)
+	if err != nil {
+		log.Fatalf("Failed to create cluster failure issues: %v.\n", err)
+	}
+	fmt.Printf("clusterFailureBuildNumbers: %+v", clusterFailureBuildNumbers)
+
+	// TODO: create issues for flaky tests
+	//CreateFlakyTestIssues(reportData, o.suspectedClusterFailureThreshold, )
+
+}
+
+func GetFlakeIssuesLabels(createFlakeIssuesLabels string, labels []prowgithub.Label, org, repo string) (issueLabels []prowgithub.Label) {
+	configuredIssueLabels := strings.Split(createFlakeIssuesLabels, ",")
+	sort.Strings(configuredIssueLabels)
+	for _, label := range labels {
+		for _, configuredLabel := range configuredIssueLabels {
+			if configuredLabel == label.Name {
+				issueLabels = append(issueLabels, label)
+				index := sort.SearchStrings(configuredIssueLabels, configuredLabel)
+				configuredIssueLabels = append(configuredIssueLabels[:index], configuredIssueLabels[index+1:]...)
+				break
+			}
+		}
+	}
+	if len(configuredIssueLabels) > 0 {
+		log.Fatalf("labels %+v not found for %s/%s.\n", configuredIssueLabels, org, repo)
+	}
+	return
 }
 
 func CreateProwJobURL(failingPR int, failingTestLane string, clusterFailureBuildNumber int) string {

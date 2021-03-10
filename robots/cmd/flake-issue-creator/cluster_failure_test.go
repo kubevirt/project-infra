@@ -28,7 +28,7 @@ import (
 
 	. "kubevirt.io/project-infra/robots/cmd/flake-issue-creator"
 	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
-	. "kubevirt.io/project-infra/robots/pkg/mock_github"
+	. "kubevirt.io/project-infra/robots/pkg/mock/prow/github"
 )
 
 var _ = Describe("cluster_failure.go", func() {
@@ -134,14 +134,18 @@ var _ = Describe("cluster_failure.go", func() {
 			mockGithubClient.EXPECT().FindIssues(gomock.Any(), gomock.Any(), gomock.Any()).Times(1)
 			mockGithubClient.EXPECT().CreateIssue(gomock.Eq("kubevirt"),gomock.Eq("kubevirt"),gomock.Any(),gomock.Any(),gomock.Eq(0),gomock.Any(),gomock.Any(),).Times(1)
 
-			CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, false)
+			issues, err := CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, false)
+			Expect(err).To(BeNil())
+			Expect(issues).To(Not(BeNil()))
 		})
 
 		It("does not create issues on dry run", func() {
 			mockGithubClient.EXPECT().FindIssues(gomock.Any(), gomock.Any(), gomock.Any()).Times(1)
 			mockGithubClient.EXPECT().CreateIssue(gomock.Eq("kubevirt"),gomock.Eq("kubevirt"),gomock.Any(),gomock.Any(),gomock.Eq(0),gomock.Any(),gomock.Any(),).Times(0)
 
-			CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, true)
+			issues, err := CreateClusterFailureIssues(params, clusterFailures, issueLabels, mockGithubClient, true)
+			Expect(err).To(BeNil())
+			Expect(issues).To(Not(BeNil()))
 		})
 
 		It("does not create issues when previous exist", func() {

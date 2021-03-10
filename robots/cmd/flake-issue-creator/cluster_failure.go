@@ -27,9 +27,12 @@ import (
 	"strings"
 )
 
-func CreateClusterFailureIssues(reportData Params, suspectedClusterFailureThreshold int, labels []github.Label, client github.Client, dryRun bool) (numbers []int, err error) {
+func CreateClusterFailureIssues(reportData Params, suspectedClusterFailureThreshold int, labels []github.Label, client github.Client, dryRun bool) (clusterFailureBuildNumbers []int, err error) {
 	var issues []github.Issue
-	issues, numbers = NewClusterFailureIssues(reportData, suspectedClusterFailureThreshold, labels)
+	issues, clusterFailureBuildNumbers = NewClusterFailureIssues(reportData, suspectedClusterFailureThreshold, labels)
+
+	labelNames := extractLabelNames(labels)
+
 	for _, issue := range issues {
 		labelSearch := createSearchByLabelsExpression(labels)
 		findIssues, err := client.FindIssues(fmt.Sprintf("%s \"%s\"", labelSearch, issue.Title), "updated-desc", false)
@@ -58,7 +61,6 @@ func CreateClusterFailureIssues(reportData Params, suspectedClusterFailureThresh
 			continue
 		}
 
-		labelNames := extractLabelNames(labels)
 		var createdIssue int
 		log.Printf("Create issue: %+v", issue)
 		if !dryRun {
@@ -69,7 +71,7 @@ func CreateClusterFailureIssues(reportData Params, suspectedClusterFailureThresh
 		}
 		log.Printf("Created issue %d %+v", createdIssue, issue)
 	}
-	return numbers, nil
+	return clusterFailureBuildNumbers, nil
 }
 
 func NewClusterFailureIssues(reportData Params, suspectedClusterFailureThreshold int, labels []github.Label) (issues []github.Issue, clusterFailureBuildNumbers []int) {
