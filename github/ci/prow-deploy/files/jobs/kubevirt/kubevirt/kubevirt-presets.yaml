@@ -15,3 +15,9 @@ presets:
   env:
     - name: KUBEVIRT_RUN_UNNESTED
       value: "false"
+  volumes:
+  - name: bazeluserroot
+    emptyDir: {}
+  volumeMounts:
+  - name: bazeluserroot
+    mountPath: /tmp/cache/bazel
