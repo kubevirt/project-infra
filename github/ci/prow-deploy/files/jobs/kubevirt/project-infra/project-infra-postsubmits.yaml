@@ -6,32 +6,30 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
+      cluster: ibm-prow-jobs
       max_concurrency: 1
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
-        preset-project-infra-kubevirtci-docker-credential: "true"
+        preset-kubevirtci-quay-credential: "true"
       spec:
-        nodeSelector:
-          type: vm
         containers:
-          - image: kubevirtci/bootstrap:v20201119-a5880e0
+          - image: kubevirtci/bootstrap:v20210126-a12b6c0
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
-              - >-
-                cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER)
-                --password-stdin && cd images &&
-                ./publish_image.sh rehearse docker.io kubevirtci
+              - |
+                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                bazelisk run //external-plugins/rehearse/plugin:push
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
               requests:
-                memory: "1Gi"
+                memory: "8Gi"
               limits:
-                memory: "1Gi"
+                memory: "8Gi"
     - name: publish-kubevirt-infra-bootstrap-image
       always_run: false
       run_if_changed: "images/kubevirt-infra-bootstrap/.*"
