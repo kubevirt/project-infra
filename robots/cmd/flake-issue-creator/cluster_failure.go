@@ -26,7 +26,7 @@ import (
 	"strings"
 )
 
-func CreateClusterFailureIssues(reportData Params, suspectedClusterFailureThreshold int, labels []github.Label, client github.Client, dryRun bool) (clusterFailureBuildNumbers []int, err error) {
+func CreateClusterFailureIssues(reportData Params, suspectedClusterFailureThreshold int, labels []github.Label, client github.Client, dryRun bool, createIssueThreshold int) (clusterFailureBuildNumbers []int, err error) {
 	var issues []github.Issue
 	issues, clusterFailureBuildNumbers = NewClusterFailureIssues(reportData, suspectedClusterFailureThreshold, labels)
 

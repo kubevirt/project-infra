@@ -26,8 +26,13 @@ import (
 	"sort"
 )
 
-func CreateFlakyTestIssues(reportData flakefinder.Params, clusterFailureBuildNumbers []int, flakeIssuesLabels []github.Label, pghClient github.Client, isDryRun bool) {
-
+func CreateFlakyTestIssues(reportData flakefinder.Params, clusterFailureBuildNumbers []int, flakeIssuesLabels []github.Label, pghClient github.Client, isDryRun bool, createIssuesThreshold int) error {
+	flakyTestIssues := NewFlakyTestIssues(reportData, clusterFailureBuildNumbers, flakeIssuesLabels)
+	err := CreateIssues(reportData.Org, reportData.Repo, flakeIssuesLabels, flakyTestIssues, pghClient, isDryRun)
+	if err != nil {
+		return fmt.Errorf("failed to create flaky test issues: %+v", err)
+	}
+	return nil
 }
 
 func NewFlakyTestIssues(reportData flakefinder.Params, clusterFailureBuildNumbers []int, labels []github.Label) (flakyTestIssues []github.Issue) {

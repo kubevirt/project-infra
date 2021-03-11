@@ -20,20 +20,21 @@
 package main_test
 
 import (
-	"fmt"
 	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega"
 	gh "k8s.io/test-infra/prow/github"
+	"strings"
 
 	. "kubevirt.io/project-infra/robots/cmd/flake-issue-creator"
 	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
-var _ = Describe("cluster_failure.go", func() {
+var _ = Describe("flake_issue.go", func() {
 
 	jobTestFailures := 10
 	jobBuildNumber := 37
 	clusterFailureJobBuildNumber := 666
+	clusterFailureBuildNumbers := []int{clusterFailureJobBuildNumber}
 	failingTestLane := "pull-whatever"
 	failingPR := 17
 	data := map[string]map[string]*Details{
@@ -78,35 +79,52 @@ var _ = Describe("cluster_failure.go", func() {
 		{Name: typeBug},
 	}
 
-	When("creating new flaky test issues", func() {
-
-		clusterFailureBuildNumbers := []int{clusterFailureJobBuildNumber}
+	When("extracting new flaky test issues", func() {
 
 		It("returns new flake test issues", func() {
 			issues := NewFlakyTestIssues(params, clusterFailureBuildNumbers, issueLabels)
-			Expect(issues).To(Not(BeNil()))
-			Expect(issues).To(HaveLen(3))
+			gomega.Expect(issues).To(gomega.Not(gomega.BeNil()))
+			gomega.Expect(issues).To(gomega.HaveLen(3))
 		})
 
 		It("flake test issues have test title", func() {
 			issues := NewFlakyTestIssues(params, clusterFailureBuildNumbers, issueLabels)
-			Expect(issues[0].Title).To(ContainSubstring("test_id:2345"))
+			gomega.Expect(
+				func() string {
+					var result []string
+					for _, issue := range issues {
+						result = append(result, issue.Title)
+					}
+					return strings.Join(result, ",")
+				}(),
+			).To(gomega.ContainSubstring("test_id:2345"))
 		})
 
 		It("flake test issues have test body with lane name", func() {
 			issues := NewFlakyTestIssues(params, clusterFailureBuildNumbers, issueLabels)
-			Expect(issues[0].Body).To(ContainSubstring(failingTestLane))
+			gomega.Expect(issues[0].Body).To(gomega.ContainSubstring(failingTestLane))
 		})
 
 		It("flake test issues have test body with lane name", func() {
 			issues := NewFlakyTestIssues(params, clusterFailureBuildNumbers, issueLabels)
-			Expect(issues[0].Body).To(ContainSubstring(failingTestLane))
+			gomega.Expect(issues[0].Body).To(gomega.ContainSubstring(failingTestLane))
 		})
 
 		It("flake test issues have test body with URL", func() {
 			issues := NewFlakyTestIssues(params, clusterFailureBuildNumbers, issueLabels)
-			fmt.Println(issues)
-			Expect(issues[0].Body).To(ContainSubstring("http"))
+			gomega.Expect(issues[0].Body).To(gomega.ContainSubstring("http"))
+		})
+
+		PIt("uses org and repo when creating issues", func() {
+			Fail("TODO") // TODO
+		})
+
+	})
+
+	When("creating flaky test issues", func() {
+
+		PIt("stops after limit of creation has been reached", func() {
+			Fail("TODO") // TODO
 		})
 
 	})

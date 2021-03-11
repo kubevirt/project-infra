@@ -22,8 +22,8 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
+	"math"
 	"net/url"
 	"time"
 
@@ -138,14 +138,16 @@ func main() {
 
 	reportData := flakefinder.CreateFlakeReportData(reportBaseData.JobResults, reportBaseData.PRNumbers, reportBaseData.EndOfReport, o.org, o.repo, reportBaseData.StartOfReport)
 
-	clusterFailureBuildNumbers, err := CreateClusterFailureIssues(reportData, o.suspectedClusterFailureThreshold, flakeIssuesLabels, pghClient, o.isDryRun)
+	clusterFailureBuildNumbers, err := CreateClusterFailureIssues(reportData, o.suspectedClusterFailureThreshold, flakeIssuesLabels, pghClient, o.isDryRun, o.createFlakeIssuesThreshold)
 	if err != nil {
 		log.Fatalf("Failed to create cluster failure issues: %v.\n", err)
 	}
-	fmt.Printf("clusterFailureBuildNumbers: %+v", clusterFailureBuildNumbers)
+	log.Printf("clusterFailureBuildNumbers: %+v", clusterFailureBuildNumbers)
 
-	// TODO: create issues for flaky tests
-	CreateFlakyTestIssues(reportData, clusterFailureBuildNumbers, flakeIssuesLabels, pghClient, o.isDryRun)
+	err = CreateFlakyTestIssues(reportData, clusterFailureBuildNumbers, flakeIssuesLabels, pghClient, o.isDryRun, int(math.Max(float64(o.createFlakeIssuesThreshold-len(clusterFailureBuildNumbers)),0)))
+	if err != nil {
+		log.Fatalf("Failed to create flaky test issues: %v.\n", err)
+	}
 
 }
 
