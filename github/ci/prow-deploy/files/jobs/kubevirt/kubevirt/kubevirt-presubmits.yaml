@@ -339,8 +339,8 @@ presubmits:
       fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: 'multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni'
       testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: false
+    always_run: false
+    optional: true
     decorate: true
     decoration_config:
       timeout: 4h
@@ -350,24 +350,19 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      sriov-pod: "true"
+      #sriov-pod: "true" # uncomment only if safety catch is desired (sequential mode)
+      sriov-pod-multi: "true"
       rehearsal.allowed: "true"
     spec:
       nodeSelector:
-        hardwareSupport: sriov-nic
+        kubernetes.io/hostname: ovirt-srv17.phx.ovirt.org
+        #sriov-nic-multi: "true"
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
                 - key: sriov-pod
-                  operator: In
-                  values:
-                  - "true"
-              topologyKey: kubernetes.io/hostname
-            - labelSelector:
-                matchExpressions:
-                - key: sriov-pod-multi
                   operator: In
                   values:
                   - "true"
@@ -390,7 +385,11 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
+            cpu: "2"
+            prow/sriov: "1"
+          limits:
+            prow/sriov: "1"
         volumeMounts:
           #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
           - name: modules
