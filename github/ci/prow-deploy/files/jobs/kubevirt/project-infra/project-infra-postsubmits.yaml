@@ -266,7 +266,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           env:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"
@@ -316,7 +316,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           env:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"

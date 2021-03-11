@@ -163,7 +163,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+    - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -236,7 +236,7 @@ periodics:
     preset-shared-images: "true"
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+    - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -292,7 +292,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
@@ -327,7 +327,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
           - |
@@ -362,7 +362,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
           - |
@@ -397,7 +397,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
           - |
