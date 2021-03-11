@@ -48,7 +48,7 @@ postsubmits:
       testgrid-create-test-group: "false"
     decorate: true
     decoration_config:
-      timeout: 1h
+      timeout: 3h
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
@@ -103,7 +103,7 @@ postsubmits:
       testgrid-create-test-group: "false"
     decorate: true
     decoration_config:
-      timeout: 1h
+      timeout: 3h
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
