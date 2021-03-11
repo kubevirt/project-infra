@@ -47,7 +47,7 @@ presubmits:
     decorate: true
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      - image: kubevirtci/bootstrap:v20210126-a12b6c0
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
