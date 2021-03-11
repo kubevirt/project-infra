@@ -16,6 +16,13 @@
 
 # generic runner script, handles DIND, bazelrc for caching, etc.
 
+# Give bazel a well defined output_user_root directory independent of the user
+# used in the image. This allows mounting an emptyDir at this location, instead
+# of writing into the container overlay.
+mkdir -p /tmp/cache/bazel
+echo "startup --output_user_root=/tmp/cache/bazel" >> "${HOME}/.bazelrc"
+echo "startup --output_user_root=/tmp/cache/bazel" >> "/etc/bazel.bazelrc"
+
 # Check if the job has opted-in to bazel remote caching and if so generate 
 # .bazelrc entries pointing to the remote cache
 export BAZEL_REMOTE_CACHE_ENABLED=${BAZEL_REMOTE_CACHE_ENABLED:-false}
