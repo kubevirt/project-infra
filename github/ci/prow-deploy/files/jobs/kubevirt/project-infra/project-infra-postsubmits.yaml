@@ -21,7 +21,7 @@ postsubmits:
               - "-c"
               - |
                 cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                bazelisk run --workspace_status_command hack/print-workspace-status.sh //external-plugins/rehearse/plugin:push
+                bazelisk run //external-plugins/rehearse/plugin:push
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true

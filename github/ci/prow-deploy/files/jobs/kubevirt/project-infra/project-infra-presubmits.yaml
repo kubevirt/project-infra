@@ -53,7 +53,7 @@ presubmits:
         - "/bin/sh"
         - "-c"
         - |
-          bazelisk test //external-plugins/rehearse/... --test_output=all --test_arg=-test.v
+          bazelisk test //external-plugins/rehearse/...
         securityContext:
           runAsUser: 0
         resources:
