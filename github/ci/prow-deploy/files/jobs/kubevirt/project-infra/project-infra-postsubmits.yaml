@@ -187,14 +187,14 @@ postsubmits:
                 memory: "8Gi"
               limits:
                 memory: "8Gi"
-    - name: post-project-infra-prow-deployment
+    - name: post-project-infra-prow-control-plane-deployment
       always_run: false
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
       branches:
       # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-      - ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+      - ^prow-control-plane-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
       labels:
         preset-docker-mirror-proxy: "true"
       skip_report: false
@@ -230,6 +230,56 @@ postsubmits:
               localhost ansible_connection=local
               EOF
               ANSIBLE_ROLES_PATH=$(pwd)/.. ansible-playbook -i inventory prow-deploy.yaml
+          resources:
+            requests:
+              memory: "8Gi"
+            limits:
+              memory: "8Gi"
+          volumeMounts:
+          - name: token
+            mountPath: /etc/github
+          - name: gcs
+            mountPath: /etc/gcs
+            readOnly: true
+          - name: pgp-bot-key
+            mountPath: /etc/pgp
+            readOnly: true
+        volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
+        - name: pgp-bot-key
+          secret:
+            secretName: pgp-bot-key
+        - name: gcs
+          secret:
+            secretName: gcs
+    - name: post-project-infra-prow-workloads-cluster-deployment
+      always_run: false
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      branches:
+      # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+      - ^prow-workloads-cluster-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+      labels:
+        preset-docker-mirror-proxy: "true"
+      skip_report: false
+      spec:
+        securityContext:
+          runAsUser: 0
+        containers:
+        - image: quay.io/kubespray/kubespray:v2.15.0
+          env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/gcs/service-account.json
+          - name: GIT_ASKPASS
+            value: "./hack/git-askpass.sh"
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "./github/ci/prow-workloads/hack/deploy.sh"
           resources:
             requests:
               memory: "8Gi"
