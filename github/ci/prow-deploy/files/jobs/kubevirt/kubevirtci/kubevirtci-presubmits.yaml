@@ -106,7 +106,55 @@ presubmits:
         resources:
           requests:
             memory: "8Gi"
-
+  - name: check-kubevirt-e2e-k8s-1.18
+    always_run: false
+    optional: true
+    decorate: true
+    skip_report: false
+    extra_refs:
+      - org: kubevirt
+        repo: kubevirt
+        base_ref: master
+    decoration_config:
+      timeout: 7h
+      grace_period: 5m
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:8c80c98d035a0f285ad49b964e5d0b62004844f3340407367841618e80e1503c
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - |
+              cp "${CA_CERT_FILE}" /usr/local/share/ca-certificates/ && \
+              update-ca-certificates && \
+              rsync -rt --links cluster-up/* ../kubevirt/cluster-up/ &&  \
+              ( \
+                cd cluster-provision/k8s/1.18 && \
+                CI=false ../provision.sh \
+              ) && \
+              ( \
+                cd ../kubevirt && \
+                export KUBEVIRTCI_PROVISION_CHECK=1 && \
+                export KUBEVIRTCI_GOCLI_CONTAINER=quay.io/kubevirtci/gocli:latest && \
+                export TARGET=k8s-1.18 && \
+                automation/test.sh \
+              )
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "34Gi"
   - name: check-provision-k8s-1.19
     always_run: true
     optional: false
