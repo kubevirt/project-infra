@@ -44,6 +44,7 @@ RUN dnf install -y dnf-plugins-core && \
     patch \
     protobuf-compiler \
     python3-devel \
+    python-unversioned-command \
     redhat-rpm-config \
     rsync \
     rsync-daemon \
