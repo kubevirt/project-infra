@@ -442,7 +442,7 @@ presets:
     preset-bazel-unnested: "true"
   env:
     - name: KUBEVIRT_RUN_UNNESTED
-      value: "false"
+      value: "true"
   volumes:
   - name: bazeluserroot
     emptyDir: {}
