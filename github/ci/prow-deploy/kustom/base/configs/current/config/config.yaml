@@ -427,3 +427,71 @@ presets:
     - name: kubevirtci-cred
       mountPath: /etc/kubevirtci-cred
       readOnly: true
+- labels:
+    preset-bazel-cache: "true"
+  env:
+    - name: BAZEL_VERSION
+      value: "1.2.1"
+    - name: CACHE_HOST
+      value: bazel-cache.kubevirt-prow
+    - name: CACHE_PORT
+      value: "8080"
+    - name: BAZEL_REMOTE_CACHE_ENABLED
+      value: "true"
+- labels:
+    preset-bazel-unnested: "true"
+  env:
+    - name: KUBEVIRT_RUN_UNNESTED
+      value: "false"
+  volumes:
+  - name: bazeluserroot
+    emptyDir: {}
+  volumeMounts:
+  - name: bazeluserroot
+    mountPath: /tmp/cache/bazel
+- labels:
+    preset-kubevirtci-quay-credential: "true"
+  env:
+  - name: QUAY_USER
+    value: /etc/kubevirtci-cred/username
+  - name: QUAY_PASSWORD
+    value: /etc/kubevirtci-cred/password
+  volumes:
+  - name: kubevirtci-cred
+    secret:
+      defaultMode: 0400
+      secretName: kubevirtci-quay-credential
+  volumeMounts:
+  - name: kubevirtci-cred
+    mountPath: /etc/kubevirtci-cred
+    readOnly: true
+- labels:
+    preset-kubevirtci-installer-pull-token: "true"
+  env:
+  - name: INSTALLER_PULL_SECRET
+    value: /etc/kubevirtci-okd/token
+  volumes:
+  - name: kubevirtci-okd
+    secret:
+      defaultMode: 0400
+      secretName: kubevirtci-installer-pull-token
+  volumeMounts:
+  - name: kubevirtci-okd
+    mountPath: /etc/kubevirtci-okd
+    readOnly: true
+- labels:
+    preset-project-infra-kubevirtci-docker-credential: "true"
+  env:
+  - name: DOCKER_USER
+    value: /etc/kubevirtci-cred/username
+  - name: DOCKER_PASSWORD
+    value: /etc/kubevirtci-cred/password
+  volumes:
+  - name: kubevirtci-cred
+    secret:
+      defaultMode: 0400
+      secretName: kubevirtci-docker-credential
+  volumeMounts:
+  - name: kubevirtci-cred
+    mountPath: /etc/kubevirtci-cred
+    readOnly: true
