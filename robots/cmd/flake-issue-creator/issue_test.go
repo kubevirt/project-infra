@@ -29,6 +29,7 @@ import (
 
 	. "kubevirt.io/project-infra/robots/cmd/flake-issue-creator"
 	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
+	. "kubevirt.io/project-infra/robots/pkg/gomock/matchers"
 	. "kubevirt.io/project-infra/robots/pkg/mock/prow/github"
 )
 
@@ -116,6 +117,22 @@ var _ = Describe("issue.go", func() {
 
 		AfterEach(func() {
 			ctrl.Finish()
+		})
+
+		It("searches for issues within org and repo", func() {
+			mockGithubClient.EXPECT().FindIssues(ContainsStrings("org:kubevirt", "repo:kubevirt"), Any(), Any()).Times(4)
+			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(4)
+
+			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false)
+			gomega.Expect(err).To(gomega.BeNil())
+		})
+
+		It("searches for issues with issue labels", func() {
+			mockGithubClient.EXPECT().FindIssues(ContainsStrings("label:"+buildWatcher,"label:"+typeBug,), Any(), Any()).Times(4)
+			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(4)
+
+			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false)
+			gomega.Expect(err).To(gomega.BeNil())
 		})
 
 		It("opens issues", func() {

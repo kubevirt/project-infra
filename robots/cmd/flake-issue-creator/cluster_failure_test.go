@@ -54,12 +54,6 @@ var _ = Describe("cluster_failure.go", func() {
 		},
 	}
 	jobFailures := JobFailures{BuildNumber: clusterFailureBuildNumber, PR: failingPR, Job: failingTestLane, Failures: clusterFailures}
-	params := Params{
-		Org:             "kubevirt",
-		Repo:            "kubevirt",
-		Data:            data,
-		FailuresForJobs: map[int]*JobFailures{clusterFailureBuildNumber: &jobFailures},
-	}
 
 	buildWatcher := "triage/build-watcher"
 	typeBug := "type/bug"
@@ -69,6 +63,13 @@ var _ = Describe("cluster_failure.go", func() {
 	}
 
 	When("extracting cluster failure issues", func() {
+
+		params := Params{
+			Org:             "kubevirt",
+			Repo:            "kubevirt",
+			Data:            data,
+			FailuresForJobs: map[int]*JobFailures{clusterFailureBuildNumber: &jobFailures},
+		}
 
 		It("returns nil on empty values", func() {
 			issues, clusterFailureBuildNumbers := NewClusterFailureIssues(Params{}, clusterFailures, issueLabels)
@@ -95,7 +96,7 @@ var _ = Describe("cluster_failure.go", func() {
 
 		It("creates an issue with links to the failed job", func() {
 			issues, _ := NewClusterFailureIssues(params, clusterFailures, issueLabels)
-			gomega.Expect(issues[0].Body).To(gomega.ContainSubstring(fmt.Sprintf("Test lane failed on %d tests: %s", clusterFailures, CreateProwJobURL(failingPR, failingTestLane, clusterFailureBuildNumber))))
+			gomega.Expect(issues[0].Body).To(gomega.ContainSubstring(fmt.Sprintf("Test lane failed on %d tests: %s", clusterFailures, CreateProwJobURL(failingPR, failingTestLane, clusterFailureBuildNumber, params.Org, params.Repo))))
 		})
 
 		It("creates an issue with labels", func() {
@@ -109,9 +110,22 @@ var _ = Describe("cluster_failure.go", func() {
 			}()
 			gomega.Expect(labels).To(gomega.BeEquivalentTo([]string{buildWatcher, typeBug}))
 		})
+	})
 
-		PIt("uses org and repo when creating issues", func() {
-			Fail("TODO") // TODO
+	When("extracting cluster failure issues for another org and repo", func() {
+
+		params := Params{
+			Org:             "myorg",
+			Repo:            "myrepo",
+			Data:            data,
+			FailuresForJobs: map[int]*JobFailures{clusterFailureBuildNumber: &jobFailures},
+		}
+
+		It("uses org and repo when creating issues", func() {
+			issues, _ := NewClusterFailureIssues(params, clusterFailures, issueLabels)
+			fmt.Println(issues)
+			gomega.Expect(issues[0].Title).To(gomega.Not(gomega.ContainSubstring("kubevirt")))
+			gomega.Expect(issues[0].Body).To(gomega.ContainSubstring("myorg_myrepo"))
 		})
 
 	})
@@ -119,6 +133,10 @@ var _ = Describe("cluster_failure.go", func() {
 	When("creating cluster failure issues", func() {
 
 		PIt("stops after limit of creation has been reached", func() {
+			Fail("TODO") // TODO
+		})
+
+		PIt("uses org and repo when searching for and creating issues", func() {
 			Fail("TODO") // TODO
 		})
 

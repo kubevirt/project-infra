@@ -38,9 +38,10 @@ import (
 )
 
 const (
-	DefaultIssueLabels  = "triage/build-watcher,kind/bug"
+	DefaultIssueLabels       = "triage/build-watcher,kind/bug"
 	DefaultIssueTitlePrefix  = "[flaky ci]"
-	DeckPRLogURLPattern = "https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/%d/%s/%d"
+	ProwBaseURL              = "https://prow.apps.ovirt.org"
+	DeckPRLogURLPattern      = ProwBaseURL + "/view/gcs/kubevirt-prow/pr-logs/pull/%s_%s/%d/%s/%d"
 )
 
 func flagOptions() options {

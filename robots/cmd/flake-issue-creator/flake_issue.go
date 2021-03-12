@@ -52,7 +52,7 @@ func NewFlakyTestIssues(reportData flakefinder.Params, clusterFailureBuildNumber
 				if issueBodyJobLanes == "" {
 					issueBodyJobLanes = fmt.Sprintf("Lane %s failed on job runs:", laneName)
 				}
-				issueBodyJobLanes += fmt.Sprintf("\n* Prow job id %d: %s", job.BuildNumber, CreateProwJobURL(job.PR, job.Job, job.BuildNumber))
+				issueBodyJobLanes += fmt.Sprintf("\n* Prow job id %d: %s", job.BuildNumber, CreateProwJobURL(job.PR, job.Job, job.BuildNumber, reportData.Org, reportData.Repo))
 			}
 			if issueBodyJobLanes != "" {
 				issueBody += issueBodyJobLanes

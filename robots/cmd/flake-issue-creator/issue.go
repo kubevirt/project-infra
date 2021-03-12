@@ -46,15 +46,15 @@ func GetFlakeIssuesLabels(createFlakeIssuesLabels string, labels []github.Label,
 	return
 }
 
-func CreateProwJobURL(failingPR int, failingTestLane string, clusterFailureBuildNumber int) string {
-	return fmt.Sprintf(DeckPRLogURLPattern, failingPR, failingTestLane, clusterFailureBuildNumber)
+func CreateProwJobURL(failingPR int, failingTestLane string, clusterFailureBuildNumber int, org string, repo string) string {
+	return fmt.Sprintf(DeckPRLogURLPattern, org, repo, failingPR, failingTestLane, clusterFailureBuildNumber)
 }
 
 func CreateIssues(org, repo string, labels []github.Label, issues []github.Issue, client github.Client, dryRun bool) error {
 	labelNames := extractLabelNames(labels)
+	labelSearch := createSearchByLabelsExpression(labels)
 	for _, issue := range issues {
-		labelSearch := createSearchByLabelsExpression(labels)
-		findIssues, err := client.FindIssues(fmt.Sprintf("%s \"%s\"", labelSearch, issue.Title), "updated-desc", false)
+		findIssues, err := client.FindIssues(fmt.Sprintf(" org:%s repo:%s %s \"%s\"", org, repo, labelSearch, issue.Title), "updated-desc", false)
 		if err != nil {
 			return err
 		}
