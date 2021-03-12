@@ -3,7 +3,9 @@ load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = [
-        "flake_issues.go",
+        "cluster_failure.go",
+        "flake_issue.go",
+        "issue.go",
         "main.go",
     ],
     importpath = "kubevirt.io/project-infra/robots/cmd/flake-issue-creator",
@@ -14,6 +16,7 @@ go_library(
         "@com_google_cloud_go_storage//:go_default_library",
         "@io_k8s_test_infra//prow/config/secret:go_default_library",
         "@io_k8s_test_infra//prow/flagutil:go_default_library",
+        "@io_k8s_test_infra//prow/github:go_default_library",
         "@org_golang_x_oauth2//:go_default_library",
     ],
 )
@@ -44,10 +47,20 @@ go_binary(
 
 go_test(
     name = "go_default_test",
-    srcs = ["main_suite_test.go"],
+    srcs = [
+        "cluster_failure_test.go",
+        "flake_issue_test.go",
+        "issue_test.go",
+        "main_suite_test.go",
+    ],
     embed = [":go_default_library"],
     deps = [
+        "//robots/pkg/flakefinder:go_default_library",
+        "//robots/pkg/gomock/matchers:go_default_library",
+        "//robots/pkg/mock/prow/github:go_default_library",
+        "@com_github_golang_mock//gomock:go_default_library",
         "@com_github_onsi_ginkgo//:go_default_library",
         "@com_github_onsi_gomega//:go_default_library",
+        "@io_k8s_test_infra//prow/github:go_default_library",
     ],
 )
