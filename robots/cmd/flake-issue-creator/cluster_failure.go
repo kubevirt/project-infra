@@ -37,7 +37,7 @@ func CreateClusterFailureIssues(reportData Params, suspectedClusterFailureThresh
 	issues, clusterFailureBuildNumbers = NewClusterFailureIssues(reportData, suspectedClusterFailureThreshold, labels)
 
 	if createIssueThreshold > 0 && len(issues) > createIssueThreshold {
-		log.Printf("Create issue threshold reached, skipping creation of %d issue(s):\n%v", len(issues) - createIssueThreshold, issues[createIssueThreshold:])
+		log.Printf("Create issue threshold reached, skipping creation of %d issue(s):\n%v", len(issues)-createIssueThreshold, issues[createIssueThreshold:])
 		issues = issues[:createIssueThreshold]
 	}
 
@@ -56,8 +56,8 @@ func NewClusterFailureIssues(reportData Params, suspectedClusterFailureThreshold
 		}
 		clusterFailureBuildNumbers = append(clusterFailureBuildNumbers, buildNumber)
 		clusterFailureIssue := github.Issue{
-			Title: fmt.Sprintf("[flaky ci] %s temporary cluster failure", failure.Job),
-			Body: fmt.Sprintf("Test lane failed on %d tests: %s", failure.Failures, CreateProwJobURL(failure.PR, failure.Job, failure.BuildNumber, reportData.Org, reportData.Repo)),
+			Title:  fmt.Sprintf("[flaky ci] %s temporary cluster failure", failure.Job),
+			Body:   fmt.Sprintf("Test lane failed on %d tests: %s", failure.Failures, CreateProwJobURL(failure.PR, failure.Job, failure.BuildNumber, reportData.Org, reportData.Repo)),
 			Labels: labels,
 		}
 		issues = append(issues, clusterFailureIssue)

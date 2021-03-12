@@ -140,6 +140,46 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
+- name: periodic-kubevirt-flake-issue-creator
+  cron: "25 0 * * *"
+  decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
+  spec:
+    nodeSelector:
+      type: vm
+      zone: ci
+    containers:
+    - image: quay.io/kubevirtci/flake-issue-creator@sha256:45db425d55fff269184978522791172151dce9aaa3f2b722b4b3cd578f0e4f9c
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      command:
+      - "/app/robots/cmd/flake-issue-creator/app.binary"
+      args:
+      - --dry-run=true
+      - --token=/etc/github/oauth
+      - --merged=24h
+      - --pr-base-branch=master
+      - --org=kubevirt
+      - --repo=kubevirt
+      - --flake-issue-labels=triage/build-watcher,kind/bug
+      - --flake-issue-threshold=0
+      - --failure-threshold-of-suspected-cluster-failure=50
+      - --suspected-cluster-failure-issue-threshold=0
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+      - name: gcs
+        mountPath: /etc/gcs
+        readOnly: true
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: gcs
+      secret:
+        secretName: gcs
 - name: periodic-kubevirt-push-nightly-build-master
   cron: "2 1 * * *"
   decorate: true

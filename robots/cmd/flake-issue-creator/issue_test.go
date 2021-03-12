@@ -128,7 +128,7 @@ var _ = Describe("issue.go", func() {
 		})
 
 		It("searches for issues with issue labels", func() {
-			mockGithubClient.EXPECT().FindIssues(ContainsStrings("label:"+buildWatcher,"label:"+typeBug,), Any(), Any()).Times(4)
+			mockGithubClient.EXPECT().FindIssues(ContainsStrings("label:"+buildWatcher, "label:"+typeBug), Any(), Any()).Times(4)
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(4)
 
 			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false)

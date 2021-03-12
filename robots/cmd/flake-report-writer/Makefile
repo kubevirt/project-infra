@@ -5,7 +5,7 @@ format:
 	gofmt -w .
 
 test:
-	bazel test //robots/cmd/flake-report-writer:*
+	bazel test --define container_tag= //robots/cmd/flake-report-writer:*
 
 push:
 	push.sh

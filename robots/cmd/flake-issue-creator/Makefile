@@ -5,7 +5,11 @@ format:
 	gofmt -w .
 
 test:
-	bazel test //robots/cmd/flake-issue-creator:*
+	bazel test --define container_tag= //robots/cmd/flake-issue-creator:*
 
 push:
-	push.sh
+	bazel run --define container_tag=$(./get-image-tag.sh) //robots/cmd/flake-issue-creator:push
+	bash -x ../../../hack/update-jobs-with-latest-image.sh quay.io/kubevirtci/flake-issue-creator
+
+clean:
+	bazel clean --expunge

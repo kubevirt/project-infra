@@ -224,7 +224,7 @@ const ReportTemplate = `
 `
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
-func WriteReportToBucket(ctx context.Context, client *storage.Client, merged time.Duration, org, repo string, writeToStdout, isDryRun bool, reportBaseData flakefinder.ReportBaseData,) (err error) {
+func WriteReportToBucket(ctx context.Context, client *storage.Client, merged time.Duration, org, repo string, writeToStdout, isDryRun bool, reportBaseData flakefinder.ReportBaseData) (err error) {
 	reportObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(reportBaseData.EndOfReport, merged)))
 	log.Printf("Report will be written to gs://%s/%s", flakefinder.BucketName, reportObject.ObjectName())
 	var reportOutputWriter *storage.Writer

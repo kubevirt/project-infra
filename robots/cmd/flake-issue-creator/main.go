@@ -37,10 +37,10 @@ import (
 )
 
 const (
-	DefaultIssueLabels       = "triage/build-watcher,kind/bug"
-	DefaultIssueTitlePrefix  = "[flaky ci]"
-	ProwBaseURL              = "https://prow.apps.ovirt.org"
-	DeckPRLogURLPattern      = ProwBaseURL + "/view/gcs/kubevirt-prow/pr-logs/pull/%s_%s/%d/%s/%d"
+	DefaultIssueLabels      = "triage/build-watcher,kind/bug"
+	DefaultIssueTitlePrefix = "[flaky ci]"
+	ProwBaseURL             = "https://prow.apps.ovirt.org"
+	DeckPRLogURLPattern     = ProwBaseURL + "/view/gcs/kubevirt-prow/pr-logs/pull/%s_%s/%d/%s/%d"
 )
 
 func flagOptions() options {
@@ -51,7 +51,7 @@ func flagOptions() options {
 	flag.Var(&o.endpoint, "endpoint", "GitHub's API endpoint")
 	flag.StringVar(&o.token, "token", "", "Path to github token")
 	flag.DurationVar(&o.merged, "merged", 24*7*time.Hour, "Filter to issues merged in the time window")
-	flag.StringVar(&o.prBaseBranch, "pr_base_branch", PRBaseBranchDefault, "Base branch for the PRs")
+	flag.StringVar(&o.prBaseBranch, "pr-base-branch", PRBaseBranchDefault, "Base branch for the PRs")
 	flag.StringVar(&o.org, "org", Org, "GitHub org name")
 	flag.StringVar(&o.repo, "repo", Repo, "GitHub org name")
 	flag.StringVar(&o.createFlakeIssuesLabels, "flake-issue-labels", DefaultIssueLabels, "Labels to attach to created issues")
@@ -152,4 +152,3 @@ func main() {
 	}
 
 }
-

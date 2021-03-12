@@ -196,7 +196,7 @@ var _ = Describe("cluster_failure.go", func() {
 			Repo: "kubevirt",
 			Data: data,
 			FailuresForJobs: map[int]*JobFailures{
-				clusterFailureBuildNumber:        {
+				clusterFailureBuildNumber: {
 					BuildNumber: clusterFailureBuildNumber,
 					PR:          failingPR,
 					Job:         failingTestLane,

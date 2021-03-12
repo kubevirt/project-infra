@@ -31,7 +31,7 @@ func CreateFlakyTestIssues(reportData flakefinder.Params, clusterFailureBuildNum
 	flakyTestIssues := NewFlakyTestIssues(reportData, clusterFailureBuildNumbers, flakeIssuesLabels)
 
 	if createIssuesThreshold > 0 && len(flakyTestIssues) > createIssuesThreshold {
-		log.Printf("Create issue threshold reached, skipping creation of %d issue(s):\n%v", len(flakyTestIssues) - createIssuesThreshold, flakyTestIssues[createIssuesThreshold:])
+		log.Printf("Create issue threshold reached, skipping creation of %d issue(s):\n%v", len(flakyTestIssues)-createIssuesThreshold, flakyTestIssues[createIssuesThreshold:])
 		flakyTestIssues = flakyTestIssues[:createIssuesThreshold]
 	}
 
@@ -53,7 +53,7 @@ func NewFlakyTestIssues(reportData flakefinder.Params, clusterFailureBuildNumber
 			}
 			issueBodyJobLanes := ""
 			for _, job := range laneDetails.Jobs {
-				if index := sort.SearchInts(clusterFailureBuildNumbers, job.BuildNumber); index < len(clusterFailureBuildNumbers) && clusterFailureBuildNumbers[index] == job.BuildNumber  {
+				if index := sort.SearchInts(clusterFailureBuildNumbers, job.BuildNumber); index < len(clusterFailureBuildNumbers) && clusterFailureBuildNumbers[index] == job.BuildNumber {
 					continue
 				}
 				if issueBodyJobLanes == "" {
@@ -67,8 +67,8 @@ func NewFlakyTestIssues(reportData flakefinder.Params, clusterFailureBuildNumber
 		}
 		if issueBody != "" {
 			flakyTestIssue = github.Issue{
-				Title: fmt.Sprintf("%s%s", DefaultIssueTitlePrefix, testName),
-				Body: issueBody,
+				Title:  fmt.Sprintf("%s%s", DefaultIssueTitlePrefix, testName),
+				Body:   issueBody,
 				Labels: labels,
 			}
 			flakyTestIssues = append(flakyTestIssues, flakyTestIssue)
@@ -76,4 +76,3 @@ func NewFlakyTestIssues(reportData flakefinder.Params, clusterFailureBuildNumber
 	}
 	return
 }
-

@@ -92,4 +92,3 @@ func CreateIssues(org, repo string, labels []github.Label, issues []github.Issue
 	}
 	return nil
 }
-
