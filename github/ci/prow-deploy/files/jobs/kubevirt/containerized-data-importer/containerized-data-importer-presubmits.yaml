@@ -243,7 +243,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -274,7 +274,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -305,7 +305,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -336,7 +336,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
