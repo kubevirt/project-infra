@@ -224,7 +224,7 @@ var _ = Describe("cluster_failure.go", func() {
 		})
 
 		It("stops after limit of creation has been reached", func() {
-			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Times(1)
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).AnyTimes()
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(1)
 
 			clusterFailureBuildNumbers, err := CreateClusterFailureIssues(params, suspectedClusterFailureThreshold, issueLabels, mockGithubClient, false, 1)
@@ -234,7 +234,7 @@ var _ = Describe("cluster_failure.go", func() {
 
 		It("ignores limit if zero", func() {
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Times(2)
-			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(2)
+			mockGithubClient.EXPECT().CreateIssue(Any(), Any(), Any(), Any(), Eq(0), Any(), Any()).Times(2)
 
 			clusterFailureBuildNumbers, err := CreateClusterFailureIssues(params, suspectedClusterFailureThreshold, issueLabels, mockGithubClient, false, 0)
 			gomega.Expect(err).To(gomega.BeNil())
@@ -243,7 +243,7 @@ var _ = Describe("cluster_failure.go", func() {
 
 		It("uses org and repo when searching for and creating issues", func() {
 			mockGithubClient.EXPECT().FindIssues(matchers.ContainsStrings("org:kubevirt", "repo:kubevirt"), Any(), Any()).Times(2)
-			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(2)
+			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).AnyTimes()
 
 			clusterFailureBuildNumbers, err := CreateClusterFailureIssues(params, suspectedClusterFailureThreshold, issueLabels, mockGithubClient, false, 0)
 			gomega.Expect(err).To(gomega.BeNil())
@@ -251,7 +251,7 @@ var _ = Describe("cluster_failure.go", func() {
 		})
 
 		It("does not create cluster failures if failure threshold is zero", func() {
-			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Times(0)
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).AnyTimes()
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(0)
 
 			clusterFailureBuildNumbers, err := CreateClusterFailureIssues(params, 0, issueLabels, mockGithubClient, false, 0)

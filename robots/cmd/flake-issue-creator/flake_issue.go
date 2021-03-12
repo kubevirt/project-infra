@@ -23,11 +23,18 @@ import (
 	"fmt"
 	"k8s.io/test-infra/prow/github"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"log"
 	"sort"
 )
 
 func CreateFlakyTestIssues(reportData flakefinder.Params, clusterFailureBuildNumbers []int, flakeIssuesLabels []github.Label, pghClient github.Client, isDryRun bool, createIssuesThreshold int) error {
 	flakyTestIssues := NewFlakyTestIssues(reportData, clusterFailureBuildNumbers, flakeIssuesLabels)
+
+	if createIssuesThreshold > 0 && len(flakyTestIssues) > createIssuesThreshold {
+		log.Printf("Create issue threshold reached, skipping creation of %d issue(s):\n%v", len(flakyTestIssues) - createIssuesThreshold, flakyTestIssues[createIssuesThreshold:])
+		flakyTestIssues = flakyTestIssues[:createIssuesThreshold]
+	}
+
 	err := CreateIssues(reportData.Org, reportData.Repo, flakeIssuesLabels, flakyTestIssues, pghClient, isDryRun)
 	if err != nil {
 		return fmt.Errorf("failed to create flaky test issues: %+v", err)

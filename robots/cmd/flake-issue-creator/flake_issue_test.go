@@ -20,13 +20,16 @@
 package main_test
 
 import (
+	. "github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
 	gh "k8s.io/test-infra/prow/github"
+	"kubevirt.io/project-infra/robots/pkg/gomock/matchers"
 	"strings"
 
 	. "kubevirt.io/project-infra/robots/cmd/flake-issue-creator"
 	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
+	. "kubevirt.io/project-infra/robots/pkg/mock/prow/github"
 )
 
 var _ = Describe("flake_issue.go", func() {
@@ -119,16 +122,40 @@ var _ = Describe("flake_issue.go", func() {
 
 	When("creating flaky test issues", func() {
 
-		PIt("uses org and repo when searching for and creating issues", func() {
-			Fail("TODO") // TODO
+		var ctrl *Controller
+		var mockGithubClient *MockClient
+
+		BeforeEach(func() {
+			ctrl = NewController(GinkgoT())
+			mockGithubClient = NewMockClient(ctrl)
 		})
 
-		PIt("stops after limit of creation has been reached", func() {
-			Fail("TODO") // TODO
+		AfterEach(func() {
+			ctrl.Finish()
 		})
 
-		PIt("does not create issues if threshold is zero", func() {
-			Fail("TODO") // TODO
+		It("uses org and repo when searching for and creating issues", func() {
+			mockGithubClient.EXPECT().FindIssues(matchers.ContainsStrings("org:kubevirt", "repo:kubevirt"), Any(), Any()).Times(4)
+			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).AnyTimes()
+
+			err := CreateFlakyTestIssues(params, []int{}, issueLabels, mockGithubClient, false, 0)
+			gomega.Expect(err).To(gomega.BeNil())
+		})
+
+		It("stops after limit of creation has been reached", func() {
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).AnyTimes()
+			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(1)
+
+			err := CreateFlakyTestIssues(params, []int{}, issueLabels, mockGithubClient, false, 1)
+			gomega.Expect(err).To(gomega.BeNil())
+		})
+
+		It("creates all issues if threshold is zero", func() {
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).AnyTimes()
+			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(4)
+
+			err := CreateFlakyTestIssues(params, []int{}, issueLabels, mockGithubClient, false, 0)
+			gomega.Expect(err).To(gomega.BeNil())
 		})
 
 	})
