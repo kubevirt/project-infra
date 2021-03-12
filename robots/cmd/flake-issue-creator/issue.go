@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"k8s.io/test-infra/prow/github"
 	"log"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -54,7 +55,11 @@ func CreateIssues(org, repo string, labels []github.Label, issues []github.Issue
 	labelNames := extractLabelNames(labels)
 	labelSearch := createSearchByLabelsExpression(labels)
 	for _, issue := range issues {
-		findIssues, err := client.FindIssues(fmt.Sprintf(" org:%s repo:%s %s \"%s\"", org, repo, labelSearch, issue.Title), "updated-desc", false)
+		query, err := CreateFindIssuesQuery(org, repo, labelSearch, issue)
+		if err != nil {
+			return err
+		}
+		findIssues, err := client.FindIssues(query, "updated-desc", false)
 		if err != nil {
 			return err
 		}
@@ -91,4 +96,21 @@ func CreateIssues(org, repo string, labels []github.Label, issues []github.Issue
 		log.Printf("Created issue %d %+v", createdIssue, issue)
 	}
 	return nil
+}
+
+func CreateFindIssuesQuery(org string, repo string, labelSearch string, issue github.Issue) (string, error) {
+	queryPart1 := fmt.Sprintf("org:%s repo:%s %s", org, repo, labelSearch)
+	queryPart2 := fmt.Sprintf("\"%s\"", issue.Title)
+	if len(queryPart1) + len(queryPart2) > 256 {
+		squareBrackets := regexp.MustCompile("[\\[\\]]+")
+		title := squareBrackets.ReplaceAllString(issue.Title, " ")
+		titleWords := strings.Split(title, " ")
+		for maxIndex := len(titleWords) - 1; len(queryPart1) + 1 + len(queryPart2) > 256 ; maxIndex-- {
+			queryPart2 = strings.Trim(strings.Join(titleWords[:maxIndex], " "), " ")
+		}
+		if queryPart2 == "" {
+			return "", fmt.Errorf("Failed to create query string for issue: %+v", issue)
+		}
+	}
+	return fmt.Sprintf("%s %s", queryPart1, queryPart2), nil
 }

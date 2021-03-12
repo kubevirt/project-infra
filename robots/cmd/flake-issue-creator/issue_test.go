@@ -189,4 +189,34 @@ var _ = Describe("issue.go", func() {
 
 	})
 
+	When("creating the query string", func() {
+
+		It("uses org, repo, labels and title", func() {
+			query, err := CreateFindIssuesQuery("myorg", "myrepo", "label:whatever", prowgithub.Issue{Title: "issue title"})
+			gomega.Expect(err).To(gomega.BeNil())
+			gomega.Expect(query, err).To(gomega.BeEquivalentTo(
+				"org:myorg repo:myrepo label:whatever \"issue title\"",
+			))
+		})
+
+		It("does not modify previous issues on dry run", func() {
+			query, err := CreateFindIssuesQuery("myorg", "myrepo", "label:whatever", prowgithub.Issue{Title: "issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title "})
+			gomega.Expect(err).To(gomega.BeNil())
+			gomega.Expect(len(query) <= 256).To(gomega.BeTrue())
+		})
+
+		It("does not modify previous issues on dry run", func() {
+			query, err := CreateFindIssuesQuery("myorg", "myrepo", "label:whatever", prowgithub.Issue{Title: "[issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title]"})
+			gomega.Expect(err).To(gomega.BeNil())
+			gomega.Expect(len(query) <= 256).To(gomega.BeTrue())
+		})
+
+		It("does not modify previous issues on dry run", func() {
+			query, err := CreateFindIssuesQuery("myorg", "myrepo", "label:whatever", prowgithub.Issue{Title: "issuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitle"})
+			gomega.Expect(err).ToNot(gomega.BeNil())
+			gomega.Expect(query).To(gomega.BeEquivalentTo(""))
+		})
+
+	})
+
 })

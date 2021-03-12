@@ -150,7 +150,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: quay.io/kubevirtci/flake-issue-creator@sha256:45db425d55fff269184978522791172151dce9aaa3f2b722b4b3cd578f0e4f9c
+    - image: quay.io/kubevirtci/flake-issue-creator@sha256:b5809affb21182b77a942cd7cbf9ee4734eb40fce4fb63a409a6d5160fd00b6c
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
