@@ -23,12 +23,23 @@ import (
 	"fmt"
 	"k8s.io/test-infra/prow/github"
 	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"log"
 	"strings"
 )
 
 func CreateClusterFailureIssues(reportData Params, suspectedClusterFailureThreshold int, labels []github.Label, client github.Client, dryRun bool, createIssueThreshold int) (clusterFailureBuildNumbers []int, err error) {
+	if suspectedClusterFailureThreshold <= 0 {
+		log.Print("Skipping cluster failure creation\n")
+		return nil, nil
+	}
+
 	var issues []github.Issue
 	issues, clusterFailureBuildNumbers = NewClusterFailureIssues(reportData, suspectedClusterFailureThreshold, labels)
+
+	if createIssueThreshold > 0 && len(issues) > createIssueThreshold {
+		log.Printf("Create issue threshold reached, skipping creation of %d issue(s):\n%v", len(issues) - createIssueThreshold, issues[createIssueThreshold:])
+		issues = issues[:createIssueThreshold]
+	}
 
 	err = CreateIssues(reportData.Org, reportData.Repo, labels, issues, client, dryRun)
 	if err != nil {

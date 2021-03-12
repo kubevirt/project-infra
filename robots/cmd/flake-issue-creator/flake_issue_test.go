@@ -83,7 +83,7 @@ var _ = Describe("flake_issue.go", func() {
 
 		It("returns new flake test issues", func() {
 			issues := NewFlakyTestIssues(params, clusterFailureBuildNumbers, issueLabels)
-			gomega.Expect(issues).To(gomega.Not(gomega.BeNil()))
+			gomega.Expect(issues).ToNot(gomega.BeNil())
 			gomega.Expect(issues).To(gomega.HaveLen(3))
 		})
 
@@ -115,15 +115,19 @@ var _ = Describe("flake_issue.go", func() {
 			gomega.Expect(issues[0].Body).To(gomega.ContainSubstring("http"))
 		})
 
-		PIt("uses org and repo when creating issues", func() {
-			Fail("TODO") // TODO
-		})
-
 	})
 
 	When("creating flaky test issues", func() {
 
+		PIt("uses org and repo when searching for and creating issues", func() {
+			Fail("TODO") // TODO
+		})
+
 		PIt("stops after limit of creation has been reached", func() {
+			Fail("TODO") // TODO
+		})
+
+		PIt("does not create issues if threshold is zero", func() {
 			Fail("TODO") // TODO
 		})
 

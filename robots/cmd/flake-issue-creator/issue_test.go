@@ -39,7 +39,7 @@ var _ = Describe("issue.go", func() {
 
 		It("returns err on labels not found", func() {
 			labels, err := GetFlakeIssuesLabels(DefaultIssueLabels, []prowgithub.Label{}, "kubevirt", "kubevirt")
-			gomega.Expect(err).To(gomega.Not(gomega.BeNil()))
+			gomega.Expect(err).ToNot(gomega.BeNil())
 			gomega.Expect(labels).To(gomega.BeNil())
 		})
 
@@ -51,7 +51,7 @@ var _ = Describe("issue.go", func() {
 
 			issueLabels, err := GetFlakeIssuesLabels(DefaultIssueLabels, labels, "kubevirt", "kubevirt")
 			gomega.Expect(err).To(gomega.BeNil())
-			gomega.Expect(issueLabels).To(gomega.Not(gomega.BeNil()))
+			gomega.Expect(issueLabels).ToNot(gomega.BeNil())
 			gomega.Expect(issueLabels).To(gomega.HaveLen(2))
 		})
 

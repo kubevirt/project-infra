@@ -23,7 +23,6 @@ import (
 	"context"
 	"flag"
 	"log"
-	"math"
 	"net/url"
 	"time"
 
@@ -56,24 +55,26 @@ func flagOptions() options {
 	flag.StringVar(&o.org, "org", Org, "GitHub org name")
 	flag.StringVar(&o.repo, "repo", Repo, "GitHub org name")
 	flag.StringVar(&o.createFlakeIssuesLabels, "flake-issue-labels", DefaultIssueLabels, "Labels to attach to created issues")
-	flag.IntVar(&o.createFlakeIssuesThreshold, "flake-issue-threshold", 0, "Maximum number of issues to create, 0 for all")
-	flag.IntVar(&o.suspectedClusterFailureThreshold, "suspected-cluster-failure-threshold", 50, "Minimum number of test failures in one job to aggregate all test failures into one issue, 0 for never")
+	flag.IntVar(&o.createFlakeIssuesThreshold, "flake-issue-threshold", 0, "Maximum number of issues to create for flaky tests, 0 for all")
+	flag.IntVar(&o.failureThresholdOfSuspectedClusterFailure, "failure-threshold-of-suspected-cluster-failure", 50, "Minimum number of test failures in one job to aggregate all test failures into one issue, 0 for never creating cluster failure issues")
+	flag.IntVar(&o.createClusterFailureIssuesThreshold, "suspected-cluster-failure-issue-threshold", 0, "Maximum number of issues to create for cluster failures, 0 for all")
 	flag.Parse()
 	return o
 }
 
 type options struct {
-	isDryRun                         bool
-	endpoint                         flagutil.Strings
-	token                            string
-	graphqlEndpoint                  string
-	merged                           time.Duration
-	prBaseBranch                     string
-	org                              string
-	repo                             string
-	createFlakeIssuesLabels          string
-	createFlakeIssuesThreshold       int
-	suspectedClusterFailureThreshold int
+	isDryRun                                  bool
+	endpoint                                  flagutil.Strings
+	token                                     string
+	graphqlEndpoint                           string
+	merged                                    time.Duration
+	prBaseBranch                              string
+	org                                       string
+	repo                                      string
+	createFlakeIssuesLabels                   string
+	createFlakeIssuesThreshold                int
+	failureThresholdOfSuspectedClusterFailure int
+	createClusterFailureIssuesThreshold       int
 }
 
 const PRBaseBranchDefault = "master"
@@ -139,13 +140,13 @@ func main() {
 
 	reportData := flakefinder.CreateFlakeReportData(reportBaseData.JobResults, reportBaseData.PRNumbers, reportBaseData.EndOfReport, o.org, o.repo, reportBaseData.StartOfReport)
 
-	clusterFailureBuildNumbers, err := CreateClusterFailureIssues(reportData, o.suspectedClusterFailureThreshold, flakeIssuesLabels, pghClient, o.isDryRun, o.createFlakeIssuesThreshold)
+	clusterFailureBuildNumbers, err := CreateClusterFailureIssues(reportData, o.failureThresholdOfSuspectedClusterFailure, flakeIssuesLabels, pghClient, o.isDryRun, o.createClusterFailureIssuesThreshold)
 	if err != nil {
 		log.Fatalf("Failed to create cluster failure issues: %v.\n", err)
 	}
 	log.Printf("clusterFailureBuildNumbers: %+v", clusterFailureBuildNumbers)
 
-	err = CreateFlakyTestIssues(reportData, clusterFailureBuildNumbers, flakeIssuesLabels, pghClient, o.isDryRun, int(math.Max(float64(o.createFlakeIssuesThreshold-len(clusterFailureBuildNumbers)),0)))
+	err = CreateFlakyTestIssues(reportData, clusterFailureBuildNumbers, flakeIssuesLabels, pghClient, o.isDryRun, o.createFlakeIssuesThreshold)
 	if err != nil {
 		log.Fatalf("Failed to create flaky test issues: %v.\n", err)
 	}
