@@ -421,8 +421,8 @@ presubmits:
       fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni
       testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: false
+    always_run: false
+    optional: true
     decorate: true
     decoration_config:
       timeout: 4h
@@ -436,7 +436,7 @@ presubmits:
       rehearsal.allowed: "true"
     spec:
       nodeSelector:
-        hardwareSupport: sriov-nic
+        kubernetes.io/hostname: ovirt-srv24.phx.ovirt.org
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
