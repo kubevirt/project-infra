@@ -7,7 +7,7 @@ go_library(
         "main.go",
         "report.go",
     ],
-    importpath = "kubevirt.io/project-infra/robots/cmd/flake-report-writer",
+    importpath = "kubevirt.io/project-infra/robots/cmd/flakefinder",
     visibility = ["//visibility:public"],
     deps = [
         "//robots/pkg/flakefinder:go_default_library",
@@ -39,7 +39,7 @@ container_push(
 )
 
 go_binary(
-    name = "flake-report-writer",
+    name = "flakefinder",
     embed = [":go_default_library"],
     visibility = ["//visibility:public"],
 )

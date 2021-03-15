@@ -224,14 +224,14 @@ const ReportTemplate = `
 `
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
-func WriteReportToBucket(ctx context.Context, client *storage.Client, merged time.Duration, org, repo string, writeToStdout, isDryRun bool, reportBaseData flakefinder.ReportBaseData) (err error) {
+func WriteReportToBucket(ctx context.Context, client *storage.Client, merged time.Duration, org, repo string, isDryRun bool, reportBaseData flakefinder.ReportBaseData) (err error) {
 	reportObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(reportBaseData.EndOfReport, merged)))
 	log.Printf("Report will be written to gs://%s/%s", flakefinder.BucketName, reportObject.ObjectName())
 	var reportOutputWriter *storage.Writer
 	if !isDryRun {
 		reportOutputWriter = reportObject.NewWriter(ctx)
 	}
-	err = Report(reportBaseData.JobResults, reportOutputWriter, org, repo, reportBaseData.PRNumbers, writeToStdout, isDryRun, reportBaseData.StartOfReport, reportBaseData.EndOfReport)
+	err = Report(reportBaseData.JobResults, reportOutputWriter, org, repo, reportBaseData.PRNumbers, isDryRun, reportBaseData.StartOfReport, reportBaseData.EndOfReport)
 	if err != nil {
 		return fmt.Errorf("failed on generating report: %v", err)
 	}
@@ -248,13 +248,13 @@ func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
 	return fmt.Sprintf(flakefinder.ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
 }
 
-func Report(results []*flakefinder.JobResult, reportOutputWriter *storage.Writer, org string, repo string, prNumbers []int, writeToStdout bool, isDryRun bool, startOfReport, endOfReport time.Time) error {
+func Report(results []*flakefinder.JobResult, reportOutputWriter *storage.Writer, org, repo string, prNumbers []int, isDryRun bool, startOfReport, endOfReport time.Time) error {
 	parameters := flakefinder.CreateFlakeReportData(results, prNumbers, endOfReport, org, repo, startOfReport)
 	var err error
 	if !isDryRun && reportOutputWriter != nil {
 		err = flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, reportOutputWriter)
 	}
-	if isDryRun || writeToStdout {
+	if isDryRun {
 		err = flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, os.Stdout)
 	}
 

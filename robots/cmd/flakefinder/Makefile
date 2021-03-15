@@ -5,10 +5,10 @@ format:
 	gofmt -w .
 
 test:
-	bazel test --define container_tag= //robots/cmd/flake-issue-creator:*
+	bazel test --define container_tag= //robots/cmd/flakefinder:*
 
 push:
-	../push.sh flake-issue-creator
+	../push.sh flakefinder
 
 clean:
 	bazel clean --expunge

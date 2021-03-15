@@ -42,7 +42,6 @@ func flagOptions() options {
 		endpoint: flagutil.NewStrings("https://api.github.com"),
 	}
 	flag.BoolVar(&o.isDryRun, "dry-run", true, "Whether report should be only printed to standard out instead of written to gcs") // TODO: incompatible change, requires setting flags on jobs
-	flag.IntVar(&o.ceiling, "ceiling", 100, "Maximum number of issues to modify, 0 for infinite")
 	flag.DurationVar(&o.merged, "merged", 24*7*time.Hour, "Filter to issues merged in the time window")
 	flag.Var(&o.endpoint, "endpoint", "GitHub's API endpoint")
 	flag.StringVar(&o.token, "token", "", "Path to github token")
@@ -53,30 +52,22 @@ func flagOptions() options {
 	flag.StringVar(&o.repo, "repo", Repo, "GitHub org name")
 	flag.BoolVar(&o.today, "today", false, "Whether to create a report for the current day only (i.e. using data starting from report day 00:00Z till now)")
 	flag.BoolVar(&o.skipBeforeStartOfReport, "skip_results_before_start_of_report", true, "Whether to skip test results occurring before start of report")
-	flag.BoolVar(&o.stdout, "stdout", false, "(Deprecated, use dry-run instead) write generated report to stdout")
 	flag.Parse()
 	return o
 }
 
 type options struct {
-	isDryRun bool
-
-	// Deprecated: no function
-	ceiling               int
-	endpoint              flagutil.Strings
-	token                 string
-	graphqlEndpoint       string
-	merged                time.Duration
-	isPreview             bool
-	prBaseBranch          string
-	reportOutputChildPath string
-	org                   string
-	repo                  string
-
-	// Deprecated: replaced by dry-run
-	stdout bool
-	today  bool
-
+	isDryRun                bool
+	endpoint                flagutil.Strings
+	token                   string
+	graphqlEndpoint         string
+	merged                  time.Duration
+	isPreview               bool
+	prBaseBranch            string
+	reportOutputChildPath   string
+	org                     string
+	repo                    string
+	today                   bool
 	skipBeforeStartOfReport bool
 }
 
@@ -127,13 +118,13 @@ func main() {
 
 	reportBaseData := flakefinder.GetReportBaseData(ctx, ghClient, storageClient, flakefinder.NewReportBaseDataOptions(PRBaseBranch, o.today, o.merged, o.org, o.repo, o.skipBeforeStartOfReport))
 
-	err = WriteReportToBucket(ctx, storageClient, o.merged, o.org, o.repo, o.stdout, o.isDryRun, reportBaseData)
+	err = WriteReportToBucket(ctx, storageClient, o.merged, o.org, o.repo, o.isDryRun, reportBaseData)
 	if err != nil {
 		log.Fatal(fmt.Errorf("failed to write report: %v", err))
 		return
 	}
 
-	printIndexPageToStdOut := o.isDryRun && o.stdout
+	printIndexPageToStdOut := o.isDryRun
 	err = CreateReportIndex(ctx, storageClient, o.org, o.repo, printIndexPageToStdOut)
 	if err != nil {
 		log.Fatal(fmt.Errorf("failed to create report index page: %v", err))
