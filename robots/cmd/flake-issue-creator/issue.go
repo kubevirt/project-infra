@@ -29,6 +29,11 @@ import (
 	"time"
 )
 
+var (
+	testIDRegExp         = regexp.MustCompile("\\[(test_id:[0-9]+)\\]")
+	squareBracketsRegExp = regexp.MustCompile("[\\[\\]]+")
+)
+
 func GetFlakeIssuesLabels(createFlakeIssuesLabels string, labels []github.Label, org, repo string) (issueLabels []github.Label, err error) {
 	configuredIssueLabels := strings.Split(createFlakeIssuesLabels, ",")
 	sort.Strings(configuredIssueLabels)
@@ -54,9 +59,8 @@ func CreateProwJobURL(failingPR int, failingTestLane string, clusterFailureBuild
 
 func CreateIssues(org, repo string, labels []github.Label, issues []github.Issue, client github.Client, dryRun bool, skipExistingIssuesChangedLately time.Duration) error {
 	labelNames := extractLabelNames(labels)
-	labelSearch := createSearchByLabelsExpression(labels)
 	for _, issue := range issues {
-		query, err := CreateFindIssuesQuery(org, repo, labelSearch, issue)
+		query, err := CreateFindIssuesQuery(org, repo, issue, labels)
 		if err != nil {
 			return err
 		}
@@ -103,19 +107,24 @@ func CreateIssues(org, repo string, labels []github.Label, issues []github.Issue
 	return nil
 }
 
-func CreateFindIssuesQuery(org string, repo string, labelSearch string, issue github.Issue) (string, error) {
-	queryPart1 := fmt.Sprintf("org:%s repo:%s %s", org, repo, labelSearch)
-	queryPart2 := fmt.Sprintf("\"%s\"", issue.Title)
-	if len(queryPart1) + len(queryPart2) > 256 {
-		squareBrackets := regexp.MustCompile("[\\[\\]]+")
-		title := squareBrackets.ReplaceAllString(issue.Title, " ")
+//CreateFindIssuesQuery creates a query string from the issue title for github. Search query contains directives to
+//search within a specific repository. If the issue title has a test_id tag (i.e. [test_id:1234] it adds the test id to
+//the query string as a primary search term.
+func CreateFindIssuesQuery(org string, repo string, issue github.Issue, labels []github.Label) (string, error) {
+	queryParts := []string{fmt.Sprintf("org:%s repo:%s %s", org, repo, createSearchByLabelsExpression(labels))}
+	if testIDRegExp.MatchString(issue.Title) {
+		queryParts = append(queryParts, "\"" + testIDRegExp.FindStringSubmatch(issue.Title)[1] + "\"")
+	}
+	titleQuery := fmt.Sprintf("\"%s\"", issue.Title)
+	if len(strings.Join(append(queryParts, titleQuery), " ")) > 256 {
+		title := squareBracketsRegExp.ReplaceAllString(issue.Title, " ")
 		titleWords := strings.Split(title, " ")
-		for maxIndex := len(titleWords) - 1; len(queryPart1) + 1 + len(queryPart2) > 256 ; maxIndex-- {
-			queryPart2 = strings.Trim(strings.Join(titleWords[:maxIndex], " "), " ")
+		for maxIndex := len(titleWords) - 1; len(strings.Join(append(queryParts, titleQuery), " ")) > 256 ; maxIndex-- {
+			titleQuery = strings.Trim(strings.Join(titleWords[:maxIndex], " "), " ")
 		}
-		if queryPart2 == "" {
+		if titleQuery == "" {
 			return "", fmt.Errorf("Failed to create query string for issue: %+v", issue)
 		}
 	}
-	return fmt.Sprintf("%s %s", queryPart1, queryPart2), nil
+	return strings.Join(append(queryParts, titleQuery), " "), nil
 }

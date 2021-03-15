@@ -20,6 +20,7 @@
 package main_test
 
 import (
+	"fmt"
 	. "github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
@@ -214,32 +215,44 @@ var _ = Describe("issue.go", func() {
 
 	})
 
+	searchLabels := []prowgithub.Label{
+		{Name: "whatever"},
+	}
+
 	When("creating the query string", func() {
 
 		It("uses org, repo, labels and title", func() {
-			query, err := CreateFindIssuesQuery("myorg", "myrepo", "label:whatever", prowgithub.Issue{Title: "issue title"})
+			query, err := CreateFindIssuesQuery("myorg", "myrepo", prowgithub.Issue{Title: "issue title"}, searchLabels)
 			gomega.Expect(err).To(gomega.BeNil())
 			gomega.Expect(query, err).To(gomega.BeEquivalentTo(
 				"org:myorg repo:myrepo label:whatever \"issue title\"",
 			))
 		})
 
-		It("does not modify previous issues on dry run", func() {
-			query, err := CreateFindIssuesQuery("myorg", "myrepo", "label:whatever", prowgithub.Issue{Title: "issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title "})
+		It("cuts the query string down to 256 characters", func() {
+			query, err := CreateFindIssuesQuery("myorg", "myrepo", prowgithub.Issue{Title: "issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title issue title "}, searchLabels)
 			gomega.Expect(err).To(gomega.BeNil())
 			gomega.Expect(len(query) <= 256).To(gomega.BeTrue())
 		})
 
-		It("does not modify previous issues on dry run", func() {
-			query, err := CreateFindIssuesQuery("myorg", "myrepo", "label:whatever", prowgithub.Issue{Title: "[issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title]"})
+		It("can handle to cut down even with no spaces", func() {
+			query, err := CreateFindIssuesQuery("myorg", "myrepo", prowgithub.Issue{Title: "[issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title]"}, searchLabels)
 			gomega.Expect(err).To(gomega.BeNil())
 			gomega.Expect(len(query) <= 256).To(gomega.BeTrue())
 		})
 
-		It("does not modify previous issues on dry run", func() {
-			query, err := CreateFindIssuesQuery("myorg", "myrepo", "label:whatever", prowgithub.Issue{Title: "issuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitle"})
+		It("cant handle strings with word characters only", func() {
+			query, err := CreateFindIssuesQuery("myorg", "myrepo", prowgithub.Issue{Title: "issuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitleissuetitle"}, searchLabels)
 			gomega.Expect(err).ToNot(gomega.BeNil())
 			gomega.Expect(query).To(gomega.BeEquivalentTo(""))
+		})
+
+		It("test_id takes precedence in query", func() {
+			query, err := CreateFindIssuesQuery("myorg", "myrepo", prowgithub.Issue{Title: "[issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][issue][title][test_id:1742]"}, searchLabels)
+			fmt.Println(query)
+			gomega.Expect(err).To(gomega.BeNil())
+			gomega.Expect(len(query) <= 256).To(gomega.BeTrue())
+			gomega.Expect(query).To(gomega.ContainSubstring("\"test_id:1742\""))
 		})
 
 	})
