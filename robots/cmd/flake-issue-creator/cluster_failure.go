@@ -25,9 +25,10 @@ import (
 	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"log"
 	"strings"
+	"time"
 )
 
-func CreateClusterFailureIssues(reportData Params, suspectedClusterFailureThreshold int, labels []github.Label, client github.Client, dryRun bool, createIssueThreshold int) (clusterFailureBuildNumbers []int, err error) {
+func CreateClusterFailureIssues(reportData Params, suspectedClusterFailureThreshold int, labels []github.Label, client github.Client, dryRun bool, createIssueThreshold int, skipExistingIssuesChangedLately time.Duration) (clusterFailureBuildNumbers []int, err error) {
 	if suspectedClusterFailureThreshold <= 0 {
 		log.Print("Skipping cluster failure creation\n")
 		return nil, nil
@@ -41,7 +42,7 @@ func CreateClusterFailureIssues(reportData Params, suspectedClusterFailureThresh
 		issues = issues[:createIssueThreshold]
 	}
 
-	err = CreateIssues(reportData.Org, reportData.Repo, labels, issues, client, dryRun)
+	err = CreateIssues(reportData.Org, reportData.Repo, labels, issues, client, dryRun, skipExistingIssuesChangedLately)
 	if err != nil {
 		return nil, err
 	}

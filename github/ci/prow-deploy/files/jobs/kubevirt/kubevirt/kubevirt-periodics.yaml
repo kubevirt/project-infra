@@ -167,6 +167,7 @@ periodics:
       - --flake-issue-threshold=0
       - --failure-threshold-of-suspected-cluster-failure=50
       - --suspected-cluster-failure-issue-threshold=0
+      - --skip-existing-issues-changed-since=12h
       volumeMounts:
       - name: token
         mountPath: /etc/github

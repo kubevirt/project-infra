@@ -26,6 +26,7 @@ import (
 	gh "k8s.io/test-infra/prow/github"
 	"kubevirt.io/project-infra/robots/pkg/gomock/matchers"
 	"strings"
+	"time"
 
 	. "kubevirt.io/project-infra/robots/cmd/flake-issue-creator"
 	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
@@ -134,11 +135,13 @@ var _ = Describe("flake_issue.go", func() {
 			ctrl.Finish()
 		})
 
+		latestIssueChange := -12*time.Hour
+
 		It("uses org and repo when searching for and creating issues", func() {
 			mockGithubClient.EXPECT().FindIssues(matchers.ContainsStrings("org:kubevirt", "repo:kubevirt"), Any(), Any()).Times(4)
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).AnyTimes()
 
-			err := CreateFlakyTestIssues(params, []int{}, issueLabels, mockGithubClient, false, 0)
+			err := CreateFlakyTestIssues(params, []int{}, issueLabels, mockGithubClient, false, 0, latestIssueChange)
 			gomega.Expect(err).To(gomega.BeNil())
 		})
 
@@ -146,7 +149,7 @@ var _ = Describe("flake_issue.go", func() {
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).AnyTimes()
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(1)
 
-			err := CreateFlakyTestIssues(params, []int{}, issueLabels, mockGithubClient, false, 1)
+			err := CreateFlakyTestIssues(params, []int{}, issueLabels, mockGithubClient, false, 1, latestIssueChange)
 			gomega.Expect(err).To(gomega.BeNil())
 		})
 
@@ -154,7 +157,7 @@ var _ = Describe("flake_issue.go", func() {
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).AnyTimes()
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(4)
 
-			err := CreateFlakyTestIssues(params, []int{}, issueLabels, mockGithubClient, false, 0)
+			err := CreateFlakyTestIssues(params, []int{}, issueLabels, mockGithubClient, false, 0, latestIssueChange)
 			gomega.Expect(err).To(gomega.BeNil())
 		})
 

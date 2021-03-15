@@ -58,6 +58,7 @@ func flagOptions() options {
 	flag.IntVar(&o.createFlakeIssuesThreshold, "flake-issue-threshold", 0, "Maximum number of issues to create for flaky tests, 0 for all")
 	flag.IntVar(&o.failureThresholdOfSuspectedClusterFailure, "failure-threshold-of-suspected-cluster-failure", 50, "Minimum number of test failures in one job to aggregate all test failures into one issue, 0 for never creating cluster failure issues")
 	flag.IntVar(&o.createClusterFailureIssuesThreshold, "suspected-cluster-failure-issue-threshold", 0, "Maximum number of issues to create for cluster failures, 0 for all")
+	flag.DurationVar(&o.skipExistingIssuesChangedSince, "skip-existing-issues-changed-since", 12*time.Hour, "Skip modification of existing issues if they were changed less than x hours ago")
 	flag.Parse()
 	return o
 }
@@ -75,6 +76,7 @@ type options struct {
 	createFlakeIssuesThreshold                int
 	failureThresholdOfSuspectedClusterFailure int
 	createClusterFailureIssuesThreshold       int
+	skipExistingIssuesChangedSince            time.Duration
 }
 
 const PRBaseBranchDefault = "master"
@@ -140,13 +142,13 @@ func main() {
 
 	reportData := flakefinder.CreateFlakeReportData(reportBaseData.JobResults, reportBaseData.PRNumbers, reportBaseData.EndOfReport, o.org, o.repo, reportBaseData.StartOfReport)
 
-	clusterFailureBuildNumbers, err := CreateClusterFailureIssues(reportData, o.failureThresholdOfSuspectedClusterFailure, flakeIssuesLabels, pghClient, o.isDryRun, o.createClusterFailureIssuesThreshold)
+	clusterFailureBuildNumbers, err := CreateClusterFailureIssues(reportData, o.failureThresholdOfSuspectedClusterFailure, flakeIssuesLabels, pghClient, o.isDryRun, o.createClusterFailureIssuesThreshold, o.skipExistingIssuesChangedSince)
 	if err != nil {
 		log.Fatalf("Failed to create cluster failure issues: %v.\n", err)
 	}
 	log.Printf("clusterFailureBuildNumbers: %+v", clusterFailureBuildNumbers)
 
-	err = CreateFlakyTestIssues(reportData, clusterFailureBuildNumbers, flakeIssuesLabels, pghClient, o.isDryRun, o.createFlakeIssuesThreshold)
+	err = CreateFlakyTestIssues(reportData, clusterFailureBuildNumbers, flakeIssuesLabels, pghClient, o.isDryRun, o.createFlakeIssuesThreshold, o.skipExistingIssuesChangedSince)
 	if err != nil {
 		log.Fatalf("Failed to create flaky test issues: %v.\n", err)
 	}

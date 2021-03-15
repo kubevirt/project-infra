@@ -26,6 +26,7 @@ import (
 	gh "k8s.io/test-infra/prow/github"
 	prowgithub "k8s.io/test-infra/prow/github"
 	"strings"
+	"time"
 
 	. "kubevirt.io/project-infra/robots/cmd/flake-issue-creator"
 	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
@@ -108,6 +109,8 @@ var _ = Describe("issue.go", func() {
 
 		var issues []prowgithub.Issue
 
+		skipExistingIssuesChangedLately := 12*time.Hour
+
 		BeforeEach(func() {
 			ctrl = NewController(GinkgoT())
 			mockGithubClient = NewMockClient(ctrl)
@@ -123,7 +126,7 @@ var _ = Describe("issue.go", func() {
 			mockGithubClient.EXPECT().FindIssues(ContainsStrings("org:kubevirt", "repo:kubevirt"), Any(), Any()).Times(4)
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(4)
 
-			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false)
+			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false, skipExistingIssuesChangedLately)
 			gomega.Expect(err).To(gomega.BeNil())
 		})
 
@@ -131,7 +134,7 @@ var _ = Describe("issue.go", func() {
 			mockGithubClient.EXPECT().FindIssues(ContainsStrings("label:"+buildWatcher, "label:"+typeBug), Any(), Any()).Times(4)
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(4)
 
-			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false)
+			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false, skipExistingIssuesChangedLately)
 			gomega.Expect(err).To(gomega.BeNil())
 		})
 
@@ -139,7 +142,7 @@ var _ = Describe("issue.go", func() {
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Times(4)
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(4)
 
-			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false)
+			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false, skipExistingIssuesChangedLately)
 			gomega.Expect(err).To(gomega.BeNil())
 		})
 
@@ -147,7 +150,7 @@ var _ = Describe("issue.go", func() {
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Times(4)
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(0)
 
-			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, true)
+			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, true, skipExistingIssuesChangedLately)
 			gomega.Expect(err).To(gomega.BeNil())
 		})
 
@@ -158,7 +161,7 @@ var _ = Describe("issue.go", func() {
 			mockGithubClient.EXPECT().CreateComment(Eq("kubevirt"), Eq("kubevirt"), existingIssueId, Any()).Times(1)
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(3)
 
-			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false)
+			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false, skipExistingIssuesChangedLately)
 			gomega.Expect(err).To(gomega.BeNil())
 		})
 
@@ -171,7 +174,7 @@ var _ = Describe("issue.go", func() {
 			mockGithubClient.EXPECT().CreateComment(Eq("kubevirt"), Eq("kubevirt"), existingIssueId, Any()).Times(1)
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(3)
 
-			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false)
+			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false, skipExistingIssuesChangedLately)
 			gomega.Expect(err).To(gomega.BeNil())
 		})
 
@@ -183,7 +186,29 @@ var _ = Describe("issue.go", func() {
 			mockGithubClient.EXPECT().ReopenIssue(Eq("kubevirt"), Eq("kubevirt"), existingIssueId).Times(0)
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(0)
 
-			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, true)
+			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, true, skipExistingIssuesChangedLately)
+			gomega.Expect(err).To(gomega.BeNil())
+		})
+
+		It("does not comment on issues that were created less than x hours ago", func() {
+			foundIssues := []gh.Issue{{ID: existingIssueId, CreatedAt: time.Now().Add(-1*time.Hour*6)}}
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(foundIssues, nil).Times(1)
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(nil, nil).Times(3)
+			mockGithubClient.EXPECT().CreateComment(Eq("kubevirt"), Eq("kubevirt"), existingIssueId, Any()).Times(0)
+			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(3)
+
+			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false, skipExistingIssuesChangedLately)
+			gomega.Expect(err).To(gomega.BeNil())
+		})
+
+		It("does not comment on issues that were updated less than x hours ago", func() {
+			foundIssues := []gh.Issue{{ID: existingIssueId, UpdatedAt: time.Now().Add(-1*time.Hour*6)}}
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(foundIssues, nil).Times(1)
+			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(nil, nil).Times(3)
+			mockGithubClient.EXPECT().CreateComment(Eq("kubevirt"), Eq("kubevirt"), existingIssueId, Any()).Times(0)
+			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(3)
+
+			err := CreateIssues("kubevirt", "kubevirt", issueLabels, issues, mockGithubClient, false, skipExistingIssuesChangedLately)
 			gomega.Expect(err).To(gomega.BeNil())
 		})
 

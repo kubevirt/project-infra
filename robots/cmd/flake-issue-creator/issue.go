@@ -26,6 +26,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 )
 
 func GetFlakeIssuesLabels(createFlakeIssuesLabels string, labels []github.Label, org, repo string) (issueLabels []github.Label, err error) {
@@ -51,7 +52,7 @@ func CreateProwJobURL(failingPR int, failingTestLane string, clusterFailureBuild
 	return fmt.Sprintf(DeckPRLogURLPattern, org, repo, failingPR, failingTestLane, clusterFailureBuildNumber)
 }
 
-func CreateIssues(org, repo string, labels []github.Label, issues []github.Issue, client github.Client, dryRun bool) error {
+func CreateIssues(org, repo string, labels []github.Label, issues []github.Issue, client github.Client, dryRun bool, skipExistingIssuesChangedLately time.Duration) error {
 	labelNames := extractLabelNames(labels)
 	labelSearch := createSearchByLabelsExpression(labels)
 	for _, issue := range issues {
@@ -66,6 +67,10 @@ func CreateIssues(org, repo string, labels []github.Label, issues []github.Issue
 		if len(findIssues) > 0 {
 			log.Printf("Issues found: %+v", findIssues)
 			latestExistingIssue := findIssues[0]
+			tooRecentlyModifiedBorder := time.Now().Add(-1*skipExistingIssuesChangedLately)
+			if latestExistingIssue.CreatedAt.After(tooRecentlyModifiedBorder) || latestExistingIssue.UpdatedAt.After(tooRecentlyModifiedBorder) {
+				continue
+			}
 			if latestExistingIssue.State == "closed" {
 				log.Printf("Reopen issue: %+v", latestExistingIssue)
 				if !dryRun {

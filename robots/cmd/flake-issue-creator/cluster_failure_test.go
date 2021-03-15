@@ -22,6 +22,7 @@ package main_test
 import (
 	"fmt"
 	"kubevirt.io/project-infra/robots/pkg/gomock/matchers"
+	"time"
 
 	. "github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
@@ -214,6 +215,8 @@ var _ = Describe("cluster_failure.go", func() {
 		var ctrl *Controller
 		var mockGithubClient *MockClient
 
+		latestIssueChange := -12*time.Hour
+
 		BeforeEach(func() {
 			ctrl = NewController(GinkgoT())
 			mockGithubClient = NewMockClient(ctrl)
@@ -227,7 +230,7 @@ var _ = Describe("cluster_failure.go", func() {
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).AnyTimes()
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(1)
 
-			clusterFailureBuildNumbers, err := CreateClusterFailureIssues(params, suspectedClusterFailureThreshold, issueLabels, mockGithubClient, false, 1)
+			clusterFailureBuildNumbers, err := CreateClusterFailureIssues(params, suspectedClusterFailureThreshold, issueLabels, mockGithubClient, false, 1, latestIssueChange)
 			gomega.Expect(err).To(gomega.BeNil())
 			gomega.Expect(clusterFailureBuildNumbers).To(gomega.HaveLen(2))
 		})
@@ -236,7 +239,7 @@ var _ = Describe("cluster_failure.go", func() {
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Times(2)
 			mockGithubClient.EXPECT().CreateIssue(Any(), Any(), Any(), Any(), Eq(0), Any(), Any()).Times(2)
 
-			clusterFailureBuildNumbers, err := CreateClusterFailureIssues(params, suspectedClusterFailureThreshold, issueLabels, mockGithubClient, false, 0)
+			clusterFailureBuildNumbers, err := CreateClusterFailureIssues(params, suspectedClusterFailureThreshold, issueLabels, mockGithubClient, false, 0, latestIssueChange)
 			gomega.Expect(err).To(gomega.BeNil())
 			gomega.Expect(clusterFailureBuildNumbers).To(gomega.HaveLen(2))
 		})
@@ -245,7 +248,7 @@ var _ = Describe("cluster_failure.go", func() {
 			mockGithubClient.EXPECT().FindIssues(matchers.ContainsStrings("org:kubevirt", "repo:kubevirt"), Any(), Any()).Times(2)
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).AnyTimes()
 
-			clusterFailureBuildNumbers, err := CreateClusterFailureIssues(params, suspectedClusterFailureThreshold, issueLabels, mockGithubClient, false, 0)
+			clusterFailureBuildNumbers, err := CreateClusterFailureIssues(params, suspectedClusterFailureThreshold, issueLabels, mockGithubClient, false, 0, latestIssueChange)
 			gomega.Expect(err).To(gomega.BeNil())
 			gomega.Expect(clusterFailureBuildNumbers).To(gomega.HaveLen(2))
 		})
@@ -254,7 +257,7 @@ var _ = Describe("cluster_failure.go", func() {
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).AnyTimes()
 			mockGithubClient.EXPECT().CreateIssue(Eq("kubevirt"), Eq("kubevirt"), Any(), Any(), Eq(0), Any(), Any()).Times(0)
 
-			clusterFailureBuildNumbers, err := CreateClusterFailureIssues(params, 0, issueLabels, mockGithubClient, false, 0)
+			clusterFailureBuildNumbers, err := CreateClusterFailureIssues(params, 0, issueLabels, mockGithubClient, false, 0, latestIssueChange)
 			gomega.Expect(err).To(gomega.BeNil())
 			gomega.Expect(clusterFailureBuildNumbers).To(gomega.BeNil())
 		})

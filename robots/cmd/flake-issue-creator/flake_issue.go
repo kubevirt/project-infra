@@ -25,9 +25,10 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"log"
 	"sort"
+	"time"
 )
 
-func CreateFlakyTestIssues(reportData flakefinder.Params, clusterFailureBuildNumbers []int, flakeIssuesLabels []github.Label, pghClient github.Client, isDryRun bool, createIssuesThreshold int) error {
+func CreateFlakyTestIssues(reportData flakefinder.Params, clusterFailureBuildNumbers []int, flakeIssuesLabels []github.Label, pghClient github.Client, isDryRun bool, createIssuesThreshold int, skipExistingIssuesChangedLately time.Duration) error {
 	flakyTestIssues := NewFlakyTestIssues(reportData, clusterFailureBuildNumbers, flakeIssuesLabels)
 
 	if createIssuesThreshold > 0 && len(flakyTestIssues) > createIssuesThreshold {
@@ -35,7 +36,7 @@ func CreateFlakyTestIssues(reportData flakefinder.Params, clusterFailureBuildNum
 		flakyTestIssues = flakyTestIssues[:createIssuesThreshold]
 	}
 
-	err := CreateIssues(reportData.Org, reportData.Repo, flakeIssuesLabels, flakyTestIssues, pghClient, isDryRun)
+	err := CreateIssues(reportData.Org, reportData.Repo, flakeIssuesLabels, flakyTestIssues, pghClient, isDryRun, skipExistingIssuesChangedLately)
 	if err != nil {
 		return fmt.Errorf("failed to create flaky test issues: %+v", err)
 	}
