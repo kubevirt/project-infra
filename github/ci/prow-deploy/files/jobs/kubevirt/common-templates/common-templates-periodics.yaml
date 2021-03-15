@@ -24,113 +24,30 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: kubevirtci/bootstrap:v20201119-a5880e0
+    - image: kubevirtci/bootstrap:v20210126-a12b6c0
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
         - "-c"
         - |
-          cat > /etc/docker/daemon.json << EOF
-          {
-              "live-restore": true
-          }
-          EOF
-          service docker restart
+          apt-get update && apt-get install -y --no-install-recommends --no-upgrade expect ansible intltool libosinfo-1.0 libssl-dev osinfo-db-tools python-gi && rm -rf /var/lib/apt/lists/*
           export KUBEVIRTCI_TAG=$(curl -L https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirtci/latest)
           export KUBEVIRTCI_GOCLI_CONTAINER=quay.io/kubevirtci/gocli:${KUBEVIRTCI_TAG}
           export KUBEVIRT_PROVIDER=k8s-1.20
           export KUBEVIRT_NUM_NODES=2
           export KUBEVIRT_MEMORY_SIZE=10240M
+          export KUBEVIRT_PROVIDER_EXTRA_ARGS="--registry-port 5000"
 
           make cluster-up
           export KUBECONFIG=$(cluster-up/kubeconfig.sh)
-          host=$(hostname)
-          echo $host
-          dnscont=k8s-1.20-dnsmasq
-          port=$(docker port $dnscont 5000 | awk -F : '{ print $2 }')
-          echo $port
-          cat > /etc/docker/daemon.json << EOF
-          {
-              "live-restore": true,
-              "insecure-registries": ["$host:$port"]
-          }
-          EOF
-          service docker restart
           cd ${PWD}/../common-templates/dvtemplates;
-          # Quay registry where the fedora images are stored
-          export FEDORA_REPO="quay.io/kubevirt/fedora-images"
-          export BASE_URL=https://download.fedoraproject.org/pub/fedora/linux/releases/
-          wget -qO index.html $BASE_URL
-          if [ $? -ne 0 ]; then
-              echo -e "Unable to connect to the Fedora repository"
-              exit 1
-          fi
-          export FEDORA_VERSION=`cat index.html | sed -e 's/.*>\(.*\)\/<.*/\1/' | sort -rn | head -n 1`
-          echo "Latest Fedora version is : ${FEDORA_VERSION}"
-          re='^ *[0-9]+ *$'
-          if ! [[ $FEDORA_VERSION =~ $re ]] ; then
-              echo -e "Invalid Image Version"
-              exit 1
-          fi
-          docker pull -a $FEDORA_REPO
-          image_tag=$(docker images $FEDORA_REPO --format "{{json .Tag }}" | sort -rn | head -n 1)
-          FEDORA_OLD_VERSION=`echo "$image_tag" | tr -d '"'`
-          echo "Fedora version in the Image Registry is : ${FEDORA_OLD_VERSION}"
-          if [ -z "$image_tag" ]; then
-              echo -e "No Container Image Tag found in the registry"
-          fi
-
-          if [ $FEDORA_VERSION == $FEDORA_OLD_VERSION ]; then
-              echo -e "Container Image for the Latest Fedora version is already present. Exiting"
-              exit 1
-          fi
-
-          IMAGE_URL=${BASE_URL}${FEDORA_VERSION}/Cloud/x86_64/images/
-          wget -qO image.html $IMAGE_URL
-          if [ $? -ne 0 ]; then
-              echo -e "Unable to connect to the Fedora Image repository"
-              exit 1
-          fi
-
-          FEDORA_IMAGE=$(grep Fedora.*qcow2 image.html | sed -e 's/.*>\(Fedora.*qcow2\)<.*/\1/')
-          URL=${IMAGE_URL}${FEDORA_IMAGE}
-          wget -q --show-progress $URL
-          if [ $? -ne 0 ]; then
-              echo -e "Unable to connect to the Fedora Image repository for download"
-              exit 1
-          fi
-          echo -e "Successfully downloaded new Fedora $FEDORA_VERSION image"
-
-          docker build . -t ${host}:${port}/disk
-          docker push ${host}:${port}/disk
-          if [ $? -ne 0 ]; then
-              echo -e "Unable to push the image to the local registry"
-              exit 1
-          fi
-          # Run tests
-          cd ${PWD}/../;
-          # Install expect to enable login to machines in the test scripts 
-          # apt-get update && apt-get install -y expect
-          apt-get update && apt-get install -y --no-install-recommends --no-upgrade expect python3-pip ansible intltool libosinfo-1.0 libpython-dev libssl-dev make osinfo-db-tools python-gi python3 python3-yaml rsync && rm -rf /var/lib/apt/lists/*
-          pip3 install six
-          curl https://mirror.openshift.com/pub/openshift-v4/clients/oc/4.4/linux/oc.tar.gz | tar -C . -xzf -
-          chmod +x oc
-          mv oc /usr/bin
-          export TARGET=refresh-image-fedora-test && export KUBE_CMD=kubectl
-          ./automation/test.sh
-          #
-          # If testing passes push the new image to the final Image registry
-          if [ $? -eq 0 ]; then
-              cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io
-              docker tag ${host}:${port}/disk $FEDORA_REPO:$FEDORA_VERSION
-              docker push $FEDORA_REPO:$FEDORA_VERSION
-              if [ $? -ne 0 ]; then
-                  echo -e "Unable to push the image to the quay registry"
-                  exit 1
-              fi
-          else
-              echo -e "End to end tests fail using the fedora container disk image"
-              exit 1
+          cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io
+          #Run the script from common-templates
+          ./fedora_new_image.sh
+          exit_status=$?
+          if [[ ( $exit_status -ne 4 && $exit_status -ne 0 ) ]]; then
+              echo -e "Exiting because of error"
+              exit $exit_status
           fi
       securityContext:
         privileged: true
