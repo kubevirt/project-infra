@@ -12,7 +12,7 @@ main(){
         decrypt_secrets
         # ssh key
         mkdir -p ~/.ssh && chmod 0700 ~/.ssh
-        extract_secret 'prowWorkloads.ssKey' ~/.ssh/id_ed25519
+        extract_secret 'prowWorkloads.sshKey' ~/.ssh/id_ed25519
         chmod 0600 ~/.ssh/id_ed25519
         # ansible config files
         extract_secret 'prowWorkloads.hostsYml' ${base_dir}/inventory/prow-workloads/hosts.yml
