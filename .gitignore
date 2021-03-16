@@ -1,6 +1,6 @@
-**/group_vars/all/main.yml
+github/ci/group_vars/all/main.yml
 *~
-inventory
+github/ci/inventory
 *pyc
 venv
 github/ci/*.retry
