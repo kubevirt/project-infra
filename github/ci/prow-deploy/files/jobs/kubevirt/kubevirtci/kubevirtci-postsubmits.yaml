@@ -29,7 +29,7 @@ postsubmits:
           secret:
             secretName: gcs
         containers:
-        - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:8c80c98d035a0f285ad49b964e5d0b62004844f3340407367841618e80e1503c
+        - image: quay.io/kubevirtci/golang:v20210316-d295087
           env:
           - name: GIT_ASKPASS
             value: "../project-infra/hack/git-askpass.sh"
