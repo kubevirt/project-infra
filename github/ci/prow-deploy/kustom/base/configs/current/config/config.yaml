@@ -96,7 +96,7 @@ tide:
     kubevirt/kubevirt-template-validator: squash
     kubevirt/kubevirt-ssp-operator: squash
     kubevirt/csi-driver: squash
-    kubevirt/ssp-operator: squash
+    kubevirt/ssp-operator: rebase
     kubevirt/must-gather: squash
     kubevirt/user-guide: squash
 
