@@ -315,7 +315,7 @@ orgs:
         allow_rebase_merge: false
         allow_squash_merge: false
         description: Kubernetes Virtualization API and runtime in order to define and manage virtual machines.
-        has_projects: false
+        has_projects: true
         homepage: https://kubevirt.io
       kubevirt-ansible:
         allow_rebase_merge: false
