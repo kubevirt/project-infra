@@ -61,7 +61,7 @@ postsubmits:
                 memory: "1Gi"
     - name: publish-bootstrap-image
       always_run: false
-      run_if_changed: "images/bootstrap/.*"
+      run_if_changed: "images/.*"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -82,6 +82,7 @@ postsubmits:
                 cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
                 ./publish_image.sh bootstrap quay.io kubevirtci
+                ./publish_image.sh golang quay.io kubevirtci
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true

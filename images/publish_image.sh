@@ -36,7 +36,7 @@ main() {
     (
         cd "$build_target"
 
-        build_image "$full_image_name"
+        build_image "$build_target" "$full_image_name"
     )
     [[ $build_only ]] && return
     publish_image "$full_image_name"
@@ -63,8 +63,9 @@ get_image_tag() {
 }
 
 build_image() {
-    local image_name="${1:?}"
-    docker build . -t "$image_name"
+    local build_target="${1:?}"
+    local image_name="${2:?}"
+    docker build . -t "$image_name" -t "$build_target"
 }
 
 publish_image() {
