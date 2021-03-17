@@ -73,7 +73,7 @@ presubmits:
       nodeSelector:
         type: vm
       containers:
-        - image: kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -99,7 +99,7 @@ presubmits:
       nodeSelector:
         type: vm
       containers:
-        - image: kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -126,7 +126,7 @@ presubmits:
       nodeSelector:
         type: vm
       containers:
-        - image: kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -154,7 +154,7 @@ presubmits:
       nodeSelector:
         type: vm
       containers:
-        - image: kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -182,7 +182,7 @@ presubmits:
       nodeSelector:
         type: vm
       containers:
-        - image: kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -210,7 +210,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
