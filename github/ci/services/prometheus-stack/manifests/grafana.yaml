@@ -3015,7 +3015,7 @@ data:
       "gnetId": null,
       "graphTooltip": 0,
       "id": 9,
-      "iteration": 1613471453488,
+      "iteration": 1615974370391,
       "links": [],
       "panels": [
         {
@@ -3024,6 +3024,7 @@ data:
           "dashLength": 10,
           "dashes": false,
           "datasource": "Prometheus",
+          "description": "",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -3039,7 +3040,7 @@ data:
             "y": 0
           },
           "hiddenSeries": false,
-          "id": 6,
+          "id": 13,
           "legend": {
             "avg": false,
             "current": false,
@@ -3066,7 +3067,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum by (job_name)\n(prowjobs{org=\"kubevirt\", state=\"failure\", job_name=~\"${job_name}\"})",
+              "expr": "sum\n(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"${job_name}\"})\n/\nsum\n(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"${job_name}\"})\n* 100",
               "interval": "",
               "legendFormat": "",
               "queryType": "randomWalk",
@@ -3077,7 +3078,7 @@ data:
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "lane failures",
+          "title": "lane failures % overall",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -3093,11 +3094,12 @@ data:
           },
           "yaxes": [
             {
+              "decimals": null,
               "format": "short",
               "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
+              "max": "100",
+              "min": "0",
               "show": true
             },
             {
@@ -3216,6 +3218,7 @@ data:
           "dashLength": 10,
           "dashes": false,
           "datasource": "Prometheus",
+          "description": "",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -3231,7 +3234,7 @@ data:
             "y": 8
           },
           "hiddenSeries": false,
-          "id": 11,
+          "id": 4,
           "legend": {
             "avg": false,
             "current": false,
@@ -3258,7 +3261,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum by (job_name)\n(prowjobs{org=\"kubevirt\", state=~\"success\", job_name=~\"${job_name}\"})  ",
+              "expr": "sum by (job_name)\n(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"${job_name}\"})\n/\nsum by (job_name)\n(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"${job_name}\"})\n* 100",
               "interval": "",
               "legendFormat": "",
               "queryType": "randomWalk",
@@ -3269,7 +3272,7 @@ data:
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "lane succeeded",
+          "title": "lane failures % per lane",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -3418,12 +3421,12 @@ data:
           "fillGradient": 0,
           "gridPos": {
             "h": 8,
-            "w": 12,
+            "w": 6,
             "x": 0,
             "y": 16
           },
           "hiddenSeries": false,
-          "id": 4,
+          "id": 11,
           "legend": {
             "avg": false,
             "current": false,
@@ -3450,7 +3453,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum by (job_name)\n(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"${job_name}\"})\n/\nsum by (job_name)\n(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"${job_name}\"})\n* 100",
+              "expr": "sum by (job_name)\n(prowjobs{org=\"kubevirt\", state=~\"success\", job_name=~\"${job_name}\"})  ",
               "interval": "",
               "legendFormat": "",
               "queryType": "randomWalk",
@@ -3461,7 +3464,103 @@ data:
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "failure %",
+          "title": "lane succeeded",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 6,
+            "y": 16
+          },
+          "hiddenSeries": false,
+          "id": 6,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.3.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum by (job_name)\n(prowjobs{org=\"kubevirt\", state=\"failure\", job_name=~\"${job_name}\"})",
+              "interval": "",
+              "legendFormat": "",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "lane failures",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -3595,32 +3694,81 @@ data:
           }
         }
       ],
-      "refresh": false,
+      "refresh": "2h",
       "schemaVersion": 26,
       "style": "dark",
       "tags": [],
       "templating": {
         "list": [
           {
+            "allValue": null,
             "current": {
-              "selected": false,
-              "text": ".*-kubevirt-e2e-.*",
-              "value": ".*-kubevirt-e2e-.*"
+              "selected": true,
+              "text": ".*-e2e-.*",
+              "value": ".*-e2e-.*"
             },
             "error": null,
             "hide": 0,
+            "includeAll": false,
             "label": null,
+            "multi": false,
             "name": "job_name",
             "options": [
               {
                 "selected": true,
+                "text": ".*-e2e-.*",
+                "value": ".*-e2e-.*"
+              },
+              {
+                "selected": false,
                 "text": ".*-kubevirt-e2e-.*",
                 "value": ".*-kubevirt-e2e-.*"
+              },
+              {
+                "selected": false,
+                "text": ".*-containerized-data-importer-e2e-.*",
+                "value": ".*-containerized-data-importer-e2e-.*"
+              },
+              {
+                "selected": false,
+                "text": ".*-csi-driver-e2e-.*",
+                "value": ".*-csi-driver-e2e-.*"
+              },
+              {
+                "selected": false,
+                "text": ".*-e2e-cluster-network-addons-operator-.*",
+                "value": ".*-e2e-cluster-network-addons-operator-.*"
+              },
+              {
+                "selected": false,
+                "text": ".*-hyperconverged-cluster-operator-e2e-.*",
+                "value": ".*-hyperconverged-cluster-operator-e2e-.*"
+              },
+              {
+                "selected": false,
+                "text": ".*-vm-import-operator-e2e-.*",
+                "value": ".*-vm-import-operator-e2e-.*"
+              },
+              {
+                "selected": false,
+                "text": "periodic-kubevirt-e2e-k8s-.*",
+                "value": "periodic-kubevirt-e2e-k8s-.*"
+              },
+              {
+                "selected": false,
+                "text": "pull-kubevirt-e2e-k8s-.*",
+                "value": "pull-kubevirt-e2e-k8s-.*"
+              },
+              {
+                "selected": false,
+                "text": "pull-kubevirt-e2e-k8s-1.[12][0-9]",
+                "value": "pull-kubevirt-e2e-k8s-1.[12][0-9]"
               }
             ],
-            "query": ".*-kubevirt-e2e-.*",
+            "query": ".*-e2e-.*,\n.*-kubevirt-e2e-.*,\n.*-containerized-data-importer-e2e-.*,\n.*-csi-driver-e2e-.*,\n.*-e2e-cluster-network-addons-operator-.*,\n.*-hyperconverged-cluster-operator-e2e-.*,\n.*-vm-import-operator-e2e-.*,\nperiodic-kubevirt-e2e-k8s-.*,\npull-kubevirt-e2e-k8s-.*,\npull-kubevirt-e2e-k8s-1.[12][0-9]",
+            "queryValue": "",
             "skipUrlSync": false,
-            "type": "textbox"
+            "type": "custom"
           }
         ]
       },
@@ -3632,7 +3780,7 @@ data:
       "timezone": "",
       "title": "e2e jobs overview",
       "uid": "Cz6zgEEGz",
-      "version": 11
+      "version": 15
     }
   merge-queue.json: |
     {
