@@ -18,7 +18,7 @@ postsubmits:
       decorate: true
       spec:
         containers:
-          - image: kubevirt/builder@sha256:e6a76ec71f2de87c3bc648bae87ab43a113540bf57da69f07f76bd0edfd500ab
+          - image: quay.io/kubevirt/builder:32-1.0.1
             env:
               - name: GIT_ASKPASS
                 value: /go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh
