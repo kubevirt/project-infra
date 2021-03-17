@@ -10,7 +10,7 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
-        preset-project-infra-kubevirtci-docker-credential: "true"
+        preset-kubevirtci-quay-credential: "true"
       spec:
         nodeSelector:
           type: vm
@@ -21,7 +21,7 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                  cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && \
+                  cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io && \
                   GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/oauth) ./hack/build-in-docker.sh
             # docker-in-docker needs privileged mode
             securityContext:
