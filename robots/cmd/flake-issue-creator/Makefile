@@ -5,7 +5,7 @@ format:
 	gofmt -w .
 
 test:
-	bazel test --define container_tag= //robots/cmd/flake-issue-creator:*
+	bazel test //robots/cmd/flake-issue-creator:*
 
 push:
 	../push.sh flake-issue-creator

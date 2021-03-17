@@ -5,7 +5,7 @@ format:
 	gofmt -w .
 
 test:
-	bazel test --define container_tag= //robots/cmd/flakefinder:*
+	bazel test //robots/cmd/flakefinder:*
 
 push:
 	../push.sh flakefinder

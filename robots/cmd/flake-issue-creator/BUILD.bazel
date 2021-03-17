@@ -36,7 +36,7 @@ container_push(
     image = ":app",
     registry = "quay.io",
     repository = "kubevirtci/flake-issue-creator",
-    tag = "$(container_tag)",
+    tag = "{DOCKER_TAG}",
 )
 
 go_binary(
