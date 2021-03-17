@@ -215,7 +215,7 @@ var _ = Describe("cluster_failure.go", func() {
 		var ctrl *Controller
 		var mockGithubClient *MockClient
 
-		latestIssueChange := -12*time.Hour
+		latestIssueChange := -12 * time.Hour
 
 		BeforeEach(func() {
 			ctrl = NewController(GinkgoT())

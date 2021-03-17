@@ -135,7 +135,7 @@ var _ = Describe("flake_issue.go", func() {
 			ctrl.Finish()
 		})
 
-		latestIssueChange := -12*time.Hour
+		latestIssueChange := -12 * time.Hour
 
 		It("uses org and repo when searching for and creating issues", func() {
 			mockGithubClient.EXPECT().FindIssues(matchers.ContainsStrings("org:kubevirt", "repo:kubevirt"), Any(), Any()).Times(4)

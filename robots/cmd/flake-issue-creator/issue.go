@@ -71,7 +71,7 @@ func CreateIssues(org, repo string, labels []github.Label, issues []github.Issue
 		if len(findIssues) > 0 {
 			log.Printf("Issues found: %+v", findIssues)
 			latestExistingIssue := findIssues[0]
-			tooRecentlyModifiedBorder := time.Now().Add(-1*skipExistingIssuesChangedLately)
+			tooRecentlyModifiedBorder := time.Now().Add(-1 * skipExistingIssuesChangedLately)
 			if latestExistingIssue.CreatedAt.After(tooRecentlyModifiedBorder) || latestExistingIssue.UpdatedAt.After(tooRecentlyModifiedBorder) {
 				continue
 			}
@@ -113,13 +113,13 @@ func CreateIssues(org, repo string, labels []github.Label, issues []github.Issue
 func CreateFindIssuesQuery(org string, repo string, issue github.Issue, labels []github.Label) (string, error) {
 	queryParts := []string{fmt.Sprintf("org:%s repo:%s %s", org, repo, createSearchByLabelsExpression(labels))}
 	if testIDRegExp.MatchString(issue.Title) {
-		queryParts = append(queryParts, "\"" + testIDRegExp.FindStringSubmatch(issue.Title)[1] + "\"")
+		queryParts = append(queryParts, "\""+testIDRegExp.FindStringSubmatch(issue.Title)[1]+"\"")
 	}
 	titleQuery := fmt.Sprintf("\"%s\"", issue.Title)
 	if len(strings.Join(append(queryParts, titleQuery), " ")) > 256 {
 		title := squareBracketsRegExp.ReplaceAllString(issue.Title, " ")
 		titleWords := strings.Split(title, " ")
-		for maxIndex := len(titleWords) - 1; len(strings.Join(append(queryParts, titleQuery), " ")) > 256 ; maxIndex-- {
+		for maxIndex := len(titleWords) - 1; len(strings.Join(append(queryParts, titleQuery), " ")) > 256; maxIndex-- {
 			titleQuery = strings.Trim(strings.Join(titleWords[:maxIndex], " "), " ")
 		}
 		if titleQuery == "" {

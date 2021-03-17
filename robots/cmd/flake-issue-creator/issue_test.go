@@ -110,7 +110,7 @@ var _ = Describe("issue.go", func() {
 
 		var issues []prowgithub.Issue
 
-		skipExistingIssuesChangedLately := 12*time.Hour
+		skipExistingIssuesChangedLately := 12 * time.Hour
 
 		BeforeEach(func() {
 			ctrl = NewController(GinkgoT())
@@ -192,7 +192,7 @@ var _ = Describe("issue.go", func() {
 		})
 
 		It("does not comment on issues that were created less than x hours ago", func() {
-			foundIssues := []gh.Issue{{ID: existingIssueId, CreatedAt: time.Now().Add(-1*time.Hour*6)}}
+			foundIssues := []gh.Issue{{ID: existingIssueId, CreatedAt: time.Now().Add(-1 * time.Hour * 6)}}
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(foundIssues, nil).Times(1)
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(nil, nil).Times(3)
 			mockGithubClient.EXPECT().CreateComment(Eq("kubevirt"), Eq("kubevirt"), existingIssueId, Any()).Times(0)
@@ -203,7 +203,7 @@ var _ = Describe("issue.go", func() {
 		})
 
 		It("does not comment on issues that were updated less than x hours ago", func() {
-			foundIssues := []gh.Issue{{ID: existingIssueId, UpdatedAt: time.Now().Add(-1*time.Hour*6)}}
+			foundIssues := []gh.Issue{{ID: existingIssueId, UpdatedAt: time.Now().Add(-1 * time.Hour * 6)}}
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(foundIssues, nil).Times(1)
 			mockGithubClient.EXPECT().FindIssues(Any(), Any(), Any()).Return(nil, nil).Times(3)
 			mockGithubClient.EXPECT().CreateComment(Eq("kubevirt"), Eq("kubevirt"), existingIssueId, Any()).Times(0)
