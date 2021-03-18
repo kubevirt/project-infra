@@ -40,6 +40,17 @@ func (a *Artifact) AppendURL(url string) {
 	a.rule.Attr("urls").(*build.ListExpr).List = append(list, &build.StringExpr{Value: url})
 }
 
+type HTTPClient interface {
+	Head(uri string) (resp *http.Response, err error)
+	Get(uri string)  (resp *http.Response, err error)
+}
+
+var Client HTTPClient
+
+func init() {
+	Client = http.DefaultClient
+}
+
 func (a *Artifact) RemoveURLs(notFoundUrls []string) {
 	var urlsToRemove = map[string]struct{}{}
 	for _, urlToRemove := range notFoundUrls {
@@ -110,7 +121,7 @@ func RemoveStaleDownloadURLS(artifacts []Artifact, ignoreURLSMatching *regexp.Re
 			if ignoreURLSMatching.MatchString(notFoundUrl) {
 				continue
 			}
-			resp, err := http.Head(notFoundUrl)
+			resp, err := Client.Head(notFoundUrl)
 			if err != nil {
 				log.Printf("Could not connect to source URL: %v", err)
 				continue
@@ -148,7 +159,7 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 		return nil
 	}
 	for _, uri := range artifact.URLs() {
-		resp, err := http.Get(uri)
+		resp, err := Client.Get(uri)
 		if err != nil {
 			log.Printf("Could not connect to source, continuing with next URL: %v", err)
 			continue

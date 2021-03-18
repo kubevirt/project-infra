@@ -1,6 +1,8 @@
 package mirror
 
 import (
+	"fmt"
+	"net/http"
 	"regexp"
 	"testing"
 
@@ -66,50 +68,91 @@ func Test(t *testing.T) {
 	}
 }
 
-type testDataForTestRemoveStaleDownloadURLS struct {
-	Data           []byte
-	ExpectedLength int
+type MockHTTPClient struct {
+	responses MockResponses
 }
 
-// FIXME: workspaceDataFoRPMWithStaleDownloadURLs below can get stale as links might get outdated, which will cause tests to fail. Use proper mocking instead
-var workspaceDataFoRPMWithStaleDownloadURLs = []testDataForTestRemoveStaleDownloadURLS{
+func (m MockHTTPClient) Get(uri string) (resp *http.Response, err error) {
+	response, exists := m.responses[uri]
+	if !exists {
+		return nil, fmt.Errorf("Unexpected url call for Get: %s", uri)
+	}
+	return response.resp, response.err
+}
+func (m MockHTTPClient) Head(uri string) (resp *http.Response, err error) {
+	response, exists := m.responses[uri]
+	if !exists {
+		return nil, fmt.Errorf("Unexpected url call for Head: %s", uri)
+	}
+	return response.resp, response.err
+}
+
+type MockResponse struct {
+	resp *http.Response
+	err  error
+}
+
+type MockResponses map[string]MockResponse
+
+type testCaseDataForTestRemoveStaleDownloadURLS struct {
+	data           []byte
+	responses      MockResponses
+	expectedLength int
+}
+
+var testCasesForTestRemoveStaleDownloadURLS = []testCaseDataForTestRemoveStaleDownloadURLS{
 	{
-		[]byte(`
+		data: []byte(`
 rpm(
     name = "vim-minimal-2__8.2.2146-2.fc32.x86_64",
     sha256 = "1cf36a5d4a96954167ebd75ca34a21b0b6fd00a7935820528b515ab936ee6393",
     urls = [
         "https://mirror.ette.biz/fedora/linux/updates/32/Everything/x86_64/Packages/v/vim-minimal-8.2.2146-2.fc32.x86_64.rpm",
-        "https://sjc.edge.kernel.org/fedora-buffet/fedora/linux/updates/32/Everything/x86_64/Packages/v/vim-minimal-8.2.2146-2.fc32.x86_64.rpm",
-        "https://mirror.genesisadaptive.com/fedora/updates/32/Everything/x86_64/Packages/v/vim-minimal-8.2.2146-2.fc32.x86_64.rpm",
-        "https://mirror.umd.edu/fedora/linux/updates/32/Everything/x86_64/Packages/v/vim-minimal-8.2.2146-2.fc32.x86_64.rpm",
         "https://kubevirt.storage.googleapis.com/builddeps/1cf36a5d4a96954167ebd75ca34a21b0b6fd00a7935820528b515ab936ee6393",
     ],
 )
 `),
-		1,
+		responses: MockResponses{
+			"https://mirror.ette.biz/fedora/linux/updates/32/Everything/x86_64/Packages/v/vim-minimal-8.2.2146-2.fc32.x86_64.rpm":
+			MockResponse{
+				resp: &http.Response{
+					StatusCode: 404,
+					Body:       http.NoBody,
+				},
+			},
+		},
+		expectedLength: 1,
 	},
 	{
-		[]byte(`
+		data: []byte(`
 rpm(
     name = "findutils-1__4.7.0-4.fc32.x86_64",
     sha256 = "c7e5d5de11d4c791596ca39d1587c50caba0e06f12a7c24c5d40421d291cd661",
     urls = [
         "https://mirror.dogado.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm",
-        "https://ftp-stud.hs-esslingen.de/pub/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm",
-        "https://ftp.halifax.rwth-aachen.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm",
-        "https://ftp.fau.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm",
         "https://kubevirt.storage.googleapis.com/builddeps/c7e5d5de11d4c791596ca39d1587c50caba0e06f12a7c24c5d40421d291cd661",
     ],
 )
 `),
-		5,
+		responses: MockResponses{
+			"https://mirror.dogado.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm":
+			MockResponse{
+				resp: &http.Response{
+					StatusCode: 200,
+					Body:       http.NoBody,
+				},
+			},
+		},
+		expectedLength: 2,
 	},
 }
 
 func TestRemoveStaleDownloadURLS(t *testing.T) {
-	for _, workspaceData := range workspaceDataFoRPMWithStaleDownloadURLs {
-		file, err := build.ParseWorkspace("workspace", workspaceData.Data)
+	for _, workspaceData := range testCasesForTestRemoveStaleDownloadURLS {
+		Client = MockHTTPClient{
+			responses: workspaceData.responses,
+		}
+		file, err := build.ParseWorkspace("workspace", workspaceData.data)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -119,8 +162,8 @@ func TestRemoveStaleDownloadURLS(t *testing.T) {
 		}
 
 		RemoveStaleDownloadURLS(artifacts, regexp.MustCompile("^https://kubevirt.storage.googleapis.com/.+"))
-		if len(artifacts[0].URLs()) != workspaceData.ExpectedLength {
-			t.Fatalf("expected length was %d, actual was %d, URLS: %v", workspaceData.ExpectedLength, len(artifacts[0].URLs()), artifacts[0].URLs())
+		if len(artifacts[0].URLs()) != workspaceData.expectedLength {
+			t.Fatalf("expected length was %d, actual was %d, URLS: %v", workspaceData.expectedLength, len(artifacts[0].URLs()), artifacts[0].URLs())
 		}
 	}
 }
