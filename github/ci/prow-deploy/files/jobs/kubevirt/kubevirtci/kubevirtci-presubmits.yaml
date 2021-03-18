@@ -37,20 +37,20 @@ presubmits:
               topologyKey: kubernetes.io/hostname
       containers:
       - image: quay.io/kubevirtci/golang:v20210316-d295087
+        env:
+        - name: "GIMME_GO_VERSION"
+          value: "1.13.8"
+        - name: "KUBEVIRT_PROVIDER"
+          value: "kind-k8s-sriov-1.17.0"
+        - name: "KUBEVIRT_NUM_NODES"
+          value: "2"
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
         - "-c"
         - >
-            apt update &&
-            apt install gettext-base -y &&
-            wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz -nv -S &&
-            tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ &&
-            export PATH=/usr/local/go/bin:$PATH &&
-            export KUBEVIRT_PROVIDER=kind-k8s-sriov-1.17.0 &&
-            export KUBEVIRT_NUM_NODES=2;
-            trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM;
-            make cluster-up;
+            trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM &&
+            make cluster-up
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
