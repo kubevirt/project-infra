@@ -59,7 +59,7 @@ limits:
 
     [2] `k8s.v1.cni.cncf.io/networks: '[{"interface":"net1","name":"sriov-passthrough-cni","namespace":"multus-cni-ns"}, {"interface":"net2","name":"sriov-passthrough-cni","namespace":"multus-cni-ns"}]'`
 
-2. Follow [2] of the previous section, but instead of 1 `prow/sriov`, use 2, in order to let k8s know that 2 PFs are
+2. Follow [4] of the previous section, but instead of 1 `prow/sriov`, use 2, in order to let k8s know that 2 PFs are
 allocated per job, each PF is represented by a `prow/sriov` resource.
 
 ```bash
