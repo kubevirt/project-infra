@@ -365,14 +365,16 @@ periodics:
       type: bare-metal-external
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         env:
           - name: KUBEVIRT_QUARANTINE
             value: "true"
-        args:
-          - |
-            export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '1p')
-            automation/test.sh
+          - name: TARGET
+            value: k8s-1.19
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - "automation/test.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
@@ -403,14 +405,16 @@ periodics:
       type: bare-metal-external
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         env:
           - name: KUBEVIRT_QUARANTINE
             value: "true"
-        args:
-          - |
-            export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '2p')
-            automation/test.sh
+          - name: TARGET
+            value: k8s-1.18
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - "automation/test.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
@@ -444,11 +448,13 @@ periodics:
         env:
           - name: KUBEVIRT_QUARANTINE
             value: "true"
-        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
-        args:
-          - |
-            export TARGET=$(ls cluster-up/cluster/ | grep -E '^k8s-1\.[0-9]+$' | sort --sort=version -r | sed -n '3p')
-            automation/test.sh
+          - name: TARGET
+            value: k8s-1.17
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - "automation/test.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
