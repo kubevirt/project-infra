@@ -15,6 +15,8 @@ import (
 	"kubevirt.io/project-infra/plugins/mirror"
 )
 
+var targetMirrorURLPattern = regexp.MustCompile(`^https://storage.googleapis.com/.+`)
+
 type options struct {
 	dryRun          bool
 	bucket          string
@@ -101,7 +103,7 @@ func upload(options options, workspace *build.File, artifacts []mirror.Artifact)
 	if err != nil {
 		log.Fatalf("Failed to create new storage client: %v.\n", err)
 	}
-	invalid := mirror.FilterArtifactsWithoutMirror(artifacts, regexp.MustCompile(`^https://storage.googleapis.com/.+`))
+	invalid := mirror.FilterArtifactsWithoutMirror(artifacts, targetMirrorURLPattern)
 
 	failed := false
 	for _, artifact := range invalid {
@@ -117,6 +119,8 @@ func upload(options options, workspace *build.File, artifacts []mirror.Artifact)
 		}
 		artifact.AppendURL(newFileUrl)
 	}
+
+	mirror.RemoveStaleDownloadURLS(artifacts, targetMirrorURLPattern)
 
 	err = mirror.WriteWorkspace(options.dryRun, workspace, options.workspacePath)
 	if err != nil {
