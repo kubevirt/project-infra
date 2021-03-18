@@ -1,0 +1,33 @@
+presubmits:
+  nmstate/nmstate:
+    - name: pull-nmstate-integ_tier1-k8s
+      branches:
+        - base
+      annotations:
+        fork-per-release: "true"
+      always_run: true
+      optional: true
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/run-tests.sh --test-type integ_tier1 --centos-stream --k8s --artifacts-dir $ARTIFACTS"

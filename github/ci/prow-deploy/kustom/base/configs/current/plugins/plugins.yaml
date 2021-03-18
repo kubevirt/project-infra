@@ -224,6 +224,10 @@ plugins:
   - dco
   - trigger
 
+  nmstate/nmstate:
+  - trigger
+  - override
+
   k8snetworkplumbingwg/kubemacpool:
   - size
   - label
