@@ -40,15 +40,22 @@ func (a *Artifact) AppendURL(url string) {
 	a.rule.Attr("urls").(*build.ListExpr).List = append(list, &build.StringExpr{Value: url})
 }
 
-func (a *Artifact) RemoveURL(url string) {
+func (a *Artifact) RemoveURLs(notFoundUrls []string) {
+	var urlsToRemove = map[string]struct{}{}
+	for _, urlToRemove := range notFoundUrls {
+		urlsToRemove[urlToRemove] = struct{}{}
+	}
+
+	var remainingArtifactURLs []build.Expr
+
 	list := a.rule.Attr("urls").(*build.ListExpr).List
-	for index, urlValue := range list {
-		artifactURLValue := urlValue.(*build.StringExpr).Value
-		if artifactURLValue == url {
-			list = append(list[:index], list[index+1:]...)
+	for _, urlValue := range list {
+		if _, exists := urlsToRemove[urlValue.(*build.StringExpr).Value]; !exists {
+			remainingArtifactURLs = append(remainingArtifactURLs, urlValue)
 		}
 	}
-	a.rule.Attr("urls").(*build.ListExpr).List = list
+
+	a.rule.Attr("urls").(*build.ListExpr).List = remainingArtifactURLs
 }
 
 func LoadWorkspace(path string) (*build.File, error) {
@@ -97,28 +104,27 @@ func FilterArtifactsWithoutMirror(artifacts []Artifact, regexp *regexp.Regexp) (
 
 func RemoveStaleDownloadURLS(artifacts []Artifact, ignoreURLSMatching *regexp.Regexp) {
 	for _, artifact := range artifacts {
-		for _, url := range artifact.URLs() {
-			if ignoreURLSMatching.MatchString(url) {
+		var notFoundUrls []string
+
+		for _, notFoundUrl := range artifact.URLs() {
+			if ignoreURLSMatching.MatchString(notFoundUrl) {
 				continue
 			}
-			found := false
-			resp, err := http.Head(url)
+			resp, err := http.Head(notFoundUrl)
 			if err != nil {
 				log.Printf("Could not connect to source URL: %v", err)
-			} else {
-				defer resp.Body.Close()
-				if resp.StatusCode == http.StatusNotFound {
-					log.Printf("Could not find artifact %s, will remove URL: Status Code: %v", url, resp.StatusCode)
-				} else if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
-					log.Printf("Artifact found at %s. Status Code: %v", url, resp.StatusCode)
-					found = true
-				}
+				continue
 			}
-			if !found {
-				artifact.RemoveURL(url)
+			defer resp.Body.Close()
+			if resp.StatusCode == http.StatusNotFound {
+				log.Printf("Could not find artifact %s, will remove URL: Status Code: %v", notFoundUrl, resp.StatusCode)
+				notFoundUrls = append(notFoundUrls, notFoundUrl)
 			}
 		}
+
+		artifact.RemoveURLs(notFoundUrls)
 	}
+
 }
 
 func getMirror(artifact Artifact, regexp *regexp.Regexp) string {
