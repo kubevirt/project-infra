@@ -108,6 +108,42 @@ presubmits:
           resources:
             requests:
               memory: "34Gi"
+  - name: pull-kubevirt-e2e-k8s-1.19-sig-storage
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    always_run: false
+    optional: true
+    skip_report: false
+    decorate: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 11
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210302-4c35b4e
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "export TARGET=k8s-1.19-sig-storage && automation/test.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "34Gi"
   - name: pull-kubevirt-e2e-k8s-1.18
     skip_branches:
       - release-\d+\.\d+
