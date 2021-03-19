@@ -2,7 +2,7 @@ postsubmits:
   kubevirt/containerized-data-importer:
   - name: push-release-containerized-data-importer-images
     branches:
-    - v[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+){0,1}
+    - release-v[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+){0,1}
     cluster: ibm-prow-jobs
     always_run: true
     optional: false
@@ -29,6 +29,8 @@ postsubmits:
         - "-c"
         - |
           cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          # Only push images on tags
+          [ -n "$(git tag --points-at HEAD | head -1)" ] &&
           DOCKER_TAG="$(git tag --points-at HEAD | head -1)" make bazel-push-images
         # docker-in-docker needs privileged mode
         securityContext:
@@ -38,7 +40,7 @@ postsubmits:
             memory: "8Gi"
   - name: push-release-containerized-data-importer-tag
     branches:
-    - v[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+){0,1}
+    - release-v[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+){0,1}
     cluster: ibm-prow-jobs
     always_run: true
     optional: false
