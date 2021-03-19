@@ -40,6 +40,35 @@ func (a *Artifact) AppendURL(url string) {
 	a.rule.Attr("urls").(*build.ListExpr).List = append(list, &build.StringExpr{Value: url})
 }
 
+type HTTPClient interface {
+	Head(uri string) (resp *http.Response, err error)
+	Get(uri string)  (resp *http.Response, err error)
+}
+
+var Client HTTPClient
+
+func init() {
+	Client = http.DefaultClient
+}
+
+func (a *Artifact) RemoveURLs(notFoundUrls []string) {
+	var urlsToRemove = map[string]struct{}{}
+	for _, urlToRemove := range notFoundUrls {
+		urlsToRemove[urlToRemove] = struct{}{}
+	}
+
+	var remainingArtifactURLs []build.Expr
+
+	list := a.rule.Attr("urls").(*build.ListExpr).List
+	for _, urlValue := range list {
+		if _, exists := urlsToRemove[urlValue.(*build.StringExpr).Value]; !exists {
+			remainingArtifactURLs = append(remainingArtifactURLs, urlValue)
+		}
+	}
+
+	a.rule.Attr("urls").(*build.ListExpr).List = remainingArtifactURLs
+}
+
 func LoadWorkspace(path string) (*build.File, error) {
 	workspaceData, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -84,6 +113,31 @@ func FilterArtifactsWithoutMirror(artifacts []Artifact, regexp *regexp.Regexp) (
 	return noMirror
 }
 
+func RemoveStaleDownloadURLS(artifacts []Artifact, ignoreURLSMatching *regexp.Regexp) {
+	for _, artifact := range artifacts {
+		var notFoundUrls []string
+
+		for _, notFoundUrl := range artifact.URLs() {
+			if ignoreURLSMatching.MatchString(notFoundUrl) {
+				continue
+			}
+			resp, err := Client.Head(notFoundUrl)
+			if err != nil {
+				log.Printf("Could not connect to source URL: %v", err)
+				continue
+			}
+			defer resp.Body.Close()
+			if resp.StatusCode == http.StatusNotFound {
+				log.Printf("Could not find artifact %s, will remove URL: Status Code: %v", notFoundUrl, resp.StatusCode)
+				notFoundUrls = append(notFoundUrls, notFoundUrl)
+			}
+		}
+
+		artifact.RemoveURLs(notFoundUrls)
+	}
+
+}
+
 func getMirror(artifact Artifact, regexp *regexp.Regexp) string {
 	for _, urlStr := range artifact.URLs() {
 		if regexp.MatchString(urlStr) {
@@ -105,7 +159,7 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 		return nil
 	}
 	for _, uri := range artifact.URLs() {
-		resp, err := http.Get(uri)
+		resp, err := Client.Get(uri)
 		if err != nil {
 			log.Printf("Could not connect to source, continuing with next URL: %v", err)
 			continue
