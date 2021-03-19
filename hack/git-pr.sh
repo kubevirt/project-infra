@@ -22,7 +22,7 @@ set -o errexit
 set -o pipefail
 
 usage() {
-    echo "Usage: $(basename "$0") -c \"<command>\" [-s \"<summary>\"] [-l <github-login>] [-t </path/to/github/token>] [-p </path/to/github/repo>] [-n \"<git-name>\"] [-e <git-email>]  [-b <pr-branch>] [-o <org>] [-r <repo>] [-m </path/where/command/should/be/run>]">&2
+    echo "Usage: $(basename "$0") -c \"<command>\" [-s \"<summary>\"] [-l <github-login>] [-t </path/to/github/token>] [-T <target-branch>] [-p </path/to/github/repo>] [-n \"<git-name>\"] [-e <git-email>]  [-b <pr-branch>] [-o <org>] [-r <repo>] [-m </path/where/command/should/be/run>]">&2
 }
 
 command=
@@ -36,8 +36,9 @@ branch=autoupdate
 org=kubevirt
 repo=kubevirt
 command_path=$(pwd)
+targetbranch=master
 
-while getopts ":c:s:l:t:p:n:e:b:o:r:m" opt; do
+while getopts ":c:s:l:t:T:p:n:e:b:o:r:m" opt; do
     case "${opt}" in
         c )
             command="${OPTARG}"
@@ -62,6 +63,9 @@ while getopts ":c:s:l:t:p:n:e:b:o:r:m" opt; do
             ;;
         b )
             branch="${OPTARG}"
+            ;;
+        T )
+            targetbranch="${OPTARG}"
             ;;
         o )
             org="${OPTARG}"
@@ -113,7 +117,7 @@ git push -f "https://${user}@github.com/${user}/${repo}.git" HEAD:"${branch}"
 echo "Creating PR to merge ${user}:${branch} into master..." >&2
 pr-creator \
     --github-token-path="${token}" \
-    --org="${org}" --repo="${repo}" --branch=master \
+    --org="${org}" --repo="${repo}" --branch="${targetbranch}" \
     --title="${summary}" --match-title="${summary}" \
     --body="Automatic run of \"$command\". Please review" \
     --source="${user}":"${branch}" \
