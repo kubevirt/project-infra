@@ -72,7 +72,9 @@ postsubmits:
           value: kubevirt-bot
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
-        - ./automation/release.sh
+        - |
+          docker login --username "$(<"$QUAY_USER")" --password-stdin=true quay.io <"$QUAY_PASSWORD"
+          ./automation/release.sh
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
