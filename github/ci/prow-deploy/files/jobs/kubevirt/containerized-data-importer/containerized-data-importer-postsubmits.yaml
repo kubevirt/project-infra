@@ -2,7 +2,7 @@ postsubmits:
   kubevirt/containerized-data-importer:
   - name: push-release-containerized-data-importer-images
     branches:
-    - release-v[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+){0,1}
+    - release-v\d+\.\d+
     cluster: ibm-prow-jobs
     always_run: true
     optional: false
@@ -40,7 +40,7 @@ postsubmits:
             memory: "8Gi"
   - name: push-release-containerized-data-importer-tag
     branches:
-    - release-v[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+){0,1}
+    - release-v\d+\.\d+
     cluster: ibm-prow-jobs
     always_run: true
     optional: false
