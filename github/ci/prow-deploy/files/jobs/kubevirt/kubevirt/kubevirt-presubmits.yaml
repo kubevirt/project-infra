@@ -374,7 +374,9 @@ presubmits:
         - "/bin/bash"
         - "-c"
         - >
+            set -e;
             trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM;
+            false;
             automation/test.sh;
         # docker-in-docker needs privileged mode
         securityContext:
