@@ -9,7 +9,6 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-dind-enabled: "true"
-        preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
       spec:
         nodeSelector:
