@@ -150,8 +150,8 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     skip_report: false
     decorate: true
     decoration_config:
