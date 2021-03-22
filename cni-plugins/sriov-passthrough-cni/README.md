@@ -53,11 +53,13 @@ limits:
 
 * In case 2 PFs are required, please do the following changes:
 
-1. Use the following annotation instead those in the previous [1] section.
+1. Use one of the following annotations instead those in the previous [1] section.
 
-    `k8s.v1.cni.cncf.io/networks: '[{"interface":"net1","name":"sriov-passthrough-cni","namespace":"multus-cni-ns"}, {"interface":"net2","name":"sriov-passthrough-cni","namespace":"multus-cni-ns"}]'`
+    [1] `k8s.v1.cni.cncf.io/networks: 'multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni'`
 
-2. Follow [2] of the previous section, but instead of 1 `prow/sriov`, use 2, in order to let k8s know that 2 PFs are
+    [2] `k8s.v1.cni.cncf.io/networks: '[{"interface":"net1","name":"sriov-passthrough-cni","namespace":"multus-cni-ns"}, {"interface":"net2","name":"sriov-passthrough-cni","namespace":"multus-cni-ns"}]'`
+
+2. Follow [4] of the previous section, but instead of 1 `prow/sriov`, use 2, in order to let k8s know that 2 PFs are
 allocated per job, each PF is represented by a `prow/sriov` resource.
 
 ```bash
