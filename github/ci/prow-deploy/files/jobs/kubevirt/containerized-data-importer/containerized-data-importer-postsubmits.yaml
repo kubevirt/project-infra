@@ -15,7 +15,7 @@ postsubmits:
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
+      preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
