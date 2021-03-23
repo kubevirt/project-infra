@@ -20,6 +20,7 @@ periodics:
       - --token=/etc/github/oauth
       - --merged=168h
       - --report_output_child_path=kubevirt/containerized-data-importer
+      - --pr_base_branch=main
       - --repo=containerized-data-importer
       - --skip_results_before_start_of_report=false
       volumeMounts:
@@ -56,6 +57,7 @@ periodics:
       - --token=/etc/github/oauth
       - --merged=24h
       - --report_output_child_path=kubevirt/containerized-data-importer
+      - --pr_base_branch=main
       - --repo=containerized-data-importer
       - --skip_results_before_start_of_report=false
       volumeMounts:
@@ -92,6 +94,7 @@ periodics:
       - --token=/etc/github/oauth
       - --merged=672h
       - --report_output_child_path=kubevirt/containerized-data-importer
+      - --pr_base_branch=main
       - --repo=containerized-data-importer
       - --skip_results_before_start_of_report=false
       volumeMounts:
