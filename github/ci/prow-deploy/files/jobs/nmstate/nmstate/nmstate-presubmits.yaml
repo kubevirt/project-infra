@@ -1,8 +1,6 @@
 presubmits:
   nmstate/nmstate:
     - name: pull-nmstate-integ_tier1-k8s
-      branches:
-        - base
       annotations:
         fork-per-release: "true"
       always_run: true
