@@ -369,15 +369,11 @@ presubmits:
             value: "kind-k8s-sriov-1.17.0"
           - name: "GIMME_GO_VERSION"
             value: "1.13.8"
-          - name: "KUBEVIRT_PROVIDER" # for cluster-down in the command below
-            value: "kind-k8s-sriov-1.17.0"
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
-        - "-c"
+        - "-ce"
         - |
-            set -e
-            trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM
             automation/test.sh
         # docker-in-docker needs privileged mode
         securityContext:
