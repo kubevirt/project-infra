@@ -532,7 +532,7 @@ periodics:
           - name: TARGET
             value: k8s-1.19
           - name: KUBEVIRT_E2E_SKIP
-            value: Multus|SRIOV|GPU|Macvtap|Operator
+            value: "SRIOV|GPU|Operator|\\[sig-network\\]"
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
         command:
