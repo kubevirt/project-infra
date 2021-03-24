@@ -511,6 +511,7 @@ periodics:
   annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
+    k8s.v1.cni.cncf.io/networks: 'multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni'
   cron: "0 22,10 * * *"
   decorate: true
   decoration_config:
