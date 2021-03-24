@@ -161,5 +161,17 @@ var _ = Describe("Events", func() {
 				false),
 		)
 
+		It("Should discover HEAD branch name from remote", func() {
+			headBranchName, err := discoverHeadBranchName("kubevirt", "kubevirt", "")
+			Expect(err).ToNot(HaveOccurred())
+			Expect(headBranchName).To(Equal("master"))
+		})
+
+		It("Should discover HEAD branch name from cloneURI", func() {
+			headBranchName, err := discoverHeadBranchName("foo", "bar", "https://github.com/nmstate/nmstate")
+			Expect(err).ToNot(HaveOccurred())
+			Expect(headBranchName).To(Equal("base"))
+		})
+
 	})
 })

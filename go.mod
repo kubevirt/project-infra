@@ -5,6 +5,7 @@ require (
 	cloud.google.com/go/storage v1.12.0
 	github.com/Masterminds/semver v1.5.0
 	github.com/bazelbuild/buildtools v0.0.0-20190917191645-69366ca98f89
+	github.com/go-git/go-git/v5 v5.3.0
 	github.com/golang/mock v1.5.0
 	github.com/google/go-cmp v0.5.4 // indirect
 	github.com/google/go-github v17.0.0+incompatible
