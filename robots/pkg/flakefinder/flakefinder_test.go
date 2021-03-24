@@ -1,4 +1,4 @@
-package main
+package flakefinder_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -6,36 +6,7 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"time"
 )
-
-var _ = Describe("main.go", func() {
-
-	When("Setting up output path", func() {
-
-		BeforeEach(func() {
-			ReportOutputPath = flakefinder.ReportsPath
-		})
-
-		It("has default path", func() {
-			options := options{}
-			Expect(BuildReportOutputPath(options)).To(BeEquivalentTo("reports/flakefinder"))
-		})
-
-		It("has preview if option enabled", func() {
-			options := options{isPreview: true}
-			Expect(BuildReportOutputPath(options)).To(BeEquivalentTo("reports/flakefinder/preview"))
-		})
-
-		It("has child branch", func() {
-			options := options{reportOutputChildPath: "master"}
-			Expect(BuildReportOutputPath(options)).To(BeEquivalentTo("reports/flakefinder/master"))
-		})
-
-		It("has preview and child branch", func() {
-			options := options{isPreview: true, reportOutputChildPath: "master"}
-			Expect(BuildReportOutputPath(options)).To(BeEquivalentTo("reports/flakefinder/preview/master"))
-		})
-
-	})
+var _ = Describe("flakefinder.go", func() {
 
 	parseAndFailTime := func(timeAsString string) time.Time {
 		time, err := time.Parse(time.RFC3339, timeAsString)
@@ -49,10 +20,11 @@ var _ = Describe("main.go", func() {
 		return duration
 	}
 
-	optionsWithDurationAndToday := func(durationAsString string, today bool) options {
-		return options{
-			merged: parseAndFailDuration(durationAsString),
-			today:  today,
+	reportIntervalOptionsWithDurationTodayAndTill := func(durationAsString string, today bool, timeAsString string) flakefinder.ReportIntervalOptions {
+		return flakefinder.ReportIntervalOptions{
+			Today:  today,
+			Merged: parseAndFailDuration(durationAsString),
+			Till: parseAndFailTime(timeAsString),
 		}
 	}
 
@@ -64,13 +36,13 @@ var _ = Describe("main.go", func() {
 	When("on 24h report GetReportInterval", func() {
 
 		It("has start of previous day as report start time", func() {
-			startOfReport, _ := GetReportInterval(optionsWithDurationAndToday("24h", false), parseAndFailTime(reportExecutionTime))
+			startOfReport, _ := flakefinder.GetReportInterval(reportIntervalOptionsWithDurationTodayAndTill("24h", false,reportExecutionTime))
 
 			Expect(startOfReport).To(BeEquivalentTo(parseAndFailTime(previousDayStartFromExecutionTime)))
 		})
 
 		It("has previous day end as report end time", func() {
-			_, endOfReport := GetReportInterval(optionsWithDurationAndToday("24h", false), parseAndFailTime(reportExecutionTime))
+			_, endOfReport := flakefinder.GetReportInterval(reportIntervalOptionsWithDurationTodayAndTill("24h", false, reportExecutionTime))
 
 			Expect(endOfReport).To(BeEquivalentTo(parseAndFailTime(previousDayEndFromExecutionTime)))
 		})
@@ -82,13 +54,13 @@ var _ = Describe("main.go", func() {
 	When("on 24h report GetReportInterval if today is set", func() {
 
 		It("it has start of current day as report start time", func() {
-			startOfReport, _ := GetReportInterval(optionsWithDurationAndToday("24h", true), parseAndFailTime(reportExecutionTime))
+			startOfReport, _ := flakefinder.GetReportInterval(reportIntervalOptionsWithDurationTodayAndTill("24h", true, reportExecutionTime))
 
 			Expect(startOfReport).To(BeEquivalentTo(parseAndFailTime(currentDayStartFromExecutionTime)))
 		})
 
 		It("has report execution time as report end time", func() {
-			_, endOfReport := GetReportInterval(optionsWithDurationAndToday("24h", true), parseAndFailTime(reportExecutionTime))
+			_, endOfReport := flakefinder.GetReportInterval(reportIntervalOptionsWithDurationTodayAndTill("24h", true, reportExecutionTime))
 
 			Expect(endOfReport).To(BeEquivalentTo(parseAndFailTime(reportExecutionTime)))
 		})
@@ -101,13 +73,13 @@ var _ = Describe("main.go", func() {
 	When("on 1h report GetReportInterval", func() {
 
 		It("has previous hour as report time start", func() {
-			startOfReport, _ := GetReportInterval(optionsWithDurationAndToday("1h", false), parseAndFailTime(reportExecutionTime))
+			startOfReport, _ := flakefinder.GetReportInterval(reportIntervalOptionsWithDurationTodayAndTill("1h", false, reportExecutionTime))
 
 			Expect(startOfReport).To(BeEquivalentTo(parseAndFailTime(previousHourStartFromExecutionTime)))
 		})
 
 		It("has current hour as report time end", func() {
-			_, endOfReport := GetReportInterval(optionsWithDurationAndToday("1h", false), parseAndFailTime(reportExecutionTime))
+			_, endOfReport := flakefinder.GetReportInterval(reportIntervalOptionsWithDurationTodayAndTill("1h", false, reportExecutionTime))
 
 			Expect(endOfReport).To(BeEquivalentTo(parseAndFailTime(previousHourEndFromExecutionTime)))
 		})

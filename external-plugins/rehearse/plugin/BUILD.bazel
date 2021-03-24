@@ -39,7 +39,7 @@ container_push(
     image = ":app",
     registry = "quay.io",
     repository = "kubevirtci/rehearse",
-    tag ="{DOCKER_TAG}"
+    tag = "{DOCKER_TAG}",
 )
 
 go_binary(

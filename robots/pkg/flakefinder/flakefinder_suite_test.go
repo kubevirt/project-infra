@@ -1,4 +1,4 @@
-package main_test
+package flakefinder_test
 
 import (
 	"flag"
@@ -23,5 +23,5 @@ func TestMain(m *testing.M) {
 
 func TestFlakefinder(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Flakefinder Suite")
+	RunSpecs(t, "Flakefinder Pkg Suite")
 }

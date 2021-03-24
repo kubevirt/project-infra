@@ -9,12 +9,12 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: quay.io/kubevirtci/flakefinder@sha256:c1a136c77b6dfdaafa8df1faac7b3e2673dcde2e8dec7bdc449abf24b1b71403
+    - image: quay.io/kubevirtci/flakefinder@sha256:9d42d74ead8740aa35d583de280555b80b49b55cbab8d7cc77bb780da138b794
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       command:
-      - "/app/robots/flakefinder/app.binary"
+      - "/app/robots/cmd/flakefinder/app.binary"
       args:
       - --dry-run=false
       - --token=/etc/github/oauth
@@ -46,12 +46,12 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: quay.io/kubevirtci/flakefinder@sha256:c1a136c77b6dfdaafa8df1faac7b3e2673dcde2e8dec7bdc449abf24b1b71403
+    - image: quay.io/kubevirtci/flakefinder@sha256:9d42d74ead8740aa35d583de280555b80b49b55cbab8d7cc77bb780da138b794
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       command:
-      - "/app/robots/flakefinder/app.binary"
+      - "/app/robots/cmd/flakefinder/app.binary"
       args:
       - --dry-run=false
       - --token=/etc/github/oauth
@@ -83,12 +83,12 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: quay.io/kubevirtci/flakefinder@sha256:c1a136c77b6dfdaafa8df1faac7b3e2673dcde2e8dec7bdc449abf24b1b71403
+    - image: quay.io/kubevirtci/flakefinder@sha256:9d42d74ead8740aa35d583de280555b80b49b55cbab8d7cc77bb780da138b794
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       command:
-      - "/app/robots/flakefinder/app.binary"
+      - "/app/robots/cmd/flakefinder/app.binary"
       args:
       - --dry-run=false
       - --token=/etc/github/oauth

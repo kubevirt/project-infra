@@ -3,10 +3,14 @@ package flakefinder
 import (
 	"context"
 	"fmt"
+	"github.com/google/go-github/v28/github"
+	"github.com/joshdk/go-junit"
 	"html/template"
 	"io"
 	"log"
 	"path"
+	"strings"
+	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/sirupsen/logrus"
@@ -20,7 +24,7 @@ const (
 	PreviewPath      = "preview"
 )
 
-//listGcsObjects get the slice of gcs objects under a given path
+//ListGcsObjects get the slice of gcs objects under a given path
 func ListGcsObjects(ctx context.Context, client *storage.Client, bucketName, prefix, delim string) (
 	[]string, error) {
 
@@ -74,5 +78,145 @@ func CreateOutputWriter(client *storage.Client, ctx context.Context, outputPath 
 	log.Printf("Report index page will be written to gs://%s/%s", BucketName, reportIndexObject.ObjectName())
 	reportIndexObjectWriter := reportIndexObject.NewWriter(ctx)
 	return reportIndexObjectWriter
+}
+
+type ReportIntervalOptions struct {
+	Today  bool
+	Merged time.Duration
+	Till   time.Time
+}
+
+func GetReportInterval(r ReportIntervalOptions) (startOfReport, endOfReport time.Time) {
+	if r.Today {
+		startOfReportToday := r.Till.Format("2006-01-02") + "T00:00:00Z"
+		startOfReport, err := time.Parse(time.RFC3339, startOfReportToday)
+		if err != nil {
+			log.Fatalf("Failed to parse time %+v: %+v", startOfReportToday, err)
+		}
+		return startOfReport, r.Till
+	} else {
+		startOfReport = r.Till.Add(-r.Merged)
+	}
+
+	// we normalize the start of the report against start of day vs. start of the hour to avoid working against a
+	// moving target.
+	// In general a user would expect to find all pull requests of the previous day in a 24h report, regardless of
+	// when the report has been run at the current day, which, depending on time of day when the report had been run,
+	// would not always be the case.
+	// Consider i.e. if the report is run late in the afternoon the user might wonder why the PR Merged in the morning
+	// the day before was not included.
+
+	var startOfDayOrHour, endOfDayOrHour string
+
+	// in case of reports for at least a day we are fetching reports from start of previous day Till end of that day
+	if r.Merged.Hours() < 24 {
+		// in case of less than a day we are fetching reports from start of the hour
+		startOfDayOrHour = startOfReport.Format("2006-01-02T15:00:00Z07:00")
+		endOfDayOrHour = r.Till.Format("2006-01-02T15:00:00Z07:00")
+	} else {
+		startOfDayOrHour = startOfReport.Format("2006-01-02") + "T00:00:00Z"
+		endOfDayOrHour = r.Till.Format("2006-01-02") + "T00:00:00Z"
+	}
+	startOfReport, err := time.Parse(time.RFC3339, startOfDayOrHour)
+	if err != nil {
+		log.Fatalf("Failed to parse time %+v: %+v", startOfDayOrHour, err)
+	}
+	endOfReport, err = time.Parse(time.RFC3339, endOfDayOrHour)
+	if err != nil {
+		log.Fatalf("Failed to parse time %+v: %+v", endOfDayOrHour, err)
+	}
+	millisecond, err := time.ParseDuration("1ms")
+	if err != nil {
+		log.Fatalf("Failed to parse duration 1ms: %+v", err)
+	}
+	endOfReport = endOfReport.Add(-millisecond)
+	return startOfReport, endOfReport
+}
+
+type JobResult struct {
+	Job         string
+	JUnit       []junit.Suite
+	BuildNumber int
+	PR          int
+}
+
+type ReportBaseDataOptions struct {
+	prBaseBranch			string
+	today                   bool
+	merged                  time.Duration
+	org                     string
+	repo                    string
+	skipBeforeStartOfReport bool
+}
+
+func NewReportBaseDataOptions(
+	prBaseBranch			string,
+today                   bool,
+merged                  time.Duration,
+org                     string,
+repo                    string,
+skipBeforeStartOfReport bool,
+) ReportBaseDataOptions {
+	return ReportBaseDataOptions{prBaseBranch, today, merged, org, repo, skipBeforeStartOfReport}
+}
+
+type ReportBaseData struct {
+	StartOfReport time.Time
+	EndOfReport   time.Time
+	PRNumbers     []int
+	JobResults    []*JobResult
+}
+
+func GetReportBaseData(ctx context.Context, c *github.Client, client *storage.Client, o ReportBaseDataOptions) ReportBaseData {
+
+	startOfReport, endOfReport := GetReportInterval(ReportIntervalOptions{o.today, o.merged, time.Now()})
+	logrus.Infof("Fetching Prs from %v till %v", startOfReport, endOfReport)
+
+	logrus.Infof("Filtering PRs for base branch %s", o.prBaseBranch)
+	var prs []*github.PullRequest
+	var prNumbers []int
+	for nextPage := 1; nextPage > 0; {
+		pullRequests, response, err := c.PullRequests.List(ctx, o.org, o.repo, &github.PullRequestListOptions{
+			Base:        o.prBaseBranch,
+			State:       "closed",
+			Sort:        "updated",
+			Direction:   "desc",
+			ListOptions: github.ListOptions{Page: nextPage},
+		})
+		if err != nil {
+			log.Fatalf("Failed to fetch PRs for page %d: %v.", nextPage, err)
+		}
+		nextPage = response.NextPage
+		for _, pr := range pullRequests {
+			if startOfReport.After(*pr.UpdatedAt) {
+				nextPage = 0
+				break
+			}
+			if pr.MergedAt == nil {
+				continue
+			}
+			if startOfReport.After(*pr.MergedAt) {
+				continue
+			}
+			if endOfReport.Before(*pr.MergedAt) {
+				continue
+			}
+			logrus.Infof("Adding PR %v '%v' (updated at %s)", *pr.Number, *pr.Title, pr.UpdatedAt.Format(time.RFC3339))
+			prs = append(prs, pr)
+			prNumbers = append(prNumbers, *pr.Number)
+		}
+	}
+	logrus.Infof("%d pull requests found.", len(prs))
+
+	var reports []*JobResult
+	for _, pr := range prs {
+		r, err := FindUnitTestFiles(ctx, client, BucketName, strings.Join([]string{o.org, o.repo}, "/"), pr, startOfReport, o.skipBeforeStartOfReport)
+		if err != nil {
+			log.Printf("failed to load JUnit file for %v: %v", pr.Number, err)
+		}
+		reports = append(reports, r...)
+	}
+
+	return ReportBaseData{startOfReport, endOfReport, prNumbers, reports}
 }
 
