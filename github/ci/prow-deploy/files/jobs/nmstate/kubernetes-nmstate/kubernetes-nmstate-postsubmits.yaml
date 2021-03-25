@@ -28,7 +28,7 @@ postsubmits:
             - name: GITHUB_USER
               value: kubevirt-bot
             - name: GITHUB_EMAIL
-              value: rmohr+kubebot@redhat.com
+              value: kubevirtbot@redhat.com
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
