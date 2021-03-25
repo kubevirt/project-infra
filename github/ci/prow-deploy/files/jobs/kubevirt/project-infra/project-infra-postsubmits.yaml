@@ -40,17 +40,20 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
-        preset-project-infra-kubevirtci-docker-credential: "true"
+        preset-kubevirtci-quay-credential: "true"
       spec:
         nodeSelector:
           type: vm
         containers:
-          - image: kubevirtci/bootstrap:v20201119-a5880e0
+          - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
-              - "-c"
-              - "cat $DOCKER_PASSWORD | docker login --username $(<$DOCKER_USER) --password-stdin && cd images && ./publish_image.sh kubevirt-infra-bootstrap docker.io kubevirtci"
+              - "-ce"
+              - |
+                  cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io
+                  cd images
+                  ./publish_image.sh kubevirt-infra-bootstrap quay.io kubevirtci
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
