@@ -12,7 +12,7 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-    preset-kubevirtci-docker-credential: "true"
+    preset-kubevirtci-quay-credential: "true"
     rehearsal.allowed: "true"
   extra_refs:
     - org: kubevirt
