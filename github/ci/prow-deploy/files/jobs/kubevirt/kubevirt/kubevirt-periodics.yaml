@@ -190,7 +190,7 @@ periodics:
   annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "0 */8 * * *"
+  cron: "0 1,9,17 * * *"
   decorate: true
   decoration_config:
     timeout: 4h
@@ -227,7 +227,7 @@ periodics:
   annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "0 */8 * * *"
+  cron: "20 2,10,18 * * *"
   decorate: true
   decoration_config:
     timeout: 4h
@@ -249,6 +249,45 @@ periodics:
         env:
           - name: TARGET
             value: "k8s-1.19-sig-storage"
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - "automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "34Gi"
+- name: periodic-kubevirt-e2e-k8s-1.19-sig-compute
+  annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cron: "40 3,11,19 * * *"
+  decorate: true
+  decoration_config:
+    timeout: 4h
+    grace_period: 5m
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: kubevirt
+      base_ref: master
+      work_dir: true
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        env:
+          - name: TARGET
+            value: "k8s-1.19"
+          - name: KUBEVIRT_E2E_FOCUS
+            value: "owner:@sig-compute"
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
