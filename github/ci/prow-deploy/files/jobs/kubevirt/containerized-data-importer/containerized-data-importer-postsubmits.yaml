@@ -30,7 +30,7 @@ postsubmits:
         - |
           cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
           # Only push images on tags
-          [ -n "$(git tag --points-at HEAD | head -1)" ] &&
+          [ -z "$(git tag --points-at HEAD | head -1)" ] ||
           DOCKER_TAG="$(git tag --points-at HEAD | head -1)" make bazel-push-images
         # docker-in-docker needs privileged mode
         securityContext:
