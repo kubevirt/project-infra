@@ -30,6 +30,6 @@ container_push(
     name = "push",
     format = "Docker",
     image = ":app",
-    registry = "index.docker.io",
+    registry = "quay.io",
     repository = "kubevirtci/release-querier",
 )

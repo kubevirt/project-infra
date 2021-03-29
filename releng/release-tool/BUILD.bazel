@@ -40,7 +40,7 @@ container_push(
     name = "release-tool-push",
     format = "Docker",
     image = ":release-tool-image",
-    registry = "index.docker.io",
+    registry = "quay.io",
     repository = "kubevirtci/release-tool",
     tag = "latest",
 )
