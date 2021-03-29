@@ -282,7 +282,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: "kubevirt/builder@sha256:e6a76ec71f2de87c3bc648bae87ab43a113540bf57da69f07f76bd0edfd500ab"
+      - image: quay.io/kubevirt/builder@sha256:0e2dde4051711e243dbb7be57a7c10f67a3b33bc764304e14297e324deaddee0
         env:
         - name: GIT_ASKPASS
           value: ../project-infra/hack/git-askpass.sh
@@ -334,7 +334,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: "kubevirt/builder@sha256:e6a76ec71f2de87c3bc648bae87ab43a113540bf57da69f07f76bd0edfd500ab"
+      - image: quay.io/kubevirt/builder@sha256:0e2dde4051711e243dbb7be57a7c10f67a3b33bc764304e14297e324deaddee0
         env:
         - name: GIT_ASKPASS
           value: ../project-infra/hack/git-askpass.sh
@@ -377,7 +377,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: "kubevirt/builder@sha256:e6a76ec71f2de87c3bc648bae87ab43a113540bf57da69f07f76bd0edfd500ab"
+      - image: quay.io/kubevirt/builder@sha256:0e2dde4051711e243dbb7be57a7c10f67a3b33bc764304e14297e324deaddee0
         env:
         - name: GIT_ASKPASS
           value: ../project-infra/hack/git-askpass.sh
