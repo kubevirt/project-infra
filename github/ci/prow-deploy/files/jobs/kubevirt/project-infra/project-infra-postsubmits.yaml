@@ -14,7 +14,7 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       spec:
         containers:
-          - image: kubevirtci/bootstrap:v20210126-a12b6c0
+          - image: quay.io/kubevirtci/bootstrap:v20210126-a12b6c0
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"

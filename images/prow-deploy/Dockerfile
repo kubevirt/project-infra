@@ -1,4 +1,4 @@
-FROM kubevirtci/bootstrap:v20210126-a12b6c0
+FROM quay.io/kubevirtci/bootstrap:v20210126-a12b6c0
 
 RUN git clone https://github.com/kubernetes/test-infra.git && \
   cd test-infra && \
