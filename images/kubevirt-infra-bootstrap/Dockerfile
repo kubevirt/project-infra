@@ -1,4 +1,4 @@
-FROM kubevirtci/bootstrap:v20201119-a5880e0
+FROM quay.io/kubevirtci/bootstrap:v20201119-a5880e0
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-upgrade \

@@ -19,7 +19,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: kubevirtci/bootstrap:v20201119-a5880e0
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
@@ -48,7 +48,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: kubevirtci/bootstrap:v20201119-a5880e0
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
@@ -76,7 +76,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: kubevirtci/bootstrap:v20201119-a5880e0
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
@@ -106,7 +106,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: kubevirtci/bootstrap:v20201119-a5880e0
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
@@ -138,7 +138,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: kubevirtci/bootstrap:v20201119-a5880e0
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
@@ -170,7 +170,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: kubevirtci/bootstrap:v20201119-a5880e0
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
@@ -234,7 +234,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: kubevirtci/bootstrap:v20201119-a5880e0
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
@@ -266,7 +266,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: kubevirtci/bootstrap:v20201119-a5880e0
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
             securityContext:
               privileged: true
             resources:
