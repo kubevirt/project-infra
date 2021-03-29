@@ -22,7 +22,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=k8s-1.17 && automation/test.sh
-        image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
+        image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
         name: ""
         resources:
           requests:
