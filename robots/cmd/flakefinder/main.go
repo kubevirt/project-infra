@@ -77,7 +77,6 @@ const Org = "kubevirt"
 const Repo = "kubevirt"
 
 var ReportOutputPath = flakefinder.ReportsPath
-var PRBaseBranch string
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
@@ -88,7 +87,6 @@ func main() {
 	}
 
 	ReportOutputPath = BuildReportOutputPath(o)
-	PRBaseBranch = o.prBaseBranch
 
 	secretAgent := &secret.Agent{}
 	if err := secretAgent.Start([]string{o.token}); err != nil {
@@ -116,7 +114,7 @@ func main() {
 		log.Fatalf("Failed to create new storage client: %v.\n", err)
 	}
 
-	reportBaseData := flakefinder.GetReportBaseData(ctx, ghClient, storageClient, flakefinder.NewReportBaseDataOptions(PRBaseBranch, o.today, o.merged, o.org, o.repo, o.skipBeforeStartOfReport))
+	reportBaseData := flakefinder.GetReportBaseData(ctx, ghClient, storageClient, flakefinder.NewReportBaseDataOptions(o.prBaseBranch, o.today, o.merged, o.org, o.repo, o.skipBeforeStartOfReport))
 
 	err = WriteReportToBucket(ctx, storageClient, o.merged, o.org, o.repo, o.isDryRun, reportBaseData)
 	if err != nil {
