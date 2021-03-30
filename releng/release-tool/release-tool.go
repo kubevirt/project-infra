@@ -656,6 +656,9 @@ func (r *releaseData) getBlockers(branch string) (*blockerListCacheEntry, error)
 	}
 
 	issueListOptions := &github.IssueListByRepoOptions{
+		// filtering by labels here gives inconsistent results
+		// with the github api, so we double check that the blocker
+		// label exists as well.
 		Labels: []string{blockerLabel},
 		ListOptions: github.ListOptions{
 			PerPage: 10000,
@@ -685,6 +688,7 @@ func (r *releaseData) getBlockers(branch string) (*blockerListCacheEntry, error)
 	prs, _, err := r.githubClient.PullRequests.List(context.Background(), r.org, r.repo, prListOptions)
 
 	filteredPRs := []*github.PullRequest{}
+	filteredIssues := []*github.Issue{}
 
 	for _, pr := range prs {
 		if pr.Labels == nil {
@@ -698,8 +702,20 @@ func (r *releaseData) getBlockers(branch string) (*blockerListCacheEntry, error)
 		}
 	}
 
+	for _, issue := range issues {
+		if issue.Labels == nil {
+			continue
+		}
+		for _, label := range issue.Labels {
+			if label.Name != nil && *label.Name == blockerLabel {
+				filteredIssues = append(filteredIssues, issue)
+				break
+			}
+		}
+	}
+
 	r.blockerListCache[blockerLabel] = &blockerListCacheEntry{
-		allBlockerIssues: issues,
+		allBlockerIssues: filteredIssues,
 		allBlockerPRs:    filteredPRs,
 	}
 
