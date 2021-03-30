@@ -386,11 +386,12 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "29Gi"
-            cpu: "2"
-            prow/sriov: "1"
+            #memory: "29Gi"
+            memory: "34Gi"
+            #cpu: "2"
+            prow/sriov: "2"
           limits:
-            prow/sriov: "1"
+            prow/sriov: "2"
         volumeMounts:
           #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
           - name: modules
