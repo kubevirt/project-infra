@@ -23,7 +23,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=k8s-1.19 && automation/test.sh
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -53,7 +53,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=k8s-1.18 && automation/test.sh
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -83,7 +83,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=k8s-1.17 && automation/test.sh
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -113,7 +113,7 @@ presubmits:
         - /bin/sh
         - -c
         - TARGET=k8s-1.19-cnao automation/test.sh
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -143,7 +143,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=windows2016 && automation/test.sh
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -197,7 +197,7 @@ presubmits:
         - -c
         - |
           apt update && apt install gettext-base -y && wget https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz -nv -S && tar -xzf go1.13.8.linux-amd64.tar.gz -C /usr/local/ && export PATH=/usr/local/go/bin:$PATH && export KUBEVIRT_PROVIDER=kind-k8s-sriov-1.17.0 && export TARGET=kind-k8s-sriov-1.17.0; trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM; automation/test.sh;
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -249,7 +249,7 @@ presubmits:
         - /bin/sh
         - -c
         - TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -279,7 +279,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=rook-ceph && automation/test.sh
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -309,7 +309,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -341,7 +341,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make gosec
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -369,7 +369,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -397,7 +397,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make test
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -431,7 +431,7 @@ presubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -467,7 +467,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -495,7 +495,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -524,7 +524,7 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX="docker.io/kubevirt"
           && make olm-verify
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:
@@ -552,7 +552,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make prom-rules-verify
-        image: kubevirtci/bootstrap:v20201119-a5880e0
+        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
           requests:

@@ -22,7 +22,7 @@ presubmits:
         - /bin/sh
         - -c
         - export TARGET=k8s-1.17 && automation/test.sh
-        image: docker.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
+        image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
         name: ""
         resources:
           requests:
@@ -53,7 +53,7 @@ presubmits:
 #        - -c
 #        - cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true
 #          quay.io && export TARGET=ocp-4.4 && automation/test.sh
-#        image: kubevirtci/bootstrap:v20201119-a5880e0
+#        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
 #        name: ""
 #        resources:
 #          requests:

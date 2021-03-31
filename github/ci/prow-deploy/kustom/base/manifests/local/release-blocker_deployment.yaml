@@ -20,7 +20,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
       - name: release-blocker
-        image: index.docker.io/kubevirtci/release-blocker@sha256:aa89a48eca962ba63f089e7f923d56540c85fbbe34ccc324c3c733137195f0e4
+        image: quay.io/kubevirtci/release-blocker@sha256:503b3a00a7e4fe344601710ef58470ddb1e05c9a3d3fdcd16ba6a93921c17542
         imagePullPolicy: Always
         args:
         - --dry-run=false

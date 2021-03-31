@@ -10,4 +10,4 @@ build:
 
 push:
 	$(bazelbin) run //robots/cmd/indexpagecreator:push
-	bash -x ../../../hack/update-jobs-with-latest-image.sh kubevirtci/indexpagecreator
+	bash -x ../../../hack/update-jobs-with-latest-image.sh quay.io/kubevirtci/indexpagecreator
