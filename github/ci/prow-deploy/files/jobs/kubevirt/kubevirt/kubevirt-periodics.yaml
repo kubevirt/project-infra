@@ -630,46 +630,6 @@ periodics:
         resources:
           requests:
             memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-latest-cnao
-  annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cron: "0 22,10 * * *"
-  decorate: true
-  decoration_config:
-    timeout: 7h
-    grace_period: 5m
-  labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-  extra_refs:
-  - org: kubevirt
-    repo: kubevirt
-    base_ref: master
-    work_dir: true
-  skip_report: true
-  spec:
-    nodeSelector:
-      type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: TARGET
-            value: k8s-1.19-cnao
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-prev-prev-sriov
   annotations:
     testgrid-dashboards: kubevirt-periodics
