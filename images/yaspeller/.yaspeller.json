@@ -300,7 +300,7 @@
     "kubevirtci",
     "(LUN|lun)",
     "(L|l)ib(V|v)irt(d)?(s|’s|'s)?",
-    "LiveMigrat(able|ion)",
+    "LiveMigrat(able|e|ion)",
     "lab(1|2|3)?",
     "labeller",
     "libosinfo",
