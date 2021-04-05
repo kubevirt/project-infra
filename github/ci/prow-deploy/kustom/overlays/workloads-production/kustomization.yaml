@@ -11,19 +11,19 @@ patches:
       kind: Secret
       namespace: ""
       name: .*
-    path: patches/JsonRFC6902/prow-namespace.yaml
+    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
   - target:
       version: v1
       kind: ConfigMap
       namespace: ""
       name: .*
-    path: patches/JsonRFC6902/prow-namespace.yaml
+    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-  - name: mirror-config
+  - name: docker-daemon-mirror-config
     files:
       - config.yaml=configs/mirror/mirror.yaml
   - name: mirror-proxy-config
