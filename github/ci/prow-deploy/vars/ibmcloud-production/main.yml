@@ -1,7 +1,7 @@
 testinfra_dir: /tmp/test-infra
 kubectl_exec: /usr/local/bin/kubectl
 bootstrap_full_config: true
-project_infra_root: /home/prow/go/src/github.com/fgimenez/project-infra
+project_infra_root: /home/prow/go/src/github.com/kubevirt/project-infra
 secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/ibmcloud-production/secrets/'
 kubeconfig_path: '{{ secrets_dir }}/kubeconfig'
 
@@ -9,3 +9,4 @@ shell_environment:
   KUBECONFIG: "{{ kubeconfig_path }}"
 
 SRIOVNodes: []
+remote_cluster_prow_jobs_context: ibm-prow-jobs

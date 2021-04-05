@@ -78,11 +78,11 @@
   include_tasks: resources.yml
 
 - name: set kubectl context if needed
-  when: remoteClusterProwJobsContext is defined
+  when: remote_cluster_prow_jobs_context is defined
   block:
     - name: switch context
       shell: |
-        {{ kubectl_exec }} config use-context {{ remoteClusterProwJobsContext }}
+        {{ kubectl_exec }} config use-context {{ remote_cluster_prow_jobs_context }}
         {{ kubectl_exec }} config current-context
 
       environment:
