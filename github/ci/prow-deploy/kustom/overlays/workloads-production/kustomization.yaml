@@ -5,6 +5,20 @@ kind: Kustomization
 resources:
   - resources/bootstrap.yaml
 
+patches:
+  - target:
+      version: v1
+      kind: Secret
+      namespace: ""
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      version: v1
+      kind: ConfigMap
+      namespace: ""
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+
 generatorOptions:
   disableNameSuffixHash: true
 
