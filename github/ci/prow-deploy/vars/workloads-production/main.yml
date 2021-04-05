@@ -1,6 +1,6 @@
 testinfra_dir: /tmp/test-infra
 kubectl_exec: /usr/local/bin/kubectl
-bootstrap_full_config: true
+bootstrap_full_config: false
 project_infra_root: /home/prow/go/src/github.com/fgimenez/project-infra
 secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/workloads-production/secrets/'
 kubeconfig_path: '{{ secrets_dir }}/kubeconfig'
