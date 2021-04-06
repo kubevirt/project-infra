@@ -247,14 +247,13 @@ presubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-          - name: GITHUB_TOKEN
-            value: /etc/github/oauth
+          - name: GIT_ASKPASS
+            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
-            - "-c"
+            - "-ce"
             - |
-              set -e
               cd github/ci/prow-deploy/
               molecule test
               tmp=$(mktemp -d)

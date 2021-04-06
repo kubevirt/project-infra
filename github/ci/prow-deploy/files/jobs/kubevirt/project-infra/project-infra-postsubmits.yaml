@@ -209,29 +209,14 @@ postsubmits:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
           - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
+            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           - name: DEPLOY_ENVIRONMENT
             value: ibmcloud-production
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
-            - |
-              base_dir=github/ci/prow-deploy
-
-              source ./hack/manage-secrets.sh
-              decrypt_secrets
-
-              mkdir -p ${base_dir}/vars/${DEPLOY_ENVIRONMENT}
-              mv main.yml ${base_dir}/vars/${DEPLOY_ENVIRONMENT}/secrets.yml
-
-              # run playbook
-              cd ${base_dir}
-              cat << EOF > inventory
-              [local]
-              localhost ansible_connection=local
-              EOF
-              ANSIBLE_ROLES_PATH=$(pwd)/.. ansible-playbook -i inventory prow-deploy.yaml
+            - "./github/ci/prow-deploy/hack/deploy.sh"
           resources:
             requests:
               memory: "8Gi"
@@ -276,29 +261,14 @@ postsubmits:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
           - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
+            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           - name: DEPLOY_ENVIRONMENT
             value: workloads-production
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
-            - |
-              base_dir=github/ci/prow-deploy
-
-              source ./hack/manage-secrets.sh
-              decrypt_secrets
-
-              mkdir -p ${base_dir}/vars/${DEPLOY_ENVIRONMENT}
-              mv main.yml ${base_dir}/vars/${DEPLOY_ENVIRONMENT}/secrets.yml
-
-              # run playbook
-              cd ${base_dir}
-              cat << EOF > inventory
-              [local]
-              localhost ansible_connection=local
-              EOF
-              ANSIBLE_ROLES_PATH=$(pwd)/.. ansible-playbook -i inventory prow-deploy.yaml
+            - "github/ci/prow-deploy/hack/deploy.sh"
           resources:
             requests:
               memory: "8Gi"
