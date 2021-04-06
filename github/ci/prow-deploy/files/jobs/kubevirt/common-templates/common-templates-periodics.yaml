@@ -19,7 +19,7 @@ periodics:
       work_dir: true
     - org: kubevirt
       repo: common-templates
-      base_ref: containerdisk-automation
+      base_ref: master
   spec:
     nodeSelector:
       type: bare-metal-external
