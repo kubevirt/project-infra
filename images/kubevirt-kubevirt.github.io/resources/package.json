@@ -1,0 +1,32 @@
+{
+  "name": "kubevirt.io",
+  "version": "2.0.0",
+  "description": "Virtual Machine Management on Kubernetes",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "publish-travis": "master _site",
+    "test": "yaspeller-ci --only-errors --find-repeat-words --ignore-digits --ignore-urls ./**/*.md"
+  },
+  "pre-commit": [
+    "test"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kubevirt/kubevirt.github.io.git"
+  },
+  "author": "KubeVirt",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kubevirt/kubevirt.github.io/issues"
+  },
+  "devDependencies": {
+    "pre-commit": "^1.2.2",
+    "yaspeller-ci": "^1.0.2"
+  },
+  "dependencies": {
+    "yaspeller": "^7.0.0"
+  }
+}

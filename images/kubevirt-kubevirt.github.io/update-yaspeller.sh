@@ -5,7 +5,7 @@ GREEN=`tput setaf 2`
 RESET=`tput sgr0`
 
 YASPELLER_URL="https://raw.githubusercontent.com/kubevirt/project-infra/master/images/yaspeller/.yaspeller.json"
-YASPELLER_PATH="/tmp/yaspeller.json"
+YASPELLER_PATH=".yaspeller.json"
 
 if [ -f "${YASPELLER_PATH}" ];
 then
