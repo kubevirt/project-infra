@@ -157,6 +157,7 @@ presubmits:
       testgrid-dashboards: kubevirt-presubmits
     always_run: false
     optional: true
+    cluster: prow-workloads
     skip_report: false
     decorate: true
     decoration_config:
@@ -165,10 +166,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
+      preset-docker-mirror-proxy: "false"
       preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
+      preset-bazel-cache: "false"
+      preset-bazel-unnested: "false"
     spec:
       nodeSelector:
         type: bare-metal-external
