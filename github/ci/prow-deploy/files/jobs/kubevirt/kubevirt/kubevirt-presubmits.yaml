@@ -126,6 +126,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "false"
+      preset-docker-mirror: "true"
       preset-shared-images: "true"
       preset-bazel-cache: "false"
       preset-bazel-unnested: "false"
