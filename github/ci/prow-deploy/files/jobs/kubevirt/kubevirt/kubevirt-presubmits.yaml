@@ -114,20 +114,21 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
+    cluster: prow-workloads
     skip_report: false
     decorate: true
     decoration_config:
-      timeout: 7h
+      timeout: 4h
       grace_period: 5m
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
+      preset-docker-mirror-proxy: "false"
       preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
+      preset-bazel-cache: "false"
+      preset-bazel-unnested: "false"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -137,7 +138,9 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.19-sig-network && automation/test.sh"
+            - |
+                curl -L https://github.com/kubevirt/kubevirt/pull/5409.diff | git apply
+                export TARGET=k8s-1.19-sig-network && automation/test.sh
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
