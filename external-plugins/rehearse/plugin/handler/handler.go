@@ -12,6 +12,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-git/go-git/v5"
+	gitconfig "github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/sirupsen/logrus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
@@ -328,8 +332,13 @@ func (h *GitHubEventsHandler) generatePresubmits(
 				presubmitKey, headPresubmit.Name)
 		}
 
+		headBranchName, err := discoverHeadBranchName(org, repo, headPresubmit.CloneURI)
+		if err != nil {
+			headBranchName = pr.Base.Ref
+		}
+
 		if repoOrg != pr.Base.Repo.FullName {
-			job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, pr.Base.Ref))
+			job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, headBranchName))
 		}
 		jobs = append(jobs, job)
 	}
@@ -472,4 +481,35 @@ func workdirAlreadyDefined(refs []prowapi.Refs) bool {
 		exists = exists || ref.WorkDir
 	}
 	return exists
+}
+
+func discoverHeadBranchName(org, repo, cloneURI string) (string, error) {
+	sourceURL := fmt.Sprintf("https://github.com/%s/%s.git", org, repo)
+	if cloneURI != "" {
+		sourceURL = cloneURI
+	}
+
+	// Create the remote with repository URL
+	rem := git.NewRemote(memory.NewStorage(), &gitconfig.RemoteConfig{
+		Name: "origin",
+		URLs: []string{sourceURL},
+	})
+
+	// We can then use every Remote functions to retrieve wanted information
+	refs, err := rem.List(&git.ListOptions{})
+	if err != nil {
+		return "", err
+	}
+
+	var headBranch string
+	for _, ref := range refs {
+		if ref.Type() == plumbing.SymbolicReference && ref.Name().String() == "HEAD" {
+			headBranch = strings.Split(ref.Target().String(), "/")[2]
+			break
+		}
+	}
+	if headBranch == "" {
+		headBranch = "master"
+	}
+	return headBranch, nil
 }

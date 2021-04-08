@@ -4,14 +4,14 @@ all: format test push
 bazelbin := bazelisk
 
 build:
-	$(bazelbin) build //external-plugins/release/plugin
+	$(bazelbin) build //external-plugins/rehearse/plugin
 
 format:
 	gofmt -w .
 
 test:
-	$(bazelbin) test //external-plugins/release/plugin:*
+	$(bazelbin) test //external-plugins/rehearse/plugin:*
 
 push:
-	$(bazelbin) run //external-plugins/release/plugin:push
-	bash -x ../../hack/update-jobs-with-latest-image.sh kubevirtci/release
+	$(bazelbin) run //external-plugins/rehearse/plugin:push
+	bash -x ../../hack/update-jobs-with-latest-image.sh kubevirtci/rehearse
