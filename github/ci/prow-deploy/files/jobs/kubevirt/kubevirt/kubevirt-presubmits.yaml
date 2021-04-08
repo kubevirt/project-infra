@@ -101,7 +101,7 @@ presubmits:
             - name: TARGET
               value: k8s-1.19
             - name: KUBEVIRT_E2E_SKIP
-              value: "SRIOV|GPU|Operator|\\[sig-network\\]"
+              value: "SRIOV|GPU|Operator|\\[sig-network\\]|\\[sig-storage\\]"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
