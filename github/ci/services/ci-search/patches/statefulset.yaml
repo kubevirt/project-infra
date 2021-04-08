@@ -10,7 +10,7 @@ spec:
       tolerations: null
       containers:
       - name: web
-        image: registry.svc.ci.openshift.org/ci/ci-search:latest
+        image: registry.ci.openshift.org/ci/ci-search:latest
         resources:
           requests:
             cpu: 100m
