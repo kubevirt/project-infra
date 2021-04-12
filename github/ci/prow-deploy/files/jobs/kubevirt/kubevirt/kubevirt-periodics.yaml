@@ -303,14 +303,15 @@ periodics:
   annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "0 1,9,17 * * *"
+  cron: "10 4,12,20 * * *"
   decorate: true
+  cluster: prow-workloads
   decoration_config:
     timeout: 4h
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
+    preset-docker-mirror-proxy: "false"
     preset-shared-images: "true"
   extra_refs:
   - org: kubevirt
@@ -340,14 +341,15 @@ periodics:
   annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "20 2,10,18 * * *"
+  cron: "20 5,13,21 * * *"
   decorate: true
+  cluster: prow-workloads
   decoration_config:
     timeout: 4h
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
+    preset-docker-mirror-proxy: "false"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -377,14 +379,15 @@ periodics:
   annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "40 3,11,19 * * *"
+  cron: "30 6,14,22 * * *"
   decorate: true
+  cluster: prow-workloads
   decoration_config:
     timeout: 4h
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
+    preset-docker-mirror-proxy: "false"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -416,14 +419,15 @@ periodics:
   annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "40 3,11,19 * * *"
+  cron: "40 7,15,23 * * *"
   decorate: true
+  cluster: prow-workloads
   decoration_config:
     timeout: 4h
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
+    preset-docker-mirror-proxy: "false"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -455,14 +459,15 @@ periodics:
   annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "15 7,15,23 * * *"
+  cron: "50 8,16,0 * * *"
   decorate: true
+  cluster: prow-workloads
   decoration_config:
     timeout: 7h
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
+    preset-docker-mirror-proxy: "false"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -478,7 +483,7 @@ periodics:
           - name: TARGET
             value: "k8s-1.20"
           - name: KUBEVIRT_E2E_SKIP
-            value: "Multus|SRIOV|GPU|Macvtap|Operator|sig-network|sig-storage|owner:@sig-compute"
+            value: "SRIOV|GPU|Operator|\\[sig-network\\]|\\[sig-storage\\]|owner:@sig-compute"
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
@@ -494,7 +499,7 @@ periodics:
   annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "15 7,15,23 * * *"
+  cron: "0 9,17,0 * * *"
   decorate: true
   decoration_config:
     timeout: 7h
