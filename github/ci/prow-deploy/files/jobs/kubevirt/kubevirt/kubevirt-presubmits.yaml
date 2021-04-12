@@ -101,7 +101,7 @@ presubmits:
             - name: TARGET
               value: k8s-1.19
             - name: KUBEVIRT_E2E_SKIP
-              value: "SRIOV|GPU|Operator|\\[sig-network\\]"
+              value: "SRIOV|GPU|Operator|\\[sig-network\\]|\\[sig-storage\\]"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -155,8 +155,9 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
+    cluster: prow-workloads
     skip_report: false
     decorate: true
     decoration_config:
@@ -165,10 +166,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
+      preset-docker-mirror-proxy: "false"
       preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
+      preset-bazel-cache: "false"
+      preset-bazel-unnested: "false"
     spec:
       nodeSelector:
         type: bare-metal-external
