@@ -73,7 +73,7 @@ postsubmits:
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
-          docker login --username "$(<"$QUAY_USER")" --password-stdin=true quay.io <"$QUAY_PASSWORD"
+          cat $QUAY_PASSWORD | docker login --username "$(cat "$QUAY_USER")" --password-stdin=true quay.io
           ./automation/release.sh
         # docker-in-docker needs privileged mode
         securityContext:
