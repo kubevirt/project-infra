@@ -77,8 +77,6 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror: "true"
       spec:
-        nodeSelector:
-          type: bare-metal-external
         volumes:
         - name: token
           secret:
