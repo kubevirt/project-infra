@@ -1,5 +1,5 @@
 periodics:
-- name: periodic-common-templates-nightly-image-builder
+- name: periodic-common-templates-nightly-fedora-cdi-builder
   cron: "30 2 * * *"
   annotations:
     testgrid-create-test-group: "false"
@@ -14,41 +14,68 @@ periodics:
     preset-kubevirtci-quay-credential: "true"
   extra_refs:
     - org: kubevirt
-      repo: kubevirtci
-      base_ref: master
+      repo: common-templates
+      base_ref: containerdisk-automation
       work_dir: true
     - org: kubevirt
-      repo: common-templates
+      repo: kubevirtci
       base_ref: master
   spec:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20210126-a12b6c0
+    - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210331-b66b42e
+      env:
+      - name: KUBEVIRT_NUM_NODES
+        value: "3"
+      - name: TARGET_OS
+        value: "fedora"
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
-        - "-c"
-        - |
-          apt-get update && apt-get install -y --no-install-recommends --no-upgrade expect ansible intltool libosinfo-1.0 libssl-dev osinfo-db-tools python-gi && rm -rf /var/lib/apt/lists/*
-          export KUBEVIRTCI_TAG=$(curl -L https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirtci/latest)
-          export KUBEVIRTCI_GOCLI_CONTAINER=quay.io/kubevirtci/gocli:${KUBEVIRTCI_TAG}
-          export KUBEVIRT_PROVIDER=k8s-1.20
-          export KUBEVIRT_NUM_NODES=3
-          export KUBEVIRT_MEMORY_SIZE=10240M
-          export KUBEVIRT_PROVIDER_EXTRA_ARGS="--registry-port 5000"
-
-          make cluster-up
-          export KUBECONFIG=$(cluster-up/kubeconfig.sh)
-          cd ${PWD}/../common-templates/dvtemplates;
-          cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io
-          #Run the script from common-templates
-          ./fedora_new_image.sh
-          exit_status=$?
-          if [[ ( $exit_status -ne 4 && $exit_status -ne 0 ) ]]; then
-              echo -e "Exiting because of error"
-              exit $exit_status
-          fi
+        - "-ce"
+        - "./dvtemplates/build_k8s_cluster.sh"
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "8Gi"
+- name: periodic-common-templates-nightly-centos-cdi-builder
+  cron: "30 3 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-quay-credential: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: common-templates
+      base_ref: containerdisk-automation
+      work_dir: true
+    - org: kubevirt
+      repo: kubevirtci
+      base_ref: master
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+    - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210331-b66b42e
+      env:
+      - name: KUBEVIRT_NUM_NODES
+        value: "2"
+      - name: TARGET_OS
+        value: "centos"
+      command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/bash"
+        - "-ce"
+        - "./dvtemplates/build_k8s_cluster.sh"
       securityContext:
         privileged: true
       resources:
