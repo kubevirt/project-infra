@@ -1,0 +1,14 @@
+module kubevirt_dev_t 1.0;
+
+require {
+        type container_t;
+        type vmblock_t;
+        class dir read;
+        class file { read getattr open ioctl };
+        class lnk_file { read getattr open ioctl };
+}
+
+#============= container_t ==============
+allow container_t vmblock_t:dir read;
+allow container_t vmblock_t:file { getattr open read ioctl };
+allow container_t vmblock_t:lnk_file { getattr open read ioctl };
