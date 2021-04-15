@@ -33,6 +33,7 @@ filters:
     - stu-gott
     - vatsalparekh
     - vladikr
+    - yuhaohaoyu
   pkg/virt-api/.*:
     reviewers:
     - matthewcarleton
