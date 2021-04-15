@@ -37,8 +37,12 @@ postsubmits:
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
-          cat $QUAY_PASSWORD | docker login --username "$(cat "$QUAY_USER")" --password-stdin=true quay.io
-          ./automation/release.sh
+          set -e
+          major_minor="$(git tag --points-at HEAD | head -1 | grep -oE '[0-9]+.[0-9]+')"
+          if [ $(expr $major_minor \>\= 0.40) -eq 1 ]; then
+            cat $QUAY_PASSWORD | docker login --username "$(cat "$QUAY_USER")" --password-stdin=true quay.io
+            ./automation/release.sh
+          fi
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
