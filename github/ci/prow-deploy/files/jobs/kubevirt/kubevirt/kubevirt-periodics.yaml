@@ -285,9 +285,7 @@ periodics:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
           - name: TARGET
-            value: "k8s-1.19"
-          - name: KUBEVIRT_E2E_FOCUS
-            value: "owner:@sig-compute"
+            value: "k8s-1.19-sig-compute"
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
