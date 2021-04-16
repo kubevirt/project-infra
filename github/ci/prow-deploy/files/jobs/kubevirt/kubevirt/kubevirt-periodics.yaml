@@ -770,7 +770,7 @@ periodics:
           - name: TARGET
             value: k8s-1.18
           - name: KUBEVIRT_E2E_SKIP
-            value: Multus|SRIOV|GPU|Macvtap|Operator
+            value: "SRIOV|GPU|Operator|\\[sig-network\\]|\\[sig-storage\\]"
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
