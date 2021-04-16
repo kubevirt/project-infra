@@ -170,6 +170,34 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
+  - name: build-kubevirt-infra-multiarch-prow-utility-image
+    always_run: false
+    run_if_changed: "images/kubevirt-infra-prow/.*"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      nodeSelector:
+        type: vm
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - |
+              cd images/kubevirt-infra-prow
+              ./publish_multiarch_prow_images.sh -b
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "2Gi"
+            limits:
+              memory: "2Gi"
   - name: build-prow-deploy-image
     always_run: false
     run_if_changed: "images/prow-deploy/.*"
