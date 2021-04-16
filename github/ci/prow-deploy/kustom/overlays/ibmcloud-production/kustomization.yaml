@@ -235,7 +235,7 @@ secretGenerator:
     type: Opaque
   - name: gcs
     files:
-      - secrets/gcs-service-account.json
+      - secrets/service-account.json
     type: Opaque
   - name: slack-token
     files:

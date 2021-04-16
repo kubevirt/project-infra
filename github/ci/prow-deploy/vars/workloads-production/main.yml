@@ -1,0 +1,17 @@
+testinfra_dir: /tmp/test-infra
+kubectl_exec: /usr/local/bin/kubectl
+bootstrap_full_config: false
+project_infra_root: /home/prow/go/src/github.com/fgimenez/project-infra
+secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/workloads-production/secrets/'
+kubeconfig_path: '{{ secrets_dir }}/kubeconfig'
+
+shell_environment:
+  KUBECONFIG: "{{ kubeconfig_path }}"
+
+SRIOVNodes:
+  - name: bare-metal-sriov-1
+    capacity: 2
+  - name: bare-metal-sriov-2
+    capacity: 2
+
+remote_cluster_prow_jobs_context: prow-workloads

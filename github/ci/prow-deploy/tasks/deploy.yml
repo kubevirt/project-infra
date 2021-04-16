@@ -21,6 +21,8 @@
     kustomize build overlays/{{ deploy_environment }} | kubectl apply -f -
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
 
 - name: Bootstrap the full job config
   shell: |
@@ -36,6 +38,7 @@
     PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
     PLUGIN_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/plugins/plugins.yaml"
     KUBECONFIG: "{{ kubeconfig_path }}"
+  when: bootstrap_full_config
 
 - name: Patch SRIOV nodes
   shell: |
