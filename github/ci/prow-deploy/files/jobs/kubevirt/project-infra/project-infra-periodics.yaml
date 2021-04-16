@@ -192,6 +192,59 @@ periodics:
     - name: token
       secret:
         secretName: oauth-token
+
+- name: periodic-project-infra-kubevirt-uploader-autoapprove
+  interval: 1h
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  spec:
+    nodeSelector:
+      type: vm
+      zone: ci
+    containers:
+    - image: gcr.io/k8s-prow/commenter:v20200623-9f5410055c
+      command:
+      - /app/robots/commenter/app.binary
+      args:
+      - |-
+        --query=is:pr
+        is:open
+        -label:do-not-merge
+        -label:do-not-merge/blocked-paths
+        -label:do-not-merge/cherry-pick-not-approved
+        -label:do-not-merge/hold
+        -label:do-not-merge/invalid-owners-file
+        -label:do-not-merge/work-in-progress
+        -label:lgtm
+        -label:approved
+        -label:needs-rebase
+        -label:needs-ok-to-test
+        author:kubevirt-bot
+        repo:kubevirt/kubevirt
+        base:master
+        status:success
+        review:none
+        "Run bazelisk run //plugins/cmd/uploader:uploader -- -workspace /home/prow/go/src/github.com/kubevirt/project-infra/../kubevirt/WORKSPACE -dry-run=false"
+      - --updated=24h
+      - --token=/etc/github/oauth
+      - |-
+        --comment=/lgtm
+        /approve
+        /release-note-none
+
+        This bot automatically approves kubevirt-bot "uploader" PRs if its test lanes have succeeded but who have
+        not been reviewed within the last 24 hours.
+      - --template
+      - --ceiling=10
+      - --confirm
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
 - name: periodic-project-infra-autoowners
   interval: 24h
   annotations:
