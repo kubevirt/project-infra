@@ -48,10 +48,9 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     cluster: prow-workloads
-    skip_report: true
     decorate: true
     decoration_config:
       timeout: 4h
