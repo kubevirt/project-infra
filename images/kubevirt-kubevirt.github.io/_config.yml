@@ -1,0 +1,67 @@
+# Site settings
+title: KubeVirt.io
+email: non@none.com
+description: >- # this means to ignore newlines until "baseurl:"
+  Virtual Machine Management on Kubernetes
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "https://kubevirt.io/" # the base hostname & protocol for your site
+type: website
+image: /assets/images/KubeVirt_logo_color.png
+twitter_username: kubevirt
+github_username:  kubevirt
+irc: kubevirt@irc.freenode.net
+Mailinglist: https://groups.google.com/forum/#!forum/kubevirt-dev
+calendar: https://calendar.google.com/calendar/embed?src=18pc0jur01k8f2cccvn5j04j1g%40group.calendar.google.com&ctz=Etc%2FGMT
+events: 18pc0jur01k8f2cccvn5j04j1g@group.calendar.google.com
+kubevirt_version: v0.15.0
+kubernetes_version: v1.10.0
+future: false
+
+# Build settings
+markdown: kramdown
+permalink: /:year/:title:output_ext
+
+collections:
+  labs:
+    output: true
+    permalink: /:collection/:path
+  galleries:
+    output: true
+    permalink: /:collection/:path
+
+plugins: [jekyll-paginate, jekyll-asciidoc, jekyll-redirect-from, jekyll-feed, jekyll-sitemap, premonition, jekyll/tagging, jekyll-diagrams, jekyll-inline-svg]
+paginate: 5
+paginate_path: "/blogs/page:num"
+
+defaults:
+  - scope:
+      path: "assets/img"
+    values:
+      image: true
+
+feed:
+  categories:
+    - news
+    - updates
+    - community
+    - releases
+    - uncategorized
+
+exclude:
+  - GUIDELINES.md
+  - README.md
+  - TODO.md
+  - .history
+
+tag_page_layout: tag
+tag_page_dir: /tag/
+
+kramdown:
+  input: GFM
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+    span:
+      line_numbers: false
+    block:
+      line_numbers: false
+      start_line: 1
