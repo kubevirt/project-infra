@@ -16,7 +16,7 @@ postsubmits:
         base_ref: master
       labels:
         preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
+        preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
       spec:
         nodeSelector:
