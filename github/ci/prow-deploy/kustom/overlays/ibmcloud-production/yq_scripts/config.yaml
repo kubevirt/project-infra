@@ -1,7 +1,7 @@
 - command: update
   path: plank.job_url_template
   value: >-
-    https://prow.ci.kubevirt.io/view/gcs/kubernetes-prow/
+    https://prow.ci.kubevirt.io/view/gs/kubernetes-prow/
     {{if eq .Spec.Type "presubmit"}}pr-logs/
     pull{{else if eq .Spec.Type "batch"}}pr-logs/
     pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/
@@ -10,22 +10,22 @@
     batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/
 - command: update
   path: deck.spyglass.gcs_browser_prefix
-  value: https://gcsweb.ci.kubevirt.io/gcs/
+  value: https://gcsweb.ci.kubevirt.io/
 - command: update
   path: plank.job_url_prefix_config.*
-  value: https://prow.ci.kubevirt.io/view/gcs/
+  value: https://prow.ci.kubevirt.io/view/
 - command: update
   path: tide.pr_status_base_urls.*
   value: https://prow.ci.kubevirt.io/pr
 - command: update
   path: plank.default_decoration_configs.*.utility_images.clonerefs
-  value: gcr.io/k8s-prow/clonerefs:v20210217-8c724915ff
+  value: gcr.io/k8s-prow/clonerefs:v20210423-a5cb5e7945
 - command: update
   path: plank.default_decoration_configs.*.utility_images.initupload
-  value: gcr.io/k8s-prow/initupload:v20210217-8c724915ff
+  value: gcr.io/k8s-prow/initupload:v20210423-a5cb5e7945
 - command: update
   path: plank.default_decoration_configs.*.utility_images.entrypoint
-  value: gcr.io/k8s-prow/entrypoint:v20210217-8c724915ff
+  value: gcr.io/k8s-prow/entrypoint:v20210423-a5cb5e7945
 - command: update
   path: plank.default_decoration_configs.*.utility_images.sidecar
-  value: gcr.io/k8s-prow/sidecar:v20210217-8c724915ff
+  value: gcr.io/k8s-prow/sidecar:v20210423-a5cb5e7945

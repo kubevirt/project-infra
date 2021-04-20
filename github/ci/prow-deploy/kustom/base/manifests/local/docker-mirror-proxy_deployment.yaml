@@ -13,10 +13,6 @@ spec:
         app: docker-mirror-proxy
     spec:
       terminationGracePeriodSeconds: 180
-      serviceAccountName: "caches"
-      nodeSelector:
-        type: bare-metal-external
-        ci.kubevirt.io/cachenode: "true"
       tolerations:
       - key: "cachenode"
         operator: "Exists"
