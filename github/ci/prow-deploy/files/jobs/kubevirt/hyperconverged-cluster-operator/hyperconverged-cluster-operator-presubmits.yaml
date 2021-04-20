@@ -4,6 +4,7 @@ presubmits:
     skip_branches:
     - release-\d+\.\d+
     annotations:
+      testgrid-dashboards: kubevirt-presubmits
       fork-per-release: "true"
     always_run: true
     optional: false
