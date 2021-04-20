@@ -85,10 +85,13 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
-  - name: build-bootstrap-image
+  - name: build-multiarch-bootstrap-image
     always_run: false
     run_if_changed: "images/bootstrap/.*|images/golang/.*"
     decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -103,16 +106,16 @@ presubmits:
             - "-ce"
             - |
               cd images
-              ./publish_image.sh -b bootstrap quay.io kubevirtci
-              ./publish_image.sh -b golang quay.io kubevirtci
+              ./publish_multiarch_image.sh -b bootstrap quay.io kubevirtci
+              ./publish_multiarch_image.sh -b -l golang quay.io kubevirtci
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
             requests:
-              memory: "1Gi"
+              memory: "8Gi"
             limits:
-              memory: "1Gi"
+              memory: "8Gi"
   - name: build-kubekins-e2e-image
     always_run: false
     run_if_changed: "images/kubekins-e2e/.*"

@@ -1,4 +1,5 @@
-FROM bootstrap
+ARG ARCH
+FROM bootstrap-$ARCH
 
 ENV GIMME_GO_VERSION=1.17.8
 
