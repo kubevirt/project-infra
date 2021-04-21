@@ -61,6 +61,27 @@ presubmits:
             memory: "8Gi"
           limits:
             memory: "8Gi"
+  - name: pull-project-infra-test-plugins
+    run_if_changed: plugins/.*
+    cluster: ibm-prow-jobs
+    optional: false
+    decorate: true
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20210126-a12b6c0
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          bazelisk test //plugins/...
+        securityContext:
+          runAsUser: 0
+        resources:
+          requests:
+            memory: "8Gi"
+          limits:
+            memory: "8Gi"
   - name: build-kubevirt-infra-bootstrap-image
     always_run: false
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
