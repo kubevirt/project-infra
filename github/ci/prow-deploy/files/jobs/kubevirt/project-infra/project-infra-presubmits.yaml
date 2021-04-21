@@ -52,8 +52,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - |
-          bazelisk test //external-plugins/rehearse/...
+        - "bazelisk test //external-plugins/rehearse/..."
         securityContext:
           runAsUser: 0
         resources:
@@ -73,8 +72,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - |
-          bazelisk test //plugins/...
+        - "bazelisk test //plugins/..."
         securityContext:
           runAsUser: 0
         resources:
