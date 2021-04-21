@@ -786,7 +786,7 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     skip_report: false
-    optional: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 1h
