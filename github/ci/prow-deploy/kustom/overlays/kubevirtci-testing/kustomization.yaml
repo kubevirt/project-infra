@@ -48,6 +48,12 @@ patches:
       name: tide
     path: patches/JsonRFC6902/tide_deployment.yaml
   - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: crier
+    path: patches/JsonRFC6902/crier_deployment.yaml
+  - target:
       group: rbac.authorization.k8s.io
       version: v1
       kind: Role
