@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"regexp"
 
@@ -108,7 +109,7 @@ func upload(options options, workspace *build.File, artifacts []mirror.Artifact)
 	failed := false
 	for _, artifact := range invalid {
 		newFileUrl := mirror.GenerateFilePath(options.bucket, &artifact)
-		err := mirror.WriteToBucket(options.dryRun, ctx, client, artifact, options.bucket)
+		err := mirror.WriteToBucket(options.dryRun, ctx, client, artifact, options.bucket, http.DefaultClient)
 		if err != nil {
 			log.Printf("failed to upload %s to %s: %s", artifact.Name(), newFileUrl, err)
 			if options.continueOnError {
@@ -120,7 +121,7 @@ func upload(options options, workspace *build.File, artifacts []mirror.Artifact)
 		artifact.AppendURL(newFileUrl)
 	}
 
-	mirror.RemoveStaleDownloadURLS(artifacts, targetMirrorURLPattern)
+	mirror.RemoveStaleDownloadURLS(artifacts, targetMirrorURLPattern, http.DefaultClient)
 
 	err = mirror.WriteWorkspace(options.dryRun, workspace, options.workspacePath)
 	if err != nil {

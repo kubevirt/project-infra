@@ -145,11 +145,29 @@ rpm(
 		},
 		expectedLength: 2,
 	},
+	{
+		data: []byte(`
+rpm(
+    name = "findutils-1__4.7.0-4.fc32.x86_64",
+    sha256 = "c7e5d5de11d4c791596ca39d1587c50caba0e06f12a7c24c5d40421d291cd661",
+)
+`),
+		responses: MockResponses{
+			"https://mirror.dogado.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm":
+			MockResponse{
+				resp: &http.Response{
+					StatusCode: 200,
+					Body:       http.NoBody,
+				},
+			},
+		},
+		expectedLength: 0,
+	},
 }
 
 func TestRemoveStaleDownloadURLS(t *testing.T) {
 	for _, workspaceData := range testCasesForTestRemoveStaleDownloadURLS {
-		Client = MockHTTPClient{
+		mockHTTPClient := MockHTTPClient{
 			responses: workspaceData.responses,
 		}
 		file, err := build.ParseWorkspace("workspace", workspaceData.data)
@@ -161,7 +179,7 @@ func TestRemoveStaleDownloadURLS(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		RemoveStaleDownloadURLS(artifacts, regexp.MustCompile("^https://kubevirt.storage.googleapis.com/.+"))
+		RemoveStaleDownloadURLS(artifacts, regexp.MustCompile("^https://kubevirt.storage.googleapis.com/.+"), mockHTTPClient)
 		if len(artifacts[0].URLs()) != workspaceData.expectedLength {
 			t.Fatalf("expected length was %d, actual was %d, URLS: %v", workspaceData.expectedLength, len(artifacts[0].URLs()), artifacts[0].URLs())
 		}

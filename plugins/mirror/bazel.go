@@ -59,14 +59,19 @@ func (a *Artifact) RemoveURLs(notFoundUrls []string) {
 
 	var remainingArtifactURLs []build.Expr
 
-	list := a.rule.Attr("urls").(*build.ListExpr).List
+	urls := a.rule.Attr("urls")
+	if urls == nil {
+		return
+	}
+
+	list := urls.(*build.ListExpr).List
 	for _, urlValue := range list {
 		if _, exists := urlsToRemove[urlValue.(*build.StringExpr).Value]; !exists {
 			remainingArtifactURLs = append(remainingArtifactURLs, urlValue)
 		}
 	}
 
-	a.rule.Attr("urls").(*build.ListExpr).List = remainingArtifactURLs
+	urls.(*build.ListExpr).List = remainingArtifactURLs
 }
 
 func LoadWorkspace(path string) (*build.File, error) {
@@ -113,7 +118,7 @@ func FilterArtifactsWithoutMirror(artifacts []Artifact, regexp *regexp.Regexp) (
 	return noMirror
 }
 
-func RemoveStaleDownloadURLS(artifacts []Artifact, ignoreURLSMatching *regexp.Regexp) {
+func RemoveStaleDownloadURLS(artifacts []Artifact, ignoreURLSMatching *regexp.Regexp, client HTTPClient) {
 	for _, artifact := range artifacts {
 		var notFoundUrls []string
 
@@ -121,7 +126,7 @@ func RemoveStaleDownloadURLS(artifacts []Artifact, ignoreURLSMatching *regexp.Re
 			if ignoreURLSMatching.MatchString(notFoundUrl) {
 				continue
 			}
-			resp, err := Client.Head(notFoundUrl)
+			resp, err := client.Head(notFoundUrl)
 			if err != nil {
 				log.Printf("Could not connect to source URL: %v", err)
 				continue
@@ -147,7 +152,7 @@ func getMirror(artifact Artifact, regexp *regexp.Regexp) string {
 	return ""
 }
 
-func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, artifact Artifact, bucket string) (err error) {
+func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, artifact Artifact, bucket string, httpClient HTTPClient) (err error) {
 	reportObject := client.Bucket(bucket).Object(artifact.SHA256())
 	reader, err := reportObject.NewReader(ctx)
 	if err != nil && err != storage.ErrObjectNotExist {
@@ -159,7 +164,7 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 		return nil
 	}
 	for _, uri := range artifact.URLs() {
-		resp, err := Client.Get(uri)
+		resp, err := httpClient.Get(uri)
 		if err != nil {
 			log.Printf("Could not connect to source, continuing with next URL: %v", err)
 			continue
