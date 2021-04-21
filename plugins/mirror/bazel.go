@@ -24,6 +24,9 @@ type Artifact struct {
 }
 
 func (a *Artifact) URLs() []string {
+	if a.rule.AttrString("url") != "" {
+		return []string{a.rule.AttrString("url")}
+	}
 	return a.rule.AttrStrings("urls")
 }
 
@@ -36,19 +39,14 @@ func (a *Artifact) SHA256() string {
 }
 
 func (a *Artifact) AppendURL(url string) {
-	list := a.rule.Attr("urls").(*build.ListExpr).List
-	a.rule.Attr("urls").(*build.ListExpr).List = append(list, &build.StringExpr{Value: url})
-}
-
-type HTTPClient interface {
-	Head(uri string) (resp *http.Response, err error)
-	Get(uri string)  (resp *http.Response, err error)
-}
-
-var Client HTTPClient
-
-func init() {
-	Client = http.DefaultClient
+	if a.rule.Attr("urls") == nil {
+		a.rule.SetAttr("urls", &build.ListExpr{})
+	}
+	if a.rule.AttrString("url") != "" {
+		a.rule.Attr("urls").(*build.ListExpr).List = append(a.rule.Attr("urls").(*build.ListExpr).List, &build.StringExpr{Value: a.rule.AttrString("url")})
+		a.rule.DelAttr("url")
+	}
+	a.rule.Attr("urls").(*build.ListExpr).List = append(a.rule.Attr("urls").(*build.ListExpr).List, &build.StringExpr{Value: url})
 }
 
 func (a *Artifact) RemoveURLs(notFoundUrls []string) {
@@ -61,6 +59,15 @@ func (a *Artifact) RemoveURLs(notFoundUrls []string) {
 
 	urls := a.rule.Attr("urls")
 	if urls == nil {
+		urlAttr := a.rule.AttrString("url")
+		if urlAttr != "" {
+			for _, notFoundUrl := range notFoundUrls {
+				if urlAttr == notFoundUrl {
+					a.rule.DelAttr("url")
+					break
+				}
+			}
+		}
 		return
 	}
 
@@ -72,6 +79,17 @@ func (a *Artifact) RemoveURLs(notFoundUrls []string) {
 	}
 
 	urls.(*build.ListExpr).List = remainingArtifactURLs
+}
+
+type HTTPClient interface {
+	Head(uri string) (resp *http.Response, err error)
+	Get(uri string)  (resp *http.Response, err error)
+}
+
+var Client HTTPClient
+
+func init() {
+	Client = http.DefaultClient
 }
 
 func LoadWorkspace(path string) (*build.File, error) {
