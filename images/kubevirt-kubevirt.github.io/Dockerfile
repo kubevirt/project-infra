@@ -7,7 +7,7 @@ RUN  dnf install jq git nodejs npm bzip2 glibc-langpack-en -y && \
 
 WORKDIR /src
 ENV LC_ALL=en_US.UTF-8
-COPY ./resources/. /src/.
+COPY ./_config/. .
 
 # Install Markdown linter
 RUN  git clone https://github.com/igorshubovych/markdownlint-cli.git  /src/markdownlint-cli  && \
