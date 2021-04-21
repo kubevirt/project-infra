@@ -3,13 +3,13 @@
   path: /spec/template/spec/containers/0/args/11
   value: --kubeconfig=/etc/remote_cluster_config/config
 - op: add
-  path: /spec/template/spec/containers/0/volumeMounts/6
+  path: /spec/template/spec/containers/0/volumeMounts/5
   value:
     mountPath: /etc/remote_cluster_config
     name: kubeconfig
     readOnly: true
 - op: add
-  path: /spec/template/spec/volumes/6
+  path: /spec/template/spec/volumes/5
   value:
     name: kubeconfig
     secret:
