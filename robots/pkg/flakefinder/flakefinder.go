@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"path"
+	"regexp"
 	"strings"
 	"time"
 
@@ -147,6 +148,7 @@ type ReportBaseDataOptions struct {
 	org                     string
 	repo                    string
 	skipBeforeStartOfReport bool
+	periodicJobDirRegex		*regexp.Regexp
 }
 
 func NewReportBaseDataOptions(
@@ -157,7 +159,14 @@ org                     string,
 repo                    string,
 skipBeforeStartOfReport bool,
 ) ReportBaseDataOptions {
-	return ReportBaseDataOptions{prBaseBranch, today, merged, org, repo, skipBeforeStartOfReport}
+	return ReportBaseDataOptions{prBaseBranch, today, merged, org, repo, skipBeforeStartOfReport, nil}
+}
+
+// SetPeriodicJobDirRegex sets the regex to use for finding periodic job directories if the string is non empty. If the regex does not compile it will panic.
+func (r *ReportBaseDataOptions) SetPeriodicJobDirRegex(regex string) {
+	if regex != "" {
+		r.periodicJobDirRegex = regexp.MustCompile(regex)
+	}
 }
 
 type ReportBaseData struct {
@@ -217,22 +226,23 @@ func GetReportBaseData(ctx context.Context, c *github.Client, client *storage.Cl
 		reports = append(reports, r...)
 	}
 
-	jobDir := "logs"
-	periodicJobDirPrefix := "periodic-kubevirt-e2e-"
-	periodicJobDirs, err := ListGcsObjects(ctx, client, BucketName, jobDir+"/", "/")
-	if err != nil {
-		log.Printf("failed to load periodicJobDirs for %v",  fmt.Sprintf("%s*", periodicJobDirPrefix), fmt.Errorf("error listing gcs objects: %v", err))
-	}
-
-	for _, periodicJobDir := range periodicJobDirs {
-		if !strings.HasPrefix(periodicJobDir, periodicJobDirPrefix) {
-			continue
-		}
-		results, err := FindUnitTestFilesForPeriodicJob(ctx, client, BucketName, []string{jobDir, periodicJobDir}, startOfReport, o.skipBeforeStartOfReport)
+	if o.periodicJobDirRegex != nil {
+		jobDir := "logs"
+		periodicJobDirs, err := ListGcsObjects(ctx, client, BucketName, jobDir+"/", "/")
 		if err != nil {
-			log.Printf("failed to load JUnit files for job %v: %v", periodicJobDir, err)
+			log.Printf("failed to load periodicJobDirs for %v",  fmt.Sprintf("%s*", o.periodicJobDirRegex), fmt.Errorf("error listing gcs objects: %v", err))
 		}
-		reports = append(reports, results...)
+
+		for _, periodicJobDir := range periodicJobDirs {
+			if !o.periodicJobDirRegex.MatchString(periodicJobDir) {
+				continue
+			}
+			results, err := FindUnitTestFilesForPeriodicJob(ctx, client, BucketName, []string{jobDir, periodicJobDir}, startOfReport, o.skipBeforeStartOfReport)
+			if err != nil {
+				log.Printf("failed to load JUnit files for job %v: %v", periodicJobDir, err)
+			}
+			reports = append(reports, results...)
+		}
 	}
 
 	return ReportBaseData{startOfReport, endOfReport, prNumbers, reports}
