@@ -399,9 +399,7 @@ periodics:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
           - name: TARGET
-            value: "k8s-1.20"
-          - name: KUBEVIRT_E2E_FOCUS
-            value: "owner:@sig-compute"
+            value: "k8s-1.20-sig-compute"
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
@@ -481,7 +479,7 @@ periodics:
           - name: TARGET
             value: "k8s-1.20"
           - name: KUBEVIRT_E2E_SKIP
-            value: "SRIOV|GPU|Operator|\\[sig-network\\]|\\[sig-storage\\]|owner:@sig-compute"
+            value: "SRIOV|GPU|Operator|\\[sig-network\\]|\\[sig-storage\\]|\\[sig-compute\\]"
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
