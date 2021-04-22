@@ -42,27 +42,27 @@ var _ = Describe("flake_issue.go", func() {
 	failingTestLane := "pull-whatever"
 	failingPR := 17
 	data := map[string]map[string]*Details{
-		"[rfe_id:1234][crit:high][owner:@sig-compute][test_id:2345]test case description": {
+		"[rfe_id:1234][crit:high][sig-compute][test_id:2345]test case description": {
 			failingTestLane: &Details{Failed: 3, Jobs: []*Job{
 				{BuildNumber: jobBuildNumber, Severity: "hard", PR: failingPR, Job: failingTestLane},
 			}},
 		},
-		"[rfe_id:1234][crit:high][owner:@sig-compute][test_id:3456]test case description": {
+		"[rfe_id:1234][crit:high][sig-compute][test_id:3456]test case description": {
 			failingTestLane: &Details{Failed: 3, Jobs: []*Job{
 				{BuildNumber: jobBuildNumber, Severity: "hard", PR: failingPR, Job: failingTestLane},
 			}},
 		},
-		"[rfe_id:1234][crit:high][owner:@sig-compute][test_id:4567]test case description": {
+		"[rfe_id:1234][crit:high][sig-compute][test_id:4567]test case description": {
 			failingTestLane: &Details{Failed: 4, Jobs: []*Job{
 				{BuildNumber: jobBuildNumber, Severity: "hard", PR: failingPR, Job: failingTestLane},
 			}},
 		},
-		"[rfe_id:1234][crit:high][owner:@sig-compute][test_id:5678]test case description": {
+		"[rfe_id:1234][crit:high][sig-compute][test_id:5678]test case description": {
 			failingTestLane: &Details{Failed: 5, Jobs: []*Job{
 				{BuildNumber: clusterFailureJobBuildNumber, Severity: "hard", PR: failingPR, Job: failingTestLane},
 			}},
 		},
-		"[rfe_id:1234][crit:high][owner:@sig-compute][test_id:6789]test case description": {
+		"[rfe_id:1234][crit:high][sig-compute][test_id:6789]test case description": {
 			failingTestLane: &Details{Failed: 0, Jobs: []*Job{
 				{BuildNumber: jobBuildNumber, Severity: "hard", PR: failingPR, Job: failingTestLane},
 			}},
