@@ -14,6 +14,7 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/bazelbuild/buildtools/build"
@@ -159,6 +160,19 @@ func RemoveStaleDownloadURLS(artifacts []Artifact, ignoreURLSMatching *regexp.Re
 		artifact.RemoveURLs(notFoundUrls)
 	}
 
+}
+
+func CheckArtifactsHaveURLS(artifacts []Artifact) error {
+	artifactsWithoutURLs := []string{}
+	for _, artifact := range artifacts {
+		if len(artifact.URLs()) == 0 {
+			artifactsWithoutURLs = append(artifactsWithoutURLs, artifact.Name())
+		}
+	}
+	if len(artifactsWithoutURLs) == 0 {
+		return nil
+	}
+	return fmt.Errorf("artifacts without urls found: '%s'", strings.Join(artifactsWithoutURLs, "', '"))
 }
 
 func getMirror(artifact Artifact, regexp *regexp.Regexp) string {

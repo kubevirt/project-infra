@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/bazelbuild/buildtools/build"
@@ -218,6 +219,106 @@ func TestRemoveStaleDownloadURLS(t *testing.T) {
 		RemoveStaleDownloadURLS(artifacts, regexp.MustCompile("^https://kubevirt.storage.googleapis.com/.+"), mockHTTPClient)
 		if len(artifacts[0].URLs()) != workspaceData.expectedLength {
 			t.Fatalf("'%s': expected length was %d, actual was %d, URLS: %v", workspaceData.name, workspaceData.expectedLength, len(artifacts[0].URLs()), artifacts[0].URLs())
+		}
+	}
+}
+
+type testCaseDataForForCheckArtifactsHaveURLs struct {
+	name		   string
+	data           []byte
+	expectFails    bool
+	shouldContain  []string
+}
+
+var testCasesForCheckArtifactsHaveURLs = []testCaseDataForForCheckArtifactsHaveURLs{
+	{
+		name: "has urls",
+		data: []byte(`
+rpm(
+    name = "findutils-1__4.7.0-4.fc32.x86_64",
+    sha256 = "c7e5d5de11d4c791596ca39d1587c50caba0e06f12a7c24c5d40421d291cd661",
+    urls = [
+        "https://mirror.dogado.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm",
+    ],
+)
+`),
+		expectFails: false,
+	},
+	{
+		name: "has url",
+		data: []byte(`
+rpm(
+    name = "findutils-1__4.7.0-4.fc32.x86_64",
+    sha256 = "c7e5d5de11d4c791596ca39d1587c50caba0e06f12a7c24c5d40421d291cd661",
+    url = "https://mirror.dogado.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm",
+)
+`),
+		expectFails: false,
+	},
+	{
+		name: "neither urls nor url",
+		data: []byte(`
+rpm(
+    name = "findutils-1__4.7.0-4.fc32.x86_64",
+    sha256 = "c7e5d5de11d4c791596ca39d1587c50caba0e06f12a7c24c5d40421d291cd661",
+)
+`),
+		expectFails: true,
+	},
+	{
+		name: "urls empty",
+		data: []byte(`
+rpm(
+    name = "findutils-1",
+    sha256 = "c7e5d5de11d4c791596ca39d1587c50caba0e06f12a7c24c5d40421d291cd661",
+    urls = [],
+)
+`),
+		expectFails: true,
+	},
+	{
+		name: "two artifacts with urls empty, both names should appear in error message",
+		data: []byte(`
+rpm(
+    name = "findutils-1",
+    sha256 = "c7e5d5de11d4c791596ca39d1587c50caba0e06f12a7c24c5d40421d291cd661",
+    urls = [],
+)
+rpm(
+    name = "findutils-2",
+    sha256 = "c7e5d5de11d4c791596ca39d1587c50caba0e06f12a7c24c5d40421d291cd662",
+    urls = [],
+)
+`),
+		expectFails: true,
+	},
+}
+
+func TestCheckArtifactsHaveURLS(t *testing.T) {
+	for _, workspaceData := range testCasesForCheckArtifactsHaveURLs {
+		file, err := build.ParseWorkspace("workspace", workspaceData.data)
+		if err != nil {
+			t.Fatal(err)
+		}
+		artifacts, err := GetArtifacts(file)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = CheckArtifactsHaveURLS(artifacts)
+		if workspaceData.expectFails {
+			if err == nil {
+				t.Fatalf("'%s': expected check to fail, URLS: %v", workspaceData.name, artifacts[0].URLs())
+			}
+			for _, shouldContain := range workspaceData.shouldContain {
+				if !strings.Contains(err.Error(), shouldContain) {
+					t.Fatalf("'%s': expected error to contain %s, was: %s", workspaceData.name, shouldContain, err.Error())
+				}
+			}
+		} else if !workspaceData.expectFails {
+			if err != nil {
+				t.Fatalf("'%s': expected check not to fail, URLS: %v", workspaceData.name, artifacts[0].URLs())
+			}
 		}
 	}
 }

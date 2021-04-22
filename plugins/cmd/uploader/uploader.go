@@ -122,6 +122,10 @@ func upload(options options, workspace *build.File, artifacts []mirror.Artifact)
 	}
 
 	mirror.RemoveStaleDownloadURLS(artifacts, targetMirrorURLPattern, http.DefaultClient)
+	err = mirror.CheckArtifactsHaveURLS(artifacts)
+	if err != nil {
+		log.Fatalf("could not update workspace items: %v", err)
+	}
 
 	err = mirror.WriteWorkspace(options.dryRun, workspace, options.workspacePath)
 	if err != nil {
