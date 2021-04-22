@@ -130,6 +130,66 @@ func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 	return reports, nil
 }
 
+func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client, bucket string, periodicJobDir []string, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*JobResult, error) {
+
+	dirOfJobs := path.Join(periodicJobDir...)
+
+	jobDirs, err := ListGcsObjects(ctx, client, bucket, dirOfJobs+"/", "/")
+	if err != nil {
+		return nil, fmt.Errorf("error listing gcs objects: %v", err)
+	}
+	builds := sortBuilds(jobDirs)
+
+	profilePath := ""
+	buildNumber := 0
+	reports := []*JobResult{}
+	for _, build := range builds {
+		buildDirPath := path.Join(dirOfJobs, strconv.Itoa(build))
+		dirOfFinishedJSON := path.Join(buildDirPath, finishedJSON)
+
+		// Fetch file attributes to check whether this test result should be included into the report
+		attrsOfFinishedJsonFile, err := ReadGcsObjectAttrs(ctx, client, bucket, dirOfFinishedJSON)
+		if err == storage.ErrObjectNotExist {
+			// build still running?
+			continue
+		} else if err != nil {
+			return nil, err
+		}
+		isBeforeStartOfReport := attrsOfFinishedJsonFile.Created.Before(startOfReport)
+		if skipBeforeStartOfReport && isBeforeStartOfReport {
+			logrus.Infof("Skipping test results before %v for %s in bucket '%s'\n", startOfReport, buildDirPath, bucket)
+			break
+		}
+
+		_, err = readGcsObject(ctx, client, bucket, dirOfFinishedJSON)
+		if err == storage.ErrObjectNotExist {
+			// build still running?
+			continue
+		} else if err != nil {
+			return nil, fmt.Errorf("Cannot read finished.json (%s) in bucket '%s'", dirOfFinishedJSON, bucket)
+		} else {
+			buildNumber = build
+			artifactsDirPath := path.Join(buildDirPath, "artifacts")
+			profilePath = path.Join(artifactsDirPath, "junit.functest.xml")
+			data, err := readGcsObject(ctx, client, bucket, profilePath)
+			if err == storage.ErrObjectNotExist {
+				logrus.Infof("Didn't find object '%s' in bucket '%s'\n", profilePath, bucket)
+				continue
+			}
+			if err != nil {
+				return nil, err
+			}
+			report, err := junit.Ingest(data)
+			if err != nil {
+				return nil, err
+			}
+			reports = append(reports, &JobResult{Job: periodicJobDir[len(periodicJobDir)-1], JUnit: report, BuildNumber: buildNumber})
+		}
+	}
+
+	return reports, nil
+}
+
 func readGcsObject(ctx context.Context, client *storage.Client, bucket, object string) ([]byte, error) {
 	logrus.Infof("Trying to read gcs object '%s' in bucket '%s'\n", object, bucket)
 	o := client.Bucket(bucket).Object(object)

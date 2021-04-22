@@ -217,6 +217,24 @@ func GetReportBaseData(ctx context.Context, c *github.Client, client *storage.Cl
 		reports = append(reports, r...)
 	}
 
+	jobDir := "logs"
+	periodicJobDirPrefix := "periodic-kubevirt-e2e-"
+	periodicJobDirs, err := ListGcsObjects(ctx, client, BucketName, jobDir+"/", "/")
+	if err != nil {
+		log.Printf("failed to load periodicJobDirs for %v",  fmt.Sprintf("%s*", periodicJobDirPrefix), fmt.Errorf("error listing gcs objects: %v", err))
+	}
+
+	for _, periodicJobDir := range periodicJobDirs {
+		if !strings.HasPrefix(periodicJobDir, periodicJobDirPrefix) {
+			continue
+		}
+		results, err := FindUnitTestFilesForPeriodicJob(ctx, client, BucketName, []string{jobDir, periodicJobDir}, startOfReport, o.skipBeforeStartOfReport)
+		if err != nil {
+			log.Printf("failed to load JUnit files for job %v: %v", periodicJobDir, err)
+		}
+		reports = append(reports, results...)
+	}
+
 	return ReportBaseData{startOfReport, endOfReport, prNumbers, reports}
 }
 

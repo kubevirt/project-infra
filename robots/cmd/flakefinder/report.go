@@ -161,7 +161,7 @@ const ReportTemplate = `
 		<table width="100%">
 			{{ range $key, $jobFailures := $.FailuresForJobs }}<tr class="unimportant">
 				<td>
-					<a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/{{ $.Org }}_{{ $.Repo }}/{{.PR}}/{{.Job}}/{{.BuildNumber}}"><span title="job build number">{{.BuildNumber}}</span></a>
+					{{ if ne .PR 0 }}<a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/{{ $.Org }}_{{ $.Repo }}/{{.PR}}/{{.Job}}/{{.BuildNumber}}"><span title="job build number">{{.BuildNumber}}</span></a>{{ else }}<a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/logs/{{.Job}}/{{.BuildNumber}}"><span title="job build number">{{.BuildNumber}}</span></a>{{ end }}
 				</td>
 				<td>
 					<a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{.PR}}"><span title="pr number">#{{.PR}}</span></a>
@@ -197,7 +197,7 @@ const ReportTemplate = `
                 <span class="tests_failed" title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span class="tests_passed" title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span class="tests_skipped" title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>
                 <div class="popuptext" id="targetr{{$row}}c{{$col}}">
                     {{ range $Job := (index $.Data $test $header).Jobs }}
-                    <div class="{{.Severity}} nowrap"><a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/{{ $.Org }}_{{ $.Repo }}/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> (<a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{.PR}}">#{{.PR}}</a>)</div>
+                    <div class="{{.Severity}} nowrap">{{ if ne .PR 0 }}<a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/pr-logs/pull/{{ $.Org }}_{{ $.Repo }}/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> (<a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{.PR}}">#{{.PR}}</a>){{ else }}<a href="https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/logs/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a>{{ end }}</div>
                     {{ end }}
                 </div>
             </div>
