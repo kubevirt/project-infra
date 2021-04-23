@@ -14,6 +14,7 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/bazelbuild/buildtools/build"
@@ -24,6 +25,9 @@ type Artifact struct {
 }
 
 func (a *Artifact) URLs() []string {
+	if a.rule.AttrString("url") != "" {
+		return []string{a.rule.AttrString("url")}
+	}
 	return a.rule.AttrStrings("urls")
 }
 
@@ -36,8 +40,46 @@ func (a *Artifact) SHA256() string {
 }
 
 func (a *Artifact) AppendURL(url string) {
-	list := a.rule.Attr("urls").(*build.ListExpr).List
-	a.rule.Attr("urls").(*build.ListExpr).List = append(list, &build.StringExpr{Value: url})
+	if a.rule.Attr("urls") == nil {
+		a.rule.SetAttr("urls", &build.ListExpr{})
+	}
+	if a.rule.AttrString("url") != "" {
+		a.rule.Attr("urls").(*build.ListExpr).List = append(a.rule.Attr("urls").(*build.ListExpr).List, &build.StringExpr{Value: a.rule.AttrString("url")})
+		a.rule.DelAttr("url")
+	}
+	a.rule.Attr("urls").(*build.ListExpr).List = append(a.rule.Attr("urls").(*build.ListExpr).List, &build.StringExpr{Value: url})
+}
+
+func (a *Artifact) RemoveURLs(notFoundUrls []string) {
+	var urlsToRemove = map[string]struct{}{}
+	for _, urlToRemove := range notFoundUrls {
+		urlsToRemove[urlToRemove] = struct{}{}
+	}
+
+	var remainingArtifactURLs []build.Expr
+
+	urls := a.rule.Attr("urls")
+	if urls == nil {
+		urlAttr := a.rule.AttrString("url")
+		if urlAttr != "" {
+			for _, notFoundUrl := range notFoundUrls {
+				if urlAttr == notFoundUrl {
+					a.rule.DelAttr("url")
+					break
+				}
+			}
+		}
+		return
+	}
+
+	list := urls.(*build.ListExpr).List
+	for _, urlValue := range list {
+		if _, exists := urlsToRemove[urlValue.(*build.StringExpr).Value]; !exists {
+			remainingArtifactURLs = append(remainingArtifactURLs, urlValue)
+		}
+	}
+
+	urls.(*build.ListExpr).List = remainingArtifactURLs
 }
 
 type HTTPClient interface {
@@ -49,24 +91,6 @@ var Client HTTPClient
 
 func init() {
 	Client = http.DefaultClient
-}
-
-func (a *Artifact) RemoveURLs(notFoundUrls []string) {
-	var urlsToRemove = map[string]struct{}{}
-	for _, urlToRemove := range notFoundUrls {
-		urlsToRemove[urlToRemove] = struct{}{}
-	}
-
-	var remainingArtifactURLs []build.Expr
-
-	list := a.rule.Attr("urls").(*build.ListExpr).List
-	for _, urlValue := range list {
-		if _, exists := urlsToRemove[urlValue.(*build.StringExpr).Value]; !exists {
-			remainingArtifactURLs = append(remainingArtifactURLs, urlValue)
-		}
-	}
-
-	a.rule.Attr("urls").(*build.ListExpr).List = remainingArtifactURLs
 }
 
 func LoadWorkspace(path string) (*build.File, error) {
@@ -113,7 +137,7 @@ func FilterArtifactsWithoutMirror(artifacts []Artifact, regexp *regexp.Regexp) (
 	return noMirror
 }
 
-func RemoveStaleDownloadURLS(artifacts []Artifact, ignoreURLSMatching *regexp.Regexp) {
+func RemoveStaleDownloadURLS(artifacts []Artifact, ignoreURLSMatching *regexp.Regexp, client HTTPClient) {
 	for _, artifact := range artifacts {
 		var notFoundUrls []string
 
@@ -121,7 +145,7 @@ func RemoveStaleDownloadURLS(artifacts []Artifact, ignoreURLSMatching *regexp.Re
 			if ignoreURLSMatching.MatchString(notFoundUrl) {
 				continue
 			}
-			resp, err := Client.Head(notFoundUrl)
+			resp, err := client.Head(notFoundUrl)
 			if err != nil {
 				log.Printf("Could not connect to source URL: %v", err)
 				continue
@@ -138,6 +162,19 @@ func RemoveStaleDownloadURLS(artifacts []Artifact, ignoreURLSMatching *regexp.Re
 
 }
 
+func CheckArtifactsHaveURLS(artifacts []Artifact) error {
+	artifactsWithoutURLs := []string{}
+	for _, artifact := range artifacts {
+		if len(artifact.URLs()) == 0 {
+			artifactsWithoutURLs = append(artifactsWithoutURLs, artifact.Name())
+		}
+	}
+	if len(artifactsWithoutURLs) == 0 {
+		return nil
+	}
+	return fmt.Errorf("artifacts without urls found: '%s'", strings.Join(artifactsWithoutURLs, "', '"))
+}
+
 func getMirror(artifact Artifact, regexp *regexp.Regexp) string {
 	for _, urlStr := range artifact.URLs() {
 		if regexp.MatchString(urlStr) {
@@ -147,7 +184,7 @@ func getMirror(artifact Artifact, regexp *regexp.Regexp) string {
 	return ""
 }
 
-func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, artifact Artifact, bucket string) (err error) {
+func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, artifact Artifact, bucket string, httpClient HTTPClient) (err error) {
 	reportObject := client.Bucket(bucket).Object(artifact.SHA256())
 	reader, err := reportObject.NewReader(ctx)
 	if err != nil && err != storage.ErrObjectNotExist {
@@ -159,7 +196,7 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 		return nil
 	}
 	for _, uri := range artifact.URLs() {
-		resp, err := Client.Get(uri)
+		resp, err := httpClient.Get(uri)
 		if err != nil {
 			log.Printf("Could not connect to source, continuing with next URL: %v", err)
 			continue
