@@ -12,6 +12,7 @@ periodics:
         repo: kubevirt-tutorial
         base_ref: master
         path_alias: kubevirt-tutorial
+    cluster: phx-prow
     spec:
       nodeSelector:
         region: primary

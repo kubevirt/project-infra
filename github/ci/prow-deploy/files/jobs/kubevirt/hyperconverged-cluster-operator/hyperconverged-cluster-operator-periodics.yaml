@@ -19,6 +19,7 @@ periodics:
       repo: hyperconverged-cluster-operator
       base_ref: master
       work_dir: true
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: bare-metal-external

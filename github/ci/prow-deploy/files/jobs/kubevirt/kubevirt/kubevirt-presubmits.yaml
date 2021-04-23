@@ -217,6 +217,7 @@ presubmits:
       timeout: 7h
       grace_period: 5m
     max_concurrency: 11
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -253,6 +254,7 @@ presubmits:
       timeout: 7h
       grace_period: 5m
     max_concurrency: 11
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -300,6 +302,7 @@ presubmits:
       preset-shared-images: "true"
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -376,6 +379,7 @@ presubmits:
       preset-shared-images: "true"
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -412,6 +416,7 @@ presubmits:
       preset-shared-images: "true"
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -448,6 +453,7 @@ presubmits:
       preset-shared-images: "true"
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -483,6 +489,7 @@ presubmits:
       preset-shared-images: "true"
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -519,6 +526,7 @@ presubmits:
       preset-shared-images: "true"
       sriov-pod: "true"
       rehearsal.allowed: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         hardwareSupport: sriov-nic
@@ -597,6 +605,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -633,6 +642,7 @@ presubmits:
       preset-shared-images: "true"
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external

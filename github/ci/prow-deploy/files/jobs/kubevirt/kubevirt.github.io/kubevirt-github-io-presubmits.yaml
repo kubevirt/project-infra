@@ -4,6 +4,7 @@ presubmits:
       decorate: true
       always_run: true
       skip_report: false
+      cluster: phx-prow
       spec:
         nodeSelector:
           region: primary

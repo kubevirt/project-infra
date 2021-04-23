@@ -2,6 +2,7 @@ periodics:
   - name: periodic-publish-kubemacpool-flakefinder-weekly-report
     cron: "50 0 * * *"
     decorate: true
+    cluster: phx-prow
     annotations:
       testgrid-create-test-group: "false"
     spec:
@@ -38,6 +39,7 @@ periodics:
             secretName: gcs
   - name: periodic-publish-kubemacpool-flakefinder-daily-report
     cron: "30 0 * * *"
+    cluster: phx-prow
     annotations:
       testgrid-create-test-group: "false"
     decorate: true

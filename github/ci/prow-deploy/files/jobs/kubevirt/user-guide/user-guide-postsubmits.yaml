@@ -10,6 +10,7 @@ postsubmits:
     - org: kubevirt
       repo: project-infra
       base_ref: master
+    cluster: ibm-prow-jobs
     spec:
       securityContext:
         runAsUser: 0
