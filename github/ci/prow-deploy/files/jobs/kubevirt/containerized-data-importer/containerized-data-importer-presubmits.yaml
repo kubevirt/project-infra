@@ -12,6 +12,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -44,6 +45,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -76,6 +78,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -108,6 +111,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -140,6 +144,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -172,6 +177,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -204,6 +210,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -236,6 +243,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -268,6 +276,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -300,6 +309,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -332,6 +342,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -364,6 +375,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -396,6 +408,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
+    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"

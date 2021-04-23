@@ -10,6 +10,7 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
+      cluster: phx-prow
       spec:
         nodeSelector:
           type: vm

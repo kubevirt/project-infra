@@ -8,6 +8,7 @@ presubmits:
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror: "true"
+      cluster: phx-prow
       spec:
         nodeSelector:
           region: primary

@@ -16,6 +16,7 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.19-0.36
     context: pull-kubevirt-e2e-k8s-1.19
+    cluster: phx-prow
     spec:
       containers:
       - command:
@@ -46,6 +47,7 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.18-0.36
     context: pull-kubevirt-e2e-k8s-1.18
+    cluster: phx-prow
     spec:
       containers:
       - command:
@@ -76,6 +78,7 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.17-0.36
     context: pull-kubevirt-e2e-k8s-1.17
+    cluster: phx-prow
     spec:
       containers:
       - command:
@@ -106,6 +109,7 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-cnao-1.19-0.36
     context: pull-kubevirt-e2e-k8s-cnao-1.19
+    cluster: phx-prow
     spec:
       containers:
       - command:
@@ -136,6 +140,7 @@ presubmits:
     max_concurrency: 1
     name: pull-kubevirt-e2e-windows2016-0.36
     context: pull-kubevirt-e2e-windows2016
+    cluster: phx-prow
     spec:
       containers:
       - command:
@@ -172,6 +177,7 @@ presubmits:
     context: pull-kubevirt-e2e-kind-1.17-sriov-release
     optional: true
     skip_report: true
+    cluster: phx-prow
     spec:
       affinity:
         podAntiAffinity:
@@ -242,6 +248,7 @@ presubmits:
     name: pull-kubevirt-check-tests-for-flakes-0.36
     context: pull-kubevirt-check-tests-for-flakes
     optional: true
+    cluster: phx-prow
     spec:
       containers:
       - command:
@@ -272,6 +279,7 @@ presubmits:
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-1.17-rook-ceph-0.36
     context: pull-kubevirt-e2e-k8s-1.17-rook-ceph
+    cluster: phx-prow
     spec:
       containers:
       - command:

@@ -10,6 +10,7 @@ presubmits:
       decoration_config:
         timeout: 3h
         grace_period: 5m
+      cluster: phx-prow
       max_concurrency: 6
       labels:
         preset-dind-enabled: "true"
@@ -39,6 +40,7 @@ presubmits:
       decoration_config:
         timeout: 3h
         grace_period: 5m
+      cluster: phx-prow
       max_concurrency: 6
       labels:
         preset-dind-enabled: "true"
@@ -68,6 +70,7 @@ presubmits:
       decoration_config:
         timeout: 3h
         grace_period: 5m
+      cluster: phx-prow
       max_concurrency: 6
       labels:
         preset-dind-enabled: "true"
@@ -97,6 +100,7 @@ presubmits:
       decoration_config:
         timeout: 3h
         grace_period: 5m
+      cluster: phx-prow
       max_concurrency: 6
       labels:
         preset-dind-enabled: "true"

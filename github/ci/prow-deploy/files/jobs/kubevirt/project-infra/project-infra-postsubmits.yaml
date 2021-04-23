@@ -41,6 +41,7 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
+      cluster: phx-prow
       spec:
         nodeSelector:
           type: vm
@@ -72,6 +73,7 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
+      cluster: phx-prow
       spec:
         nodeSelector:
           type: vm
@@ -105,6 +107,7 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
+      cluster: phx-prow
       spec:
         nodeSelector:
           type: vm
@@ -137,6 +140,7 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
+      cluster: phx-prow
       spec:
         nodeSelector:
           type: vm
@@ -168,6 +172,7 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
+      cluster: phx-prow
       spec:
         nodeSelector:
           type: vm
@@ -200,6 +205,7 @@ postsubmits:
       labels:
         preset-docker-mirror-proxy: "true"
       skip_report: false
+      cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
@@ -252,6 +258,7 @@ postsubmits:
       labels:
         preset-docker-mirror-proxy: "true"
       skip_report: false
+      cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
@@ -304,6 +311,7 @@ postsubmits:
       labels:
         preset-docker-mirror-proxy: "true"
       skip_report: false
+      cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
@@ -353,6 +361,7 @@ postsubmits:
       - ^master$
       labels:
         preset-docker-mirror-proxy: "true"
+      cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
@@ -403,6 +412,7 @@ postsubmits:
       - ^master$
       labels:
         preset-docker-mirror-proxy: "true"
+      cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
@@ -454,6 +464,7 @@ postsubmits:
       - ^master$
       labels:
         preset-docker-mirror-proxy: "true"
+      cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
@@ -504,6 +515,7 @@ postsubmits:
       - ^master$
       labels:
         preset-docker-mirror-proxy: "true"
+      cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
@@ -558,6 +570,7 @@ postsubmits:
       - ^master$
       labels:
         preset-docker-mirror-proxy: "true"
+      cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
@@ -606,6 +619,7 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
+      cluster: ibm-prow-jobs
       spec:
         containers:
         - image: gcr.io/k8s-prow/transfigure:v20210224-afd05eb414

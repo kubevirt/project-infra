@@ -3,6 +3,7 @@ presubmits:
   - name: check-prow-config
     always_run: true
     decorate: true
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: vm
@@ -25,6 +26,7 @@ presubmits:
     run_if_changed: robots/.*
     optional: false
     decorate: true
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: vm
@@ -88,6 +90,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: vm
@@ -114,6 +117,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: vm
@@ -141,6 +145,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: vm
@@ -169,6 +174,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: vm
@@ -197,6 +203,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: vm
@@ -224,6 +231,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -256,6 +264,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -310,6 +319,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -346,6 +356,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -382,6 +393,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -418,6 +430,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -454,6 +467,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -488,6 +502,7 @@ presubmits:
     decorate: true
     annotations:
       testgrid-create-test-group: "false"
+    cluster: ibm-prow-jobs
     spec:
       containers:
       - image: gcr.io/k8s-prow/transfigure:v20210224-afd05eb414
@@ -510,6 +525,7 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     max_concurrency: 1
+    cluster: ibm-prow-jobs
     spec:
       containers:
       - name: peribolos
@@ -547,6 +563,7 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     max_concurrency: 1
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: vm
@@ -577,6 +594,7 @@ presubmits:
     decoration_config:
       timeout: 1h
       grace_period: 5m
+    cluster: phx-prow
     max_concurrency: 1
     spec:
       nodeSelector:

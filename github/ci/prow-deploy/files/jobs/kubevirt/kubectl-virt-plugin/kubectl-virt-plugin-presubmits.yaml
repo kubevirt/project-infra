@@ -17,6 +17,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+    cluster: ibm-prow-jobs
     spec:
       containers:
       - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:49045b159c711cf307bdabeb5fd8889dae26a44753ec8c74a3e32fa3ba5fcde1
@@ -47,6 +48,7 @@ presubmits:
     labels:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+    cluster: ibm-prow-jobs
     spec:
       containers:
       - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:49045b159c711cf307bdabeb5fd8889dae26a44753ec8c74a3e32fa3ba5fcde1
@@ -69,6 +71,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+    cluster: phx-prow
     spec:
       nodeSelector:
         type: bare-metal-external

@@ -9,6 +9,7 @@ periodics:
         repo: kubevirt.github.io
         base_ref: source
         path_alias: kubevirt.github.io
+    cluster: phx-prow
     spec:
       nodeSelector:
         region: primary

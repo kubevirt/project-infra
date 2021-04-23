@@ -4,6 +4,7 @@ periodics:
   decorate: true
   annotations:
     testgrid-create-test-group: "false"
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: vm
@@ -40,6 +41,7 @@ periodics:
   decorate: true
   annotations:
     testgrid-create-test-group: "false"
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: vm
@@ -75,6 +77,7 @@ periodics:
   decorate: true
   annotations:
     testgrid-create-test-group: "false"
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: vm
@@ -110,6 +113,7 @@ periodics:
   decorate: true
   annotations:
     testgrid-create-test-group: "false"
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: vm
@@ -145,6 +149,7 @@ periodics:
   decorate: true
   annotations:
     testgrid-create-test-group: "false"
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: vm
@@ -204,6 +209,7 @@ periodics:
     repo: kubevirt
     base_ref: master
     work_dir: true
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -241,6 +247,7 @@ periodics:
       repo: kubevirt
       base_ref: master
       work_dir: true
+  cluster: prow-workloads
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -278,6 +285,7 @@ periodics:
       repo: kubevirt
       base_ref: master
       work_dir: true
+  cluster: prow-workloads
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -509,6 +517,7 @@ periodics:
       repo: kubevirt
       base_ref: master
       work_dir: true
+  cluster: prow-workloads
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -549,6 +558,7 @@ periodics:
       repo: kubevirt
       base_ref: master
       work_dir: true
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -678,6 +688,7 @@ periodics:
       base_ref: master
       path_alias: kubevirt
       workdir: true
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -713,6 +724,7 @@ periodics:
     base_ref: master
     work_dir: true
   skip_report: true
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -755,6 +767,7 @@ periodics:
     base_ref: master
     work_dir: true
   skip_report: true
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -797,6 +810,7 @@ periodics:
     base_ref: master
     work_dir: true
   skip_report: true
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -840,6 +854,7 @@ periodics:
     base_ref: master
     work_dir: true
   skip_report: true
+  cluster: phx-prow
   spec:
       nodeSelector:
         hardwareSupport: sriov-nic
@@ -922,6 +937,7 @@ periodics:
     base_ref: master
     work_dir: true
   skip_report: true
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -968,6 +984,7 @@ periodics:
     preset-docker-mirror: "true"
     preset-bazel-cache: "true"
     preset-bazel-unnested: "true"
+  cluster: phx-prow
   spec:
     volumes:
     - name: token

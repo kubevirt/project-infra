@@ -8,6 +8,7 @@ periodics:
     timeout: 1h
     grace_period: 5m
   max_concurrency: 1
+  cluster: phx-prow
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
@@ -49,6 +50,7 @@ periodics:
     timeout: 1h
     grace_period: 5m
   max_concurrency: 1
+  cluster: phx-prow
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"

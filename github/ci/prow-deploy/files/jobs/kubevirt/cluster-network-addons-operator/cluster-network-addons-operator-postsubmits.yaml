@@ -10,6 +10,7 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
+      cluster: phx-prow
       spec:
         nodeSelector:
           type: vm
