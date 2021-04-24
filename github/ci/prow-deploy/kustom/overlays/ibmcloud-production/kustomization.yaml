@@ -7,6 +7,7 @@ resources:
   - resources/ingress-class.yaml
   - resources/hook-rbac.yaml
   - resources/horologium-rbac.yaml
+  - resources/sinker-rbac.yaml
   # templated resources
   - resources/admin-rbac.yaml
 

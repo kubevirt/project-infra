@@ -10,7 +10,7 @@
     batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/
 - command: update
   path: deck.spyglass.gcs_browser_prefix
-  value: https://gcsweb.ci.kubevirt.io/
+  value: https://gcsweb.ci.kubevirt.io/gcs/
 - command: update
   path: plank.job_url_prefix_config.*
   value: https://prow.ci.kubevirt.io/view/
