@@ -5,6 +5,9 @@ kind: Kustomization
 resources:
   - ../../base
   - resources/ingress-class.yaml
+  - resources/hook-rbac.yaml
+  - resources/horologium-rbac.yaml
+  - resources/sinker-rbac.yaml
   # templated resources
   - resources/admin-rbac.yaml
 
@@ -40,8 +43,14 @@ patches:
       name: tide
     path: patches/JsonRFC6902/tide_deployment.yaml
   - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: crier
+    path: patches/JsonRFC6902/crier_deployment.yaml
+  - target:
       group: rbac.authorization.k8s.io
-      version: v1beta1
+      version: v1
       kind: Role
       namespace: test-pods
       name: deck
@@ -63,6 +72,22 @@ patches:
       kind: PersistentVolumeClaim
       name: ghproxy
     path: patches/StrategicMerge/ghproxy.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: Role
+      namespace: test-pods
+      name: crier
+    path: patches/StrategicMerge/crier_role.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: Role
+      namespace: test-pods
+      name: prow-controller-manager
+    path: patches/StrategicMerge/prow_controller_manager_role.yaml
+
+
   # namespaces
   - target:
       group: apps

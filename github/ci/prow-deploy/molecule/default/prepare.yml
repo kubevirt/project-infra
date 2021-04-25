@@ -58,6 +58,13 @@
       changed_when: false
       when: "'kubevirtci' in deploy_environment"
 
+    - name: bootstrap cluster
+      shell: |
+        kubectl apply -f '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/resources/bootstrap.yaml'
+      changed_when: false
+      environment:
+        KUBECONFIG: '{{ kubeconfig_path }}'
+
     - name: set secrets dir
       set_fact:
         secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/secrets/'
@@ -72,3 +79,22 @@
         src: '{{ kubeconfig_path }}'
         dest: '{{ secrets_dir }}/kubeconfig'
         remote_src: true
+
+    - name: copy production kustomize files
+      synchronize:
+        src: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/ibmcloud-production/{{ item }}'
+        dest: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}'
+      delegate_to: '{{ inventory_hostname }}'
+      loop:
+        - kustomization.yaml
+        - patches
+        - resources
+
+    - name: patch production resources for testing usage
+      block:
+        - name: patch greenhouse node selector
+          shell: |
+            yq w -i {{ project_infra_root }}/github/ci/prow-deploy/kustom/base/manifests/local/greenhouse-deployment.yaml spec.template.spec.nodeSelector.type vm
+        - name: patch ghproxy pvc class
+          shell: |
+            yq w -i {{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/patches/StrategicMerge/ghproxy.yaml spec.storageClassName standard
