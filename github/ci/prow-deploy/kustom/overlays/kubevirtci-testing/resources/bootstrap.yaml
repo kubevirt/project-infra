@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: kubernetes-prow
+  name: kubevirt-prow
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: kubernetes-prow-jobs
+  name: kubevirt-prow-jobs
 ---
 apiVersion: v1
 kind: Node
@@ -23,6 +23,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: job-config
+  namespace: kubevirt-prow
 data:
   test_job_config.yaml: |
     presubmits:
