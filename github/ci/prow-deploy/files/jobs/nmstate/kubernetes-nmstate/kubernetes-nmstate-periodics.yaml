@@ -4,6 +4,7 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: vm
@@ -41,6 +42,7 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: vm
@@ -78,6 +80,7 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
+  cluster: phx-prow
   spec:
     nodeSelector:
       type: vm
