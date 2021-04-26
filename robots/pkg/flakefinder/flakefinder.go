@@ -230,7 +230,7 @@ func GetReportBaseData(ctx context.Context, c *github.Client, client *storage.Cl
 		jobDir := "logs"
 		periodicJobDirs, err := ListGcsObjects(ctx, client, BucketName, jobDir+"/", "/")
 		if err != nil {
-			log.Printf("failed to load periodicJobDirs for %v",  fmt.Sprintf("%s*", o.periodicJobDirRegex), fmt.Errorf("error listing gcs objects: %v", err))
+			log.Printf("failed to load periodicJobDirs for %v: %v",  fmt.Sprintf("%s*", o.periodicJobDirRegex), fmt.Errorf("error listing gcs objects: %v", err))
 		}
 
 		for _, periodicJobDir := range periodicJobDirs {
