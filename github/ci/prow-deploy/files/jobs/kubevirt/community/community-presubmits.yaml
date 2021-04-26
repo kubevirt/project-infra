@@ -16,3 +16,19 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
+  - name: pull-community-validate-sigs-yaml
+    run_if_changed: "sigs.yaml"
+    optional: false
+    decorate: true
+    spec:
+      containers:
+        - image: golang:1.16
+          env:
+            - name: GO111MODULE
+              value: "on"
+            - name: XDG_CACHE_HOME
+              value: "/tmp/.cache"
+          command:
+            - "/bin/bash"
+            - "-c"
+            - "go run validators/cmd/sigs/sigs-validator.go --sigs_file_path=./sigs.yaml"
