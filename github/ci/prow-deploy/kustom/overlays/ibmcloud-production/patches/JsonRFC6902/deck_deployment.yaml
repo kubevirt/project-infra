@@ -1,6 +1,6 @@
 # Removes deprecated  --redirect-http-to=
 - op: remove
-  path: /spec/template/spec/containers/0/args/3
+  path: /spec/template/spec/containers/0/args/2
 - op: remove
   path: /spec/template/spec/containers/0/livenessProbe
 - op: remove
