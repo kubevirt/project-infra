@@ -231,7 +231,7 @@ periodics:
         base:master
         review:none
         "Run bazelisk run //plugins/cmd/uploader:uploader -- -workspace /home/prow/go/src/github.com/kubevirt/project-infra/../kubevirt/WORKSPACE -dry-run=false"
-      - --updated=24h
+      - --updated=12h
       - --token=/etc/github/oauth
       - |-
         --comment=/lgtm
