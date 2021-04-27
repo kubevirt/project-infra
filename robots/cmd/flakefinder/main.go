@@ -52,6 +52,7 @@ func flagOptions() options {
 	flag.StringVar(&o.repo, "repo", Repo, "GitHub org name")
 	flag.BoolVar(&o.today, "today", false, "Whether to create a report for the current day only (i.e. using data starting from report day 00:00Z till now)")
 	flag.BoolVar(&o.skipBeforeStartOfReport, "skip_results_before_start_of_report", true, "Whether to skip test results occurring before start of report")
+	flag.StringVar(&o.periodicJobDirRegex, "periodic_job_dir_regex", "", "Regular expression to use for fetching data from periodic jobs, or empty string if not wanted")
 	flag.Parse()
 	return o
 }
@@ -69,6 +70,7 @@ type options struct {
 	repo                    string
 	today                   bool
 	skipBeforeStartOfReport bool
+	periodicJobDirRegex     string
 }
 
 const MaxNumberOfReportsToLinkTo = 50
@@ -77,7 +79,6 @@ const Org = "kubevirt"
 const Repo = "kubevirt"
 
 var ReportOutputPath = flakefinder.ReportsPath
-var PRBaseBranch string
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
@@ -88,7 +89,6 @@ func main() {
 	}
 
 	ReportOutputPath = BuildReportOutputPath(o)
-	PRBaseBranch = o.prBaseBranch
 
 	secretAgent := &secret.Agent{}
 	if err := secretAgent.Start([]string{o.token}); err != nil {
@@ -116,7 +116,10 @@ func main() {
 		log.Fatalf("Failed to create new storage client: %v.\n", err)
 	}
 
-	reportBaseData := flakefinder.GetReportBaseData(ctx, ghClient, storageClient, flakefinder.NewReportBaseDataOptions(PRBaseBranch, o.today, o.merged, o.org, o.repo, o.skipBeforeStartOfReport))
+	reportBaseDataOptions := flakefinder.NewReportBaseDataOptions(o.prBaseBranch, o.today, o.merged, o.org, o.repo, o.skipBeforeStartOfReport)
+	reportBaseDataOptions.SetPeriodicJobDirRegex(o.periodicJobDirRegex)
+
+	reportBaseData := flakefinder.GetReportBaseData(ctx, ghClient, storageClient, reportBaseDataOptions)
 
 	err = WriteReportToBucket(ctx, storageClient, o.merged, o.org, o.repo, o.isDryRun, reportBaseData)
 	if err != nil {
