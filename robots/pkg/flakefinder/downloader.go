@@ -130,7 +130,7 @@ func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 	return reports, nil
 }
 
-func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client, bucket string, periodicJobDir []string, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*JobResult, error) {
+func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client, bucket string, periodicJobDir []string, startOfReport time.Time, endOfReport time.Time) ([]*JobResult, error) {
 
 	dirOfJobs := path.Join(periodicJobDir...)
 
@@ -156,9 +156,14 @@ func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client
 			return nil, err
 		}
 		isBeforeStartOfReport := attrsOfFinishedJsonFile.Created.Before(startOfReport)
-		if skipBeforeStartOfReport && isBeforeStartOfReport {
+		if isBeforeStartOfReport {
 			logrus.Infof("Skipping test results before %v for %s in bucket '%s'\n", startOfReport, buildDirPath, bucket)
 			break
+		}
+		isAfterEndOfReport := attrsOfFinishedJsonFile.Created.After(endOfReport)
+		if isAfterEndOfReport {
+			logrus.Infof("Skipping test results after %v for %s in bucket '%s'\n", endOfReport, buildDirPath, bucket)
+			continue
 		}
 
 		_, err = readGcsObject(ctx, client, bucket, dirOfFinishedJSON)

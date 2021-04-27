@@ -237,7 +237,7 @@ func GetReportBaseData(ctx context.Context, c *github.Client, client *storage.Cl
 			if !o.periodicJobDirRegex.MatchString(periodicJobDir) {
 				continue
 			}
-			results, err := FindUnitTestFilesForPeriodicJob(ctx, client, BucketName, []string{jobDir, periodicJobDir}, startOfReport, o.skipBeforeStartOfReport)
+			results, err := FindUnitTestFilesForPeriodicJob(ctx, client, BucketName, []string{jobDir, periodicJobDir}, startOfReport, endOfReport)
 			if err != nil {
 				log.Printf("failed to load JUnit files for job %v: %v", periodicJobDir, err)
 			}
