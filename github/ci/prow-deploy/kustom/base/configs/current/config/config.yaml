@@ -3,6 +3,7 @@ plank:
   job_url_prefix_config:
     '*':  https://prow.apps.ovirt.org/view/gcs/
   pod_pending_timeout: 60m
+  pod_unscheduled_timeout: 24h
   default_decoration_configs:
     '*':
       timeout: 2h
