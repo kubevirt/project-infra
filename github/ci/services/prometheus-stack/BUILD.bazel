@@ -29,7 +29,7 @@ PRODUCTION_USER = "ibm-prow-jobs-automation"
         name = NAME,
         cluster = CLUSTER,
         manifests = glob([
-            "manifests/*.yaml",
+            "manifests/stack/*.yaml",
         ]),
         patches = glob([
             "patches/*.yaml",
@@ -43,5 +43,21 @@ PRODUCTION_USER = "ibm-prow-jobs-automation"
     for NAME, CLUSTER, USER in [
         ("testing", TEST_CLUSTER, TEST_USER),
         ("production", PRODUCTION_CLUSTER, PRODUCTION_USER),
+    ]
+]
+
+[
+    k8s_deploy(
+        name = NAME,
+        cluster = CLUSTER,
+        manifests = glob([
+            "manifests/service-monitors/*.yaml",
+        ]),
+        namespace = "kubevirt-prow",
+        user = USER,
+    )
+    for NAME, CLUSTER, USER in [
+        ("testing-service-monitors", TEST_CLUSTER, TEST_USER),
+        ("production-service-monitors", PRODUCTION_CLUSTER, PRODUCTION_USER),
     ]
 ]

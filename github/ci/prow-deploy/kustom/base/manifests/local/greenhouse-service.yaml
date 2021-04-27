@@ -17,6 +17,7 @@ kind: Service
 metadata:
   name: bazel-cache
   labels:
+    app: greenhouse
     run: bazel-cache
 spec:
   ports:
@@ -30,6 +31,7 @@ kind: Service
 metadata:
   name: bazel-cache-metrics
   labels:
+    app: greenhouse
     metrics: "true"
 spec:
   selector:

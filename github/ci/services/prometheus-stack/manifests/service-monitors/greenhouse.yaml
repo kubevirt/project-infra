@@ -1,0 +1,15 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: bazel-cache
+  labels:
+    group: kubevirtci
+spec:
+  selector:
+    matchLabels:
+      app: greenhouse
+      metrics: "true"
+  endpoints:
+  - port: default
+    path: /prometheus

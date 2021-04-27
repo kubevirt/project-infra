@@ -205,7 +205,7 @@ data:
       "editable": true,
       "gnetId": null,
       "graphTooltip": 0,
-      "id": 3,
+      "id": null
       "links": [],
       "panels": [
         {
@@ -2399,7 +2399,7 @@ data:
       "editable": true,
       "gnetId": null,
       "graphTooltip": 0,
-      "id": 7,
+      "id": null
       "links": [],
       "panels": [
         {
@@ -3014,7 +3014,7 @@ data:
       "editable": true,
       "gnetId": null,
       "graphTooltip": 0,
-      "id": 9,
+      "id": null
       "iteration": 1615974370391,
       "links": [],
       "panels": [
@@ -3800,9 +3800,130 @@ data:
       "editable": true,
       "gnetId": null,
       "graphTooltip": 0,
-      "id": 4,
+      "id": null
       "links": [],
       "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "hiddenSeries": false,
+          "id": 6,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.4.0",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "$$hashKey": "object:24",
+              "alias": "retests to merge avg + std",
+              "fillBelowTo": "retests to merge avg - std",
+              "lines": false
+            },
+            {
+              "$$hashKey": "object:29",
+              "alias": "retests to merge avg - std",
+              "lines": false
+            }
+          ],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "cihealth_avg_retests_to_merge_total + cihealth_std_retests_to_merge_total",
+              "interval": "",
+              "legendFormat": "retests to merge avg + std",
+              "refId": "A"
+            },
+            {
+              "expr": "clamp_min(cihealth_avg_retests_to_merge_total - cihealth_std_retests_to_merge_total, 0)  ",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "retests to merge avg - std",
+              "refId": "B"
+            },
+            {
+              "expr": "cihealth_avg_retests_to_merge_total",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "retests to merge avg",
+              "refId": "C"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Retests to merge",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
         {
           "aliasColors": {},
           "bars": false,
@@ -3825,9 +3946,9 @@ data:
           "fill": 0,
           "fillGradient": 0,
           "gridPos": {
-            "h": 10,
-            "w": 24,
-            "x": 0,
+            "h": 8,
+            "w": 12,
+            "x": 12,
             "y": 0
           },
           "hiddenSeries": false,
@@ -3894,7 +4015,7 @@ data:
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Average time to merge",
+          "title": "Time to merge",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -3951,7 +4072,7 @@ data:
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 10
+            "y": 8
           },
           "hiddenSeries": false,
           "id": 4,
@@ -4017,7 +4138,7 @@ data:
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Average merge queue length",
+          "title": "Merge queue length",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -4072,7 +4193,7 @@ data:
       "timezone": "",
       "title": "Merge Queue",
       "uid": "WZU1-LPGz",
-      "version": 4
+      "version": 8
     }
 ---
 # Source: grafana/templates/tests/test-configmap.yaml
