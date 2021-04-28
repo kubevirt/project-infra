@@ -72,7 +72,7 @@ periodics:
       - name: KUBEVIRT_NUM_NODES
         value: "2"
       - name: TARGET_OS
-        value: "centos"
+        value: "centos8"
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
