@@ -1,7 +1,7 @@
 plank:
-  job_url_template: 'https://prow.apps.ovirt.org/view/gcs/kubevirt-prow/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
+  job_url_template: 'https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
   job_url_prefix_config:
-    '*':  https://prow.apps.ovirt.org/view/gcs/
+    '*':  https://prow.ci.kubevirt.org/view/
   pod_pending_timeout: 60m
   pod_unscheduled_timeout: 24h
   default_decoration_configs:
@@ -9,10 +9,10 @@ plank:
       timeout: 2h
       grace_period: 15s
       utility_images:
-        clonerefs: "gcr.io/k8s-prow/clonerefs:v20200623-9f5410055c"
-        initupload: "gcr.io/k8s-prow/initupload:v20200623-9f5410055c"
-        entrypoint: "gcr.io/k8s-prow/entrypoint:v20200623-9f5410055c"
-        sidecar: "gcr.io/k8s-prow/sidecar:v20200623-9f5410055c"
+        clonerefs: "gcr.io/k8s-prow/clonerefs:v20210423-a5cb5e7945"
+        initupload: "gcr.io/k8s-prow/initupload:v20210423-a5cb5e7945"
+        entrypoint: "gcr.io/k8s-prow/entrypoint:v20210423-a5cb5e7945"
+        sidecar: "gcr.io/k8s-prow/sidecar:v20210423-a5cb5e7945"
       gcs_configuration:
         bucket: "kubevirt-prow"
         path_strategy: "explicit"
@@ -21,7 +21,7 @@ plank:
 deck:
   spyglass:
     size_limit: 500000000 # 500MB
-    gcs_browser_prefix: https://gcsweb.apps.ovirt.org/gcs/
+    gcs_browser_prefix: https://gcsweb.ci.kubevirt.io/gcs/
     testgrid_config: gs://k8s-testgrid/config
     testgrid_root: https://testgrid.k8s.io/
     lenses:
@@ -159,7 +159,7 @@ tide:
     - needs-rebase
     - "dco-signoff: no"
   pr_status_base_urls:
-    '*': https://prow.apps.ovirt.org/pr
+    '*': https://prow.ci.kubevirt.io/pr
   context_options:
     orgs:
      kubevirt:
