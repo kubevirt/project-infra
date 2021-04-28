@@ -791,7 +791,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "90Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-prev-prev
   annotations:
     testgrid-dashboards: kubevirt-periodics
