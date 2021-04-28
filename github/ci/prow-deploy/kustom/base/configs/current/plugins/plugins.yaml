@@ -320,6 +320,7 @@ external_plugins:
   - name: cherrypicker
   kubevirt/project-infra:
   - name: rehearse
+    endpoint: http://prow-rehearse:9900
     events:
       - pull_request
       - issue_comment
