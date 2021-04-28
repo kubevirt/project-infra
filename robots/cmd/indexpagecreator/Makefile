@@ -1,13 +1,17 @@
-.PHONY: all clean format test push
-all: format build push
-bazelbin := bazelisk
+.PHONY: all clean verify format test push
+all: format verify test push
 
 format:
 	gofmt -w .
 
-build:
-	$(bazelbin) build //robots/cmd/indexpagecreator:*
+test:
+	bazel build //robots/cmd/indexpagecreator:* //robots/pkg/flakefinder:*
+
+verify:
+	../build-verify.sh
 
 push:
-	$(bazelbin) run //robots/cmd/indexpagecreator:push
-	bash -x ../../../hack/update-jobs-with-latest-image.sh quay.io/kubevirtci/indexpagecreator
+	../push.sh indexpagecreator
+
+clean:
+	bazel clean --expunge
