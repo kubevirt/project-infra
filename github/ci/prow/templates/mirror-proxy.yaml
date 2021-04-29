@@ -30,25 +30,25 @@ spec:
         - name: ALLOW_PUSH
           value: "true"
         - name: PROXY_CONNECT_TIMEOUT
-          value: "600s"
+          value: "1200s"
         - name: PROXY_CONNECT_READ_TIMEOUT
-          value: "600s"
+          value: "1200s"
         - name: PROXY_CONNECT_CONNECT_TIMEOUT
-          value: "600s"
+          value: "1200s"
         - name: PROXY_CONNECT_SEND_TIMEOUT
-          value: "600s"
+          value: "1200s"
         - name: SEND_TIMEOUT
-          value: "600s"
+          value: "1200s"
         - name: CLIENT_BODY_TIMEOUT
-          value: "600s"
+          value: "1200s"
         - name: CLIENT_HEADER_TIMEOUT
-          value: "600s"
+          value: "1200s"
         - name: PROXY_READ_TIMEOUT
-          value: "600s"
+          value: "1200s"
         - name: PROXY_CONNECT_TIMEOUT
-          value: "600s"
+          value: "1200s"
         - name: PROXY_SEND_TIMEOUT
-          value: "600s"
+          value: "1200s"
         volumeMounts:
         - name: storage
           mountPath: /docker_mirror_cache
