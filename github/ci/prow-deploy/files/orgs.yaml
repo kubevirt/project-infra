@@ -313,6 +313,12 @@ orgs:
         description: 'Incubating: A number of Kubernetes device-plugins developed and useful for KubeVirt'
         has_projects: false
         has_wiki: false
+      libguestfs-appliance:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        description: Builds libguestfs appliances and container images to be consumed by other kubevirt projects
+        has_projects: true
+        homepage: https://kubevirt.io
       kubevirt:
         allow_rebase_merge: false
         allow_squash_merge: false
@@ -581,6 +587,11 @@ orgs:
           cloud-provider-kubevirt: write
           kubernetes-device-plugins: read
           kubevirt: write
+      libguestfs-appliance-maintainers:
+        maintainers:
+          - alicefr
+        repos:
+          libguestfs-appliance: admin
       monitoring-maintainers:
         maintainers:
           - sradco

@@ -43,6 +43,12 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/libguestfs-appliance:
+  - trigger
+  - owners-label
+  - lgtm
+  - approve
+
   kubevirt/common-templates:
   - trigger
   - release-note
@@ -302,6 +308,12 @@ plugins:
   - trigger
 
 external_plugins:
+  libguestfs-appliance:
+  - name: needs-rebase
+    events:
+      - pull_request
+  - name: cherrypicker
+  - name: release-blocker
   kubevirt:
   - name: needs-rebase
     events:
