@@ -1,0 +1,29 @@
+presubmits:
+  kubevirt/libguestfs-appliance:
+  - name: pull-libguestfs-appliance-build
+    branches:
+      - main
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 3h
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+    cluster: ibm-prow-jobs
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "./create-libguestfs-appliance.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "2Gi"
