@@ -291,6 +291,8 @@ branch-protection:
                   - continuous-integration/travis-ci/pr
             release-1.3:
               protect: true
+            release-1.4:
+              protect: true
         cluster-network-addons-operator:
           branches:
             master:
