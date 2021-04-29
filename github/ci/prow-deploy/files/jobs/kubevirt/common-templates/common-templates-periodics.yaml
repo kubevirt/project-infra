@@ -1,6 +1,6 @@
 periodics:
 - name: periodic-common-templates-nightly-fedora-cdi-builder
-  cron: "30 2 * * *"
+  cron: "30 20 * * *"
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
@@ -16,7 +16,7 @@ periodics:
   extra_refs:
     - org: kubevirt
       repo: common-templates
-      base_ref: containerdisk-automation
+      base_ref: master
       work_dir: true
     - org: kubevirt
       repo: kubevirtci
@@ -42,7 +42,7 @@ periodics:
         requests:
           memory: "8Gi"
 - name: periodic-common-templates-nightly-centos-cdi-builder
-  cron: "30 3 * * *"
+  cron: "30 21 * * *"
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
@@ -58,7 +58,7 @@ periodics:
   extra_refs:
     - org: kubevirt
       repo: common-templates
-      base_ref: containerdisk-automation
+      base_ref: master
       work_dir: true
     - org: kubevirt
       repo: kubevirtci
@@ -70,7 +70,7 @@ periodics:
     - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210331-b66b42e
       env:
       - name: KUBEVIRT_NUM_NODES
-        value: "2"
+        value: "3"
       - name: TARGET_OS
         value: "centos8"
       command:
