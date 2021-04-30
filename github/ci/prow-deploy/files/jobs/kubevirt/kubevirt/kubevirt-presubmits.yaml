@@ -240,6 +240,51 @@ presubmits:
           resources:
             requests:
               memory: "34Gi"
+  - name: pull-kubevirt-e2e-k8s-1.19-nonroot
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    always_run: false
+    optional: true
+    skip_report: false
+    decorate: true
+    decoration_config:
+      timeout: 7h
+      grace_period: 5m
+    max_concurrency: 11
+    cluster: phx-prow
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          env:
+            - name: TARGET
+              value: k8s-1.19
+            - name: KUBEVIRT_E2E_SKIP
+              value: "SRIOV|GPU|Operator"
+            - name: FEATURE_GATES
+              value: "NonRoot"
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "automation/test.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "34Gi"
+  
   - name: pull-kubevirt-e2e-k8s-1.19
     skip_branches:
       - release-\d+\.\d+
@@ -546,6 +591,90 @@ presubmits:
         resources:
           requests:
             memory: "34Gi"
+  - name: pull-kubevirt-e2e-kind-1.17-sriov-nonroot
+    skip_branches:
+    - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+      k8s.v1.cni.cncf.io/networks: 'multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni'
+      testgrid-dashboards: kubevirt-presubmits
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 30m
+    max_concurrency: 10
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+      sriov-pod: "true"
+      rehearsal.allowed: "true"
+    cluster: phx-prow
+    spec:
+      nodeSelector:
+        hardwareSupport: sriov-nic
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: sriov-pod
+                  operator: In
+                  values:
+                  - "true"
+              topologyKey: kubernetes.io/hostname
+            - labelSelector:
+                matchExpressions:
+                - key: sriov-pod-multi
+                  operator: In
+                  values:
+                  - "true"
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - image: quay.io/kubevirtci/golang:v20210316-d295087
+        env:
+          - name: "TARGET"
+            value: "kind-k8s-sriov-1.17.0"
+          - name: "GIMME_GO_VERSION"
+            value: "1.13.8"
+          - name: FEATURE_GATES
+            value: "NonRoot"
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/bash"
+        - "-ce"
+        - "automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "34Gi"
+        volumeMounts:
+          #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
+          - name: modules
+            mountPath: /lib/modules
+            readOnly: true
+          - name: cgroup
+            mountPath: /sys/fs/cgroup
+          - name: vfio
+            mountPath: /dev/vfio/
+      volumes:
+        - name: modules
+          hostPath:
+            path: /lib/modules
+            type: Directory
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: Directory
+        - name: vfio
+          hostPath:
+            path: /dev/vfio/
+            type: Directory
+  
   - name: pull-kubevirt-e2e-kind-1.17-sriov
     skip_branches:
     - release-\d+\.\d+
@@ -662,6 +791,51 @@ presubmits:
           resources:
             requests:
               memory: "34Gi"
+  - name: pull-kubevirt-e2e-k8s-1.17-rook-ceph-nonroot
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    always_run: false
+    optional: true
+    skip_report: false
+    decorate: true
+    decoration_config:
+      timeout: 7h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+    cluster: phx-prow
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          env:
+            - name: FEATURE_GATES
+              value: "NonRoot"
+            - name: TARGET
+              value: k8s-1.17
+            - name: KUBEVIRT_STORAGE
+              value: rook-ceph-default
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "automation/test.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "34Gi"
+  
   - name: pull-kubevirt-e2e-k8s-1.17-rook-ceph
     skip_branches:
       - release-\d+\.\d+
