@@ -693,25 +693,20 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      sriov-pod: "true"
+      #sriov-pod: "true" # uncomment only if safety catch is desired (sequential mode)
+      sriov-pod-multi: "true"
       rehearsal.allowed: "true"
     cluster: phx-prow
     spec:
       nodeSelector:
-        hardwareSupport: sriov-nic
+        #hardwareSupport: sriov-nic
+        kubernetes.io/hostname: ovirt-srv17.phx.ovirt.org
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
                 - key: sriov-pod
-                  operator: In
-                  values:
-                  - "true"
-              topologyKey: kubernetes.io/hostname
-            - labelSelector:
-                matchExpressions:
-                - key: sriov-pod-multi
                   operator: In
                   values:
                   - "true"
@@ -728,6 +723,7 @@ presubmits:
         - "/bin/bash"
         - "-ce"
         - |
+            echo bla
             automation/test.sh
         # docker-in-docker needs privileged mode
         securityContext:
@@ -735,6 +731,10 @@ presubmits:
         resources:
           requests:
             memory: "34Gi"
+            cpu: "2"
+            prow/sriov: "2"
+          limits:
+            prow/sriov: "2"
         volumeMounts:
           #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
           - name: modules
