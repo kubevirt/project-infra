@@ -1,5 +1,5 @@
 periodics:
-- name: periodic-hco-push-nightly-build-master
+- name: periodic-hco-push-nightly-build-main
   cron: "2 2 * * *"
   decorate: true
   annotations:
@@ -17,7 +17,7 @@ periodics:
   extra_refs:
     - org: kubevirt
       repo: hyperconverged-cluster-operator
-      base_ref: master
+      base_ref: main
       work_dir: true
   cluster: phx-prow
   spec:
