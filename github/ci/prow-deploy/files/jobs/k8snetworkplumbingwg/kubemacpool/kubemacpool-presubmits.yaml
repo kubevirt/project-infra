@@ -3,7 +3,7 @@ presubmits:
   k8snetworkplumbingwg/kubemacpool:
     - name: pull-kubemacpool-unit-test
       skip_branches:
-        - release-\d+\.\d+
+        - release-v\d+\.\d+
       annotations:
         fork-per-release: "true"
       always_run: true
@@ -34,7 +34,7 @@ presubmits:
 
     - name: pull-kubemacpool-e2e-k8s
       skip_branches:
-        - release-\d+\.\d+
+        - release-v\d+\.\d+
       annotations:
         fork-per-release: "true"
       always_run: true
