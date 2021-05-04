@@ -68,7 +68,7 @@ presubmits:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-k8s-1.19-hpp
     skip_branches:
-      - release-v1.13
+      - release-v1.28
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -101,7 +101,7 @@ presubmits:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-k8s-1.19-ceph
     skip_branches:
-      - release-v1.13
+      - release-v1.28
     annotations:
       fork-per-release: "true"
     always_run: true
