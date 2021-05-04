@@ -1,0 +1,288 @@
+---
+presubmits:
+  kubevirt/cluster-network-addons-operator:
+    - name: pull-e2e-cnao-lifecycle-k8s-release-0.53
+      branches:
+        - release-0.53
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 4h
+        grace_period: 10m
+      cluster: phx-prow
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-lifecycle-k8s.sh"
+    - name: pull-e2e-cnao-workflow-k8s-release-0.53
+      branches:
+        - release-0.53
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      cluster: phx-prow
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-workflow-k8s.sh"
+    - name: pull-cnao-unit-test-release-0.53
+      branches:
+        - release-0.53
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      cluster: phx-prow
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "4Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.unit-test.sh"
+    - name: pull-e2e-cnao-kubemacpool-functests-release-0.53
+      branches:
+        - release-0.53
+      always_run: true
+      optional: false
+      decorate: true
+      skip_report: false
+      decoration_config:
+        timeout: 3h
+        grace_period: 25m
+      cluster: phx-prow
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-kubemacpool-functests.sh"
+    - name: pull-e2e-cnao-multus-functests-release-0.53
+      branches:
+        - release-0.53
+      annotations:
+        fork-per-release: "true"
+      always_run: true
+      optional: false
+      decorate: true
+      skip_report: false
+      decoration_config:
+        timeout: 3h
+        grace_period: 25m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      cluster: phx-prow
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-multus-functests.sh"
+    - name: pull-e2e-cnao-br-marker-functests-release-0.53
+      branches:
+        - release-0.53
+      annotations:
+        fork-per-release: "true"
+      always_run: true
+      optional: false
+      decorate: true
+      skip_report: false
+      decoration_config:
+        timeout: 3h
+        grace_period: 25m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      cluster: phx-prow
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-bridge-marker-functests.sh"
+    - name: pull-e2e-cnao-nmstate-functests-release-0.53
+      branches:
+        - release-0.53
+      annotations:
+        fork-per-release: "true"
+      always_run: true
+      optional: false
+      decorate: true
+      skip_report: false
+      decoration_config:
+        timeout: 3h
+        grace_period: 25m
+      max_concurrency: 6
+      cluster: phx-prow
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-nmstate-functests.sh"
+    - name: pull-e2e-cnao-ovs-cni-functests-release-0.53
+      branches:
+        - release-0.53
+      annotations:
+        fork-per-release: "true"
+      always_run: true
+      optional: false
+      decorate: true
+      skip_report: false
+      decoration_config:
+        timeout: 3h
+        grace_period: 25m
+      max_concurrency: 6
+      cluster: phx-prow
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-ovs-cni-functests.sh"
+    - name: pull-e2e-cnao-macvtap-cni-functests-release-0.53
+      branches:
+        - release-0.53
+      annotations:
+        fork-per-release: "true"
+      always_run: true
+      optional: false
+      decorate: true
+      skip_report: false
+      decoration_config:
+        timeout: 3h
+        grace_period: 25m
+      max_concurrency: 6
+      cluster: phx-prow
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-macvtap-cni-functests.sh"
