@@ -41,6 +41,7 @@ type options struct {
 	ensureLatestThreeMinor string
 	major                  int
 	providerDir            string
+	clusterUpDir           string
 }
 
 func (o *options) Validate() error {
@@ -73,6 +74,7 @@ func gatherOptions() options {
 	fs.BoolVar(&o.ensureLatest, "ensure-latest", false, "Ensure that we have a provider for the latest k8s release")
 	fs.StringVar(&o.ensureLatestThreeMinor, "ensure-last-three-minor-of", "", "Ensure that the last three minor releases of the given major release are up to date (e.g. v1 or 2)")
 	fs.StringVar(&o.providerDir, "k8s-provider-dir", "", "The directory of the k8s providers")
+	fs.StringVar(&o.clusterUpDir, "cluster-up-dir", "", "The directory of the cluster up configurations")
 	fs.Parse(os.Args[1:])
 	return o
 }
@@ -131,7 +133,7 @@ func main() {
 			log.Info("No release found.")
 			os.Exit(0)
 		}
-		err := kubevirtci.EnsureProviderExists(o.providerDir, releases[0])
+		err := kubevirtci.EnsureProviderExists(o.providerDir, o.clusterUpDir, releases[0])
 		if err != nil {
 			log.WithError(err).Info("Failed to ensure that a provider for the given release exists.")
 		}

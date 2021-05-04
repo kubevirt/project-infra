@@ -57,7 +57,7 @@ func DropUnsupporedProviders(existing []querier.SemVer, supportedReleases []*git
 // EnsureProviderExists will search for a predecessor provider, copy its content and set the version file accordingly
 // If a provider already exists, it will do nothing.
 // TODO new jobs need to be created
-func EnsureProviderExists(providerDir string, release *github.RepositoryRelease) error {
+func EnsureProviderExists(providerDir string, clusterUpDir string, release *github.RepositoryRelease) error {
 	existing, err := ReadExistingProviders(providerDir)
 	if err != nil {
 		return err
@@ -73,23 +73,45 @@ func EnsureProviderExists(providerDir string, release *github.RepositoryRelease)
 			return nil
 		}
 		// First smaller existing provider. Copy the provider.
-		sourceDir := filepath.Join(providerDir, fmt.Sprintf("%s.%s", rel.Major, rel.Minor))
-		targetDir := filepath.Join(providerDir, fmt.Sprintf("%s.%s", semver.Major, semver.Minor))
+		sourceProviderDir := filepath.Join(providerDir, fmt.Sprintf("%s.%s", rel.Major, rel.Minor))
+		targetProviderDir := filepath.Join(providerDir, fmt.Sprintf("%s.%s", semver.Major, semver.Minor))
 
-		if _, err := os.Stat(targetDir); os.IsNotExist(err) {
-			// proper recursive copy of dirs is complicated, let `cp` do that.
-			err := exec.Command("cp", "-a", sourceDir, targetDir).Run()
-			if err != nil {
-				return err
-			}
-			logrus.Infof("Added provider %s.%s with version %v", semver.Major, semver.Minor, semver.String())
-			// Bump the new provider to the right version
+		err = copyRecursive(sourceProviderDir, targetProviderDir)
+		if err != nil {
+			return err
 		}
+		logrus.Infof("Added provider %s.%s with version %v", semver.Major, semver.Minor, semver.String())
+
 		err = bumpRelease(providerDir, release)
 		if err != nil {
 			return err
 		}
+
+		sourceClusterUpDir := filepath.Join(clusterUpDir, fmt.Sprintf("k8s-%s.%s", rel.Major, rel.Minor))
+		targetClusterUpDir := filepath.Join(clusterUpDir, fmt.Sprintf("k8s-%s.%s", semver.Major, semver.Minor))
+
+		err = copyRecursive(sourceClusterUpDir, targetClusterUpDir)
+		if err != nil {
+			return err
+		}
+
+		// TODO change all old references in docs to new version
+
 		break
+	}
+	return nil
+}
+
+func copyRecursive(sourceDir string, targetDir string) error {
+	if _, err := os.Stat(targetDir); os.IsNotExist(err) {
+		if _, err := os.Stat(sourceDir); os.IsNotExist(err) {
+			return fmt.Errorf("source dir %q does not exist: %v", sourceDir, err)
+		}
+		// proper recursive copy of dirs is complicated, let `cp` do that.
+		err := exec.Command("cp", "-a", sourceDir, targetDir).Run()
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
