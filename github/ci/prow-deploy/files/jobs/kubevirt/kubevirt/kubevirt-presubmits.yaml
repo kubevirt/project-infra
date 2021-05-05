@@ -289,7 +289,7 @@ presubmits:
           resources:
             requests:
               memory: "34Gi"
-  
+
   - name: pull-kubevirt-e2e-k8s-1.19
     skip_branches:
       - release-\d+\.\d+
@@ -418,7 +418,7 @@ presubmits:
     always_run: true
     optional: false
     cluster: prow-workloads
-    skip_report: true
+    skip_report: false
     decorate: true
     decoration_config:
       timeout: 7h
@@ -694,7 +694,7 @@ presubmits:
           hostPath:
             path: /dev/vfio/
             type: Directory
-  
+
   - name: pull-kubevirt-e2e-kind-1.17-sriov
     skip_branches:
     - release-\d+\.\d+
