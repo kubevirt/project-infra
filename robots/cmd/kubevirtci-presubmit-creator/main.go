@@ -22,18 +22,17 @@ import (
 	"golang.org/x/oauth2"
 	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
-	resource "k8s.io/apimachinery/pkg/api/resource"
+	"k8s.io/apimachinery/pkg/api/resource"
 	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
 	prowjobs "k8s.io/test-infra/prow/apis/prowjobs/v1"
 	"k8s.io/test-infra/prow/config"
 	"kubevirt.io/project-infra/robots/pkg/querier"
 	"os"
 	"sigs.k8s.io/yaml"
-	"strconv"
 	"time"
 )
 
-const orgAndRepoForJobConfig = "kubevirt/kubevirtci"
+const OrgAndRepoForJobConfig = "kubevirt/kubevirtci"
 
 type options struct {
 	port int
@@ -119,30 +118,19 @@ func main() {
 
 	latestReleaseSemver := querier.ParseRelease(releases[0])
 
-	kubevirtciJobs := make(map[string]config.Presubmit, len(jobConfig.PresubmitsStatic[orgAndRepoForJobConfig]))
-	for _, job := range jobConfig.PresubmitsStatic[orgAndRepoForJobConfig] {
-		kubevirtciJobs[job.Name] = job
-	}
-
-	wantedCheckProvisionJobName := createKubevirtciPresubmitJobName(latestReleaseSemver)
-	if _, exists := kubevirtciJobs[wantedCheckProvisionJobName]; !o.dryRun && exists {
-		log.Info(fmt.Sprintf("Job %s exists, nothing to do.", wantedCheckProvisionJobName))
+	newJobConfig, exists := AddNewPresubmitIfNotExists(jobConfig, latestReleaseSemver)
+	if exists && !o.dryRun {
+		log.Info(fmt.Sprintf("presubmit job for %v exists, nothing to do.", latestReleaseSemver))
 		os.Exit(0)
 	}
 
-	newPresubmitJobForRelease, err := CreatePresubmitJobForRelease(latestReleaseSemver)
-	if err != nil {
-		log.Panicln(err)
-	}
-	jobConfig.PresubmitsStatic[orgAndRepoForJobConfig] = append(jobConfig.PresubmitsStatic[orgAndRepoForJobConfig], newPresubmitJobForRelease)
-
-	marshalledConfig, err := yaml.Marshal(jobConfig)
+	marshalledConfig, err := yaml.Marshal(newJobConfig)
 	if err != nil {
 		log.WithError(err).Error("Failed to marshall jobconfig")
 	}
 
 	if o.dryRun {
-		_, err := os.Stdout.Write(marshalledConfig)
+		_, err = os.Stdout.Write(marshalledConfig)
 		if err != nil {
 			log.WithError(err).Error("Failed to write jobconfig")
 		}
@@ -155,7 +143,24 @@ func main() {
 	}
 }
 
-func CreatePresubmitJobForRelease(semver *querier.SemVer) (config.Presubmit, error) {
+func AddNewPresubmitIfNotExists(jobConfig config.JobConfig, latestReleaseSemver *querier.SemVer) (newJobConfig config.JobConfig, jobExists bool) {
+	newJobConfig = jobConfig
+	kubevirtciJobs := make(map[string]config.Presubmit, len(newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig]))
+	for _, job := range newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig] {
+		kubevirtciJobs[job.Name] = job
+	}
+
+	wantedCheckProvisionJobName := createKubevirtciPresubmitJobName(latestReleaseSemver)
+	if _, exists := kubevirtciJobs[wantedCheckProvisionJobName]; exists {
+		return newJobConfig, true
+	}
+
+	newPresubmitJobForRelease := CreatePresubmitJobForRelease(latestReleaseSemver)
+	newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig] = append(newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig], newPresubmitJobForRelease)
+	return newJobConfig, false
+}
+
+func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 	yes := true
 	res := config.Presubmit{
 		AlwaysRun: false,
@@ -200,15 +205,7 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) (config.Presubmit, err
 			},
 		},
 	}
-	return res, nil
-}
-
-func createPreviousSemver(err error, latestReleaseSemver *querier.SemVer, log *logrus.Entry) *querier.SemVer {
-	minor, err := strconv.Atoi(latestReleaseSemver.Minor)
-	if err != nil {
-		log.Panicln(err)
-	}
-	return &querier.SemVer{Major: latestReleaseSemver.Major, Minor: strconv.Itoa(minor - 1), Patch: latestReleaseSemver.Patch}
+	return res
 }
 
 func createKubevirtciPresubmitJobName(latestReleaseSemver *querier.SemVer) string {
