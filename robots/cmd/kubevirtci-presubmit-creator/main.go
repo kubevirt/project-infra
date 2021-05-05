@@ -178,7 +178,7 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 			MaxConcurrency: 1,
 			Labels: map[string]string{
 				"preset-dind-enabled":  "true",
-				"preset-docker-mirror": "true",
+				"preset-docker-mirror-proxy": "true",
 			},
 			Cluster: "phx-prow",
 			Spec: &v1.PodSpec{
