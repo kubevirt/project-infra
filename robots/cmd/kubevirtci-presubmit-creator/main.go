@@ -17,19 +17,21 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"time"
+
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
 	prowjobs "k8s.io/test-infra/prow/apis/prowjobs/v1"
 	"k8s.io/test-infra/prow/config"
-	"kubevirt.io/project-infra/robots/pkg/querier"
-	"os"
 	"sigs.k8s.io/yaml"
-	"time"
+
+	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
 const OrgAndRepoForJobConfig = "kubevirt/kubevirtci"

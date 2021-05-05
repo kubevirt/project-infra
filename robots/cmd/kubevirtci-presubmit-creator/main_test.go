@@ -104,9 +104,9 @@ func TestAddNewPresubmitIfNotExists(t *testing.T) {
 		wantJobExists    bool
 	}{
 		{
-			name:             "no job exists",
-			args:             args{
-				jobConfig:           config.JobConfig{
+			name: "no job exists",
+			args: args{
+				jobConfig: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
 						OrgAndRepoForJobConfig: {},
 					},
@@ -120,12 +120,12 @@ func TestAddNewPresubmitIfNotExists(t *testing.T) {
 					},
 				},
 			},
-			wantJobExists:    false,
+			wantJobExists: false,
 		},
 		{
-			name:             "different job exists",
-			args:             args{
-				jobConfig:           config.JobConfig{
+			name: "different job exists",
+			args: args{
+				jobConfig: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
 						OrgAndRepoForJobConfig: {
 							CreatePresubmitJobForRelease(newMinorSemver("1", "37")),
@@ -142,12 +142,12 @@ func TestAddNewPresubmitIfNotExists(t *testing.T) {
 					},
 				},
 			},
-			wantJobExists:    false,
+			wantJobExists: false,
 		},
 		{
-			name:             "same job exists",
-			args:             args{
-				jobConfig:           config.JobConfig{
+			name: "same job exists",
+			args: args{
+				jobConfig: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
 						OrgAndRepoForJobConfig: {
 							CreatePresubmitJobForRelease(newMinorSemver("1", "37")),
@@ -163,12 +163,12 @@ func TestAddNewPresubmitIfNotExists(t *testing.T) {
 					},
 				},
 			},
-			wantJobExists:    true,
+			wantJobExists: true,
 		},
 		{
-			name:             "same job exists but different patch version",
-			args:             args{
-				jobConfig:           config.JobConfig{
+			name: "same job exists but different patch version",
+			args: args{
+				jobConfig: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
 						OrgAndRepoForJobConfig: {
 							CreatePresubmitJobForRelease(newSemver("1", "37", "0")),
@@ -184,7 +184,7 @@ func TestAddNewPresubmitIfNotExists(t *testing.T) {
 					},
 				},
 			},
-			wantJobExists:    true,
+			wantJobExists: true,
 		},
 	}
 	for _, tt := range tests {
