@@ -23,12 +23,17 @@ presubmits:
     cluster: phx-prow
     spec:
       containers:
-      - command:
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        env:
+        - name: TARGET
+          value: "k8s-1.20"
+        - name: KUBEVIRT_E2E_SKIP
+          value: "Multus|SRIOV|GPU|Macvtap|\\[sig-operator\\]"
+        command:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - export TARGET=k8s-1.20 KUBEVIRT_E2E_SKIP='Multus|SRIOV|GPU|Macvtap|Operator' && automation/test.sh
-        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        - automation/test.sh
         name: ""
         resources:
           requests:
@@ -57,12 +62,17 @@ presubmits:
     cluster: phx-prow
     spec:
       containers:
-      - command:
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        env:
+        - name: TARGET
+          value: "k8s-1.20-cgroupsv2"
+        - name: KUBEVIRT_E2E_SKIP
+          value: "Multus|SRIOV|GPU|Macvtap|\\[sig-operator\\]"
+        command:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - export TARGET=k8s-1.20-cgroupsv2 KUBEVIRT_E2E_SKIP='Multus|SRIOV|GPU|Macvtap|Operator' && automation/test.sh
-        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        - automation/test.sh
         name: ""
         resources:
           requests:
@@ -90,12 +100,17 @@ presubmits:
     cluster: phx-prow
     spec:
       containers:
-      - command:
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        env:
+        - name: TARGET
+          value: "k8s-1.19"
+        - name: KUBEVIRT_E2E_SKIP
+          value: "Multus|SRIOV|GPU|Macvtap|\\[sig-operator\\]"
+        command:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - export TARGET=k8s-1.19 KUBEVIRT_E2E_SKIP='Multus|SRIOV|GPU|Macvtap|Operator' && automation/test.sh
-        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        - automation/test.sh
         name: ""
         resources:
           requests:
@@ -191,13 +206,17 @@ presubmits:
     cluster: phx-prow
     spec:
       containers:
-      - command:
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        env:
+        - name: TARGET
+          value: "k8s-1.19"
+        - name: KUBEVIRT_E2E_FOCUS
+          value: "\\[sig-operator\\]"
+        command:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - TARGET=k8s-1.19 KUBEVIRT_E2E_FOCUS=Operator automation/test.sh
-        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
+        - automation/test.sh
         resources:
           requests:
             memory: 34Gi
@@ -224,12 +243,17 @@ presubmits:
     cluster: phx-prow
     spec:
       containers:
-      - command:
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        env:
+        - name: TARGET
+          value: "k8s-1.18"
+        - name: KUBEVIRT_E2E_SKIP
+          value: "Multus|SRIOV|GPU|Macvtap|\\[sig-operator\\]"
+        command:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - export TARGET=k8s-1.18 KUBEVIRT_E2E_SKIP='Multus|SRIOV|GPU|Macvtap|Operator' && automation/test.sh
-        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        - automation/test.sh
         name: ""
         resources:
           requests:
@@ -258,12 +282,17 @@ presubmits:
     cluster: phx-prow
     spec:
       containers:
-      - command:
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        env:
+        - name: TARGET
+          value: "k8s-1.17"
+        - name: KUBEVIRT_E2E_SKIP
+          value: "Multus|SRIOV|GPU|Macvtap|\\[sig-operator\\]"
+        command:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - export TARGET=k8s-1.17 KUBEVIRT_E2E_SKIP='Multus|SRIOV|GPU|Macvtap|Operator' && automation/test.sh
-        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        - automation/test.sh
         name: ""
         resources:
           requests:
