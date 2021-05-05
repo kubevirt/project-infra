@@ -704,7 +704,7 @@ periodics:
           - name: TARGET
             value: "k8s-1.21"
           - name: KUBEVIRT_E2E_FOCUS
-            value: "Operator"
+            value: "[sig-operator]"
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
