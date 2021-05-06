@@ -306,7 +306,7 @@ periodics:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
         command:
-          - "/app/robots/indexpagecreator/app.binary"
+          - "/app/robots/cmd/indexpagecreator/app.binary"
         args:
           - --dry-run=false
         volumeMounts:
