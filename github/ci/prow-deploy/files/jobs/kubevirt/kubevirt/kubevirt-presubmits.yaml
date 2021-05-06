@@ -167,10 +167,10 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
-    cluster: prow-workloads
-    skip_report: true
+    always_run: true
+    optional: false
+    cluster: phx-prow
+    skip_report: false
     decorate: true
     decoration_config:
       timeout: 7h
@@ -178,10 +178,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -289,7 +289,7 @@ presubmits:
           resources:
             requests:
               memory: "34Gi"
-  
+
   - name: pull-kubevirt-e2e-k8s-1.19
     skip_branches:
       - release-\d+\.\d+
@@ -694,7 +694,7 @@ presubmits:
           hostPath:
             path: /dev/vfio/
             type: Directory
-  
+
   - name: pull-kubevirt-e2e-kind-1.17-sriov
     skip_branches:
     - release-\d+\.\d+
