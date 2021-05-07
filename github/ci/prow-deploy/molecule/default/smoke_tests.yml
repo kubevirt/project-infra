@@ -1,6 +1,10 @@
 - name: deploy ingress controller
   shell: |
     kubectl apply -f '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/resources/ingress-nginx-controller.yaml'
+    kubectl wait --namespace ingress-nginx \
+      --for=condition=ready pod \
+      --selector=app.kubernetes.io/component=controller \
+      --timeout=90s
   changed_when: false
   environment:
     KUBECONFIG: '{{ kubeconfig_path }}'
