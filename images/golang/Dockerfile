@@ -1,4 +1,4 @@
-FROM bootstrap
+FROM bootstrap-amd64
 
 ENV GIMME_GO_VERSION=1.15.8
 
