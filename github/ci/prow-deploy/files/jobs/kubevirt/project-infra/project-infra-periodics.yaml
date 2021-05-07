@@ -546,3 +546,43 @@ periodics:
     - name: token
       secret:
         secretName: oauth-token
+- name: periodic-project-infra-prow-bump
+  cron: "10 6 * * 5"
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - org: fgimenez
+    repo: project-infra
+    base_ref: automated-prow-update
+    workdir: true
+  - org: kubernetes
+    repo: test-infra
+    base_ref: master
+  cluster: ibm-prow-jobs
+  spec:
+    securityContext:
+      runAsUser: 0
+    containers:
+      - image: quay.io/kubevirt/builder@sha256:0e2dde4051711e243dbb7be57a7c10f67a3b33bc764304e14297e324deaddee0
+        env:
+        - name: GIT_ASKPASS
+          value: hack/git-askpass.sh
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra
+        volumeMounts:
+        - name: token
+          mountPath: /etc/github
+        resources:
+          requests:
+            memory: "200Mi"
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
