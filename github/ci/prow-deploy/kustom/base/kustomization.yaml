@@ -2,6 +2,7 @@ resources:
   - manifests/local/branch-protector.yaml
   - manifests/local/cherrypicker_deployment.yaml
   - manifests/local/cherrypicker_service.yaml
+  - manifests/local/deck-ingress.yaml
   - manifests/local/docker-daemon_configmap.yaml
   - manifests/local/docker-mirror_deployment.yaml
   - manifests/local/docker-mirror_service.yaml
@@ -11,6 +12,7 @@ resources:
   - manifests/local/exporter-deployment.yaml
   - manifests/local/exporter-rbac.yaml
   - manifests/local/gcsweb-deployment.yaml
+  - manifests/local/gcsweb-ingress.yaml
   - manifests/local/gcsweb-service.yaml
   - manifests/local/greenhouse-deployment.yaml
   - manifests/local/greenhouse-pvc.yaml
@@ -18,7 +20,6 @@ resources:
   - manifests/local/label-sync-kubevirt.yaml
   - manifests/local/label-sync-nmstate.yaml
   - manifests/local/memory-job-defaults.yaml
-  - manifests/local/nginx-ingress.yaml
   - manifests/local/prow-rehearse-rbac.yaml
   - manifests/local/prow-rehearse-deployment.yaml
   - manifests/local/prow-rehearse-service.yaml

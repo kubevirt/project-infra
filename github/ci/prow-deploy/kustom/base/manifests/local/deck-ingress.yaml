@@ -1,5 +1,4 @@
 ---
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -29,30 +28,5 @@ spec:
         backend:
           service:
             name: deck
-            port:
-              number: 80
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
-  name: gcsweb
-  namespace: default
-spec:
-  ingressClassName: public-iks-k8s-nginx
-  tls:
-  - hosts:
-    - gcsweb.ci.kubevirt.io
-    secretName: gcsweb-tls
-  rules:
-  - host: gcsweb.ci.kubevirt.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: gcsweb
             port:
               number: 80
