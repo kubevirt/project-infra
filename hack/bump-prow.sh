@@ -5,7 +5,7 @@ set -euxo pipefail
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_INFRA_ROOT=$(readlink --canonicalize ${BASEDIR}/..)
 PROJECT_INFRA_MANIFESTS_ROOT=${PROJECT_INFRA_ROOT}/github/ci/prow-deploy/kustom/base
-TEST_INFRA_ROOT=$(readlink --canonicalize ${PROJECT_INFRA_ROOT}/../test-infra)
+TEST_INFRA_ROOT=$(readlink --canonicalize ${PROJECT_INFRA_ROOT}/../../kubernetes/test-infra)
 TEST_INFRA_MANIFESTS_ROOT=${TEST_INFRA_ROOT}/config/prow/cluster
 
 copy_files(){
@@ -26,6 +26,11 @@ get_latest_prow_tag(){
 
 bump_utility_images(){
     local latest_prow_tag=$(get_latest_prow_tag)
+
+    if [ -z "${latest_prow_tag}" ]; then
+        echo "Could not find latest prow tag"
+        exit 1
+    fi
 
     echo latest_prow_tag: $latest_prow_tag
 
