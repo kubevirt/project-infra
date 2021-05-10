@@ -90,7 +90,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
     cluster: phx-prow
     spec:
       nodeSelector:
@@ -118,7 +118,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
     cluster: phx-prow
     spec:
       nodeSelector:
@@ -146,7 +146,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
     cluster: phx-prow
     spec:
       nodeSelector:
@@ -173,7 +173,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
     cluster: phx-prow
     spec:
       nodeSelector:
@@ -200,7 +200,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
     cluster: phx-prow
     spec:
       nodeSelector:
@@ -227,7 +227,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
     cluster: phx-prow
     spec:
       nodeSelector:
@@ -254,7 +254,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
     cluster: phx-prow
     spec:
       nodeSelector:
@@ -280,7 +280,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
     cluster: phx-prow
     spec:
       nodeSelector:
