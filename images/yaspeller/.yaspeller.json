@@ -10,14 +10,14 @@
   ".html"
   ],
   "excludeFiles": [
-    "*/.git",
-    "*/.jekyll-cache",
-    "*/_site",
-    "*/GUIDELINES.md",
-    "*/TODO.md",
-    "*/changelog.md",
-    "*/node_modules",
-    "*/site"
+    "/srv/.git",
+    "/srv/.jekyll-cache",
+    "/srv/_site",
+    "/srv/GUIDELINES.md",
+    "/srv/TODO.md",
+    "/srv/changelog.md",
+    "/srv/node_modules",
+    "/srv/site"
   ],
   "dictionary": [
     "_____BEGIN_CONTRIBUTOR_NAMES_HERE_____",
