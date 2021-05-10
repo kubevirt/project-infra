@@ -580,7 +580,7 @@ presubmits:
     always_run: true
     optional: false
     cluster: prow-workloads
-    skip_report: true
+    skip_report: false
     decorate: true
     decoration_config:
       timeout: 7h
