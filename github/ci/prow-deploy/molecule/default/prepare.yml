@@ -51,6 +51,7 @@
                 name: '{{ node_name }}'
                 kubeletExtraArgs:
                   system-reserved: memory=16Gi
+                  node-labels: "ingress-ready=true"
     - name: Launch cluster
       shell: |
         kind delete cluster
@@ -98,3 +99,10 @@
         - name: patch ghproxy pvc class
           shell: |
             yq w -i {{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/patches/StrategicMerge/ghproxy.yaml spec.storageClassName standard
+        - name: patch ingresses
+          shell: |
+            yq m -ix {{ project_infra_root }}/github/ci/prow-deploy/kustom/base/manifests/local/{{ item }}-ingress.yaml {{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/patches/StrategicMerge/{{ item }}-ingress.yaml
+            yq d -i {{ project_infra_root }}/github/ci/prow-deploy/kustom/base/manifests/local/{{ item }}-ingress.yaml spec.tls[0].secretName
+          loop:
+            - deck
+            - gcsweb

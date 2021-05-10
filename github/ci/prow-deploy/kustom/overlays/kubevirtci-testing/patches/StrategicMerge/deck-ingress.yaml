@@ -1,0 +1,30 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: deck
+  annotations:
+    nginx.ingress.kubernetes.io/app-root: ""
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: deck.prowdeploy.ci
+    http:
+      paths:
+      - path: /hook
+        pathType: Prefix
+        backend:
+          service:
+            name: hook
+            port:
+              number: 8888
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: deck
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - deck.prowdeploy.ci
