@@ -59,6 +59,7 @@ periodics:
       - --merged=168h
       - --report_output_child_path=kubevirt/kubevirt
       - --skip_results_before_start_of_report=false
+      - --periodic_job_dir_regex=periodic-kubevirt-e2e-.*
       volumeMounts:
       - name: token
         mountPath: /etc/github
@@ -132,6 +133,7 @@ periodics:
       - --merged=672h
       - --report_output_child_path=kubevirt/kubevirt
       - --skip_results_before_start_of_report=false
+      - --periodic_job_dir_regex=periodic-kubevirt-e2e-.*
       volumeMounts:
       - name: token
         mountPath: /etc/github
