@@ -252,7 +252,7 @@ presubmits:
     always_run: true
     optional: false
     cluster: prow-workloads
-    skip_report: true
+    skip_report: false
     decorate: true
     decoration_config:
       timeout: 4h
@@ -560,11 +560,14 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          env:
+            - name: TARGET
+              value: k8s-1.19-sig-storage
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.19-sig-storage && automation/test.sh"
+            - "automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
