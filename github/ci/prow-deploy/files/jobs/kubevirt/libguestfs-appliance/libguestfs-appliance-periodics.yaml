@@ -1,0 +1,45 @@
+periodics:
+- name: periodic-libguestfs-appliance-push-weekly-build-main
+  branches:
+    - main
+  # Run once a week at midnight on Sunday morning
+  cron: "0 0 * * 0"
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 3h
+  max_concurrency: 1
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror: "true"
+  cluster: ibm-prow-jobs
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          set -e
+          bucket_dir="kubevirt-prow/devel/release/kubevirt/libguestfs-appliance"
+          ./create-libguestfs-appliance.sh
+          gsutil cp ./output/appliance-*.tar.xz gs://$bucket_dir/
+      # docker-in-docker needs privileged mode
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "2Gi"
+      volumeMounts:
+        - name: gcs
+          mountPath: /etc/gcs
+          readOnly: false
+    volumes:
+      - name: gcs
+        secret:
+          secretName: gcs
