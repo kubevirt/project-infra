@@ -20,9 +20,10 @@
 set -o nounset
 set -o errexit
 set -o pipefail
+set -x
 
 usage() {
-    echo "Usage: $(basename "$0") -c \"<command>\" [-s \"<summary>\"] [-l <github-login>] [-t </path/to/github/token>] [-T <target-branch>] [-p </path/to/github/repo>] [-n \"<git-name>\"] [-e <git-email>]  [-b <pr-branch>] [-o <org>] [-r <repo>] [-m </path/where/command/should/be/run>]">&2
+    echo "Usage: $(basename "$0") -c \"<command>\" [-s \"<summary>\"] [-l <github-login>] [-t </path/to/github/token>] [-T <target-branch>] [-p </path/to/github/repo>] [-n \"<git-name>\"] [-e <git-email>]  [-b <pr-branch>] [-o <org>] [-r <repo>] [-L label1,..,labelN] [-m </path/where/command/should/be/run>]">&2
 }
 
 command=
@@ -37,8 +38,9 @@ org=kubevirt
 repo=kubevirt
 command_path=$(pwd)
 targetbranch=master
+labels=
 
-while getopts ":c:s:l:t:T:p:n:e:b:o:r:m" opt; do
+while getopts ":c:s:l:t:T:p:n:e:b:o:r:m:L:" opt; do
     case "${opt}" in
         c )
             command="${OPTARG}"
@@ -75,6 +77,9 @@ while getopts ":c:s:l:t:T:p:n:e:b:o:r:m" opt; do
             ;;
         m )
             command_path="${OPTARG}"
+            ;;
+        L )
+            labels="${OPTARG}"
             ;;
         \? )
             usage
@@ -121,4 +126,5 @@ pr-creator \
     --title="${summary}" --match-title="${summary}" \
     --body="Automatic run of \"$command\". Please review" \
     --source="${user}":"${branch}" \
+    --labels="${labels}" \
     --confirm
