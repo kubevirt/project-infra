@@ -1206,7 +1206,7 @@ presubmits:
       - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
-    always_run: false
+    always_run: true
     skip_report: false
     optional: true
     decorate: true
