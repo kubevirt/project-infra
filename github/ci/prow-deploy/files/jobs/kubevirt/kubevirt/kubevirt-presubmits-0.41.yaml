@@ -19,6 +19,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     optional: true
     skip_report: true
     spec:
@@ -42,7 +44,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.41
     cluster: prow-workloads
@@ -59,6 +61,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-sig-network-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     spec:
       containers:
       - command:
@@ -78,7 +82,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.41
     cluster: prow-workloads
@@ -95,6 +99,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-sig-storage-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     skip_report: true
     spec:
       containers:
@@ -132,6 +138,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-sig-compute-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     optional: true
     skip_report: true
     spec:
@@ -170,6 +178,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-operator-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     optional: true
     skip_report: true
     spec:
@@ -210,6 +220,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-cgroupsv2-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     optional: true
     spec:
       containers:
@@ -244,6 +256,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.19-nonroot-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     optional: true
     spec:
       containers:
@@ -268,7 +282,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.41
     cluster: phx-prow
@@ -285,6 +299,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.19-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     spec:
       containers:
       - command:
@@ -306,7 +322,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.41
     cluster: phx-prow
@@ -323,6 +339,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.19-sig-network-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     spec:
       containers:
       - command:
@@ -342,7 +360,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.41
     cluster: prow-workloads
@@ -359,6 +377,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.19-sig-storage-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     spec:
       containers:
       - command:
@@ -375,7 +395,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.41
     cluster: prow-workloads
@@ -392,6 +412,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.19-sig-compute-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     skip_report: true
     spec:
       containers:
@@ -412,7 +434,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.41
     cluster: phx-prow
@@ -429,6 +451,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.19-operator-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     spec:
       containers:
       - command:
@@ -445,7 +469,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.41
     cluster: phx-prow
@@ -462,6 +486,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.18-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     spec:
       containers:
       - command:
@@ -495,6 +521,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.17-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     optional: true
     spec:
       containers:
@@ -512,7 +540,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.41
     cluster: phx-prow
@@ -529,6 +557,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-windows2016-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     spec:
       containers:
       - command:
@@ -564,6 +594,8 @@ presubmits:
       sriov-pod: "true"
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-1.17-sriov-nonroot-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     optional: true
     spec:
       affinity:
@@ -626,7 +658,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-  - always_run: true
+  - always_run: false
     annotations:
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
     branches:
@@ -645,6 +677,8 @@ presubmits:
       sriov-pod: "true"
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-1.17-sriov-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     spec:
       affinity:
         podAntiAffinity:
@@ -705,7 +739,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.41
     cluster: phx-prow
@@ -720,6 +754,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-check-tests-for-flakes-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     optional: true
     spec:
       containers:
@@ -754,6 +790,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-1.17-rook-ceph-nonroot-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     optional: true
     spec:
       containers:
@@ -795,6 +833,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-1.20-rook-ceph-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     optional: true
     spec:
       containers:
@@ -812,7 +852,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.41
     cluster: phx-prow
@@ -829,6 +869,8 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-1.17-rook-ceph-0.41
+    # The regex matches all files except these patterns: *.md, *.txt, docs/*
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
     spec:
       containers:
       - command:
