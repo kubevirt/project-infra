@@ -27,7 +27,6 @@ var _ = Describe("prometheus-stack deployment", func() {
 		table.Entry("grafana service", "3000", "app.kubernetes.io/name=grafana", "<title>Grafana</title>", ""),
 		table.Entry("prometheus service", "9090", "app=prometheus", "<title>Prometheus Time Series Collection and Processing Server</title>", ""),
 		table.Entry("alertmanager service", "9093", "app=alertmanager", "<title>Alertmanager</title>", ""),
-		table.Entry("loki service", "3100", "app=loki", "ready", "ready"),
 		table.Entry("node-exporter service", "9100", "app=prometheus-node-exporter", "<title>Node Exporter</title>", ""),
 	)
 })

@@ -1,12 +1,13 @@
 load("@com_adobe_rules_gitops//gitops:defs.bzl", "k8s_deploy")
 
 TEST_CLUSTER = "kind-kind"
-
 TEST_USER = "kind-kind"
 
-PRODUCTION_CLUSTER = "ibm-cluster"
+PRODUCTION_CLUSTER_CONTROL_PLANE = "ibm-cluster"
+PRODUCTION_USER_CONTROL_PLANE = "ibm-prow-jobs-automation"
 
-PRODUCTION_USER = "ibm-prow-jobs-automation"
+PRODUCTION_CLUSTER_E2E_WORKLOADS = "prow-workloads-cluster"
+PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
 
 [
     k8s_deploy(
@@ -20,7 +21,8 @@ PRODUCTION_USER = "ibm-prow-jobs-automation"
     )
     for NAME, CLUSTER, USER in [
         ("testing-crds", TEST_CLUSTER, TEST_USER),
-        ("production-crds", PRODUCTION_CLUSTER, PRODUCTION_USER),
+        ("production-control-plane-crds", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+        ("production-e2e-workloads-crds", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
     ]
 ]
 
@@ -29,10 +31,11 @@ PRODUCTION_USER = "ibm-prow-jobs-automation"
         name = NAME,
         cluster = CLUSTER,
         manifests = glob([
-            "manifests/stack/*.yaml",
+            "manifests/stack/common/*.yaml",
+            "manifests/stack/%s/*.yaml" % NAME,
         ]),
         patches = glob([
-            "patches/*.yaml",
+            "patches/%s/*.yaml" % NAME,
         ]),
         secrets_srcs = glob([
             "secrets/%s/**/*" % NAME,
@@ -42,7 +45,8 @@ PRODUCTION_USER = "ibm-prow-jobs-automation"
     )
     for NAME, CLUSTER, USER in [
         ("testing", TEST_CLUSTER, TEST_USER),
-        ("production", PRODUCTION_CLUSTER, PRODUCTION_USER),
+        ("production-control-plane", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+        ("production-e2e-workloads", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
     ]
 ]
 
@@ -58,6 +62,7 @@ PRODUCTION_USER = "ibm-prow-jobs-automation"
     )
     for NAME, CLUSTER, USER in [
         ("testing-service-monitors", TEST_CLUSTER, TEST_USER),
-        ("production-service-monitors", PRODUCTION_CLUSTER, PRODUCTION_USER),
+        ("production-control-plane-service-monitors", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+        ("production-e2e-workloads-service-monitors", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
     ]
 ]
