@@ -498,24 +498,27 @@ presubmits:
             limits:
               memory: "16Gi"
   - name: pull-project-infra-check-testgrid-config
-    run_if_changed: '^(github/ci/prow-deploy/files/jobs/.*)|(github/ci/testgrid/gen-config\.yaml)$'
+    run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$'
     decorate: true
     annotations:
       testgrid-create-test-group: "false"
     cluster: ibm-prow-jobs
+    extra_refs:
+    - org: kubernetes
+      repo: test-infra
+      base_ref: master
     spec:
       containers:
       - image: gcr.io/k8s-prow/transfigure:v20210224-afd05eb414
         command:
-        - /transfigure.sh
-        args:
-        - test
-        - github/ci/prow-deploy/files/config.yaml
-        - github/ci/prow-deploy/files/jobs
-        - github/ci/testgrid/gen-config.yaml
-        - kubevirt
+        - github/ci/testgrid/hack/check.sh
         securityContext:
           runAsUser: 0
+        resources:
+          requests:
+            memory: "8Gi"
+          limits:
+            memory: "8Gi"
   - name: pull-kubevirt-org-github-config-updater
     run_if_changed: '^github/ci/prow-deploy/files/orgs\.yaml$'
     annotations:
