@@ -537,11 +537,12 @@ postsubmits:
               decrypt_secrets
 
               extract_secret 'kubeconfig' ~/.kube/config
-              extract_secret 'grafanaUser' ./github/ci/services/prometheus-stack/secrets/production/grafana/admin-user
-              extract_secret 'grafanaPassword' ./github/ci/services/prometheus-stack/secrets/production/grafana/admin-password
-              extract_secret 'grafanaLDAPTOML' ./github/ci/services/prometheus-stack/secrets/production/grafana/ldap-toml
+              extract_secret 'grafanaUser' ./github/ci/services/prometheus-stack/secrets/production-control-plane/grafana/admin-user
+              extract_secret 'grafanaPassword' ./github/ci/services/prometheus-stack/secrets/production-control-plane/grafana/admin-password
+              extract_secret 'grafanaLDAPTOML' ./github/ci/services/prometheus-stack/secrets/production-control-plane/grafana/ldap-toml
 
-              ./github/ci/services/prometheus-stack/hack/deploy.sh production
+              ./github/ci/services/prometheus-stack/hack/deploy.sh production-control-plane
+              ./github/ci/services/prometheus-stack/hack/deploy.sh production-e2e-workloads
           resources:
             requests:
               memory: "8Gi"

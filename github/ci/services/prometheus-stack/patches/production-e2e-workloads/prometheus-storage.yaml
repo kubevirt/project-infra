@@ -1,0 +1,9 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus-stack-kube-prom-prometheus
+  namespace: default
+spec:
+  storage:
+    emptyDir:
+      medium: Memory
