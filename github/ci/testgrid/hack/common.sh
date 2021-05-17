@@ -3,8 +3,8 @@
 set -euxo pipefail
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-TEST_INFRA_ROOT=$(readlink -f --canonicalize ${BASEDIR}/../../kubernetes/test-infra)
-TESTGRID_CONFIG=${BASEDIR}/github/ci/testgrid/gen-config.yaml
+TEST_INFRA_ROOT=$(readlink -f --canonicalize ${BASEDIR}/../../../../../../kubernetes/test-infra)
+TESTGRID_CONFIG=$(readlink -f --canonicalize ${BASEDIR}/../gen-config.yaml)
 USER=kubevirtbot
 EMAIL=kubevirtbot@redhat.com
 
