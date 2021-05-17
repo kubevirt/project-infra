@@ -613,8 +613,8 @@ postsubmits:
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
-    - name: post-project-infra-upload-testgrid-config
-      run_if_changed: '^(github/ci/prow-deploy/files/jobs/.*)|(github/ci/testgrid/gen-config\.yaml)$'
+    - name: post-project-infra-update-testgrid-config
+      run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$'
       branches:
       - master
       annotations:
@@ -625,18 +625,16 @@ postsubmits:
         containers:
         - image: gcr.io/k8s-prow/transfigure:v20210224-afd05eb414
           command:
-          - /transfigure.sh
+          - github/ci/testgrid/hack/update.sh
           args:
           - /etc/github/oauth
-          - github/ci/prow-deploy/files/config.yaml
-          - github/ci/prow-deploy/files/jobs
-          - github/ci/testgrid/gen-config.yaml
-          - kubevirt
-          - test-infra
-          - kubevirt-bot
-          - rmohr+kubebot@redhat.com
           securityContext:
             runAsUser: 0
+          resources:
+            requests:
+              memory: "8Gi"
+            limits:
+              memory: "8Gi"
           volumeMounts:
           - name: token
             mountPath: /etc/github
@@ -644,3 +642,33 @@ postsubmits:
         - name: token
           secret:
             secretName: oauth-token
+    - name: post-project-infra-upload-testgrid-config
+      run_if_changed: '^github/ci/testgrid/gen-config\.yaml$'
+      branches:
+      - master
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      cluster: ibm-prow-jobs
+      spec:
+        containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/gcs/service-account.json
+          command:
+          - github/ci/testgrid/hack/upload.sh
+          securityContext:
+            runAsUser: 0
+          resources:
+            requests:
+              memory: "200Mi"
+            limits:
+              memory: "200Mi"
+          volumeMounts:
+          - name: gcs
+            mountPath: /etc/gcs
+        volumes:
+        - name: gcs
+          secret:
+            secretName: gcs
