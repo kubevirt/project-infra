@@ -358,7 +358,7 @@ branch-protection:
       repos:
         kubernetes-nmstate:
           branches:
-            master:
+            main:
               protect: true
             release-0.15:
               protect: true
