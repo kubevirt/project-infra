@@ -13,6 +13,11 @@ periodics:
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror: "true"
+  extra_refs:
+   - org: kubevirt
+     repo: libguestfs-appliance
+     base_ref: main
+     work_dir: true
   cluster: ibm-prow-jobs
   spec:
     containers:
