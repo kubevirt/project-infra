@@ -399,11 +399,6 @@ orgs:
         default_branch: cnv-3.10
         has_issues: false
         has_projects: true
-      ovs-cni:
-        allow_rebase_merge: false
-        description: Open vSwitch CNI plugin
-        has_projects: false
-        has_wiki: false
       project-infra:
         allow_rebase_merge: false
         description: Project infrastructure administrative tools
@@ -559,7 +554,6 @@ orgs:
           kubevirtci: write
           libvirt: write
           node-maintenance-operator: write
-          ovs-cni: read
           project-infra: write
           qe-tools: read
           run: write
