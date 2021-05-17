@@ -1,6 +1,6 @@
 ---
 presubmits:
-  kubevirt/ovs-cni:
+  k8snetworkplumbingwg/ovs-cni:
     - name: pull-e2e-ovs-cni
       skip_branches:
         - release-\d+\.\d+

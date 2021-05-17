@@ -119,12 +119,15 @@ plugins:
   - lgtm
   - approve
 
-  kubevirt/ovs-cni:
+  k8snetworkplumbingwg/ovs-cni:
   - trigger
   - release-note
   - owners-label
   - lgtm
   - approve
+  - hold
+  - wip
+  - verify-owners
 
   kubevirt/macvtap-cni:
   - trigger
@@ -320,6 +323,11 @@ external_plugins:
       - pull_request
   - name: cherrypicker
   - name: release-blocker
+  k8snetworkplumbingwg/ovs-cni:
+  - name: needs-rebase
+    events:
+      - pull_request
+  - name: cherrypicker
   k8snetworkplumbingwg/kubemacpool:
   - name: needs-rebase
     events:
