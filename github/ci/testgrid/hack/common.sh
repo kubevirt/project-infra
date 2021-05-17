@@ -3,14 +3,15 @@
 set -euxo pipefail
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-TEST_INFRA_ROOT=$(readlink -f --canonicalize ${BASEDIR}/../../../../../../kubernetes/test-infra)
+PROJECT_INFRA_ROOT=$(readlink -f --canonicalize ${BASEDIR}/../../../..)
+TEST_INFRA_ROOT=$(readlink -f --canonicalize ${PROJECT_INFRA_ROOT}/../../kubernetes/test-infra)
 TESTGRID_CONFIG=$(readlink -f --canonicalize ${BASEDIR}/../gen-config.yaml)
 USER=kubevirtbot
 EMAIL=kubevirtbot@redhat.com
 
 generate_config(){
-    local prow_config=${BASEDIR}/github/ci/prow-deploy/kustom/base/configs/current/config/config.yaml
-    local job_config=${BASEDIR}/github/ci/prow-deploy/files/jobs
+    local prow_config=${PROJECT_INFRA_ROOT}/github/ci/prow-deploy/kustom/base/configs/current/config/config.yaml
+    local job_config=${PROJECT_INFRA_ROOT}/github/ci/prow-deploy/files/jobs
     local testgrid_dir=${TEST_INFRA_ROOT}/config/testgrids
     local testgrid_subdir=kubevirt
 
