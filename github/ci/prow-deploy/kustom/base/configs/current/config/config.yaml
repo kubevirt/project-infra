@@ -81,7 +81,7 @@ tide:
     kubevirt/hostpath-provisioner: squash
     kubevirt/katacoda-scenarios: squash
     kubevirt/demo: squash
-    kubevirt/ovs-cni: squash
+    k8snetworkplumbingwg/ovs-cni: squash
     kubevirt/macvtap-cni: merge
     kubevirt/cluster-network-addons-operator: squash
     kubevirt/bridge-marker: squash
@@ -130,7 +130,7 @@ tide:
     - kubevirt/kubevirt
     - kubevirt/containerized-data-importer
     - kubevirt/hostpath-provisioner
-    - kubevirt/ovs-cni
+    - k8snetworkplumbingwg/ovs-cni
     - kubevirt/macvtap-cni
     - kubevirt/cluster-network-addons-operator
     - kubevirt/bridge-marker

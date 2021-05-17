@@ -119,7 +119,7 @@ plugins:
   - lgtm
   - approve
 
-  kubevirt/ovs-cni:
+  k8snetworkplumbingwg/ovs-cni:
   - trigger
   - release-note
   - owners-label
