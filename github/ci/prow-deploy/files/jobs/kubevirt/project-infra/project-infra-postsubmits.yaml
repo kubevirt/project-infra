@@ -614,7 +614,7 @@ postsubmits:
           secret:
             secretName: pgp-bot-key
     - name: post-project-infra-update-testgrid-config
-      run_if_changed: '^github/ci/prow-deploy/files/orgs\.yaml$'
+      run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$'
       branches:
       - master
       annotations:
