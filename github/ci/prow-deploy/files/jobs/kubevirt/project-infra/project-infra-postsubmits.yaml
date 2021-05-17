@@ -621,6 +621,10 @@ postsubmits:
         testgrid-create-test-group: "false"
       decorate: true
       cluster: ibm-prow-jobs
+      extra_refs:
+      - org: kubernetes
+        repo: test-infra
+        base_ref: master
       spec:
         containers:
         - image: gcr.io/k8s-prow/transfigure:v20210224-afd05eb414
