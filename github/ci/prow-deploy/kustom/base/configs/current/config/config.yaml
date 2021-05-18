@@ -301,10 +301,6 @@ branch-protection:
               protect: true
             release-0.39:
               protect: true
-        ovs-cni:
-          branches:
-            master:
-              protect: true
         macvtap-cni:
           branches:
             master:
@@ -351,6 +347,10 @@ branch-protection:
     k8snetworkplumbingwg:
       repos:
         kubemacpool:
+          branches:
+            master:
+              protect: true
+        ovs-cni:
           branches:
             master:
               protect: true
