@@ -2,7 +2,7 @@ postsubmits:
   kubevirt/macvtap-cni:
     - name: publish-macvtap-cni
       branches:
-      - master
+      - main
       always_run: true
       annotations:
         testgrid-create-test-group: "false"
