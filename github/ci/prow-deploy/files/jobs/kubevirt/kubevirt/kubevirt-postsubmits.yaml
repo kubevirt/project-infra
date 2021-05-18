@@ -113,3 +113,44 @@ postsubmits:
       - name: gcs
         secret:
           secretName: gcs
+  - name: push-kubevirt-goveralls
+    cluster: ibm-prow-jobs
+    branches:
+      - master
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 10m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          env:
+            - name: COVERALLS_TOKEN_FILE
+              value: /root/.docker/secrets/coveralls/token
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make goveralls"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+          volumeMounts:
+            - name: kubevirtci-coveralls
+              mountPath: /root/.docker/secrets/coveralls
+              readOnly: true
+      volumes:
+        - name: kubevirtci-coveralls
+          secret:
+            secretName: kubevirtci-coveralls-token
