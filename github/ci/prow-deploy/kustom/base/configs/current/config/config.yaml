@@ -307,7 +307,7 @@ branch-protection:
               protect: true
         macvtap-cni:
           branches:
-            master:
+            main:
               protect: true
         common-templates:
           branches:
