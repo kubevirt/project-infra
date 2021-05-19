@@ -56,6 +56,5 @@ spec:
             memory: 3Gi
       volumes:
       - name: cache
-        hostPath:
-          path: /var/lib/greenhouse/default
-          type: DirectoryOrCreate
+        persistentVolumeClaim:
+          claimName: greenhouse
