@@ -1186,9 +1186,9 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
@@ -1196,7 +1196,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make test"
+            - "make test"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
