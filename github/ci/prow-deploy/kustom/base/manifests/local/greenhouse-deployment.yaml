@@ -29,10 +29,9 @@ spec:
         app: greenhouse
     spec:
       nodeSelector:
-        type: bare-metal-external
-        zone: ci
+        ci.kubevirt.io/cachenode: "true"
       tolerations:
-      - key: "cachenode"
+      - key: "ci.kubevirt.io/cachenode"
         operator: "Exists"
         effect: "NoSchedule"
       containers:

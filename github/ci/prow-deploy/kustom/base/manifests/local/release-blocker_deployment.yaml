@@ -14,9 +14,6 @@ spec:
       labels:
         app: release-blocker
     spec:
-      nodeSelector:
-        type: vm
-        zone: ci
       terminationGracePeriodSeconds: 180
       containers:
       - name: release-blocker
