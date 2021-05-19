@@ -5,3 +5,13 @@
   path: /spec/template/spec/containers/0/livenessProbe
 - op: remove
   path: /spec/template/spec/containers/0/readinessProbe
+# sets resources
+- op: add
+  path: /spec/template/spec/containers/0/resources
+  value:
+    limits:
+      cpu: 300m
+      memory: 2Gi
+    requests:
+      cpu: 300m
+      memory: 2Gi

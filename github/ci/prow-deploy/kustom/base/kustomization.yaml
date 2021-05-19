@@ -9,8 +9,6 @@ resources:
   - manifests/local/docker-mirror-proxy_deployment.yaml
   - manifests/local/docker-mirror-proxy_pvc.yaml
   - manifests/local/docker-mirror-proxy_service.yaml
-  - manifests/local/exporter-deployment.yaml
-  - manifests/local/exporter-rbac.yaml
   - manifests/local/gcsweb-deployment.yaml
   - manifests/local/gcsweb-ingress.yaml
   - manifests/local/gcsweb-service.yaml

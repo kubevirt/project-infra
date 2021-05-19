@@ -27,9 +27,6 @@ spec:
     spec:
       template:
         spec:
-          nodeSelector:
-            type: vm
-            zone: ci
           containers:
             - name: label-sync
               image: gcr.io/k8s-prow/label_sync:v20200623-9f5410055c
