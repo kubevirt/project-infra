@@ -428,6 +428,7 @@ orgs:
       terraform-provider-kubevirt:
         allow_rebase_merge: false
         allow_squash_merge: false
+        default_branch: main
         description: Terraform provider for Kubevirt platform
         has_projects: true
       test-infra-containers:
