@@ -118,7 +118,7 @@ postsubmits:
     branches:
       - master
     annotations:
-      fork-per-release: "true"
+      testgrid-create-test-group: "false"
     always_run: true
     optional: false
     decorate: true
