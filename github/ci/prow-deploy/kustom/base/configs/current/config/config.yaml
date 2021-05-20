@@ -101,6 +101,7 @@ tide:
     kubevirt/ssp-operator: rebase
     kubevirt/must-gather: squash
     kubevirt/user-guide: squash
+    kubevirt/terraform-provider-kubevirt: merge
 
   queries:
   - repos:
@@ -343,6 +344,10 @@ branch-protection:
             gh-pages:
               protect: true
             source:
+              protect: true
+        terraform-provider-kubevirt:
+          branches:
+            master:
               protect: true
     k8snetworkplumbingwg:
       repos:
