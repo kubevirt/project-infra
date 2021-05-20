@@ -617,13 +617,22 @@ postsubmits:
       run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$'
       branches:
       - master
+      labels:
+        preset-bazel-cache: "true"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
       cluster: ibm-prow-jobs
+      extra_refs:
+      - org: kubernetes
+        repo: test-infra
+        base_ref: master
       spec:
         containers:
         - image: gcr.io/k8s-prow/transfigure:v20210224-afd05eb414
+          env:
+          - name: GIT_ASKPASS
+            value: "./hack/git-askpass.sh"
           command:
           - github/ci/testgrid/hack/update.sh
           args:
