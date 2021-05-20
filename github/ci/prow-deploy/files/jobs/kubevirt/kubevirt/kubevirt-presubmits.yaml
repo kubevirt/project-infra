@@ -202,7 +202,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "34Gi"
+              memory: "29Gi"
   - name: pull-kubevirt-e2e-k8s-1.20
     skip_branches:
       - release-\d+\.\d+
