@@ -628,6 +628,9 @@ postsubmits:
       spec:
         containers:
         - image: gcr.io/k8s-prow/transfigure:v20210224-afd05eb414
+          env:
+          - name: GIT_ASKPASS
+            value: "./hack/git-askpass.sh"
           command:
           - github/ci/testgrid/hack/update.sh
           args:

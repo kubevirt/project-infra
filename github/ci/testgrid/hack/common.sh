@@ -1,12 +1,12 @@
 #!/bin/bash
 
-set -euxo pipefail
+set -euo pipefail
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_INFRA_ROOT=$(readlink -f --canonicalize ${BASEDIR}/../../../..)
 TEST_INFRA_ROOT=$(readlink -f --canonicalize ${PROJECT_INFRA_ROOT}/../../kubernetes/test-infra)
 TESTGRID_CONFIG=$(readlink -f --canonicalize ${BASEDIR}/../gen-config.yaml)
-USER=kubevirtbot
+USER=kubevirt-bot
 EMAIL=kubevirtbot@redhat.com
 
 generate_config(){
@@ -30,6 +30,7 @@ generate_config(){
 
 run_tests(){
     (
+        ${PROJECT_INFRA_ROOT}/hack/create_bazel_cache_rcs.sh
         cd ${TEST_INFRA_ROOT}
         bazel test //config/tests/... //hack:verify-spelling
     )
@@ -53,9 +54,9 @@ propose_pr(){
     title="Update TestGrid"
     git commit -m "${title}"
     echo "Pushing commit to ${USER}/project-infra:${branch}..."
-    git push -f "https://${USER}:$(cat "${token}")@github.com/${USER}/project-infra" "HEAD:${branch}"
+    git push -f "https://${USER}@github.com/${USER}/project-infra" "HEAD:${branch}"
 
-    echo "Creating PR to merge ${user}:${branch} into kubevirt/project-infra:master..."
+    echo "Creating PR to merge ${USER}:${branch} into kubevirt/project-infra:master..."
     /pr-creator \
         --github-token-path="${token}" \
         --org="kubevirt" --repo="project-infra" --branch=master \
