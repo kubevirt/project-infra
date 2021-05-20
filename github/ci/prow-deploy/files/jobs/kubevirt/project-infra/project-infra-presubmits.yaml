@@ -500,6 +500,8 @@ presubmits:
   - name: pull-project-infra-check-testgrid-config
     run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$'
     decorate: true
+    labels:
+      preset-bazel-cache: "true"
     annotations:
       testgrid-create-test-group: "false"
     cluster: ibm-prow-jobs

@@ -617,6 +617,8 @@ postsubmits:
       run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$'
       branches:
       - master
+      labels:
+        preset-bazel-cache: "true"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
