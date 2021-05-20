@@ -311,6 +311,12 @@ plugins:
   - owners-label
   - trigger
 
+  kubevirt/terraform-provider-kubevirt:
+  - trigger
+  - approve
+  - lgtm
+  - owners-label
+
 external_plugins:
   libguestfs-appliance:
   - name: needs-rebase
@@ -414,6 +420,7 @@ approve:
   - kubevirt/must-gather
   - kubevirt/csi-driver
   - kubevirt/user-guide
+  - kubevirt/terraform-provider-kubevirt
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -451,6 +458,7 @@ lgtm:
   - kubevirt/must-gather
   - kubevirt/csi-driver
   - kubevirt/user-guide
+  - kubevirt/terraform-provider-kubevirt
   review_acts_as_lgtm: true
 
 override:

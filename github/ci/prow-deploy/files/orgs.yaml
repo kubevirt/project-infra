@@ -425,6 +425,11 @@ orgs:
       storage-demo:
         description: 'Incubating: Container images for a kubevirt storage demo environment'
         has_projects: true
+      terraform-provider-kubevirt:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        description: Terraform provider for Kubevirt platform
+        has_projects: true
       test-infra-containers:
         description: All containers which are useful for testing (tgtd, cinder, ceph, gluster, ...)
         has_projects: true
@@ -655,6 +660,12 @@ orgs:
         members:
           - phoracek
         privacy: closed
+      terraform-provider-kubevirt-maintainers:
+        maintainers:
+          - nirarg
+          - isaacdorfman
+        repos:
+          terraform-provider-kubevirt: admin
       sig-security:
         description: ""
         maintainers:
