@@ -1,0 +1,20 @@
+---
+resources:
+  - resources/deployment.yaml
+  - resources/service.yaml
+
+configMapGenerator:
+  - name: mirror-proxy-config
+    namespace: kubevirt-prow
+    files:
+      - configs/ca.crt
+
+secretGenerator:
+  - name: docker-mirror-proxy
+    namespace: kubevirt-prow
+    files:
+      - ca.key=secrets/ca.key
+    type: Opaque
+
+generatorOptions:
+  disableNameSuffixHash: true

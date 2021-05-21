@@ -3,6 +3,7 @@ kubectl_exec: /usr/local/bin/kubectl
 bootstrap_full_config: true
 project_infra_root: /home/prow/go/src/github.com/kubevirt/project-infra
 secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/ibmcloud-production/secrets/'
+components_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/components'
 kubeconfig_path: '{{ secrets_dir }}/kubeconfig'
 
 shell_environment:

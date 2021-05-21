@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: docker-mirror-proxy
+  namespace: kubevirt-prow
 spec:
   selector:
     matchLabels:
@@ -13,10 +14,6 @@ spec:
         app: docker-mirror-proxy
     spec:
       terminationGracePeriodSeconds: 180
-      tolerations:
-      - key: "cachenode"
-        operator: "Exists"
-        effect: "NoSchedule"
       containers:
       - name: mirror-proxy
         image: rpardini/docker-registry-proxy:0.6.2
@@ -46,8 +43,6 @@ spec:
         - name: PROXY_SEND_TIMEOUT
           value: "1200s"
         volumeMounts:
-        - name: storage
-          mountPath: /docker_mirror_cache
         - name: ca-public
           mountPath: /ca/ca.crt
           subPath: ca.crt
@@ -71,6 +66,3 @@ spec:
       - name: ca-private
         secret:
           secretName: docker-mirror-proxy
-      - name: storage
-        persistentVolumeClaim:
-          claimName: docker-mirror-proxy

@@ -4,12 +4,19 @@ kind: Kustomization
 
 resources:
   - ../../base
+  - ../../components/docker-mirror-proxy/base
+  - ../../components/greenhouse/base
+  - resources/docker-mirror-proxy_pvc.yaml
   - resources/ingress-class.yaml
   - resources/hook-rbac.yaml
   - resources/horologium-rbac.yaml
   - resources/sinker-rbac.yaml
   # templated resources
   - resources/admin-rbac.yaml
+
+components:
+  - ../../components/docker-mirror-proxy/pv
+  - ../../components/greenhouse/pv
 
 patches:
   - target:
@@ -240,15 +247,9 @@ configMapGenerator:
   - name: label-config
     files:
       - configs/labels/labels.yaml
-  - name: mirror-config
-    files:
-      - config.yaml=configs/mirror/mirror.yaml
   - name: plugins
     files:
       - configs/plugins/plugins.yaml
-  - name: mirror-proxy-config
-    files:
-      - configs/mirror-proxy/ca.crt
   - name: cat-api-key
     files:
       - configs/cat-api/api-key
@@ -285,11 +286,6 @@ secretGenerator:
   - name: unsplash-api-key
     literals:
       - honk.txt=
-  - name: docker-mirror-proxy
-    files:
-      - ca.key=secrets/docker-proxy-ca.key
-    type: Opaque
-
   - name: kubevirtci-docker-credential
     # username=dockerUser
     # password=dockerPass

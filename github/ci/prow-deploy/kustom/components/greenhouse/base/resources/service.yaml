@@ -16,6 +16,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: bazel-cache
+  namespace: kubevirt-prow
   labels:
     app: greenhouse
     run: bazel-cache
@@ -30,6 +31,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: bazel-cache-metrics
+  namespace: kubevirt-prow
   labels:
     app: greenhouse
     metrics: "true"

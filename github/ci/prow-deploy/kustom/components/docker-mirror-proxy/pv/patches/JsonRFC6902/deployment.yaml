@@ -1,0 +1,13 @@
+---
+# sets up dynamic provisioned PV
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/0
+  value:
+    name: storage
+    mountPath: /docker_mirror_cache
+- op: add
+  path: /spec/template/spec/volumes/0
+  value:
+    name: storage
+    persistentVolumeClaim:
+      claimName: docker-mirror-proxy

@@ -1,0 +1,24 @@
+---
+# schedule on cachenode
+- op: add
+  path: /spec/template/spec/nodeSelector
+  value:
+    ci.kubevirt.io/cachenode: "true"
+- op: add
+  path: /spec/template/spec/tolerations
+  value:
+    - key: "ci.kubevirt.io/cachenode"
+      operator: "Exists"
+      effect: "NoSchedule"
+# setup data hostPath
+- op: add
+  path: /spec/template/spec/volumes/0
+  value:
+    name: storage
+    hostPath:
+      path: "/data/docker-mirror-proxy"
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/0
+  value:
+    name: storage
+    mountPath: /docker_mirror_cache

@@ -1,0 +1,10 @@
+---
+kind: Component
+
+patches:
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: greenhouse
+    path: patches/JsonRFC6902/deployment.yaml
