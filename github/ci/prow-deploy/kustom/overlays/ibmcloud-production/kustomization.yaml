@@ -55,6 +55,12 @@ patches:
       name: prow-controller-manager
     path: patches/JsonRFC6902/prow_controller_manager_deployment.yaml
   - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: ghproxy
+    path: patches/JsonRFC6902/ghproxy_deployment.yaml
+  - target:
       group: rbac.authorization.k8s.io
       version: v1
       kind: Role
