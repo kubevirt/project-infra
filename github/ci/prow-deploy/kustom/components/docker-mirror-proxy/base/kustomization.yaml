@@ -5,7 +5,7 @@ resources:
 
 configMapGenerator:
   - name: mirror-proxy-config
-    namespace: kubevirt-prow
+    namespace: kubevirt-prow-jobs
     files:
       - configs/ca.crt
 
