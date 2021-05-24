@@ -17,10 +17,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -57,10 +57,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -97,10 +97,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -137,10 +137,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -178,10 +178,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -220,10 +220,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -261,10 +261,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -301,10 +301,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -341,10 +341,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -492,7 +492,7 @@ presubmits:
           resources:
             requests:
               memory: "34Gi"
-  
+
   - name: pull-kubevirt-e2e-k8s-1.19-sig-network-nonroot
     skip_branches:
       - release-\d+\.\d+
@@ -545,7 +545,6 @@ presubmits:
     optional: true
     skip_report: false
     cluster: prow-workloads
-    skip_report: false
     decorate: true
     decoration_config:
       timeout: 4h
@@ -553,10 +552,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -721,10 +720,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -761,10 +760,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external

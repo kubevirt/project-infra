@@ -245,7 +245,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -285,7 +285,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -326,7 +326,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
   - org: kubevirt
@@ -366,7 +366,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -406,7 +406,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -446,7 +446,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -488,7 +488,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -527,7 +527,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -567,7 +567,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -610,7 +610,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
   - org: kubevirt
@@ -650,7 +650,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -690,7 +690,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt
@@ -730,7 +730,7 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   extra_refs:
     - org: kubevirt

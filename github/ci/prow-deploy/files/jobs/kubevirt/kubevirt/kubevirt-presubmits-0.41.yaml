@@ -12,10 +12,10 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-0.41
@@ -52,10 +52,10 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-sig-network-0.41
@@ -88,10 +88,10 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-sig-storage-0.41
@@ -125,10 +125,10 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-sig-compute-0.41
@@ -163,10 +163,10 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-operator-0.41
@@ -352,10 +352,10 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.19-sig-storage-0.41
@@ -385,10 +385,10 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.19-sig-compute-0.41
