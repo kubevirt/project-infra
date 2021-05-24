@@ -247,6 +247,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -287,6 +289,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -328,6 +332,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
   - org: kubevirt
     repo: kubevirt
@@ -368,6 +374,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -408,6 +416,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -448,6 +458,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -490,6 +502,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -529,6 +543,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -569,6 +585,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -612,6 +630,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
   - org: kubevirt
     repo: kubevirt
@@ -652,6 +672,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -692,6 +714,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -732,6 +756,8 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
