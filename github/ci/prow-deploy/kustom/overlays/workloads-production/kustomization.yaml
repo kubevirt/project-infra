@@ -14,12 +14,6 @@ components:
 generatorOptions:
   disableNameSuffixHash: true
 
-configMapGenerator:
-  - name: docker-daemon-mirror-config
-    namespace: kubevirt-prow-jobs
-    files:
-      - config.yaml=configs/mirror/mirror.yaml
-
 secretGenerator:
   - name: gcs
     namespace: kubevirt-prow-jobs

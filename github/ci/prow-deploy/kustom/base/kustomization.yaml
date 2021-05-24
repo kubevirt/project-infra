@@ -3,7 +3,6 @@ resources:
   - manifests/local/cherrypicker_deployment.yaml
   - manifests/local/cherrypicker_service.yaml
   - manifests/local/deck-ingress.yaml
-  - manifests/local/docker-daemon_configmap.yaml
   - manifests/local/gcsweb-deployment.yaml
   - manifests/local/gcsweb-ingress.yaml
   - manifests/local/gcsweb-service.yaml
