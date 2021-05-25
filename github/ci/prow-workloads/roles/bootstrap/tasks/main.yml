@@ -24,10 +24,19 @@
       changed_when: False
 
     - name: uncomment mirrorlist lines
-      replace:
+      lineinfile:
         path: '{{ item.path }}'
-        regexp: '#(.*mirrorlist.*)'
-        replace: '\1'
+        regexp: '#(\s?mirrorlist.*)'
+        line: '\1'
+        backrefs: yes
+      with_items: '{{ repo_entries.files }}'
+
+    - name: comment baseurl line
+      lineinfile:
+        path: '{{ item.path }}'
+        regexp: '^baseurl(.*)'
+        line: '# baseurl\1'
+        backrefs: yes
       with_items: '{{ repo_entries.files }}'
 
 - name: remove uneeded packages
@@ -80,3 +89,6 @@
     dest: /etc/sysctl.d/fs.inotify.max_user_watches.conf
     content: |
       fs.inotify.max_user_watches=524288
+
+- name: reboot to apply changes
+  reboot:
