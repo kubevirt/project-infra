@@ -245,8 +245,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -285,8 +287,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -326,8 +330,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
   - org: kubevirt
     repo: kubevirt
@@ -366,8 +372,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -406,8 +414,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -446,8 +456,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -488,8 +500,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -527,8 +541,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -567,8 +583,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -610,8 +628,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
   - org: kubevirt
     repo: kubevirt
@@ -650,8 +670,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -690,8 +712,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -730,8 +754,10 @@ periodics:
     grace_period: 5m
   labels:
     preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
   extra_refs:
     - org: kubevirt
       repo: kubevirt
