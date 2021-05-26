@@ -1,63 +1,64 @@
 presubmits:
   kubevirt/terraform-provider-kubevirt:
-  - name: pull-terraform-proider-kubevirt-e2e-k8s-1.20
-    skip_branches:
-      - release-\d+\.\d+
+  - name: pull-terraform-provider-kubevirt-e2e-k8s-1.20
+    branches:
+      - main
     annotations:
       fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
+      testgrid-create-test-group: "false"
     always_run: true
     optional: false
     skip_report: false
     cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 7h
+      timeout: 1h
       grace_period: 5m
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          env:
+            - name: KUBEVIRT_PROVIDER
+              value: "k8s-1.20"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export KUBEVIRT_PROVIDER=k8s-1.20 && automation/test.sh"
+            - "automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
             requests:
-              memory: "34Gi"
-  - name: pull-terraform-proider-kubevirt-unit-tests
-    skip_branches:
-      - release-\d+\.\d+
+              memory: "29Gi"
+  - name: pull-terraform-provider-kubevirt-unit-tests
+    branches:
+      - main
     annotations:
       fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
+      testgrid-create-test-group: "false"
     always_run: true
     optional: false
     skip_report: false
     cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 7h
+      timeout: 10m
       grace_period: 5m
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "false"
-      preset-bazel-unnested: "false"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -73,4 +74,4 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "34Gi"
+              memory: "10Gi"
