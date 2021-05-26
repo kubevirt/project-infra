@@ -13,11 +13,8 @@ kind: Node
 metadata:
   name: node01
   labels:
-    type: vm
-    zone: ci
     role: ingress-controller
     ci.kubevirt.io/cachenode: 'true'
-    dedicated: ghproxy
 ---
 apiVersion: v1
 kind: ConfigMap
