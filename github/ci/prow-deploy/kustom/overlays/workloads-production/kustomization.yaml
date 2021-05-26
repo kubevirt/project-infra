@@ -4,43 +4,24 @@ kind: Kustomization
 
 resources:
   - resources/bootstrap.yaml
+  - ../../components/docker-mirror-proxy/base
+  - ../../components/greenhouse/base
 
-patches:
-  - target:
-      version: v1
-      kind: Secret
-      namespace: ""
-      name: .*
-    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
-  - target:
-      version: v1
-      kind: ConfigMap
-      namespace: ""
-      name: .*
-    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
+components:
+  - ../../components/docker-mirror-proxy/hostpath
+  - ../../components/greenhouse/hostpath
 
 generatorOptions:
   disableNameSuffixHash: true
 
-configMapGenerator:
-  - name: docker-daemon-mirror-config
-    files:
-      - config.yaml=configs/mirror/mirror.yaml
-  - name: mirror-proxy-config
-    files:
-      - configs/mirror-proxy/ca.crt
-
 secretGenerator:
   - name: gcs
+    namespace: kubevirt-prow-jobs
     files:
       - secrets/service-account.json
     type: Opaque
-  - name: docker-mirror-proxy
-    files:
-      - ca.key=secrets/docker-proxy-ca.key
-    type: Opaque
-
   - name: kubevirtci-docker-credential
+    namespace: kubevirt-prow-jobs
     # username=dockerUser
     # password=dockerPass
     envs:
@@ -48,17 +29,20 @@ secretGenerator:
     type: Opaque
 
   - name: kubevirtci-quay-credential
+    namespace: kubevirt-prow-jobs
     # username=quayUser
     # password=quayPass
     envs:
     - secrets/kubevirtci-quay-credential
     type: Opaque
   - name: kubevirtci-installer-pull-token
+    namespace: kubevirt-prow-jobs
     files:
       # installerPullToken
       - token=secrets/kubevirtci-installer-pull-token
     type: Opaque
   - name: kubevirtci-coveralls-token
+    namespace: kubevirt-prow-jobs
     files:
       # coverallsToken
       - token=secrets/kubevirtci-coveralls-token

@@ -7,19 +7,10 @@
     path: '{{ configs_dir }}'
     state: directory
 
-- name: set mirror-proxy-config directory
-  set_fact:
-    mirror_proxy_config_dir: '{{ configs_dir}}/mirror-proxy'
-
-- name: create mirror-proxy-config directory
-  file:
-    path: '{{ mirror_proxy_config_dir }}'
-    state: directory
-
 - name: create mirror-proxy-config
   copy:
     content: '{{ dockerMirrorProxyCA.crt }}'
-    dest: '{{ mirror_proxy_config_dir }}/ca.crt'
+    dest: '{{ components_dir }}/docker-mirror-proxy/base/configs/ca.crt'
 
 - name: set cat-api directory
   set_fact:

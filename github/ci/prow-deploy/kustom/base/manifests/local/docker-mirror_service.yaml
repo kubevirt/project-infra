@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: docker-mirror
-spec:
-  selector:
-    app: docker-mirror
-  ports:
-  - port: 5000
