@@ -11,7 +11,7 @@ postsubmits:
       extra_refs:
       - org: kubevirt
         repo: project-infra
-        base_ref: main
+        base_ref: master
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
