@@ -683,7 +683,7 @@ presubmits:
       preset-shared-images: "true"
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
