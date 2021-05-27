@@ -46,26 +46,6 @@ ensure_git_config() {
     return 1
 }
 
-propose_pr(){
-    local token=${1}
-    local branch=update-testgrid-config
-
-    ensure_git_config
-    title="Update TestGrid"
-    git commit -m "${title}"
-    echo "Pushing commit to ${USER}/project-infra:${branch}..."
-    git push -f "https://${USER}@github.com/${USER}/project-infra" "HEAD:${branch}"
-
-    echo "Creating PR to merge ${USER}:${branch} into kubevirt/project-infra:master..."
-    /pr-creator \
-        --github-token-path="${token}" \
-        --org="kubevirt" --repo="project-infra" --branch=master \
-        --title="${title}" --head-branch="${branch}" \
-        --body="TestGrid config updated by configurator, please review." \
-        --source="${USER}:${branch}" \
-        --confirm
-}
-
 upload_config(){
     gsutil cp ${TESTGRID_CONFIG} gs://kubevirt-prow/testgrid/gen-config.yaml
 }

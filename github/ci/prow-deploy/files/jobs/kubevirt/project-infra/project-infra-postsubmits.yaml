@@ -633,10 +633,10 @@ postsubmits:
           env:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"
-          command:
-          - github/ci/testgrid/hack/update.sh
+          command: ["/bin/sh"]
           args:
-          - /etc/github/oauth
+          - "-c"
+          - hack/git-pr.sh -c "github/ci/testgrid/hack/update.sh" -b update-testgrid-config -r project-infra
           securityContext:
             runAsUser: 0
           resources:
