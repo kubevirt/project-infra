@@ -6,16 +6,12 @@ BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 source ${BASEDIR}/common.sh
 
 main(){
+    # make transfigure image pr-creator available in the path
+    ln -s /pr-creator /usr/local/bin/pr-creator
+
     generate_config "${@}"
 
-    if git diff --cached --quiet --exit-code; then
-        echo "No changes in testgrid config. Aborting no-op bump"
-        exit 0
-    fi
-
     run_tests "${@}"
-
-    propose_pr "${@}"
 }
 
 main "${@}"
