@@ -629,14 +629,14 @@ postsubmits:
         base_ref: master
       spec:
         containers:
-        - image: gcr.io/k8s-prow/transfigure:v20210224-afd05eb414
+        - image: gcr.io/k8s-prow/transfigure:v20210526-84965e233e
           env:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"
-          command:
-          - github/ci/testgrid/hack/update.sh
+          command: ["/bin/sh"]
           args:
-          - /etc/github/oauth
+          - "-c"
+          - hack/git-pr.sh -c "github/ci/testgrid/hack/update.sh" -b update-testgrid-config -r project-infra
           securityContext:
             runAsUser: 0
           resources:
