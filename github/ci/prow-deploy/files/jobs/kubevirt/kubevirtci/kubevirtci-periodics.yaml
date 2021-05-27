@@ -26,7 +26,7 @@ periodics:
           - name: BASE_REPOID
             value: devel_kubic_libcontainers_stable
           - name: CRIO_VERSIONS
-            value: "1.20"
+            value: "1.20,1.21"
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
