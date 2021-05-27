@@ -1,0 +1,21 @@
+---
+# PodMonitor to scrape prometheus metrics from each ephemeral Prometheus instance of each prow-job kubevirtci cluster
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: prometheus-stack-federation
+  namespace: monitoring
+  labels:
+    group: kubevirtci
+spec:
+  podMetricsEndpoints:
+  - targetPort: 30007
+    path: '/federate?match[]={__name__!=""}'
+    interval: 15s
+  selector:
+    matchLabels:
+     ci.kubevirt.io/prometheus: ""
+  jobLabel: prow.k8s.io/job
+  namespaceSelector:
+    matchNames:
+      - "kubevirt-prow-jobs"
