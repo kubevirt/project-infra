@@ -5,7 +5,8 @@ set -euo pipefail
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_INFRA_ROOT=$(readlink -f --canonicalize ${BASEDIR}/../../../..)
 TEST_INFRA_ROOT=$(readlink -f --canonicalize ${PROJECT_INFRA_ROOT}/../../kubernetes/test-infra)
-TESTGRID_CONFIG=$(readlink -f --canonicalize ${BASEDIR}/../gen-config.yaml)
+TESTGRID_GEN_CONFIG=$(readlink -f --canonicalize ${BASEDIR}/../gen-config.yaml)
+TESTGRID_CONFIG=$(readlink -f --canonicalize ${BASEDIR}/../config.yaml)
 USER=kubevirt-bot
 EMAIL=kubevirtbot@redhat.com
 
@@ -19,7 +20,7 @@ generate_config(){
         --prow-config "${prow_config}" \
         --prow-job-config "${job_config}" \
         --output-yaml \
-        --yaml "${TESTGRID_CONFIG}" \
+        --yaml "${TESTGRID_GEN_CONFIG}" \
         --oneshot \
         --output "${testgrid_dir}/${testgrid_subdir}/gen-config.yaml"
 
@@ -46,26 +47,6 @@ ensure_git_config() {
     return 1
 }
 
-propose_pr(){
-    local token=${1}
-    local branch=update-testgrid-config
-
-    ensure_git_config
-    title="Update TestGrid"
-    git commit -m "${title}"
-    echo "Pushing commit to ${USER}/project-infra:${branch}..."
-    git push -f "https://${USER}@github.com/${USER}/project-infra" "HEAD:${branch}"
-
-    echo "Creating PR to merge ${USER}:${branch} into kubevirt/project-infra:master..."
-    /pr-creator \
-        --github-token-path="${token}" \
-        --org="kubevirt" --repo="project-infra" --branch=master \
-        --title="${title}" --head-branch="${branch}" \
-        --body="TestGrid config updated by configurator, please review." \
-        --source="${USER}:${branch}" \
-        --confirm
-}
-
 upload_config(){
-    gsutil cp ${TESTGRID_CONFIG} gs://kubevirt-prow/testgrid/gen-config.yaml
+    gsutil cp ${TESTGRID_CONFIG} gs://kubevirt-prow/testgrid/config.yaml
 }
