@@ -5,7 +5,10 @@ periodics:
   # Run once a week at midnight on Sunday morning
   cron: "0 0 * * 0"
   annotations:
-    testgrid-create-test-group: "false"
+    testgrid-dashboards: kubevirt-libguestfs-appliance-periodics
+    testgrid-alert-email: afrosi@redhat.com, victortoso@redhat.com
+    testgrid-num-failures-to-alert: "1"
+    testgrid-alert-stale-results-hours: "1"
   decorate: true
   decoration_config:
     timeout: 3h

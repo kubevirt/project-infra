@@ -1,9 +1,11 @@
 dashboards:
 - name: kubevirt-presubmits
 - name: kubevirt-periodics
+- name: kubevirt-libguestfs-appliance-periodics
 
 dashboard_groups:
 - name: kubevirt
   dashboard_names:
   - kubevirt-presubmits
   - kubevirt-periodics
+  - kubevirt-libguestfs-appliance-periodics
