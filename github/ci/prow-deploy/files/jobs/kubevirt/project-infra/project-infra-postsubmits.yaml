@@ -614,45 +614,7 @@ postsubmits:
           secret:
             secretName: pgp-bot-key
     - name: post-project-infra-update-testgrid-config
-      run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$'
-      branches:
-      - master
-      labels:
-        preset-bazel-cache: "true"
-      annotations:
-        testgrid-create-test-group: "false"
-      decorate: true
-      cluster: ibm-prow-jobs
-      extra_refs:
-      - org: kubernetes
-        repo: test-infra
-        base_ref: master
-      spec:
-        containers:
-        - image: gcr.io/k8s-prow/transfigure:v20210526-84965e233e
-          env:
-          - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
-          command: ["/bin/sh"]
-          args:
-          - "-c"
-          - hack/git-pr.sh -c "github/ci/testgrid/hack/update.sh" -b update-testgrid-config -r project-infra
-          securityContext:
-            runAsUser: 0
-          resources:
-            requests:
-              memory: "8Gi"
-            limits:
-              memory: "8Gi"
-          volumeMounts:
-          - name: token
-            mountPath: /etc/github
-        volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
-    - name: post-project-infra-upload-testgrid-config
-      run_if_changed: '^github/ci/testgrid/config\.yaml$'
+      run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$|^github/ci/testgrid/gen-config\.yaml$|^github/ci/testgrid/default\.yaml$'
       branches:
       - master
       annotations:
@@ -661,19 +623,23 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        - image: gcr.io/k8s-prow/configurator:v20210526-1d9416cb76
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
           command:
-          - github/ci/testgrid/hack/upload.sh
-          securityContext:
-            runAsUser: 0
+          - /app/testgrid/cmd/configurator/app.binary
+          args:
+          - --prow-config=github/ci/prow-deploy/files/config.yaml
+          - --prow-job-config=github/ci/prow-deploy/files/jobs
+          - --yaml=github/ci/testgrid/gen-config.yaml
+          - --default=github/ci/testgrid/default.yaml
+          - --oneshot
+          - --update-description
+          - --output=gs://kubevirt-prow/testgrid/config
           resources:
             requests:
-              memory: "200Mi"
-            limits:
-              memory: "200Mi"
+              memory: "1Gi"
           volumeMounts:
           - name: gcs
             mountPath: /etc/gcs
