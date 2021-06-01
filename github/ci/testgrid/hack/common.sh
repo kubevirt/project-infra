@@ -4,7 +4,9 @@ set -euo pipefail
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_INFRA_ROOT=$(readlink -f --canonicalize ${BASEDIR}/../../../..)
-TEST_INFRA_ROOT=$(readlink -f --canonicalize ${PROJECT_INFRA_ROOT}/../../kubernetes/test-infra)
+if [ -d ${PROJECT_INFRA_ROOT}/../../kubernetes/test-infra ]; then
+    TEST_INFRA_ROOT=$(readlink -f --canonicalize ${PROJECT_INFRA_ROOT}/../../kubernetes/test-infra)
+fi
 TESTGRID_GEN_CONFIG=$(readlink -f --canonicalize ${BASEDIR}/../gen-config.yaml)
 TESTGRID_CONFIG=$(readlink -f --canonicalize ${BASEDIR}/../config.yaml)
 USER=kubevirt-bot
@@ -48,5 +50,6 @@ ensure_git_config() {
 }
 
 upload_config(){
+    gcloud auth activate-service-account --key-file=/etc/gcs/service-account.json
     gsutil cp ${TESTGRID_CONFIG} gs://kubevirt-prow/testgrid/config.yaml
 }
