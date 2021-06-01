@@ -1111,7 +1111,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: false
+    always_run: true
     optional: true
     skip_report: false
     decorate: true
