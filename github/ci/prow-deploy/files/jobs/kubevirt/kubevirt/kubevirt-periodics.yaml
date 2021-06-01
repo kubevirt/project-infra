@@ -233,7 +233,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.19-sig-storage
   annotations:
     testgrid-dashboards: kubevirt-periodics
@@ -275,7 +275,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.19-sig-compute
   annotations:
     testgrid-dashboards: kubevirt-periodics
@@ -317,7 +317,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.20-sig-network
   annotations:
     testgrid-dashboards: kubevirt-periodics
@@ -359,7 +359,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.20-sig-storage
   annotations:
     testgrid-dashboards: kubevirt-periodics
@@ -401,7 +401,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.20-sig-compute
   annotations:
     testgrid-dashboards: kubevirt-periodics
@@ -443,7 +443,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.20-operator
   annotations:
     testgrid-dashboards: kubevirt-periodics
@@ -487,49 +487,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
-- name: periodic-kubevirt-e2e-k8s-1.20
-  annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cron: "50 8,16,0 * * *"
-  decorate: true
-  cluster: prow-workloads
-  decoration_config:
-    timeout: 7h
-    grace_period: 5m
-  labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: master
-      work_dir: true
-  spec:
-    nodeSelector:
-      type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: TARGET
-            value: "k8s-1.20"
-          - name: KUBEVIRT_E2E_SKIP
-            value: "SRIOV|GPU|\\[sig-operator\\]|\\[sig-network\\]|\\[sig-storage\\]|\\[sig-compute\\]"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.20-cgroupsv2
   annotations:
     testgrid-dashboards: kubevirt-periodics
@@ -571,7 +529,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.20-cgroupsv2-rook-ceph
   annotations:
     testgrid-dashboards: kubevirt-periodics
@@ -615,7 +573,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.21-sig-network
   annotations:
     testgrid-dashboards: kubevirt-periodics
@@ -657,7 +615,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.21-sig-storage
   annotations:
     testgrid-dashboards: kubevirt-periodics
@@ -699,7 +657,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.21-sig-compute
   annotations:
     testgrid-dashboards: kubevirt-periodics
@@ -741,7 +699,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.21-operator
   annotations:
     testgrid-dashboards: kubevirt-periodics
@@ -785,7 +743,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
 - name: periodic-kubevirt-push-nightly-build-master
   cron: "2 1 * * *"
   decorate: true
@@ -1056,7 +1014,7 @@ periodics:
           privileged: true
         resources:
           requests:
-            memory: "34Gi"
+            memory: "29Gi"
         volumeMounts:
           #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
           - name: modules

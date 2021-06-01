@@ -37,7 +37,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -76,7 +76,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -114,7 +114,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -148,7 +148,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -182,7 +182,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -219,7 +219,7 @@ presubmits:
         - automation/test.sh
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -257,7 +257,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -296,7 +296,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -329,7 +329,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -362,7 +362,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -424,7 +424,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
         volumeMounts:
@@ -477,7 +477,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -510,7 +510,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -544,7 +544,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 34Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
