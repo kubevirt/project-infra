@@ -47,3 +47,8 @@ secretGenerator:
       # coverallsToken
       - token=secrets/kubevirtci-coveralls-token
     type: Opaque
+  - name: win-sysprep-001
+    namespace: kubevirt-prow-jobs
+    files:
+      - productKey=secrets/win-sysprep-001
+    type: Opaque
