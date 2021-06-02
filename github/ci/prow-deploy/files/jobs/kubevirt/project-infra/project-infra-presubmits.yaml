@@ -498,7 +498,7 @@ presubmits:
             limits:
               memory: "16Gi"
   - name: pull-project-infra-check-testgrid-config
-    run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$|^github/ci/testgrid/gen-config\.yaml$'
+    run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$|^github/ci/testgrid/gen-config\.yaml$|^github/ci/testgrid/default\.yaml$'
     decorate: true
     labels:
       preset-bazel-cache: "true"
