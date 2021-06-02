@@ -66,6 +66,39 @@ presubmits:
           resources:
             requests:
               memory: "29Gi"
+  - name: pull-containerized-data-importer-e2e-k8s-1.20-hpp-istio
+    skip_branches:
+      - release-v\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 5h
+      grace_period: 5m
+    max_concurrency: 6
+    cluster: phx-prow
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "ln -b /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 && export TARGET=k8s-1.20 && export KUBEVIRT_STORAGE=hpp && export KUBEVIRT_DEPLOY_ISTIO=true && export CDI_E2E_FOCUS=Istio && automation/test.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-k8s-1.19-hpp
     skip_branches:
       - release-v1.28
