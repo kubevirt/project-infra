@@ -5,6 +5,8 @@ filters:
   .*:
     approvers:
     - alicefr
+    - victortoso
     reviewers:
     - alicefr
+    - victortoso
 options: {}
