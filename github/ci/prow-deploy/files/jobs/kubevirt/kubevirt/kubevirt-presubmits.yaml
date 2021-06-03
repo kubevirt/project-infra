@@ -1498,3 +1498,31 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
+  - name: pull-kubevirt-test-doc-change-ignore
+    skip_branches:
+      - release-\d+\.\d+
+    always_run: false
+    optional: true
+    run_if_changed: '^(?:[^d]|d[^o]|do[^c]|doc[^s]|docs[^/]).*(?:[^.]txt|[^t]xt|[^x]t|[^.]md|[^m]d|[^dt])$'
+    skip_report: true
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 7h
+      grace_period: 5m
+    max_concurrency: 11
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          command:
+            - "echo"
+            - "test-doc-change-ignore lane executed"
+          resources:
+            requests:
+              memory: "10Mi"
