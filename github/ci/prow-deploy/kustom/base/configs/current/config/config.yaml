@@ -105,7 +105,7 @@ tide:
     kubevirt/kubevirt-template-validator: squash
     kubevirt/kubevirt-ssp-operator: squash
     kubevirt/csi-driver: squash
-    kubevirt/ssp-operator: rebase
+    kubevirt/ssp-operator: merge
     kubevirt/must-gather: squash
     kubevirt/user-guide: squash
     kubevirt/terraform-provider-kubevirt: merge
