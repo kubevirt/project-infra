@@ -579,48 +579,6 @@ presubmits:
           resources:
             requests:
               memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.19
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: false
-    skip_report: false
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 11
-    cluster: phx-prow
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.19
-            - name: KUBEVIRT_E2E_SKIP
-              value: "SRIOV|GPU|\\[sig-operator\\]|\\[sig-network\\]|\\[sig-storage\\]|\\[sig-compute\\]"
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
   - name: pull-kubevirt-e2e-k8s-1.19-sig-network
     skip_branches:
       - release-\d+\.\d+
