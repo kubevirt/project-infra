@@ -37,6 +37,7 @@ periodics:
           bucket_dir="kubevirt-prow/devel/release/kubevirt/libguestfs-appliance"
           ./create-libguestfs-appliance.sh
           gsutil cp ./output/appliance-*.tar.xz gs://$bucket_dir/
+          gsutil cp ./output/latest-version.txt gs://$bucket_dir/
       # docker-in-docker needs privileged mode
       securityContext:
         privileged: true
