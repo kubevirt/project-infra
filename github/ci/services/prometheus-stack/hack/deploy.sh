@@ -12,8 +12,9 @@ main(){
     bazelisk run //github/ci/services/prometheus-stack:${environment}.apply
 
     bazelisk run //github/ci/services/common/k8s/cmd/wait -- -namespace monitoring -selector prometheus-stack-kube-prom-operator -kind deployment
-    bazelisk run //github/ci/services/common/k8s/cmd/wait -- -namespace monitoring -selector alertmanager-prometheus-stack-kube-prom-alertmanager -kind statefulset
+
     if [ "${environment}" = "production-control-plane" ]; then
+        bazelisk run //github/ci/services/common/k8s/cmd/wait -- -namespace monitoring -selector alertmanager-prometheus-stack-kube-prom-alertmanager -kind statefulset
         bazelisk run //github/ci/services/common/k8s/cmd/wait -- -namespace monitoring -selector grafana -kind deployment
     fi
     bazelisk run //github/ci/services/common/k8s/cmd/wait -- -namespace monitoring -selector node-exporter-prometheus-node-exporter -kind daemonset

@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus-stack-kube-prom-prometheus
+  namespace: default
+spec:
+  externalLabels:
+    cluster: ibm-prow-jobs
+    replica: "0"
+  thanos:
+    baseImage: quay.io/thanos/thanos
+    version: v0.21.1
+    objectStorageConfig:
+      key: thanos.yaml
+      name: thanos-objstore-config
+  resources:
+    requests:
+      cpu: 700m
+      memory: 4Gi
+    limits:
+      cpu: 700m
+      memory: 4Gi

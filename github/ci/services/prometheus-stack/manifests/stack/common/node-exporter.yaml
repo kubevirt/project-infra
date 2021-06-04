@@ -5,7 +5,7 @@ kind: PodSecurityPolicy
 metadata:
   name: node-exporter-prometheus-node-exporter
   namespace: default
-  labels:     
+  labels:
     app: prometheus-node-exporter
     heritage: Helm
     release: node-exporter
@@ -74,7 +74,7 @@ kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: psp-node-exporter-prometheus-node-exporter
-  labels:     
+  labels:
     app: prometheus-node-exporter
     heritage: Helm
     release: node-exporter
@@ -91,7 +91,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: psp-node-exporter-prometheus-node-exporter
-  labels:     
+  labels:
     app: prometheus-node-exporter
     heritage: Helm
     release: node-exporter
@@ -113,7 +113,7 @@ metadata:
   namespace: default
   annotations:
     prometheus.io/scrape: "true"
-  labels:     
+  labels:
     app: prometheus-node-exporter
     heritage: Helm
     release: node-exporter
@@ -135,7 +135,7 @@ kind: DaemonSet
 metadata:
   name: node-exporter-prometheus-node-exporter
   namespace: default
-  labels:     
+  labels:
     app: prometheus-node-exporter
     heritage: Helm
     release: node-exporter
@@ -151,7 +151,7 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      labels:         
+      labels:
         app: prometheus-node-exporter
         heritage: Helm
         release: node-exporter
@@ -229,12 +229,12 @@ kind: ServiceMonitor
 metadata:
   name: node-exporter-prometheus-node-exporter
   namespace: default
-  labels:     
+  labels:
     app: prometheus-node-exporter
     heritage: Helm
     release: node-exporter
     chart: prometheus-node-exporter-1.15.0
-    group: kubevirt
+    group: kubevirtci
 spec:
   selector:
     matchLabels:
