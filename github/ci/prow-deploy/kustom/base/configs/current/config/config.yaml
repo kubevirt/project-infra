@@ -369,11 +369,7 @@ branch-protection:
     nmstate:
       repos:
         kubernetes-nmstate:
-          branches:
-            main:
-              protect: true
-            release-0.15:
-              protect: true
+          protect: true
 
 push_gateway:
   endpoint: pushgateway
