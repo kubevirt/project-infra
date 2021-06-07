@@ -4,6 +4,7 @@ kind: Kustomization
 
 resources:
   - resources/bootstrap.yaml
+  - resources/ingress-controller.yaml
   - ../../components/docker-mirror-proxy/base
   - ../../components/greenhouse/base
 
