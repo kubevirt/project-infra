@@ -34,9 +34,10 @@ periodics:
         - "-c"
         - |
           set -e
+          url=https://storage.googleapis.com/kubevirt-prow/devel/release/kubevirt/libguestfs-appliance
           bucket_dir="kubevirt-prow/devel/release/kubevirt/libguestfs-appliance"
           ./create-libguestfs-appliance.sh
-          gsutil cp ./output/appliance-*.tar.xz gs://$bucket_dir/
+          curl --output /dev/null --silent --head --fail $url/$(cat ./output/latest-version.txt).tar.xz || gsutil cp ./output/appliance-*.tar.xz gs://$bucket_dir/
           gsutil cp ./output/latest-version.txt gs://$bucket_dir/
       # docker-in-docker needs privileged mode
       securityContext:
