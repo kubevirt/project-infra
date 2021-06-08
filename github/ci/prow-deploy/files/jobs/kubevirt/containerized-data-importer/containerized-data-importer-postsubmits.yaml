@@ -38,6 +38,42 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
+  - name: push-latest-containerized-data-importer-images
+    branches:
+    - main
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          DOCKER_TAG="latest" make bazel-push-images
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
   - name: push-release-containerized-data-importer-tag
     branches:
     - release-v\d+\.\d+
