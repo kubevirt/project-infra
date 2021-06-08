@@ -10,7 +10,7 @@ periodics:
   max_concurrency: 1
   labels:
     preset-shared-images: "true"
-  cluster: phx-prow
+  cluster: prow-workloads
   spec:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
@@ -87,7 +87,7 @@ periodics:
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror: "true"
-  cluster: phx-prow
+  cluster: prow-workloads
   spec:
     volumes:
     - name: token
