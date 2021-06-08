@@ -406,7 +406,7 @@ presubmits:
           resources:
             requests:
               memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.19-nonroot
+  - name: pull-kubevirt-e2e-k8s-1.19-sig-compute-nonroot
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -414,13 +414,13 @@ presubmits:
       testgrid-dashboards: kubevirt-presubmits
     always_run: false
     optional: true
+    cluster: prow-workloads
     skip_report: false
     decorate: true
     decoration_config:
       timeout: 7h
       grace_period: 5m
     max_concurrency: 11
-    cluster: phx-prow
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -434,9 +434,7 @@ presubmits:
         - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           env:
             - name: TARGET
-              value: k8s-1.19
-            - name: KUBEVIRT_E2E_SKIP
-              value: "SRIOV|GPU|Operator"
+              value: k8s-1.19-sig-compute
             - name: FEATURE_GATES
               value: "NonRoot"
           command:
