@@ -163,7 +163,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "8Gi"
+            memory: "12Gi"
   - name: check-provision-k8s-1.21
     always_run: true
     optional: false
@@ -190,7 +190,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "8Gi"
+            memory: "12Gi"
   - name: check-provision-k8s-1.20-cgroupsv2
     always_run: false
     optional: true
