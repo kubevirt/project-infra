@@ -120,11 +120,14 @@ git commit -s -m "${summary}"
 git push -f "https://${user}@github.com/${user}/${repo}.git" HEAD:"${branch}"
 
 echo "Creating PR to merge ${user}:${branch} into master..." >&2
+# TODO: fix the truncation of the summary in pr-creator
+# this is currently required as the search for existing PRs fails if the summary is too long due to
+# GitHub search being limited to 250 characters
 pr-creator \
     --github-token-path="${token}" \
     --org="${org}" --repo="${repo}" --branch="${targetbranch}" \
-    --title="${summary}" --match-title="${summary}" \
-    --body="Automatic run of \"$command\". Please review" \
+    --title="${summary}" --match-title="$(echo $summary | cut -c -150)" \
+    --body="Automatic run of \"${command}\". Please review" \
     --source="${user}":"${branch}" \
     --labels="${labels}" \
     --confirm
