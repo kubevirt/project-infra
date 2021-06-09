@@ -1,4 +1,5 @@
 dashboards:
+- name: kubevirt-containerized-data-importer-presubmits
 - name: kubevirt-presubmits
 - name: kubevirt-periodics
 - name: kubevirt-libguestfs-appliance-periodics
@@ -6,6 +7,7 @@ dashboards:
 dashboard_groups:
 - name: kubevirt
   dashboard_names:
+  - kubevirt-containerized-data-importer-presubmits
   - kubevirt-presubmits
   - kubevirt-periodics
   - kubevirt-libguestfs-appliance-periodics
