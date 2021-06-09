@@ -16,6 +16,11 @@ generatorOptions:
   disableNameSuffixHash: true
 
 secretGenerator:
+  - name: oauth-token
+    namespace: kubevirt-prow-jobs
+    files:
+      - oauth=secrets/oauth-token
+    type: Opaque
   - name: gcs
     namespace: kubevirt-prow-jobs
     files:
@@ -41,6 +46,12 @@ secretGenerator:
     files:
       # installerPullToken
       - token=secrets/kubevirtci-installer-pull-token
+    type: Opaque
+  - name: commenter-oauth-token
+    namespace: kubevirt-prow-jobs
+    # githubCommenterToken
+    files:
+      - oauth=secrets/commenter-oauth-token
     type: Opaque
   - name: kubevirtci-coveralls-token
     namespace: kubevirt-prow-jobs
