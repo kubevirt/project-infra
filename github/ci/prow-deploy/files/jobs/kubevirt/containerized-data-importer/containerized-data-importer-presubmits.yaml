@@ -5,7 +5,7 @@ presubmits:
       - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
-      testgrid-dashboards: kubevirt-containerized-data-importer
+      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
     decorate: true
@@ -39,7 +39,7 @@ presubmits:
       - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
-      testgrid-dashboards: kubevirt-containerized-data-importer
+      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
     decorate: true
@@ -73,7 +73,7 @@ presubmits:
       - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
-      testgrid-dashboards: kubevirt-containerized-data-importer
+      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: false
     optional: true
     decorate: true
@@ -107,7 +107,7 @@ presubmits:
       - release-v1.28
     annotations:
       fork-per-release: "true"
-      testgrid-dashboards: kubevirt-containerized-data-importer
+      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
     decorate: true
@@ -141,7 +141,7 @@ presubmits:
       - release-v1.28
     annotations:
       fork-per-release: "true"
-      testgrid-dashboards: kubevirt-containerized-data-importer
+      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
     decorate: true
@@ -207,7 +207,7 @@ presubmits:
     skip_branches:
       - release-v\d+\.\d+
     annotations:
-      testgrid-dashboards: kubevirt-containerized-data-importer
+      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
       fork-per-release: "true"
     always_run: true
     optional: false
@@ -241,7 +241,7 @@ presubmits:
     skip_branches:
       - release-v\d+\.\d+
     annotations:
-      testgrid-dashboards: kubevirt-containerized-data-importer
+      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
       fork-per-release: "true"
     always_run: true
     optional: false
