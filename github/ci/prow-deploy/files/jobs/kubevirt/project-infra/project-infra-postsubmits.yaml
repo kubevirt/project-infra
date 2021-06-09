@@ -436,7 +436,8 @@ postsubmits:
               decrypt_secrets
               extract_secret 'kubeconfig' ~/.kube/config
 
-              ./github/ci/services/cert-manager/hack/deploy.sh production
+              ./github/ci/services/cert-manager/hack/deploy.sh production-control-plane
+              ./github/ci/services/cert-manager/hack/deploy.sh production-e2e-workloads
           resources:
             requests:
               memory: "8Gi"

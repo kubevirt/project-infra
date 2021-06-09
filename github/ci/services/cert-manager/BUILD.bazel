@@ -4,58 +4,50 @@ TESTING_CLUSTER = "kind-kind"
 
 TESTING_USER = "kind-kind"
 
-PRODUCTION_CLUSTER = "ibm-cluster"
+PRODUCTION_CLUSTER_CONTROL_PLANE = "ibm-cluster"
 
-PRODUCTION_USER = "ibm-prow-jobs-automation"
+PRODUCTION_USER_CONTROL_PLANE = "ibm-prow-jobs-automation"
 
-k8s_deploy(
-    name = "testing-base",
-    cluster = TESTING_CLUSTER,
-    manifests = glob([
-        "manifests/*.yaml",
-    ]),
-    patches = glob([
-        "patches/*.yaml",
-    ]),
-    namespace = "cert-manager",
-    user = TESTING_USER,
-)
+PRODUCTION_CLUSTER_E2E_WORKLOADS = "prow-workloads-cluster"
 
-k8s_deploy(
-    name = "testing-issuers",
-    cluster = TESTING_CLUSTER,
-    manifests = glob([
-        "manifests/issuers/*.yaml",
-    ]),
-    patches = glob([
-        "overlays/testing/*.yaml",
-    ]),
-    namespace = "cert-manager",
-    user = TESTING_USER,
-)
+PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
 
-k8s_deploy(
-    name = "production-base",
-    cluster = PRODUCTION_CLUSTER,
-    manifests = glob([
-        "manifests/*.yaml",
-    ]),
-    patches = glob([
-        "patches/*.yaml",
-    ]),
-    namespace = "cert-manager",
-    user = PRODUCTION_USER,
-)
+[
+    k8s_deploy(
+        name = NAME,
+        cluster = CLUSTER,
+        manifests = glob([
+            "manifests/*.yaml",
+        ]),
+        patches = glob([
+            "patches/*.yaml",
+        ]),
+        namespace = "cert-manager",
+        user = USER,
+    )
+    for NAME, CLUSTER, USER in [
+            ("testing-base", TESTING_CLUSTER, TESTING_USER),
+            ("production-control-plane-base", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+            ("production-e2e-workloads-base", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+    ]
+]
 
-k8s_deploy(
-    name = "production-issuers",
-    cluster = PRODUCTION_CLUSTER,
-    manifests = glob([
-        "manifests/issuers/*.yaml",
-    ]),
-    namespace = "cert-manager",
-    user = PRODUCTION_USER,
-    deps = [
-        ":production-base",
-    ],
-)
+[
+    k8s_deploy(
+        name = NAME,
+        cluster = CLUSTER,
+        manifests = glob([
+            "manifests/issuers/*.yaml",
+        ]),
+        patches = glob([
+            "overlays/%s/*.yaml" % NAME,
+        ]),
+        namespace = "cert-manager",
+        user = USER,
+    )
+    for NAME, CLUSTER, USER in [
+            ("testing-issuers", TESTING_CLUSTER, TESTING_USER),
+            ("production-control-plane-issuers", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+            ("production-e2e-workloads-issuers", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+    ]
+]
