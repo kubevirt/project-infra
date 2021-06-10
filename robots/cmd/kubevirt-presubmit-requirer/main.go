@@ -29,7 +29,7 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
-const OrgAndRepoForJobConfig = "kubevirt/kubevirt"
+const orgAndRepoForJobConfig = "kubevirt/kubevirt"
 
 type options struct {
 	port int
@@ -148,8 +148,8 @@ func UpdatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, lat
 		createPresubmitJobName(latestReleaseSemver, "operator"): "",
 	}
 
-	for index := range jobConfig.PresubmitsStatic[OrgAndRepoForJobConfig] {
-		job := &jobConfig.PresubmitsStatic[OrgAndRepoForJobConfig][index]
+	for index := range jobConfig.PresubmitsStatic[orgAndRepoForJobConfig] {
+		job := &jobConfig.PresubmitsStatic[orgAndRepoForJobConfig][index]
 		name := job.Name
 		if _, exists := jobsToCheck[name]; !exists {
 			continue

@@ -548,7 +548,7 @@ periodics:
       repo: project-infra
       base_ref: master
       workdir: true
-  cluster: phx-prow
+  cluster: prow-workloads
   spec:
     securityContext:
       runAsUser: 0
