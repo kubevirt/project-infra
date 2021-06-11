@@ -200,8 +200,7 @@ postsubmits:
         testgrid-create-test-group: "false"
       decorate: true
       branches:
-      # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-      - ^prow-control-plane-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+      - ^master$
       labels:
         preset-docker-mirror-proxy: "true"
       skip_report: false
@@ -253,8 +252,7 @@ postsubmits:
         testgrid-create-test-group: "false"
       decorate: true
       branches:
-      # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-      - ^prow-workloads-cluster-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+      - ^master$
       labels:
         preset-docker-mirror-proxy: "true"
       skip_report: false
