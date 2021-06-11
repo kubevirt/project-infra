@@ -359,6 +359,7 @@ orgs:
         has_wiki: false
         homepage: https://kubevirt.io
       kubevirtci:
+        default_branch: main
         description: Contains cluster definitions and client tools to quickly spin up and destroy ephemeral and scalable k8s and ocp clusters for testing
         has_projects: true
       kvm-info-nfd-plugin:
