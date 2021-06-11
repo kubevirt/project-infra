@@ -534,3 +534,44 @@ periodics:
     - name: token
       secret:
         secretName: oauth-token
+- name: periodic-kubevirt-presubmit-requirer
+  cron: "0 1 1 * *"
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+    - org: kubevirt
+      repo: project-infra
+      base_ref: master
+      workdir: true
+  cluster: prow-workloads
+  spec:
+    securityContext:
+      runAsUser: 0
+    containers:
+      - image: quay.io/kubevirt/builder@sha256:0a33ac20425efa54b357e51ba0ea6e0ca515d47f572ad078408f92870e3a1e08
+        env:
+          - name: GIT_ASKPASS
+            value: ../project-infra/hack/git-askpass.sh
+        command: [ "/bin/sh" , "-c" ]
+        args:
+          - |
+            bazel_dir=$(mktemp -d) &&
+            curl --fail -L https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 --output ${bazel_dir}/bazelisk &&
+            chmod a+x ${bazel_dir}/bazelisk &&
+            export PATH=${PATH}:${bazel_dir} &&
+            hack/git-pr.sh -c "bazelisk run //robots/cmd/kubevirt-presubmit-requirer:kubevirt-presubmit-requirer -- -job-config-path-kubevirt-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml -github-token-path= -dry-run=false" -r project-infra -b require-kubevirt-presubmits
+        volumeMounts:
+          - name: token
+            mountPath: /etc/github
+        resources:
+          requests:
+            memory: "200Mi"
+    volumes:
+      - name: token
+        secret:
+          secretName: oauth-token
