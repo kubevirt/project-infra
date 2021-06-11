@@ -4,13 +4,11 @@
 filters:
   .*:
     approvers:
-    - codificat
+    - davidvossel
     - fabiand
-    - hroyrh
     - mazzystr
+    - stu-gott
     reviewers:
-    - codificat
-    - hroyrh
     - mazzystr
   ^_(data|layouts|sass|css|js)/.*:
     labels:
