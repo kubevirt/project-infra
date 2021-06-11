@@ -279,7 +279,7 @@ branch-protection:
               protect: true
         kubevirtci:
           branches:
-            master:
+            main:
               protect: true
         containerized-data-importer:
           branches:

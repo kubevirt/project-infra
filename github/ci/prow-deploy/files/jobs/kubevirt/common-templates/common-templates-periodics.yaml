@@ -20,7 +20,7 @@ periodics:
       work_dir: true
     - org: kubevirt
       repo: kubevirtci
-      base_ref: master
+      base_ref: main
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -62,7 +62,7 @@ periodics:
       work_dir: true
     - org: kubevirt
       repo: kubevirtci
-      base_ref: master
+      base_ref: main
   spec:
     nodeSelector:
       type: bare-metal-external
