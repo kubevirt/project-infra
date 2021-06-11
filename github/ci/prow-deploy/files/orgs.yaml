@@ -309,6 +309,7 @@ orgs:
         homepage: https://index.krew.dev
       kubectl-virt-plugin:
         description: Holds all scripts to create packages and manifest file required for publishing the virtctl binary as a krew package for kubectl.
+        default_branch: main
         has_projects: true
       kubernetes-device-plugins:
         archived: true

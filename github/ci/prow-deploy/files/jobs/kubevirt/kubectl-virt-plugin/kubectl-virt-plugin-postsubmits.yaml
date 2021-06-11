@@ -2,7 +2,7 @@ postsubmits:
   kubevirt/kubectl-virt-plugin:
     - name: publish-kubectl-virt-plugin-images
       branches:
-      - master
+      - main
       always_run: false
       run_if_changed: "images/.*"
       annotations:
@@ -13,7 +13,7 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: phx-prow
+      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
