@@ -325,6 +325,7 @@ orgs:
       kubevirt:
         allow_rebase_merge: false
         allow_squash_merge: false
+        default_branch: main
         description: Kubernetes Virtualization API and runtime in order to define and manage virtual machines.
         has_projects: true
         homepage: https://kubevirt.io

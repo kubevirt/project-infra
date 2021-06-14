@@ -282,7 +282,7 @@ periodics:
     workdir: true
   - org: kubevirt
     repo: kubevirt
-    base_ref: master
+    base_ref: main
   - org: kubevirt
     repo: containerized-data-importer
     base_ref: main
@@ -304,7 +304,7 @@ periodics:
             curl --fail -L https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 --output ${bazel_dir}/bazelisk &&
             chmod a+x ${bazel_dir}/bazelisk &&
             export PATH=${PATH}:${bazel_dir} &&
-            hack/git-pr.sh -c "bazelisk run //plugins/cmd/uploader:uploader -- -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ../kubevirt -r kubevirt -L lgtm,approved,release-note-none &&
+            hack/git-pr.sh -c "bazelisk run //plugins/cmd/uploader:uploader -- -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ../kubevirt -r kubevirt -L lgtm,approved,release-note-none -T main &&
             hack/git-pr.sh -c "bazelisk run //plugins/cmd/uploader:uploader -- -workspace ${PWD}/../containerized-data-importer/WORKSPACE -dry-run=false" -p ../containerized-data-importer -r containerized-data-importer -T main -L lgtm,approved,release-note-none
         volumeMounts:
         - name: token
