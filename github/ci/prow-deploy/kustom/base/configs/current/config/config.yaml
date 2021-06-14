@@ -364,7 +364,7 @@ branch-protection:
               protect: true
         ovs-cni:
           branches:
-            master:
+            main:
               protect: true
     nmstate:
       repos:
