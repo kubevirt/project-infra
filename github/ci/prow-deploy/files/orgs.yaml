@@ -405,6 +405,7 @@ orgs:
         has_projects: true
       project-infra:
         allow_rebase_merge: false
+        default_branch: main
         description: Project infrastructure administrative tools
         has_projects: false
         has_wiki: false

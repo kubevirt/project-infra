@@ -206,7 +206,7 @@ periodics:
   extra_refs:
   - org: kubevirt
     repo: project-infra
-    base_ref: master
+    base_ref: main
     work_dir: true
   cluster: phx-prow
   spec:
@@ -226,6 +226,7 @@ periodics:
       - --github-endpoint=https://api.github.com
       - --org=kubevirt
       - --repo=project-infra
+      - --pr-base-branch=main
       - --target-dir=.
       - --target-subdir=github/ci/prow-deploy/files
       - --config-subdir=jobs
@@ -278,7 +279,7 @@ periodics:
   extra_refs:
   - org: kubevirt
     repo: project-infra
-    base_ref: master
+    base_ref: main
     workdir: true
   - org: kubevirt
     repo: kubevirt
@@ -334,7 +335,7 @@ periodics:
   extra_refs:
   - org: kubevirt
     repo: project-infra
-    base_ref: master
+    base_ref: main
     workdir: true
   - org: kubevirt
     repo: kubevirtci
@@ -422,7 +423,7 @@ periodics:
   extra_refs:
   - org: kubevirt
     repo: project-infra
-    base_ref: master
+    base_ref: main
     workdir: true
   cluster: phx-prow
   spec:
@@ -440,7 +441,7 @@ periodics:
             curl --fail -L https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 --output ${bazel_dir}/bazelisk &&
             chmod a+x ${bazel_dir}/bazelisk &&
             export PATH=${PATH}:${bazel_dir} &&
-            hack/git-pr.sh -c "bazelisk run //robots/cmd/kubevirtci-presubmit-creator:kubevirtci-presubmit-creator -- -job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml -github-token-path= -dry-run=false" -r project-infra -b create-kubevirtci-presubmit
+            hack/git-pr.sh -c "bazelisk run //robots/cmd/kubevirtci-presubmit-creator:kubevirtci-presubmit-creator -- -job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml -github-token-path= -dry-run=false" -r project-infra -b create-kubevirtci-presubmit -T main
         volumeMounts:
         - name: token
           mountPath: /etc/github
@@ -461,7 +462,7 @@ periodics:
   extra_refs:
   - org: kubevirt
     repo: project-infra
-    base_ref: master
+    base_ref: main
     workdir: true
   interval: 1h
   max_concurrency: 1
@@ -506,7 +507,7 @@ periodics:
   extra_refs:
   - org: kubevirt
     repo: project-infra
-    base_ref: master
+    base_ref: main
     workdir: true
   - org: kubernetes
     repo: test-infra
@@ -546,7 +547,7 @@ periodics:
   extra_refs:
     - org: kubevirt
       repo: project-infra
-      base_ref: master
+      base_ref: main
       workdir: true
   cluster: prow-workloads
   spec:
@@ -564,7 +565,7 @@ periodics:
             curl --fail -L https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 --output ${bazel_dir}/bazelisk &&
             chmod a+x ${bazel_dir}/bazelisk &&
             export PATH=${PATH}:${bazel_dir} &&
-            hack/git-pr.sh -c "bazelisk run //robots/cmd/kubevirt-presubmit-requirer:kubevirt-presubmit-requirer -- -job-config-path-kubevirt-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml -github-token-path= -dry-run=false" -r project-infra -b require-kubevirt-presubmits
+            hack/git-pr.sh -c "bazelisk run //robots/cmd/kubevirt-presubmit-requirer:kubevirt-presubmit-requirer -- -job-config-path-kubevirt-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml -github-token-path= -dry-run=false" -r project-infra -b require-kubevirt-presubmits -T main
         volumeMounts:
           - name: token
             mountPath: /etc/github

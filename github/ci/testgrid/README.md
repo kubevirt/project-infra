@@ -9,7 +9,7 @@ It creates a pull request each time the TestGrid configuration file in the `kube
 
 ## Adding new dashboard
 
-The dashboards' configuration is stored in the [gen-config.yaml](https://github.com/kubevirt/project-infra/tree/master/github/ci/testgrid/gen-config.yaml) file. See the example of a dashboard configuration file:
+The dashboards' configuration is stored in the [gen-config.yaml](https://github.com/kubevirt/project-infra/tree/main/github/ci/testgrid/gen-config.yaml) file. See the example of a dashboard configuration file:
 ```yaml
 dashboards:
   - name: kubevirt_presubmits

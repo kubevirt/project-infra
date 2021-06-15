@@ -1090,7 +1090,7 @@ periodics:
   extra_refs:
   - org: kubevirt
     repo: project-infra
-    base_ref: master
+    base_ref: main
   - org: kubevirt
     repo: kubevirt
     base_ref: master

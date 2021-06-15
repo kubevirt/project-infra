@@ -200,7 +200,7 @@ postsubmits:
         testgrid-create-test-group: "false"
       decorate: true
       branches:
-      - ^master$
+      - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
       skip_report: false
@@ -252,7 +252,7 @@ postsubmits:
         testgrid-create-test-group: "false"
       decorate: true
       branches:
-      - ^master$
+      - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
       skip_report: false
@@ -409,7 +409,7 @@ postsubmits:
       decorate: true
       run_if_changed: "github/ci/services/cert-manager.*"
       branches:
-      - ^master$
+      - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
       cluster: ibm-prow-jobs
@@ -461,7 +461,7 @@ postsubmits:
       decorate: true
       run_if_changed: "github/ci/services/ci-search.*"
       branches:
-      - ^master$
+      - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
       cluster: ibm-prow-jobs
@@ -513,7 +513,7 @@ postsubmits:
       decorate: true
       run_if_changed: "github/ci/services/sippy.*"
       branches:
-      - ^master$
+      - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
       cluster: ibm-prow-jobs
@@ -564,7 +564,7 @@ postsubmits:
       decorate: true
       run_if_changed: "github/ci/services/prometheus-stack.*"
       branches:
-      - ^master$
+      - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
       cluster: ibm-prow-jobs
@@ -620,7 +620,7 @@ postsubmits:
       decorate: true
       run_if_changed: "github/ci/services/kuberhealthy.*"
       branches:
-      - ^master$
+      - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
       cluster: ibm-prow-jobs
@@ -668,7 +668,7 @@ postsubmits:
     - name: post-project-infra-update-testgrid-config
       run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$|^github/ci/testgrid/gen-config\.yaml$|^github/ci/testgrid/default\.yaml$'
       branches:
-      - master
+      - main
       annotations:
         testgrid-create-test-group: "false"
       decorate: true

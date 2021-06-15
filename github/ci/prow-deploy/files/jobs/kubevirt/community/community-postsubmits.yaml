@@ -9,7 +9,7 @@ postsubmits:
       extra_refs:
         - org: kubevirt
           repo: project-infra
-          base_ref: master
+          base_ref: main
         - org: cncf
           repo: devstats
           base_ref: master
