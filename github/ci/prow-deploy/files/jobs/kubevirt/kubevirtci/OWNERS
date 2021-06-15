@@ -6,6 +6,7 @@ filters:
     approvers:
     - davidvossel
     - dhiller
+    - enp0s3
     - fgimenez
     - jean-edouard
     - phoracek
@@ -16,6 +17,7 @@ filters:
     reviewers:
     - davidvossel
     - dhiller
+    - enp0s3
     - fgimenez
     - jean-edouard
     - ormergi
