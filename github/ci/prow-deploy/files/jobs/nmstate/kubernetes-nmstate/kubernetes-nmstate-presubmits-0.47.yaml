@@ -2,10 +2,8 @@
 presubmits:
   nmstate/kubernetes-nmstate:
     - name: pull-kubernetes-nmstate-unit-test-0.47
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+      branches:
+        - release-0.47
       always_run: true
       optional: false
       decorate: true
@@ -30,10 +28,8 @@ presubmits:
               - "automation/check-patch.unit-test.sh"
 
     - name: pull-kubernetes-nmstate-e2e-handler-k8s-0.47
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+      branches:
+        - release-0.47
       always_run: true
       optional: false
       decorate: true
@@ -61,10 +57,8 @@ presubmits:
               - "automation/check-patch.e2e-k8s.sh"
 
     - name: pull-kubernetes-nmstate-e2e-handler-k8s-future-0.47
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+      branches:
+        - release-0.47
       always_run: true
       optional: true
       decorate: true
@@ -92,10 +86,8 @@ presubmits:
               - "NMSTATE_PIN=future automation/check-patch.e2e-k8s.sh"
 
     - name: pull-kubernetes-nmstate-e2e-operator-k8s-0.47
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+      branches:
+        - release-0.47
       always_run: true
       optional: false
       decorate: true
