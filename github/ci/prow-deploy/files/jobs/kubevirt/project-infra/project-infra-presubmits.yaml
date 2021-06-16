@@ -224,6 +224,33 @@ presubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
+  - name: build-autoowners-image
+    always_run: false
+    run_if_changed: "images/autoowners/.*"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: prow-workloads
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - |
+              cd images
+              ./publish_image.sh -b autoowners quay.io kubevirtci
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+            limits:
+              memory: "4Gi"
   - name: kubernetes-crud-ci-role
     always_run: false
     run_if_changed: "github/ci/kubernetes-crud/.*"
