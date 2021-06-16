@@ -234,8 +234,6 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
     cluster: prow-workloads
     spec:
-      nodeSelector:
-        type: vm
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           command:
