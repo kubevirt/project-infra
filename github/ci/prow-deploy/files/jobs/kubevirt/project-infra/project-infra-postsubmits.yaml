@@ -221,9 +221,9 @@ postsubmits:
               privileged: true
             resources:
               requests:
-                memory: "1Gi"
+                memory: "4Gi"
               limits:
-                memory: "1Gi"
+                memory: "4Gi"
     - name: post-project-infra-prow-control-plane-deployment
       always_run: false
       annotations:

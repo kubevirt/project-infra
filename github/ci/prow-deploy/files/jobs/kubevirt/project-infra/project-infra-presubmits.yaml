@@ -248,9 +248,9 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "1Gi"
+              memory: "4Gi"
             limits:
-              memory: "1Gi"
+              memory: "4Gi"
   - name: kubernetes-crud-ci-role
     always_run: false
     run_if_changed: "github/ci/kubernetes-crud/.*"
