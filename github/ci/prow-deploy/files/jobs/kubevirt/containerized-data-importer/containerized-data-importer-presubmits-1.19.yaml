@@ -17,7 +17,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
-    cluster: phx-prow
+    cluster: prow-workloads
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
@@ -55,7 +55,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
-    cluster: phx-prow
+    cluster: prow-workloads
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
@@ -93,7 +93,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
-    cluster: phx-prow
+    cluster: prow-workloads
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
