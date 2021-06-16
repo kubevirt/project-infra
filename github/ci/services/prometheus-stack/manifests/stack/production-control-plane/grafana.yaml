@@ -150,13 +150,17 @@ data:
       isDefault: true
       name: Prometheus
       type: prometheus
-      url: http://prometheus-stack-kube-prom-prometheus:9090/
+      url: http://thanos-query-frontend:9090/
     - access: proxy
       editable: false
       isDefault: false
       name: Loki
       type: loki
       url: http://loki:3100/
+    - access: proxy
+      name: Cluster Prometheus
+      type: prometheus
+      url: http://prometheus-stack-kube-prom-prometheus:9090/
   dashboardproviders.yaml: |
     apiVersion: 1
     providers:

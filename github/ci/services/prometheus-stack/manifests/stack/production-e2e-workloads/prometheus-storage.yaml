@@ -1,0 +1,24 @@
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: prometheus-db-0
+  labels:
+    app: prometheus
+    type: local
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/prometheus"
+    type: ""
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: ci.kubevirt.io/cachenode
+          operator: In
+          values:
+          - "true"

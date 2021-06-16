@@ -24,3 +24,10 @@ spec:
             name: prometheus-stack-kube-prom-prometheus
             port:
               number: 9090
+      - path: /thanos-sidecar
+        pathType: Prefix
+        backend:
+          service:
+            name: thanos-sidecar
+            port:
+              number: 10901

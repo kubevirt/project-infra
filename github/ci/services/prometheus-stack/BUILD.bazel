@@ -1,12 +1,15 @@
 load("@com_adobe_rules_gitops//gitops:defs.bzl", "k8s_deploy")
 
 TEST_CLUSTER = "kind-kind"
+
 TEST_USER = "kind-kind"
 
 PRODUCTION_CLUSTER_CONTROL_PLANE = "ibm-cluster"
+
 PRODUCTION_USER_CONTROL_PLANE = "ibm-prow-jobs-automation"
 
 PRODUCTION_CLUSTER_E2E_WORKLOADS = "prow-workloads-cluster"
+
 PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
 
 [

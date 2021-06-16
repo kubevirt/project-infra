@@ -4,6 +4,34 @@ Customization and deployment of a prometheus-based monitoring stack, including
 [prometheus operator], [alertmanager], [grafana] and [loki]. It uses internally
 these bazel [gitops rules].
 
+## Layout
+
+We have a setup in which the main components are running in the same cluster as
+Prow control plane. Metrics from the rest of clusters are aggregated and
+accessible from the main cluster. The architecture of the stack looks like this:
+
+[monitoring stack](monitoring-stack.png)
+
+These are the components involved:
+* Control plane cluster:
+  * Grafana: main entry point from the outside to access dashboards and explore
+metrics.
+  * Thanos query-frontend: retrieves metrics from Thanos querier and makes them
+  available to Grafana. It currently uses an in-memory cache to improve the query
+  performance.
+  * Thanos querier: aggregates metrics from the different Prometheus sidecars and
+  from the long-term store.
+  * Prometheus and Thanos sidecar: Prometheus is only concerned with scrapping
+  metrics and writing blocks to its configured local storage. The sidecar takes
+  care of persisting these blocks to the permanent storage and respond to requests
+  from querier.
+  * Compactor: optimizes indices of blocks uploaded to permanent storage, executes
+  downsampling to improve query performance on medium/large time ranges and enforces
+  data retention (currently set to 40 days).
+* Workloads clusters: they only run Prometheus and sidecar components described
+above, the sidecar service must be accessible from the control plane cluster.
+* GCS bucket: permanent store of persisted blocks.
+
 ## Deployment
 
 You need:

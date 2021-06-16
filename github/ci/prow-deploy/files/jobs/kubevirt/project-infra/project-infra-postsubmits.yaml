@@ -592,6 +592,8 @@ postsubmits:
               extract_secret 'grafanaUser' ./github/ci/services/prometheus-stack/secrets/production-control-plane/grafana/admin-user
               extract_secret 'grafanaPassword' ./github/ci/services/prometheus-stack/secrets/production-control-plane/grafana/admin-password
               extract_secret 'grafanaLDAPTOML' ./github/ci/services/prometheus-stack/secrets/production-control-plane/grafana/ldap-toml
+              extract_secret 'thanosObjstoreConfig' ./github/ci/services/prometheus-stack/secrets/production-control-plane/thanos-objstore-config/thanos.yaml
+              extract_secret 'thanosObjstoreConfig' ./github/ci/services/prometheus-stack/secrets/production-e2e-workloads/thanos-objstore-config/thanos.yaml
 
               ./github/ci/services/prometheus-stack/hack/deploy.sh production-control-plane
               ./github/ci/services/prometheus-stack/hack/deploy.sh production-e2e-workloads
