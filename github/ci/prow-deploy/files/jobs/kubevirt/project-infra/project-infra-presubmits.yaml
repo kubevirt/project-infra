@@ -319,9 +319,9 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "18Gi"
+              memory: "22Gi"
             limits:
-              memory: "18Gi"
+              memory: "22Gi"
           volumeMounts:
           - name: token
             mountPath: /etc/github
