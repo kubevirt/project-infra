@@ -246,8 +246,8 @@ presubmits:
           requests:
             memory: "8Gi"
   - name: check-provision-k8s-1.17
-    always_run: true
-    optional: false
+    always_run: false
+    optional: true
     decorate: true
     decoration_config:
       timeout: 3h
