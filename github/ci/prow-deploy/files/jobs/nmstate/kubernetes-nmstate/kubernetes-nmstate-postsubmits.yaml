@@ -16,7 +16,7 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: phx-prow
+      cluster: prow-workloads
       spec:
         nodeSelector:
           type: vm
@@ -57,11 +57,8 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       branches:
         - ^v\d+\.\d+\.\d+$
-      cluster: phx-prow
+      cluster: prow-workloads
       spec:
-        nodeSelector:
-          type: vm
-          zone: ci
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
             command:

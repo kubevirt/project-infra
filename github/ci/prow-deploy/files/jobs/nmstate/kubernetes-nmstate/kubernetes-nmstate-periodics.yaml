@@ -4,7 +4,7 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: phx-prow
+  cluster: prow-workloads
   spec:
     nodeSelector:
       type: vm
@@ -42,7 +42,7 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: phx-prow
+  cluster: prow-workloads
   spec:
     nodeSelector:
       type: vm
@@ -80,11 +80,8 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: phx-prow
+  cluster: prow-workloads
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
     - image: quay.io/kubevirtci/flakefinder@sha256:9871c510cde2945ae65406c8e6b153a3e573ced8b95f3eeb8ff47a6642cffdb4
       env:
