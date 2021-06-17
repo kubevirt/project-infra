@@ -1030,7 +1030,7 @@ periodics:
           hostPath:
             path: /dev/vfio/
             type: Directory
-- name: periodic-kubevirt-e2e-k8s-prev-prev-rook-ceph
+- name: periodic-kubevirt-e2e-k8s-rook-ceph
   annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
@@ -1062,7 +1062,7 @@ periodics:
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: TARGET
-            value: k8s-1.17
+            value: k8s-1.20
           - name: KUBEVIRT_STORAGE
             value: rook-ceph
         command:
