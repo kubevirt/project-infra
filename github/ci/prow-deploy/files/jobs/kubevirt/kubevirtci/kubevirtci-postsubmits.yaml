@@ -2,7 +2,7 @@ postsubmits:
   kubevirt/kubevirtci:
     - name: publish-kubevirtci
       branches:
-      - master
+      - main
       always_run: true
       annotations:
         testgrid-create-test-group: "false"
