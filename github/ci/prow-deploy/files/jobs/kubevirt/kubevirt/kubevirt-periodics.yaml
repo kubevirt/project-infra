@@ -212,7 +212,7 @@ periodics:
     repo: kubevirt
     base_ref: master
     work_dir: true
-  cluster: phx-prow
+  cluster: prow-workloads
   reporter_config:
     slack:
       job_states_to_report: []
@@ -796,7 +796,7 @@ periodics:
       repo: kubevirt
       base_ref: master
       work_dir: true
-  cluster: phx-prow
+  cluster: prow-workloads
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -926,7 +926,7 @@ periodics:
       base_ref: master
       path_alias: kubevirt
       workdir: true
-  cluster: phx-prow
+  cluster: prow-workloads
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -1049,7 +1049,7 @@ periodics:
     base_ref: master
     work_dir: true
   skip_report: true
-  cluster: phx-prow
+  cluster: prow-workloads
   reporter_config:
     slack:
       job_states_to_report: []

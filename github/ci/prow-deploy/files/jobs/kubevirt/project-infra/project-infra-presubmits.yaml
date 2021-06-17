@@ -258,7 +258,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -291,7 +291,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -346,7 +346,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -383,7 +383,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -420,7 +420,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -457,7 +457,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -494,7 +494,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external

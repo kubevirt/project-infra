@@ -16,7 +16,7 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
         rehearsal.allowed: "true"
-      cluster: phx-prow
+      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external

@@ -17,7 +17,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.13.3-0.34
     context: pull-kubevirt-e2e-k8s-1.13.3
     optional: true
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -49,7 +49,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.14-0.34
     context: pull-kubevirt-e2e-k8s-1.14
     optional: true
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -82,7 +82,7 @@ presubmits:
     context: pull-kubevirt-e2e-k8s-1.16-ceph
     optional: true
     skip_report: true
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -117,7 +117,7 @@ presubmits:
     context: pull-kubevirt-e2e-k8s-1.19-release-0.34
     optional: true
     skip_report: true
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -148,7 +148,7 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.18-0.34
     context: pull-kubevirt-e2e-k8s-1.18
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -179,7 +179,7 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.17-0.34
     context: pull-kubevirt-e2e-k8s-1.17
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -210,7 +210,7 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.16-0.34
     context: pull-kubevirt-e2e-k8s-1.16
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -241,7 +241,7 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-cnao-1.17-0.34
     context: pull-kubevirt-e2e-k8s-cnao-1.17
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -273,7 +273,7 @@ presubmits:
     name: pull-kubevirt-e2e-os-3.11.0-crio-0.34
     context: pull-kubevirt-e2e-os-3.11.0-crio
     optional: true
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -305,7 +305,7 @@ presubmits:
     name: pull-kubevirt-e2e-os-3.11.0-multus-0.34
     context: pull-kubevirt-e2e-os-3.11.0-multus
     optional: true
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -336,7 +336,7 @@ presubmits:
     max_concurrency: 1
     name: pull-kubevirt-e2e-windows2016-0.34
     context: pull-kubevirt-e2e-windows2016
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -442,7 +442,7 @@ presubmits:
     name: pull-kubevirt-check-tests-for-flakes-0.34
     context: pull-kubevirt-check-tests-for-flakes
     optional: true
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -473,7 +473,7 @@ presubmits:
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-1.17-rook-ceph-0.34
     context: pull-kubevirt-e2e-k8s-1.17-rook-ceph
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:

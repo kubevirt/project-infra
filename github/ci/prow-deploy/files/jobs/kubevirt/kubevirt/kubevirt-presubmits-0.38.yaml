@@ -18,7 +18,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.20-0.38
     optional: true
     skip_report: true
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -49,7 +49,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.19-0.38
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -80,7 +80,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.18-0.38
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -111,7 +111,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.17-0.38
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -142,7 +142,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-cnao-1.19-0.38
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -173,7 +173,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-windows2016-0.38
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -279,7 +279,7 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-check-tests-for-flakes-0.38
     optional: true
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:
@@ -310,7 +310,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-1.17-rook-ceph-0.38
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       containers:
       - command:

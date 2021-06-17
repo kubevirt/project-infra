@@ -48,7 +48,7 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
-      cluster: phx-prow
+      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
@@ -81,7 +81,7 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror: "true"
         preset-shared-images: "true"
-      cluster: phx-prow
+      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
@@ -144,7 +144,7 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
-      cluster: phx-prow
+      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
