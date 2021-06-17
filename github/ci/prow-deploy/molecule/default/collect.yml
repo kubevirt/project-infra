@@ -51,3 +51,7 @@
   loop_control:
     loop_var: resource
     label: "{{ resource.key }}"
+
+- name: collect kind logs
+  shell: |
+    kind export logs {{ artifacts_dir }}

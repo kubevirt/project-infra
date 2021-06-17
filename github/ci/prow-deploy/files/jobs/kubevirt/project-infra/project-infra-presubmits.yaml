@@ -311,7 +311,9 @@ presubmits:
             - |
               cd github/ci/prow-deploy/
               molecule test || true
-              sleep 3600
+              tmp=$(mktemp -d)
+              docker cp instance:$ARTIFACTS $tmp
+              cp -ar $tmp/artifacts/* $ARTIFACTS
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
