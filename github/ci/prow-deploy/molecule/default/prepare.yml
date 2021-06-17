@@ -55,7 +55,7 @@
     - name: Launch cluster
       shell: |
         kind delete cluster
-        kind create cluster --config {{ kind.cluster_config }} --image quay.io/kubevirtci/kind:{{ kind.image_tag }}
+        kind create cluster --config {{ kind.cluster_config }} --image quay.io/kubevirtci/kind:{{ kind.image_tag }} --verbosity 4
       changed_when: false
       when: "'kubevirtci' in deploy_environment"
 
