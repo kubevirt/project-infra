@@ -90,5 +90,19 @@
     content: |
       fs.inotify.max_user_watches=524288
 
+- name: additional kernel modules
+  block:
+    - name: insert module
+      shell: |
+        modprobe {{ item }}
+
+    - name: make module insertion permanent
+      copy:
+        dest: /etc/modules-load.d/{{ item }}.conf
+        content: |
+          {{ item }}
+  loop:
+    - openvswitch
+
 - name: reboot to apply changes
   reboot:
