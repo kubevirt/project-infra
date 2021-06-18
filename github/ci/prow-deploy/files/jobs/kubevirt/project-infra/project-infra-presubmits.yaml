@@ -307,7 +307,7 @@ presubmits:
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
-            - "-ce"
+            - "-c"
             - |
               cd github/ci/prow-deploy/
               molecule test || true
