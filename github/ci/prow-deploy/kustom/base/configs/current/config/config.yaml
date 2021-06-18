@@ -271,7 +271,7 @@ branch-protection:
                   - continuous-integration/travis-ci/pr
         project-infra:
           branches:
-            master:
+            main:
               protect: true
         libguestfs-appliance:
           branches:

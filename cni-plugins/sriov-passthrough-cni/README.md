@@ -41,7 +41,7 @@ This will let k8s know that only one PF is allocated (each PF is represented by 
 K8s uses these resources in order to know how many jobs can run simultaneously.
 Each SR-IOV node of the CI cluster has `prow/sriov` capacity according to the amount of it's available physical PFs.
 
-[3] https://github.com/kubevirt/project-infra/blob/master/github/ci/prow/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml
+[3] https://github.com/kubevirt/project-infra/blob/main/github/ci/prow/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml
 
 [4] 
 ```bash

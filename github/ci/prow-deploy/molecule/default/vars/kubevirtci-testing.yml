@@ -1,6 +1,6 @@
 # Test provisioning
 testinfra_dir: /tmp/test-infra
-project_infra_root: /workspace/repos/project-infra-master
+project_infra_root: /workspace/repos/project-infra-main
 
 kubeconfig_path: '/root/.kube/config'
 secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/kubevirtci-testing/secrets/'
