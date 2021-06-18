@@ -62,9 +62,9 @@ postsubmits:
       - name: gcs
         secret:
           secretName: gcs
-  - name: push-kubevirt-master
+  - name: push-kubevirt-main
     branches:
-    - master
+    - main
     cluster: ibm-prow-jobs
     always_run: true
     optional: false
@@ -93,7 +93,7 @@ postsubmits:
           value: /etc/github/oauth
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
-        - ./automation/postsubmit-master.sh
+        - ./automation/postsubmit-main.sh
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
@@ -116,7 +116,7 @@ postsubmits:
   - name: push-kubevirt-goveralls
     cluster: ibm-prow-jobs
     branches:
-      - master
+      - main
     annotations:
       testgrid-create-test-group: "false"
     always_run: true
