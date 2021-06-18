@@ -23,7 +23,7 @@ presubmits:
           type: vm
           zone: ci
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: quay.io/kubevirtci/golang:v20210316-d295087
             securityContext:
               privileged: true
             command:
@@ -53,7 +53,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          - image: quay.io/kubevirtci/golang:v20210316-d295087
             securityContext:
               privileged: true
             resources:
@@ -86,7 +86,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: quay.io/kubevirtci/golang:v20210316-d295087
             securityContext:
               privileged: true
             resources:
@@ -116,7 +116,7 @@ presubmits:
         preset-shared-images: "true"
       spec:
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20200430-be2a8a9
+          - image: quay.io/kubevirtci/golang:v20210316-d295087
             securityContext:
               privileged: true
             command:
@@ -149,7 +149,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          - image: quay.io/kubevirtci/golang:v20210316-d295087
             securityContext:
               privileged: true
             resources:
