@@ -14,3 +14,4 @@
       vars:
         main_actions:
           - cleanup
+      ignore_errors: yes

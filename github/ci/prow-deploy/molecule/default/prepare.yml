@@ -30,35 +30,39 @@
         /usr/local/bin/start_dind.sh
       changed_when: false
 
-    - name: create cluster config
-      copy:
-        dest: '{{ kind.cluster_config }}'
-        content: |
-          kind: Cluster
-          apiVersion: kind.x-k8s.io/v1alpha4
-          nodes:
-          - role: control-plane
-          - role: worker
-            extraPortMappings:
-            - containerPort: 80
-              hostPort: 80
-            - containerPort: 443
-              hostPort: 443
-            kubeadmConfigPatches:
-            - |
-              kind: JoinConfiguration
-              nodeRegistration:
-                name: '{{ node_name }}'
-                kubeletExtraArgs:
-                  system-reserved: memory=16Gi
-                  node-labels: "ingress-ready=true"
-    - name: Launch cluster
-      shell: |
-        kind delete cluster
-        kind create cluster --config {{ kind.cluster_config }} --image quay.io/kubevirtci/kind:{{ kind.image_tag }} --retain
-      changed_when: false
-      when: "'kubevirtci' in deploy_environment"
-
+    - name: Create cluster
+      block:
+        - name: create cluster config
+          copy:
+            dest: '{{ kind.cluster_config }}'
+            content: |
+              kind: Cluster
+              apiVersion: kind.x-k8s.io/v1alpha4
+              nodes:
+              - role: control-plane
+              - role: worker
+                extraPortMappings:
+                - containerPort: 80
+                  hostPort: 80
+                - containerPort: 443
+                  hostPort: 443
+                kubeadmConfigPatches:
+                - |
+                  kind: JoinConfiguration
+                  nodeRegistration:
+                    name: '{{ node_name }}'
+                    kubeletExtraArgs:
+                      system-reserved: memory=16Gi
+                      node-labels: "ingress-ready=true"
+        - name: Launch cluster
+          shell: |
+            kind delete cluster
+            kind create cluster --config {{ kind.cluster_config }} --image quay.io/kubevirtci/kind:{{ kind.image_tag }} --retain
+          changed_when: false
+          when: "'kubevirtci' in deploy_environment"
+      always:
+        - name: collect deployment information
+          include_tasks: collect.yml
     - name: bootstrap cluster
       shell: |
         kubectl apply -f '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/resources/bootstrap.yaml'
