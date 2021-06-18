@@ -23,7 +23,7 @@ RUN curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_lin
   chmod a+x ./yq && \
   mv ./yq /usr/local/bin
 
-RUN curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.9.0/kind-linux-amd64 && \
+RUN curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.11.1/kind-linux-amd64 && \
   chmod a+x ./kind && \
   mv ./kind /usr/local/bin
 
