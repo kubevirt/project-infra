@@ -949,7 +949,7 @@ presubmits:
       fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: 'multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni'
       testgrid-dashboards: kubevirt-presubmits
-    always_run: true
+    always_run: false
     optional: true
     decorate: true
     decoration_config:
