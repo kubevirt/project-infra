@@ -4,7 +4,7 @@ driver:
 
 platforms:
   - name: instance
-    image: quay.io/kubevirtci/prow-deploy:v20210129-a239273
+    image: quay.io/kubevirtci/prow-deploy:v20210618-2e4be2d
     privileged: True
     etc_hosts:
       "gcsweb.prowdeploy.ci": "127.0.0.1"
