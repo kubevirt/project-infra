@@ -371,7 +371,7 @@ presubmits:
     name: pull-kubevirt-e2e-kind-1.17-sriov-release-0.34
     context: pull-kubevirt-e2e-kind-1.17-sriov
     optional: true
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       affinity:
         podAntiAffinity:

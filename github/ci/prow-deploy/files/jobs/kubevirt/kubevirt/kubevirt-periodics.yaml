@@ -963,7 +963,7 @@ periodics:
     base_ref: main
     work_dir: true
   skip_report: true
-  cluster: phx-prow
+  cluster: prow-workloads
   reporter_config:
     slack:
       job_states_to_report: []

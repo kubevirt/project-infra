@@ -15,7 +15,7 @@ presubmits:
       preset-kubevirtci-installer-pull-token: "true"
       sriov-pod: "true"
       rehearsal.allowed: "true"
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       nodeSelector:
         hardwareSupport: sriov-nic
