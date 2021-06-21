@@ -291,14 +291,14 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
       securityContext:
         runAsUser: 0
       containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20210129-a239273
+        - image: quay.io/kubevirtci/prow-deploy:v20210618-2e4be2d
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json

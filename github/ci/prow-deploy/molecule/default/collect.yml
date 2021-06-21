@@ -34,15 +34,18 @@
 - name: Describe all in a single yaml.
   shell: |
     {{ kubectl_prow }} get all -o yaml > {{ artifacts_dir }}/get_all.yaml
+  ignore_errors: yes
 
 - name: Compress yaml
   archive:
     path: "{{ artifacts_dir }}/get_all.yaml"
     remove: yes
+  ignore_errors: yes
 
 - name: collect opened port
   shell: |
     ss -ntpa > {{ artifacts_dir }}/host-netstat.txt
+  ignore_errors: yes
 
 # Putting relevant data in a hierarchy
 - name: include resource collection tasks
@@ -51,3 +54,8 @@
   loop_control:
     loop_var: resource
     label: "{{ resource.key }}"
+  ignore_errors: yes
+
+- name: collect kind logs
+  shell: |
+    kind export logs {{ artifacts_dir }}
