@@ -1,0 +1,52 @@
+postsubmits:
+  k8snetworkplumbingwg/ovs-cni:
+    - name: main-ovs-cni
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-kubevirtci-quay-credential: "true"
+      branches:
+        - main
+      cluster: prow-workloads
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && make docker-build docker-push"
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+    - name: release-ovs-cni
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-kubevirtci-quay-credential: "true"
+      branches:
+        - ^v\d+\.\d+\.\d+$
+      cluster: prow-workloads
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-ce"
+              - |
+                cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io
+                # Only push images on tags
+                COMMIT_TAG=$(git tag --points-at HEAD | head -1)
+                [ -z "$COMMIT_TAG" ] || make docker-build docker-push IMAGE_TAG=$COMMIT_TAG
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
