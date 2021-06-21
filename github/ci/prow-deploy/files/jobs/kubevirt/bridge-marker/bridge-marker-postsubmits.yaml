@@ -47,7 +47,7 @@ postsubmits:
                 # Only push images on tags
                 COMMIT_TAG=$(git tag --points-at HEAD | head -1)
                 [ -z "$COMMIT_TAG" ] ||
-                make make docker-build docker-push IMAGE_TAG=$COMMIT_TAG
+                make docker-build docker-push IMAGE_TAG=$COMMIT_TAG
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
