@@ -17,10 +17,10 @@ presubmits:
     max_concurrency: 11
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
+      #preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
+      #preset-bazel-cache: "true"
+      #preset-bazel-unnested: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -33,7 +33,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "automation/test.sh"
+            - "echo bla && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
