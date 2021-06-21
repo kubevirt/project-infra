@@ -764,11 +764,14 @@ presubmits:
         type: bare-metal-external
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        env:
+          - name: TARGET
+            value: windows2016
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "export TARGET=windows2016 && automation/test.sh"
+        - "automation/test.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
@@ -1045,11 +1048,16 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          env:
+            - name: TARGET
+              value: k8s-1.20
+            - name: KUBEVIRT_STORAGE
+              value: rook-ceph-default
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.20 && export KUBEVIRT_STORAGE=rook-ceph-default && automation/test.sh"
+            - "automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
