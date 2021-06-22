@@ -84,8 +84,8 @@ presubmits:
   - name: check-up-kind-1.19-sriov
     annotations:
       k8s.v1.cni.cncf.io/networks: 'multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni'
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 1h
