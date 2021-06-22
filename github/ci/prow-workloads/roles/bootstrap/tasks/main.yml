@@ -90,5 +90,10 @@
     content: |
       fs.inotify.max_user_watches=524288
 
+- name: additional kernel modules
+  include_tasks: additional_kernel_modules.yml
+  loop:
+    - openvswitch
+
 - name: reboot to apply changes
   reboot:
