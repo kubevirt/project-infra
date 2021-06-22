@@ -292,7 +292,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirt/builder@sha256:0a33ac20425efa54b357e51ba0ea6e0ca515d47f572ad078408f92870e3a1e08
+      - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
         env:
         - name: GIT_ASKPASS
           value: ../project-infra/hack/git-askpass.sh
@@ -345,7 +345,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirt/builder@sha256:0a33ac20425efa54b357e51ba0ea6e0ca515d47f572ad078408f92870e3a1e08
+      - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
         env:
         - name: GIT_ASKPASS
           value: ../project-infra/hack/git-askpass.sh
@@ -389,7 +389,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirt/builder@sha256:0a33ac20425efa54b357e51ba0ea6e0ca515d47f572ad078408f92870e3a1e08
+      - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
         env:
         - name: GIT_ASKPASS
           value: ../project-infra/hack/git-askpass.sh
@@ -430,7 +430,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirt/builder@sha256:0a33ac20425efa54b357e51ba0ea6e0ca515d47f572ad078408f92870e3a1e08
+      - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
         env:
         - name: GIT_ASKPASS
           value: ../project-infra/hack/git-askpass.sh
@@ -517,7 +517,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirt/builder@sha256:0a33ac20425efa54b357e51ba0ea6e0ca515d47f572ad078408f92870e3a1e08
+      - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
         env:
         - name: GIT_ASKPASS
           value: hack/git-askpass.sh
@@ -554,7 +554,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirt/builder@sha256:0a33ac20425efa54b357e51ba0ea6e0ca515d47f572ad078408f92870e3a1e08
+      - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
         env:
           - name: GIT_ASKPASS
             value: ../project-infra/hack/git-askpass.sh

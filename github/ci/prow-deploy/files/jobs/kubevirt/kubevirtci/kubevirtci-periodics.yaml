@@ -97,7 +97,7 @@ periodics:
       secret:
         secretName: gcs
     containers:
-    - image: quay.io/kubevirt/builder:2105310929-3310f7bdd
+    - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
       env:
       - name: GIT_ASKPASS
         value: "../project-infra/hack/git-askpass.sh"
