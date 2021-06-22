@@ -7,7 +7,7 @@ postsubmits:
     cluster: ibm-prow-jobs
     always_run: true
     optional: false
-    skip_report: true
+    skip_report: false
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
@@ -68,7 +68,7 @@ postsubmits:
     cluster: ibm-prow-jobs
     always_run: true
     optional: false
-    skip_report: true
+    skip_report: false
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
