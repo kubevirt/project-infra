@@ -22,3 +22,10 @@
   value:
     name: storage
     mountPath: /docker_mirror_cache
+# set cpu resources
+- op: replace
+  path: /spec/template/spec/containers/0/resources/limits/cpu
+  value: "700m"
+- op: replace
+  path: /spec/template/spec/containers/0/resources/requests/cpu
+  value: "700m"

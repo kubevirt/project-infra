@@ -56,8 +56,10 @@ spec:
             containerPort: 3128
         resources:
           requests:
+            cpu: 300m
             memory: 3Gi
           limits:
+            cpu: 300m
             memory: 3Gi
       volumes:
       - name: ca-public
