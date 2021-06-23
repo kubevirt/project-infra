@@ -1360,31 +1360,3 @@ presubmits:
             memory: 4Gi
         securityContext:
           privileged: true
-  - always_run: true
-    branches:
-    - release-0.42
-    cluster: ibm-prow-jobs
-    context: pull-kubevirt-check-unassigned-tests
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 1h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-      preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-check-unassigned-tests-0.42
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - hack/check-unassigned-tests.sh
-        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
-        resources:
-          requests:
-            memory: 4Gi
-        securityContext:
-          privileged: true
