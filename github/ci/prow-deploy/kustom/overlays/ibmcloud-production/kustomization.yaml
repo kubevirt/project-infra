@@ -13,6 +13,8 @@ resources:
   - resources/sinker-rbac.yaml
   - resources/prow-exporter-deployment.yaml
   - resources/prow-exporter-rbac.yaml
+  - resources/ci-usage-exporter-deployment.yaml
+  - resources/ci-usage-exporter-service.yaml
   # templated resources
   - resources/admin-rbac.yaml
 
