@@ -31,13 +31,13 @@ PRODUCTION_USER = "ibm-prow-jobs-automation"
         manifests = glob([
             "manifests/*.yaml",
         ]),
+        namespace = "kuberhealthy",
         patches = glob([
             "patches/*.yaml",
         ]),
         secrets_srcs = glob([
             "secrets/%s/**/*" % NAME,
         ]),
-        namespace = "kuberhealthy",
         user = USER,
     )
     for NAME, CLUSTER, USER in [

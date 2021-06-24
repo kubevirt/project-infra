@@ -54,7 +54,6 @@ go_test(
         "rehearse_suite_test.go",
         "rehearse_test.go",
     ],
-    embed = [":go_default_library"],
     deps = [
         "//external-plugins/rehearse/plugin/handler:go_default_library",
         "@com_github_onsi_ginkgo//:go_default_library",

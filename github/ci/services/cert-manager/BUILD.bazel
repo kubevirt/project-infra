@@ -19,16 +19,16 @@ PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
         manifests = glob([
             "manifests/*.yaml",
         ]),
+        namespace = "cert-manager",
         patches = glob([
             "patches/*.yaml",
         ]),
-        namespace = "cert-manager",
         user = USER,
     )
     for NAME, CLUSTER, USER in [
-            ("testing-base", TESTING_CLUSTER, TESTING_USER),
-            ("production-control-plane-base", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
-            ("production-e2e-workloads-base", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+        ("testing-base", TESTING_CLUSTER, TESTING_USER),
+        ("production-control-plane-base", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+        ("production-e2e-workloads-base", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
     ]
 ]
 
@@ -39,15 +39,15 @@ PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
         manifests = glob([
             "manifests/issuers/*.yaml",
         ]),
+        namespace = "cert-manager",
         patches = glob([
             "overlays/%s/*.yaml" % NAME,
         ]),
-        namespace = "cert-manager",
         user = USER,
     )
     for NAME, CLUSTER, USER in [
-            ("testing-issuers", TESTING_CLUSTER, TESTING_USER),
-            ("production-control-plane-issuers", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
-            ("production-e2e-workloads-issuers", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+        ("testing-issuers", TESTING_CLUSTER, TESTING_USER),
+        ("production-control-plane-issuers", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+        ("production-e2e-workloads-issuers", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
     ]
 ]

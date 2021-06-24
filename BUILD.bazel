@@ -2,6 +2,7 @@ load("@bazel_gazelle//:def.bzl", "gazelle")
 
 # gazelle:prefix kubevirt.io/project-infra
 # gazelle:resolve go google.golang.org/grpc/naming @org_golang_google_grpc//naming:go_default_library
+# gazelle:proto disable
 gazelle(name = "gazelle")
 
 exports_files(["testaccount.json"])

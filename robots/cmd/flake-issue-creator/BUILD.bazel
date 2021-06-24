@@ -53,8 +53,8 @@ go_test(
         "issue_test.go",
         "main_suite_test.go",
     ],
-    embed = [":go_default_library"],
     deps = [
+        ":go_default_library",
         "//robots/pkg/flakefinder:go_default_library",
         "//robots/pkg/gomock/matchers:go_default_library",
         "//robots/pkg/mock/prow/github:go_default_library",
