@@ -16,10 +16,9 @@ RUN set -x && \
     cd / && \
     export GO111MODULE=on && \
     source /etc/profile.d/gimme.sh && \
-    # we need https://github.com/kubernetes/test-infra/pull/20535 merged
-    git clone https://github.com/rmohr/test-infra.git && \
+    git clone https://github.com/kubernetes/test-infra.git && \
     cd /test-infra && \
-    git checkout a398e0a4d605a5a523e96f5c6fb44859eaeb7d42 && \
+    git checkout 1f3edddfe487b7df5714dbd9de3b2ed6e691485e && \
     cd /test-infra/robots/pr-creator && \
     go install && \
     cd /test-infra/releng/config-forker && \
