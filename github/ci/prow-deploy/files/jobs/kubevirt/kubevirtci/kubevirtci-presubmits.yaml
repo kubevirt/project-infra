@@ -81,34 +81,6 @@ presubmits:
             path: /dev/vfio/
             type: Directory
 
-  - name: check-provision-k8s-1.18
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 3h
-    max_concurrency: 1
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-    cluster: prow-workloads
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-      - image: quay.io/kubevirtci/golang:v20210316-d295087
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-c"
-        - "cd cluster-provision/k8s/1.18 && ../provision.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "8Gi"
-
   - name: check-provision-k8s-1.19
     always_run: true
     optional: false
@@ -239,33 +211,6 @@ presubmits:
         - "/bin/sh"
         - "-c"
         - "cd cluster-provision/k8s/1.21 && CGROUPV2=true ../provision.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "8Gi"
-  - name: check-provision-k8s-1.17
-    always_run: false
-    optional: true
-    decorate: true
-    decoration_config:
-      timeout: 3h
-    max_concurrency: 1
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-    cluster: prow-workloads
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-      - image: quay.io/kubevirtci/golang:v20210316-d295087
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-c"
-        - "cd cluster-provision/k8s/1.17 && ../provision.sh"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
