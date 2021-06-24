@@ -455,6 +455,7 @@ func (r *releaseData) forkProwJobs() error {
 			"--title", fmt.Sprintf("Release configs for %s/%s release branch %s", r.org, r.repo, r.newBranch),
 			"--body", "adds new release configs",
 			"--source", fmt.Sprintf("kubevirt:%s", gitbranch),
+			"--labels", "lgtm,approved",
 			"--confirm",
 		)
 		bytes, err := cmd.CombinedOutput()
