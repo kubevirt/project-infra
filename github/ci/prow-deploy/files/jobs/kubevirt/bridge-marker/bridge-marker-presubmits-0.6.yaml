@@ -4,6 +4,8 @@ presubmits:
     - name: pull-bridge-marker-test-0.6
       branches:
         - release-0.6
+      #annotations:
+      #  fork-per-release: "true"
       always_run: true
       optional: false
       decorate: true
@@ -16,6 +18,8 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
+        #preset-bazel-cache: "true"
+        #preset-bazel-unnested: "true"
       spec:
         nodeSelector:
           type: bare-metal-external
@@ -30,4 +34,4 @@ presubmits:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
               - "-c"
-              - "automation/check-patch.sh"
+              - "echo bla && automation/check-patch.sh"
