@@ -943,7 +943,7 @@ periodics:
         resources:
           requests:
             memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-prev-prev-sriov
+- name: periodic-kubevirt-e2e-k8s-1.19-sriov
   annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
@@ -993,7 +993,7 @@ periodics:
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: "TARGET"
-            value: "kind-k8s-sriov-1.17.0"
+            value: "kind-1.19-sriov"
           - name: "GIMME_GO_VERSION"
             value: "1.13.8"
         command:
