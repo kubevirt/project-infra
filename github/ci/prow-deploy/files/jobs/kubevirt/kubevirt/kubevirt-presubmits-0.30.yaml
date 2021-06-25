@@ -305,7 +305,7 @@ presubmits:
     context: pull-kubevirt-e2e-kind-1.17-sriov
     optional: true
     skip_report: true
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       affinity:
         podAntiAffinity:

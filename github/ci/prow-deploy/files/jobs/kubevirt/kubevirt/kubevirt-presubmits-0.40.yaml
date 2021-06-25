@@ -385,7 +385,7 @@ presubmits:
       sriov-pod: "true"
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-1.17-sriov-0.40
-    cluster: phx-prow
+    cluster: prow-workloads
     spec:
       affinity:
         podAntiAffinity:
