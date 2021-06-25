@@ -16,3 +16,4 @@ SRIOVNodes:
     capacity: 2
 
 remote_cluster_prow_jobs_context: prow-workloads
+ansible_python_interpreter: /usr/bin/python3
