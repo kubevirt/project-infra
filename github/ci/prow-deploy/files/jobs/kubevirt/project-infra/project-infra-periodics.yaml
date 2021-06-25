@@ -524,7 +524,7 @@ periodics:
         command: ["/bin/sh"]
         args:
           - "-c"
-          - hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra
+          - hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra -T main
         volumeMounts:
         - name: token
           mountPath: /etc/github
