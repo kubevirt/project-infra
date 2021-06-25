@@ -1,13 +1,18 @@
 periodics:
-- name: periodic-kubevirtci-sync-crio-repository-weekly
+- name: periodic-kubevirtci-mirror-crio-repository-weekly
   cron: "25 0 * * 1"
   decorate: true
   annotations:
-      testgrid-create-test-group: "false"
+    testgrid-create-test-group: "false"
   decoration_config:
     timeout: 1h
     grace_period: 5m
   max_concurrency: 1
+  extra_refs:
+    - org: kubevirt
+      repo: project-infra
+      base_ref: main
+      workdir: true
   labels:
     preset-shared-images: "true"
   cluster: prow-workloads
@@ -27,37 +32,9 @@ periodics:
             value: devel_kubic_libcontainers_stable
           - name: CRIO_VERSIONS
             value: "1.20,1.21"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - |
-            set -e;
-            dnf install dnf-utils -y
-
-            sync_crio_repo_for_version () {
-              if [ -z "$1" ]
-              then
-                  CRIO_SUBDIR=""
-                  REPOID=$BASE_REPOID
-              else
-                  CRIO_SUBDIR=":cri-o:$1"
-                  REPOID="${BASE_REPOID}_cri-o_$1"
-              fi
-              curl -L -o $REPOID.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable$CRIO_SUBDIR/$OS/devel:kubic:libcontainers:stable$CRIO_SUBDIR.repo
-              reposync -c $REPOID.repo -p ./$LOCAL_MIRROR_DIR -n --repoid=$REPOID --download-metadata
-            }
-
-            # First sync the shared stable repository
-            sync_crio_repo_for_version
-
-            # Loop over comma-separated list of cri-o versions
-            for i in $(echo $CRIO_VERSIONS | sed "s/,/ /g")
-            do
-              sync_crio_repo_for_version $i
-            done
-
-            gsutil rsync -d -r $LOCAL_MIRROR_DIR gs://$BUCKET_DIR
+        command: ["/bin/sh", "-c"]
+        args:
+          - ./hack/mirror-crio.sh
         resources:
           requests:
             memory: "2Gi"
