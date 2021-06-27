@@ -581,8 +581,6 @@ periodics:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
           - name: TARGET
             value: "k8s-1.21-sig-network"
         command:
