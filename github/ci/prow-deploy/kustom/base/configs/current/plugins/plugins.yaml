@@ -380,6 +380,7 @@ triggers:
   - kubevirt/vm-import-operator
   - kubevirt/csi-driver
   - kubevirt/community
+  - kubevirt/terraform-provider-kubevirt
 - repos:
   - virtblocks/virtblocks
 - repos:
