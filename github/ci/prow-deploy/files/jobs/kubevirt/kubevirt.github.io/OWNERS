@@ -5,6 +5,7 @@ filters:
   .*:
     approvers:
     - davidvossel
+    - dhiller
     - fabiand
     - mazzystr
     - stu-gott
