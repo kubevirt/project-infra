@@ -21,8 +21,10 @@ RUN dnf install -y \
         libtool \
         bison \
         sqlite-devel \
+        glibc-langpack-en \
     && dnf -y clean all
 
+ENV LANG=en_US.UTF-8
 ENV RUBY_VERSION=2.7.3
 
 RUN cd && \

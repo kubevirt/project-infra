@@ -17,7 +17,7 @@ postsubmits:
       securityContext:
         runAsUser: 0
       containers:
-      - image: quay.io/kubevirtci/ruby:v20210628-50668d7
+      - image: quay.io/kubevirtci/ruby:v20210628-647402e
         env:
         - name: GIT_ASKPASS
           value: ../project-infra/hack/git-askpass.sh
