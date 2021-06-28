@@ -9,7 +9,7 @@ postsubmits:
     extra_refs:
     - org: kubevirt
       repo: project-infra
-      base_ref: main
+      base_ref: master
     cluster: ibm-prow-jobs
     spec:
       securityContext:
