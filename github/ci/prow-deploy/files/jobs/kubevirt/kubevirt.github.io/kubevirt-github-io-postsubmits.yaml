@@ -39,7 +39,7 @@ postsubmits:
           )
           WORK_DIR=$(cd ../gh-pages && pwd)
           bundle install && make build
-          BUILD_DIR=$(pwd)/site
+          BUILD_DIR=$(pwd)/_site
           cd ${WORK_DIR}
           find . -mindepth 1 -maxdepth 1 -regextype egrep -not -regex '\./(\.git.*|\.nojekyll)' -print0 | xargs -0 rm -rf
           cp -R ${BUILD_DIR}/* .
