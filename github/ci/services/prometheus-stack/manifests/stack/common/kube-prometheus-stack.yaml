@@ -1251,7 +1251,7 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 20Gi
+            storage: 50Gi
   additionalScrapeConfigs:
     name: prometheus-stack-kube-prom-prometheus-scrape-confg
     key: additional-scrape-configs.yaml
