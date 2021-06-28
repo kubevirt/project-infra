@@ -5,6 +5,8 @@ postsubmits:
     - ^master$
     annotations:
       testgrid-create-test-group: "false"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
     decorate: true
     extra_refs:
     - org: kubevirt
@@ -15,7 +17,7 @@ postsubmits:
       securityContext:
         runAsUser: 0
       containers:
-      - image: docker.io/library/python:3.7
+      - image: quay.io/kubevirtci/ruby:v20210628-50668d7
         env:
         - name: GIT_ASKPASS
           value: ../project-infra/hack/git-askpass.sh
@@ -23,10 +25,10 @@ postsubmits:
           value: kubevirt-bot
         - name: GIT_AUTHOR_EMAIL
           value: kubevirtbot@redhat.com
-        command: [ "/bin/sh", "-c" ]
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
-          set -e
+          set -ex
           commit=$(git show -s --format=%H)
           (
             cd ..
@@ -36,7 +38,7 @@ postsubmits:
             git config user.name "$GIT_AUTHOR_NAME"
           )
           WORK_DIR=$(cd ../gh-pages && pwd)
-          make build
+          bundle install && make build
           BUILD_DIR=$(pwd)/site
           cd ${WORK_DIR}
           find . -mindepth 1 -maxdepth 1 -regextype egrep -not -regex '\./(\.git.*|\.nojekyll)' -print0 | xargs -0 rm -rf
