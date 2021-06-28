@@ -124,6 +124,7 @@ tide:
     - kubevirt/demo
     - kubevirt/kubectl-virt-plugin
     - kubevirt/user-guide
+    - kubevirt/terraform-provider-kubevirt
     labels:
     - lgtm
     - approved
