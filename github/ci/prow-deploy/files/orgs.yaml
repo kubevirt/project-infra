@@ -317,6 +317,9 @@ orgs:
         description: 'Incubating: A number of Kubernetes device-plugins developed and useful for KubeVirt'
         has_projects: false
         has_wiki: false
+      kubevirt-velero-plugin:
+        description: Plugin to Velero which automates backing up and restoring KubeVirt/CDI objects
+        has_projects: true
       libguestfs-appliance:
         allow_rebase_merge: false
         allow_squash_merge: false
@@ -526,6 +529,13 @@ orgs:
           cpu-nfd-plugin: admin
           kubevirt: admin
           node-labeller: read
+      kubevirt-velero-plugin-maintainers:
+        description: ""
+        maintainers:
+          - tomob
+          - aglitke
+        repos:
+          kubevirt-velero-plugin: admin
       maintainers:
         description: ""
         maintainers:
