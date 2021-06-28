@@ -358,11 +358,11 @@ presubmits:
             - "-c"
             - |
               # install kind
-              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
               chmod +x ./kind && mv ./kind /usr/local/bin/kind
 
               # create test cluster
-              kind create cluster --image quay.io/kubevirtci/kind:v1.19.1
+              kind create cluster --image quay.io/kubevirtci/kind:v1.21.1
 
               ./github/ci/services/cert-manager/hack/deploy.sh testing
 
@@ -395,11 +395,11 @@ presubmits:
             - "-c"
             - |
               # install kind
-              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
               chmod +x ./kind && mv ./kind /usr/local/bin/kind
 
               # create test cluster
-              kind create cluster --image quay.io/kubevirtci/kind:v1.19.1
+              kind create cluster --image quay.io/kubevirtci/kind:v1.21.1
 
               ./github/ci/services/ci-search/hack/deploy.sh testing
 
@@ -432,11 +432,11 @@ presubmits:
             - "-c"
             - |
               # install kind
-              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
               chmod +x ./kind && mv ./kind /usr/local/bin/kind
 
               # create test cluster
-              kind create cluster --image quay.io/kubevirtci/kind:v1.19.1
+              kind create cluster --image quay.io/kubevirtci/kind:v1.21.1
 
               ./github/ci/services/sippy/hack/deploy.sh testing
 
@@ -469,11 +469,11 @@ presubmits:
             - "-c"
             - |
               # install kind
-              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
               chmod +x ./kind && mv ./kind /usr/local/bin/kind
 
               # create test cluster
-              kind create cluster --image quay.io/kubevirtci/kind:v1.19.1
+              kind create cluster --image quay.io/kubevirtci/kind:v1.21.1
 
               ./github/ci/services/prometheus-stack/hack/deploy.sh testing
 
@@ -506,11 +506,11 @@ presubmits:
             - "-c"
             - |
               # install kind
-              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
               chmod +x ./kind && mv ./kind /usr/local/bin/kind
 
               # create test cluster
-              kind create cluster --image quay.io/kubevirtci/kind:v1.19.1
+              kind create cluster --image quay.io/kubevirtci/kind:v1.21.1
 
               ./github/ci/services/kuberhealthy/hack/deploy.sh testing
 
