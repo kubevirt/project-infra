@@ -157,7 +157,7 @@ postsubmits:
   - name: push-kubevirt-fossa
     cluster: ibm-prow-jobs
     branches:
-      - master
+      - main
     annotations:
       testgrid-create-test-group: "false"
     always_run: true
