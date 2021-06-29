@@ -7,12 +7,10 @@ periodics:
     extra_refs:
       - org: kubevirt
         repo: kubevirt.github.io
-        base_ref: source
+        base_ref: master
         path_alias: kubevirt.github.io
-    cluster: phx-prow
+    cluster: ibm-prow-jobs
     spec:
-      nodeSelector:
-        region: primary
       containers:
         - image: docker.io/library/ruby
           env:
