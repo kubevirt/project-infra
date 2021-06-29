@@ -24,8 +24,8 @@ spec:
         - --config=/etc/ci-search/config.yaml
         - --interval=10m
         - --path=/var/lib/ci-search/
-        - --deck-uri=https://prow.apps.ovirt.org/
-        - --job-uri-prefix=https://prow.apps.ovirt.org/view/gs/
+        - --deck-uri=https://prow.ci.kubevirt.io/
+        - --job-uri-prefix=https://prow.ci.kubevirt.io/view/gs/
         - --index-bucket=kubevirt-prow
         - --bugzilla-url=https://bugzilla.redhat.com/rest
         - --bugzilla-search=OPEN version:1.4,2.5,2.6 product="Container Native Virtualization (CNV)" AND delta_ts>-2w
