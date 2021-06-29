@@ -355,7 +355,7 @@ orgs:
         homepage: https://www.kubevirt.io/
       kubevirt.github.io:
         allow_rebase_merge: false
-        default_branch: source
+        default_branch: master
         description: KubeVirt website repo, documentation at https://kubevirt.io/user-guide/
         has_projects: false
         has_wiki: false

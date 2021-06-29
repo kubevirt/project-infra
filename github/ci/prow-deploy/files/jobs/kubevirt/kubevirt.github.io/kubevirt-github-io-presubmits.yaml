@@ -4,10 +4,8 @@ presubmits:
       decorate: true
       always_run: true
       skip_report: false
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
-        nodeSelector:
-          region: primary
         containers:
           - image: docker.io/library/ruby
             env:
