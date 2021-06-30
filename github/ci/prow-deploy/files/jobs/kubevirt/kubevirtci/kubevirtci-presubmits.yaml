@@ -87,7 +87,7 @@ presubmits:
     decorate: true
     decoration_config:
       timeout: 3h
-    max_concurrency: 1
+    max_concurrency: 2
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -115,7 +115,7 @@ presubmits:
     decorate: true
     decoration_config:
       timeout: 3h
-    max_concurrency: 1
+    max_concurrency: 2
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -142,7 +142,7 @@ presubmits:
     decorate: true
     decoration_config:
       timeout: 3h
-    max_concurrency: 1
+    max_concurrency: 2
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
