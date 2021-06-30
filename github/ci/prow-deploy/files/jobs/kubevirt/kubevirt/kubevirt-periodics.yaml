@@ -222,6 +222,8 @@ periodics:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
+          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+            value: "true"
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: TARGET
@@ -267,6 +269,8 @@ periodics:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
+          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+            value: "true"
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: TARGET
@@ -312,6 +316,8 @@ periodics:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
+          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+            value: "true"
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: TARGET
@@ -357,6 +363,8 @@ periodics:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
+          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+            value: "true"
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: TARGET
@@ -402,6 +410,8 @@ periodics:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
+          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+            value: "true"
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: TARGET
@@ -447,6 +457,8 @@ periodics:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
+          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+            value: "true"
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: TARGET
@@ -492,6 +504,8 @@ periodics:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
+          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+            value: "true"
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: TARGET
@@ -581,6 +595,8 @@ periodics:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
+          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+            value: "true"
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: TARGET
@@ -626,6 +642,8 @@ periodics:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
+          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+            value: "true"
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: TARGET
@@ -671,6 +689,8 @@ periodics:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
+          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+            value: "true"
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: TARGET
@@ -716,6 +736,8 @@ periodics:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         env:
+          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+            value: "true"
           - name: KUBEVIRT_QUARANTINE
             value: "true"
           - name: TARGET
