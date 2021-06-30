@@ -81,6 +81,72 @@ presubmits:
             path: /dev/vfio/
             type: Directory
 
+  - name: check-up-k8s-1.20-cgroupsv2
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 3h
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: quay.io/kubevirtci/golang:v20210316-d295087
+        env:
+        - name: "KUBEVIRT_PROVIDER"
+          value: "k8s-1.20-cgroupsv2"
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/bash"
+        - "-c"
+        - >
+            trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM &&
+            make cluster-up
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+
+  - name: check-up-k8s-1.21-cgroupsv2
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 3h
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: quay.io/kubevirtci/golang:v20210316-d295087
+        env:
+        - name: "KUBEVIRT_PROVIDER"
+          value: "k8s-1.21-cgroupsv2"
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/bash"
+        - "-c"
+        - >
+            trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM &&
+            make cluster-up
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+
   - name: check-provision-k8s-1.19
     always_run: true
     optional: false
