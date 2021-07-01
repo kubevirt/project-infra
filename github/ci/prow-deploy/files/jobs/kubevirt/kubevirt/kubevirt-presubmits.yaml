@@ -1,1417 +1,1364 @@
 presubmits:
   kubevirt/kubevirt:
-  - name: pull-kubevirt-e2e-k8s-1.21-sig-network
-    skip_branches:
-      - release-\d+\.\d+
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
-    skip_report: false
     cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 4h
-      grace_period: 5m
-    max_concurrency: 11
+      grace_period: 5m0s
+      timeout: 4h0m0s
     labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.21-sig-network
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
     spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.21-sig-network
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
       nodeSelector:
         type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.21-sig-network
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.21-sig-storage
-    skip_branches:
-      - release-\d+\.\d+
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
-    skip_report: false
     cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 4h
-      grace_period: 5m
-    max_concurrency: 11
+      grace_period: 5m0s
+      timeout: 4h0m0s
     labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.21-sig-storage
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
     spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.21-sig-storage
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
       nodeSelector:
         type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.21-sig-storage
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.21-sig-compute
-    skip_branches:
-      - release-\d+\.\d+
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
-    skip_report: false
     cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 11
+      grace_period: 5m0s
+      timeout: 7h0m0s
     labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.21-sig-compute
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
     spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.21-sig-compute
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
       nodeSelector:
         type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.21-sig-compute
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.21-operator
-    skip_branches:
-      - release-\d+\.\d+
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
-    skip_report: false
     cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 11
+      grace_period: 5m0s
+      timeout: 7h0m0s
     labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.21-operator
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
     spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.21
+        - name: KUBEVIRT_E2E_FOCUS
+          value: \[sig-operator\]
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
       nodeSelector:
         type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.21
-            - name: KUBEVIRT_E2E_FOCUS
-              value: "\\[sig-operator\\]"
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.21-rest-coverage
-    skip_branches:
-      - release-\d+\.\d+
+  - always_run: false
     annotations:
       testgrid-create-test-group: "false"
-    always_run: false
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.21-rest-coverage
     optional: true
-    skip_report: false
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.21
-            - name: RUN_REST_COVERAGE
-              value: "true"
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.20-sig-network
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: false
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      timeout: 4h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.20-sig-network
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.20-sig-storage
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: false
-    cluster: prow-workloads
-    skip_report: false
-    decorate: true
-    decoration_config:
-      timeout: 4h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.20-sig-storage
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.20-sig-compute
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: true
-    cluster: prow-workloads
-    skip_report: false
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.20-sig-compute
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.20-operator
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: false
-    cluster: prow-workloads
-    skip_report: false
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.20
-            - name: KUBEVIRT_E2E_FOCUS
-              value: "\\[sig-operator\\]"
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.20-cgroupsv2
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
-    skip_report: false
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 11
-    cluster: prow-workloads
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: "k8s-1.20-cgroupsv2"
-            - name: KUBEVIRT_E2E_SKIP
-              value: "Multus|SRIOV|GPU|Macvtap|\\[sig-operator\\]"
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.19-sig-compute-nonroot
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
-    cluster: prow-workloads
-    skip_report: false
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.19-sig-compute
-            - name: FEATURE_GATES
-              value: "NonRoot"
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-
-  - name: pull-kubevirt-e2e-k8s-1.19-sig-network-nonroot
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
-    skip_report: false
-    decorate: true
-    decoration_config:
-      timeout: 4h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    cluster: prow-workloads
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.19-sig-network
-            - name: FEATURE_GATES
-              value: "NonRoot"
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.19-sig-storage-nonroot
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
-    skip_report: false
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      timeout: 4h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: "TARGET"
-              value: "k8s-1.19-sig-storage"
-            - name: FEATURE_GATES
-              value: "NonRoot"
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.19-operator-nonroot
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
-    skip_report: false
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    cluster: prow-workloads
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: "TARGET"
-              value: "k8s-1.19"
-            - name: FEATURE_GATES
-              value: "NonRoot"
-            - name: "KUBEVIRT_E2E_FOCUS"
-              value: "Operator"
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - " automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.19-sig-network
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: false
-    skip_report: false
-    decorate: true
-    decoration_config:
-      timeout: 4h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    cluster: prow-workloads
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.19-sig-network
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.19-sig-storage
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: false
-    cluster: prow-workloads
-    skip_report: false
-    decorate: true
-    decoration_config:
-      timeout: 4h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.19-sig-storage
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.19-sig-compute
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: false
-    cluster: prow-workloads
-    skip_report: false
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: k8s-1.19-sig-compute
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.19-operator
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: false
-    skip_report: false
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 11
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    cluster: prow-workloads
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: TARGET
-              value: "k8s-1.19"
-            - name: KUBEVIRT_E2E_FOCUS
-              value: "\\[sig-operator\\]"
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-windows2016
     skip_branches:
     - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 2h
-      grace_period: 5m
-    max_concurrency: 1 # we have one license
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    cluster: prow-workloads
     spec:
-      nodeSelector:
-        type: bare-metal-external
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
         env:
-          - name: TARGET
-            value: windows2016
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-c"
-        - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
+        - name: TARGET
+          value: k8s-1.21
+        - name: RUN_REST_COVERAGE
+          value: "true"
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
         resources:
           requests:
-            memory: "29Gi"
-  - name: pull-kubevirt-e2e-kind-1.17-sriov-nonroot
-    skip_branches:
-    - release-\d+\.\d+
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
     annotations:
       fork-per-release: "true"
-      k8s.v1.cni.cncf.io/networks: 'multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni'
       testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
+    cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 4h
-      grace_period: 30m
-    max_concurrency: 10
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.20-sig-network
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.20-sig-network
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.20-sig-storage
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.20-sig-storage
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.20-sig-compute
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.20-sig-compute
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.20-operator
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.20
+        - name: KUBEVIRT_E2E_FOCUS
+          value: \[sig-operator\]
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.20-cgroupsv2
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.20-cgroupsv2
+        - name: KUBEVIRT_E2E_SKIP
+          value: Multus|SRIOV|GPU|Macvtap|\[sig-operator\]
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.19-sig-compute-nonroot
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.19-sig-compute
+        - name: FEATURE_GATES
+          value: NonRoot
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.19-sig-network-nonroot
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.19-sig-network
+        - name: FEATURE_GATES
+          value: NonRoot
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.19-sig-storage-nonroot
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.19-sig-storage
+        - name: FEATURE_GATES
+          value: NonRoot
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.19-operator-nonroot
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - ' automation/test.sh'
+        env:
+        - name: TARGET
+          value: k8s-1.19
+        - name: FEATURE_GATES
+          value: NonRoot
+        - name: KUBEVIRT_E2E_FOCUS
+          value: Operator
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.19-sig-network
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.19-sig-network
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.19-sig-storage
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.19-sig-storage
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.19-sig-compute
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.19-sig-compute
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.19-operator
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.19
+        - name: KUBEVIRT_E2E_FOCUS
+          value: \[sig-operator\]
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 2h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 1
+    name: pull-kubevirt-e2e-windows2016
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: windows2016
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 30m0s
+      timeout: 4h0m0s
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      sriov-pod: "true"
       rehearsal.allowed: "true"
-    cluster: prow-workloads
+      sriov-pod: "true"
+    max_concurrency: 10
+    name: pull-kubevirt-e2e-kind-1.17-sriov-nonroot
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
     spec:
-      nodeSelector:
-        hardwareSupport: sriov-nic
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: sriov-pod
-                  operator: In
-                  values:
-                  - "true"
-              topologyKey: kubernetes.io/hostname
-            - labelSelector:
-                matchExpressions:
-                - key: sriov-pod-multi
-                  operator: In
-                  values:
-                  - "true"
-              topologyKey: kubernetes.io/hostname
+          - labelSelector:
+              matchExpressions:
+              - key: sriov-pod
+                operator: In
+                values:
+                - "true"
+            topologyKey: kubernetes.io/hostname
+          - labelSelector:
+              matchExpressions:
+              - key: sriov-pod-multi
+                operator: In
+                values:
+                - "true"
+            topologyKey: kubernetes.io/hostname
       containers:
-      - image: quay.io/kubevirtci/golang:v20210316-d295087
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        - automation/test.sh
         env:
-          - name: "TARGET"
-            value: "kind-k8s-sriov-1.17.0"
-          - name: "GIMME_GO_VERSION"
-            value: "1.13.8"
-          - name: FEATURE_GATES
-            value: "NonRoot"
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/bash"
-        - "-ce"
-        - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
+        - name: TARGET
+          value: kind-k8s-sriov-1.17.0
+        - name: GIMME_GO_VERSION
+          value: 1.13.8
+        - name: FEATURE_GATES
+          value: NonRoot
+        image: quay.io/kubevirtci/golang:v20210316-d295087
+        name: ""
         resources:
           requests:
-            memory: "29Gi"
+            memory: 29Gi
+        securityContext:
+          privileged: true
         volumeMounts:
-          #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
-          - name: modules
-            mountPath: /lib/modules
-            readOnly: true
-          - name: cgroup
-            mountPath: /sys/fs/cgroup
-          - name: vfio
-            mountPath: /dev/vfio/
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+        - mountPath: /dev/vfio/
+          name: vfio
+      nodeSelector:
+        hardwareSupport: sriov-nic
       volumes:
-        - name: modules
-          hostPath:
-            path: /lib/modules
-            type: Directory
-        - name: cgroup
-          hostPath:
-            path: /sys/fs/cgroup
-            type: Directory
-        - name: vfio
-          hostPath:
-            path: /dev/vfio/
-            type: Directory
-
-  - name: pull-kubevirt-e2e-kind-1.19-sriov
-    skip_branches:
-      - release-\d+\.\d+
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+      - hostPath:
+          path: /dev/vfio/
+          type: Directory
+        name: vfio
+  - always_run: true
     annotations:
       fork-per-release: "true"
-      k8s.v1.cni.cncf.io/networks: 'multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni'
+      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
       testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: false
+    cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 4h
-      grace_period: 30m
-    max_concurrency: 10
+      grace_period: 30m0s
+      timeout: 4h0m0s
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      sriov-pod: "true"
       rehearsal.allowed: "true"
-    cluster: prow-workloads
+      sriov-pod: "true"
+    max_concurrency: 10
+    name: pull-kubevirt-e2e-kind-1.19-sriov
+    skip_branches:
+    - release-\d+\.\d+
     spec:
-      nodeSelector:
-        hardwareSupport: sriov-nic
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: sriov-pod
-                    operator: In
-                    values:
-                      - "true"
-              topologyKey: kubernetes.io/hostname
-            - labelSelector:
-                matchExpressions:
-                  - key: sriov-pod-multi
-                    operator: In
-                    values:
-                      - "true"
-              topologyKey: kubernetes.io/hostname
+          - labelSelector:
+              matchExpressions:
+              - key: sriov-pod
+                operator: In
+                values:
+                - "true"
+            topologyKey: kubernetes.io/hostname
+          - labelSelector:
+              matchExpressions:
+              - key: sriov-pod-multi
+                operator: In
+                values:
+                - "true"
+            topologyKey: kubernetes.io/hostname
       containers:
-        - image: quay.io/kubevirtci/golang:v20210316-d295087
-          env:
-            - name: "TARGET"
-              value: "kind-1.19-sriov"
-            - name: "GIMME_GO_VERSION"
-              value: "1.13.8"
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/bash"
-            - "-ce"
-            - |
-                automation/test.sh
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-          volumeMounts:
-            #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
-            - name: modules
-              mountPath: /lib/modules
-              readOnly: true
-            - name: cgroup
-              mountPath: /sys/fs/cgroup
-            - name: vfio
-              mountPath: /dev/vfio/
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        - |
+          automation/test.sh
+        env:
+        - name: TARGET
+          value: kind-1.19-sriov
+        - name: GIMME_GO_VERSION
+          value: 1.13.8
+        image: quay.io/kubevirtci/golang:v20210316-d295087
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+        - mountPath: /dev/vfio/
+          name: vfio
+      nodeSelector:
+        hardwareSupport: sriov-nic
       volumes:
-        - name: modules
-          hostPath:
-            path: /lib/modules
-            type: Directory
-        - name: cgroup
-          hostPath:
-            path: /sys/fs/cgroup
-            type: Directory
-        - name: vfio
-          hostPath:
-            path: /dev/vfio/
-            type: Directory
-
-  - name: pull-kubevirt-check-tests-for-flakes
-    skip_branches:
-      - release-\d+\.\d+
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+      - hostPath:
+          path: /dev/vfio/
+          type: Directory
+        name: vfio
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    optional: true
+    cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 11
+      grace_period: 5m0s
+      timeout: 7h0m0s
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-    cluster: prow-workloads
+    max_concurrency: 11
+    name: pull-kubevirt-check-tests-for-flakes
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
     spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
       nodeSelector:
         type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-e2e-k8s-1.20-rook-ceph-nonroot
-    skip_branches:
-      - release-\d+\.\d+
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: false
-    optional: true
-    skip_report: false
+    cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 7h
-      grace_period: 5m
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
     max_concurrency: 6
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-    cluster: prow-workloads
+    name: pull-kubevirt-e2e-k8s-1.20-rook-ceph-nonroot
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
     spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: FEATURE_GATES
+          value: NonRoot
+        - name: TARGET
+          value: k8s-1.20
+        - name: KUBEVIRT_STORAGE
+          value: rook-ceph-default
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
       nodeSelector:
         type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: FEATURE_GATES
-              value: "NonRoot"
-            - name: TARGET
-              value: k8s-1.20
-            - name: KUBEVIRT_STORAGE
-              value: rook-ceph-default
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-kubevirt-generate
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
+  - always_run: true
     annotations:
       fork-per-release: "true"
-    always_run: true
-    skip_report: false
-    optional: false
+    cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
-      timeout: 1h
-      grace_period: 5m
+      grace_period: 5m0s
+      timeout: 1h0m0s
     labels:
+      preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
+    name: pull-kubevirt-generate
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
-  - name: pull-kubevirt-verify-rpms
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
-    always_run: false
-    skip_report: false
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-verify-rpms
     optional: true
-    run_if_changed: "WORKSPACE"
-    decorate: true
-    decoration_config:
-      timeout: 1h
-      grace_period: 5m
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
+    run_if_changed: WORKSPACE
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make verify-rpm-deps"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
-  - name: pull-kubevirt-gosec
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make verify-rpm-deps
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       rehearsal.allowed: "true"
-    always_run: false
-    skip_report: true
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-gosec
     optional: true
-    decorate: true
-    decoration_config:
-      timeout: 1h
-      grace_period: 5m
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
+    skip_branches:
+    - release-\d+\.\d+
+    skip_report: true
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make gosec"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
-
-  - name: pull-kubevirt-build
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make gosec
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
     annotations:
       fork-per-release: "true"
-    always_run: true
-    skip_report: false
-    optional: false
+    cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
-      timeout: 1h
-      grace_period: 5m
+      grace_period: 5m0s
+      timeout: 1h0m0s
     labels:
+      preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
+    name: pull-kubevirt-build
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
-  - name: pull-kubevirt-build-arm64
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
     annotations:
       fork-per-release: "true"
-    always_run: true
-    skip_report: false
-    optional: false
+    cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
-      timeout: 1h
-      grace_period: 5m
+      grace_period: 5m0s
+      timeout: 1h0m0s
     labels:
+      preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
+    name: pull-kubevirt-build-arm64
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          env:
-            - name: BUILD_ARCH
-              value: crossbuild-aarch64
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
-  - name: pull-kubevirt-unit-test
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
+        env:
+        - name: BUILD_ARCH
+          value: crossbuild-aarch64
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    always_run: true
-    skip_report: false
-    optional: false
+    cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
-      timeout: 1h
-      grace_period: 5m
+      grace_period: 5m0s
+      timeout: 1h0m0s
     labels:
-      preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-    spec:
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "make test"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
-  - name: pull-kubevirt-goveralls
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-    always_run: true
-    skip_report: false
-    optional: true
-    decorate: true
-    decoration_config:
-      timeout: 1h
-      grace_period: 10m
-    labels:
-      preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
+    name: pull-kubevirt-unit-test
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: COVERALLS_TOKEN_FILE
-            value: /root/.docker/secrets/coveralls/token
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "cp /etc/bazel.bazelrc ./ci.bazelrc && if [ ${JOB_TYPE} != 'batch' ]; then make goveralls; fi"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make test
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
         resources:
           requests:
-            memory: "8Gi"
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 10m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-goveralls
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && if [ ${JOB_TYPE} != 'batch' ]; then
+          make goveralls; fi
+        env:
+        - name: COVERALLS_TOKEN_FILE
+          value: /root/.docker/secrets/coveralls/token
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
         volumeMounts:
-          - name: kubevirtci-coveralls
-            mountPath: /root/.docker/secrets/coveralls
-            readOnly: true
+        - mountPath: /root/.docker/secrets/coveralls
+          name: kubevirtci-coveralls
+          readOnly: true
       volumes:
-        - name: kubevirtci-coveralls
-          secret:
-            secretName: kubevirtci-coveralls-token
-  - name: pull-kubevirt-apidocs
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
+      - name: kubevirtci-coveralls
+        secret:
+          secretName: kubevirtci-coveralls-token
+  - always_run: true
     annotations:
       fork-per-release: "true"
-    always_run: true
-    skip_report: false
-    optional: false
+    cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
-      timeout: 1h
-      grace_period: 5m
+      grace_period: 5m0s
+      timeout: 1h0m0s
     labels:
+      preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
+    name: pull-kubevirt-apidocs
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
-  - name: pull-kubevirt-client-python
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
     annotations:
       fork-per-release: "true"
-    always_run: true
-    skip_report: false
-    optional: false
+    cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
-      timeout: 1h
-      grace_period: 5m
+      grace_period: 5m0s
+      timeout: 1h0m0s
     labels:
+      preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
+    name: pull-kubevirt-client-python
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
-  - name: pull-kubevirt-manifests
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
     annotations:
       fork-per-release: "true"
-    always_run: true
-    skip_report: false
-    optional: false
+    cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
-      timeout: 1h
-      grace_period: 5m
+      grace_period: 5m0s
+      timeout: 1h0m0s
     labels:
+      preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
+    name: pull-kubevirt-manifests
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          # skip getting old CSVs here (no QUAY_REPOSITORY), verification might fail because of stricter rules over time; falls back to latest if not on a tag
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX=\"docker.io/kubevirt\" && make olm-verify"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
-  - name: pull-kubevirt-prom-rules-verify
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX="docker.io/kubevirt"
+          && make olm-verify
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
     annotations:
       fork-per-release: "true"
-    always_run: true
-    skip_report: false
-    optional: false
+    cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
-      timeout: 1h
-      grace_period: 5m
+      grace_period: 5m0s
+      timeout: 1h0m0s
     labels:
+      preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
+    name: pull-kubevirt-prom-rules-verify
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          # skip getting old CSVs here (no QUAY_REPOSITORY), verification might fail because of stricter rules over time; falls back to latest if not on a tag
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make prom-rules-verify"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
-  - name: pull-kubevirt-check-unassigned-tests
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make prom-rules-verify
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+  - always_run: true
     annotations:
       fork-per-release: "true"
-    always_run: true
-    skip_report: false
-    optional: false
+    cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
-      timeout: 1h
-      grace_period: 5m
+      grace_period: 5m0s
+      timeout: 1h0m0s
     labels:
-      preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-check-unassigned-tests
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "hack/check-unassigned-tests.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - hack/check-unassigned-tests.sh
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
