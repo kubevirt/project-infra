@@ -25,7 +25,7 @@ spec:
           - name: http
             containerPort: 8080
         args:
-        - --prow-exporter-url=http://deck/
+        - --deck-url=http://deck/
         - --config-path=/etc/config/config.yaml
         - --job-config-path=/etc/job-config
         env:
