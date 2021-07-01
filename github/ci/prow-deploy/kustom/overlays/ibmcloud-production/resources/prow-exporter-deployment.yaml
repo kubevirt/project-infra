@@ -16,14 +16,12 @@ spec:
       labels:
         app: prow-exporter
     spec:
+      serviceAccountName: prow-exporter
       terminationGracePeriodSeconds: 30
       containers:
       - name: prow-exporter
         image: gcr.io/k8s-prow/exporter:v20210624-69a9f34cd9
         imagePullPolicy: Always
-        ports:
-          - name: http
-            containerPort: 8080
         args:
         - --deck-url=http://deck/
         - --config-path=/etc/config/config.yaml

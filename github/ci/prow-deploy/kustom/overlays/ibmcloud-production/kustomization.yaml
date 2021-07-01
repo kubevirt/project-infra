@@ -12,7 +12,7 @@ resources:
   - resources/horologium-rbac.yaml
   - resources/sinker-rbac.yaml
   - resources/prow-exporter-deployment.yaml
-  - resources/prow-exporter-service.yaml
+  - resources/prow-exporter-rbac.yaml
   # templated resources
   - resources/admin-rbac.yaml
 
