@@ -65,3 +65,8 @@ secretGenerator:
     files:
       - productKey=secrets/win-sysprep-001
     type: Opaque
+  - name: kubevirtci-fossa-token
+    files:
+      # fossaToken
+      - token=secrets/kubevirtci-fossa-token
+    type: Opaque

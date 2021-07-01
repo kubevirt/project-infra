@@ -154,3 +154,44 @@ postsubmits:
         - name: kubevirtci-coveralls
           secret:
             secretName: kubevirtci-coveralls-token
+  - name: push-kubevirt-fossa
+    cluster: ibm-prow-jobs
+    branches:
+      - main
+    annotations:
+      testgrid-create-test-group: "false"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 10m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          env:
+            - name: FOSSA_TOKEN_FILE
+              value: /root/.docker/secrets/fossa/token
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make fossa"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+          volumeMounts:
+            - name: kubevirtci-fossa
+              mountPath: /root/.docker/secrets/fossa
+              readOnly: true
+      volumes:
+        - name: kubevirtci-fossa
+          secret:
+            secretName: kubevirtci-fossa-token
