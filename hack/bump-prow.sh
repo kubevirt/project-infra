@@ -29,14 +29,7 @@ get_latest_prow_tag(){
 }
 
 bump_utility_images(){
-    local latest_prow_tag=$(get_latest_prow_tag)
-
-    if [ -z "${latest_prow_tag}" ]; then
-        echo "Could not find latest prow tag"
-        exit 1
-    fi
-
-    echo latest_prow_tag: $latest_prow_tag
+    local latest_prow_tag=$1
 
     local utility_images=(clonerefs initupload entrypoint sidecar)
 
@@ -45,10 +38,25 @@ bump_utility_images(){
     done
 }
 
+bump_exporter(){
+    local latest_prow_tag=$1
+
+    sed -i "s!image: gcr.io/k8s-prow/exporter:.*!image: gcr.io/k8s-prow/exporter:${latest_prow_tag}!" ${PROJECT_INFRA_ROOT}/github/ci/prow-deploy/kustom/overlays/ibmcloud-production/resources/prow-exporter-deployment.yaml
+}
+
 main(){
     copy_files
 
-    bump_utility_images
+    local latest_prow_tag=$(get_latest_prow_tag)
+    if [ -z "${latest_prow_tag}" ]; then
+        echo "Could not find latest prow tag"
+        exit 1
+    fi
+
+    echo latest_prow_tag: $latest_prow_tag
+
+    bump_utility_images "${latest_prow_tag}"
+    bump_exporter "${latest_prow_tag}"
 }
 
 main "${@}"

@@ -55,17 +55,18 @@ PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
 
 [
     k8s_deploy(
-        name = NAME,
+        name = "%s-service-monitors" % NAME,
         cluster = CLUSTER,
         manifests = glob([
-            "manifests/service-monitors/*.yaml",
+            "manifests/service-monitors/common/*.yaml",
+            "manifests/service-monitors/%s/*.yaml" % NAME,
         ]),
         namespace = "kubevirt-prow",
         user = USER,
     )
     for NAME, CLUSTER, USER in [
-        ("testing-service-monitors", TEST_CLUSTER, TEST_USER),
-        ("production-control-plane-service-monitors", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
-        ("production-e2e-workloads-service-monitors", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+        ("testing", TEST_CLUSTER, TEST_USER),
+        ("production-control-plane", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+        ("production-e2e-workloads", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
     ]
 ]
