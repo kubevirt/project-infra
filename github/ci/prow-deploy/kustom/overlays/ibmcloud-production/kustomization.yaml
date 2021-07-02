@@ -329,6 +329,7 @@ secretGenerator:
       - token=secrets/kubevirtci-coveralls-token
     type: Opaque
   - name: kubevirtci-fossa-token
+    namespace: kubevirt-prow-jobs
     files:
       # fossaToken
       - token=secrets/kubevirtci-fossa-token
