@@ -1063,3 +1063,93 @@ periodics:
       resources:
         requests:
           memory: "8Gi"
+- name: periodic-kubevirt-cluster-sync-test-ARM
+  annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cron: "40 4,12,20 * * *"
+  decorate: true
+  cluster: prow-workloads
+  decoration_config:
+    timeout: 4h
+    grace_period: 5m
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-kubevirtci-quay-credential: "true"
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirt
+    base_ref: main
+    work_dir: true
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+  reporter_config:
+    slack:
+      job_states_to_report: []
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        env:
+          - name: TARGET
+            value: "external"
+          - name: KUBEVIRT_PROVIDER
+            value: "external"
+          - name: DOCKER_PREFIX
+            value: quay.io/kubevirtci
+          - name: DOCKER_TAG
+            value: "aarch64_test"
+          - name: KUBECONFIG
+            value: "/kubeconfig"
+          - name: IMAGE_PULL_POLICY
+            value: "Always"
+          - name: BUILD_ARCH
+            value: "crossbuild-aarch64"
+          - name: KUBEVIRT_E2E_FOCUS
+            value: "test_id:1464"
+          - name: GIT_ASKPASS
+            value: "../project-infra/hack/git-askpass.sh"
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - |
+            # install yq
+            curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+            chmod +x ./yq && mv ./yq /usr/local/bin/yq
+
+            # get kubeconfig
+            source ../project-infra/hack/manage-secrets.sh
+            decrypt_secrets
+            extract_secret 'kubeconfigARM' /kubeconfig
+
+            # login quay.io
+            cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+
+            # run the test
+            automation/test.sh
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "29Gi"
+        volumeMounts:
+          - name: token
+            mountPath: /etc/github
+          - name: pgp-bot-key
+            mountPath: /etc/pgp
+            readOnly: true
+    volumes:
+      - name: token
+        secret:
+          secretName: oauth-token
+      - name: pgp-bot-key
+        secret:
+          secretName: pgp-bot-key
