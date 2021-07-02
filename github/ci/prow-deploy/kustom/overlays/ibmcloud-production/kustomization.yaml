@@ -270,9 +270,17 @@ configMapGenerator:
 
 secretGenerator:
   - name: oauth-token
+    files:
+      - oauth=secrets/oauth-token
+    type: Opaque
+  - name: oauth-token
     namespace: kubevirt-prow-jobs
     files:
       - oauth=secrets/oauth-token
+    type: Opaque
+  - name: gcs
+    files:
+      - secrets/service-account.json
     type: Opaque
   - name: gcs
     namespace: kubevirt-prow-jobs
@@ -296,7 +304,6 @@ secretGenerator:
       - secret=secrets/github-oauth-config
     type: Opaque
   - name: kubeconfig
-    namespace: kubevirt-prow-jobs
     files:
       - config=secrets/kubeconfig
     type: Opaque
