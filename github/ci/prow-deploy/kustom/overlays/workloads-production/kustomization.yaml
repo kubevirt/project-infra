@@ -66,6 +66,7 @@ secretGenerator:
       - productKey=secrets/win-sysprep-001
     type: Opaque
   - name: kubevirtci-fossa-token
+    namespace: kubevirt-prow-jobs
     files:
       # fossaToken
       - token=secrets/kubevirtci-fossa-token
