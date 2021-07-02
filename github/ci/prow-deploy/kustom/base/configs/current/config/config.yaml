@@ -374,6 +374,7 @@ branch-protection:
 
 push_gateway:
   endpoint: pushgateway
+  serve_metrics: true
 
 presets:
 - labels:
