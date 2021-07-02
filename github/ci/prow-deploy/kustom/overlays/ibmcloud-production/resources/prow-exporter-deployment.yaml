@@ -22,6 +22,11 @@ spec:
       - name: prow-exporter
         image: gcr.io/k8s-prow/exporter:v20210624-69a9f34cd9
         imagePullPolicy: Always
+        ports:
+        - name: metrics
+          containerPort: 9090
+        - name: healthz
+          containerPort: 8081
         args:
         - --deck-url=http://deck/
         - --config-path=/etc/config/config.yaml
