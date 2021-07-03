@@ -227,6 +227,7 @@
     "EliteDesk",
     "(E|e)(nd|ntry)point(s)?",
     "eg",
+    "enduser(s|’s|'s)?",
     "empty((D|d)ir|(D|d)isk)(s|’s|'s)?",
     "env",
     "etcd",
