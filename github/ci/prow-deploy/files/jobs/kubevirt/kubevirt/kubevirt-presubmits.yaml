@@ -850,8 +850,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      sriov-pod-multi: "true"
       rehearsal.allowed: "true"
-      sriov-pod: "true"
+      #sriov-pod: "true"
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-1.19-sriov
     skip_branches:
@@ -867,20 +868,13 @@ presubmits:
                 values:
                 - "true"
             topologyKey: kubernetes.io/hostname
-          - labelSelector:
-              matchExpressions:
-              - key: sriov-pod-multi
-                operator: In
-                values:
-                - "true"
-            topologyKey: kubernetes.io/hostname
       containers:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/bash
         - -ce
         - |
-          automation/test.sh
+          echo bla4 && automation/test.sh
         env:
         - name: TARGET
           value: kind-1.19-sriov
@@ -891,6 +885,9 @@ presubmits:
         resources:
           requests:
             memory: 29Gi
+            prow/sriov: "2"
+          limits:
+            prow/sriov: "2"
         securityContext:
           privileged: true
         volumeMounts:
