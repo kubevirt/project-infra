@@ -874,7 +874,7 @@ presubmits:
         - /bin/bash
         - -ce
         - |
-          echo bla && automation/test.sh
+          echo bla2 && automation/test.sh
         env:
         - name: TARGET
           value: kind-1.19-sriov
