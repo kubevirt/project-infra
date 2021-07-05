@@ -26,22 +26,28 @@ presubmits:
     run_if_changed: "robots/.*|WORKSPACE|go_third_party.bzl"
     optional: false
     decorate: true
-    cluster: phx-prow
+    cluster: ibm-prow-jobs
+    labels:
+      preset-bazel-cache: "true"
     spec:
-      nodeSelector:
-        type: vm
-        zone: ci
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20210126-a12b6c0
         command:
           - "/bin/bash"
           - "-c"
           - "bazelisk test //robots/..."
+        resources:
+          requests:
+            memory: "8Gi"
+          limits:
+            memory: "8Gi"
   - name: pull-project-infra-test-rehearse
     run_if_changed: external-plugins/rehearse/.*
     cluster: ibm-prow-jobs
     optional: false
     decorate: true
+    labels:
+      preset-bazel-cache: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20210126-a12b6c0
@@ -62,6 +68,8 @@ presubmits:
     cluster: ibm-prow-jobs
     optional: false
     decorate: true
+    labels:
+      preset-bazel-cache: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20210126-a12b6c0
