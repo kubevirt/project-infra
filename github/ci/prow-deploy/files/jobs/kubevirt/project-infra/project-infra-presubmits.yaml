@@ -23,7 +23,7 @@ presubmits:
           requests:
             memory: "500Mi"
   - name: pull-project-infra-test-robots
-    run_if_changed: robots/.*|WORKSPACE|go_third_party\.bzl
+    run_if_changed: "robots/.*|WORKSPACE|go_third_party.bzl"
     optional: false
     decorate: true
     cluster: phx-prow
@@ -336,7 +336,7 @@ presubmits:
         emptyDir: {}
   - name: pull-project-infra-cert-manager-deploy-test
     optional: false
-    run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|WORKSPACE|go_third_party\.bzl"
+    run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
       preset-dind-enabled: "true"
@@ -373,7 +373,7 @@ presubmits:
               memory: "16Gi"
   - name: pull-project-infra-ci-search-deploy-test
     optional: false
-    run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*|WORKSPACE|go_third_party\.bzl"
+    run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
       preset-dind-enabled: "true"
@@ -410,7 +410,7 @@ presubmits:
               memory: "16Gi"
   - name: pull-project-infra-sippy-deploy-test
     optional: false
-    run_if_changed: "github/ci/services/sippy/.*|github/ci/services/common/.*|WORKSPACE|go_third_party\.bzl"
+    run_if_changed: "github/ci/services/sippy/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
       preset-dind-enabled: "true"
@@ -447,7 +447,7 @@ presubmits:
               memory: "16Gi"
   - name: pull-project-infra-prometheus-stack-deploy-test
     optional: false
-    run_if_changed: "github/ci/services/prometheus-stack/.*|github/ci/services/common/.*|WORKSPACE|go_third_party\.bzl"
+    run_if_changed: "github/ci/services/prometheus-stack/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
       preset-dind-enabled: "true"
@@ -484,7 +484,7 @@ presubmits:
               memory: "16Gi"
   - name: pull-project-infra-kuberhealthy-deploy-test
     optional: false
-    run_if_changed: "github/ci/services/kuberhealthy/.*|github/ci/services/common/.*|WORKSPACE|go_third_party\.bzl"
+    run_if_changed: "github/ci/services/kuberhealthy/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
       preset-dind-enabled: "true"
