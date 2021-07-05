@@ -11,9 +11,9 @@ shell_environment:
 
 SRIOVNodes:
   - name: bare-metal-sriov-1
-    capacity: 2
+    capacity: 4
   - name: bare-metal-sriov-2
-    capacity: 2
+    capacity: 4
 
 remote_cluster_prow_jobs_context: prow-workloads
 ansible_python_interpreter: /usr/bin/python3
