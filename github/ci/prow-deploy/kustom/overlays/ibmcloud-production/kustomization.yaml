@@ -233,7 +233,7 @@ patches:
   - target:
       version: v1
       kind: Secret
-      namespace: ""
+      namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
@@ -273,7 +273,17 @@ secretGenerator:
     files:
       - oauth=secrets/oauth-token
     type: Opaque
+  - name: oauth-token
+    namespace: kubevirt-prow-jobs
+    files:
+      - oauth=secrets/oauth-token
+    type: Opaque
   - name: gcs
+    files:
+      - secrets/service-account.json
+    type: Opaque
+  - name: gcs
+    namespace: kubevirt-prow-jobs
     files:
       - secrets/service-account.json
     type: Opaque
@@ -301,6 +311,7 @@ secretGenerator:
     literals:
       - honk.txt=
   - name: kubevirtci-docker-credential
+    namespace: kubevirt-prow-jobs
     # username=dockerUser
     # password=dockerPass
     envs:
@@ -308,22 +319,26 @@ secretGenerator:
     type: Opaque
 
   - name: kubevirtci-quay-credential
+    namespace: kubevirt-prow-jobs
     # username=quayUser
     # password=quayPass
     envs:
     - secrets/kubevirtci-quay-credential
     type: Opaque
   - name: kubevirtci-installer-pull-token
+    namespace: kubevirt-prow-jobs
     files:
       # installerPullToken
       - token=secrets/kubevirtci-installer-pull-token
     type: Opaque
   - name: commenter-oauth-token
+    namespace: kubevirt-prow-jobs
     # githubCommenterToken
     files:
       - oauth=secrets/commenter-oauth-token
     type: Opaque
   - name: kubevirtci-coveralls-token
+    namespace: kubevirt-prow-jobs
     files:
       # coverallsToken
       - token=secrets/kubevirtci-coveralls-token
