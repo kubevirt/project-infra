@@ -307,6 +307,7 @@ periodics:
             export PATH=${PATH}:${bazel_dir} &&
             hack/git-pr.sh -c "bazelisk run //plugins/cmd/uploader:uploader -- -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ../kubevirt -r kubevirt -L lgtm,approved,release-note-none -T main &&
             hack/git-pr.sh -c "bazelisk run //plugins/cmd/uploader:uploader -- -workspace ${PWD}/../containerized-data-importer/WORKSPACE -dry-run=false" -p ../containerized-data-importer -r containerized-data-importer -T main -L lgtm,approved,release-note-none
+            hack/git-pr.sh -c "bazelisk run //plugins/cmd/uploader:uploader -- -workspace ${PWD}/WORKSPACE -dry-run=false" -p ${PWD} -r project-infra -T main -L lgtm,approved,release-note-none
         volumeMounts:
         - name: token
           mountPath: /etc/github
