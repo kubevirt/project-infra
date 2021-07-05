@@ -7,13 +7,13 @@ load("@com_adobe_rules_gitops//gitops:defs.bzl", "k8s_deploy")
         manifests = glob([
             "manifests/*.yaml",
         ]),
+        namespace = "sippy",
         patches = glob([
             "patches/*.yaml",
         ]),
         secrets_srcs = glob([
             "secrets/%s/**/*" % NAME,
         ]),
-        namespace = "sippy",
         user = USER,
     )
     for NAME, CLUSTER, USER in [

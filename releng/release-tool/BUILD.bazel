@@ -30,8 +30,8 @@ container_image(
     directory = "/usr/sbin",
     entrypoint = ["/usr/sbin/entrypoint.sh"],
     files = [
-        ":release-tool",
         ":entrypoint.sh",
+        ":release-tool",
     ],
     visibility = ["//visibility:public"],
 )

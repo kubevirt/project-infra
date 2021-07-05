@@ -388,7 +388,7 @@ func (h *GitHubEventsHandler) loadConfigsAtRef(
 			log.WithError(err).Infoln("Could not write temp file")
 			return nil, err
 		}
-		pc, err := config.Load(prowConfigTmp, jobConfigTmp)
+		pc, err := config.Load(prowConfigTmp, jobConfigTmp, nil, "")
 		if err != nil {
 			log.WithError(err).Errorf("Could not load job config from path %s at git ref %s", jobConfigTmp, ref)
 			return nil, err

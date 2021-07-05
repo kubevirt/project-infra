@@ -37,13 +37,13 @@ PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
             "manifests/stack/common/*.yaml",
             "manifests/stack/%s/*.yaml" % NAME,
         ]),
+        namespace = "monitoring",
         patches = glob([
             "patches/%s/*.yaml" % NAME,
         ]),
         secrets_srcs = glob([
             "secrets/%s/**/*" % NAME,
         ]),
-        namespace = "monitoring",
         user = USER,
     )
     for NAME, CLUSTER, USER in [
