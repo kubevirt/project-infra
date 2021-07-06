@@ -1216,7 +1216,7 @@ presubmits:
       - name: kubevirtci-coveralls
         secret:
           secretName: kubevirtci-coveralls-token
-  - always_run: false
+  - always_run: true
     cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
