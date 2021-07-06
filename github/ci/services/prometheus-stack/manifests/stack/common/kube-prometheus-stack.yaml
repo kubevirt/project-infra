@@ -1217,7 +1217,7 @@ spec:
     requests:
       cpu: 500m
       memory: 2Gi
-  retention: "10d"
+  retention: "4d"
   routePrefix: "/"
   serviceAccountName: prometheus-stack-kube-prom-prometheus
   serviceMonitorSelector:
