@@ -791,8 +791,9 @@ periodics:
         - "-c"
         - |
           set -e
+          build_date="$(date +%Y%m%d)"
           cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-          export DOCKER_TAG="$(date +%Y%m%d)_$(git show -s --format=%h)"
+          export DOCKER_TAG="${build_date}_$(git show -s --format=%h)"
           make
           counter=3
           retval=0
@@ -815,7 +816,6 @@ periodics:
           fi
           make build-functests
           git show -s --format=%H > _out/commit
-          build_date="$(date +%Y%m%d)"
           echo ${build_date} > _out/build_date
           bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}"
           gsutil cp ./_out/manifests/release/kubevirt-operator.yaml ./_out/manifests/release/kubevirt-cr.yaml _out/manifests/release/conformance.yaml gs://$bucket_dir/
@@ -823,6 +823,90 @@ periodics:
           gsutil cp ./_out/tests/tests.test gs://$bucket_dir/testing/
           gsutil cp ./_out/commit gs://$bucket_dir/commit
           gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
+      # docker-in-docker needs privileged mode
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "8Gi"
+      volumeMounts:
+        - name: gcs
+          mountPath: /etc/gcs
+          readOnly: false
+    volumes:
+      - name: gcs
+        secret:
+          secretName: gcs
+- name: periodic-kubevirt-push-nightly-build-main-ARM64
+  cron: "2 1 * * *"
+  decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+    preset-kubevirtci-quay-credential: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: kubevirt
+      base_ref: main
+      work_dir: true
+  cluster: prow-workloads
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+    - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      - name: DOCKER_PREFIX
+        value: quay.io/kubevirt
+      - name: BUILD_ARCH
+        value: crossbuild-aarch64
+      command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          set -e
+          build_date="$(date +%Y%m%d)"
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+          export DOCKER_TAG="${build_date}_$(git show -s --format=%h)-arm64"
+          make
+          counter=3
+          retval=0
+          while [ $counter -gt 0 ]; do
+              set +e
+              make push
+              retval=$?
+              set -e
+              if [ $retval -eq 0 ]; then
+                  break
+              fi
+              set +e
+              counter=$(expr $counter - 1)
+              set -e
+              sleep 120
+          done
+          if [ $retval -ne 0 ]; then
+              echo "push failed!"
+              exit 1
+          fi
+          # build functest currently does not support crossbuild, skip it
+          git show -s --format=%H > _out/commit
+          echo ${build_date} > _out/build_date
+          bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}"
+          gsutil cp ./_out/manifests/release/kubevirt-operator.yaml gs://$bucket_dir/kubevirt-operator-arm64.yaml
+          gsutil cp ./_out/manifests/release/kubevirt-cr.yaml gs://$bucket_dir/kubevirt-cr-arm64.yaml
+          gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/testing-arm64
+          gsutil cp ./_out/commit gs://$bucket_dir/commit-arm64
+          gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest-arm64
       # docker-in-docker needs privileged mode
       securityContext:
         privileged: true
