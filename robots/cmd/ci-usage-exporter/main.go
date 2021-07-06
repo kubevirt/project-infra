@@ -13,16 +13,19 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	configflagutil "k8s.io/test-infra/prow/flagutil/config"
+	"k8s.io/test-infra/prow/pjutil"
 
 	"kubevirt.io/project-infra/robots/pkg/ci-usage-exporter/metrics"
 )
 
 const (
 	metricsPath = "/metrics"
+	healthPath  = "/healthz"
 )
 
 type options struct {
-	port          int
+	metricsPort   int
+	healthPort    int
 	jobConfigPath string
 	configPath    string
 }
@@ -30,7 +33,8 @@ type options struct {
 func flagOptions() options {
 	o := options{}
 
-	flag.IntVar(&o.port, "port", 9836, "Port to serve metrics")
+	flag.IntVar(&o.metricsPort, "metrics-port", 9836, "Port to serve metrics")
+	flag.IntVar(&o.healthPort, "health-port", 8081, "Port to serve health endpoint")
 	flag.StringVar(&o.jobConfigPath, "job-config-path", "", "Path to Prow jobs configuration directory")
 	flag.StringVar(&o.configPath, "config-path", "", "Path to Prow configuration file")
 	flag.Parse()
@@ -40,6 +44,9 @@ func flagOptions() options {
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	o := flagOptions()
+
+	health := pjutil.NewHealthOnPort(o.healthPort)
+	health.ServeReady()
 
 	cfg := configflagutil.ConfigOptions{
 		ConfigPath:    o.configPath,
@@ -63,7 +70,7 @@ func main() {
 		}
 	}()
 
-	addr := fmt.Sprintf(":%d", o.port)
+	addr := fmt.Sprintf(":%d", o.metricsPort)
 	sm := http.NewServeMux()
 	sm.Handle(metricsPath, promhttp.Handler())
 	srv := &http.Server{
