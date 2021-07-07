@@ -1402,3 +1402,25 @@ presubmits:
             memory: 4Gi
         securityContext:
           privileged: true
+  - name: pull-kubevirt-test-doc-change-ignore
+    skip_branches:
+    - release-\d+\.\d+
+    always_run: false
+    optional: false
+    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
+    skip_report: false
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    max_concurrency: 11
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        command:
+        - "echo"
+        - "test-doc-change-ignore lane executed"
+        resources:
+          requests:
+            memory: "10Mi"
