@@ -23,7 +23,7 @@ spec:
         imagePullPolicy: Always
         ports:
         - name: metrics
-          containerPort: 9090
+          containerPort: 9836
         - name: healthz
           containerPort: 8081
         args:

@@ -9,6 +9,6 @@ metadata:
 spec:
   ports:
     - name: metrics
-      port: 9090
+      port: 9836
   selector:
     app: ci-usage-exporter
