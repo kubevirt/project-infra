@@ -10,7 +10,7 @@ import (
 var memoryResources = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 	Name: "kubevirt_ci_job_memory_bytes",
 	Help: "Memory used by CI job",
-}, []string{"job_name", "org", "repo", "type", "cluster"})
+}, []string{"job_name", "org", "repo", "type", "job_cluster"})
 
 type resourcesExporter struct{}
 
