@@ -1,0 +1,33 @@
+---
+presubmits:
+  RHsyseng/rhcos-slb:
+    - name: pull-rhcos-slb-ci-network-tests-main
+      annotations:
+        fork-per-release: "true"
+      always_run: false
+      optional: true
+      decorate: true
+      cluster: prow-workloads
+      decoration_config:
+        timeout: 30m
+        grace_period: 5m
+      max_concurrency: 1
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20210706-a5d2c6b
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "4Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "tests/setup.sh && tests/test-coreos.sh"
