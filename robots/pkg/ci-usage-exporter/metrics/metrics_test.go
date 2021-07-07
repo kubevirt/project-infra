@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
-	"regexp"
 	"strings"
 	"testing"
 
@@ -89,17 +88,17 @@ var _ = Describe("resources", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		bodyStr := string(body)
-
 		for _, expectation := range expectations {
-			for labelName, labelValue := range expectation.labels {
-				valueStr := fmt.Sprintf("%g", expectation.value)
-				valueStr = strings.Replace(valueStr, "+", `\+`, 1)
-				r, err := regexp.Compile(fmt.Sprintf(`%s{.*%s=\"%s\".*} %s`, expectation.name, labelName, labelValue, valueStr))
-				Expect(err).NotTo(HaveOccurred())
-
-				if !r.MatchString(bodyStr) {
-					Fail(fmt.Sprintf("Label %q with value %q for metric %q with value %g not found in exposed metrics %q", labelName, labelValue, expectation.name, expectation.value, bodyStr))
-				}
+			expectedMetric := fmt.Sprintf(`%s{job_cluster="%s",job_name="%s",org="%s",repo="%s",type="%s"} %g`,
+				expectation.name,
+				expectation.labels["job_cluster"],
+				expectation.labels["job_name"],
+				expectation.labels["org"],
+				expectation.labels["repo"],
+				expectation.labels["type"],
+				expectation.value)
+			if !strings.Contains(bodyStr, expectedMetric) {
+				Fail(fmt.Sprintf("Metric %q not found in exposed metrics %q", expectedMetric, bodyStr))
 			}
 		}
 	},
@@ -649,7 +648,7 @@ var _ = Describe("resources", func() {
 						"job_name":    "test-job1",
 						"org":         "test-org1",
 						"repo":        "test-repo1",
-						"type":        "postsubmit",
+						"type":        "presubmit",
 						"job_cluster": "test-cluster1",
 					},
 				},
