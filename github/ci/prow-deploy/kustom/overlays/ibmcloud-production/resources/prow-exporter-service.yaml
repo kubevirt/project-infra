@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: prow-exporter
+    monitoring: "true"
+  name: prow-exporter
+spec:
+  selector:
+    app: prow-exporter
+  ports:
+  - name: metrics
+    port: 9090
