@@ -4,6 +4,7 @@ kind: Service
 metadata:
   labels:
     app: ci-usage-exporter
+    monitoring: "true"
   namespace: default
   name: ci-usage-exporter
 spec:

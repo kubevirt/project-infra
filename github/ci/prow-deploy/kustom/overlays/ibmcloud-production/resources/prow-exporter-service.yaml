@@ -3,6 +3,7 @@ kind: Service
 metadata:
   labels:
     app: prow-exporter
+    monitoring: "true"
   name: prow-exporter
 spec:
   selector:

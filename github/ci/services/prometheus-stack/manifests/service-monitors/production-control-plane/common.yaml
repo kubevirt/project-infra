@@ -2,12 +2,12 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: prow-exporter
+  name: common
   labels:
     group: kubevirtci
 spec:
   selector:
     matchLabels:
-      app: prow-exporter
+      monitoring: "true"
   endpoints:
   - port: metrics
