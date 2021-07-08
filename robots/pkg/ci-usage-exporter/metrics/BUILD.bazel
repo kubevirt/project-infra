@@ -1,0 +1,30 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "main.go",
+        "resources.go",
+    ],
+    importpath = "kubevirt.io/project-infra/robots/pkg/ci-usage-exporter/metrics",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_prometheus_client_golang//prometheus:go_default_library",
+        "@io_k8s_test_infra//prow/config:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["metrics_test.go"],
+    deps = [
+        ":go_default_library",
+        "@com_github_onsi_ginkgo//:go_default_library",
+        "@com_github_onsi_ginkgo//extensions/table:go_default_library",
+        "@com_github_onsi_gomega//:go_default_library",
+        "@com_github_prometheus_client_golang//prometheus/promhttp:go_default_library",
+        "@io_k8s_api//core/v1:go_default_library",
+        "@io_k8s_apimachinery//pkg/api/resource:go_default_library",
+        "@io_k8s_test_infra//prow/config:go_default_library",
+    ],
+)

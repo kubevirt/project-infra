@@ -1,0 +1,65 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: default
+  name: ci-usage-exporter
+  labels:
+    app: ci-usage-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ci-usage-exporter
+  template:
+    metadata:
+      labels:
+        app: ci-usage-exporter
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: ci-usage-exporter
+        image: quay.io/kubevirtci/ci-usage-exporter:v20210707-83c2f8c1
+        imagePullPolicy: Always
+        ports:
+        - name: metrics
+          containerPort: 9836
+        - name: healthz
+          containerPort: 8081
+        args:
+        - --config-path=/etc/config/config.yaml
+        - --job-config-path=/etc/job-config
+        volumeMounts:
+        - name: config
+          mountPath: /etc/config
+          readOnly: true
+        - name: job-config
+          mountPath: /etc/job-config
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /healthz/ready
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 3
+          timeoutSeconds: 600
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+          limits:
+            cpu: 100m
+            memory: 200Mi
+      volumes:
+      - name: config
+        configMap:
+          name: config
+      - name: job-config
+        configMap:
+          name: job-config

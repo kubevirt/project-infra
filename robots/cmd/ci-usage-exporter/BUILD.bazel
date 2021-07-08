@@ -1,0 +1,39 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "kubevirt.io/project-infra/robots/cmd/ci-usage-exporter",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//robots/pkg/ci-usage-exporter/metrics:go_default_library",
+        "@com_github_prometheus_client_golang//prometheus/promhttp:go_default_library",
+        "@io_k8s_test_infra//prow/flagutil/config:go_default_library",
+        "@io_k8s_test_infra//prow/pjutil:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "ci-usage-exporter",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
+
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+
+go_image(
+    name = "app",
+    base = "@infra-base//image",
+    embed = [":go_default_library"],
+)
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+
+container_push(
+    name = "push",
+    format = "Docker",
+    image = ":app",
+    registry = "quay.io",
+    repository = "kubevirtci/ci-usage-exporter",
+    tag = "{DOCKER_TAG}",
+)

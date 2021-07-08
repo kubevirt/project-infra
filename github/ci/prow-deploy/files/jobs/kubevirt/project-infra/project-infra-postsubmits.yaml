@@ -22,9 +22,6 @@ postsubmits:
               - |
                 cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 bazelisk run //external-plugins/rehearse/plugin:push
-            # docker-in-docker needs privileged mode
-            securityContext:
-              privileged: true
             resources:
               requests:
                 memory: "8Gi"
@@ -731,3 +728,29 @@ postsubmits:
         - name: gcs
           secret:
             secretName: gcs
+    - name: publish-ci-usage-exporter-image
+      always_run: false
+      run_if_changed: "robots/.*/ci-usage-exporter/.*"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      cluster: ibm-prow-jobs
+      max_concurrency: 1
+      labels:
+        preset-kubevirtci-quay-credential: "true"
+        preset-bazel-cache: "true"
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20210126-a12b6c0
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                bazelisk run //robots/cmd/ci-usage-exporter:push
+            resources:
+              requests:
+                memory: "8Gi"
+              limits:
+                memory: "8Gi"
