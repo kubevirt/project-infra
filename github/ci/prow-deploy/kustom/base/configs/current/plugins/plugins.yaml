@@ -317,6 +317,10 @@ plugins:
   - lgtm
   - owners-label
 
+  RHsyseng/rhcos-slb:
+  - trigger
+  - override
+
 external_plugins:
   libguestfs-appliance:
   - name: needs-rebase
