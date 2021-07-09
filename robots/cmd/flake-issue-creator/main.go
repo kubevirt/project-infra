@@ -39,7 +39,7 @@ import (
 const (
 	DefaultIssueLabels      = "triage/build-watcher,kind/bug"
 	DefaultIssueTitlePrefix = "[flaky ci]"
-	ProwBaseURL             = "https://prow.apps.ovirt.org"
+	ProwBaseURL             = "https://prow.ci.kubevirt.io"
 	DeckPRLogURLPattern     = ProwBaseURL + "/view/gcs/kubevirt-prow/pr-logs/pull/%s_%s/%d/%s/%d"
 )
 

@@ -191,7 +191,7 @@ To manually update, go to your [kubernetes/test-infra](https://github.com/kubern
         --config-path=$CONFIG_DIR/github/ci/prow/files/config.yaml \
         --plugin-config=$CONFIG_DIR/github/ci/prow/files/plugins.yaml \
         --job-config-path=$CONFIG_DIR/github/ci/prow/files/jobs \
-        --deck-url=https://prow.apps.ovirt.org )
+        --deck-url=https://prow.ci.kubevirt.io )
 ```
 
 See [config-bootstrapper](https://github.com/kubernetes/test-infra/tree/master/prow/cmd/config-bootstrapper)
