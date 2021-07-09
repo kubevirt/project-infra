@@ -276,14 +276,14 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 	}
 }
 
-const rehearsalRestrictedAnnotation = "rehearsal.restricted"
+const RehearsalRestrictedAnnotation = "rehearsal.restricted"
 
 func rehearsalRestricted(job prowapi.ProwJob) bool {
 	annotations := job.GetAnnotations()
 	if annotations == nil {
 		return false
 	}
-	isRestricted, restrictedAnnotationExists := annotations[rehearsalRestrictedAnnotation]
+	isRestricted, restrictedAnnotationExists := annotations[RehearsalRestrictedAnnotation]
 	return restrictedAnnotationExists && isRestricted == "true"
 }
 

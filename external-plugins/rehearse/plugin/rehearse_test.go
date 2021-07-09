@@ -19,1046 +19,210 @@ import (
 	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/handler"
 )
 
+const testUserName = "testuser"
+
 var _ = Describe("Rehearse", func() {
 
-	Context("A valid pull request event", func() {
+	var gitrepo *localgit.LocalGit
+	var gitClientFactory git2.ClientFactory
+	var baseref string
 
-		var gitrepo *localgit.LocalGit
-		var gitClientFactory git2.ClientFactory
+	var gh *fakegithub.FakeClient
 
-		BeforeEach(func() {
-			var err error
+	var prowc *fake.FakeProwV1
+	var fakelog *logrus.Logger
 
-			gitrepo, gitClientFactory, err = localgit.NewV2()
+	var eventsChan chan *handler.GitHubEvent
+	var eventsHandler *handler.GitHubEventsHandler
+
+	BeforeEach(func() {
+		var err error
+
+		gitrepo, gitClientFactory, err = localgit.NewV2()
+		Expect(err).ShouldNot(HaveOccurred())
+
+		Expect(makeFakeGitRepository(gitrepo, "foo", "bar")).Should(Succeed())
+
+		gh = &fakegithub.FakeClient{}
+
+		prowc = &fake.FakeProwV1{
+			Fake: &testing.Fake{},
+		}
+		fakelog = logrus.New()
+		eventsChan = make(chan *handler.GitHubEvent)
+		eventsHandler = handler.NewGitHubEventsHandler(
+			eventsChan,
+			fakelog,
+			prowc.ProwJobs("test-ns"),
+			gh,
+			"prowconfig.yaml",
+			"",
+			true,
+			gitClientFactory)
+
+		By("Generating a base commit with two presubmits", func() {
+			expectAddCommitForJobsConfigToSucceed(gitrepo,
+				expectGenerateMarshalledConfigWithJobsToSucceed([]config.Presubmit{
+					makePresubmit("modified-job", "some-image"),
+					makePresubmit("existing-job", "other-image"),
+				}))
+			baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
 			Expect(err).ShouldNot(HaveOccurred())
 		})
 
-		AfterEach(func() {
-			if gitClientFactory != nil {
-				gitClientFactory.Clean()
-			}
-		})
+	})
 
-		Context("User in org", func() {
+	AfterEach(func() {
+		if gitClientFactory != nil {
+			Expect(gitClientFactory.Clean()).To(Succeed())
+		}
+	})
 
-			It("Should generate Prow jobs for the changed configs", func() {
+	Context("A valid pull request event", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+		When("User is an org member", func() {
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
-
-				var headref string
-				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "modified-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": headConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
-
-				gh := &fakegithub.FakeClient{}
-				var event github.PullRequestEvent
-
-				testuser := "testuser"
-				By("Registering a user to the fake github client", func() {
-					gh.OrgMembers = map[string][]string{
-						"foo": {
-							testuser,
-						},
-					}
-				})
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.PullRequestEvent{
-						Action: github.PullRequestActionOpened,
-						GUID:   "guid",
-						Repo: github.Repo{
-							FullName: "foo/bar",
-						},
-						Sender: github.User{
-							Login: testuser,
-						},
-						PullRequest: github.PullRequest{
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: &event.PullRequest,
-					}
-				})
-
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerPullRequestEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-					eventsHandler.Handle(handlerEvent)
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(1))
-						pjAction := prowc.Actions()[0].GetResource()
-						Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
-					})
-				})
-
+			BeforeEach(func() {
+				registerTestUserAsOrgMember(gh)
 			})
 
-			It("Should not generate Prow jobs if there are no changes", func() {
-
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+			It("Should generate Prow jobs for the changed configs", func() {
+				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
+					makePresubmit("modified-job", "modified-image"),
+					makePresubmit("existing-job", "other-image"),
 				})
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				event := makePullRequestEvent(baseref, headref, nil)
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &event.PullRequest,
+				}
 
-				var headref string
-				By("Generating a head commit with an unrelated modified file", func() {
-					err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"some-file": []byte(""),
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				letEventsHandlerHandleMadePullRequestEvent(eventsHandler, &event)
 
-				gh := &fakegithub.FakeClient{}
+				Expect(prowc.Actions()).Should(HaveLen(1))
+				pjAction := prowc.Actions()[0].GetResource()
+				Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
+			})
+
+			It("Should not generate Prow jobs if there are unrelated changes", func() {
+
+				err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					"some-file": []byte(""),
+				})
+				Expect(err).ShouldNot(HaveOccurred())
+				headref, err := gitrepo.RevParse("foo", "bar", "HEAD")
+				Expect(err).ShouldNot(HaveOccurred())
+
 				var event github.PullRequestEvent
 
-				testuser := "testuser"
-				By("Registering a user to the fake github client", func() {
-					gh.OrgMembers = map[string][]string{
-						"foo": {
-							testuser,
-						},
-					}
-				})
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.PullRequestEvent{
-						Action: github.PullRequestActionOpened,
-						GUID:   "guid",
-						Repo: github.Repo{
-							FullName: "foo/bar",
-						},
-						Sender: github.User{
-							Login: testuser,
-						},
-						PullRequest: github.PullRequest{
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
+				event = makePullRequestEvent(baseref, headref, nil)
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &event.PullRequest,
+				}
 
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: &event.PullRequest,
-					}
-				})
+				letEventsHandlerHandleMadePullRequestEvent(eventsHandler, &event)
 
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerPullRequestEvent(&event)
-					eventsHandler.Handle(handlerEvent)
-					Expect(err).ShouldNot(HaveOccurred())
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
-
+				Expect(prowc.Actions()).Should(HaveLen(0))
 			})
 
 			It("Should not generate Prow jobs if a job was deleted", func() {
-
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
+					makePresubmit("existing-job", "other-image"),
 				})
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				event := makePullRequestEvent(baseref, headref, nil)
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &event.PullRequest,
+				}
 
-				var headref string
-				By("Generating a head commit that removes a job", func() {
-					headConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": headConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				letEventsHandlerHandleMadePullRequestEvent(eventsHandler, &event)
 
-				gh := &fakegithub.FakeClient{}
-				var event github.PullRequestEvent
-
-				testuser := "testuser"
-				By("Registering a user to the fake github client", func() {
-					gh.OrgMembers = map[string][]string{
-						"foo": {
-							testuser,
-						},
-					}
-				})
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.PullRequestEvent{
-						Action: github.PullRequestActionOpened,
-						GUID:   "guid",
-						Repo: github.Repo{
-							FullName: "foo/bar",
-						},
-						Sender: github.User{
-							Login: testuser,
-						},
-						PullRequest: github.PullRequest{
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: &event.PullRequest,
-					}
-				})
-
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-					handlerEvent, err := makeHandlerPullRequestEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
-
+				Expect(prowc.Actions()).Should(HaveLen(0))
 			})
 
-			It("Should not act on pull request event if always run is set to false", func() {
+			It("Should act on pull request event if always run is set to false", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
+					makePresubmitWithAlwaysRun("modified-job", "modified-image", false),
+					makePresubmit("existing-job", "other-image"),
 				})
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
+				event := makePullRequestEvent(baseref, headref, nil)
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &event.PullRequest,
+				}
+
+				letEventsHandlerHandleMadePullRequestEvent(eventsHandler, &event)
+
+				Expect(prowc.Actions()).Should(HaveLen(1))
+				pjAction := prowc.Actions()[0].GetResource()
+				Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
+			})
+
+			It("Should not generate Prow jobs if job is rehearsal restricted", func() {
+
+				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
+					makePresubmitWithRestrictedAnnotation("modified-job", "modified-image"),
+					makePresubmit("existing-job", "other-image"),
 				})
 
-				var headref string
-				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "modified-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": headConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				event := makePullRequestEvent(baseref, headref, nil)
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &event.PullRequest,
+				}
 
-				gh := &fakegithub.FakeClient{}
-				var event github.PullRequestEvent
+				letEventsHandlerHandleMadePullRequestEvent(eventsHandler, &event)
 
-				testuser := "testuser"
-				By("Registering a user to the fake github client", func() {
-					gh.OrgMembers = map[string][]string{
-						"foo": {
-							testuser,
-						},
-					}
-				})
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.PullRequestEvent{
-						Action: github.PullRequestActionOpened,
-						GUID:   "guid",
-						Repo: github.Repo{
-							FullName: "foo/bar",
-						},
-						Sender: github.User{
-							Login: testuser,
-						},
-						PullRequest: github.PullRequest{
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: &event.PullRequest,
-					}
-				})
-
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						false,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerPullRequestEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-					go eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
-
+				Expect(prowc.Actions()).Should(HaveLen(0))
 			})
 
 		})
 
-		Context("ok-to-test label is set", func() {
+		When("user is not an org member but ok-to-test label is set", func() {
 
 			It("Should generate Prow jobs for the changed configs with ok-to-test label", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
+					makePresubmit("modified-job", "modified-image"),
+					makePresubmit("existing-job", "other-image"),
 				})
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
+				event := makePullRequestEvent(baseref, headref, []github.Label{
+					{
+						Name: "ok-to-test",
+					},
 				})
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &event.PullRequest,
+				}
 
-				var headref string
-				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "modified-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": headConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				letEventsHandlerHandleMadePullRequestEvent(eventsHandler, &event)
 
-				gh := &fakegithub.FakeClient{}
-				var event github.PullRequestEvent
-
-				testuser := "testuser"
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.PullRequestEvent{
-						Action: github.PullRequestActionOpened,
-						GUID:   "guid",
-						Repo: github.Repo{
-							FullName: "foo/bar",
-						},
-						Sender: github.User{
-							Login: testuser,
-						},
-						PullRequest: github.PullRequest{
-							Number: 17,
-							Labels: []github.Label{
-								{
-									Name: "ok-to-test",
-								},
-							},
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: &event.PullRequest,
-					}
-				})
-
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerPullRequestEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-
-						Expect(prowc.Actions()).Should(HaveLen(1))
-						pjAction := prowc.Actions()[0].GetResource()
-						Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
-					})
-				})
-
+				Expect(prowc.Actions()).Should(HaveLen(1))
+				pjAction := prowc.Actions()[0].GetResource()
+				Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
 			})
 
 		})
 
-		Context("Unauthorized user", func() {
+		When("Unauthorized user", func() {
 
 			It("Should not generate Prow jobs", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
+					makePresubmit("modified-job", "modified-image"),
+					makePresubmit("existing-job", "other-image"),
 				})
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				event := makePullRequestEvent(baseref, headref, nil)
 
-				var headref string
-				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "modified-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": headConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &event.PullRequest,
+				}
 
-				gh := &fakegithub.FakeClient{}
-				var event github.PullRequestEvent
+				letEventsHandlerHandleMadePullRequestEvent(eventsHandler, &event)
 
-				testuser := "testuser"
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.PullRequestEvent{
-						Action: github.PullRequestActionOpened,
-						GUID:   "guid",
-						Repo: github.Repo{
-							FullName: "foo/bar",
-						},
-						Sender: github.User{
-							Login: testuser,
-						},
-						PullRequest: github.PullRequest{
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: &event.PullRequest,
-					}
-				})
-
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerPullRequestEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
-
+				Expect(prowc.Actions()).Should(HaveLen(0))
 			})
 
 		})
@@ -1067,1075 +231,176 @@ var _ = Describe("Rehearse", func() {
 
 	Context("A valid comment event", func() {
 
-		var gitrepo *localgit.LocalGit
-		var gitClientFactory git2.ClientFactory
+		openIssueWithPullRequest := github.Issue{
+			Number: 17,
+			State:  "open",
+			User: github.User{
+				Login: testUserName,
+			},
+			PullRequest: &struct{}{},
+		}
 
-		BeforeEach(func() {
-			var err error
+		When("User is an org member", func() {
 
-			gitrepo, gitClientFactory, err = localgit.NewV2()
-			Expect(err).ShouldNot(HaveOccurred())
-		})
-
-		AfterEach(func() {
-			if gitClientFactory != nil {
-				gitClientFactory.Clean()
-			}
-		})
-
-		Context("User in org", func() {
-
-			It("Should generate Prow jobs for the changed configs", func() {
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
-
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
-
-				var headref string
-				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "modified-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": headConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
-
-				gh := &fakegithub.FakeClient{}
-				var event github.IssueCommentEvent
-
-				testuser := "testuser"
-				By("Registering a user to the fake github client", func() {
-					gh.OrgMembers = map[string][]string{
-						"foo": {
-							testuser,
-						},
-					}
-				})
-				By("Generating a fake pull request event and registering it to the github client", func() {
-
-					pr := &github.PullRequest{
-						Number: 17,
-						Base: github.PullRequestBranch{
-							Repo: github.Repo{
-								Name:     "bar",
-								FullName: "foo/bar",
-							},
-							Ref: baseref,
-							SHA: baseref,
-						},
-						Head: github.PullRequestBranch{
-							Repo: github.Repo{
-								Name:     "bar",
-								FullName: "foo/bar",
-							},
-							Ref: headref,
-							SHA: headref,
-						},
-					}
-
-					event = github.IssueCommentEvent{
-						Action: github.IssueCommentActionCreated,
-						Comment: github.IssueComment{
-							Body: "/rehearse",
-							User: github.User{
-								Login: testuser,
-							},
-						},
-						GUID: "guid",
-						Repo: github.Repo{
-							FullName: "foo/bar",
-						},
-						Issue: github.Issue{
-							Number: 17,
-							State:  "open",
-							User: github.User{
-								Login: testuser,
-							},
-							PullRequest: &struct{}{},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: pr,
-					}
-				})
-
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-					handlerEvent, err := makeHandlerIssueCommentEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(1))
-						pjAction := prowc.Actions()[0].GetResource()
-						Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
-					})
-				})
-
+			BeforeEach(func() {
+				registerTestUserAsOrgMember(gh)
 			})
 
-			It("Should not generate Prow jobs if there are no changes", func() {
+			It("Should generate Prow jobs for the changed configs", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
+					makePresubmit("modified-job", "modified-image"),
+					makePresubmit("existing-job", "other-image"),
 				})
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				event := makeRehearseCommentEvent(openIssueWithPullRequest)
+				pr := makePullRequest(baseref, headref, nil)
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &pr,
+				}
 
-				var headref string
-				By("Generating a head commit with an unrelated modified file", func() {
-					err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"some-file": []byte(""),
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				letEventsHandlerHandleMadeIssueCommentEvent(eventsHandler, &event)
 
-				gh := &fakegithub.FakeClient{}
+				Expect(prowc.Actions()).Should(HaveLen(1))
+				pjAction := prowc.Actions()[0].GetResource()
+				Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
+			})
+
+			It("Should not generate Prow jobs if there are unrelated changes", func() {
+
+				err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					"some-file": []byte(""),
+				})
+				Expect(err).ShouldNot(HaveOccurred())
+				headref, err := gitrepo.RevParse("foo", "bar", "HEAD")
+				Expect(err).ShouldNot(HaveOccurred())
+
 				var event github.IssueCommentEvent
 
-				testuser := "testuser"
-				By("Registering a user to the fake github client", func() {
-					gh.OrgMembers = map[string][]string{
-						"foo": {
-							testuser,
-						},
-					}
-				})
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.IssueCommentEvent{
-						Action: github.IssueCommentActionCreated,
-						Comment: github.IssueComment{
-							Body: "/rehearse",
-							User: github.User{
-								Login: testuser,
-							},
-						},
-						GUID: "guid",
-						Repo: github.Repo{
-							FullName: "foo/bar",
-						},
-						Issue: github.Issue{
-							Number: 17,
-							User: github.User{
-								Login: testuser,
-							},
-						},
-					}
+				event = makeRehearseCommentEvent(openIssueWithPullRequest)
+				pr := makePullRequest(baseref, headref, nil)
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &pr,
+				}
 
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: {
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-				})
+				letEventsHandlerHandleMadeIssueCommentEvent(eventsHandler, &event)
 
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerIssueCommentEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
-
+				Expect(prowc.Actions()).Should(HaveLen(0))
 			})
 
 			It("Should not generate Prow jobs if a job was deleted", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
+					makePresubmit("existing-job", "other-image"),
 				})
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				registerTestUserAsOrgMember(gh)
 
-				var headref string
-				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": headConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				event := makeRehearseCommentEvent(openIssueWithPullRequest)
+				pr := makePullRequest(baseref, headref, nil)
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &pr,
+				}
 
-				gh := &fakegithub.FakeClient{}
-				var event github.IssueCommentEvent
+				letEventsHandlerHandleMadeIssueCommentEvent(eventsHandler, &event)
 
-				testuser := "testuser"
-				By("Registering a user to the fake github client", func() {
-					gh.OrgMembers = map[string][]string{
-						"foo": {testuser},
-					}
-				})
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.IssueCommentEvent{
-						Action: github.IssueCommentActionCreated,
-						Comment: github.IssueComment{
-							Body: "/rehearse",
-							User: github.User{
-								Login: testuser,
-							},
-						},
-						GUID: "guid",
-						Repo: github.Repo{
-							FullName: "foo/bar",
-						},
-						Issue: github.Issue{
-							Number: 17,
-							User: github.User{
-								Login: testuser,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: {
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-				})
-
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerIssueCommentEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
-
+				Expect(prowc.Actions()).Should(HaveLen(0))
 			})
 
-			It("Should not generate Prow jobs if a job is not permitted", func() {
+			It("Should not generate Prow jobs if PR is not open", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
+					makePresubmit("modified-job", "modified-image"),
+					makePresubmit("existing-job", "other-image"),
 				})
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
+				notOpenIssue := github.Issue{
+					Number: 17,
+					User: github.User{
+						Login: testUserName,
+					},
+					PullRequest: &struct{}{},
+				}
+				event := makeRehearseCommentEvent(notOpenIssue)
+				pr := makePullRequest(baseref, headref, nil)
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &pr,
+				}
+
+				letEventsHandlerHandleMadeIssueCommentEvent(eventsHandler, &event)
+
+				Expect(prowc.Actions()).Should(HaveLen(0))
+			})
+
+			It("Should not generate Prow jobs if a job is rehearsal restricted", func() {
+
+				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
+					makePresubmitWithRestrictedAnnotation("modified-job", "modified-image"),
+					makePresubmit("existing-job", "other-image"),
 				})
 
-				var headref string
-				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": headConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				event := makeRehearseCommentEvent(openIssueWithPullRequest)
+				pr := makePullRequest(baseref, headref, nil)
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &pr,
+				}
 
-				gh := &fakegithub.FakeClient{}
-				var event github.IssueCommentEvent
+				letEventsHandlerHandleMadeIssueCommentEvent(eventsHandler, &event)
 
-				testuser := "testuser"
-				By("Registering a user to the fake github client", func() {
-					gh.OrgMembers = map[string][]string{
-						"foo": {testuser},
-					}
-				})
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.IssueCommentEvent{
-						Action: github.IssueCommentActionCreated,
-						Comment: github.IssueComment{
-							Body: "/rehearse",
-							User: github.User{
-								Login: testuser,
-							},
-						},
-						GUID: "guid",
-						Repo: github.Repo{
-							FullName: "foo/bar",
-						},
-						Issue: github.Issue{
-							Number: 17,
-							User: github.User{
-								Login: testuser,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: {
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-				})
-
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerIssueCommentEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
-
+				Expect(prowc.Actions()).Should(HaveLen(0))
 			})
 
 		})
 
-		Context("ok-to-test label is set", func() {
+		When("user is not an org member but ok-to-test label is set", func() {
 
 			It("Should generate Prow jobs for the changed configs", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+				By("Generating a head commit with a modified job")
+				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
+					makePresubmit("modified-job", "modified-image"),
+					makePresubmit("existing-job", "other-image"),
 				})
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
+				event := makeRehearseCommentEvent(openIssueWithPullRequest)
+				pr := makePullRequest(baseref, headref, []github.Label{
+					{
+						Name: "ok-to-test",
+					},
 				})
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &pr,
+				}
 
-				var headref string
-				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "modified-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": headConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				letEventsHandlerHandleMadeIssueCommentEvent(eventsHandler, &event)
 
-				gh := &fakegithub.FakeClient{}
-				var event github.IssueCommentEvent
+				Expect(prowc.Actions()).Should(HaveLen(1))
 
-				testuser := "testuser"
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.IssueCommentEvent{
-						Action: github.IssueCommentActionCreated,
-						Comment: github.IssueComment{
-							Body: "/rehearse",
-							User: github.User{
-								Login: testuser,
-							},
-						},
-						GUID: "guid",
-						Repo: github.Repo{
-							FullName: "foo/bar",
-						},
-						Issue: github.Issue{
-							Number: 17,
-							State:  "open",
-							User: github.User{
-								Login: testuser,
-							},
-							PullRequest: &struct{}{},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: {
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Labels: []github.Label{
-								{
-									Name: "ok-to-test",
-								},
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-				})
-
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerIssueCommentEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(1))
-
-						pjAction := prowc.Actions()[0].GetResource()
-						Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
-					})
-				})
-
+				pjAction := prowc.Actions()[0].GetResource()
+				Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
 			})
 
 		})
 
-		Context("Unauthorized user", func() {
+		When("Unauthorized user", func() {
 
 			It("Should not generate Prow jobs", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+				By("Generating a head commit with a modified job")
+				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
+					makePresubmit("modified-job", "modified-image"),
+					makePresubmit("existing-job", "other-image"),
 				})
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				event := makeRehearseCommentEvent(openIssueWithPullRequest)
+				pr := makePullRequest(baseref, headref, nil)
+				gh.PullRequests = map[int]*github.PullRequest{
+					17: &pr,
+				}
 
-				var headref string
-				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "modified-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
-						"jobs-config.yaml": headConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				letEventsHandlerHandleMadeIssueCommentEvent(eventsHandler, &event)
 
-				gh := &fakegithub.FakeClient{}
-				var event github.IssueCommentEvent
-
-				testuser := "testuser"
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.IssueCommentEvent{
-						Action: github.IssueCommentActionCreated,
-						Comment: github.IssueComment{
-							Body: "/rehearse",
-							User: github.User{
-								Login: testuser,
-							},
-						},
-						GUID: "guid",
-						Repo: github.Repo{
-							FullName: "foo/bar",
-						},
-						Issue: github.Issue{
-							Number: 17,
-							User: github.User{
-								Login: testuser,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: {
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-				})
-
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerIssueCommentEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
-
+				Expect(prowc.Actions()).Should(HaveLen(0))
 			})
 
 		})
@@ -2144,7 +409,153 @@ var _ = Describe("Rehearse", func() {
 
 })
 
-func makeRepoWithEmptyProwConfig(lg *localgit.LocalGit, repo, org string) error {
+func makePullRequestEvent(baseref, headref string, labels []github.Label) github.PullRequestEvent {
+	return github.PullRequestEvent{
+		Action: github.PullRequestActionOpened,
+		GUID:   "guid",
+		Repo: github.Repo{
+			FullName: "foo/bar",
+		},
+		Sender: github.User{
+			Login: testUserName,
+		},
+		PullRequest: makePullRequest(baseref, headref, labels),
+	}
+}
+
+func makePullRequest(baseref, headref string, labels []github.Label) github.PullRequest {
+	return github.PullRequest{
+		Number: 17,
+		Labels: labels,
+		Base:   makePullRequestBranch(baseref),
+		Head:   makePullRequestBranch(headref),
+	}
+}
+
+func makePullRequestBranch(ref string) github.PullRequestBranch {
+	return github.PullRequestBranch{
+		Repo: github.Repo{
+			Name:     "bar",
+			FullName: "foo/bar",
+		},
+		Ref: ref,
+		SHA: ref,
+	}
+}
+
+func makeRehearseCommentEvent(issue github.Issue) github.IssueCommentEvent {
+	return github.IssueCommentEvent{
+		Action: github.IssueCommentActionCreated,
+		Comment: github.IssueComment{
+			Body: "/rehearse",
+			User: github.User{
+				Login: testUserName,
+			},
+		},
+		GUID: "guid",
+		Repo: github.Repo{
+			FullName: "foo/bar",
+		},
+		Issue: issue,
+	}
+}
+
+func commitChangedJobConfigurations(gitrepo *localgit.LocalGit, presubmits []config.Presubmit) (headref string) {
+	headConfig := expectGenerateMarshalledConfigWithJobsToSucceed(presubmits)
+	expectAddCommitForJobsConfigToSucceed(gitrepo, headConfig)
+	headref, err := gitrepo.RevParse("foo", "bar", "HEAD")
+	Expect(err).ShouldNot(HaveOccurred())
+	return headref
+}
+
+func letEventsHandlerHandleMadeIssueCommentEvent(eventsHandler *handler.GitHubEventsHandler, event *github.IssueCommentEvent) {
+	handlerEvent, err := makeHandlerIssueCommentEvent(event)
+	Expect(err).ShouldNot(HaveOccurred())
+	eventsHandler.Handle(handlerEvent)
+}
+
+func letEventsHandlerHandleMadePullRequestEvent(eventsHandler *handler.GitHubEventsHandler, event *github.PullRequestEvent) {
+	handlerEvent, err := makeHandlerPullRequestEvent(event)
+	Expect(err).ShouldNot(HaveOccurred())
+	eventsHandler.Handle(handlerEvent)
+}
+
+func expectAddCommitForJobsConfigToSucceed(gitrepo *localgit.LocalGit, bytes []byte) bool {
+	return Expect(gitrepo.AddCommit("foo", "bar", map[string][]byte{
+		"jobs-config.yaml": bytes,
+	})).Should(Succeed())
+}
+
+func registerTestUserAsOrgMember(gh *fakegithub.FakeClient) {
+	gh.OrgMembers = map[string][]string{
+		"foo": {
+			testUserName,
+		},
+	}
+}
+
+func expectGenerateMarshalledConfigWithJobsToSucceed(presubmits []config.Presubmit) []byte {
+	bytes, err := json.Marshal(&config.Config{
+		JobConfig: config.JobConfig{
+			PresubmitsStatic: map[string][]config.Presubmit{
+				"foo/bar": presubmits,
+			},
+		},
+	})
+	Expect(err).ToNot(HaveOccurred())
+	return bytes
+}
+
+func makePresubmit(jobName string, imageName string) config.Presubmit {
+	return config.Presubmit{
+		JobBase: config.JobBase{
+			Name: jobName,
+			Spec: &v1.PodSpec{
+				Containers: []v1.Container{
+					{
+						Image: imageName,
+					},
+				},
+			},
+		},
+	}
+}
+
+func makePresubmitWithAlwaysRun(jobName string, imageName string, alwaysRun bool) config.Presubmit {
+	return config.Presubmit{
+		JobBase: config.JobBase{
+			Name: jobName,
+			Spec: &v1.PodSpec{
+				Containers: []v1.Container{
+					{
+						Image: imageName,
+					},
+				},
+			},
+		},
+		AlwaysRun: alwaysRun,
+	}
+}
+
+func makePresubmitWithRestrictedAnnotation(jobName string, imageName string) config.Presubmit {
+	return config.Presubmit{
+		JobBase: config.JobBase{
+			Name: jobName,
+			Annotations: map[string]string{
+				handler.RehearsalRestrictedAnnotation: "true",
+			},
+			Spec: &v1.PodSpec{
+				Containers: []v1.Container{
+					{
+						Image: imageName,
+					},
+				},
+			},
+		},
+	}
+}
+
+func makeFakeGitRepository(lg *localgit.LocalGit, repo, org string) error {
 	err := lg.MakeFakeRepo(repo, org)
 	if err != nil {
 		return err
