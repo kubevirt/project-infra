@@ -1194,7 +1194,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "make fossa"
+        - "make fossa && echo 42"
         # docker-in-docker needs privileged mode
         env:
         - name: FOSSA_TOKEN_FILE
