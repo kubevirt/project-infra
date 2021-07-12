@@ -1,0 +1,41 @@
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: greenhouse-0
+  labels:
+    app: greenhouse
+    type: local
+spec:
+  capacity:
+    storage: 1400Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/greenhouse"
+    type: ""
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: ci.kubevirt.io/cachenode
+          operator: In
+          values:
+          - "true"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: greenhouse
+  namespace: kubevirt-prow
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1400Gi
+  storageClassName: ""
+  selector:
+    matchLabels:
+      app: greenhouse
+      type: local

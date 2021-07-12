@@ -3,11 +3,3 @@ kind: Component
 
 resources:
   - resources/pvc.yaml
-
-patches:
-  - target:
-      version: v1
-      group: apps
-      kind: Deployment
-      name: greenhouse
-    path: patches/JsonRFC6902/deployment.yaml
