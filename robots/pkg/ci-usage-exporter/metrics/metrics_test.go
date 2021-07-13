@@ -89,13 +89,15 @@ var _ = Describe("resources", func() {
 
 		bodyStr := string(body)
 		for _, expectation := range expectations {
-			expectedMetric := fmt.Sprintf(`%s{always_run="%s",job_cluster="%s",job_name="%s",org="%s",repo="%s",type="%s"} %g`,
+			expectedMetric := fmt.Sprintf(`%s{always_run="%s",branches="%s",job_cluster="%s",job_name="%s",org="%s",repo="%s",skip_branches="%s",type="%s"} %g`,
 				expectation.name,
 				expectation.labels["always_run"],
+				expectation.labels["branches"],
 				expectation.labels["job_cluster"],
 				expectation.labels["job_name"],
 				expectation.labels["org"],
 				expectation.labels["repo"],
+				expectation.labels["skip_branches"],
 				expectation.labels["type"],
 				expectation.value)
 			if !strings.Contains(bodyStr, expectedMetric) {
@@ -186,6 +188,56 @@ var _ = Describe("resources", func() {
 						"type":        "presubmit",
 						"job_cluster": "test-cluster",
 						"always_run":  "true",
+					},
+				},
+			},
+		),
+		Entry("presubmit honors brancher",
+			metrics.Config{
+				ProwConfig: &prowConfig.Config{
+					JobConfig: prowConfig.JobConfig{
+						PresubmitsStatic: map[string][]prowConfig.Presubmit{
+							"test-org/test-repo": {
+								{
+									AlwaysRun: true,
+									Brancher: prowConfig.Brancher{
+										Branches:     []string{"branch1", "branch2"},
+										SkipBranches: []string{"branch3", "branch4"},
+									},
+									JobBase: prowConfig.JobBase{
+										Name:    "test-job",
+										Cluster: "test-cluster",
+										Spec: &v1.PodSpec{
+											Containers: []v1.Container{
+												{
+													Resources: v1.ResourceRequirements{
+														Requests: v1.ResourceList{
+															v1.ResourceMemory: quantity1,
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			[]metricExpectations{
+				{
+					name:  "kubevirt_ci_job_memory_bytes",
+					value: quantityValue1,
+					labels: map[string]string{
+						"job_name":      "test-job",
+						"org":           "test-org",
+						"repo":          "test-repo",
+						"type":          "presubmit",
+						"job_cluster":   "test-cluster",
+						"always_run":    "true",
+						"branches":      "branch1,branch2",
+						"skip_branches": "branch3,branch4",
 					},
 				},
 			},
@@ -375,6 +427,55 @@ var _ = Describe("resources", func() {
 						"type":        "postsubmit",
 						"job_cluster": "test-cluster",
 						"always_run":  "true",
+					},
+				},
+			},
+		),
+		Entry("postsubmit honors brancher",
+			metrics.Config{
+				ProwConfig: &prowConfig.Config{
+					JobConfig: prowConfig.JobConfig{
+						PostsubmitsStatic: map[string][]prowConfig.Postsubmit{
+							"test-org/test-repo": {
+								{
+									Brancher: prowConfig.Brancher{
+										Branches:     []string{"branch1", "branch2"},
+										SkipBranches: []string{"branch3", "branch4"},
+									},
+									JobBase: prowConfig.JobBase{
+										Name:    "test-job",
+										Cluster: "test-cluster",
+										Spec: &v1.PodSpec{
+											Containers: []v1.Container{
+												{
+													Resources: v1.ResourceRequirements{
+														Requests: v1.ResourceList{
+															v1.ResourceMemory: quantity1,
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			[]metricExpectations{
+				{
+					name:  "kubevirt_ci_job_memory_bytes",
+					value: quantityValue1,
+					labels: map[string]string{
+						"job_name":      "test-job",
+						"org":           "test-org",
+						"repo":          "test-repo",
+						"type":          "postsubmit",
+						"job_cluster":   "test-cluster",
+						"always_run":    "true",
+						"branches":      "branch1,branch2",
+						"skip_branches": "branch3,branch4",
 					},
 				},
 			},
