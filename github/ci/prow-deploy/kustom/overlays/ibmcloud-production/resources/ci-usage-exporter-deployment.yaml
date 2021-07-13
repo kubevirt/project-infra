@@ -19,7 +19,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: ci-usage-exporter
-        image: quay.io/kubevirtci/ci-usage-exporter:v20210707-83c2f8c1
+        image: quay.io/kubevirtci/ci-usage-exporter:v20210713-6507c046
         imagePullPolicy: Always
         ports:
         - name: metrics
