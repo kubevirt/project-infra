@@ -382,7 +382,9 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.20-cgroupsv2
+          value: k8s-1.20
+        - name: KUBEVIRT_CGROUPV2
+          value: "true"
         - name: KUBEVIRT_E2E_SKIP
           value: Multus|SRIOV|GPU|Macvtap|\[sig-operator\]
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
