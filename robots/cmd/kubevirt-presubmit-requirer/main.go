@@ -155,9 +155,9 @@ func UpdatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, lat
 			continue
 		}
 
-		// phase 1: always_run: false -> true
-		if !job.AlwaysRun {
-			job.AlwaysRun = true
+		// phase 1: always_run: false -> skip_if_only_changed: "^docs/|.md$|^LICENSE$"
+		if !job.AlwaysRun && job.RunIfChanged == "" && job.SkipIfOnlyChanged == "" {
+			job.SkipIfOnlyChanged = "^docs/|.md$|^LICENSE$"
 			updated = true
 
 			// -- fix skip_report: true -> false
@@ -168,6 +168,13 @@ func UpdatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, lat
 
 		// phase 2: optional: true -> false
 		if job.Optional {
+			// as the branchprotector can only require jobs that have `always_run: true`, we need to fix the jobs
+			// that are only triggered on certain changes when changing them in phase 2 to being required
+			if job.RunIfChanged != "" || job.SkipIfOnlyChanged != "" {
+				job.RunIfChanged = ""
+				job.SkipIfOnlyChanged = ""
+				job.AlwaysRun = true
+			}
 			job.Optional = false
 			updated = true
 		}
