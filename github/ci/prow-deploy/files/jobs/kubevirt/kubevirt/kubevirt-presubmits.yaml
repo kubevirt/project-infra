@@ -1010,6 +1010,38 @@ presubmits:
             memory: 4Gi
         securityContext:
           privileged: true
+  - name: pull-kubevirt-verify-go-mod
+    cluster: ibm-prow-jobs
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    skip_report: false
+    optional: true
+    run_if_changed: ^vendor/.*|go\.mod$|go\.sum$
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make deps-sync && hack/verify-generate.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
   - always_run: false
     annotations:
       fork-per-release: "true"
