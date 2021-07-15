@@ -1217,7 +1217,7 @@ spec:
     requests:
       cpu: 500m
       memory: 2Gi
-  retention: "4d"
+  retention: "2d"
   routePrefix: "/"
   serviceAccountName: prometheus-stack-kube-prom-prometheus
   serviceMonitorSelector:
@@ -1251,7 +1251,7 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
+            storage: 60Gi
   additionalScrapeConfigs:
     name: prometheus-stack-kube-prom-prometheus-scrape-confg
     key: additional-scrape-configs.yaml
