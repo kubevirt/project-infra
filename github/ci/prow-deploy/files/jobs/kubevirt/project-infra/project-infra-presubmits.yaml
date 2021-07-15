@@ -289,7 +289,7 @@ presubmits:
               memory: "8Gi"
   - name: pull-project-infra-prow-deploy-test
     always_run: false
-    run_if_changed: "github/ci/prow-deploy/.*|github/ci/prow-deploy/files/.*"
+    run_if_changed: "github/ci/prow-deploy/.*"
     decorate: true
     labels:
       preset-dind-enabled: "true"
