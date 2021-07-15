@@ -223,6 +223,7 @@ postsubmits:
                 memory: "4Gi"
     - name: post-project-infra-prow-control-plane-deployment
       always_run: false
+      run_if_changed: "github/ci/prow-deploy/.*"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
