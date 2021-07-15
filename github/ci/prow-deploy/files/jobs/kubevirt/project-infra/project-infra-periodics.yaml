@@ -52,14 +52,11 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20200623-9f5410055c
+    - image: gcr.io/k8s-prow/commenter:v20210714-7b8bded266
       command:
       - /app/robots/commenter/app.binary
       args:
-      - |-
-        --query=org:kubevirt
-        -label:lifecycle/frozen
-        label:lifecycle/rotten
+      - --query=org:kubevirt -label:lifecycle/frozen label:lifecycle/rotten
       - --updated=720h
       - --token=/etc/github/oauth
       - |-
@@ -90,14 +87,11 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20200623-9f5410055c
+    - image: gcr.io/k8s-prow/commenter:v20210714-7b8bded266
       command:
       - /app/robots/commenter/app.binary
       args:
-      - |-
-        --query=org:kubevirt
-        -label:lifecycle/frozen
-        label:triage/build-watcher
+      - --query=org:kubevirt -label:lifecycle/frozen label:triage/build-watcher
       - --updated=336h
       - --token=/etc/github/oauth
       - |-
@@ -127,15 +121,11 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20200623-9f5410055c
+    - image: gcr.io/k8s-prow/commenter:v20210714-7b8bded266
       command:
       - /app/robots/commenter/app.binary
       args:
-      - |-
-        --query=org:kubevirt
-        -label:lifecycle/frozen
-        label:lifecycle/stale
-        -label:lifecycle/rotten
+      - --query=org:kubevirt -label:lifecycle/frozen label:lifecycle/stale -label:lifecycle/rotten
       - --updated=720h
       - --token=/etc/github/oauth
       - |-
@@ -168,15 +158,11 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20200623-9f5410055c
+    - image: gcr.io/k8s-prow/commenter:v20210714-7b8bded266
       command:
       - /app/robots/commenter/app.binary
       args:
-      - |-
-        --query=org:kubevirt
-        -label:lifecycle/frozen
-        -label:lifecycle/stale
-        -label:lifecycle/rotten
+      - --query=org:kubevirt -label:lifecycle/frozen -label:lifecycle/stale -label:lifecycle/rotten
       - --updated=2160h
       - --token=/etc/github/oauth
       - |-
