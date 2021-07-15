@@ -46,7 +46,7 @@
       --hmac-token-key=hmac \
       --hook-url https://prow.ci.kubevirt.io/hook \
       --deck-url https://prow.ci.kubevirt.io/ \
-      --dry-run=true
+      --dry-run=false
   environment:
     PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
     GITHUB_TOKEN_PATH: "{{ secrets_dir }}/oauth-token"
