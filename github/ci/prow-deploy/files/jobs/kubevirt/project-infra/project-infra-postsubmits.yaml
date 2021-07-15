@@ -236,6 +236,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
+        # TODO: update to latest version for hmac
         - image: quay.io/kubevirtci/prow-deploy:v20210129-a239273
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS

@@ -1,6 +1,7 @@
 testinfra_dir: /tmp/test-infra
 kubectl_exec: /usr/local/bin/kubectl
 bootstrap_full_config: false
+reconcile_github_webhooks: false
 project_infra_root: /home/prow/go/src/github.com/kubevirt/project-infra
 secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/workloads-production/secrets/'
 components_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/components'

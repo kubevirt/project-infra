@@ -34,6 +34,25 @@
     KUBECONFIG: "{{ kubeconfig_path }}"
   when: bootstrap_full_config
 
+- name: Reconcile webhooks for onboarded repositories
+  shell: |
+    hmac \
+      --config-path=$PROW_CONFIG_PATH \
+      --github-token-path=$GITHUB_TOKEN_PATH \
+      --kubeconfig=$KUBECONFIG \
+      --kubeconfig-context=ibm-prow-jobs \
+      --hmac-token-secret-namespace={{ prowNamespace }} \
+      --hmac-token-secret-name=hmac-token \
+      --hmac-token-key=hmac \
+      --hook-url https://prow.ci.kubevirt.io/hook \
+      --deck-url https://prow.ci.kubevirt.io/ \
+      --dry-run=true
+  environment:
+    PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
+    GITHUB_TOKEN_PATH: "{{ secrets_dir }}/oauth-token"
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  when: reconcile_github_webhooks
+
 - name: Patch SRIOV nodes
   shell: |
     {{ project_infra_root }}/hack/patch_node.sh {{ item.name }} {{ item.capacity }}
