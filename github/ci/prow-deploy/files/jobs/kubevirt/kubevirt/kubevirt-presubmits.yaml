@@ -17,10 +17,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.21-sig-network
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -59,10 +56,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.21-sig-storage
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -101,10 +95,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.21-sig-compute
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -143,10 +134,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.21-operator
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -186,10 +174,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.21-rest-coverage
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -306,10 +291,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-sig-compute
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -388,10 +370,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-cgroupsv2
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -434,10 +413,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-sig-compute-nonroot
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -478,10 +454,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-sig-network-nonroot
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -522,10 +495,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-sig-storage-nonroot
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -566,10 +536,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-operator-nonroot
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -805,10 +772,7 @@ presubmits:
       sriov-pod: "true"
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-1.19-sriov-nonroot
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -967,10 +931,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-check-tests-for-flakes
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1031,10 +992,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-verify-rpms
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     run_if_changed: WORKSPACE
     skip_branches:
     - release-\d+\.\d+
@@ -1098,10 +1056,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-gosec
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     skip_report: true
@@ -1223,10 +1178,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-goveralls
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1266,10 +1218,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-fossa
-    # WARNING: please remember to remove skip_if_only_changed if this job is
-    # set to required (optional: false)
     optional: true
-    skip_if_only_changed: "^docs/|.md$|^LICENSE$"
     skip_branches:
     - release-\d+\.\d+
     skip_report: false
