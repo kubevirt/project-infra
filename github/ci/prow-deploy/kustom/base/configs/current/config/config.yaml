@@ -522,13 +522,14 @@ managed_webhooks:
   org_repo_config:
     kubevirt:
       token_created_after: 2021-07-15T01:00:00Z
-    k8snetworkplumbingwg/kubemacpool:
-      token_created_after: 2021-07-15T01:00:00Z
-    k8snetworkplumbingwg/ovs-cni:
-      token_created_after: 2021-07-15T01:00:00Z
-    nmstate/kubernetes-nmstate:
-      token_created_after: 2021-07-15T01:00:00Z
-    nmstate/nmstate:
-      token_created_after: 2021-07-15T01:00:00Z
-    RHsyseng/rhcos-slb:
-      token_created_after: 2021-07-15T01:00:00Z
+# TODO: onboard remaining orgs and repos
+#    k8snetworkplumbingwg/kubemacpool:
+#      token_created_after: 2021-07-15T01:00:00Z
+#    k8snetworkplumbingwg/ovs-cni:
+#      token_created_after: 2021-07-15T01:00:00Z
+#    nmstate/kubernetes-nmstate:
+#      token_created_after: 2021-07-15T01:00:00Z
+#    nmstate/nmstate:
+#      token_created_after: 2021-07-15T01:00:00Z
+#    RHsyseng/rhcos-slb:
+#      token_created_after: 2021-07-15T01:00:00Z
