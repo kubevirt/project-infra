@@ -272,7 +272,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-cdi-unit-test
-    cluster: ibm-prow-jobs
+    cluster: prow-workloads
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -287,7 +287,6 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
@@ -301,7 +300,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "4Gi"
+              memory: "8Gi"
   - name: pull-cdi-generate-verify
     cluster: ibm-prow-jobs
     skip_branches:
