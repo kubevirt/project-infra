@@ -7,7 +7,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 1h
+      timeout: 2h
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
@@ -45,13 +45,18 @@ presubmits:
           value: "kind-1.19-sriov"
         - name: "KUBEVIRT_NUM_NODES"
           value: "3"
+        - name: "RUN_KUBEVIRT_CONFORMANCE"
+          value: "true"
+        - name: "SONOBUOY_EXTRA_ARGS"
+          value: "--plugin-env kubevirt-conformance.E2E_FOCUS=SRIOV"
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
         - "-c"
         - >
             trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM &&
-            make cluster-up
+            make cluster-up &&
+            ./cluster-up/cluster/kind/check-cluster-up.sh
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
