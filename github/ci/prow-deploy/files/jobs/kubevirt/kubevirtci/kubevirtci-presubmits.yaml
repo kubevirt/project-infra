@@ -54,6 +54,10 @@ presubmits:
         - "/bin/bash"
         - "-ce"
         - |
+          PR="645"
+          BRANCH="pr$PR"
+          git fetch "https://github.com/kubevirt/kubevirtci" pull/$PR/head:$BRANCH
+          git checkout $BRANCH
           trap "echo teardown && make cluster-down" EXIT SIGINT
           make cluster-up
           ./cluster-up/cluster/kind/check-cluster-up.sh
