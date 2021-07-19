@@ -15,8 +15,8 @@ spec:
       name: thanos-objstore-config
   resources:
     requests:
-      cpu: 700m
-      memory: 6Gi
+      cpu: 1
+      memory: 12Gi
     limits:
-      cpu: 700m
-      memory: 6Gi
+      cpu: 1
+      memory: 12Gi
