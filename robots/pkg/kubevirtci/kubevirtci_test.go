@@ -262,7 +262,7 @@ var testsEnsureProviderExists = []struct {
 		},
 	},
 	{
-		name:    "expect the latest 1.16 provider to be updated from 1.16.5 to 1.16.7",
+		name:    "expect the latest 1.16 provider not to be updated from 1.16.5 to 1.16.7 (already done by ensureLatestThreeMinor)",
 		release: release("v1.16.7", true),
 		existing: []querier.SemVer{
 			newSemVer("1", "2", "1"),
@@ -271,7 +271,7 @@ var testsEnsureProviderExists = []struct {
 			newSemVer("1", "16", "5"),
 		},
 		wanted: []querier.SemVer{
-			newSemVer("1", "16", "7"),
+			newSemVer("1", "16", "5"),
 			newSemVer("1", "9", "4"),
 			newSemVer("1", "3", "2"),
 			newSemVer("1", "2", "1"),
