@@ -263,6 +263,12 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/kubevirt-velero-plugin:
+  - approve
+  - lgtm
+  - owners-label
+  - trigger
+
   kubevirt/node-maintenance-operator:
   - trigger
   - owners-label
@@ -385,6 +391,7 @@ triggers:
   - kubevirt/csi-driver
   - kubevirt/community
   - kubevirt/terraform-provider-kubevirt
+  - kubevirt/kubevirt-velero-plugin
 - repos:
   - virtblocks/virtblocks
 - repos:
@@ -426,6 +433,7 @@ approve:
   - kubevirt/csi-driver
   - kubevirt/user-guide
   - kubevirt/terraform-provider-kubevirt
+  - kubevirt/kubevirt-velero-plugin
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -464,6 +472,7 @@ lgtm:
   - kubevirt/csi-driver
   - kubevirt/user-guide
   - kubevirt/terraform-provider-kubevirt
+  - kubevirt/kubevirt-velero-plugin
   review_acts_as_lgtm: true
 
 override:

@@ -109,6 +109,7 @@ tide:
     kubevirt/must-gather: squash
     kubevirt/user-guide: squash
     kubevirt/terraform-provider-kubevirt: merge
+    kubevirt/kubevirt-velero-plugin: squash
 
   queries:
   - repos:
@@ -283,6 +284,10 @@ branch-protection:
             main:
               protect: true
         containerized-data-importer:
+          branches:
+            main:
+              protect: true
+        kubevirt-velero-plugin:
           branches:
             main:
               protect: true
