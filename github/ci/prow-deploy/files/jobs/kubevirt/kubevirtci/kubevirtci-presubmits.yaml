@@ -7,7 +7,7 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 2h
+      timeout: 4h
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
@@ -54,6 +54,14 @@ presubmits:
         - "/bin/bash"
         - "-c"
         - >
+            pr="644";
+            branch644="pr$pr";
+            git fetch "https://github.com/kubevirt/kubevirtci" "pull/$pr/head":"$branch644";
+            git checkout "$branch644";
+            pr="645";
+            branch645="pr$pr";
+            git fetch "https://github.com/kubevirt/kubevirtci" "pull/$pr/head":"$branch645";
+            git rebase "$branch645";
             trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM &&
             make cluster-up &&
             ./cluster-up/cluster/kind/check-cluster-up.sh
