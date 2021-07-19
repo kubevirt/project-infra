@@ -12,20 +12,7 @@ periodics:
       - /app/robots/commenter/app.binary
       args:
       - |-
-        --query=is:pr
-        -label:do-not-merge
-        -label:do-not-merge/blocked-paths
-        -label:do-not-merge/cherry-pick-not-approved
-        -label:do-not-merge/hold
-        -label:do-not-merge/invalid-owners-file
-        -label:do-not-merge/release-note-label-needed
-        -label:do-not-merge/work-in-progress
-        label:lgtm
-        label:approved
-        status:failure
-        -label:needs-rebase
-        -label:needs-ok-to-test
-        repo:kubevirt/kubevirt
+        --query=is:pr is:open -label:do-not-merge -label:do-not-merge/blocked-paths -label:do-not-merge/cherry-pick-not-approved -label:do-not-merge/hold -label:do-not-merge/invalid-owners-file -label:do-not-merge/release-note-label-needed -label:do-not-merge/work-in-progress label:lgtm label:approved status:failure -label:needs-rebase -label:needs-ok-to-test repo:kubevirt/kubevirt
       - --token=/etc/github/oauth
       - |-
         --comment=/retest
