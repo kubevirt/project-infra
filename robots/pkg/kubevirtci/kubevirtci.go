@@ -65,7 +65,7 @@ func EnsureProviderExists(providerDir string, clusterUpDir string, release *gith
 	semver := *querier.ParseRelease(release)
 
 	for _, rel := range existing {
-		cmp := rel.Compare(&semver)
+		cmp := rel.CompareMajorMinor(&semver)
 		if cmp > 0 {
 			// not yet there
 			continue
