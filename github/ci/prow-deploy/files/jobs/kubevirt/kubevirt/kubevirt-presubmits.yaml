@@ -880,6 +880,19 @@ presubmits:
         - /bin/bash
         - -ce
         - |
+          kubevirt_path=${PWD} &&
+          pr=644 &&
+          tmp=$(mktemp -d /tmp/cluster-up.XXXX) &&
+          cd $tmp &&
+          git clone "https://github.com/kubevirt/kubevirtci" --branch main --depth 1  &&
+          cd kubevirtci  &&
+          git fetch "https://github.com/kubevirt/kubevirtci" "pull/$pr/head:pr$pr"  &&
+          git checkout "pr$pr"  &&
+          kubevirtci_git_hash=$(git rev-parse HEAD)  &&
+          rm -rf $kubevirt_path/cluster-up &&
+          mv cluster-up $kubevirt_path/cluster-up  &&
+          cd $kubevirt_path &&
+          rm -rf $tmp;
           automation/test.sh
         env:
         - name: TARGET
