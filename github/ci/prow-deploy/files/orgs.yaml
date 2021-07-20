@@ -744,3 +744,61 @@ orgs:
         repos:
           cloud-image-builder: admin
           community: admin
+  openshift-cnv:
+    admins:
+    - dhiller
+    - fabiand
+    - fgimenez
+    - kubevirt-bot
+    - tiraboschi
+    billing_email: fdeutsch@redhat.com
+    company: ""
+    default_repository_permission: read
+    description: OpenShift CNV
+    email: ""
+    has_organization_projects: true
+    has_repository_projects: true
+    location: ""
+    members:
+    - kubevirt-commenter-bot
+    - openshift-ci-robot
+    - openshift-merge-robot
+    - orenc1
+    - stu-gott
+    - zcahana
+    members_can_create_repositories: false
+    name: OpenShift CNV
+    repos:
+      cnv-ci:
+        allow_merge_commit: false
+        allow_rebase_merge: false
+        description: OpenShift CNV CI - files and scripts to support testing CNV on OpenShift CI
+        has_projects: true
+    teams:
+      cnv-ci:
+        description: ""
+        maintainers:
+        - dhiller
+        - fabiand
+        members:
+        - kubevirt-commenter-bot
+        - orenc1
+        - openshift-ci-robot
+        - zcahana
+        privacy: closed
+        repos:
+          cnv-ci: write
+      cnv-ci-maintainers:
+        description: ""
+        maintainers:
+        - dhiller
+        - fabiand
+        members:
+        - dhiller
+        - fabiand
+        - openshift-merge-robot
+        - stu-gott
+        - tiraboschi
+        privacy: closed
+        repos:
+          cnv-ci: admin
