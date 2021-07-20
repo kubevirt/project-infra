@@ -52,8 +52,10 @@ spec:
           mountPath: /data
         resources:
           requests:
+            cpu: 1.2
             memory: 3Gi
           limits:
+            cpu: 1.2
             memory: 3Gi
       volumes:
       - name: cache
