@@ -16,7 +16,7 @@ spec:
   resources:
     requests:
       cpu: 1
-      memory: 12Gi
+      memory: 6Gi
     limits:
       cpu: 1
-      memory: 12Gi
+      memory: 6Gi
