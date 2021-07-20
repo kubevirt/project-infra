@@ -8,8 +8,13 @@ job_dir="$(cd "$(cd "$(dirname $0)" && pwd)"'/../github/ci/prow/files/jobs' && p
 docker pull "$IMAGE_NAME"
 sha_id=$(docker images --digests "$IMAGE_NAME" | grep 'latest ' | head -1 | awk '{ print $3 }')
 
-# shellcheck disable=SC2086
-for file in $(grep -l 'image: .*'"$IMAGE_NAME" $job_dir/**/**/*-periodics.yaml | sort | uniq); do
-    sed -i -E 's#'"$IMAGE_NAME"'@sha256\:[a-z0-9]+#'"$IMAGE_NAME"'@'"$sha_id"'#g' \
-        "$file"
-done
+command -V skopeo && image_tag=$(skopeo inspect "docker://$IMAGE_NAME@$sha_id" | jq -r ' [ .RepoTags[] | select( test( "latest" ) != true ) ] | sort | .[-1] ' )
+
+replace_regex='s#'"$IMAGE_NAME"'(@sha256\:[a-z0-9]+|:v[a-z0-9]+-[a-z0-9]+)#'"$IMAGE_NAME"
+if [ -n "$image_tag" ]; then
+    replace_regex+=':'"$image_tag"'#g'
+else
+    replace_regex+='@'"$sha_id"'#g'
+fi
+
+find "$job_dir" -regextype egrep -regex '.*-(periodics|presubmits|postsubmits)\.yaml' -exec sed -i -E $replace_regex {} +
