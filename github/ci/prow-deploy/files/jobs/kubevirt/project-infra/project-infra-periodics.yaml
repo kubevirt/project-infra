@@ -7,12 +7,25 @@ periodics:
   cluster: phx-prow
   spec:
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20200623-9f5410055c
+    - image: gcr.io/k8s-prow/commenter:v20210720-5548472063
       command:
       - /app/robots/commenter/app.binary
       args:
       - |-
-        --query=is:pr is:open -label:do-not-merge -label:do-not-merge/blocked-paths -label:do-not-merge/cherry-pick-not-approved -label:do-not-merge/hold -label:do-not-merge/invalid-owners-file -label:do-not-merge/release-note-label-needed -label:do-not-merge/work-in-progress label:lgtm label:approved status:failure -label:needs-rebase -label:needs-ok-to-test repo:kubevirt/kubevirt
+        --query=is:pr
+          is:open
+          -label:do-not-merge
+          -label:do-not-merge/blocked-paths
+          -label:do-not-merge/cherry-pick-not-approved
+          -label:do-not-merge/hold
+          -label:do-not-merge/invalid-owners-file
+          -label:do-not-merge/release-note-label-needed
+          -label:do-not-merge/work-in-progress
+          label:lgtm label:approved
+          status:failure
+          -label:needs-rebase
+          -label:needs-ok-to-test
+          repo:kubevirt/kubevirt
       - --token=/etc/github/oauth
       - |-
         --comment=/retest
@@ -39,11 +52,14 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20210714-7b8bded266
+    - image: gcr.io/k8s-prow/commenter:v20210720-5548472063
       command:
       - /app/robots/commenter/app.binary
       args:
-      - --query=org:kubevirt -label:lifecycle/frozen label:lifecycle/rotten
+      - |-
+        --query=org:kubevirt
+          -label:lifecycle/frozen
+          label:lifecycle/rotten
       - --updated=720h
       - --token=/etc/github/oauth
       - |-
@@ -74,11 +90,14 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20210714-7b8bded266
+    - image: gcr.io/k8s-prow/commenter:v20210720-5548472063
       command:
       - /app/robots/commenter/app.binary
       args:
-      - --query=org:kubevirt -label:lifecycle/frozen label:triage/build-watcher
+      - |-
+        --query=org:kubevirt
+          -label:lifecycle/frozen
+          label:triage/build-watcher
       - --updated=336h
       - --token=/etc/github/oauth
       - |-
@@ -108,11 +127,15 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20210714-7b8bded266
+    - image: gcr.io/k8s-prow/commenter:v20210720-5548472063
       command:
       - /app/robots/commenter/app.binary
       args:
-      - --query=org:kubevirt -label:lifecycle/frozen label:lifecycle/stale -label:lifecycle/rotten
+      - |-
+        --query=org:kubevirt
+          -label:lifecycle/frozen
+          label:lifecycle/stale
+          -label:lifecycle/rotten
       - --updated=720h
       - --token=/etc/github/oauth
       - |-
@@ -145,11 +168,15 @@ periodics:
       type: vm
       zone: ci
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20210714-7b8bded266
+    - image: gcr.io/k8s-prow/commenter:v20210720-5548472063
       command:
       - /app/robots/commenter/app.binary
       args:
-      - --query=org:kubevirt -label:lifecycle/frozen -label:lifecycle/stale -label:lifecycle/rotten
+      - |-
+        --query=org:kubevirt
+          -label:lifecycle/frozen
+          -label:lifecycle/stale
+          -label:lifecycle/rotten
       - --updated=2160h
       - --token=/etc/github/oauth
       - |-
