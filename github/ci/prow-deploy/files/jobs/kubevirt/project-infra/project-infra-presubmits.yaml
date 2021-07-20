@@ -564,7 +564,7 @@ presubmits:
     spec:
       containers:
       - name: peribolos
-        image: gcr.io/k8s-prow/peribolos:v20210115-603a3a062d
+        image: gcr.io/k8s-prow/peribolos:v20210720-5548472063
         command:
         - /app/prow/cmd/peribolos/app.binary
         args:
@@ -574,9 +574,9 @@ presubmits:
         - --github-token-path=/etc/github/oauth
         - --fix-org=true
         - --fix-org-members=true
-        - --fix-teams=false
-        - --fix-team-members=false
-        - --fix-team-repos=false
+        - --fix-teams=true
+        - --fix-team-members=true
+        - --fix-team-repos=true
         - --fix-repos=true
         - --confirm=false
         volumeMounts:
