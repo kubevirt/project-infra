@@ -1,7 +1,0 @@
-Instructions:
-
-1. copy the entire subtree in a safe location outside this repository
-2. fill out the secrets following per-secret comments
-3. remove all the comments
-4. copy the filled subtree to the environment root tree as secrets/
-5. secrets directory on environment is ignored by default and cannot be added to repository

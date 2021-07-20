@@ -1,1 +1,0 @@
-# Can be safely left blank when the unsplash plugin is not used

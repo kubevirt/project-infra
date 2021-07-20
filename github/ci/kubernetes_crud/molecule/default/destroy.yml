@@ -1,9 +1,0 @@
-- hosts: localhost
-  vars:
-    kubevirtci_dir: /tmp/kubevirtci
-  tasks:
-    - name: Teardown kubevirtci cluster
-      command: make cluster-down
-      changed_when: false
-      args:
-        chdir: "{{ kubevirtci_dir }}"

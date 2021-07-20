@@ -1,27 +1,34 @@
 # Kubevirt Prow deployment
 
-Prow is normally deployed from test-infra repository against the
-kubernetes infrastructure
-In kubevirt case, we are using some manifests from the prow deployment
-and some manifests to deploy prow in three different environment
+This directory contains code to test and deploy Prow and related components
+in our clusters.
 
-- kubevirtci-testing
+## Continuous Delivery of Prow
 
-Is the testing environment to test prow both locally or on automatic jobs.
-It uses a cluster created by kubvirtci as target to deploy prow
+There are three Prow jobs defined in `kubevirt/project-infra` that help us to
+implement Continuous Delivery of the componenets we use in our Prow setup:
 
-- ibmcloud-staging
+* `pull-project-infra-prow-deploy-test`: presubmit that deploys Prow on a test
+environment with the same code used for production and executes integration tests.
+This job is triggered when files under `github/ci/prow-deploy` directory are
+changed on a PR.
 
-Is the staging environment to test prow alongside production.
-It uses the cluster in ibmcloud, but with changes in naming and paths to not
-interfere with production deployment
+* `post-project-infra-prow-control-plane-deployment`: postsubmit that deploys
+Prow and related components when changes to files under `github/ci/prow-deploy`
+are merged.
 
-- ibmcloud-production
+* `periodic-project-infra-prow-bump`: periodic that gets the latest Prow manifests
+from `kubernetes/test-infra`, bumps the tags of the Prow images used in our
+setup and proposes a PR with the changes.
 
-Is the production environment. This is the default environment for production
-deployment. A deployment on this environment will affect real jobs
+Besides additional changes proposed by collaborators, the normal workflow for
+updating Prow consist of `periodic-project-infra-prow-bump` proposing a PR with
+changes to update to the latest Prow version. This triggers `pull-project-infra-prow-deploy-test`
+and the integration tests are executed. After a review by collaborators the
+changes are merged, which triggers `post-project-infra-prow-control-plane-deployment`
+to deploy them to production.
 
-## How to launch a deployment
+## How deployment works
 
 To launch deployment three tools are needed
 
@@ -35,22 +42,7 @@ Command line tool to handle yaml files
 
 - kubectl
 
-### Install dependencies
-
-Version 3 of kustomize is needed.
-
-    GOBIN=$(pwd)/ GO111MODULE=on go get sigs.k8s.io/kustomize/kustomize/v3
-
-Or you can follow instructions at https://kubectl.docs.kubernetes.io/installation/kustomize/source/
-
-The install yq. Please be aware that there is another yq written in python
-with the same goal, but it doesn't support patch scripting and it's not usable here.
-
-    GO111MODULE=on go get github.com/mikefarah/yq/v3
-
-yq (the one in go, not the one in python)
-
-### Generate configuration
+### Configuration generation
 
 Before being able to generate the ConfigMaps with kustomize, we need to generate
 environment specific configuration from the base configuration. This is done
@@ -67,22 +59,6 @@ Will apply patches to the configuration as defined in the patch script for the e
 then renders the yaml configurations, then copy them to the environment directory at
 
     kustom/overlays/$environment/configs
-
-### Copy the secrets
-
-Before being able to generate the secrets with kustomize, we need to copy them in the
-proper overlay directory at
-
-    kustom/overlays/$overlay/secrets
-
-All the secrets needed are contained under the directory
-
-    kustom/secrets-boilerplate
-
-Copy the whole subtree to the environment dir then fill out all your secret.
-No code should be pushed as PR which contains environment specific secrets.
-As an additional security measure, the environment specific secret directories are
-ignored explicity with a .gitignore.
 
 ### Generate manifests
 
@@ -111,10 +87,9 @@ Contains the base configurations and manifests
 Contains the list of resources utilized in the prow deployment. Only manifests
 specified here will be included in the final kustomized rendering.
 
-- base/manifests/test-infra
+- base/manifests/test_infra/current
 
 Contains an exact copy of the prow manifests from the test-infra repository.
-They will be in a directory named as the git SHA from where they were pulled from
 
 - base/manifests/local
 
@@ -122,8 +97,7 @@ Will contain the manifests created specifically for the kubevirt prow deployment
 
 - base/config
 
-Will contain the base yaml configuration files for the deployments. They are under
-a timestamped directory to make config versioning easier.
+Will contain the base yaml configuration files for the deployments.
 
 - overlays
 
@@ -145,6 +119,10 @@ Contains patch scripts for the yq tool, to modify base configuration files
 
 Contains the patches to modify base manifests, divided per patch type.
 
+- components
+
+Kustomize components reusable in the different overlays.
+
 ### Kustomize patches
 
 The main target of kustomization are names and namespaces, and generating
@@ -156,26 +134,7 @@ namespaces present.
 The option "prefix" is used in staging overlay, but it's not enough as some
 resources configuration retain the old names.
 
-
 ## Testing
-
-# Prow deployment role
-
-This role deploys prow in a kubernetes cluster created using kubevirt-ci
-It contains variables that define a set of manifests to upload
-to deploy prow, then uses kubernetes_crud role as primary interface with
-the staging cluster to upload the manifests.
-
-## Role structure
-
-    molecule/default
-
-Contains the main scenario for local or automated testing.
-
-Beside invoking kustomize, the role performs small setup/cleanup
-tasks, primarily passing variables around.
-
-## How to test the role
 
 The role is tested using molecule.
 Molecule will take care of all the test task.
@@ -244,70 +203,3 @@ will tear down the kubevirt ci cluster completely
     molecule test
 
 will launch all the above step automatically in sequence.
-
-## How to debug the services in live cluster
-
-Behaviour of prow services in pods proved to be less than reliable, with
-services unable to start properly, but not reporting any errors in the logs
-and marking the pod as "Running"
-
-In those cases, the best way to debug a service is to jump directly on the pod
-executing a shell and running the service manually.
-
-### Process overview
-
-We need to enter the pod, download the service code, and run it manually with "go run".
-The service will log to stdout and any error will block the execution, giving reason
-on its behaviour
-Unfortunately, there is no way to stop the pod entrypoint, as any attempt to interfere with
-process 1 (the service) will cause the pod termination, but it's possible to start
-another process with the same service in parallel.
-
-### Container base image caveat
-
-The container base image of a service is a quite obsolete version of alpine (3.6).
-The base image uses musl libc instead of glibc and has very old version of basic tools.
-The pod entrypoint is normally a statically compiled binary that requires limited memory and doesn't
-rely on the (very old) dynamic libraries offered by the base images when launched.
-We need to launch the service using "go run" instead of bazel, because bazel requires glibc.
-
-### Increase pod memory
-
-Launching service with "go run" will require more memory that the default 512Mb
-So we need to change the request and limit on the deployment configuration of the pod
-you want to debug to at least 1G. If a "go run" attempt is killed by an unexplained signal, more
-memory will be needed.
-This can be done on the manifests, or directly editing the deployment.
-If the manifest is changed the deployment will need to be cleaned up and restart.
-If it is done directly, kubernetes will redeploy the pods automatically, but a cleanup will
-wipe the configuration.
-
-### Update base image
-
-Once memory requirements are satisfied, the next step is to git clone the service code and install
-go runtime.
-The go runtime provided with the base alpine image is very old (pre 1.11) and will not be able to run
-the code correctly, so the release must be updated.
-A script at
-
-    files/debug_prepare.sh
-
-will do this automatically
-it is enough to launch it inside the pod, as in the following example
-
-    cd $KUBEVIRTCI_DIR
-    POD=deck-74fd5d678d-g8dz6
-    ./cluster-up/kubectl.sh -n kubevirt-prow cp debug_prepare.sh $POD:/
-    ./cluster-up/kubectl.sh -n kubevirt-prow exec $POD -- chmod +x /debug_prepare.sh
-    ./cluster-up/kubectl.sh -n kubevirt-prow exec $POD -- sh -c /debug_prepare.sh
-
-The script will replace repository to a viable version, update the packaging tool,
-install basic tools, and clone the test-infra code inside the container.
-Once the script has finished, we can run a interactive shell, change to the parent directory of
-the service, then launch the service
-
-    ./cluster-up/kubectl.sh -n kubevirt-prow exec -it $POD -- sh
-    # cd /srv/test-infra/prow/cmd
-    # go run ./$COMMAND
-
-Logs will show on stdout.

@@ -1,6 +1,0 @@
-# WARNING: Token used here MUST be real, and MUST have
-# at most read:user scope. Otherwise the test deployment will
-# have enough permission to interfere with production
-# environment, like commenting on PRs
-# A real token cannot be provided hardcoded, so it will need to be passed
-# as extra variables in any molecule call

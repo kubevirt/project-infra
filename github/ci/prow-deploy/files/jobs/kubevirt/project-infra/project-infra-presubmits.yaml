@@ -254,39 +254,6 @@ presubmits:
               memory: "4Gi"
             limits:
               memory: "4Gi"
-  - name: kubernetes-crud-ci-role
-    always_run: false
-    run_if_changed: "github/ci/kubernetes-crud/.*"
-    decorate: true
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-    cluster: prow-workloads
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/bash"
-            - "-c"
-            - |
-              cd github/ci/kubernetes_crud/
-              apt-get update && apt-get install -y python3-venv --no-install-recommends
-              python3 -m venv venv
-              source venv/bin/activate
-              pip install wheel
-              pip install -r requirements.txt
-              molecule test
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "8Gi"
-            limits:
-              memory: "8Gi"
   - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/.*"
