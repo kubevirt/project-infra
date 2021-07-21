@@ -24,7 +24,7 @@ This repository provides supporting code for the project infrastructure.
 
    * github/ci/prow-workloads
 
-   Ansible code for provisioning prow-workloads cluster
+   Ansible code for bootstraping prow-workloads cluster with Kubespray
 
    * github/ci/services
 
