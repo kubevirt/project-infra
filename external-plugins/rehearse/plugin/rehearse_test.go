@@ -19,7 +19,14 @@ import (
 	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/handler"
 )
 
-const testUserName = "testuser"
+
+const (
+	testUserName = "testuser"
+	repo         = "foo"
+	org          = "bar"
+	baseBranch   = "main"
+	prBranchName = "my-update-branch"
+)
 
 var _ = Describe("Rehearse", func() {
 
@@ -41,7 +48,8 @@ var _ = Describe("Rehearse", func() {
 		gitrepo, gitClientFactory, err = localgit.NewV2()
 		Expect(err).ShouldNot(HaveOccurred())
 
-		Expect(makeFakeGitRepository(gitrepo, "foo", "bar")).Should(Succeed())
+		Expect(makeFakeGitRepositoryWithEmptyProwConfig(gitrepo, repo, org)).Should(Succeed())
+		Expect(localgit.DefaultBranch(gitrepo.Dir)).To(BeEquivalentTo(baseBranch))
 
 		gh = &fakegithub.FakeClient{}
 
@@ -66,8 +74,12 @@ var _ = Describe("Rehearse", func() {
 					makePresubmit("modified-job", "some-image"),
 					makePresubmit("existing-job", "other-image"),
 				}))
-			baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+			baseref, err = gitrepo.RevParse(repo, org, "HEAD")
 			Expect(err).ShouldNot(HaveOccurred())
+		})
+
+		By("Checking out a new branch for the PR", func() {
+			gitrepo.CheckoutNewBranch(org, repo, prBranchName)
 		})
 
 	})
@@ -104,42 +116,6 @@ var _ = Describe("Rehearse", func() {
 				Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
 			})
 
-			It("Should not generate Prow jobs if there are unrelated changes", func() {
-
-				err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
-					"some-file": []byte(""),
-				})
-				Expect(err).ShouldNot(HaveOccurred())
-				headref, err := gitrepo.RevParse("foo", "bar", "HEAD")
-				Expect(err).ShouldNot(HaveOccurred())
-
-				var event github.PullRequestEvent
-
-				event = makePullRequestEvent(baseref, headref, nil)
-				gh.PullRequests = map[int]*github.PullRequest{
-					17: &event.PullRequest,
-				}
-
-				letEventsHandlerHandleMadePullRequestEvent(eventsHandler, &event)
-
-				Expect(prowc.Actions()).Should(HaveLen(0))
-			})
-
-			It("Should not generate Prow jobs if a job was deleted", func() {
-				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
-					makePresubmit("existing-job", "other-image"),
-				})
-
-				event := makePullRequestEvent(baseref, headref, nil)
-				gh.PullRequests = map[int]*github.PullRequest{
-					17: &event.PullRequest,
-				}
-
-				letEventsHandlerHandleMadePullRequestEvent(eventsHandler, &event)
-
-				Expect(prowc.Actions()).Should(HaveLen(0))
-			})
-
 			It("Should act on pull request event if always run is set to false", func() {
 
 				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
@@ -162,7 +138,7 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs if job is rehearsal restricted", func() {
 
 				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
-					makePresubmitWithRestrictedAnnotation("modified-job", "modified-image"),
+					MakePresubmitWithRestrictedAnnotation("modified-job", "modified-image"),
 					makePresubmit("existing-job", "other-image"),
 				})
 
@@ -266,47 +242,6 @@ var _ = Describe("Rehearse", func() {
 				Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
 			})
 
-			It("Should not generate Prow jobs if there are unrelated changes", func() {
-
-				err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
-					"some-file": []byte(""),
-				})
-				Expect(err).ShouldNot(HaveOccurred())
-				headref, err := gitrepo.RevParse("foo", "bar", "HEAD")
-				Expect(err).ShouldNot(HaveOccurred())
-
-				var event github.IssueCommentEvent
-
-				event = makeRehearseCommentEvent(openIssueWithPullRequest)
-				pr := makePullRequest(baseref, headref, nil)
-				gh.PullRequests = map[int]*github.PullRequest{
-					17: &pr,
-				}
-
-				letEventsHandlerHandleMadeIssueCommentEvent(eventsHandler, &event)
-
-				Expect(prowc.Actions()).Should(HaveLen(0))
-			})
-
-			It("Should not generate Prow jobs if a job was deleted", func() {
-
-				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
-					makePresubmit("existing-job", "other-image"),
-				})
-
-				registerTestUserAsOrgMember(gh)
-
-				event := makeRehearseCommentEvent(openIssueWithPullRequest)
-				pr := makePullRequest(baseref, headref, nil)
-				gh.PullRequests = map[int]*github.PullRequest{
-					17: &pr,
-				}
-
-				letEventsHandlerHandleMadeIssueCommentEvent(eventsHandler, &event)
-
-				Expect(prowc.Actions()).Should(HaveLen(0))
-			})
-
 			It("Should not generate Prow jobs if PR is not open", func() {
 
 				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
@@ -335,7 +270,7 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs if a job is rehearsal restricted", func() {
 
 				headref := commitChangedJobConfigurations(gitrepo, []config.Presubmit{
-					makePresubmitWithRestrictedAnnotation("modified-job", "modified-image"),
+					MakePresubmitWithRestrictedAnnotation("modified-job", "modified-image"),
 					makePresubmit("existing-job", "other-image"),
 				})
 
@@ -537,7 +472,7 @@ func makePresubmitWithAlwaysRun(jobName string, imageName string, alwaysRun bool
 	}
 }
 
-func makePresubmitWithRestrictedAnnotation(jobName string, imageName string) config.Presubmit {
+func MakePresubmitWithRestrictedAnnotation(jobName string, imageName string) config.Presubmit {
 	return config.Presubmit{
 		JobBase: config.JobBase{
 			Name: jobName,
@@ -555,7 +490,7 @@ func makePresubmitWithRestrictedAnnotation(jobName string, imageName string) con
 	}
 }
 
-func makeFakeGitRepository(lg *localgit.LocalGit, repo, org string) error {
+func makeFakeGitRepositoryWithEmptyProwConfig(lg *localgit.LocalGit, repo, org string) error {
 	err := lg.MakeFakeRepo(repo, org)
 	if err != nil {
 		return err
