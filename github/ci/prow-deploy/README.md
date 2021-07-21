@@ -6,7 +6,7 @@ in our clusters.
 ## Continuous Delivery of Prow
 
 There are three Prow jobs defined in `kubevirt/project-infra` that help us to
-implement Continuous Delivery of the componenets we use in our Prow setup:
+implement Continuous Delivery of the components we use in our Prow setup:
 
 * `pull-project-infra-prow-deploy-test`: presubmit that deploys Prow on a test
 environment with the same code used for production and executes integration tests.
@@ -22,7 +22,7 @@ from `kubernetes/test-infra`, bumps the tags of the Prow images used in our
 setup and proposes a PR with the changes.
 
 Besides additional changes proposed by collaborators, the normal workflow for
-updating Prow consist of `periodic-project-infra-prow-bump` proposing a PR with
+updating Prow consists of `periodic-project-infra-prow-bump` proposing a PR with
 changes to update to the latest Prow version. This triggers `pull-project-infra-prow-deploy-test`
 and the integration tests are executed. After a review by collaborators the
 changes are merged, which triggers `post-project-infra-prow-control-plane-deployment`

@@ -12,7 +12,7 @@ This repository provides supporting code for the project infrastructure.
 
  * github/ci
 
- Infrastructure code for ou main deployments:
+ Infrastructure code for our main deployments:
 
    * github/ci/phx-prow
 
