@@ -1,6 +1,6 @@
-github/ci/group_vars/all/main.yml
+github/ci/phx-prow/group_vars/all/main.yml
 *~
-github/ci/inventory
+github/ci/phx-prow/inventory
 *pyc
 venv
 github/ci/*.retry
