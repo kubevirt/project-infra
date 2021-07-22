@@ -781,9 +781,7 @@ orgs:
         - dhiller
         - fabiand
         members:
-        - kubevirt-commenter-bot
         - orenc1
-        - openshift-ci-robot
         - zcahana
         privacy: closed
         repos:
@@ -796,9 +794,30 @@ orgs:
         members:
         - dhiller
         - fabiand
-        - openshift-merge-robot
         - stu-gott
         - tiraboschi
         privacy: closed
         repos:
           cnv-ci: admin
+      openshift-ci:
+        description: Openshift CI bots. Add the team with write access to your repo to allow openshift CI to work.
+        maintainers:
+        - dhiller
+        - fabiand
+        members:
+        - openshift-ci-robot
+        - openshift-merge-robot
+        privacy: closed
+        repos:
+          cnv-ci: write
+      kubevirt-ci:
+        description: KubeVirt CI bots. Add the team with write access to your repo to allow KubeVirt CI to work.
+        maintainers:
+        - dhiller
+        - fabiand
+        members:
+        - kubevirt-bot
+        - kubevirt-commenter-bot
+        privacy: closed
+        repos:
+          cnv-ci: write
