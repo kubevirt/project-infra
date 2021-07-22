@@ -305,11 +305,11 @@ plugins:
   - approve
 
   kubevirt/controller-lifecycle-operator-sdk:
-    - trigger
-    - owners-label
-    - release-note
-    - lgtm
-    - approve
+  - trigger
+  - owners-label
+  - release-note
+  - lgtm
+  - approve
 
   kubevirt/user-guide:
   - approve
