@@ -328,23 +328,23 @@ plugins:
   - override
 
   RedHatQE/openshift-python-wrapper:
-    - size
-    - label
-    - hold
-    - lgtm
-    - approve
-    - release-note
-    - owners-label
-    - assign
-    - blunderbuss
-    - lifecycle
-    - verify-owners
-    - skip
-    - override
-    - wip
-    - pony
-    - dog
-    - cat
+  - size
+  - label
+  - hold
+  - lgtm
+  - approve
+  - release-note
+  - owners-label
+  - assign
+  - blunderbuss
+  - lifecycle
+  - verify-owners
+  - skip
+  - override
+  - wip
+  - pony
+  - dog
+  - cat
 
 external_plugins:
   libguestfs-appliance:
