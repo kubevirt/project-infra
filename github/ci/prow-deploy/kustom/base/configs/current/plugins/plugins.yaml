@@ -327,6 +327,25 @@ plugins:
   - trigger
   - override
 
+  RedHatQE/openshift-python-wrapper:
+    - size
+    - label
+    - hold
+    - lgtm
+    - approve
+    - release-note
+    - owners-label
+    - assign
+    - blunderbuss
+    - lifecycle
+    - verify-owners
+    - skip
+    - override
+    - wip
+    - pony
+    - dog
+    - cat
+
 external_plugins:
   libguestfs-appliance:
   - name: needs-rebase
@@ -361,6 +380,11 @@ external_plugins:
     events:
       - pull_request
       - issue_comment
+  RedHatQE/openshift-python-wrapper:
+    - name: needs-rebase
+      events:
+        - pull_request
+    - name: cherrypicker
 
 triggers:
 - repos:
@@ -398,6 +422,8 @@ triggers:
   - nmstate/kubernetes-nmstate
 - repos:
   - k8snetworkplumbingwg/kubemacpool
+- repos:
+  - RedHatQE/openshift-python-wrapper
 
 
 approve:
@@ -434,6 +460,7 @@ approve:
   - kubevirt/user-guide
   - kubevirt/terraform-provider-kubevirt
   - kubevirt/kubevirt-velero-plugin
+  - RedHatQE/openshift-python-wrapper
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -473,6 +500,7 @@ lgtm:
   - kubevirt/user-guide
   - kubevirt/terraform-provider-kubevirt
   - kubevirt/kubevirt-velero-plugin
+  - RedHatQE/openshift-python-wrapper
   review_acts_as_lgtm: true
 
 override:
