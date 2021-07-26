@@ -44,6 +44,12 @@ bump_exporter(){
     sed -i "s!image: gcr.io/k8s-prow/exporter:.*!image: gcr.io/k8s-prow/exporter:${latest_prow_tag}!" ${PROJECT_INFRA_ROOT}/github/ci/prow-deploy/kustom/overlays/ibmcloud-production/resources/prow-exporter-deployment.yaml
 }
 
+bump_base_manifests_local_images(){
+    local latest_prow_tag=$1
+
+    find ${PROJECT_INFRA_ROOT}/github/ci/prow-deploy/kustom/base/manifests/local -type f -name '*.yaml' | xargs sed -i "s!image: gcr.io/k8s-prow/\(.*\):.*!image: gcr.io/k8s-prow/\\1:${latest_prow_tag}!"
+}
+
 main(){
     copy_files
 
@@ -57,6 +63,7 @@ main(){
 
     bump_utility_images "${latest_prow_tag}"
     bump_exporter "${latest_prow_tag}"
+    bump_base_manifests_local_images "${latest_prow_tag}"
 }
 
 main "${@}"
