@@ -128,7 +128,13 @@ spec:
             port: 9090
             scheme: HTTP
           periodSeconds: 5
-        resources: {}
+        resources:
+          limits:
+            cpu: 100m
+            memory: 800Mi
+          requests:
+            cpu: 100m
+            memory: 800Mi
         terminationMessagePolicy: FallbackToLogsOnError
       securityContext:
         fsGroup: 65534
@@ -272,10 +278,10 @@ spec:
         resources:
           limits:
             cpu: 0.42
-            memory: 420Mi
+            memory: 1Gi
           requests:
-            cpu: 0.123
-            memory: 123Mi
+            cpu: 0.42
+            memory: 1Gi
         terminationMessagePolicy: FallbackToLogsOnError
         volumeMounts:
         - mountPath: /var/thanos/store
