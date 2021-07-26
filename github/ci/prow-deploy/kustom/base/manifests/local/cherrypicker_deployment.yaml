@@ -32,7 +32,7 @@ spec:
       containers:
       - name: cherrypicker
         # TODO before upgrade check back whether https://github.com/kubernetes/test-infra/issues/18074 is fixed
-        image: gcr.io/k8s-prow/cherrypicker:v20200204-7e8cd997a
+        image: gcr.io/k8s-prow/cherrypicker:v20210722-64d720b97e
         imagePullPolicy: Always
         args:
         - --dry-run=false
