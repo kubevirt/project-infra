@@ -9,8 +9,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
-        preset-docker-mirror-proxy: "true"
+        preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
       spec:
         containers:
@@ -36,8 +35,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
-        preset-docker-mirror-proxy: "true"
+        preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
       spec:
         containers:
