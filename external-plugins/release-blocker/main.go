@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-
 	"k8s.io/test-infra/pkg/flagutil"
 	"k8s.io/test-infra/prow/config"
 	"k8s.io/test-infra/prow/config/secret"
@@ -17,6 +16,7 @@ import (
 	"k8s.io/test-infra/prow/git/v2"
 	"k8s.io/test-infra/prow/interrupts"
 	"k8s.io/test-infra/prow/pluginhelp/externalplugins"
+	"k8s.io/test-infra/prow/plugins/ownersconfig"
 	"k8s.io/test-infra/prow/repoowners"
 )
 
@@ -83,22 +83,22 @@ func main() {
 		}
 	})
 
-	botName, err := githubClient.BotName()
+	botUserData, err := githubClient.BotUser()
 	if err != nil {
 		logrus.WithError(err).Fatal("Error getting bot name.")
 	}
 
 	mdYAMLEnabled := func(org, repo string) bool { return true }
 	skipCollaborators := func(org, repo string) bool { return false }
-	ownersDirBlacklist := func() config.OwnersDirBlacklist {
-		return config.OwnersDirBlacklist{}
+	ownersDirDenylist := func() *config.OwnersDirDenylist {
+		return &config.OwnersDirDenylist{}
 	}
 
-	ownersClient := repoowners.NewClient(git.ClientFactoryFrom(gitClient), githubClient, mdYAMLEnabled, skipCollaborators, ownersDirBlacklist)
+	ownersClient := repoowners.NewClient(git.ClientFactoryFrom(gitClient), githubClient, mdYAMLEnabled, skipCollaborators, ownersDirDenylist, ownersconfig.FakeResolver)
 
 	server := &Server{
 		tokenGenerator: secretAgent.GetTokenGenerator(o.webhookSecretFile),
-		botName:        botName,
+		botName:        botUserData.Name,
 
 		ghc:          githubClient,
 		log:          log,
