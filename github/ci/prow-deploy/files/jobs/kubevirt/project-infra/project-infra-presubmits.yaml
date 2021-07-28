@@ -41,8 +41,8 @@ presubmits:
             memory: "8Gi"
           limits:
             memory: "8Gi"
-  - name: pull-project-infra-test-rehearse
-    run_if_changed: external-plugins/rehearse/.*
+  - name: pull-project-infra-test-external-plugins
+    run_if_changed: external-plugins/.*
     cluster: ibm-prow-jobs
     optional: false
     decorate: true
@@ -55,7 +55,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "bazelisk test //external-plugins/rehearse/..."
+        - "bazelisk test //external-plugins/..."
         securityContext:
           runAsUser: 0
         resources:
