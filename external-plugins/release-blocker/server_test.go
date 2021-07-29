@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/sirupsen/logrus"
-
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/test-infra/prow/github"
+
 	"kubevirt.io/project-infra/external-plugins/testutils"
 )
 

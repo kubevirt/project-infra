@@ -23,11 +23,13 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"regexp"
-	"sigs.k8s.io/yaml"
 
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/test-infra/prow/github"
+	"k8s.io/test-infra/prow/pkg/layeredsets"
+	"k8s.io/test-infra/prow/plugins/ownersconfig"
 	"k8s.io/test-infra/prow/repoowners"
+	"sigs.k8s.io/yaml"
 )
 
 const botName = "k8s-ci-robot"
@@ -42,9 +44,9 @@ const (
 type FakeOwnersClient struct {
 	ExistingTopLevelApprovers sets.String
 	owners                    map[string]string
-	approvers                 map[string]sets.String
+	approvers                 map[string]layeredsets.String
 	leafApprovers             map[string]sets.String
-	reviewers                 map[string]sets.String
+	reviewers                 map[string]layeredsets.String
 	requiredReviewers         map[string]sets.String
 	leafReviewers             map[string]sets.String
 	dirBlacklist              []*regexp.Regexp
@@ -63,7 +65,7 @@ func (foc *FakeOwnersClient) TopLevelApprovers() sets.String {
 	return foc.ExistingTopLevelApprovers
 }
 
-func (foc *FakeOwnersClient) Approvers(path string) sets.String {
+func (foc *FakeOwnersClient) Approvers(path string) layeredsets.String {
 	return foc.approvers[path]
 }
 
@@ -75,7 +77,7 @@ func (foc *FakeOwnersClient) FindApproverOwnersForFile(path string) string {
 	return foc.owners[path]
 }
 
-func (foc *FakeOwnersClient) Reviewers(path string) sets.String {
+func (foc *FakeOwnersClient) Reviewers(path string) layeredsets.String {
 	return foc.reviewers[path]
 }
 
@@ -96,6 +98,14 @@ func (foc *FakeOwnersClient) FindLabelsForFile(path string) sets.String {
 }
 
 func (foc *FakeOwnersClient) IsNoParentOwners(path string) bool {
+	return false
+}
+
+func (foc *FakeOwnersClient) Filenames() ownersconfig.Filenames {
+	return ownersconfig.FakeFilenames
+}
+
+func (foc *FakeOwnersClient) IsAutoApproveUnownedSubfolders(path string) bool {
 	return false
 }
 
@@ -148,7 +158,7 @@ type FakeClient struct {
 	CombinedStatuses    map[string]*github.CombinedStatus
 	CreatedStatuses     map[string][]github.Status
 	IssueEvents         map[int][]github.ListedIssueEvent
-	Commits             map[string]github.SingleCommit
+	Commits             map[string]github.RepositoryCommit
 
 	RepoBranches []github.Branch
 
@@ -376,7 +386,7 @@ func (f *FakeClient) DeleteRef(owner, repo, ref string) error {
 }
 
 // GetSingleCommit returns a single commit.
-func (f *FakeClient) GetSingleCommit(org, repo, SHA string) (github.SingleCommit, error) {
+func (f *FakeClient) GetSingleCommit(org, repo, SHA string) (github.RepositoryCommit, error) {
 	return f.Commits[SHA], nil
 }
 
