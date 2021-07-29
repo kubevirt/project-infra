@@ -40,6 +40,7 @@ container_push(
     image = ":app",
     registry = "quay.io",
     repository = "kubevirtci/release-blocker",
+    tag = "{DOCKER_TAG}",
 )
 
 go_binary(

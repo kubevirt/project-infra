@@ -9,8 +9,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
-        preset-docker-mirror-proxy: "true"
+        preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
       spec:
         containers:
@@ -22,6 +21,32 @@ postsubmits:
               - |
                 cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 bazelisk run //external-plugins/rehearse/plugin:push
+            resources:
+              requests:
+                memory: "8Gi"
+              limits:
+                memory: "8Gi"
+    - name: publish-release-blocker-image
+      always_run: false
+      run_if_changed: "external-plugins/release-blocker/.*"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      cluster: ibm-prow-jobs
+      max_concurrency: 1
+      labels:
+        preset-bazel-cache: "true"
+        preset-kubevirtci-quay-credential: "true"
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20210126-a12b6c0
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                bazelisk run //external-plugins/release-blocker:push
             resources:
               requests:
                 memory: "8Gi"

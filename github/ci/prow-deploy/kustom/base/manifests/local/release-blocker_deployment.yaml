@@ -17,12 +17,13 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
       - name: release-blocker
-        image: quay.io/kubevirtci/release-blocker@sha256:503b3a00a7e4fe344601710ef58470ddb1e05c9a3d3fdcd16ba6a93921c17542
+        image: quay.io/kubevirtci/release-blocker:v20210728-c3fc6359
         imagePullPolicy: Always
         args:
         - --dry-run=false
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
+        - --github-token-path=/etc/github/oauth
         ports:
           - name: http
             containerPort: 8888
