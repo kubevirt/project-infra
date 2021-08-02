@@ -405,7 +405,7 @@ func TestCutNewBranch(t *testing.T) {
 		return "", nil
 	}
 
-	err := r.cutNewBranch()
+	err := r.cutNewBranch(false)
 	if err != nil {
 		t.Errorf("got unexpected error %s", err)
 	} else if len(expectedGitCommands) != len(seenGitCommands) {
