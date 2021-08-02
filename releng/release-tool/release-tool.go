@@ -468,21 +468,23 @@ func (r *releaseData) forkProwJobs() error {
 	return nil
 }
 
-func (r *releaseData) cutNewBranch() error {
+func (r *releaseData) cutNewBranch(skipProw bool) error {
 
-	// checkout project infra project in order to update jobs for new branch
-	err := r.checkoutProjectInfra()
-	if err != nil {
-		return err
-	}
+	if !skipProw {
+		// checkout project infra project in order to update jobs for new branch
+		err := r.checkoutProjectInfra()
+		if err != nil {
+			return err
+		}
 
-	err = r.forkProwJobs()
-	if err != nil {
-		return err
+		err = r.forkProwJobs()
+		if err != nil {
+			return err
+		}
 	}
 
 	// checkout remote branch
-	err = r.checkoutUpstream()
+	err := r.checkoutUpstream()
 	if err != nil {
 		return err
 	}
@@ -1106,6 +1108,7 @@ func main() {
 	gitEmail := flag.String("git-email", "", "git user email")
 	skipReleaseNotes := flag.Bool("skip-release-notes", false, "skip generating release notes for a tag")
 	force := flag.Bool("force", false, "force a release or release branch to occur despite blockers or other warnings")
+	skipProw := flag.Bool("skip-prow", false, "skip creating prow configs")
 	promoteRC := flag.String("promote-release-candidate", "", "The tag of an rc release that will be promoted to an official release")
 
 	autoRelease := flag.Bool("auto-release", false, "Automatically perform branch cutting an releases based on time intervals")
@@ -1204,7 +1207,7 @@ func main() {
 			log.Fatal("ERROR Branch is blocked")
 		}
 
-		err = r.cutNewBranch()
+		err = r.cutNewBranch(*skipProw)
 		if err != nil {
 			log.Fatalf("ERROR Creating Branch: %s ", err)
 		}
