@@ -29,11 +29,22 @@ For each kind of external clusters the process is different:
   permissions on the namespace where Prow is configured to create jobs (currently
   `kubevirt-prow-jobs`).
 
-  * Update Prow's kubeconfig secret, if you are not a Kubevirt CI maintainer you
-  need to create an [issue on project-infra] with title `Add Prow build cluster
-  <name>`, being `<name>` the name you want to use to schedule jobs in the new
-  cluster, and with the [kubeconfig encrypted as described here] attached to the
-  issue.
+  * Update Prow's kubeconfig secret:
+
+    * If you are not a Kubevirt CI maintainer you need to create an
+    [issue on project-infra] with title `Add Prow build cluster <name>`, being
+    `<name>` the name you want to use to schedule jobs in the new cluster, and
+    with the [kubeconfig encrypted as described here] attached to the issue.
+    * If you are a CI maintainer you should:
+
+      * Decrypt the kubeconfig file attached to the issue.
+      * Decrypt the secrets in https://github.com/kubevirt/secrets and add the
+      user and cluster in the new kubeconfig to a new context named `<name>` in
+      the `kubeconfig` entry of the secrets.
+      * Encrypt the secrets and create a PR to https://github.com/kubevirt/secrets
+      with the changed file.
+      * Once the PR is merged write a comment on the original issue saying that
+      all is done and close it.
 
   * Create Prow jobs that have the `cluster` field set to the name you provided in
   the issue above.
@@ -43,11 +54,21 @@ For each kind of external clusters the process is different:
   * Obtain a kubeconfig for your cluster that refers to an user with admin
   permissions.
 
-  * Include your kubeconfig in our automation secrets, if you are not a Kubevirt
-  CI maintainer you need to create an [issue on project-infra] with title `Add
-  KubeVirtCI external provider <name>`, being `<name>` the name you want to use
-  to identify your cluster, and with the [kubeconfig encrypted as described here]
-  attached to the issue.
+  * Include your kubeconfig in our automation secrets:
+
+    * If you are not a Kubevirt CI maintainer you need to create an
+    [issue on project-infra] with title `Add KubeVirtCI external provider <name>`,
+    being `<name>` the name you want to use to identify your cluster, and with the
+    [kubeconfig encrypted as described here] attached to the issue.
+    * If you are a CI maintainer you should:
+
+      * Decrypt the kubeconfig file attached to the issue.
+      * Decrypt the secrets in https://github.com/kubevirt/secrets and add the
+      new kubeconfig in a new entry of the secrets named `<name>`.
+      * Encrypt the secrets and create a PR to https://github.com/kubevirt/secrets
+      with the changed file.
+      * Once the PR is merged write a comment on the original issue saying that
+      all is done and close it.
 
   * Create Prow jobs that extract the cluster kubeconfig from the automation
   secrets and defines as environment variables `KUBEVIRT_PROVIDER` set to `external`
