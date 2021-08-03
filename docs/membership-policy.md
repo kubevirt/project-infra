@@ -3,7 +3,7 @@
 This document outlines the various responsibilities of the maintainer role in
 KubeVirt CI.
 
-KubeVirt CI maintainers are community members that have access to CI
+KubeVirt CI maintainers are community members that can control CI
 infrastructure.
 
 ## Requirements
