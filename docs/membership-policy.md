@@ -1,24 +1,31 @@
 # CI maintainers
 
 This document outlines the various responsibilities of the maintainer role in
-KubeVirt CI.
+KubeVirt CI. It is inspired by the [KubeVirt community membership document] and
+the [Kubernetes community membership document].
 
 KubeVirt CI maintainers are community members that can control CI
 infrastructure.
 
 ## Requirements
 
-* Be an [approver] of https://github.com/kubevirt/project-infra for at least 1 month.
+* Be an [approver] of https://github.com/kubevirt/project-infra for at least 1
+month.
 
 * Nominated by a [current CI maintainer].
 
 ## Responsibilities and privileges
 
-* Contribute infrastructure code.
-* Review and eventually approve infrastructure code proposed by others.
-* Have access to the CI clusters, user interface of the infrastructure providers, the private
-monitoring dashboards and the channels reserved to receive infrastructure
-notifications and alerts.
+* Contribute infrastructure code, like Prow configuration, automation code,
+create or modify manifests to deploy additional services or changes in the
+monitoring stack.
+* Review and eventually approve infrastructure code proposed by others, such as
+in Prow configuration to add a new repo, new Prow job definitions or changes to
+tune existing alerts.
+* Have access to the CI clusters, user interface of the infrastructure providers,
+the private monitoring dashboards and the channels reserved to receive
+infrastructure notifications and alerts ([kubevirt-ci-monitoring] and
+[kubevirt-ci-infra-monitoring]).
 * Have access to automation secrets.
 * Improve observability of the infrastructure.
 * Design and implement alerts.
@@ -26,5 +33,9 @@ notifications and alerts.
 * Participate in post-mortems and contribute code to prevent detected flaws.
 
 
-[Approvers]: https://github.com/kubevirt/community/blob/master/membership_policy.md#approver
+[KubeVirt community membership document]: https://github.com/kubevirt/community/blob/master/membership_policy.md
+[Kubernetes community membership document]: https://github.com/kubernetes/community/blob/master/community-membership.md
+[approver]: https://github.com/kubevirt/community/blob/master/membership_policy.md#approver
 [current CI maintainer]: ../OWNERS_ALIASES
+[kubevirt-ci-monitoring]: https://app.slack.com/client/T027F3GAJ/CTFN306KC
+[kubevirt-ci-infra-monitoring]: https://app.slack.com/client/T027F3GAJ/C01MJUAT7GD
