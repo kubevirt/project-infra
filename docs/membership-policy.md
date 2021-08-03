@@ -16,7 +16,7 @@ infrastructure.
 
 * Contribute infrastructure code.
 * Review and eventually approve infrastructure code proposed by others.
-* Have access to the CI clusters, the infrastructure providers' UIs, the private
+* Have access to the CI clusters, user interface of the infrastructure providers, the private
 monitoring dashboards and the channels reserved to receive infrastructure
 notifications and alerts.
 * Have access to automation secrets.
