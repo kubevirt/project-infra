@@ -10,7 +10,7 @@ infrastructure.
 
 * [Approvers] of https://github.com/kubevirt/project-infra for at least 1 month.
 
-* Nominated by a CI maintainer.
+* Nominated by a [current CI maintainer].
 
 ## Responsibilities and privileges
 
@@ -27,3 +27,4 @@ notifications and alerts.
 
 
 [Approvers]: https://github.com/kubevirt/community/blob/master/membership_policy.md#approver
+[current CI maintainer]: ../OWNERS_ALIASES
