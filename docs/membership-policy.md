@@ -19,9 +19,9 @@ month.
 * Contribute infrastructure code, like Prow configuration, automation code,
 create or modify manifests to deploy additional services or changes in the
 monitoring stack.
-* Review and eventually approve infrastructure code proposed by others, such as
-in Prow configuration to add a new repo, new Prow job definitions or changes to
-tune existing alerts.
+* Review and eventually approve infrastructure code proposed by others. For example
+Prow configuration to add a new repo, new Prow job definitions or
+tuning existing alerts.
 * Have access to the CI clusters, user interface of the infrastructure providers,
 the private monitoring dashboards and the channels reserved to receive
 infrastructure notifications and alerts ([kubevirt-ci-monitoring] and
