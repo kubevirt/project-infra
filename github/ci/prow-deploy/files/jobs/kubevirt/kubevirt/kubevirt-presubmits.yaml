@@ -928,8 +928,6 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.19-vgpu
     skip_branches:
@@ -951,7 +949,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 18Gi
         securityContext:
           privileged: true
         volumeMounts:
