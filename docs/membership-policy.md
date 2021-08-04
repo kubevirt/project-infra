@@ -12,15 +12,19 @@ infrastructure.
 * Be an [approver] of https://github.com/kubevirt/project-infra for at least 1
 month.
 
-* A reasoned nomination by a [current CI maintainer].
+* A reasoned nomination by a current CI maintainer, a GitHub user already
+present in the [current CI maintainer] list. The nomination should be in the
+form of a PR adding the new maintainer to the [current CI maintainer] list and
+should include an explanation of the reasons to add the new maintainer in the
+PR description.
 
 ## Responsibilities and privileges
 
 * Contribute infrastructure code, like Prow configuration, automation code,
 create or modify manifests to deploy additional services or changes in the
 monitoring stack.
-* Review and eventually approve infrastructure code proposed by others. For example
-Prow configuration to add a new repo, new Prow job definitions or
+* Review and eventually approve infrastructure code proposed by others. For
+example Prow configuration to add a new repo, new Prow job definitions or
 tuning existing alerts.
 * Have access to the CI clusters, user interface of the infrastructure providers,
 the private monitoring dashboards and the channels reserved to receive
