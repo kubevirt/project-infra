@@ -12,7 +12,7 @@ infrastructure.
 * Be an [approver] of https://github.com/kubevirt/project-infra for at least 1
 month.
 
-* A nomination by a [current CI maintainer].
+* A reasoned nomination by a [current CI maintainer].
 
 ## Responsibilities and privileges
 
