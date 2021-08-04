@@ -1,7 +1,7 @@
 presubmits:
   kubevirt/project-infra:
   - name: check-prow-config
-    always_run: true
+    run_if_changed: "github/ci/prow-deploy/kustom/base/configs/.*|github/ci/prow-deploy/files/jobs/.*"
     decorate: true
     cluster: phx-prow
     spec:
