@@ -1293,3 +1293,64 @@ periodics:
       - name: pgp-bot-key
         secret:
           secretName: pgp-bot-key
+- name: periodic-kubevirt-e2e-k8s-1.21-sig-performance
+  annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cron: "40 7,15,23 * * *"
+  decorate: true
+  cluster: prow-workloads
+  decoration_config:
+    timeout: 4h
+    grace_period: 5m
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    ci.kubevirt.io/prometheus: ""
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirt
+    base_ref: main
+    work_dir: true
+  reporter_config:
+    slack:
+      job_states_to_report: []
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        env:
+          - name: KUBEVIRT_PROVIDER
+            value: "k8s-1.21"
+          - name: KUBEVIRT_STORAGE
+            value: "hpp"
+          - name: KUBEVIRT_MEMORY_SIZE
+            value: "9G"
+          - name: KUBEVIRT_NUM_NODES
+            value: "4"
+          - name: KUBEVIRT_DEPLOY_PROMETHEUS
+            value: "true"
+          - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+            value: "--prometheus-port 30007"
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - |
+            # Create k8s cluster
+            make cluster-up
+
+            # Push and deploy kubevirt
+            make cluster-sync
+
+            FUNC_TEST_ARGS="--noColor --seed=42" make perftest            
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "44Gi"
+            cpu: "12000m"
