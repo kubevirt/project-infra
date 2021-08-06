@@ -598,6 +598,9 @@ periodics:
       base_ref: main
       work_dir: true
   cluster: prow-workloads
+  reporter_config:
+    slack:
+      job_states_to_report: []
   spec:
     nodeSelector:
       type: bare-metal-external
@@ -1346,7 +1349,7 @@ periodics:
             # Push and deploy kubevirt
             make cluster-sync
 
-            FUNC_TEST_ARGS="--noColor --seed=42" make perftest            
+            FUNC_TEST_ARGS="--noColor --seed=42" make perftest
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
