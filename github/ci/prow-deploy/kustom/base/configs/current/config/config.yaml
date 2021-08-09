@@ -535,5 +535,3 @@ managed_webhooks:
       token_created_after: 2021-07-16T01:00:00Z
     nmstate/nmstate:
       token_created_after: 2021-07-16T01:00:00Z
-    RHsyseng/rhcos-slb:
-      token_created_after: 2021-07-16T01:00:00Z
