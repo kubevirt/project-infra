@@ -4,12 +4,15 @@
 filters:
   .*:
     approvers:
+    - cwilkers
     - davidvossel
     - dhiller
     - fabiand
     - mazzystr
     - stu-gott
     reviewers:
+    - cwilkers
+    - jobbler
     - mazzystr
   ^_(data|layouts|sass|css|js)/.*:
     labels:
