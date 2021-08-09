@@ -3,11 +3,14 @@
 
 approvers:
 - codificat
+- cwilkers
 - fabiand
 - mazzystr
 - rmohr
 options: {}
 reviewers:
 - codificat
+- cwilkers
 - jean-edouard
+- jobbler
 - mazzystr
