@@ -48,6 +48,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
+    cluster: phx-prow
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
