@@ -26,7 +26,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "hack/test.sh"
+            - "./hack/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -89,7 +89,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "k8s-e2e.sh"
+            - "./hack/k8s-e2e.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
