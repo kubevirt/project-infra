@@ -1,86 +1,61 @@
 # KubeVirt Project Infrastructure Tools
 
-This repository provides supporting code for the project infrastructure.
+This repository provides supporting code for the project infrastructure. This is
+what you can find on each of the repo directories
 
- * cni-plugins
+* `cni-plugins`: code to deploy CNI plugins (currently only sriov-passthrough-cni
+is available)
 
- Code to deploy CNI plugins (currently only sriov-passthrough-cni is available)
+* `docs`: extended documentation of several aspects of our infrastructure
 
- * external-plugins
+* `external-plugins`: Prow plugins used on our setup
 
- Prow plugins used on our setup
+* `github/ci`: Infrastructure code for our main deployments:
 
- * github/ci
+  * `github/ci/phx-prow`: Ansible code for provisioning phx-prow cluster
 
- Infrastructure code for our main deployments:
+  * `github/ci/prow-deploy`: Ansible code for testing and deploying Prow components,
+  includes Prow configuration under github/ci/prow-deploy/files
 
-   * github/ci/phx-prow
+  * `github/ci/prow-workloads`: Ansible code for bootstrapping prow-workloads cluster
+  with Kubespray
 
-   Ansible code for provisioning phx-prow cluster
+  * `github/ci/services`: Code to manage additional CI services
 
-   * github/ci/prow-deploy
+  * `github/ci/testgrid`: Code to manage the configuration for our
+  [testgrid setup](https://testgrid.k8s.io/kubevirt)
 
-   Ansible code for testing and deploying Prow components, includes Prow configuration under github/ci/prow-deploy/files
+* `images`: Definition of container images used in CI
 
-   * github/ci/prow-workloads
+* `limiter`: Tool used to control connections for GCE buckets to the outside world
+depending on billing alerts. See [README](limiter/README.md)
 
-   Ansible code for bootstraping prow-workloads cluster with Kubespray
+* `releng/release-tool`: Tool for creating KubeVirt releases
 
-   * github/ci/services
+* `robots`: Automation tools
 
-   Code to manage additional CI services
+  * `robots/cmd/ci-usage-exporter`: Prometheus exporter to expose CI infrastructure
+  information
 
-   * github/ci/testgrid
+  * `robots/cmd/flakefinder`: Tool to create statistics from failed tests of PRs.
+  See [README](robots/flakefinder/README.md)
 
-   Code to manage the configuration for our [testgrid setup](https://testgrid.k8s.io/kubevirt)
+  * `robots/cmd/flake-issue-creator`: Tool to create kubevirt/kubevirt issues from
+  flake test results
 
- * images
+  * `robots/cmd/indexpagecreator`: Creates flakefinder index page
 
- Definition of container images used in CI
+  * `robots/cmd/kubevirtci-bumper`: Tool to automatically bump kubevirtci providers.
+  See [README](robots/kubevirtci-bumper/README.md)
 
- * limiter
+  * `robots/cmd/kubevirtci-presubmit-creator`: Creates kubevirtci presubmit job
+  definitions for new providers
 
- Tool used to control connections for GCE buckets to the outside world depending on billing alerts. See [README](limiter/README.md)
+  * `robots/cmd/kubevirt-presubmit-requirer`: Updates kubevirt presubmit jobs
+  definitions to make required jobs related to new providers
 
- * plugins/cmd/uploader
-
- Tool to mirror bazel dependencies on GCS. See [README](plugins/cmd/uploader/README.md)
-
- * releng/release-tool
-
- Tool for creating KubeVirt releases
-
- * robots
-
- Several Go based automation tools
-
-   * robots/ci-usage-exporter
-
-   Prometheus exporter to expose CI infrastructure information
-
-   * robots/flakefinder
-
-    Tool to create statistics from failed tests of PRs. See [README](robots/flakefinder/README.md)
-
-   * robots/flake-issue-creator
-
-   Tool to create kubevirt/kubevirt issues from flake test results
-
-   * robots/indexpagecreator
-
-   Creates flakefinder index page
-
-   * robots/kubevirtci-bumper
-
-   Tool to automatically bump kubevirtci providers. See [README](robots/kubevirtci-bumper/README.md)
-
-   * robots/kubevirtci-presubmit-creator
-
-   Creates kubevirtci presubmit job definitions for new providers
-
-   * robots/kubevirt-presubmit-requirer
-
-   Updates kubevirt presubmit jobs definitions to make required jobs related to new providers
+  * `robots/cmd/uploader`: Tool to mirror bazel dependencies on GCS. See
+  [README](plugins/cmd/uploader/README.md)
 
 ## Contributing
 
