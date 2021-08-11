@@ -95,7 +95,7 @@
         - patches
         - resources
 
-    - name: patch production resources for testing usage
+    - name: prepare production resources for testing usage
       block:
         - name: patch ghproxy pvc class
           shell: |
@@ -113,3 +113,9 @@
           loop:
             - deck_deployment
             - prow_controller_manager_deployment
+        - name: create hmac secret
+          shell: |
+            kubectl create secret -n kubevirt-prow generic hmac-token --from-file=hmac={{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/resources/hmac.yaml
+          changed_when: false
+          environment:
+            KUBECONFIG: '{{ kubeconfig_path }}'
