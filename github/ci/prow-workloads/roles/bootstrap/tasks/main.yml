@@ -95,5 +95,17 @@
   loop:
     - openvswitch
 
+- name: package maintenaince
+  block:
+    - name: set number of packages to keep by yum
+      lineinfile:
+        path: '/etc/yum.conf'
+        regexp: 'installonly_limit=.*'
+        line: 'installonly_limit=2'
+
+    - name: remove old packages kept
+      shell: |
+        dnf remove $(dnf repoquery --installonly --latest-limit=-2)
+
 - name: reboot to apply changes
   reboot:
