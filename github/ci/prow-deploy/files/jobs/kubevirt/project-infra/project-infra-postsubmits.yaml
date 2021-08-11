@@ -13,7 +13,7 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210126-a12b6c0
+          - image: quay.io/kubevirtci/bootstrap:v20210715-d0c2b78
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -39,7 +39,7 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210126-a12b6c0
+          - image: quay.io/kubevirtci/bootstrap:v20210715-d0c2b78
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -767,7 +767,7 @@ postsubmits:
         preset-bazel-cache: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210126-a12b6c0
+          - image: quay.io/kubevirtci/bootstrap:v20210715-d0c2b78
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"

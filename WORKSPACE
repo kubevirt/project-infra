@@ -122,3 +122,5 @@ rules_gitops_repositories()
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 gazelle_dependencies()
+
+register_toolchains("//:py_toolchain")
