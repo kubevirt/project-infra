@@ -1,60 +1,53 @@
 periodics:
-- name: periodic-kubevirt-flakefinder-hourly-rolling-window-report
-  cron: "5 * * * *"
-  decorate: true
-  annotations:
+- annotations:
     testgrid-create-test-group: "false"
   cluster: phx-prow
-  spec:
-    nodeSelector:
-      type: vm
-      zone: ci
-    containers:
-      - image: quay.io/kubevirtci/flakefinder@sha256:9871c510cde2945ae65406c8e6b153a3e573ced8b95f3eeb8ff47a6642cffdb4
-        env:
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /etc/gcs/service-account.json
-        command:
-          - "/app/robots/cmd/flakefinder/app.binary"
-        args:
-          - --dry-run=false
-          - --token=/etc/github/oauth
-          - --merged=24h
-          - --today=true
-          - --report_output_child_path=kubevirt/kubevirt
-          - --skip_results_before_start_of_report=false
-          - --pr_base_branch=main
-        volumeMounts:
-          - name: token
-            mountPath: /etc/github
-          - name: gcs
-            mountPath: /etc/gcs
-            readOnly: true
-    volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
-      - name: gcs
-        secret:
-          secretName: gcs
-- name: periodic-publish-kubevirt-flakefinder-weekly-report
-  cron: "45 0 * * *"
+  cron: 5 * * * *
   decorate: true
-  annotations:
-    testgrid-create-test-group: "false"
-  cluster: phx-prow
+  name: periodic-kubevirt-flakefinder-hourly-rolling-window-report
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
-    - image: quay.io/kubevirtci/flakefinder@sha256:9871c510cde2945ae65406c8e6b153a3e573ced8b95f3eeb8ff47a6642cffdb4
+    - args:
+      - --dry-run=false
+      - --token=/etc/github/oauth
+      - --merged=24h
+      - --today=true
+      - --report_output_child_path=kubevirt/kubevirt
+      - --skip_results_before_start_of_report=false
+      - --pr_base_branch=main
+      command:
+      - /app/robots/cmd/flakefinder/app.binary
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
-      command:
-      - "/app/robots/cmd/flakefinder/app.binary"
-      args:
+      image: quay.io/kubevirtci/flakefinder@sha256:9871c510cde2945ae65406c8e6b153a3e573ced8b95f3eeb8ff47a6642cffdb4
+      name: ""
+      resources: {}
+      volumeMounts:
+      - mountPath: /etc/github
+        name: token
+      - mountPath: /etc/gcs
+        name: gcs
+        readOnly: true
+    nodeSelector:
+      type: vm
+      zone: ci
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: gcs
+      secret:
+        secretName: gcs
+- annotations:
+    testgrid-create-test-group: "false"
+  cluster: phx-prow
+  cron: 45 0 * * *
+  decorate: true
+  name: periodic-publish-kubevirt-flakefinder-weekly-report
+  spec:
+    containers:
+    - args:
       - --dry-run=false
       - --token=/etc/github/oauth
       - --merged=168h
@@ -62,12 +55,23 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --periodic_job_dir_regex=periodic-kubevirt-e2e-.*
       - --pr_base_branch=main
+      command:
+      - /app/robots/cmd/flakefinder/app.binary
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      image: quay.io/kubevirtci/flakefinder@sha256:9871c510cde2945ae65406c8e6b153a3e573ced8b95f3eeb8ff47a6642cffdb4
+      name: ""
+      resources: {}
       volumeMounts:
-      - name: token
-        mountPath: /etc/github
-      - name: gcs
-        mountPath: /etc/gcs
+      - mountPath: /etc/github
+        name: token
+      - mountPath: /etc/gcs
+        name: gcs
         readOnly: true
+    nodeSelector:
+      type: vm
+      zone: ci
     volumes:
     - name: token
       secret:
@@ -75,24 +79,15 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
-- name: periodic-publish-kubevirt-flakefinder-daily-report
-  cron: "25 0 * * *"
-  decorate: true
-  annotations:
+- annotations:
     testgrid-create-test-group: "false"
   cluster: phx-prow
+  cron: 25 0 * * *
+  decorate: true
+  name: periodic-publish-kubevirt-flakefinder-daily-report
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
-    - image: quay.io/kubevirtci/flakefinder@sha256:9871c510cde2945ae65406c8e6b153a3e573ced8b95f3eeb8ff47a6642cffdb4
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
-      command:
-      - "/app/robots/cmd/flakefinder/app.binary"
-      args:
+    - args:
       - --dry-run=false
       - --token=/etc/github/oauth
       - --merged=24h
@@ -100,12 +95,23 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --periodic_job_dir_regex=periodic-kubevirt-e2e-.*
       - --pr_base_branch=main
+      command:
+      - /app/robots/cmd/flakefinder/app.binary
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      image: quay.io/kubevirtci/flakefinder@sha256:9871c510cde2945ae65406c8e6b153a3e573ced8b95f3eeb8ff47a6642cffdb4
+      name: ""
+      resources: {}
       volumeMounts:
-      - name: token
-        mountPath: /etc/github
-      - name: gcs
-        mountPath: /etc/gcs
+      - mountPath: /etc/github
+        name: token
+      - mountPath: /etc/gcs
+        name: gcs
         readOnly: true
+    nodeSelector:
+      type: vm
+      zone: ci
     volumes:
     - name: token
       secret:
@@ -113,24 +119,15 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
-- name: periodic-publish-kubevirt-flakefinder-four-weekly-report
-  interval: 168h
-  decorate: true
-  annotations:
+- annotations:
     testgrid-create-test-group: "false"
   cluster: phx-prow
+  decorate: true
+  interval: 168h
+  name: periodic-publish-kubevirt-flakefinder-four-weekly-report
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
-    - image: quay.io/kubevirtci/flakefinder@sha256:9871c510cde2945ae65406c8e6b153a3e573ced8b95f3eeb8ff47a6642cffdb4
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
-      command:
-      - "/app/robots/cmd/flakefinder/app.binary"
-      args:
+    - args:
       - --dry-run=false
       - --token=/etc/github/oauth
       - --merged=672h
@@ -138,12 +135,23 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --periodic_job_dir_regex=periodic-kubevirt-e2e-.*
       - --pr_base_branch=main
+      command:
+      - /app/robots/cmd/flakefinder/app.binary
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      image: quay.io/kubevirtci/flakefinder@sha256:9871c510cde2945ae65406c8e6b153a3e573ced8b95f3eeb8ff47a6642cffdb4
+      name: ""
+      resources: {}
       volumeMounts:
-      - name: token
-        mountPath: /etc/github
-      - name: gcs
-        mountPath: /etc/gcs
+      - mountPath: /etc/github
+        name: token
+      - mountPath: /etc/gcs
+        name: gcs
         readOnly: true
+    nodeSelector:
+      type: vm
+      zone: ci
     volumes:
     - name: token
       secret:
@@ -151,24 +159,15 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
-- name: periodic-kubevirt-flake-issue-creator
-  cron: "25 0 * * *"
-  decorate: true
-  annotations:
+- annotations:
     testgrid-create-test-group: "false"
   cluster: phx-prow
+  cron: 25 0 * * *
+  decorate: true
+  name: periodic-kubevirt-flake-issue-creator
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
-    - image: quay.io/kubevirtci/flake-issue-creator@sha256:78bf3fc1823e619c9f08f19e2eab012c7262514d600faeed535226ff8b7307c8
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
-      command:
-      - "/app/robots/cmd/flake-issue-creator/app.binary"
-      args:
+    - args:
       - --dry-run=true
       - --token=/etc/github/oauth
       - --merged=24h
@@ -180,17 +179,27 @@ periodics:
       - --failure-threshold-of-suspected-cluster-failure=50
       - --suspected-cluster-failure-issue-threshold=0
       - --skip-existing-issues-changed-since=12h
-      volumeMounts:
-      - name: token
-        mountPath: /etc/github
-      - name: gcs
-        mountPath: /etc/gcs
-        readOnly: true
+      command:
+      - /app/robots/cmd/flake-issue-creator/app.binary
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      image: quay.io/kubevirtci/flake-issue-creator@sha256:78bf3fc1823e619c9f08f19e2eab012c7262514d600faeed535226ff8b7307c8
+      name: ""
       resources:
-        requests:
-          memory: "500Mi"
         limits:
-          memory: "1Gi"
+          memory: 1Gi
+        requests:
+          memory: 500Mi
+      volumeMounts:
+      - mountPath: /etc/github
+        name: token
+      - mountPath: /etc/gcs
+        name: gcs
+        readOnly: true
+    nodeSelector:
+      type: vm
+      zone: ci
     volumes:
     - name: token
       secret:
@@ -198,726 +207,734 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
-- name: periodic-kubevirt-e2e-k8s-1.19-sig-network
-  annotations:
+- annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "0 1,9,17 * * *"
+  cluster: prow-workloads
+  cron: 0 1,9,17 * * *
   decorate: true
   decoration_config:
-    timeout: 4h
-    grace_period: 5m
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-  extra_refs:
-  - org: kubevirt
-    repo: kubevirt
-    base_ref: main
-    work_dir: true
-  cluster: prow-workloads
+  name: periodic-kubevirt-e2e-k8s-1.19-sig-network
   reporter_config:
-    slack:
-      job_states_to_report: []
+    slack: {}
   spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.19-sig-network
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
     nodeSelector:
       type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-            value: "true"
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: TARGET
-            value: "k8s-1.19-sig-network"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.19-sysprep
-  annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
+- annotations:
     testgrid-alert-email: bodnopoz@redhat.com, kubevirtci-sysprep-test@googlegroups.com
-    testgrid-num-failures-to-alert: "1"
     testgrid-alert-stale-results-hours: "1"
-  cron: "0 0 * * *"
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+    testgrid-num-failures-to-alert: "1"
+  cluster: prow-workloads
+  cron: 0 0 * * *
   decorate: true
   decoration_config:
-    timeout: 4h
-    grace_period: 5m
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-  extra_refs:
-  - org: kubevirt
-    repo: kubevirt
-    base_ref: main
-    work_dir: true
-  cluster: prow-workloads
+  name: periodic-kubevirt-e2e-k8s-1.19-sysprep
   spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: TARGET
+        value: windows_sysprep
+      - name: KUBEVIRT_WINDOWS_PRODUCT_KEY_PATH
+        value: /etc/win-sysprep/productKey
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: /etc/win-sysprep
+        name: win-sysprep
     nodeSelector:
       type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: TARGET
-            value: "windows_sysprep"
-          - name: KUBEVIRT_WINDOWS_PRODUCT_KEY_PATH
-            value: /etc/win-sysprep/productKey
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-        volumeMounts:
-          - name: win-sysprep
-            mountPath: /etc/win-sysprep
     volumes:
-      - name: win-sysprep
-        secret:
-          secretName: win-sysprep-001
-- name: periodic-kubevirt-e2e-k8s-1.19-sig-storage
-  annotations:
+    - name: win-sysprep
+      secret:
+        secretName: win-sysprep-001
+- annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "20 2,10,18 * * *"
+  cluster: prow-workloads
+  cron: 20 2,10,18 * * *
   decorate: true
   decoration_config:
-    timeout: 4h
-    grace_period: 5m
-  labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
+    grace_period: 5m0s
+    timeout: 4h0m0s
   extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
-  cluster: prow-workloads
-  reporter_config:
-    slack:
-      job_states_to_report: []
-  spec:
-    nodeSelector:
-      type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-            value: "true"
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: TARGET
-            value: "k8s-1.19-sig-storage"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.19-sig-compute
-  annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cron: "40 3,11,19 * * *"
-  decorate: true
-  decoration_config:
-    timeout: 4h
-    grace_period: 5m
-  labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
-  cluster: prow-workloads
-  reporter_config:
-    slack:
-      job_states_to_report: []
-  spec:
-    nodeSelector:
-      type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-            value: "true"
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: TARGET
-            value: "k8s-1.19-sig-compute"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.20-sig-network
-  annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cron: "10 4,12,20 * * *"
-  decorate: true
-  cluster: prow-workloads
-  decoration_config:
-    timeout: 4h
-    grace_period: 5m
-  labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-  extra_refs:
-  - org: kubevirt
+  - base_ref: main
+    org: kubevirt
     repo: kubevirt
-    base_ref: main
-    work_dir: true
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.19-sig-storage
   reporter_config:
-    slack:
-      job_states_to_report: []
+    slack: {}
   spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.19-sig-storage
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
     nodeSelector:
       type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-            value: "true"
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: TARGET
-            value: "k8s-1.20-sig-network"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.20-sig-storage
-  annotations:
+- annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "20 5,13,21 * * *"
-  decorate: true
   cluster: prow-workloads
-  decoration_config:
-    timeout: 4h
-    grace_period: 5m
-  labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
-  reporter_config:
-    slack:
-      job_states_to_report: []
-  spec:
-    nodeSelector:
-      type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-            value: "true"
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: TARGET
-            value: "k8s-1.20-sig-storage"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.20-sig-compute
-  annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cron: "30 6,14,22 * * *"
-  decorate: true
-  cluster: prow-workloads
-  decoration_config:
-    timeout: 4h
-    grace_period: 5m
-  labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
-  reporter_config:
-    slack:
-      job_states_to_report: []
-  spec:
-    nodeSelector:
-      type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-            value: "true"
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: TARGET
-            value: "k8s-1.20-sig-compute"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.20-operator
-  annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cron: "40 7,15,23 * * *"
-  decorate: true
-  cluster: prow-workloads
-  decoration_config:
-    timeout: 4h
-    grace_period: 5m
-  labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
-  reporter_config:
-    slack:
-      job_states_to_report: []
-  spec:
-    nodeSelector:
-      type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-            value: "true"
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: TARGET
-            value: "k8s-1.20"
-          - name: KUBEVIRT_E2E_FOCUS
-            value: "\\[sig-operator\\]"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.20-cgroupsv2
-  annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cron: "0 9,17,0 * * *"
+  cron: 40 3,11,19 * * *
   decorate: true
   decoration_config:
-    timeout: 7h
-    grace_period: 5m
-  labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
+    grace_period: 5m0s
+    timeout: 4h0m0s
   extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
-  cluster: prow-workloads
-  spec:
-    nodeSelector:
-      type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: TARGET
-            value: "k8s-1.20"
-          - name: KUBEVIRT_CGROUPV2
-            value: "true"
-          - name: KUBEVIRT_E2E_SKIP
-            value: "Multus|SRIOV|GPU|Macvtap|\\[sig-operator\\]"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.21-sig-network
-  annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cron: "40 4,12,20 * * *"
-  decorate: true
-  cluster: prow-workloads
-  decoration_config:
-    timeout: 4h
-    grace_period: 5m
-  labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-  extra_refs:
-  - org: kubevirt
+  - base_ref: main
+    org: kubevirt
     repo: kubevirt
-    base_ref: main
-    work_dir: true
-  reporter_config:
-    slack:
-      job_states_to_report: []
-  spec:
-    nodeSelector:
-      type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-            value: "true"
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: TARGET
-            value: "k8s-1.21-sig-network"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.21-sig-storage
-  annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cron: "50 5,13,21 * * *"
-  decorate: true
-  cluster: prow-workloads
-  decoration_config:
-    timeout: 4h
-    grace_period: 5m
   labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
+  name: periodic-kubevirt-e2e-k8s-1.19-sig-compute
   reporter_config:
-    slack:
-      job_states_to_report: []
+    slack: {}
   spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.19-sig-compute
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
     nodeSelector:
       type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-            value: "true"
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: TARGET
-            value: "k8s-1.21-sig-storage"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.21-sig-compute
-  annotations:
+- annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "0 6,14,22 * * *"
-  decorate: true
   cluster: prow-workloads
+  cron: 10 4,12,20 * * *
+  decorate: true
   decoration_config:
-    timeout: 4h
-    grace_period: 5m
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
   labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
+  name: periodic-kubevirt-e2e-k8s-1.20-sig-network
   reporter_config:
-    slack:
-      job_states_to_report: []
+    slack: {}
   spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.20-sig-network
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
     nodeSelector:
       type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-            value: "true"
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: TARGET
-            value: "k8s-1.21-sig-compute"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.21-operator
-  annotations:
+- annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "10 7,15,23 * * *"
-  decorate: true
   cluster: prow-workloads
+  cron: 20 5,13,21 * * *
+  decorate: true
   decoration_config:
-    timeout: 4h
-    grace_period: 5m
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
   labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
+  name: periodic-kubevirt-e2e-k8s-1.20-sig-storage
   reporter_config:
-    slack:
-      job_states_to_report: []
+    slack: {}
   spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.20-sig-storage
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
     nodeSelector:
       type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-            value: "true"
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: TARGET
-            value: "k8s-1.21"
-          - name: KUBEVIRT_E2E_FOCUS
-            value: "\\[sig-operator\\]"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-push-nightly-build-main
-  cron: "2 1 * * *"
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 30 6,14,22 * * *
   decorate: true
-  annotations:
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.20-sig-compute
+  reporter_config:
+    slack: {}
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.20-sig-compute
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 40 7,15,23 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.20-operator
+  reporter_config:
+    slack: {}
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.20
+      - name: KUBEVIRT_E2E_FOCUS
+        value: \[sig-operator\]
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 0 9,17,0 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 7h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.20-cgroupsv2
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: TARGET
+        value: k8s-1.20
+      - name: KUBEVIRT_CGROUPV2
+        value: "true"
+      - name: KUBEVIRT_E2E_SKIP
+        value: Multus|SRIOV|GPU|Macvtap|\[sig-operator\]
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 40 4,12,20 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.21-sig-network
+  reporter_config:
+    slack: {}
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.21-sig-network
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 50 5,13,21 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.21-sig-storage
+  reporter_config:
+    slack: {}
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.21-sig-storage
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 0 6,14,22 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.21-sig-compute
+  reporter_config:
+    slack: {}
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.21-sig-compute
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 10 7,15,23 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.21-operator
+  reporter_config:
+    slack: {}
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.21
+      - name: KUBEVIRT_E2E_FOCUS
+        value: \[sig-operator\]
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
     testgrid-create-test-group: "false"
+  cluster: prow-workloads
+  cron: 2 1 * * *
+  decorate: true
   decoration_config:
-    timeout: 1h
-    grace_period: 5m
-  max_concurrency: 1
+    grace_period: 5m0s
+    timeout: 1h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
     preset-kubevirtci-quay-credential: "true"
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
-  cluster: prow-workloads
+    preset-shared-images: "true"
+  max_concurrency: 1
+  name: periodic-kubevirt-push-nightly-build-main
   spec:
-    nodeSelector:
-      type: bare-metal-external
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - |
+        set -e
+        build_date="$(date +%Y%m%d)"
+        cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+        export DOCKER_TAG="${build_date}_$(git show -s --format=%h)"
+        make
+        counter=3
+        retval=0
+        while [ $counter -gt 0 ]; do
+            set +e
+            make push
+            retval=$?
+            set -e
+            if [ $retval -eq 0 ]; then
+                break
+            fi
+            set +e
+            counter=$(expr $counter - 1)
+            set -e
+            sleep 120
+        done
+        if [ $retval -ne 0 ]; then
+            echo "push failed!"
+            exit 1
+        fi
+        make build-functests
+        git show -s --format=%H > _out/commit
+        echo ${build_date} > _out/build_date
+        bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}"
+        gsutil cp ./_out/manifests/release/kubevirt-operator.yaml ./_out/manifests/release/kubevirt-cr.yaml _out/manifests/release/conformance.yaml gs://$bucket_dir/
+        gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/
+        gsutil cp ./_out/tests/tests.test gs://$bucket_dir/testing/
+        gsutil cp ./_out/commit gs://$bucket_dir/commit
+        gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       - name: DOCKER_PREFIX
         value: quay.io/kubevirt
-      command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-c"
-        - |
-          set -e
-          build_date="$(date +%Y%m%d)"
-          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-          export DOCKER_TAG="${build_date}_$(git show -s --format=%h)"
-          make
-          counter=3
-          retval=0
-          while [ $counter -gt 0 ]; do
-              set +e
-              make push
-              retval=$?
-              set -e
-              if [ $retval -eq 0 ]; then
-                  break
-              fi
-              set +e
-              counter=$(expr $counter - 1)
-              set -e
-              sleep 120
-          done
-          if [ $retval -ne 0 ]; then
-              echo "push failed!"
-              exit 1
-          fi
-          make build-functests
-          git show -s --format=%H > _out/commit
-          echo ${build_date} > _out/build_date
-          bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}"
-          gsutil cp ./_out/manifests/release/kubevirt-operator.yaml ./_out/manifests/release/kubevirt-cr.yaml _out/manifests/release/conformance.yaml gs://$bucket_dir/
-          gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/
-          gsutil cp ./_out/tests/tests.test gs://$bucket_dir/testing/
-          gsutil cp ./_out/commit gs://$bucket_dir/commit
-          gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
-      # docker-in-docker needs privileged mode
-      securityContext:
-        privileged: true
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
       resources:
         requests:
-          memory: "8Gi"
+          memory: 8Gi
+      securityContext:
+        privileged: true
       volumeMounts:
-        - name: gcs
-          mountPath: /etc/gcs
-          readOnly: false
+      - mountPath: /etc/gcs
+        name: gcs
+    nodeSelector:
+      type: bare-metal-external
     volumes:
-      - name: gcs
-        secret:
-          secretName: gcs
-- name: periodic-kubevirt-push-nightly-build-main-ARM64
-  cron: "2 1 * * *"
-  decorate: true
-  annotations:
+    - name: gcs
+      secret:
+        secretName: gcs
+- annotations:
     testgrid-create-test-group: "false"
+  cluster: prow-workloads
+  cron: 2 1 * * *
+  decorate: true
   decoration_config:
-    timeout: 1h
-    grace_period: 5m
-  max_concurrency: 1
+    grace_period: 5m0s
+    timeout: 1h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
     preset-kubevirtci-quay-credential: "true"
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
-  cluster: prow-workloads
+    preset-shared-images: "true"
+  max_concurrency: 1
+  name: periodic-kubevirt-push-nightly-build-main-ARM64
   spec:
-    nodeSelector:
-      type: bare-metal-external
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - |
+        set -e
+        build_date="$(date +%Y%m%d)"
+        cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+        export DOCKER_TAG="${build_date}_$(git show -s --format=%h)-arm64"
+        make
+        counter=3
+        retval=0
+        while [ $counter -gt 0 ]; do
+            set +e
+            make push
+            retval=$?
+            set -e
+            if [ $retval -eq 0 ]; then
+                break
+            fi
+            set +e
+            counter=$(expr $counter - 1)
+            set -e
+            sleep 120
+        done
+        if [ $retval -ne 0 ]; then
+            echo "push failed!"
+            exit 1
+        fi
+        # build functest currently does not support crossbuild, skip it
+        git show -s --format=%H > _out/commit
+        echo ${build_date} > _out/build_date
+        bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}"
+        gsutil cp ./_out/manifests/release/kubevirt-operator.yaml gs://$bucket_dir/kubevirt-operator-arm64.yaml
+        gsutil cp ./_out/manifests/release/kubevirt-cr.yaml gs://$bucket_dir/kubevirt-cr-arm64.yaml
+        gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/testing-arm64
+        gsutil cp ./_out/commit gs://$bucket_dir/commit-arm64
+        gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest-arm64
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -925,254 +942,229 @@ periodics:
         value: quay.io/kubevirt
       - name: BUILD_ARCH
         value: crossbuild-aarch64
-      command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-c"
-        - |
-          set -e
-          build_date="$(date +%Y%m%d)"
-          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-          export DOCKER_TAG="${build_date}_$(git show -s --format=%h)-arm64"
-          make
-          counter=3
-          retval=0
-          while [ $counter -gt 0 ]; do
-              set +e
-              make push
-              retval=$?
-              set -e
-              if [ $retval -eq 0 ]; then
-                  break
-              fi
-              set +e
-              counter=$(expr $counter - 1)
-              set -e
-              sleep 120
-          done
-          if [ $retval -ne 0 ]; then
-              echo "push failed!"
-              exit 1
-          fi
-          # build functest currently does not support crossbuild, skip it
-          git show -s --format=%H > _out/commit
-          echo ${build_date} > _out/build_date
-          bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}"
-          gsutil cp ./_out/manifests/release/kubevirt-operator.yaml gs://$bucket_dir/kubevirt-operator-arm64.yaml
-          gsutil cp ./_out/manifests/release/kubevirt-cr.yaml gs://$bucket_dir/kubevirt-cr-arm64.yaml
-          gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/testing-arm64
-          gsutil cp ./_out/commit gs://$bucket_dir/commit-arm64
-          gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest-arm64
-      # docker-in-docker needs privileged mode
-      securityContext:
-        privileged: true
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
       resources:
         requests:
-          memory: "8Gi"
+          memory: 8Gi
+      securityContext:
+        privileged: true
       volumeMounts:
-        - name: gcs
-          mountPath: /etc/gcs
-          readOnly: false
+      - mountPath: /etc/gcs
+        name: gcs
+    nodeSelector:
+      type: bare-metal-external
     volumes:
-      - name: gcs
-        secret:
-          secretName: gcs
-- name: periodic-kubevirt-clean-nightly-build
-  cluster: ibm-prow-jobs
-  cron: "2 15 */7 * *"
-  decorate: true
-  annotations:
+    - name: gcs
+      secret:
+        secretName: gcs
+- annotations:
     testgrid-create-test-group: "false"
+  cluster: ibm-prow-jobs
+  cron: 2 15 */7 * *
+  decorate: true
   decoration_config:
-    timeout: 1h
-    grace_period: 5m
-  max_concurrency: 1
+    grace_period: 5m0s
+    timeout: 1h0m0s
   labels:
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
+  max_concurrency: 1
+  name: periodic-kubevirt-clean-nightly-build
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - |
+        set -e; latest_build=$(gsutil cat gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest); delete_before_seconds=$(date -d "$latest_build - 4 weeks" +%s); for nightly_build_dir in $(gsutil ls gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/ | grep -E '[0-9]+\/$'); do
+          build_date=$(echo "${nightly_build_dir}" | sed -E 's#^.*/([0-9]+)/$#\1#g');
+          bd_seconds=$(date -d "$build_date" +%s);
+          if [ $bd_seconds -lt $delete_before_seconds ]; then
+            echo "Deleting $nightly_build_dir";
+            gsutil -m rm -r ${nightly_build_dir};
+          fi;
+        done
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
-      command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-c"
-        - >
-          set -e;
-          latest_build=$(gsutil cat gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest);
-          delete_before_seconds=$(date -d "$latest_build - 4 weeks" +%s);
-          for nightly_build_dir in $(gsutil ls gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/ | grep -E '[0-9]+\/$'); do
-            build_date=$(echo "${nightly_build_dir}" | sed -E 's#^.*/([0-9]+)/$#\1#g');
-            bd_seconds=$(date -d "$build_date" +%s);
-            if [ $bd_seconds -lt $delete_before_seconds ]; then
-              echo "Deleting $nightly_build_dir";
-              gsutil -m rm -r ${nightly_build_dir};
-            fi;
-          done
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
       resources:
         requests:
-          memory: "200Mi"
+          memory: 200Mi
       volumeMounts:
-        - name: gcs
-          mountPath: /etc/gcs
-          readOnly: false
+      - mountPath: /etc/gcs
+        name: gcs
     volumes:
-      - name: gcs
-        secret:
-          secretName: gcs
-- name: periodic-kubevirt-push-nightly-conformance
-  cron: "30 2 * * *"
-  decorate: true
-  max_concurrency: 1
-  annotations:
+    - name: gcs
+      secret:
+        secretName: gcs
+- annotations:
     testgrid-dashboards: kubevirt-periodics
+  cluster: prow-workloads
+  cron: 30 2 * * *
+  decorate: true
   decoration_config:
-    timeout: 7h
-    grace_period: 5m
+    grace_period: 5m0s
+    timeout: 7h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    path_alias: kubevirt
+    repo: kubevirt
+    workdir: true
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-  annotations:
-    testgrid-dashboards: kubevirt-periodics
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      path_alias: kubevirt
-      workdir: true
-  cluster: prow-workloads
+  max_concurrency: 1
+  name: periodic-kubevirt-push-nightly-conformance
   spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/conformance.sh
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
     nodeSelector:
       type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/conformance.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.19-sriov
-  annotations:
+- annotations:
+    k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-    k8s.v1.cni.cncf.io/networks: 'multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni'
-  cron: "0 22,10 * * *"
+  cluster: prow-workloads
+  cron: 0 22,10 * * *
   decorate: true
   decoration_config:
-    timeout: 4h
-    grace_period: 30m
+    grace_period: 30m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-  extra_refs:
-  - org: kubevirt
-    repo: kubevirt
-    base_ref: main
-    work_dir: true
-  skip_report: true
-  cluster: prow-workloads
+  name: periodic-kubevirt-e2e-k8s-1.19-sriov
   reporter_config:
-    slack:
-      job_states_to_report: []
+    slack: {}
   spec:
-      nodeSelector:
-        hardwareSupport: sriov-nic
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: sriov-pod
-                  operator: In
-                  values:
-                  - "true"
-              topologyKey: kubernetes.io/hostname
-            - labelSelector:
-                matchExpressions:
-                - key: sriov-pod-multi
-                  operator: In
-                  values:
-                  - "true"
-              topologyKey: kubernetes.io/hostname
-      containers:
-      - image: quay.io/kubevirtci/golang:v20210316-d295087
-        env:
-          - name: KUBEVIRT_QUARANTINE
-            value: "true"
-          - name: "TARGET"
-            value: "kind-1.19-sriov"
-          - name: "GIMME_GO_VERSION"
-            value: "1.13.8"
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/bash"
-        - "-ce"
-        - |
-            automation/test.sh
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-        volumeMounts:
-          #for running kind with dind (see https://github.com/kubernetes-sigs/kind/issues/303)
-          - name: modules
-            mountPath: /lib/modules
-            readOnly: true
-          - name: cgroup
-            mountPath: /sys/fs/cgroup
-          - name: vfio
-            mountPath: /dev/vfio/
-      volumes:
-        - name: modules
-          hostPath:
-            path: /lib/modules
-            type: Directory
-        - name: cgroup
-          hostPath:
-            path: /sys/fs/cgroup
-            type: Directory
-        - name: vfio
-          hostPath:
-            path: /dev/vfio/
-            type: Directory
-- name: bump-kubevirt-rpms-weekly
-  cron: "15 22 * * 0"
-  branches:
-  - main
-  always_run: true
-  annotations:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: sriov-pod
+              operator: In
+              values:
+              - "true"
+          topologyKey: kubernetes.io/hostname
+        - labelSelector:
+            matchExpressions:
+            - key: sriov-pod-multi
+              operator: In
+              values:
+              - "true"
+          topologyKey: kubernetes.io/hostname
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -ce
+      - |
+        automation/test.sh
+      env:
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: kind-1.19-sriov
+      - name: GIMME_GO_VERSION
+        value: 1.13.8
+      image: quay.io/kubevirtci/golang:v20210316-d295087
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: /lib/modules
+        name: modules
+        readOnly: true
+      - mountPath: /sys/fs/cgroup
+        name: cgroup
+      - mountPath: /dev/vfio/
+        name: vfio
+    nodeSelector:
+      hardwareSupport: sriov-nic
+    volumes:
+    - hostPath:
+        path: /lib/modules
+        type: Directory
+      name: modules
+    - hostPath:
+        path: /sys/fs/cgroup
+        type: Directory
+      name: cgroup
+    - hostPath:
+        path: /dev/vfio/
+        type: Directory
+      name: vfio
+- annotations:
     testgrid-create-test-group: "false"
+  cluster: phx-prow
+  cron: 15 22 * * 0
   decorate: true
   decoration_config:
-    timeout: 1h
-  max_concurrency: 1
+    timeout: 1h0m0s
   extra_refs:
-  - org: kubevirt
+  - base_ref: main
+    org: kubevirt
     repo: project-infra
-    base_ref: main
-  - org: kubevirt
+  - base_ref: main
+    org: kubevirt
     repo: kubevirt
-    base_ref: main
   labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror: "true"
     preset-bazel-cache: "true"
     preset-bazel-unnested: "true"
-  cluster: phx-prow
+    preset-dind-enabled: "true"
+    preset-docker-mirror: "true"
+  max_concurrency: 1
+  name: bump-kubevirt-rpms-weekly
   spec:
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
+        -p ../kubevirt -T main
+      env:
+      - name: GIT_ASKPASS
+        value: ../project-infra/hack/git-askpass.sh
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/service-account.json
+      image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
+      name: ""
+      resources:
+        requests:
+          memory: 8Gi
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: /etc/github
+        name: token
+      - mountPath: /etc/gcs
+        name: gcs
     volumes:
     - name: token
       secret:
@@ -1180,177 +1172,316 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
-    containers:
-    - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
-      env:
-      - name: GIT_ASKPASS
-        value: "../project-infra/hack/git-askpass.sh"
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
-      command:
-        - /bin/bash
-        - -c
-        - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies -p ../kubevirt -T main
-      volumeMounts:
-      - name: token
-        mountPath: /etc/github
-      # docker-in-docker needs privileged mode
-      - name: gcs
-        mountPath: /etc/gcs
-        readOnly: false
-      securityContext:
-        privileged: true
-      resources:
-        requests:
-          memory: "8Gi"
-- name: periodic-kubevirt-cluster-sync-test-ARM
-  annotations:
+- annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "40 4,12,20 * * *"
-  decorate: true
   cluster: prow-workloads
+  cron: 40 4,12,20 * * *
+  decorate: true
   decoration_config:
-    timeout: 4h
-    grace_period: 5m
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  - base_ref: main
+    org: kubevirt
+    repo: project-infra
   labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-quay-credential: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-cluster-sync-test-ARM
+  reporter_config:
+    slack: {}
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - |
+        # install yq
+        curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+        chmod +x ./yq && mv ./yq /usr/local/bin/yq
+
+        # get kubeconfig
+        source ../project-infra/hack/manage-secrets.sh
+        decrypt_secrets
+        extract_secret 'kubeconfigARM' /kubeconfig
+
+        # login quay.io
+        cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+
+        # run the test
+        automation/test.sh
+      env:
+      - name: TARGET
+        value: external
+      - name: KUBEVIRT_PROVIDER
+        value: external
+      - name: DOCKER_PREFIX
+        value: quay.io/kubevirtci
+      - name: DOCKER_TAG
+        value: aarch64_test
+      - name: KUBECONFIG
+        value: /kubeconfig
+      - name: IMAGE_PULL_POLICY
+        value: Always
+      - name: BUILD_ARCH
+        value: crossbuild-aarch64
+      - name: KUBEVIRT_E2E_FOCUS
+        value: test_id:1464
+      - name: GIT_ASKPASS
+        value: ../project-infra/hack/git-askpass.sh
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: /etc/github
+        name: token
+      - mountPath: /etc/pgp
+        name: pgp-bot-key
+        readOnly: true
+    nodeSelector:
+      type: bare-metal-external
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: pgp-bot-key
+      secret:
+        secretName: pgp-bot-key
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 40 7,15,23 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    ci.kubevirt.io/prometheus: ""
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+  name: periodic-kubevirt-e2e-k8s-1.21-sig-performance
+  reporter_config:
+    slack: {}
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - |
+        # Create k8s cluster
+        make cluster-up
+
+        # Push and deploy kubevirt
+        make cluster-sync
+
+        FUNC_TEST_ARGS="--noColor --seed=42" make perftest
+      env:
+      - name: KUBEVIRT_PROVIDER
+        value: k8s-1.21
+      - name: KUBEVIRT_STORAGE
+        value: hpp
+      - name: KUBEVIRT_MEMORY_SIZE
+        value: 9G
+      - name: KUBEVIRT_NUM_NODES
+        value: "4"
+      - name: KUBEVIRT_DEPLOY_PROMETHEUS
+        value: "true"
+      - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+        value: --prometheus-port 30007
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          cpu: "12"
+          memory: 44Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 50 5,13,21 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-    preset-kubevirtci-quay-credential: "true"
-  extra_refs:
-  - org: kubevirt
-    repo: kubevirt
-    base_ref: main
-    work_dir: true
-  - org: kubevirt
-    repo: project-infra
-    base_ref: main
+  name: periodic-kubevirt-e2e-k8s-1.22-sig-network
   reporter_config:
-    slack:
-      job_states_to_report: []
+    slack: {}
   spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.22-sig-network
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
     nodeSelector:
       type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: TARGET
-            value: "external"
-          - name: KUBEVIRT_PROVIDER
-            value: "external"
-          - name: DOCKER_PREFIX
-            value: quay.io/kubevirtci
-          - name: DOCKER_TAG
-            value: "aarch64_test"
-          - name: KUBECONFIG
-            value: "/kubeconfig"
-          - name: IMAGE_PULL_POLICY
-            value: "Always"
-          - name: BUILD_ARCH
-            value: "crossbuild-aarch64"
-          - name: KUBEVIRT_E2E_FOCUS
-            value: "test_id:1464"
-          - name: GIT_ASKPASS
-            value: "../project-infra/hack/git-askpass.sh"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - |
-            # install yq
-            curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
-            chmod +x ./yq && mv ./yq /usr/local/bin/yq
-
-            # get kubeconfig
-            source ../project-infra/hack/manage-secrets.sh
-            decrypt_secrets
-            extract_secret 'kubeconfigARM' /kubeconfig
-
-            # login quay.io
-            cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-
-            # run the test
-            automation/test.sh
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
-        volumeMounts:
-          - name: token
-            mountPath: /etc/github
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-    volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
-      - name: pgp-bot-key
-        secret:
-          secretName: pgp-bot-key
-- name: periodic-kubevirt-e2e-k8s-1.21-sig-performance
-  annotations:
+- annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "40 7,15,23 * * *"
-  decorate: true
   cluster: prow-workloads
+  cron: 0 6,14,22 * * *
+  decorate: true
   decoration_config:
-    timeout: 4h
-    grace_period: 5m
+    grace_period: 5m0s
+    timeout: 4h0m0s
   labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
     preset-bazel-cache: "true"
     preset-bazel-unnested: "true"
-    ci.kubevirt.io/prometheus: ""
-  extra_refs:
-  - org: kubevirt
-    repo: kubevirt
-    base_ref: main
-    work_dir: true
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.22-sig-storage
   reporter_config:
-    slack:
-      job_states_to_report: []
+    slack: {}
   spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.22-sig-storage
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
     nodeSelector:
       type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 10 7,15,23 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.22-sig-compute
+  reporter_config:
+    slack: {}
+  spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: KUBEVIRT_PROVIDER
-            value: "k8s-1.21"
-          - name: KUBEVIRT_STORAGE
-            value: "hpp"
-          - name: KUBEVIRT_MEMORY_SIZE
-            value: "9G"
-          - name: KUBEVIRT_NUM_NODES
-            value: "4"
-          - name: KUBEVIRT_DEPLOY_PROMETHEUS
-            value: "true"
-          - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
-            value: "--prometheus-port 30007"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - |
-            # Create k8s cluster
-            make cluster-up
-
-            # Push and deploy kubevirt
-            make cluster-sync
-
-            FUNC_TEST_ARGS="--noColor --seed=42" make perftest
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "44Gi"
-            cpu: "12000m"
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.22-sig-compute
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 20 8,16,24 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.22-operator
+  reporter_config:
+    slack: {}
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.22-operator
+      - name: KUBEVIRT_E2E_FOCUS
+        value: \[sig-operator\]
+      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external

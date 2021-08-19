@@ -412,7 +412,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-sig-compute-nonroot
-    optional: false
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -535,7 +534,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-operator-nonroot
-    optional: false
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -916,7 +914,6 @@ presubmits:
           type: Directory
         name: vfio
   - always_run: false
-    optional: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -930,6 +927,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.19-vgpu
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1069,38 +1067,37 @@ presubmits:
             memory: 4Gi
         securityContext:
           privileged: true
-  - name: pull-kubevirt-verify-go-mod
-    cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
+  - always_run: false
     annotations:
       fork-per-release: "true"
-    always_run: false
-    skip_report: false
-    optional: true
-    run_if_changed: ^vendor/.*|go\.mod$|go\.sum$
+    cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
-      timeout: 1h
-      grace_period: 5m
+      grace_period: 5m0s
+      timeout: 1h0m0s
     labels:
+      preset-bazel-cache: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
+    name: pull-kubevirt-verify-go-mod
+    optional: true
+    run_if_changed: ^vendor/.*|go\.mod$|go\.sum$
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "cp /etc/bazel.bazelrc ./ci.bazelrc && make deps-sync && hack/verify-generate.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make deps-sync && hack/verify-generate.sh
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
   - always_run: false
     annotations:
       fork-per-release: "true"
@@ -1270,8 +1267,8 @@ presubmits:
     cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
-      grace_period: 10m
-      timeout: 1h
+      grace_period: 10m0s
+      timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
       preset-dind-enabled: "true"
@@ -1280,27 +1277,26 @@ presubmits:
     optional: true
     skip_branches:
     - release-\d+\.\d+
-    skip_report: false
     spec:
       containers:
       - command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-c"
-        - "make fossa"
-        # docker-in-docker needs privileged mode
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make fossa
         env:
         - name: FOSSA_TOKEN_FILE
           value: /root/.docker/secrets/fossa/token
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
         resources:
           requests:
-            memory: "4Gi"
+            memory: 4Gi
         securityContext:
           privileged: true
         volumeMounts:
-        - name: kubevirtci-fossa
-          mountPath: /root/.docker/secrets/fossa
+        - mountPath: /root/.docker/secrets/fossa
+          name: kubevirtci-fossa
           readOnly: true
       volumes:
       - name: kubevirtci-fossa
@@ -1452,3 +1448,153 @@ presubmits:
             memory: 4Gi
         securityContext:
           privileged: true
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.22-sig-network
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.22-sig-network
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.22-sig-storage
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.22-sig-storage
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.22-sig-compute
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.22-sig-compute
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.22-operator
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.22-operator
+        - name: KUBEVIRT_E2E_FOCUS
+          value: \[sig-operator\]
+        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external

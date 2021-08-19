@@ -1,0 +1,468 @@
+remoteClusterName: "ibm-ks-cluster"
+githubSecret: ""
+githubCallbackUrl: "http://virtblade06.virt.lab.eng.bos.redhat.com:8080/"
+githubToken: "58900ea92e8d210491208e777bd6b2ed78c8e902"
+githubCommenterToken: "5730d268b095e3a2b1bc5339520cfda479d14018"
+
+prowUrl: "kubevirt-prow.apps.ovirt.org"
+deckUrl: "prow.apps.ovirt.org"
+prowNamespace: "kubevirt-prow"
+prowJobsNamespace: "kubevirt-prow-jobs"
+prowHmac: "e4a61a12b5cae91dca3b8c1a576c735fe971110f"
+prowAdmins: ["rmohr@redhat.com", "dbelenky@redhat.com", "dhiller@redhat.com", "ellorent@redhat.com", "fgimenez@redhat.com"]
+
+appOAuthConfig: |
+  client_id: 2c6a4c27829470510dc0
+  client_secret: adc51f573d2b87b0f01f6215ad0cbc330908195b
+  redirect_url: https://prow.ci.kubevirt.io/github-login/redirect
+  final_redirect_url: https://prow.ci.kubevirt.io/pr
+appCookieSecret: |
+  BtxuLDhh+OpaH2XujrlPD6488dpFsAAIFiQWfsMrBMm/mUhRNT9R/Ap8nvrUXxgC
+  yEeFuMjsXGCB1jgMlIE+YA==
+gcsServiceAccount: |
+  {
+    "type": "service_account",
+    "project_id": "kubevirt-240711",
+    "private_key_id": "a9ac82a39b7a9e02b6dcd3ef675d36c8669093f2",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCoGoJhcSX7/pYm\nDIoTNl/0IJxlwwBsuq2mezMTfXIgZnNC3AMZ/Z1nt3MJNW71JPUS8q/daIGEnWiG\n+osXBCEtoRze4N4EpRmakDRVGs3fdrAglicY9urhtKptDjqBaxT1qOAj9dn0Ukr6\nQNj8yHSv2O10WF5P3sxyaiT6AidGIgI29qWaieaLzFQrgOOOmFKudZldSdf7D6eC\nsIglvm0y8oEniAyfG0LuikzMiRmdQsFEbxr6L7cmqKWZxxqARcErDSAJpY6CFXB8\n5ParS1sAA3B/GNeAkZ14WOxpyWoAzb8mLZCGakQh4sQg2H7rsPe8vkK4ZcEJTzkG\np0G/oSN9AgMBAAECggEAALcmKrx/dSMC/WlMas2uhbHgKzBehNfxi8Br+foCHZWv\nXro5etJBFH3WdpRR4ydeXKTdmei13mbeGO723xOfLDF1Qj886qek5CsXcezx3IYw\nid73Dnc544Pa6CkT7NTpa1c7PE6cTXAj42HvGnpO7ChVRbYSPARJJKEuLvCJ6BWU\nsmCDy+CNpF08kyPw5HlJMFAm35gmQH2xqU9zJWOk7yU9W/W6jNkX8mp0SLEJMpdo\n92BTOtiSh3AmGazsRBqbqUuvINp2XIr8sjmti5ih41DOLRjlVBIdg340sKAr00jf\nNqpwoBRApKIy77sDq7zX8PiEYCdtyVuSG28Z+Mv9uQKBgQDhkUTcFtwKmnC0mjju\nMkMc90eeTSXDFC8oBeamysgIu4USUolTU1t6x8g2qcnsU8djCue3zNxs9HYjXPxk\nMAFzYV3ztDl2rrNdEepMNfEPcrWXhT53usN4qtZ8X7stou3B95zSkQ2dYORYCpeh\nXRu2BcbKvoQPKrWUfLCRzJzFeQKBgQC+yIfxYu2OAJ0TQFgRIIJ+XP7YzPcE8LeD\nsLKD9c94UQZTMLKv5OVfNBS85TAFA8fNLFXNpF3iFqbixYc6dRiKJcNISxb+9nnz\nGUEXRsMsKex85jTZaq9lLnIhkOAo06LNMLgYRXqVRDyKl93UYHLTl34SoKYDcm0o\n7rv0pqQhJQKBgC6+WOO3BQBZgtOaRgPufIPrJndCi3nCnAcSOfsEeLF+kpP6cKTI\n2GM4NWBGjSahMedvYhdvp5oYisbHRTJJ1HMhkUOobGQQzfCSftguMXc/ESyGGyza\nkhlWZb4+ZF6Pre+NLX1hO84KPyeTglqZHd35knl/Q4SVGC3eLQT5vt8ZAoGAfGMw\nRxCSA7igsNGN2bTRf+PQALg6Ac2USNcmvOTCXRauwgSJLCdX6SeCsdnX4h0h4sKa\nOtaEo4jTTB0vWszHsCKI3RSgLKG0xuvbRXrMe3nmB1TsdiiZrKWIohvcGqJJjfDK\nxoBeOP3hXxc++V3c39nwx+JX+v1a8Ioen5cagcUCgYAfrxV+riX8JErrBJWecFtu\nP7MmlvEHUsYxWD0BwkyM8XReu8ZZAoaT66nenmX7qPIzdr9O4irLYYXXUA44k/qp\nkfChqJpI0J+Gfw7UcrMetluBSZyipxGKJZv2zo1mQDI0MXchRd6PhfLWWPnxv8V0\ne9qc6bcioresGRx8KC2UBQ==\n-----END PRIVATE KEY-----\n",
+    "client_email": "prow-46@kubevirt-240711.iam.gserviceaccount.com",
+    "client_id": "111075634870558306087",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/prow-46%40kubevirt-240711.iam.gserviceaccount.com"
+  }
+
+grafanaUser: "admin"
+grafanaPassword: "345gFjgslgsgDDfg44566"
+grafanaUrl: "grafana-kubevirt-prow.apps.ovirt.org"
+
+nmstateQuayUser: "nmstate+knmstate"
+nmstateQuayPass: "A83A32PUCZB0EEGSN7Q0BBCQ0ZHDYO0C44O7CF3U5E5ZKOLNYCVUSP5BZLG2NUSK"
+
+dockerUser: "kubevirtbot"
+dockerPass: "sf556&*(*03543jhgdDG"
+
+quayUser: "kubevirtcibot"
+quayPass: "4C=wc4wMAJ236yTf=xh-+?SFkRnP&6Gr"
+
+# this account is attached to quay's kubevirtcibot to allow SSO
+redHatBot:
+  user: "kubevirt-ci-bot"
+  pass: "gAFRHGFyHGNJ+6=4H&^rFP4^"
+
+installerPullToken: '{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K2VsbG9yZW50MXJrNWJ1dHZuMTB5c2Z2NHhseDVua2tqcnhsOk4wMk1IVDlBOFM4R1hPODFCQTVSQ1lQVThVSDVENUJFRThEVDJFRk1XT1pYWFRQWEkzR1NZWDNESlRXRTBDV0s=","email":"ellorent@redhat.com"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K2VsbG9yZW50MXJrNWJ1dHZuMTB5c2Z2NHhseDVua2tqcnhsOk4wMk1IVDlBOFM4R1hPODFCQTVSQ1lQVThVSDVENUJFRThEVDJFRk1XT1pYWFRQWEkzR1NZWDNESlRXRTBDV0s=","email":"ellorent@redhat.com"},"registry.connect.redhat.com":{"auth":"NTE3NjI3NDB8dWhjLTFSSzVidVR2bjEweVNmdjR4bHg1TmtLalJYbDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXhNVEk1TXpRd1pUVmxObVkwTWpKak9ETTBabVpqTmpnM1lUa3lNamMyTXlKOS5RTWNaZ3M5ZGFRZzdGVVFpbGRJejhuakpZQnh4Rm9sMkVzaU5Fekt6RV9BSHVkcGxiS0V0WGpLRUhGX3YwZFlIbGxTSmxnbzh1Qm1MTF90RFpBM1BQalR0blJacnJqUlZ1Z1Q0bXhPUFMycWZ0TEtmdmRvUmNhWUpfM0ZzOW56WDl0dnNuenU2WmhKOEdqV0ZNU0lKb3UyVmc0X2xCTlBONGlFekZ5M3JtLTZGXzllUWpjbVJSbEJkd2JLZnQ5Uzl6RmZkUVlsdTBOV1k2RVhwNmIxUVBOWlJCZ3BTRnRhZ0dHSGhNbGY0Rk51OTVlajFjRTczbk5DNlBseUc3RUU4bGF2bGRJQ2h4WnNoc2xkczJ2SWRNOUtPcEh2alJ3TzZSNVk1cXUyWkdrLWpNS3lRQzB5bTU2T3RKVExzUnlIOW1SaXRRMzYtRXZwS0piMUxkaDhIOWY3T2tmTzBrSmVzTjA4eVZLaWtFckVrMmo2b01ud1d0MzdYN2Uza09zUTZuc3QwcjVVVUZfQkRuUUdXbjJTWjR2d0lJV2p5dnRzTVY3QzBTM0NBMGZEdWZwV2ZJbGQwcC1vZHppamZwdmJNUmJXVDZfeG5uNFEtdGl6dk53OWQ4SzRzaVpoNUd2cTNrM2dYMm9uWmYyTGdHTmpoSDdkUVRTblRuQllxOGt4TEF3UUVYZGVDNFlnTHBiMXg0VUVvazBXb0J0LWlZLS1FMFp3OGhxR0IxUVo3eTdOWlpJcjN1YjZPMDdQdkZVSU56eVdzQ1BqSHpKdWYza2NnaG54c2VKdFNjSXRJX1JSOGVGMFJTaW9jNDVKcERpU05YbUZMdkxpWXdOSVBtbS1BencyNjRpV3BGSjB1VUlkcEdTTlBEUS1jd0kyOTdTMmh5NmNVLVNWS01KNA==","email":"ellorent@redhat.com"},"registry.redhat.io":{"auth":"NTE3NjI3NDB8dWhjLTFSSzVidVR2bjEweVNmdjR4bHg1TmtLalJYbDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSXhNVEk1TXpRd1pUVmxObVkwTWpKak9ETTBabVpqTmpnM1lUa3lNamMyTXlKOS5RTWNaZ3M5ZGFRZzdGVVFpbGRJejhuakpZQnh4Rm9sMkVzaU5Fekt6RV9BSHVkcGxiS0V0WGpLRUhGX3YwZFlIbGxTSmxnbzh1Qm1MTF90RFpBM1BQalR0blJacnJqUlZ1Z1Q0bXhPUFMycWZ0TEtmdmRvUmNhWUpfM0ZzOW56WDl0dnNuenU2WmhKOEdqV0ZNU0lKb3UyVmc0X2xCTlBONGlFekZ5M3JtLTZGXzllUWpjbVJSbEJkd2JLZnQ5Uzl6RmZkUVlsdTBOV1k2RVhwNmIxUVBOWlJCZ3BTRnRhZ0dHSGhNbGY0Rk51OTVlajFjRTczbk5DNlBseUc3RUU4bGF2bGRJQ2h4WnNoc2xkczJ2SWRNOUtPcEh2alJ3TzZSNVk1cXUyWkdrLWpNS3lRQzB5bTU2T3RKVExzUnlIOW1SaXRRMzYtRXZwS0piMUxkaDhIOWY3T2tmTzBrSmVzTjA4eVZLaWtFckVrMmo2b01ud1d0MzdYN2Uza09zUTZuc3QwcjVVVUZfQkRuUUdXbjJTWjR2d0lJV2p5dnRzTVY3QzBTM0NBMGZEdWZwV2ZJbGQwcC1vZHppamZwdmJNUmJXVDZfeG5uNFEtdGl6dk53OWQ4SzRzaVpoNUd2cTNrM2dYMm9uWmYyTGdHTmpoSDdkUVRTblRuQllxOGt4TEF3UUVYZGVDNFlnTHBiMXg0VUVvazBXb0J0LWlZLS1FMFp3OGhxR0IxUVo3eTdOWlpJcjN1YjZPMDdQdkZVSU56eVdzQ1BqSHpKdWYza2NnaG54c2VKdFNjSXRJX1JSOGVGMFJTaW9jNDVKcERpU05YbUZMdkxpWXdOSVBtbS1BencyNjRpV3BGSjB1VUlkcEdTTlBEUS1jd0kyOTdTMmh5NmNVLVNWS01KNA==","email":"ellorent@redhat.com"}, "registry.svc.ci.openshift.org": { "auth": "c3lzdGVtLXNlcnZpY2VhY2NvdW50LWtuaS1kZWZhdWx0OmV5SmhiR2NpT2lKU1V6STFOaUlzSW10cFpDSTZJaUo5LmV5SnBjM01pT2lKcmRXSmxjbTVsZEdWekwzTmxjblpwWTJWaFkyTnZkVzUwSWl3aWEzVmlaWEp1WlhSbGN5NXBieTl6WlhKMmFXTmxZV05qYjNWdWRDOXVZVzFsYzNCaFkyVWlPaUpyYm1raUxDSnJkV0psY201bGRHVnpMbWx2TDNObGNuWnBZMlZoWTJOdmRXNTBMM05sWTNKbGRDNXVZVzFsSWpvaVpHVm1ZWFZzZEMxMGIydGxiaTAxZEdkbU55SXNJbXQxWW1WeWJtVjBaWE11YVc4dmMyVnlkbWxqWldGalkyOTFiblF2YzJWeWRtbGpaUzFoWTJOdmRXNTBMbTVoYldVaU9pSmtaV1poZFd4MElpd2lhM1ZpWlhKdVpYUmxjeTVwYnk5elpYSjJhV05sWVdOamIzVnVkQzl6WlhKMmFXTmxMV0ZqWTI5MWJuUXVkV2xrSWpvaVlqZzNNRGt4WmpZdE5qRXlNeTB4TVdVNUxXRTJNVGt0TkRJd01UQmhPR1V3TURBeUlpd2ljM1ZpSWpvaWMzbHpkR1Z0T25ObGNuWnBZMlZoWTJOdmRXNTBPbXR1YVRwa1pXWmhkV3gwSW4wLm51VGR0RlczRENHcFpvT0pCbU45VjQwWG1wbmlZRE9tUnI2Z05vNGVwRVBrb1lDXzk1YmhWX0ttYjhoTnprOTNVTGtDNnJXNTVjTXFQMVM4RHh3QWw0RUxRZ2NFZXIyalBJLXZBNGUzdlZ5cHNLbS1XSkFxcWo2OGhNN0Z4ekMzRGgxY19lN19EQkJLOWtxZmcyRzZiNTJXQmI2RUhsODg2Q2Nza3JBVm1fbmprNS14ay1Ma1hSM3lXNW5JeXlZdXhNVGg1LUNMd3lQQy1yLVIzeklzdnlWelNPVTgyeUJaaE1tUmc3enUtOWlydThENHdqRFJQclhiSm1FV3lBM1FIUlJ2VTJuci01MTFEeEhEbWhtNW14YU0tSFA4emk3SU8zVEU5SU55S3BqTmo5eTIwNmtFN0NNSVNMWmRWWFl3MkpIQ1BmSmJQMHNJY3V0dnFvOTdGdw=="}}}'
+
+gcswebUrl: "gcsweb.apps.ovirt.org"
+slackToken: "xoxb-2253118358-948617102631-rRzJnVkkhq6cisTNqyNuu65Y"
+
+fossaToken: "af06c0240bcf70ccbaac76c308bf6b1a"
+
+remoteClusterProwJobsContext: ibm-prow-jobs
+masterClusterContext: phx-prow
+remoteClusterGreenhouseStorageClass: ibmc-vpc-block-general-purpose
+kubeconfig: |
+  apiVersion: v1
+  clusters:
+  - cluster:
+      certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURRRENDQWlpZ0F3SUJBZ0lVZGFMUmxsdWdqUkpOZWx0MkJKUnkrQUxaejZFd0RRWUpLb1pJaHZjTkFRRUwKQlFBd09ERTJNRFFHQTFVRUF4TXRZblZpWXpKblkyUXdNREp0Ykc1aVl6Vm1jR2N0YTNWaVpYSnVaWFJsY3kxagpZUzB4TmpBek56RTFORGd3TUI0WERUSXdNVEF5TmpFeU1qWXdNRm9YRFRJMU1UQXlOVEV5TWpZd01Gb3dPREUyCk1EUUdBMVVFQXhNdFluVmlZekpuWTJRd01ESnRiRzVpWXpWbWNHY3RhM1ZpWlhKdVpYUmxjeTFqWVMweE5qQXoKTnpFMU5EZ3dNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQW15WTF6VmNFQzY1SQpJRTRkV0VJV2hna3VsOThrYXV1eDZRY1BuamVlVHlQeHU1TjVPV09jL1ZNTFlWMExFZWxrMlFKN1ZCTGU2NjR3ClNYcXpxK1kzU2JxcmRuallFTVpJelNKWFVETmVoQmdZOHQ2bnFTTTNyTVVpa3NYVXhEU3VJeFZtbFEyajBEaDEKWEt2Qk1PN2NOVGRFWFFwOWllNmJIZzJabnNLcEEzSjhUdkNIcHdjRXFpdy8rZ3U5SlNDY2liMDFXaU5YcG9BaQozSEZkWlljSldxWVY0T1FSY0tIY2lHeFdTdFJnQ1ZieFlMRlJxeGxkQVV2WXhyTlp0Z05TS1BuOVVMUUNERXlCCk03SEFwS3VNRzRsWGFRWDVHWEx6YzdDOTMvQm9LcVFTejE2OFFzcHEvZGpPY1AzVU5lWTlBRGxIcGE5NHd1MGIKKzY0eG1Ga1Rld0lEQVFBQm8wSXdRREFPQmdOVkhROEJBZjhFQkFNQ0FRWXdEd1lEVlIwVEFRSC9CQVV3QXdFQgovekFkQmdOVkhRNEVGZ1FVa0h6UTdJSXMvR1U5SGl5QitJcmJZUFJZMFR3d0RRWUpLb1pJaHZjTkFRRUxCUUFECmdnRUJBR3g5SFNpMVVhRTdpQm5PUDJ1Z25kS1VzbDh1RzZtMDd1SjVybERDaDFNWXBNTmZDMHBmeXc1ZjhQT1kKOFF6bGUxZlgxYThDTDAzaVFNYy8vc09uTUhyS1lJMGZ0QnZkVEVrK3c3S0lPNlo4THVjYUtwcUFBSU0wRU1TcgpneU0weWNUcy93ZDRheGJFa1Yvdm9HNG5NbUgybndndFBkdmV2NVlNaExsM2FaQWtCVnNhTFVEdDd2eUp3NlowCjFxK29DNHVlcGZDWXN5K09ma0d6bkxDWnl5Q254QjVQMkowS21IZm9aQ3Z6Nko0d0ZLT1BmMGRWQkExakVEZisKTnVlUjRHUjdHQVpSOEtVTGtHdms5ZTBOeWZLRFJHTDBBWEw2cm5ldlhnaXRCenNJSyt2bFRNNmZFaUQ5eEd2cwprRmNFVnp4YkhSMlU5VCtLendmVTFJSEVmQm89Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0KLS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURRakNDQWlxZ0F3SUJBZ0lVREtFcVVHY2w3L0s1Zm9zdkFrR1ExYnRWUmhZd0RRWUpLb1pJaHZjTkFRRUwKQlFBd09ERTJNRFFHQTFVRUF4TXRZblZpWXpKblkyUXdNREp0Ykc1aVl6Vm1jR2N0YTNWaVpYSnVaWFJsY3kxagpZUzB4TmpBek56RTFORGd3TUNBWERUSXdNVEV4T0RFNE1UQXdNRm9ZRHpJd05UQXhNVEV4TVRneE1EQXdXakE0Ck1UWXdOQVlEVlFRREV5MWlkV0pqTW1kalpEQXdNbTFzYm1Kak5XWndaeTFyZFdKbGNtNWxkR1Z6TFdOaExURTIKTURNM01UVTBPREF3Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRQ2JKalhOVndRTApya2dnVGgxWVFoYUdDUzZYM3lScTY3SHBCdytlTjU1UEkvRzdrM2s1WTV6OVV3dGhYUXNSNldUWkFudFVFdDdyCnJqQkplck9yNWpkSnVxdDJlTmdReGtqTklsZFFNMTZFR0JqeTNxZXBJemVzeFNLU3hkVEVOSzRqRldhVkRhUFEKT0hWY3E4RXc3dHcxTjBSZENuMko3cHNlRFptZXdxa0RjbnhPOEllbkJ3U3FMRC82QzcwbElKeUp2VFZhSTFlbQpnQ0xjY1YxbGh3bGFwaFhnNUJGd29keUliRlpLMUdBSlZ2RmdzVkdyR1YwQlM5akdzMW0yQTFJbytmMVF0QUlNClRJRXpzY0NrcTR3YmlWZHBCZmtaY3ZOenNMM2Y4R2dxcEJMUFhyeEN5bXI5Mk01dy9kUTE1ajBBT1VlbHIzakMKN1J2N3JqR1lXUk43QWdNQkFBR2pRakJBTUE0R0ExVWREd0VCL3dRRUF3SUJoakFQQmdOVkhSTUJBZjhFQlRBRApBUUgvTUIwR0ExVWREZ1FXQkJTUWZORHNnaXo4WlQwZUxJSDRpdHRnOUZqUlBEQU5CZ2txaGtpRzl3MEJBUXNGCkFBT0NBUUVBTGJjMld2dzkwMTg0aDJMcHdVY3Q1ODFXTWxXRERTd3c3WFo0cDhxRm9EWDV4WjJBb2NNWm02WVUKbWZDeEtuNUx2VU9xRmtBcTVMOUdsbHJVSlFjTHRhNWFzUFlpWDZnOGRlZzFnRW5VM01nTkpIdWFkcThDUG9JcApNaXNvb3daZXNvbVpaWFBNNHk1V0g5aC80OTVBbFBWTnBvampEOXJxOU1QYWRBM2VxMmxtOEs2VGlHd3VZMndlCkpXeEl4U3BsSHNkNHNvUGVJYWNMMzIwc1ZodEtMM1pReHZHTFpETmQ1RmEvTEI4dmpZK1JGS0s2aXFvbkpwdlQKdXJiZmFnbmMvM1FVUERIMnlzU1JGNFgwTW1BTzk2WWl3R1JyVDlPeldqNnQ1MlRoSTVON2c1clEvT3A1Uk9wWAo4SGIyN3Q0VG03ejBWRHNyMm9oK0lHcGFaY3hxVlE9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCi0tLS0tQkVHSU4gQ0VSVElGSUNBVEUtLS0tLQpNSUlEUURDQ0FpaWdBd0lCQWdJVWRhTFJsbHVnalJKTmVsdDJCSlJ5K0FMWno2RXdEUVlKS29aSWh2Y05BUUVMCkJRQXdPREUyTURRR0ExVUVBeE10WW5WaVl6Sm5ZMlF3TURKdGJHNWlZelZtY0djdGEzVmlaWEp1WlhSbGN5MWoKWVMweE5qQXpOekUxTkRnd01CNFhEVEl3TVRBeU5qRXlNall3TUZvWERUSTFNVEF5TlRFeU1qWXdNRm93T0RFMgpNRFFHQTFVRUF4TXRZblZpWXpKblkyUXdNREp0Ykc1aVl6Vm1jR2N0YTNWaVpYSnVaWFJsY3kxallTMHhOakF6Ck56RTFORGd3TUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFteVkxelZjRUM2NUkKSUU0ZFdFSVdoZ2t1bDk4a2F1dXg2UWNQbmplZVR5UHh1NU41T1dPYy9WTUxZVjBMRWVsazJRSjdWQkxlNjY0dwpTWHF6cStZM1NicXJkbmpZRU1aSXpTSlhVRE5laEJnWTh0Nm5xU00zck1VaWtzWFV4RFN1SXhWbWxRMmowRGgxClhLdkJNTzdjTlRkRVhRcDlpZTZiSGcyWm5zS3BBM0o4VHZDSHB3Y0VxaXcvK2d1OUpTQ2NpYjAxV2lOWHBvQWkKM0hGZFpZY0pXcVlWNE9RUmNLSGNpR3hXU3RSZ0NWYnhZTEZScXhsZEFVdll4ck5adGdOU0tQbjlVTFFDREV5QgpNN0hBcEt1TUc0bFhhUVg1R1hMemM3QzkzL0JvS3FRU3oxNjhRc3BxL2RqT2NQM1VOZVk5QURsSHBhOTR3dTBiCis2NHhtRmtUZXdJREFRQUJvMEl3UURBT0JnTlZIUThCQWY4RUJBTUNBUVl3RHdZRFZSMFRBUUgvQkFVd0F3RUIKL3pBZEJnTlZIUTRFRmdRVWtIelE3SUlzL0dVOUhpeUIrSXJiWVBSWTBUd3dEUVlKS29aSWh2Y05BUUVMQlFBRApnZ0VCQUd4OUhTaTFVYUU3aUJuT1AydWduZEtVc2w4dUc2bTA3dUo1cmxEQ2gxTVlwTU5mQzBwZnl3NWY4UE9ZCjhRemxlMWZYMWE4Q0wwM2lRTWMvL3NPbk1IcktZSTBmdEJ2ZFRFayt3N0tJTzZaOEx1Y2FLcHFBQUlNMEVNU3IKZ3lNMHljVHMvd2Q0YXhiRWtWL3ZvRzRuTW1IMm53Z3RQZHZldjVZTWhMbDNhWkFrQlZzYUxVRHQ3dnlKdzZaMAoxcStvQzR1ZXBmQ1lzeStPZmtHem5MQ1p5eUNueEI1UDJKMEttSGZvWkN2ejZKNHdGS09QZjBkVkJBMWpFRGYrCk51ZVI0R1I3R0FaUjhLVUxrR3ZrOWUwTnlmS0RSR0wwQVhMNnJuZXZYZ2l0QnpzSUsrdmxUTTZmRWlEOXhHdnMKa0ZjRVZ6eGJIUjJVOVQrS3p3ZlUxSUhFZkJvPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCi0tLS0tQkVHSU4gQ0VSVElGSUNBVEUtLS0tLQpNSUlEUWpDQ0FpcWdBd0lCQWdJVUN0MnFpQ0dCa1hxcEVGL0lPRnFZajg3RjNjY3dEUVlKS29aSWh2Y05BUUVMCkJRQXdPREUyTURRR0ExVUVBeE10WW5WaVl6Sm5ZMlF3TURKdGJHNWlZelZtY0djdGEzVmlaWEp1WlhSbGN5MWoKWVMweE5qQXpOekUxTkRnd01DQVhEVEl3TVRFeE9ERTRNVEF3TUZvWUR6SXdOVEF4TVRFeE1UZ3hNREF3V2pBNApNVFl3TkFZRFZRUURFeTFpZFdKak1tZGpaREF3TW0xc2JtSmpOV1p3WnkxcmRXSmxjbTVsZEdWekxXTmhMVEUyCk1ETTNNVFUwT0RBd2dnRWlNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0SUJEd0F3Z2dFS0FvSUJBUUNiSmpYTlZ3UUwKcmtnZ1RoMVlRaGFHQ1M2WDN5UnE2N0hwQncrZU41NVBJL0c3azNrNVk1ejlVd3RoWFFzUjZXVFpBbnRVRXQ3cgpyakJKZXJPcjVqZEp1cXQyZU5nUXhrak5JbGRRTTE2RUdCankzcWVwSXplc3hTS1N4ZFRFTks0akZXYVZEYVBRCk9IVmNxOEV3N3R3MU4wUmRDbjJKN3BzZURabWV3cWtEY254TzhJZW5Cd1NxTEQvNkM3MGxJSnlKdlRWYUkxZW0KZ0NMY2NWMWxod2xhcGhYZzVCRndvZHlJYkZaSzFHQUpWdkZnc1ZHckdWMEJTOWpHczFtMkExSW8rZjFRdEFJTQpUSUV6c2NDa3E0d2JpVmRwQmZrWmN2TnpzTDNmOEdncXBCTFBYcnhDeW1yOTJNNXcvZFExNWowQU9VZWxyM2pDCjdSdjdyakdZV1JON0FnTUJBQUdqUWpCQU1BNEdBMVVkRHdFQi93UUVBd0lCaGpBUEJnTlZIUk1CQWY4RUJUQUQKQVFIL01CMEdBMVVkRGdRV0JCU1FmTkRzZ2l6OFpUMGVMSUg0aXR0ZzlGalJQREFOQmdrcWhraUc5dzBCQVFzRgpBQU9DQVFFQWVUN21tWGQxMHNlaTA3emhycVhxcEdFT1M3Ry84TlAyd25sQ3RtcjhFR1kzZXZESVJsT0lXY0ZUCkJLSEVtOWpkSUUrUlZqV092czJKQUt2bitRUjRyMkVNeERzZ2ZWWnd3Q3c3MitKc0JJZEt5WmJqY0R1OTFiNUgKa3BtM1p0RkZQd1p5d0pRNXZ1eG5RWUcrMHkvQmxpZVlycllpR1ZwSEkwSGplUGl1U2NaSU90TURYUmhVL21ZcQp4Z0N3TFpqNDFZMFZEK1dpYUFpeDRnRkdXOXhzOWZIcVQvM2hmc25MdGZudENFbnlFcEFjYlQwK0IzeUMyNjN6CkRlb1Voclg2d01CbXFiWUJwY2pHR3FiNUNTQ1o2ZCs0T1NXcHh1ZUlUbSsrTmpmSEZTNytWWThCM2xjS2lza1QKTVBHeUdqQmdGekFBdk5RODZwNDdLQlF6SHBsalBRPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+      server: https://c113.us-south.containers.cloud.ibm.com:30054
+    name: ibm-cluster
+  - cluster:
+      server: https://shift.ovirt.org:8443
+    name: phx-ocp
+  - cluster:
+      certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJeE1ETXpNREUxTXpRek5sb1hEVE14TURNeU9ERTFNelF6Tmxvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTkZYCmpOVE5nTHcxZ2RGUEYwK0VVVnU2bUs2OCswdTBocUVNLzRuYytKaE85d0V5aE5uNTI4Z2tPeDJxdnV1ZC9QTFIKQm9qenV6cUY2cEVBOURpc3dBQWFpMm9yMEdiUUVua1hVemd0eFcyTmlXMUVtb0Y4R2lBOVdaemNiaWwxUm1ncgpiejBMci9Ta0NqU3VtbVVxdDN5L1kwV1pFQTFqckdob2d4bnBlU2I1anpEemp0MkRjNVVTWE9tTWdleWZxd2xKCmFtNmh3ekRCVVZoVDJETVBqb2JoVWVwTHBhZmU2V0NuOGE0d0M3WmFhM0RMbUp1cTJieUprMWNUeGtrNE9qNmsKR3FmRnV5K1pRWTFWbUFFRUIwMzIzV0ljc213Z3M5aVRkL1BJNklLeEs0T00zTmlUZEFqMkMxY2lmbVMyQU9jRgpPS3ZXUW1oSU9BRFVGSG10QnJzQ0F3RUFBYU5DTUVBd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZISWlIK1FuUE5Ma3ZYNlkvZU5ybmhqOE42L1pNQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFBM2NGcFgySlhIdDRxdmMyUHFZK1JPSzltVTdLNEJKM0dxNnBUemNvQURYVCtnTmIyNQpNREN3Y0pyMmtRUm9ISTRBcHo5UTd1NUZYaFdpcFA2bjZsaTVoUDl4YkF1K25lVlEvWEFTb2RKNmZSSUQ0NDI4Cmc3eU02TkVVcTBtazRJQmFRd1IyVXlFb3FKNlhrVkU2cFlncS9rdm1adUNkeDVEa01NVWFNT0xRNVk2UUoxN1UKV0ZlalQ2a3pJQnZKbE1JVGFSamtzNFlIVGl1TFk2UVJTRXBRTVFaMXM3WGRCdk9SS21CUFhleEJUZXFsMXVOUwowRXFMbTk1dUZCcWY3L3BsY3hFWTJPQWgxM1p5YUJjNGh4dnRuYStrYkN2eHIrellkeGNWbzFtWXljTUFtUWQ0CmluNkxkODA0cGpPL1hwbzAxTW5LSC9EWTlPTzY3eDhXWjliQgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+      server: https://kubevirt-sm-lb01-2007274-dal09.clb.appdomain.cloud:6443
+    name: prow-workloads-cluster
+  contexts:
+  - context:
+      cluster: ibm-cluster
+      namespace: kubevirt-automation
+      user: ibm-prow-jobs-automation
+    name: ibm-prow-jobs
+  - context:
+      cluster: phx-ocp
+      user: phx-automation
+    name: phx-prow
+  - context:
+      cluster: prow-workloads-cluster
+      user: prow-workloads-automation
+    name: prow-workloads
+  current-context: ibm-prow-jobs
+  kind: Config
+  preferences: {}
+  users:
+  - name: ibm-prow-jobs-automation
+    user:
+      token: eyJhbGciOiJSUzI1NiIsImtpZCI6InEwMFpESFhXSUlobkhpZl8yRDhKcHl0YmFZcjJTd0Q5ZlkyUXVpakZ4aGMifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJldmlydC1wcm93LWpvYnMiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlY3JldC5uYW1lIjoiaWJtLXByb3ctam9icy1hdXRvbWF0aW9uLXRva2VuLWxwNzJ2Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImlibS1wcm93LWpvYnMtYXV0b21hdGlvbiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjU1NzZhMjA5LWNkY2UtNDJiMS04YWE4LTcwMjYwYjMzNjYwZiIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJldmlydC1wcm93LWpvYnM6aWJtLXByb3ctam9icy1hdXRvbWF0aW9uIn0.RvsS8ddnIMWOnlQy7lknD7Z2QHnLIxuSgnO9PfEbIyQD-rfbyrRBzhFLQVRZiD2uJZ9PgujL6cK7uM2AtXUCcQyoOxLor5gHO3gYw82otk8vl5VxXjr3qbATIwu1S5FN5qQ119pHjZ2vII8Fe6TFGVL_g9IuzldobrhKlJsSYWBLKufuEPC1gHiS3TugyU2d3uBqXX4BSRErEqdBrpHC_lJtNdM3A7JppgccJl0OsEbZgoed2VZbX3Rn-AKO2bUjxRu2jO0IlAvE_zCGYdnfqyPWL2713L3MPXimVGJLN8aOo_e-s77akGzkYLuG13cnbVSYDA4wq--IwG1k2J5FiPrIrN9RxGFJoCC0UNX7gK9gmuXyt0A5_x1Cekqx4NIZRT5ZNOW4qwFm9q21oLDGcp29Qg-XuuMd1U5hQerd1LDpOpQm_VrpqEcE4ZLBd6F2vW6CmeDC9Ux_9r-4enSEvxN0aP-m5Wnd6K2OW3aQwOMSsxfFMbI5IfRLJfMP_c8-bRHO-u9G2quQzVPeX4t3nBFZDBlTsXgzN-aSA8gLTv4lscHGKnxbasI-_Hnr2NB1R_dfZyQXVpcUNsDEhv8zQkRdc8r5KhN9s5LfFOs4EfdGl8nDI0yMVXlAb22f-ofC1kEWHPKORPkEoDYsYYfYMvmBN_2RkuRgtgSOYGKbeRc
+  - name: phx-automation
+    user:
+      token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJldmlydC1wcm93Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6InBsYW5rLXRva2VuLTR6ajhkIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6InBsYW5rIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiYzI3YjNkNjgtYmM5OS0xMWU4LWJjZjEtMDAxYTRhNWI3ZTExIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmV2aXJ0LXByb3c6cGxhbmsifQ.FCDYGSzqYGeNWxSG8vqe_9u8qiDXX5kk-2MdPYwg2UYf0KhnTuQgTqlA4A3IGkuvb-LNVbHIKWie5iaemPu0J2lO3m52SU38X8J61iadMNy_EUtr0650dKpHt2OcNUsreJPVnVHofMWZrw14_fIDtyJccZmHbm_9s9xCXEw4-grVFdTfWf0At0xRuxMyOroOlN1ZXwVwvwxEfc0GHZbbDlmflr_KNmjo5DXTRG13BKNGc1yAGBwMLkYI56lN6W4LGep_yLG3Mik7l0IlK1Uh-aH9n8J8Qk0jJAnPnaY-uwZFNpCqFvTrh7j2sdzOhuHIX7iYIIFARj_BU0IZ-j_yZw
+  - name: prow-workloads-automation
+    user:
+      token: eyJhbGciOiJSUzI1NiIsImtpZCI6IjJOejNIV0g3bG5aTlFrbWNmX0YzZzdIUWJ4Z2RwbFRoN1VMeHZQbDFKc0EifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6InByb3ctd29ya2xvYWRzLWF1dG9tYXRpb24tdG9rZW4taHR6aGwiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoicHJvdy13b3JrbG9hZHMtYXV0b21hdGlvbiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjBlZTc0Zjk2LTM3NTYtNGMxZC04Y2NmLWU2NmQwMTRjNWI0ZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OnByb3ctd29ya2xvYWRzLWF1dG9tYXRpb24ifQ.DAEFuehcspUY-ccBHZ3Mr2cINXn68QI7y7P6UhcwzFBrsXMLxVcIuG1ab--G3rjJ-ZuYsrAqivJQdyJCM685Kr_G5aG_oJBkGhv_KXPAoa338qEEIQBrDiFUDvG9g8dd00y4a63rt5EhTduKTyrS7Mik36GZH9QAEfkwUp_QyBeQypp0PnQRRcTtONBFDo0nmw0nUbuFs9-A_0R46y-m1gkzxHb0mGXqj1VXiIfmsP6AUdlrNqJL5BVcHg7Hbbc5p_38iVBclbUEQp4eOW2FQEZS7jHD4YDfJ4L9pKV3Vj8kk7vjA_iZFqw8uCVaG6jt-wZwj3YCuqhppSZGL7ulzg
+
+coverallsToken: PETaZqKngQoUq3pK7CPYagFoT3kWIjNIn
+dockerMirrorProxyCA:
+  key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    Proc-Type: 4,ENCRYPTED
+    DEK-Info: DES-EDE3-CBC,CDF4E58C637CB40D
+
+    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
+    -----END RSA PRIVATE KEY-----
+  crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIF+DCCA+CgAwIBAgIUCY7QsyMZk8WD7zNHYuYfarPxfsUwDQYJKoZIhvcNAQEL
+    BQAwgZMxCzAJBgNVBAYTAk5MMRYwFAYDVQQIDA1Ob29yZCBIb2xsYW5kMRIwEAYD
+    VQQHDAlBbXN0ZXJkYW0xCzAJBgNVBAoMAk1FMQswCQYDVQQLDAJJVDE+MDwGA1UE
+    Aww1RG9ja2VyTWlycm9yQm94IENBIFJvb3QgYTZmMWMwMTQ0MDlhIDIwMjAuMTEu
+    MTIgMTA6MTYwHhcNMjAxMTEyMTAxNjAxWhcNMjQwNjA0MTAxNjAxWjCBkzELMAkG
+    A1UEBhMCTkwxFjAUBgNVBAgMDU5vb3JkIEhvbGxhbmQxEjAQBgNVBAcMCUFtc3Rl
+    cmRhbTELMAkGA1UECgwCTUUxCzAJBgNVBAsMAklUMT4wPAYDVQQDDDVEb2NrZXJN
+    aXJyb3JCb3ggQ0EgUm9vdCBhNmYxYzAxNDQwOWEgMjAyMC4xMS4xMiAxMDoxNjCC
+    AiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANHizdFbZhVZ/M0Cvepta/D9
+    HzKEWghDiswSC64yHJazEeJz7T1UD7XJZNJZ2m+UmGCdFJp140wuCAw+eNiDHFil
+    Ji1sRxWNUCR+D1zmWRLbFJvS23wvvB2G6U5fTCM5HHbeO9djLl+zHlZ7BOcocJu3
+    I6ABGzs3PD8ElguuM9cSdjEs6aukm10rHT+InSLxQZMRMBSESu//91lbKqmeC0Yc
+    nuQ/Xm5VgF4N6WcjhCB9IIo2c1PIEf/zLsjHlCcQ4Hz1bv8JvKTUwIBJegU9whaf
+    jY8TfeJKT5I4zIA1334Rnzz9HQGnFu5n5wFB3czVFyf6c0tSKuSeGcGY7R4Vp2CV
+    aKB+dvg9FkznxR5tLh5iWqpNWko+vt79cEf5pPxxk1CM4jDBC+Jmz9q7f4PiEVcF
+    amm/XK8m8PsQRg6YP+4/+dFPNIenhL1lf/pVw/rzmehcsSVkW15+fMgJzwu3+9NS
+    JkD48op+DJZ+6SS0r3XZrRzzcC1DeTLTcY1DHp5V91jQd0wgSJOqMX4/nupIppIS
+    Q6Q0H6mTNRh/epHF+7PU6BMmubvbNszCKUC+MWFx1c7Hll2cZoku8R1dS/9DNC9Z
+    6Erek1byyMYLBcAeeNE9SRQ5pwN+ietH+FNQKO0pIc0ucinxCBQdfBLRp8sluhqP
+    +ex5FO/00nn/386vDFGFAgMBAAGjQjBAMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0P
+    AQH/BAQDAgGGMB0GA1UdDgQWBBSq6BIsH8Xl0QcP0UFyGrr1eGlZlzANBgkqhkiG
+    9w0BAQsFAAOCAgEARYfqnLBqajVNXPxhukCJdwAndACeveLKpAg3cNOVOn+BFkwQ
+    USh9bk9ziwtyetAg3hQNkTxm5Zb66ar4HTrjuuiukmOjce19wybbCU6v0+ePHXmk
+    d67KY0/szlhjLEXMts2MJo0dfF1tc3dJdJcPf9jpu9tieKTqZfXcJN1jyKn6UYNB
+    j9ll2f0DxiyDg4mjSlliR9JgPccYau0Dq6GjLMq7frq+4OSUNgDnrm9fHS9zT3lO
+    xCZJSYtaPOidxU3iK9qoSu0Lm4egSzM/mLMwrHQvvlPwk3bvizng5g3j0++kqD1B
+    ip3u4XyFEHE2pBkWnn1ZB7DT8enQw9J79BeX9wvUdkhn2xtJUtbpOvcQhIlQl8TN
+    1PBHm3Q/YhliL6rqWei31El16BJ5bSDwuYGV0B+Ti2zg2QhvmXNqwBgXAyGxAwGU
+    8opDNySHMBsva8F8F8gpg6WSD5AkcGLz1bDRWrAyCaFvRtoAxX1W1yNqC7tjukeG
+    2CGmiYnL8Ik76pNcYZdahhSMhUFyExB2h6fQpsrlM4XkKSYap32U1RPVafgWO5M5
+    fZBQZJPrebia+pg6VuIDINmY+qgSfgbJtQVIqAWPd1m2RF9D2hXHzNiVbPpn43VR
+    nLkkQvXpkQsyvzx9GOmZv+Vz2eax5s+W3KxfqRb7YR7bIcxYTbwYqpXi1Yw=
+    -----END CERTIFICATE-----
+
+kubevirtBotPGP:
+  privateKey: |
+    -----BEGIN PGP PRIVATE KEY BLOCK-----
+
+    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
+    =4CEU
+    -----END PGP PRIVATE KEY BLOCK-----
+bugzilla:
+  user: fgimenez+kubevirtbot@redhat.com
+  password: "%8#mX#T%j3x2LG$q"
+  apiKey: "8rVVZEQyqropCqlAOCnbyBrMnBnp0jq0LoxSkUPx"
+prowWorkloads:
+  sshKey: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+    QyNTUxOQAAACCcO6G7nM7CFykYo9MCiVPjKfwlkYgF6QkhlBt6rqYAtwAAAKhiEGnFYhBp
+    xQAAAAtzc2gtZWQyNTUxOQAAACCcO6G7nM7CFykYo9MCiVPjKfwlkYgF6QkhlBt6rqYAtw
+    AAAEBxhLA0XsReGSdVaiiJ4piAvzCmKziifnOd9Y6FEFJVC5w7obuczsIXKRij0wKJU+Mp
+    /CWRiAXpCSGUG3qupgC3AAAAHmZnaW1lbmV6QGxvY2FsaG9zdC5sb2NhbGRvbWFpbgECAw
+    QFBgc=
+    -----END OPENSSH PRIVATE KEY-----
+  hostsYml: # github/ci/prow-workloads/inventory/prow-workloads/hosts.yml
+    all:
+      hosts:
+        master1:
+          ansible_host: 169.45.167.197
+          ip: 10.155.211.137
+        master2:
+          ansible_host: 169.45.167.199
+          ip: 10.155.211.180
+        master3:
+          ansible_host: 169.45.167.202
+          ip: 10.155.211.157
+        bare-metal-sriov-1:
+          ansible_host: 169.45.167.200
+          ip: 10.155.211.144
+          node_labels:
+            type: bare-metal-external
+            hardwareSupport: sriov-nic
+        bare-metal-sriov-2:
+          ansible_host: 169.45.167.201
+          ip: 10.155.211.185
+          node_labels:
+            type: bare-metal-external
+            hardwareSupport: sriov-nic
+        bare-metal-1:
+          ansible_host: 169.45.167.194
+          ip: 10.155.211.167
+          node_labels:
+            type: bare-metal-external
+            ci.kubevirt.io/cachenode: "true"
+          node_taints:
+            - "ci.kubevirt.io/cachenode=true:NoSchedule"
+        bare-metal-2:
+          ansible_host: 169.45.167.198
+          ip: 10.155.211.130
+          node_labels:
+            type: bare-metal-external
+        bare-metal-3:
+          ansible_host: 169.45.167.206
+          ip: 10.155.211.177
+          node_labels:
+            type: bare-metal-external
+        bare-metal-4:
+          ansible_host: 169.45.167.204
+          ip: 10.155.211.168
+          node_labels:
+            type: bare-metal-external
+        bare-metal-5:
+          ansible_host: 169.45.167.195
+          ip: 10.155.211.143
+          node_labels:
+            type: bare-metal-external
+        bare-metal-6:
+          ansible_host: 169.45.167.205
+          ip: 10.155.211.172
+          node_labels:
+            type: bare-metal-external
+        bare-metal-7:
+          ansible_host: 169.45.167.196
+          ip: 10.155.211.142
+          node_labels:
+            type: bare-metal-external
+        bare-metal-8:
+          ansible_host: 169.44.70.196
+          ip: 10.155.211.149
+          node_labels:
+            type: bare-metal-external
+            hardwareSupport: gpu
+        bare-metal-9:
+          ansible_host: 169.45.167.203
+          ip: 10.155.211.175
+          node_labels:
+            type: bare-metal-external
+            hardwareSupport: gpu
+      children:
+        kube-master:
+          hosts:
+            master1:
+            master2:
+            master3:
+        kube-node:
+          hosts:
+            bare-metal-sriov-1:
+            bare-metal-sriov-2:
+            bare-metal-1:
+            bare-metal-2:
+            bare-metal-3:
+            bare-metal-4:
+            bare-metal-5:
+            bare-metal-6:
+            bare-metal-7:
+            bare-metal-8:
+            bare-metal-9:
+        etcd:
+          hosts:
+            master1:
+            master2:
+            master3:
+        k8s-cluster:
+          children:
+            kube-master:
+            kube-node:
+        calico-rr:
+          hosts: {}
+  groupVarsAllYml: # github/ci/prow-workloads/inventory/prow-workloads/group_vars/all/all.yml
+    apiserver_loadbalancer_domain_name: "kubevirt-sm-lb01-2007274-dal09.clb.appdomain.cloud"
+    loadbalancer_apiserver:
+      port: 6443
+    download_container: false
+    skip_downloads: false
+windowsProductKeys:
+  sysprep-001: "6W9QF-NCGPD-B3RRW-G46GD-M7TPB"
+thanosObjstoreConfig:
+  type: GCS
+  config:
+    bucket: "kubevirt-thanos"
+    service_account: |-
+      {
+        "type": "service_account",
+        "project_id": "kubevirt-240711",
+        "private_key_id": "a9ac82a39b7a9e02b6dcd3ef675d36c8669093f2",
+        "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCoGoJhcSX7/pYm\nDIoTNl/0IJxlwwBsuq2mezMTfXIgZnNC3AMZ/Z1nt3MJNW71JPUS8q/daIGEnWiG\n+osXBCEtoRze4N4EpRmakDRVGs3fdrAglicY9urhtKptDjqBaxT1qOAj9dn0Ukr6\nQNj8yHSv2O10WF5P3sxyaiT6AidGIgI29qWaieaLzFQrgOOOmFKudZldSdf7D6eC\nsIglvm0y8oEniAyfG0LuikzMiRmdQsFEbxr6L7cmqKWZxxqARcErDSAJpY6CFXB8\n5ParS1sAA3B/GNeAkZ14WOxpyWoAzb8mLZCGakQh4sQg2H7rsPe8vkK4ZcEJTzkG\np0G/oSN9AgMBAAECggEAALcmKrx/dSMC/WlMas2uhbHgKzBehNfxi8Br+foCHZWv\nXro5etJBFH3WdpRR4ydeXKTdmei13mbeGO723xOfLDF1Qj886qek5CsXcezx3IYw\nid73Dnc544Pa6CkT7NTpa1c7PE6cTXAj42HvGnpO7ChVRbYSPARJJKEuLvCJ6BWU\nsmCDy+CNpF08kyPw5HlJMFAm35gmQH2xqU9zJWOk7yU9W/W6jNkX8mp0SLEJMpdo\n92BTOtiSh3AmGazsRBqbqUuvINp2XIr8sjmti5ih41DOLRjlVBIdg340sKAr00jf\nNqpwoBRApKIy77sDq7zX8PiEYCdtyVuSG28Z+Mv9uQKBgQDhkUTcFtwKmnC0mjju\nMkMc90eeTSXDFC8oBeamysgIu4USUolTU1t6x8g2qcnsU8djCue3zNxs9HYjXPxk\nMAFzYV3ztDl2rrNdEepMNfEPcrWXhT53usN4qtZ8X7stou3B95zSkQ2dYORYCpeh\nXRu2BcbKvoQPKrWUfLCRzJzFeQKBgQC+yIfxYu2OAJ0TQFgRIIJ+XP7YzPcE8LeD\nsLKD9c94UQZTMLKv5OVfNBS85TAFA8fNLFXNpF3iFqbixYc6dRiKJcNISxb+9nnz\nGUEXRsMsKex85jTZaq9lLnIhkOAo06LNMLgYRXqVRDyKl93UYHLTl34SoKYDcm0o\n7rv0pqQhJQKBgC6+WOO3BQBZgtOaRgPufIPrJndCi3nCnAcSOfsEeLF+kpP6cKTI\n2GM4NWBGjSahMedvYhdvp5oYisbHRTJJ1HMhkUOobGQQzfCSftguMXc/ESyGGyza\nkhlWZb4+ZF6Pre+NLX1hO84KPyeTglqZHd35knl/Q4SVGC3eLQT5vt8ZAoGAfGMw\nRxCSA7igsNGN2bTRf+PQALg6Ac2USNcmvOTCXRauwgSJLCdX6SeCsdnX4h0h4sKa\nOtaEo4jTTB0vWszHsCKI3RSgLKG0xuvbRXrMe3nmB1TsdiiZrKWIohvcGqJJjfDK\nxoBeOP3hXxc++V3c39nwx+JX+v1a8Ioen5cagcUCgYAfrxV+riX8JErrBJWecFtu\nP7MmlvEHUsYxWD0BwkyM8XReu8ZZAoaT66nenmX7qPIzdr9O4irLYYXXUA44k/qp\nkfChqJpI0J+Gfw7UcrMetluBSZyipxGKJZv2zo1mQDI0MXchRd6PhfLWWPnxv8V0\ne9qc6bcioresGRx8KC2UBQ==\n-----END PRIVATE KEY-----\n",
+        "client_email": "prow-46@kubevirt-240711.iam.gserviceaccount.com",
+        "client_id": "111075634870558306087",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/prow-46%40kubevirt-240711.iam.gserviceaccount.com"
+      }
+kubeconfigARM: |
+  apiVersion: v1
+  clusters:
+  - cluster:
+      certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJeE1EWXlOREV4TlRNME4xb1hEVE14TURZeU1qRXhOVE0wTjFvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTWhRCmwxVDd1dTF3K1NaTHF5anVraHVEemhMZEo4VXZhZUJ6akdCVWdzTHFwSGxhZW9jdGcrSmEvTWpwU2piZ3djV3UKRmlDVlduNVhQbTIyZEpGcXJlNWl1ZVAvSXNMbDg4aHl1ZHpucUVBL3RPck1NMWRwRHp0c1ZJMlRQM1M4RmFPMQppZGtLMU40cUFuOTBVYW4zNW1ZZFdvT2hBYVlLenZPRWlORk0zZ3k3OHlqa0NkQlJZM2Nldzl4L3BRejd6V0h6Cm9iTlBReWNsc1VNMklsd1pFK3ViVFRnb3RzTWlGNE11NnhFYUdiWHpiUTlBbHBuelBKTlg0SWVJR0NqSk5xYUIKdjJQUjRqWllFSkM1dkI3UGxMdGRiUzVSZ2VpeDN3WWRISko1bFFOQ2FMaDVZSEFEWTd4bldsTUFodUZ1VitXSgppTHBPLzdXKzBmZS9DUS9NT0VNQ0F3RUFBYU5DTUVBd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZMRWV2NHRWR3k5bHEyd0s5UkRLSndjeDdNSnpNQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFCWmRUVGxPWW0rUCsyZG9qTGV0czE2ZEJIeWZRWDJ5N0FZaFIwbnVtQXZMQzVmYi9CYQpXMURQWUM0clExMFhKak5wNnFySzlyY3d1cFl2OVdDWW1aVGZSRXZ2STlXUVdKcm9Zb3BPSUt0cnFvTEk0Mk5rCm9yV1IwUXFZMklBZVBhdWdZWmw5MG5rc3poOEVXRis5bzJnaWptdkxFNWltVCtUU2dxTmtpb01tM1BxS2VpSkcKcS8vSFJkWEozSGt4SVoxTmpPc0xuU0NRTzRUZ2JqZkQ5K0RFbEx5dlNWS0xNSWpOWCtNZU44bjkwT3IxZ0dUVAowbTFVTjEySHB3UzlsU1lNeDJNdHFxdXpOTVdQdCt0SmVaQnk4cHJ6N3l2bGlNVVJacGRnWDhqSEpMUUhtVGNMCnFUQkNPZVErV0ptVHJ1djdnenNLMlZielo2emprN3BWalk0RAotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+      server: https://147.75.93.22:6443
+    name: cluster.local
+  contexts:
+  - context:
+      cluster: cluster.local
+      user: kubernetes-admin
+    name: kubernetes-admin@cluster.local
+  current-context: kubernetes-admin@cluster.local
+  kind: Config
+  preferences: {}
+  users:
+  - name: kubernetes-admin
+    user:
+      client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURFekNDQWZ1Z0F3SUJBZ0lJWXVlWU53ZnVOaTB3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TVRBMk1qUXhNVFV6TkRkYUZ3MHlNakEyTWpReE1UVTBNamhhTURReApGekFWQmdOVkJBb1REbk41YzNSbGJUcHRZWE4wWlhKek1Sa3dGd1lEVlFRREV4QnJkV0psY201bGRHVnpMV0ZrCmJXbHVNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXk0Q2xWMXVNa2tjYmdNdm0KSkJsZE5kL21rU1puT0pjVElMT2JsU0VHWTVjemk2SXJLZFpHa2xYbXdpdC8zNHFJVXNRTlF1Q0szTWRzL0FOMApaUW9GTnRrU0RsN0VPOEtUQkV5a2QxM1dybm5jZVhvYkUraTlHT3BDdGExckVKV20wMXMyUDFUcDNPc0VJS2k2ClA5MEp0bVFHK3ZDOXAwY0JGNDNENDFuMzUxazBhZnlKNGU3bm9Lb2g2QzUwSU1IS0E4VU5kQ0RDYk5iQjRBN1MKejZiR2tSOVFLTFZQK2NvYUdBZGM2YVVmQ1N5bC9vSlVJTXMwdW5yNE1mT3VuSkpUZ0NCTWxQNUJXOGdQWHpZZwo5Vm43VzZWWVdIMnh1SWhsRVN2cW9YSmx6THFuckQzOG5YSHZJU1pheHB6bE54NzRGazN6N0tCNW85UjBtdU5LCno3QXpWUUlEQVFBQm8wZ3dSakFPQmdOVkhROEJBZjhFQkFNQ0JhQXdFd1lEVlIwbEJBd3dDZ1lJS3dZQkJRVUgKQXdJd0h3WURWUjBqQkJnd0ZvQVVzUjYvaTFVYkwyV3JiQXIxRU1vbkJ6SHN3bk13RFFZSktvWklodmNOQVFFTApCUUFEZ2dFQkFKRFNvR09nQWFRQWIyVmlXbWJLamFUY0lZTmdkWGErcnJiLzQ2dTU0dG5PWXh6YWI2MytkQlc1CkQ1WjltaS9mSUtkeGY0WGh6RXVlQ0JrRHlBVW8ram1WNENzMFJySmhWZXdlQzdncHdaa21DdGJTUUdYTUZ0dm0KT05tRG1ieVVVa0k3YmZNbU4wMDNjSHdNOFkvU3creGZLNnNSdnh1b2s4bWZaNnRqRlYxaVV2RmdvSWJ3d0RHaQphSXEwaEl2eXg1dmxUM2ZiRTl6aFlFL2ZNNVBlVGdCTEkxbE1jOVR5eFkreTdjWHVzNmtPMFhtTzdkT0VoUlhECnNVL2tFbm9ZQXpPK3Z5ZFFyNmF1VUd2MUs3K0xzOG9ZS1NNZEV4dEgzb3BienEwYTV3dDZPckE0cE5tTXJBaGsKSVM5V2xvYnBVdm5FMTZQS0dkQmJ6SXJLdnhhemRzOD0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+      client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBeTRDbFYxdU1ra2NiZ012bUpCbGROZC9ta1Nabk9KY1RJTE9ibFNFR1k1Y3ppNklyCktkWkdrbFhtd2l0LzM0cUlVc1FOUXVDSzNNZHMvQU4wWlFvRk50a1NEbDdFTzhLVEJFeWtkMTNXcm5uY2VYb2IKRStpOUdPcEN0YTFyRUpXbTAxczJQMVRwM09zRUlLaTZQOTBKdG1RRyt2QzlwMGNCRjQzRDQxbjM1MWswYWZ5Sgo0ZTdub0tvaDZDNTBJTUhLQThVTmRDRENiTmJCNEE3U3o2YkdrUjlRS0xWUCtjb2FHQWRjNmFVZkNTeWwvb0pVCklNczB1bnI0TWZPdW5KSlRnQ0JNbFA1Qlc4Z1BYellnOVZuN1c2VllXSDJ4dUlobEVTdnFvWEpsekxxbnJEMzgKblhIdklTWmF4cHpsTng3NEZrM3o3S0I1bzlSMG11Tkt6N0F6VlFJREFRQUJBb0lCQVFETGR4dFpKWEo5eWxTbwpTTFVZZ0xlZUp2ZkxSbDlMeUZqYWlGbFZHRWpnQ0F3RVh5YlMxS2VJcGhSckxMelVUeGtQejI4RzM2UlhLNWsrCnUyR0RxQ29nZFpaRkFlRW5jdG8xSVVBTERLcVpsY09uUFR1WGcwcVZmNXNsTkhkb2hJZmdxRUNydjRWM1dRNnUKYktTVE43Zi9RVEZ0Y29mY21QUnhqVTgrbi9ScHZCRnQzSUZBdXRmZTJUODNjdzVLRktUYnpzWmYxNUxDKzZZZAo3TnM2N0NveEI4YjROZnNSS2xnbUc4d0h2b3ZvNFo4V3pMRXVyaURjeUtCR1lYakdFcm9oMlNUMDlGOW1qak1iCkdBZk9tTklOZTVIK0JvQVpYeWdlUSs2SGdNZHhFZ0JUQWFYbkpoV3h3alhtQU1GTmkzWklRUERRRHZkWnMrTXYKWEJwTDRwUDlBb0dCQU9Rb240amgxS0wwbDREZmJmdTdZVjJrYWJSdXBHL3htSTh0SnJOT0lWQVpwbFNvSE1pawpTdVNlbkc1MnVjb3pCNnVmZTBhUUF3M1dxeVRycHI1V2JnZllwOVZCN0I4MVltZDBnRkY1a1pDbHU4dzRoWFV2CkptanIzU0ZXQ1VhRnhkVGlscGpXNGdiaU1ObHF1Tm1Ma3pabWtocm4rMUpUZ1BUZ0RCMDRjV3lIQW9HQkFPUlYKeS9LblFGcTFVK2pHSTFYbndoZWhRNHZSRFI4WmVwWXhtNWdQN0MvRVBVL3dQR0FZcWk4QnI5ZEZZY3hGMlQ4bApqODExcDZ6enFRU01hVFJWaFhTZnA5cU9QRmlienhuSlR6MHMzbVlCYUNzWE5GMys4c2ZnbzhrbStEOTdmYU5GCm1yNVNwL0J2ZDY5THByRzZZYUVNbloybkdGcmEzemJZZGluRUY5UkRBb0dBRzJKczA0Y1hlSCtXOTViWm9vODQKL241UFdhSzJCZUdmaC8vSlYxZ1hVMy9nb09TVW45aG9UTXhreGpWbDAwa1FzSjZ4c3lSeDJXVmNvVS9QY2FUNgpDK01MTWVONXJiMUFsRjQ5VUlvZzJKV3IxclVwLzRpck9ZaWx2K3lOckhNOTdYRk0xZ2RrbGFMc2Jnd0xKOEZDCjZCS2prcXNwVlJaRXNoOTZGTC9EalYwQ2dZQVJsMDZNRmppT0JIUS9kYXhaUE82bUZXVjN5eFpBdEJ6T24ybkcKVUV1NDdseHU0U28xbVJEYmFEemN6OXFWK3plZWRzMWFYZHNhSnZkNWd6dkRyV2NIc2hramJGdlgwOEVqMG0rSgpYZ0NRU1VGMk9HWnZhMm5XM2thZ0E2R1NlbmdXY1JGWDRsUlA0TGFPeWJ4QTZ3UUVmVTFUVFFGQ1ZxUmx2RTEyCk1FWkpzd0tCZ1FDUkVpU0l0eGpDMUY5MSt0UTRtQ1BqVXdqdkFDY2E1WVFMTkNKTjcxVENOeXVBNm02YWFXYXUKZ0R2TXNjbi9oQnJ3ckdYQThVUS96Rzh1bXJCZVdjbm9PcWpUZlFkREprdzZuQkQyRXBQNnZPbXlvRHNibWtkVQp1TG5ORDZ4aC90RWF1Yzl3Sm0rK3diSE5DNXpCYisvMmI0MlJjWnM1UGp2VlNVZG1QOS9rR2c9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
