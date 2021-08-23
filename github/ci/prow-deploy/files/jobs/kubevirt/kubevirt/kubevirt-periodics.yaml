@@ -598,6 +598,9 @@ periodics:
       base_ref: main
       work_dir: true
   cluster: prow-workloads
+  reporter_config:
+    slack:
+      job_states_to_report: []
   spec:
     nodeSelector:
       type: bare-metal-external
