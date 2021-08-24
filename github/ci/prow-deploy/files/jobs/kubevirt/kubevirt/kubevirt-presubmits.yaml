@@ -909,8 +909,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-  - always_run: false
-    optional: true
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
