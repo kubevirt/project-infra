@@ -234,7 +234,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    cluster: phx-prow
+    cluster: prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s

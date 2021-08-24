@@ -180,7 +180,7 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 				"preset-dind-enabled":  "true",
 				"preset-docker-mirror-proxy": "true",
 			},
-			Cluster: "phx-prow",
+			Cluster: "prow-workloads",
 			Spec: &v1.PodSpec{
 				NodeSelector: map[string]string{
 					"type": "bare-metal-external",
