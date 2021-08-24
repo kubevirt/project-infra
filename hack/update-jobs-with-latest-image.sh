@@ -3,7 +3,7 @@ set -euo pipefail
 
 IMAGE_NAME="$1"
 
-job_dir="$(cd "$(cd "$(dirname $0)" && pwd)"'/../github/ci/prow/files/jobs' && pwd)"
+job_dir="$(readlink --canonicalize $(cd "$(cd "$(dirname $0)" && pwd)"'/../github/ci/prow-deploy/files/jobs' && pwd))"
 
 docker pull "$IMAGE_NAME"
 sha_id=$(docker images --digests "$IMAGE_NAME" | grep 'latest ' | head -1 | awk '{ print $3 }')
