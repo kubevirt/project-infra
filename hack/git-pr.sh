@@ -23,7 +23,7 @@ set -o pipefail
 set -x
 
 usage() {
-    echo "Usage: $(basename "$0") -c \"<command>\" [-s \"<summary>\"] [-l <github-login>] [-t </path/to/github/token>] [-T <target-branch>] [-p </path/to/github/repo>] [-n \"<git-name>\"] [-e <git-email>]  [-b <pr-branch>] [-o <org>] [-r <repo>] [-L label1,..,labelN] [-m </path/where/command/should/be/run>]">&2
+    echo "Usage: $(basename "$0") -c \"<command>\" [-s \"<summary>\"] [-l <github-login>] [-t </path/to/github/token>] [-T <target-branch>] [-p </path/to/github/repo>] [-n \"<git-name>\"] [-e <git-email>]  [-b <pr-branch>] [-o <org>] [-r <repo>] [-L label1,..,labelN] [-m </path/where/command/should/be/run>] [-d <command-to-create-commit-message>]">&2
 }
 
 command=
@@ -39,8 +39,11 @@ repo=kubevirt
 command_path=$(pwd)
 targetbranch=master
 labels=
+description_command=
+title=
+body=
 
-while getopts ":c:s:l:t:T:p:n:e:b:o:r:m:L:" opt; do
+while getopts ":c:s:l:t:T:p:n:e:b:o:r:m:L:d:" opt; do
     case "${opt}" in
         c )
             command="${OPTARG}"
@@ -81,6 +84,9 @@ while getopts ":c:s:l:t:T:p:n:e:b:o:r:m:L:" opt; do
         L )
             labels="${OPTARG}"
             ;;
+        d )
+            description_command="${OPTARG}"
+            ;;
         \? )
             usage
             exit 1
@@ -110,6 +116,15 @@ if ! git config user.name &>/dev/null && git config user.email &>/dev/null; then
     exit 1
 fi
 
+if [ -n "${description_command}" ]; then
+    summary=$(eval "${description_command}")
+    title=$(echo "$summary" | head -1)
+    body=$(echo "$summary" | sed '1,2d')
+else
+    title="$summary"
+    body="Automatic run of \"${command}\". Please review"
+fi
+
 git add -A
 if git diff --name-only --exit-code HEAD; then
     echo "Nothing changed" >&2
@@ -126,8 +141,8 @@ echo "Creating PR to merge ${user}:${branch} into master..." >&2
 pr-creator \
     --github-token-path="${token}" \
     --org="${org}" --repo="${repo}" --branch="${targetbranch}" \
-    --title="${summary}" --match-title="$(echo $summary | cut -c -150)" \
-    --body="Automatic run of \"${command}\". Please review" \
+    --title="${title}" --match-title="$(echo $title | cut -c -150)" \
+    --body="${body}" \
     --source="${user}":"${branch}" \
     --labels="${labels}" \
     --confirm
