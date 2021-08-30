@@ -122,8 +122,11 @@ func main() {
 		os.Exit(0)
 	}
 
-	latestReleaseSemver := querier.ParseRelease(releases[0])
-	secondLatestReleaseSemver := querier.ParseRelease(releases[1])
+	targetRelease, sourceRelease, err := getSourceAndTargetRelease(releases)
+	if err != nil {
+		log().WithError(err).Info("Cannot determine source and target release.")
+		os.Exit(0)
+	}
 
 	jobConfigs := map[string]func(*config.JobConfig, *querier.SemVer, *querier.SemVer) bool{
 		o.jobConfigPathKubevirtPresubmits: func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return CopyPresubmitJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
@@ -135,9 +138,9 @@ func main() {
 			log().WithField("jobConfigPath", jobConfigPath).WithError(err).Fatal("Failed to read jobconfig")
 		}
 
-		updated := jobConfigCopyFunc(&jobConfig, latestReleaseSemver, secondLatestReleaseSemver)
+		updated := jobConfigCopyFunc(&jobConfig, targetRelease, sourceRelease)
 		if !updated && !o.dryRun {
-			log().WithField("jobConfigPath", jobConfigPath).Info(fmt.Sprintf("presubmit jobs for %v weren't modified, nothing to do.", latestReleaseSemver))
+			log().WithField("jobConfigPath", jobConfigPath).Info(fmt.Sprintf("presubmit jobs for %v weren't modified, nothing to do.", targetRelease))
 			continue
 		}
 
@@ -159,6 +162,25 @@ func main() {
 			log().WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to write jobconfig")
 		}
 	}
+}
+
+func getSourceAndTargetRelease(releases []*github.RepositoryRelease) (targetRelease *querier.SemVer, sourceRelease *querier.SemVer, err error) {
+	if len(releases) < 2 {
+		err = fmt.Errorf("less than two releases")
+		return
+	}
+	targetRelease = querier.ParseRelease(releases[0])
+	for _, release := range releases[1:] {
+		nextRelease := querier.ParseRelease(release)
+		if nextRelease.Minor < targetRelease.Minor {
+			sourceRelease = nextRelease
+			break
+		}
+	}
+	if sourceRelease == nil {
+		err = fmt.Errorf("no source release found")
+	}
+	return
 }
 
 var sigNames = []string{
