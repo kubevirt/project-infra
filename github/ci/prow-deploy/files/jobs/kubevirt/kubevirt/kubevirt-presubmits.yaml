@@ -249,6 +249,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.20-sig-storage
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -610,6 +611,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.19-sig-storage
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
