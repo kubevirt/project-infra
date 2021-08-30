@@ -577,53 +577,6 @@ periodics:
         resources:
           requests:
             memory: "29Gi"
-- name: periodic-kubevirt-e2e-k8s-1.20-cgroupsv2
-  annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cron: "0 9,17,0 * * *"
-  decorate: true
-  decoration_config:
-    timeout: 7h
-    grace_period: 5m
-  labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
-  cluster: prow-workloads
-  reporter_config:
-    slack:
-      job_states_to_report: []
-  spec:
-    nodeSelector:
-      type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        env:
-          - name: TARGET
-            value: "k8s-1.20"
-          - name: KUBEVIRT_CGROUPV2
-            value: "true"
-          - name: KUBEVIRT_E2E_SKIP
-            value: "Multus|SRIOV|GPU|Macvtap|\\[sig-operator\\]"
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
 - name: periodic-kubevirt-e2e-k8s-1.21-sig-network
   annotations:
     testgrid-dashboards: kubevirt-periodics
