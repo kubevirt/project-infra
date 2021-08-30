@@ -17,7 +17,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"strconv"
@@ -86,12 +85,9 @@ func main() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	// TODO: Use global option from the prow config.
 	logrus.SetLevel(logrus.DebugLevel)
-	log := logrus.StandardLogger().WithField("robot", "kubevirt-job-copier")
-
 	o := gatherOptions()
 	if err := o.Validate(); err != nil {
-		log.WithError(err).Error("Invalid arguments provided.")
-		os.Exit(1)
+		log().WithError(err).Fatal("Invalid arguments provided.")
 	}
 
 	ctx := context.Background()
@@ -100,67 +96,67 @@ func main() {
 		var err error
 		client, err = github.NewEnterpriseClient(o.endpoint, o.endpoint, nil)
 		if err != nil {
-			log.Panicln(err)
+			log().Panicln(err)
 		}
 	} else {
-		token, err := ioutil.ReadFile(o.TokenPath)
+		token, err := os.ReadFile(o.TokenPath)
 		if err != nil {
-			log.Panicln(err)
+			log().Panicln(err)
 		}
 		ts := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: string(token)},
 		)
 		client, err = github.NewEnterpriseClient(o.endpoint, o.endpoint, oauth2.NewClient(ctx, ts))
 		if err != nil {
-			log.Panicln(err)
+			log().Panicln(err)
 		}
 	}
 
 	releases, _, err := client.Repositories.ListReleases(ctx, "kubernetes", "kubernetes", nil)
 	if err != nil {
-		log.Panicln(err)
+		log().Panicln(err)
 	}
 	releases = querier.ValidReleases(releases)
 	if len(releases) < 2 {
-		log.Info("No two releases found, nothing to do.")
+		log().Info("No two releases found, nothing to do.")
 		os.Exit(0)
 	}
 
 	latestReleaseSemver := querier.ParseRelease(releases[0])
 	secondLatestReleaseSemver := querier.ParseRelease(releases[1])
 
-	jobConfigs := map[string]func(*config.JobConfig, *querier.SemVer, *querier.SemVer, *logrus.Entry) bool{
-		o.jobConfigPathKubevirtPresubmits: func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer, log *logrus.Entry) bool { return CopyPresubmitJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver, log) },
-		o.jobConfigPathKubevirtPeriodics:  func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer, log *logrus.Entry) bool { return CopyPeriodicJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver, log) },
+	jobConfigs := map[string]func(*config.JobConfig, *querier.SemVer, *querier.SemVer) bool{
+		o.jobConfigPathKubevirtPresubmits: func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return CopyPresubmitJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
+		o.jobConfigPathKubevirtPeriodics:  func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return CopyPeriodicJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
 	}
 	for jobConfigPath, jobConfigCopyFunc := range jobConfigs {
 		jobConfig, err := config.ReadJobConfig(jobConfigPath)
 		if err != nil {
-			log.WithField("jobConfigPath", jobConfigPath).WithError(err).Fatal("Failed to read jobconfig")
+			log().WithField("jobConfigPath", jobConfigPath).WithError(err).Fatal("Failed to read jobconfig")
 		}
 
-		updated := jobConfigCopyFunc(&jobConfig, latestReleaseSemver, secondLatestReleaseSemver, log)
+		updated := jobConfigCopyFunc(&jobConfig, latestReleaseSemver, secondLatestReleaseSemver)
 		if !updated && !o.dryRun {
-			log.WithField("jobConfigPath", jobConfigPath).Info(fmt.Sprintf("presubmit jobs for %v weren't modified, nothing to do.", latestReleaseSemver))
+			log().WithField("jobConfigPath", jobConfigPath).Info(fmt.Sprintf("presubmit jobs for %v weren't modified, nothing to do.", latestReleaseSemver))
 			continue
 		}
 
 		marshalledConfig, err := yaml.Marshal(&jobConfig)
 		if err != nil {
-			log.WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to marshall jobconfig")
+			log().WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to marshall jobconfig")
 		}
 
 		if o.dryRun {
 			_, err = os.Stdout.Write(marshalledConfig)
 			if err != nil {
-				log.WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to write jobconfig")
+				log().WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to write jobconfig")
 			}
 			continue
 		}
 
-		err = ioutil.WriteFile(jobConfigPath, marshalledConfig, os.ModePerm)
+		err = os.WriteFile(jobConfigPath, marshalledConfig, os.ModePerm)
 		if err != nil {
-			log.WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to write jobconfig")
+			log().WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to write jobconfig")
 		}
 	}
 }
@@ -172,7 +168,7 @@ var sigNames = []string{
 	"operator",
 }
 
-func CopyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProviderReleaseSemver *querier.SemVer, sourceProviderReleaseSemver *querier.SemVer, log *logrus.Entry) (updated bool) {
+func CopyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProviderReleaseSemver *querier.SemVer, sourceProviderReleaseSemver *querier.SemVer) (updated bool) {
 	allPresubmitJobs := map[string]config.Presubmit{}
 	for index := range jobConfig.PresubmitsStatic[orgAndRepoForJobConfig] {
 		job := jobConfig.PresubmitsStatic[orgAndRepoForJobConfig][index]
@@ -184,16 +180,16 @@ func CopyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProvider
 		sourceJobName := createPresubmitJobName(sourceProviderReleaseSemver, sigName)
 
 		if _, exists := allPresubmitJobs[targetJobName]; exists {
-			log.WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Target job exists, nothing to do")
+			log().WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Target job exists, nothing to do")
 			continue
 		}
 
 		if _, exists := allPresubmitJobs[sourceJobName]; !exists {
-			log.WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Warn("Source job does not exist, can't copy job definition!")
+			log().WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Warn("Source job does not exist, can't copy job definition!")
 			continue
 		}
 
-		log.WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Copying source to target job")
+		log().WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Copying source to target job")
 
 		newJob := config.Presubmit{}
 		newJob.Annotations = make(map[string]string)
@@ -231,7 +227,7 @@ func CopyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProvider
 	return
 }
 
-func CopyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderReleaseSemver *querier.SemVer, sourceProviderReleaseSemver *querier.SemVer, log *logrus.Entry) (updated bool) {
+func CopyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderReleaseSemver *querier.SemVer, sourceProviderReleaseSemver *querier.SemVer) (updated bool) {
 	allPeriodicJobs := map[string]config.Periodic{}
 	for index := range jobConfig.Periodics {
 		job := jobConfig.Periodics[index]
@@ -243,16 +239,16 @@ func CopyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 		sourceJobName := createPeriodicJobName(sourceProviderReleaseSemver, sigName)
 
 		if _, exists := allPeriodicJobs[targetJobName]; exists {
-			log.WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Target job exists, nothing to do")
+			log().WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Target job exists, nothing to do")
 			continue
 		}
 
 		if _, exists := allPeriodicJobs[sourceJobName]; !exists {
-			log.WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Warn("Source job does not exist, can't copy job definition!")
+			log().WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Warn("Source job does not exist, can't copy job definition!")
 			continue
 		}
 
-		log.WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Copying source to target job")
+		log().WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Copying source to target job")
 
 		newJob := config.Periodic{}
 		newJob.Annotations = make(map[string]string)
@@ -306,7 +302,7 @@ func createTargetValue(latestReleaseSemver *querier.SemVer, sigName string) stri
 // cron expression must have format of i.e. "0 1,9,17 * * *" or it will panic
 func advanceCronExpression (sourceCronExpr string) string {
 	if !cronRegex.MatchString(sourceCronExpr) {
-		logrus.StandardLogger().WithField("cronRegex", cronRegex).WithField("sourceCronExpr", sourceCronExpr).Fatal("cronRegex doesn't match")
+		log().WithField("cronRegex", cronRegex).WithField("sourceCronExpr", sourceCronExpr).Fatal("cronRegex doesn't match")
 	}
 	parts := strings.Split(sourceCronExpr, " ")
 	mins, err := strconv.ParseInt(parts[0], 10, 64)
@@ -320,4 +316,8 @@ func advanceCronExpression (sourceCronExpr string) string {
 		firstHour = 1
 	}
 	return fmt.Sprintf("%d %d,%d,%d * * *", mins, firstHour, firstHour + 8, firstHour + 16)
+}
+
+func log() *logrus.Entry {
+	return logrus.StandardLogger().WithField("robot", "kubevirt-job-copier")
 }
