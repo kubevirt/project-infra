@@ -1,4 +1,6 @@
-github/ci/phx-prow/group_vars/all/main.yml
+github/ci/**/group_vars/all/main.yml
+github/ci/prow-deploy/vars/ibmcloud-production/secrets.yml
+github/ci/prow-deploy/vars/workloads-production/secrets.yml
 *~
 github/ci/phx-prow/inventory
 *pyc
