@@ -105,7 +105,10 @@ periodics:
         value: /etc/gcs/service-account.json
       command: ["/bin/sh", "-c"]
       args:
-      - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -p ../kubevirt -T main
+      - |
+        set -e
+        bazelisk run //robots/cmd/labels-checker:labels-checker -- --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=bump-kubevirtci --ensure-labels-missing=lgtm --github-token-path=/etc/github/oauth
+        ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -p ../kubevirt -T main
       volumeMounts:
       - name: token
         mountPath: /etc/github
