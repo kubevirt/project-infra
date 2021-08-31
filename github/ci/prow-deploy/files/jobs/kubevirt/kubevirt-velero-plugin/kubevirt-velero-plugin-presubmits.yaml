@@ -1,7 +1,7 @@
 presubmits:
   kubevirt/kubevirt-velero-plugin:
   - name: pull-kvp-unit-test
-    cluster: ibm-prow-jobs
+    cluster: phx-prow
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -23,7 +23,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "make test"
+            - "hack/run-unit-tests.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -31,7 +31,7 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-kvp-functional-test
-    cluster: ibm-prow-jobs
+    cluster: prow-workloads
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -41,12 +41,14 @@ presubmits:
     optional: true
     decorate: true
     decoration_config:
-      timeout: 1h
+      timeout: 4h
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
     spec:
+      nodeSelector:
+        type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
           command:
@@ -59,4 +61,4 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "4Gi"
+              memory: "8Gi"
