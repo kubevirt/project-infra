@@ -1,14 +1,33 @@
+/*
+ * This file is part of the KubeVirt project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Copyright 2021 Red Hat, Inc.
+ *
+ */
 package main
 
 import (
 	"context"
 	"flag"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"os"
-	"strings"
 )
 
 type options struct {
@@ -21,7 +40,7 @@ type options struct {
 	ensureLabelsMissing string
 }
 
-func (o *options) Validate() error {
+func (o *options) validate() error {
 	if o.org == "" {
 		return fmt.Errorf("org is required")
 	}
@@ -37,30 +56,29 @@ func (o *options) Validate() error {
 	return nil
 }
 
-func (o *options) GetEnsureLabelsMissing() []string {
+func (o *options) getEnsureLabelsMissing() []string {
 	return strings.Split(o.ensureLabelsMissing, ",")
 }
 
-func gatherOptions() options {
-	o := options{}
-	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	fs.StringVar(&o.tokenPath, "github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
-	fs.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
-	fs.StringVar(&o.org, "org", "", "The org for the PR.")
-	fs.StringVar(&o.repo, "repo", "", "The repo for the PR.")
-	fs.StringVar(&o.author, "author", "", "The author for the PR.")
-	fs.StringVar(&o.branchName, "branch-name", "", "The branch name for the PR.")
-	fs.StringVar(&o.ensureLabelsMissing, "ensure-labels-missing", "lgtm", "What labels have to be missing on the PR (list of comma separated labels).")
-	fs.Parse(os.Args[1:])
-	return o
+var o = options{}
+
+func init() {
+	flag.StringVar(&o.tokenPath, "github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
+	flag.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
+	flag.StringVar(&o.org, "org", "", "The org for the PR.")
+	flag.StringVar(&o.repo, "repo", "", "The repo for the PR.")
+	flag.StringVar(&o.author, "author", "", "The author for the PR.")
+	flag.StringVar(&o.branchName, "branch-name", "", "The branch name for the PR.")
+	flag.StringVar(&o.ensureLabelsMissing, "ensure-labels-missing", "lgtm", "What labels have to be missing on the PR (list of comma separated labels).")
 }
 
 func main() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	// TODO: Use global option from the prow config.
 	logrus.SetLevel(logrus.DebugLevel)
-	o := gatherOptions()
-	if err := o.Validate(); err != nil {
+
+	flag.Parse()
+	if err := o.validate(); err != nil {
 		log().WithError(err).Fatal("Invalid arguments provided.")
 	}
 
@@ -99,14 +117,14 @@ func main() {
 	if err != nil {
 		log().WithError(err).Fatal("failed to find PR")
 	} else if len(prs) == 0 {
-		logrus.Info("No PR found")
+		log().Info("No PR found")
 		os.Exit(0)
 	} else if len(prs) > 1 {
-		logrus.Fatalf("More than one PR found: %+v", prs)
+		log().Fatalf("More than one PR found: %+v", prs)
 	}
 
-	if checkAnyLabelExists(prs[0], o.GetEnsureLabelsMissing()) {
-		log().Fatalf("ensureLabelsMissing failed")
+	if checkAnyLabelExists(prs[0], o.getEnsureLabelsMissing()) {
+		log().WithField("PR", prs[0].GetNumber()).Fatalf("ensureLabelsMissing: some labels were present that shouldn't be")
 	}
 
 }
@@ -120,7 +138,7 @@ func checkAnyLabelExists(prToCheck *github.PullRequest, labelsToCheck []string) 
 	labelsExist := false
 	for _, label := range labelsToCheck {
 		if _, exists := labels[label]; exists {
-			log().Infof("label %s exists on PR %+v", label, prToCheck)
+			log().WithField("PR", prToCheck.GetNumber()).Infof("label %s exists", label)
 			labelsExist = true
 		}
 	}
