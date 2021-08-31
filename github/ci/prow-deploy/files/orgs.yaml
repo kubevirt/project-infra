@@ -537,6 +537,7 @@ orgs:
         maintainers:
           - tomob
           - aglitke
+          - brybacki
         repos:
           kubevirt-velero-plugin: admin
       maintainers:
