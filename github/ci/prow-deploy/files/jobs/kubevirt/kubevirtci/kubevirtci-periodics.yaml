@@ -97,7 +97,7 @@ periodics:
       secret:
         secretName: gcs
     containers:
-    - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
+    - image: quay.io/kubevirt/builder:2108311443-370e711b8
       env:
       - name: GIT_ASKPASS
         value: "../project-infra/hack/git-askpass.sh"
@@ -107,7 +107,10 @@ periodics:
       args:
       - |
         set -e
-        bazelisk run //robots/cmd/labels-checker:labels-checker -- --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=bump-kubevirtci --ensure-labels-missing=lgtm --github-token-path=/etc/github/oauth
+        cwd=$(pwd)
+        cd ../project-infra
+        bazel run //robots/cmd/labels-checker:labels-checker -- --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=bump-kubevirtci --ensure-labels-missing=lgtm --github-token-path=/etc/github/oauth
+        cd $cwd
         ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -p ../kubevirt -T main
       volumeMounts:
       - name: token
