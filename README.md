@@ -51,6 +51,8 @@ depending on billing alerts. See [README](limiter/README.md)
   * `robots/cmd/kubevirtci-presubmit-creator`: Creates kubevirtci presubmit job
   definitions for new providers
 
+  * `robots/cmd/labels-checker`: Checks whether a PR has certain labels
+
   * `robots/cmd/kubevirt-presubmit-requirer`: Updates kubevirt presubmit jobs
   definitions to make required jobs related to new providers
 
