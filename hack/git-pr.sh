@@ -23,7 +23,7 @@ set -o pipefail
 set -x
 
 usage() {
-    echo "Usage: $(basename "$0") -c \"<command>\" [-s \"<summary>\"] [-l <github-login>] [-t </path/to/github/token>] [-T <target-branch>] [-p </path/to/github/repo>] [-n \"<git-name>\"] [-e <git-email>]  [-b <pr-branch>] [-o <org>] [-r <repo>] [-L label1,..,labelN] [-m </path/where/command/should/be/run>] [-d <command-to-create-commit-message>]">&2
+    echo "Usage: $(basename "$0") -c \"<command>\" [-s \"<summary>\"] [-l <github-login>] [-t </path/to/github/token>] [-T <target-branch>] [-p </path/to/github/repo>] [-n \"<git-name>\"] [-e <git-email>]  [-b <pr-branch>] [-o <org>] [-r <repo>] [-L label1,..,labelN] [-m </path/where/command/should/be/run>] [-d <command-to-create-commit-message>] [-h <head-branch>]">&2
 }
 
 command=
@@ -42,8 +42,9 @@ labels=
 description_command=
 title=
 body=
+head_branch=
 
-while getopts ":c:s:l:t:T:p:n:e:b:o:r:m:L:d:" opt; do
+while getopts ":c:s:l:t:T:p:n:e:b:o:r:m:L:d:h:" opt; do
     case "${opt}" in
         c )
             command="${OPTARG}"
@@ -87,6 +88,9 @@ while getopts ":c:s:l:t:T:p:n:e:b:o:r:m:L:d:" opt; do
         d )
             description_command="${OPTARG}"
             ;;
+        h )
+            head_branch="${OPTARG}"
+            ;;
         \? )
             usage
             exit 1
@@ -125,6 +129,10 @@ else
     body="Automatic run of \"${command}\". Please review"
 fi
 
+if [ -z "${head_branch}" ]; then
+    head_branch="${branch}"
+fi
+
 git add -A
 if git diff --name-only --exit-code HEAD; then
     echo "Nothing changed" >&2
@@ -135,13 +143,11 @@ git commit -s -m "${summary}"
 git push -f "https://${user}@github.com/${user}/${repo}.git" HEAD:"${branch}"
 
 echo "Creating PR to merge ${user}:${branch} into master..." >&2
-# TODO: fix the truncation of the summary in pr-creator
-# this is currently required as the search for existing PRs fails if the summary is too long due to
-# GitHub search being limited to 250 characters
 pr-creator \
     --github-token-path="${token}" \
     --org="${org}" --repo="${repo}" --branch="${targetbranch}" \
-    --title="${title}" --match-title="$(echo $title | cut -c -150)" \
+    --title="${title}" \
+    --head-branch="${head_branch}" \
     --body="${body}" \
     --source="${user}":"${branch}" \
     --labels="${labels}" \
