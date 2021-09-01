@@ -333,10 +333,7 @@ func advanceCronExpression (sourceCronExpr string) string {
 	}
 	mins = ( mins + 10 ) % 60
 	firstHour, err := strconv.ParseInt(strings.Split(parts[1], ",")[0], 10, 64)
-	firstHour = ( firstHour + 1 ) % 9
-	if firstHour == 0 {
-		firstHour = 1
-	}
+	firstHour = ( firstHour + 1 ) % 8
 	return fmt.Sprintf("%d %d,%d,%d * * *", mins, firstHour, firstHour + 8, firstHour + 16)
 }
 
