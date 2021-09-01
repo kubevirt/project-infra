@@ -9,3 +9,12 @@ RUN set -x && \
     chmod +x /usr/local/bin/pr-creator && \
     bazel clean --expunge && \
     cd .. && rm -rf ./test-infra
+
+RUN set -x && \
+    git clone https://github.com/kubevirt/project-infra.git && \
+    cd ./project-infra && \
+    cp ./hack/git-askpass.sh hack/git-pr.sh /usr/local/bin && \
+    chmod +x /usr/local/bin/git-askpass.sh /usr/local/bin/git-pr.sh && \
+    cd .. && rm -rf ./project-infra
+
+ENV GIT_ASKPASS=/usr/local/bin/git-askpass.sh
