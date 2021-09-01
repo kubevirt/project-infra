@@ -122,6 +122,10 @@ fi
 
 if [ -n "${description_command}" ]; then
     summary=$(eval "${description_command}")
+    if [ -z "$summary" ]; then
+        echo "no summary detected, exiting"
+        exit 0
+    fi
     title=$(echo "$summary" | head -1)
     body=$(echo "$summary" | sed '1,2d')
 else
