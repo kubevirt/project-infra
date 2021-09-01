@@ -38,6 +38,13 @@ func Test_advanceCronExpression(t *testing.T) {
 			},
 			want: "10 1,9,17 * * *",
 		},
+		{
+			name: "zero seven fifteen twentythree",
+			args: args{
+				sourceCronExpr: "0 7,15,23 * * *",
+			},
+			want: "10 0,8,16 * * *",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

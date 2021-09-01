@@ -45,6 +45,8 @@ depending on billing alerts. See [README](limiter/README.md)
 
   * `robots/cmd/indexpagecreator`: Creates flakefinder index page
 
+  * `robots/cmd/kubevirt-job-copier`: Creates copies of the SIG jobs (periodic and presubmit) to enable testing kubevirt with kubevirtci
+
   * `robots/cmd/kubevirtci-bumper`: Tool to automatically bump kubevirtci providers.
   See [README](robots/kubevirtci-bumper/README.md)
 
