@@ -5,7 +5,6 @@ filters:
   .*:
     approvers:
     - alonakaplan
-    - ashleyschuett
     - codificat
     - cwilkers
     - danielbelenky
@@ -22,7 +21,6 @@ filters:
     - vladikr
     reviewers:
     - alonakaplan
-    - ashleyschuett
     - codificat
     - cwilkers
     - danielbelenky
