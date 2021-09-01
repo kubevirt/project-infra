@@ -70,7 +70,7 @@ periodics:
         secret:
           secretName: gcs
 - name: periodic-kubevirtci-bump-kubevirt
-  interval: 24h
+  cron: "0 */12 * * *"
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
