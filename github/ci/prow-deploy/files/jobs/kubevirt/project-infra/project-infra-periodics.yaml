@@ -401,7 +401,7 @@ periodics:
             curl --fail -L https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 --output ${bazel_dir}/bazelisk &&
             chmod a+x ${bazel_dir}/bazelisk &&
             export PATH=${PATH}:${bazel_dir} &&
-            hack/git-pr.sh -c "bazelisk run //robots/cmd/kubevirtci-bumper:kubevirtci-bumper -- -ensure-latest --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" -s "Update minor version of KubevirtCI cluster" -p ../kubevirtci -r kubevirtci -b minor-version-bump -T main
+            hack/git-pr.sh -c "bazelisk run //robots/cmd/kubevirtci-bumper:kubevirtci-bumper -- -ensure-latest --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" -p ../kubevirtci -r kubevirtci -b minor-version-bump -T main
         volumeMounts:
         - name: token
           mountPath: /etc/github
