@@ -15,6 +15,9 @@ RUN set -x && \
     cd ./project-infra && \
     cp ./hack/git-askpass.sh hack/git-pr.sh /usr/local/bin && \
     chmod +x /usr/local/bin/git-askpass.sh /usr/local/bin/git-pr.sh && \
+    bazel build //robots/cmd/labels-checker:labels-checker && \
+    cp ./bazel-out/k8-fastbuild/bin/robots/cmd/labels-checker/labels-checker_/labels-checker /usr/local/bin && \
+    chmod +x /usr/local/bin/labels-checker && \
     cd .. && rm -rf ./project-infra
 
 ENV GIT_ASKPASS=/usr/local/bin/git-askpass.sh
