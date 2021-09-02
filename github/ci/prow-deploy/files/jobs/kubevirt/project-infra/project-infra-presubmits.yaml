@@ -232,6 +232,33 @@ presubmits:
               memory: "4Gi"
             limits:
               memory: "4Gi"
+  - name: build-pr-creator-image
+    always_run: false
+    run_if_changed: "images/pr-creator/.*"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: prow-workloads
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - |
+              cd images
+              ./publish_image.sh -b pr-creator quay.io kubevirtci
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+            limits:
+              memory: "4Gi"
   - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/.*"
