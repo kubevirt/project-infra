@@ -26,6 +26,7 @@ usage() {
     echo "Usage: $(basename "$0") -c \"<command>\" [-s \"<summary>\"] [-l <github-login>] [-t </path/to/github/token>] [-T <target-branch>] [-p </path/to/github/repo>] [-n \"<git-name>\"] [-e <git-email>]  [-b <pr-branch>] [-o <org>] [-r <repo>] [-L label1,..,labelN] [-m </path/where/command/should/be/run>] [-d <command-to-create-commit-message>] [-h <head-branch>]">&2
 }
 
+dry_run=
 command=
 summary=
 user=kubevirt-bot
@@ -44,8 +45,11 @@ title=
 body=
 head_branch=
 
-while getopts ":c:s:l:t:T:p:n:e:b:o:r:m:L:d:h:" opt; do
+while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:d:h:" opt; do
     case "${opt}" in
+        D )
+            dry_run=true
+            ;;
         c )
             command="${OPTARG}"
             ;;
@@ -139,16 +143,25 @@ if git diff --name-only --exit-code HEAD; then
     exit 0
 fi
 
-git commit -s -m "${summary}"
-git push -f "https://${user}@github.com/${user}/${repo}.git" HEAD:"${branch}"
+if [ -z "$dry_run" ]; then
+    git commit -s -m "${summary}"
+    git push -f "https://${user}@github.com/${user}/${repo}.git" HEAD:"${branch}"
+else
+    echo "dry_run: git commit -s -m \"${summary}\""
+    echo "dry_run: git push -f \"https://${user}@github.com/${user}/${repo}.git\" HEAD:\"${branch}\""
+fi
 
-echo "Creating PR to merge ${user}:${branch} into master..." >&2
-pr-creator \
-    --github-token-path="${token}" \
-    --org="${org}" --repo="${repo}" --branch="${targetbranch}" \
-    --title="${title}" \
-    --head-branch="${head_branch}" \
-    --body="${body}" \
-    --source="${user}":"${branch}" \
-    --labels="${labels}" \
-    --confirm
+if [ -z "$dry_run" ]; then
+    echo "Creating PR to merge ${user}:${branch} into master..." >&2
+    pr-creator \
+        --github-token-path="${token}" \
+        --org="${org}" --repo="${repo}" --branch="${targetbranch}" \
+        --title="${title}" \
+        --head-branch="${head_branch}" \
+        --body="${body}" \
+        --source="${user}":"${branch}" \
+        --labels="${labels}" \
+        --confirm
+else
+    pr-creator --help
+fi
