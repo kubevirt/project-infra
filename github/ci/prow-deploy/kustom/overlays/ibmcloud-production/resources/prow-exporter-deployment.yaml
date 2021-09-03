@@ -28,7 +28,6 @@ spec:
         - name: healthz
           containerPort: 8081
         args:
-        - --deck-url=http://deck/
         - --config-path=/etc/config/config.yaml
         - --job-config-path=/etc/job-config
         env:
