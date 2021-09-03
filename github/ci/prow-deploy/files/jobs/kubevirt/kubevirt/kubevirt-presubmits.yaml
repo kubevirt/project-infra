@@ -382,7 +382,7 @@ presubmits:
         - name: KUBEVIRT_CGROUPV2
           value: "true"
         - name: KUBEVIRT_E2E_SKIP
-          value: Multus|SRIOV|GPU|Macvtap|\[sig-operator\]
+          value: Multus|SRIOV|GPU|Macvtap|MediatedDevices
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         name: ""
         resources:
