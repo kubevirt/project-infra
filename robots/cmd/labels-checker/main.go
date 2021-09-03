@@ -22,6 +22,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"k8s.io/test-infra/prow/config/secret"
 	"os"
 	"strings"
 
@@ -91,17 +92,12 @@ func main() {
 			log().Panicln(err)
 		}
 	} else {
-		tokenBytes, err := os.ReadFile(o.tokenPath)
+		err := secret.Add(o.tokenPath)
 		if err != nil {
-			log().Panicln(err)
-		}
-		token := string(tokenBytes)
-		token = strings.TrimSuffix(token, "\n")
-		if err != nil {
-			log().Panicln(err)
+			log().Fatalf("Failed to load token from path %s: %v", o.tokenPath, err)
 		}
 		ts := oauth2.StaticTokenSource(
-			&oauth2.Token{AccessToken: token},
+			&oauth2.Token{AccessToken: string(secret.GetSecret(o.tokenPath))},
 		)
 		client, err = github.NewEnterpriseClient(o.endpoint, o.endpoint, oauth2.NewClient(ctx, ts))
 		if err != nil {

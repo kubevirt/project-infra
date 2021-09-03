@@ -160,54 +160,6 @@ periodics:
       secret:
         secretName: gcs
 - annotations:
-    testgrid-create-test-group: "false"
-  cluster: phx-prow
-  cron: 25 0 * * *
-  decorate: true
-  name: periodic-kubevirt-flake-issue-creator
-  spec:
-    containers:
-    - args:
-      - --dry-run=true
-      - --token=/etc/github/oauth
-      - --merged=24h
-      - --pr-base-branch=main
-      - --org=kubevirt
-      - --repo=kubevirt
-      - --flake-issue-labels=triage/build-watcher,kind/bug
-      - --flake-issue-threshold=0
-      - --failure-threshold-of-suspected-cluster-failure=50
-      - --suspected-cluster-failure-issue-threshold=0
-      - --skip-existing-issues-changed-since=12h
-      command:
-      - /app/robots/cmd/flake-issue-creator/app.binary
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
-      image: quay.io/kubevirtci/flake-issue-creator@sha256:78bf3fc1823e619c9f08f19e2eab012c7262514d600faeed535226ff8b7307c8
-      name: ""
-      resources:
-        limits:
-          memory: 1Gi
-        requests:
-          memory: 500Mi
-      volumeMounts:
-      - mountPath: /etc/github
-        name: token
-      - mountPath: /etc/gcs
-        name: gcs
-        readOnly: true
-    nodeSelector:
-      type: vm
-      zone: ci
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
-    - name: gcs
-      secret:
-        secretName: gcs
-- annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
