@@ -5,13 +5,11 @@ filters:
   .*:
     approvers:
     - alonakaplan
-    - codificat
     - cwilkers
     - danielbelenky
     - davidvossel
     - dhiller
     - fabiand
-    - hroyrh
     - jean-edouard
     - mazzystr
     - mhenriks
@@ -21,13 +19,11 @@ filters:
     - vladikr
     reviewers:
     - alonakaplan
-    - codificat
     - cwilkers
     - danielbelenky
     - davidvossel
     - dhiller
     - fabiand
-    - hroyrh
     - jean-edouard
     - jobbler
     - mazzystr
