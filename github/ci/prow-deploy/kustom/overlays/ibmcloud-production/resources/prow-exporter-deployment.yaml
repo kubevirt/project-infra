@@ -20,7 +20,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: prow-exporter
-        image: gcr.io/k8s-prow/exporter:v20210826-d4b68720ec
+        image: gcr.io/k8s-prow/exporter:v20210902-3cdc3ee299
         imagePullPolicy: Always
         ports:
         - name: metrics
@@ -28,7 +28,6 @@ spec:
         - name: healthz
           containerPort: 8081
         args:
-        - --deck-url=http://deck/
         - --config-path=/etc/config/config.yaml
         - --job-config-path=/etc/job-config
         env:
