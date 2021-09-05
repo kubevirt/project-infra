@@ -5,7 +5,6 @@ filters:
   .*:
     approvers:
     - alonakaplan
-    - ashleyschuett
     - danielbelenky
     - davidvossel
     - dhiller
@@ -20,7 +19,6 @@ filters:
     reviewers:
     - acardace
     - alonakaplan
-    - ashleyschuett
     - davidvossel
     - dhiller
     - eddev
