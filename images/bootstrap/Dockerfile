@@ -98,8 +98,7 @@ RUN  curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/downloa
 
 # Cache the most commonly used bazel versions inside the image
 # and remove resulting cache directories to save a few hundred MB
-RUN USE_BAZEL_VERSION=3.4.1 bazel version && \
-    USE_BAZEL_VERSION=4.0.0 bazel version && \
+RUN USE_BAZEL_VERSION=4.1.0 bazel version && \
     USE_BAZEL_VERSION=4.2.1 bazel version && \
     rm -rf /root/.cache/bazel
 
