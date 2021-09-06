@@ -97,21 +97,16 @@ periodics:
       secret:
         secretName: gcs
     containers:
-    - image: quay.io/kubevirt/builder:2108311443-370e711b8
+    - image: quay.io/kubevirtci/pr-creator:v20210901-354d148
       env:
-      - name: GIT_ASKPASS
-        value: "../project-infra/hack/git-askpass.sh"
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       command: ["/bin/sh", "-c"]
       args:
       - |
         set -e
-        cwd=$(pwd)
-        cd ../project-infra
-        bazel run //robots/cmd/labels-checker:labels-checker -- --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=bump-kubevirtci --ensure-labels-missing=lgtm,approved --github-token-path=/etc/github/oauth
-        cd $cwd
-        ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -p ../kubevirt -T main
+        labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=bump-kubevirtci --ensure-labels-missing=lgtm,approved --github-token-path=/etc/github/oauth
+        git-pr.sh -c "cd ../kubevirt && make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -p ../kubevirt -T main
       volumeMounts:
       - name: token
         mountPath: /etc/github
