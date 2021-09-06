@@ -225,43 +225,61 @@ const ReportTemplate = `
 </html>
 `
 
+const ReportCSVTemplate = `"Test Name","Test Lane","Severity","Failed","Succeeded","Skipped","Jobs (JSON)"
+{{ range $testName, $results := $.Data }}{{ range $jobName, $result := $results }}"{{ $testName }}","{{ $jobName }}","{{ $result.Severity }}",{{ $result.Failed }},{{ $result.Succeeded }},{{ $result.Skipped }},{{ range $job := $result.Jobs }}"{BuildNumber: {{ $job.BuildNumber }},Severity: ""{{ $job.Severity }}"",PR: {{ $job.PR }},Job: ""{{ $job.Job }}"",},"{{ end }}
+{{ end }}{{ end }}`
+
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
 func WriteReportToBucket(ctx context.Context, client *storage.Client, merged time.Duration, org, repo string, isDryRun bool, reportBaseData flakefinder.ReportBaseData) (err error) {
-	reportObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileName(reportBaseData.EndOfReport, merged)))
-	log.Printf("Report will be written to gs://%s/%s", flakefinder.BucketName, reportObject.ObjectName())
 	var reportOutputWriter *storage.Writer
+	var reportCSVOutputWriter *storage.Writer
 	if !isDryRun {
+		reportObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileNameWithEnding(reportBaseData.EndOfReport, merged, "html")))
+		log.Printf("Report will be written to gs://%s/%s", reportObject.BucketName(), reportObject.ObjectName())
+		reportCSVObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileNameWithEnding(reportBaseData.EndOfReport, merged, "csv")))
+		log.Printf("Report CSV will be written to gs://%s/%s", reportCSVObject.BucketName(), reportCSVObject.ObjectName())
 		reportOutputWriter = reportObject.NewWriter(ctx)
+		defer reportOutputWriter.Close()
+		reportCSVOutputWriter = reportCSVObject.NewWriter(ctx)
+		defer reportCSVOutputWriter.Close()
 	}
-	err = Report(reportBaseData.JobResults, reportOutputWriter, org, repo, reportBaseData.PRNumbers, isDryRun, reportBaseData.StartOfReport, reportBaseData.EndOfReport)
+	err = Report(reportBaseData.JobResults, reportOutputWriter, reportCSVOutputWriter, org, repo, reportBaseData.PRNumbers, isDryRun, reportBaseData.StartOfReport, reportBaseData.EndOfReport)
 	if err != nil {
 		return fmt.Errorf("failed on generating report: %v", err)
-	}
-	if !isDryRun {
-		err = reportOutputWriter.Close()
-		if err != nil {
-			return fmt.Errorf("failed on closing report object: %v", err)
-		}
 	}
 	return nil
 }
 
-func CreateReportFileName(reportTime time.Time, merged time.Duration) string {
-	return fmt.Sprintf(flakefinder.ReportFilePrefix+"%s-%03dh.html", reportTime.Format("2006-01-02"), int(merged.Hours()))
+func CreateReportFileNameWithEnding(reportTime time.Time, merged time.Duration, fileEnding string) string {
+	return fmt.Sprintf(flakefinder.ReportFilePrefix+"%s-%03dh.%s", reportTime.Format("2006-01-02"), int(merged.Hours()), fileEnding)
 }
 
-func Report(results []*flakefinder.JobResult, reportOutputWriter *storage.Writer, org, repo string, prNumbers []int, isDryRun bool, startOfReport, endOfReport time.Time) error {
-	parameters := flakefinder.CreateFlakeReportData(results, prNumbers, endOfReport, org, repo, startOfReport)
-	var err error
-	if !isDryRun && reportOutputWriter != nil {
-		err = flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, reportOutputWriter)
-	}
-	if isDryRun {
-		err = flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, os.Stdout)
-	}
+type CSVParams struct {
+	Data map[string]map[string]*flakefinder.Details
+}
 
-	if err != nil {
-		return fmt.Errorf("failed to render report template: %v", err)
+func Report(results []*flakefinder.JobResult, reportOutputWriter, reportCSVOutputWriter *storage.Writer, org, repo string, prNumbers []int, isDryRun bool, startOfReport, endOfReport time.Time) error {
+	parameters := flakefinder.CreateFlakeReportData(results, prNumbers, endOfReport, org, repo, startOfReport)
+	csvParams := CSVParams{Data: parameters.Data}
+	var err error
+	if !isDryRun {
+		err = flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, reportOutputWriter)
+		if err != nil {
+			return fmt.Errorf("failed to write report: %v", err)
+		}
+		err = flakefinder.WriteTemplateToOutput(ReportCSVTemplate, csvParams, reportCSVOutputWriter)
+		if err != nil {
+			return fmt.Errorf("failed to write report csv: %v", err)
+		}
+	} else {
+		err = flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, os.Stdout)
+		if err != nil {
+			return fmt.Errorf("failed to render report template: %v", err)
+		}
+		err = flakefinder.WriteTemplateToOutput(ReportCSVTemplate, csvParams, os.Stdout)
+		if err != nil {
+			return fmt.Errorf("failed to write report csv: %v", err)
+		}
 	}
 
 	return nil
