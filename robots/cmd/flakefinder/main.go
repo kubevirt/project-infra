@@ -23,6 +23,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"k8s.io/test-infra/prow/config/secret"
 	"log"
 	"net/url"
 	"path/filepath"
@@ -31,7 +32,6 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/google/go-github/v28/github"
 	"golang.org/x/oauth2"
-	"k8s.io/test-infra/prow/config/secret"
 	"k8s.io/test-infra/prow/flagutil"
 
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
@@ -44,7 +44,7 @@ func flagOptions() options {
 	flag.BoolVar(&o.isDryRun, "dry-run", true, "Whether report should be only printed to standard out instead of written to gcs") // TODO: incompatible change, requires setting flags on jobs
 	flag.DurationVar(&o.merged, "merged", 24*7*time.Hour, "Filter to issues merged in the time window")
 	flag.Var(&o.endpoint, "endpoint", "GitHub's API endpoint")
-	flag.StringVar(&o.token, "token", "", "Path to github token")
+	flag.StringVar(&o.tokenPath, "token", "", "Path to github token")
 	flag.BoolVar(&o.isPreview, "preview", false, "Whether report should be written to preview directory")
 	flag.StringVar(&o.prBaseBranch, "pr_base_branch", PRBaseBranchDefault, "Base branch for the PRs")
 	flag.StringVar(&o.reportOutputChildPath, "report_output_child_path", "", fmt.Sprintf("Child path below the main reporting directory '%s' (i.e. 'master')", flakefinder.ReportsPath))
@@ -60,7 +60,7 @@ func flagOptions() options {
 type options struct {
 	isDryRun                bool
 	endpoint                flagutil.Strings
-	token                   string
+	tokenPath               string
 	graphqlEndpoint         string
 	merged                  time.Duration
 	isPreview               bool
@@ -84,18 +84,16 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	o := flagOptions()
 
-	if o.token == "" {
+	if o.tokenPath == "" {
 		log.Fatal("empty --token")
+	}
+	err := secret.Add(o.tokenPath)
+	if err != nil {
+		log.Fatalf("Failed to load token from path %s: %v", o.tokenPath, err)
 	}
 
 	ReportOutputPath = BuildReportOutputPath(o)
 
-	secretAgent := &secret.Agent{}
-	if err := secretAgent.Start([]string{o.token}); err != nil {
-		log.Fatalf("Error starting secrets agent: %v", err)
-	}
-
-	var err error
 	for _, ep := range o.endpoint.Strings() {
 		_, err = url.ParseRequestURI(ep)
 		if err != nil {
@@ -105,7 +103,7 @@ func main() {
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: string(secretAgent.GetSecret(o.token))},
+		&oauth2.Token{AccessToken: string(secret.GetSecret(o.tokenPath))},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 

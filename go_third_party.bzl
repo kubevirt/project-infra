@@ -96,8 +96,8 @@ def go_deps():
         name = "com_github_andygrunwald_go_gerrit",
         build_file_proto_mode = "disable",
         importpath = "github.com/andygrunwald/go-gerrit",
-        sum = "h1:uUuUZipfD5nPl2L/i0I3N4iRKJcoO2CPjktaH/kP9gQ=",
-        version = "v0.0.0-20190120104749-174420ebee6c",
+        sum = "h1:7gokoTWteZhP1t2f0OzrFFXlyL8o0+b0r4ZaRV9PXOs=",
+        version = "v0.0.0-20210709065208-9d38b0be0268",
     )
     go_repository(
         name = "com_github_andygrunwald_go_jira",
@@ -208,8 +208,8 @@ def go_deps():
         name = "com_github_aws_aws_sdk_go",
         build_file_proto_mode = "disable",
         importpath = "github.com/aws/aws-sdk-go",
-        sum = "h1:izATc/E0+HcT5YHmaQVjn7GHCoqaBxn0PGo6Zq5UNFA=",
-        version = "v1.34.30",
+        sum = "h1:cyZp8TvUbH9rrShdrwULtCj4pB5szddrw9aKHUsw1Ic=",
+        version = "v1.37.22",
     )
     go_repository(
         name = "com_github_aybabtme_rgbterm",
@@ -1322,8 +1322,8 @@ def go_deps():
         name = "com_github_go_test_deep",
         build_file_proto_mode = "disable",
         importpath = "github.com/go-test/deep",
-        sum = "h1:u2CU3YKy9I2pmu9pX0eq50wCgjfGIt539SqR7FbHiho=",
-        version = "v1.0.4",
+        sum = "h1:/VSMRlnY/JSyqxQUzQLKVMAskpY/NZKFA5j2P+0pP2M=",
+        version = "v1.0.7",
     )
     go_repository(
         name = "com_github_go_toolsmith_astcast",
@@ -1707,8 +1707,8 @@ def go_deps():
         name = "com_github_google_go_querystring",
         build_file_proto_mode = "disable",
         importpath = "github.com/google/go-querystring",
-        sum = "h1:Xkwi/a1rcvNg1PPYe5vI8GbeBY/jrVuDX5ASuANWTrk=",
-        version = "v1.0.0",
+        sum = "h1:AnCroh3fv4ZBgVIf1Iwtovgjaw/GiKJo8M8yD/fhyJ8=",
+        version = "v1.1.0",
     )
     go_repository(
         name = "com_github_google_go_replayers_grpcreplay",
@@ -1791,8 +1791,8 @@ def go_deps():
         name = "com_github_google_uuid",
         build_file_proto_mode = "disable",
         importpath = "github.com/google/uuid",
-        sum = "h1:EVhdT+1Kseyi1/pUmXKaFxYsDNy9RQYkMWRH68J/W7Y=",
-        version = "v1.1.2",
+        sum = "h1:qJYtXnJRWmpe7m/3XlyhrsLrEURqHRM2kxzoxXqyUDs=",
+        version = "v1.2.0",
     )
     go_repository(
         name = "com_github_google_wire",
@@ -3445,8 +3445,8 @@ def go_deps():
         name = "com_github_shurcool_githubv4",
         build_file_proto_mode = "disable",
         importpath = "github.com/shurcooL/githubv4",
-        sum = "h1:Cocq9/ZZxCoiybhygOR7hX4E3/PkV8eNbd1AEcUvaHM=",
-        version = "v0.0.0-20191102174205-af46314aec7b",
+        sum = "h1:N5B+JgvM/DVYIxreItPJMM3yWrNO/GB2q4nESrtBisM=",
+        version = "v0.0.0-20210725200734-83ba7b4c9228",
     )
     go_repository(
         name = "com_github_shurcool_go",
@@ -3550,8 +3550,8 @@ def go_deps():
         name = "com_github_spf13_cobra",
         build_file_proto_mode = "disable",
         importpath = "github.com/spf13/cobra",
-        sum = "h1:KfztREH0tPxJJ+geloSLaAkaPkr4ki2Er5quFV1TDo4=",
-        version = "v1.1.1",
+        sum = "h1:xghbfqPkxzxP3C/f3n5DdpAbdKLj4ZE4BWQI362l53M=",
+        version = "v1.1.3",
     )
     go_repository(
         name = "com_github_spf13_jwalterweatherman",
@@ -3571,8 +3571,8 @@ def go_deps():
         name = "com_github_spf13_viper",
         build_file_proto_mode = "disable",
         importpath = "github.com/spf13/viper",
-        sum = "h1:xVKxvI7ouOI5I+U9s2eeiUfMaWBVoXA3AWskkrqK0VM=",
-        version = "v1.7.0",
+        sum = "h1:pM5oEahlgWv/WnHXpgbKz7iLIxRf65tye2Ci+XFK5sk=",
+        version = "v1.7.1",
     )
     go_repository(
         name = "com_github_src_d_gcfg",
@@ -4413,8 +4413,8 @@ def go_deps():
         name = "io_k8s_sigs_boskos",
         build_file_proto_mode = "disable",
         importpath = "sigs.k8s.io/boskos",
-        sum = "h1:ofZy0Txrpd7wjp0cA/Ok5aVTYU1n2uu88hWrvRjUd3U=",
-        version = "v0.0.0-20201218211225-4c6cb9eeb307",
+        sum = "h1:OCr84Jrq4HgrYxP9wrfSsGioR1VSpTZMh/RXMu5sm+8=",
+        version = "v0.0.0-20210730172138-093b54882439",
     )
     go_repository(
         name = "io_k8s_sigs_controller_runtime",
@@ -4483,8 +4483,8 @@ def go_deps():
         name = "io_k8s_test_infra",
         build_file_proto_mode = "disable",
         importpath = "k8s.io/test-infra",
-        sum = "h1:dPMh99jt3Q4jsPT0ndKJbRjtpwCOe8el3Ad8VUpWiN8=",
-        version = "v0.0.0-20210702133613-2028fff68d67",
+        sum = "h1:g5GLdRIOMs9vnEM/ZWG67f1Stn8cW1dER+MNK9P7Xn8=",
+        version = "v0.0.0-20210903101950-5c7809e9c5e9",
     )
     go_repository(
         name = "io_k8s_utils",

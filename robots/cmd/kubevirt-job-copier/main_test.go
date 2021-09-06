@@ -2,10 +2,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/google/go-github/github"
-	"kubevirt.io/project-infra/robots/pkg/querier"
+	"os"
+	"path"
 	"reflect"
+	"sigs.k8s.io/yaml"
+	"strings"
 	"testing"
+
+	"github.com/go-test/deep"
+	"github.com/google/go-github/github"
+	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/test-infra/prow/apis/prowjobs/v1"
+	"k8s.io/test-infra/prow/config"
+
+	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
 func Test_advanceCronExpression(t *testing.T) {
@@ -60,11 +70,11 @@ func Test_getSourceAndTargetRelease(t *testing.T) {
 		releases []*github.RepositoryRelease
 	}
 	tests := []struct {
-		name  string
-		args  args
-		wantTargetRelease  *querier.SemVer
+		name              string
+		args              args
+		wantTargetRelease *querier.SemVer
 		wantSourceRelease *querier.SemVer
-		wantErr error
+		wantErr           error
 	}{
 		{
 			name: "has one patch release for latest",
@@ -116,7 +126,7 @@ func Test_getSourceAndTargetRelease(t *testing.T) {
 			},
 			wantTargetRelease: nil,
 			wantSourceRelease: nil,
-			wantErr: fmt.Errorf("less than two releases"),
+			wantErr:           fmt.Errorf("less than two releases"),
 		},
 		{
 			name: "has two major same releases",
@@ -132,10 +142,10 @@ func Test_getSourceAndTargetRelease(t *testing.T) {
 				Patch: "1",
 			},
 			wantSourceRelease: nil,
-			wantErr: fmt.Errorf("no source release found"),
+			wantErr:           fmt.Errorf("no source release found"),
 		},
 	}
-		for _, tt := range tests {
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotTargetRelease, gotSourceRelease, gotErr := getSourceAndTargetRelease(tt.args.releases)
 			if !reflect.DeepEqual(gotErr, tt.wantErr) {
@@ -151,8 +161,149 @@ func Test_getSourceAndTargetRelease(t *testing.T) {
 	}
 }
 
+func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
+	type args struct {
+		jobConfig                   *config.JobConfig
+		targetProviderReleaseSemver *querier.SemVer
+		sourceProviderReleaseSemver *querier.SemVer
+	}
+	tests := []struct {
+		name                                 string
+		args                                 args
+		wantUpdated                          bool
+		wantJobConfig                        *config.JobConfig
+		wantJobStatesToReportInSerialization bool
+	}{
+		/*
+			checks that in the case of explicitly leaving the job_states_to_report empty, which implies that we do not
+			want to report in any case, this empty config is preserved in the resulting modified version that has been
+			written to storage.
+		 */
+		{
+			name: "reporterconfig with empty job states slice is preserved even with no job state to report",
+			args: args{
+				jobConfig: &config.JobConfig{
+					Periodics: []config.Periodic{
+						{
+							JobBase: config.JobBase{
+								Labels: map[string]string{},
+								ReporterConfig: &v1.ReporterConfig{
+									Slack: &v1.SlackReporterConfig{
+										JobStatesToReport: []v1.ProwJobState{},
+									},
+								},
+								Name: createPeriodicJobName(semver("1", "21", "0"), "sig-network"),
+								Spec: &corev1.PodSpec{
+									Containers: []corev1.Container{
+										{
+											Env: []corev1.EnvVar{},
+										},
+									},
+								},
+							},
+							Interval: "",
+							Cron:     "0 1,9,17 * * *",
+							Tags:     nil,
+						},
+					},
+				},
+				targetProviderReleaseSemver: semver("1", "22", "0"),
+				sourceProviderReleaseSemver: semver("1", "21", "0"),
+			},
+			wantUpdated: true,
+			wantJobConfig: &config.JobConfig{
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Labels: map[string]string{},
+							Name:   createPeriodicJobName(semver("1", "21", "0"), "sig-network"),
+							ReporterConfig: &v1.ReporterConfig{
+								Slack: &v1.SlackReporterConfig{
+									JobStatesToReport: []v1.ProwJobState{},
+								},
+							},
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{},
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "0 1,9,17 * * *",
+						Tags:     nil,
+					},
+					{
+						JobBase: config.JobBase{
+							Annotations: map[string]string{},
+							Labels:      map[string]string{},
+							Name:        createPeriodicJobName(semver("1", "22", "0"), "sig-network"),
+							ReporterConfig: &v1.ReporterConfig{
+								Slack: &v1.SlackReporterConfig{
+									JobStatesToReport: []v1.ProwJobState{},
+								},
+							},
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{},
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "10 2,10,18 * * *",
+						Tags:     nil,
+					},
+				},
+			},
+			wantJobStatesToReportInSerialization: true,
+		},
+	}
+	temp, err := os.MkdirTemp("", "jobconfig")
+	panicOn(err)
+	defer os.RemoveAll(temp)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotUpdated := CopyPeriodicJobsForNewProvider(tt.args.jobConfig, tt.args.targetProviderReleaseSemver, tt.args.sourceProviderReleaseSemver); gotUpdated != tt.wantUpdated {
+				t.Errorf("CopyPeriodicJobsForNewProvider() = %v, want %v", gotUpdated, tt.wantUpdated)
+			}
+			if tt.wantUpdated && !reflect.DeepEqual(tt.args.jobConfig, tt.wantJobConfig) {
+				t.Errorf("CopyPeriodicJobsForNewProvider() = %v", deep.Equal(tt.args.jobConfig, tt.wantJobConfig))
+			}
+			marshalledConfig, err := yaml.Marshal(&tt.args.jobConfig)
+			panicOn(err)
+			filePath := path.Join(temp, "periodicsConfig.yaml")
+			err = os.WriteFile(filePath, marshalledConfig, os.ModePerm)
+			panicOn(err)
+			file, err := os.ReadFile(filePath)
+			panicOn(err)
+			configString := string(file)
+			gotJobStatesToReportInSerialization := strings.Contains(configString, "job_states_to_report")
+			if tt.wantJobStatesToReportInSerialization != gotJobStatesToReportInSerialization {
+				t.Errorf("CopyPeriodicJobsForNewProvider(): wantJobStatesToReportInSerialization: want %t, got %t", tt.wantJobStatesToReportInSerialization, gotJobStatesToReportInSerialization)
+			}
+		})
+	}
+}
+
+func panicOn(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func release(version string) *github.RepositoryRelease {
 	result := github.RepositoryRelease{}
 	result.TagName = &version
 	return &result
+}
+
+func semver(major, minor, patch string) *querier.SemVer {
+	return &querier.SemVer{
+		Major: major,
+		Minor: minor,
+		Patch: patch,
+	}
 }

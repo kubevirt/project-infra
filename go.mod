@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/bazelbuild/buildtools v0.0.0-20200922170545-10384511ce98
 	github.com/go-git/go-git/v5 v5.3.0
+	github.com/go-test/deep v1.0.7
 	github.com/golang/mock v1.5.0
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-github/v28 v28.1.1
@@ -15,6 +16,7 @@ require (
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.13.0
 	github.com/prometheus/client_golang v1.11.0
+	github.com/shurcooL/githubv4 v0.0.0-20210725200734-83ba7b4c9228 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/mod v0.4.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
@@ -23,8 +25,8 @@ require (
 	k8s.io/apiextensions-apiserver v0.21.1
 	k8s.io/apimachinery v0.21.1
 	k8s.io/client-go v11.0.1-0.20190805182717-6502b5e7b1b5+incompatible
-	k8s.io/test-infra v0.0.0-20210702133613-2028fff68d67
-	sigs.k8s.io/boskos v0.0.0-20201218211225-4c6cb9eeb307
+	k8s.io/test-infra v0.0.0-20210903101950-5c7809e9c5e9
+	sigs.k8s.io/boskos v0.0.0-20210730172138-093b54882439
 	sigs.k8s.io/yaml v1.2.0
 )
 
