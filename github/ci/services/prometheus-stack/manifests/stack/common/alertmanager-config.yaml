@@ -1,0 +1,61 @@
+---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: kubevirtci
+  labels:
+    alertmanagerConfig: kubevirtci
+spec:
+  route:
+    groupBy: ['job']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    receiver: 'slack'
+  receivers:
+  - name: 'slack'
+    slackConfigs:
+    - apiURL:
+        name: 'slack-config'
+        key: 'apiURL'
+      channel: '#kubevirt-ci-infra-monitoring'
+      sendResolved: true
+      title: |-
+        {{ define "__alert_severity_prefix_title" -}}
+          {{ if ne .Status "firing" -}}
+          :white_check_mark:
+          {{- else if eq .CommonLabels.severity "critical" -}}
+          :fire:
+          {{- else if eq .CommonLabels.severity "warning" -}}
+          :warning:
+          {{- else if eq .CommonLabels.severity "info" -}}
+          :information_source:
+          {{- else -}}
+          :question:
+          {{- end }}
+        {{- end }}
+        [{{ .Status | toUpper -}}
+        {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
+        ] {{ template "__alert_severity_prefix_title" . }} {{ .CommonLabels.alertname }}
+      color: |-
+        {{ if eq .Status "firing" -}}
+          {{ if eq .CommonLabels.severity "warning" -}}
+            warning
+          {{- else if eq .CommonLabels.severity "critical" -}}
+            danger
+          {{- else -}}
+            #439FE0
+          {{- end -}}
+        {{ else -}}
+        good
+        {{- end }}
+      text: |-
+        {{ range .Alerts }}
+          Cluster: {{ .Labels.cluster }}
+          {{- if .Annotations.message }}
+            {{ .Annotations.message }}
+          {{- end }}
+          {{- if .Annotations.description }}
+            {{ .Annotations.description }}
+          {{- end }}
+        {{- end }}

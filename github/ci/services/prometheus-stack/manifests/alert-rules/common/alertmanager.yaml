@@ -1,0 +1,31 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    group: kubevirtci
+  name: alertmanager
+spec:
+  groups:
+  - name: alertmanager.rules
+    rules:
+    - alert: AlertmanagerConfigInconsistent
+      annotations:
+        message: 'The configuration of the instances of the Alertmanager cluster `{{$labels.service}}`
+          are out of sync.'
+      expr: |
+        count_values("config_hash", alertmanager_config_hash{job="prometheus-operator-alertmanager"}) BY (service) / ON(service) GROUP_LEFT() label_replace(prometheus_operator_alertmanager_spec_replicas{job="prometheus-operator-operator"}, "service", "alertmanager-$1", "alertmanager", "(.*)") != 1
+      for: 5m
+      labels:
+        severity: critical
+        namespace: monitoring
+    - alert: AlertmanagerFailedReload
+      annotations:
+        message: 'Reloading Alertmanager configuration has failed for {{ $labels.namespace
+          }}/{{ $labels.pod}}.'
+      expr: |
+        alertmanager_config_last_reload_successful{job="prometheus-operator-alertmanager"} == 0
+      for: 10m
+      labels:
+        severity: warning
+        namespace: monitoring

@@ -677,6 +677,8 @@ postsubmits:
               extract_secret 'grafanaLDAPTOML' ./github/ci/services/prometheus-stack/secrets/production-control-plane/grafana/ldap-toml
               extract_secret 'thanosObjstoreConfig' ./github/ci/services/prometheus-stack/secrets/production-control-plane/thanos-objstore-config/thanos.yaml
               extract_secret 'thanosObjstoreConfig' ./github/ci/services/prometheus-stack/secrets/production-e2e-workloads/thanos-objstore-config/thanos.yaml
+              extract_secret 'alertmanager.slack.apiURL' ./github/ci/services/prometheus-stack/secrets/production-control-plane/slack-config/apiURL.yaml
+              extract_secret 'alertmanager.slack.apiURL' ./github/ci/services/prometheus-stack/secrets/production-e2e-workloads/slack-config/apiURL.yaml
 
               ./github/ci/services/prometheus-stack/hack/deploy.sh production-control-plane
               ./github/ci/services/prometheus-stack/hack/deploy.sh production-e2e-workloads

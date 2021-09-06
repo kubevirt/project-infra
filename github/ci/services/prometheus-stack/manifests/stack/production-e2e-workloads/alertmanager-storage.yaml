@@ -1,0 +1,24 @@
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: alertmanager-0
+  labels:
+    app: alertmanager
+    type: local
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+  - ReadWriteOnce
+  hostPath:
+    path: "/data/alertmanager"
+    type: ""
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: ci.kubevirt.io/cachenode
+          operator: In
+          values:
+          - "true"

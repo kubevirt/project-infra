@@ -1,0 +1,20 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: prometheus-stack-kube-prom-alertmanager
+spec:
+  nodeSelector:
+    ci.kubevirt.io/cachenode: "true"
+  tolerations:
+  - key: "ci.kubevirt.io/cachenode"
+    operator: "Exists"
+    effect: "NoSchedule"
+  storage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: ""
+        selector:
+          matchLabels:
+            app: alertmanager
+            type: local
