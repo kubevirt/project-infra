@@ -1495,7 +1495,7 @@ periodics:
           - name: KUBEVIRT_CGROUPV2
             value: "true"
           - name: KUBEVIRT_E2E_SKIP
-            value: "Multus|SRIOV|GPU|Macvtap|\\[sig-operator\\]"
+            value: Multus|SRIOV|GPU|Macvtap|MediatedDevices
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
