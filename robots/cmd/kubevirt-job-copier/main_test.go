@@ -174,8 +174,13 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 		wantJobConfig                        *config.JobConfig
 		wantJobStatesToReportInSerialization bool
 	}{
+		/*
+			checks that in the case of explicitly leaving the job_states_to_report empty, which implies that we do not
+			want to report in any case, this empty config is preserved in the resulting modified version that has been
+			written to storage.
+		 */
 		{
-			name: "test reporterconfig not preserved with no job state to report",
+			name: "reporterconfig with empty job states slice is preserved even with no job state to report",
 			args: args{
 				jobConfig: &config.JobConfig{
 					Periodics: []config.Periodic{
@@ -237,93 +242,6 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 							ReporterConfig: &v1.ReporterConfig{
 								Slack: &v1.SlackReporterConfig{
 									JobStatesToReport: []v1.ProwJobState{},
-								},
-							},
-							Spec: &corev1.PodSpec{
-								Containers: []corev1.Container{
-									{
-										Env: []corev1.EnvVar{},
-									},
-								},
-							},
-						},
-						Interval: "",
-						Cron:     "10 2,10,18 * * *",
-						Tags:     nil,
-					},
-				},
-			},
-			wantJobStatesToReportInSerialization: true,
-		},
-		{
-			name: "test reporterconfig preserved with some job state to report",
-			args: args{
-				jobConfig: &config.JobConfig{
-					Periodics: []config.Periodic{
-						{
-							JobBase: config.JobBase{
-								Labels: map[string]string{},
-								ReporterConfig: &v1.ReporterConfig{
-									Slack: &v1.SlackReporterConfig{
-										JobStatesToReport: []v1.ProwJobState{
-											v1.ErrorState,
-										},
-									},
-								},
-								Name: createPeriodicJobName(semver("1", "21", "0"), "sig-network"),
-								Spec: &corev1.PodSpec{
-									Containers: []corev1.Container{
-										{
-											Env: []corev1.EnvVar{},
-										},
-									},
-								},
-							},
-							Interval: "",
-							Cron:     "0 1,9,17 * * *",
-							Tags:     nil,
-						},
-					},
-				},
-				targetProviderReleaseSemver: semver("1", "22", "0"),
-				sourceProviderReleaseSemver: semver("1", "21", "0"),
-			},
-			wantUpdated: true,
-			wantJobConfig: &config.JobConfig{
-				Periodics: []config.Periodic{
-					{
-						JobBase: config.JobBase{
-							Labels: map[string]string{},
-							Name:   createPeriodicJobName(semver("1", "21", "0"), "sig-network"),
-							ReporterConfig: &v1.ReporterConfig{
-								Slack: &v1.SlackReporterConfig{
-									JobStatesToReport: []v1.ProwJobState{
-										v1.ErrorState,
-									},
-								},
-							},
-							Spec: &corev1.PodSpec{
-								Containers: []corev1.Container{
-									{
-										Env: []corev1.EnvVar{},
-									},
-								},
-							},
-						},
-						Interval: "",
-						Cron:     "0 1,9,17 * * *",
-						Tags:     nil,
-					},
-					{
-						JobBase: config.JobBase{
-							Annotations: map[string]string{},
-							Labels:      map[string]string{},
-							Name:        createPeriodicJobName(semver("1", "22", "0"), "sig-network"),
-							ReporterConfig: &v1.ReporterConfig{
-								Slack: &v1.SlackReporterConfig{
-									JobStatesToReport: []v1.ProwJobState{
-										v1.ErrorState,
-									},
 								},
 							},
 							Spec: &corev1.PodSpec{
