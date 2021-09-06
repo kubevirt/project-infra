@@ -194,7 +194,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.19-sig-network
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -236,7 +236,7 @@ periodics:
         value: windows_sysprep
       - name: KUBEVIRT_WINDOWS_PRODUCT_KEY_PATH
         value: /etc/win-sysprep/productKey
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -289,7 +289,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.19-sig-storage
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -335,7 +335,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.19-sig-compute
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -381,7 +381,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.20-sig-network
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -427,7 +427,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.20-sig-storage
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -473,7 +473,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.20-sig-compute
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -521,7 +521,7 @@ periodics:
         value: k8s-1.20
       - name: KUBEVIRT_E2E_FOCUS
         value: \[sig-operator\]
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -567,7 +567,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.21-sig-network
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -613,7 +613,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.21-sig-storage
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -659,7 +659,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.21-sig-compute
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -707,7 +707,7 @@ periodics:
         value: k8s-1.21
       - name: KUBEVIRT_E2E_FOCUS
         value: \[sig-operator\]
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -780,7 +780,7 @@ periodics:
         value: /etc/gcs/service-account.json
       - name: DOCKER_PREFIX
         value: quay.io/kubevirt
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -862,7 +862,7 @@ periodics:
         value: quay.io/kubevirt
       - name: BUILD_ARCH
         value: crossbuild-aarch64
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -909,7 +909,7 @@ periodics:
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -948,7 +948,7 @@ periodics:
       - /bin/sh
       - -c
       - automation/conformance.sh
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -1160,7 +1160,7 @@ periodics:
         value: test_id:1464
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -1232,7 +1232,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
         value: --prometheus-port 30007
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -1275,7 +1275,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.22-sig-network
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -1317,7 +1317,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.22-sig-storage
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -1359,7 +1359,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.22-sig-compute
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -1403,7 +1403,7 @@ periodics:
         value: k8s-1.22-operator
       - name: KUBEVIRT_E2E_FOCUS
         value: \[sig-operator\]
-      image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -1440,7 +1440,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
         env:
           - name: TARGET
             value: "k8s-1.20"
