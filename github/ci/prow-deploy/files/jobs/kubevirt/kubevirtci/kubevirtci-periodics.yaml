@@ -97,7 +97,7 @@ periodics:
       secret:
         secretName: gcs
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20210901-354d148
+    - image: quay.io/kubevirtci/pr-creator:v20210907-eaf738f
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
