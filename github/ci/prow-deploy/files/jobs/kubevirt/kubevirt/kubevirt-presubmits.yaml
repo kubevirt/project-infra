@@ -142,9 +142,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.21
-        - name: KUBEVIRT_E2E_FOCUS
-          value: \[sig-operator\]
+          value: k8s-1.21-sig-operator
         image: quay.io/kubevirtci/bootstrap:v20210906-994b913
         name: ""
         resources:
@@ -337,9 +335,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.20
-        - name: KUBEVIRT_E2E_FOCUS
-          value: \[sig-operator\]
+          value: k8s-1.20-sig-operator
         image: quay.io/kubevirtci/bootstrap:v20210906-994b913
         name: ""
         resources:
@@ -542,11 +538,9 @@ presubmits:
         - ' automation/test.sh'
         env:
         - name: TARGET
-          value: k8s-1.20
+          value: k8s-1.20-sig-operator
         - name: FEATURE_GATES
           value: NonRoot
-        - name: KUBEVIRT_E2E_FOCUS
-          value: \[sig-operator\]
         image: quay.io/kubevirtci/bootstrap:v20210906-994b913
         name: ""
         resources:
@@ -699,9 +693,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.19
-        - name: KUBEVIRT_E2E_FOCUS
-          value: \[sig-operator\]
+          value: k8s-1.19-sig-operator
         image: quay.io/kubevirtci/bootstrap:v20210906-994b913
         name: ""
         resources:
@@ -1586,9 +1578,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.22-operator
-        - name: KUBEVIRT_E2E_FOCUS
-          value: \[sig-operator\]
+          value: k8s-1.22-sig-operator
         image: quay.io/kubevirtci/bootstrap:v20210906-994b913
         name: ""
         resources:
