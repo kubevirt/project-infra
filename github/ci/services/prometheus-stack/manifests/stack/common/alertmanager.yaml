@@ -21,9 +21,11 @@ spec:
   externalUrl: http://prometheus-stack-kube-prom-alertmanager.default:9093
   paused: false
   logFormat: "logfmt"
-  logLevel:  "info"
+  logLevel: "info"
   retention: "120h"
-  alertmanagerConfigSelector: {}
+  alertmanagerConfigSelector:
+    matchLabels:
+      alertmanagerConfig: kubevirtci
   alertmanagerConfigNamespaceSelector: {}
   resources:
     limits:

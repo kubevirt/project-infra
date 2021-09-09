@@ -70,3 +70,21 @@ PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
         ("production-e2e-workloads", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
     ]
 ]
+
+[
+    k8s_deploy(
+        name = "%s-alert-rules" % NAME,
+        cluster = CLUSTER,
+        manifests = glob([
+            "manifests/alert-rules/common/*.yaml",
+            "manifests/alert-rules/%s/*.yaml" % NAME,
+        ]),
+        namespace = "monitoring",
+        user = USER,
+    )
+    for NAME, CLUSTER, USER in [
+        ("testing", TEST_CLUSTER, TEST_USER),
+        ("production-control-plane", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+        ("production-e2e-workloads", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+    ]
+]

@@ -1194,7 +1194,7 @@ metadata:
 spec:
   alerting:
     alertmanagers:
-      - namespace: default
+      - namespace: monitoring
         name: prometheus-stack-kube-prom-alertmanager
         port: web
         pathPrefix: "/"
@@ -1278,7 +1278,7 @@ spec:
       self-monitor: "true"
   namespaceSelector:
     matchNames:
-      - "default"
+      - "monitoring"
   endpoints:
   - port: web
     path: "/metrics"
@@ -1516,7 +1516,7 @@ spec:
       release: "prometheus-stack"
   namespaceSelector:
     matchNames:
-      - "default"
+      - "monitoring"
 ---
 # Source: kube-prometheus-stack/templates/prometheus/servicemonitor.yaml
 apiVersion: monitoring.coreos.com/v1
@@ -1536,10 +1536,9 @@ spec:
     matchLabels:
       app: kube-prometheus-stack-prometheus
       release: "prometheus-stack"
-      self-monitor: "true"
   namespaceSelector:
     matchNames:
-      - "default"
+      - "monitoring"
   endpoints:
   - port: web
     path: "/metrics"

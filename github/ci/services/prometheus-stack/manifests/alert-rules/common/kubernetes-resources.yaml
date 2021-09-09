@@ -1,0 +1,83 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    group: kubevirtci
+  name: kubernetes-resources
+spec:
+  groups:
+  - name: kubernetes-resources
+    rules:
+    - alert: KubeCPUOvercommit
+      annotations:
+        message: 'Cluster has overcommitted CPU resource requests for Pods and cannot
+          tolerate node failure.'
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubecpuovercommit
+      expr: |
+        sum(namespace_name:kube_pod_container_resource_requests_cpu_cores:sum)
+          /
+        sum(node:node_num_cpu:sum)
+          >
+        (count(node:node_num_cpu:sum)-1) / count(node:node_num_cpu:sum)
+      for: 5m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: KubeMemOvercommit
+      annotations:
+        message: 'Cluster has overcommitted memory resource requests for Pods and cannot
+          tolerate node failure.'
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubememovercommit
+      expr: |
+        sum(namespace_name:kube_pod_container_resource_requests_memory_bytes:sum)
+          /
+        sum(node_memory_MemTotal)
+          >
+        (count(node:node_num_cpu:sum)-1)
+          /
+        count(node:node_num_cpu:sum)
+      for: 5m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: KubeCPUOvercommit
+      annotations:
+        message: 'Cluster has overcommitted CPU resource requests for Namespaces.'
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubecpuovercommit
+      expr: |
+        sum(kube_resourcequota{job="kube-state-metrics", type="hard", resource="requests.cpu"})
+          /
+        sum(node:node_num_cpu:sum)
+          > 1.5
+      for: 5m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: KubeMemOvercommit
+      annotations:
+        message: 'Cluster has overcommitted memory resource requests for Namespaces.'
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubememovercommit
+      expr: |
+        sum(kube_resourcequota{job="kube-state-metrics", type="hard", resource="requests.memory"})
+          /
+        sum(node_memory_MemTotal{job="node-exporter"})
+          > 1.5
+      for: 5m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: KubeQuotaExceeded
+      annotations:
+        message: 'Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value
+          }}% of its {{ $labels.resource }} quota.'
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubequotaexceeded
+      expr: |
+        100 * kube_resourcequota{job="kube-state-metrics", type="used"}
+          / ignoring(instance, job, type)
+        (kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)
+          > 90
+      for: 15m
+      labels:
+        severity: warning
+        namespace: monitoring

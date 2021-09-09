@@ -1,0 +1,119 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    group: kubevirtci
+  name: prometheus
+spec:
+  groups:
+  - name: prometheus.rules
+    rules:
+    - alert: PrometheusConfigReloadFailed
+      annotations:
+        description: 'Reloading Prometheus configuration has failed for {{$labels.namespace}}/{{$labels.pod}}'
+        summary: Reloading Prometheus' configuration failed
+      expr: |
+        prometheus_config_last_reload_successful{job="prometheus-operator-prometheus"} == 0
+      for: 10m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: PrometheusNotificationQueueRunningFull
+      annotations:
+        description: 'Prometheus alert notification queue is running full for {{$labels.namespace}}/{{$labels.pod}}'
+        summary: Prometheus' alert notification queue is running full
+      expr: |
+        predict_linear(prometheus_notifications_queue_length{job="prometheus-operator-prometheus"}[5m], 60 * 30) > prometheus_notifications_queue_capacity{job="prometheus-operator-prometheus"}
+      for: 10m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: PrometheusErrorSendingAlerts
+      annotations:
+        description: 'Errors while sending alerts from Prometheus {{$labels.namespace}}/{{
+          $labels.pod}} to Alertmanager {{$labels.Alertmanager}}'
+        summary: Errors while sending alert from Prometheus
+      expr: |
+        rate(prometheus_notifications_errors_total{job="prometheus-operator-prometheus"}[5m]) / rate(prometheus_notifications_sent_total{job="prometheus-operator-prometheus"}[5m]) > 0.01
+      for: 10m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: PrometheusErrorSendingAlerts
+      annotations:
+        description: 'Errors while sending alerts from Prometheus {{$labels.namespace}}/{{
+          $labels.pod}} to Alertmanager {{$labels.Alertmanager}}'
+        summary: Errors while sending alerts from Prometheus
+      expr: |
+        rate(prometheus_notifications_errors_total{job="prometheus-operator-prometheus"}[5m]) / rate(prometheus_notifications_sent_total{job="prometheus-operator-prometheus"}[5m]) > 0.03
+      for: 10m
+      labels:
+        severity: critical
+        namespace: monitoring
+    - alert: PrometheusNotConnectedToAlertmanagers
+      annotations:
+        description: 'Prometheus {{ $labels.namespace }}/{{ $labels.pod}} is not connected
+          to any Alertmanagers'
+        summary: Prometheus is not connected to any Alertmanagers
+      expr: |
+        prometheus_notifications_alertmanagers_discovered{job="prometheus-operator-prometheus"} < 1
+      for: 10m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: PrometheusTSDBReloadsFailing
+      annotations:
+        description: '{{$labels.job}} at {{$labels.instance}} had {{$value | humanize}}
+          reload failures over the last four hours.'
+        summary: Prometheus has issues reloading data blocks from disk
+      expr: |
+        increase(prometheus_tsdb_reloads_failures_total{job="prometheus-operator-prometheus"}[2h]) > 0
+      for: 12h
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: PrometheusTSDBCompactionsFailing
+      annotations:
+        description: '{{$labels.job}} at {{$labels.instance}} had {{$value | humanize}}
+          compaction failures over the last four hours.'
+        summary: Prometheus has issues compacting sample blocks
+      expr: |
+        increase(prometheus_tsdb_compactions_failed_total{job="prometheus-operator-prometheus"}[2h]) > 0
+      for: 12h
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: PrometheusTSDBWALCorruptions
+      annotations:
+        description: '{{$labels.job}} at {{$labels.instance}} has a corrupted write-ahead
+          log (WAL).'
+        summary: Prometheus write-ahead log is corrupted
+      expr: |
+        tsdb_wal_corruptions_total{job="prometheus-operator-prometheus"} > 0
+      for: 4h
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: PrometheusNotIngestingSamples
+      annotations:
+        description: 'Prometheus {{ $labels.namespace }}/{{ $labels.pod}} isnt ingesting
+          samples.'
+        summary: Prometheus isn't ingesting samples
+      expr: |
+        rate(prometheus_tsdb_head_samples_appended_total{job="prometheus-operator-prometheus"}[5m]) <= 0
+      for: 10m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: PrometheusTargetScrapesDuplicate
+      annotations:
+        description: '{{$labels.namespace}}/{{$labels.pod}} has many samples rejected
+          due to duplicate timestamps but different values'
+        summary: Prometheus has many samples rejected
+      expr: |
+        increase(prometheus_target_scrapes_sample_duplicate_timestamp_total{job="prometheus-operator-prometheus"}[5m]) > 0
+      for: 10m
+      labels:
+        severity: warning
+        namespace: monitoring
