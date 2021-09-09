@@ -12,7 +12,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -278,7 +277,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -455,7 +453,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
