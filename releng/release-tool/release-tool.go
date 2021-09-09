@@ -402,10 +402,10 @@ func (r *releaseData) forkProwJobs() error {
 		}
 
 	}
-	_, err = gitCommand("-C", r.infraDir, "pull", "origin", gitbranch)
-	if err != nil {
-		return err
-	}
+	// ignore error here, we're just trying to make sure we've synced
+	// and pulled down any changes from the origin branch in github
+	// in case there are non local changes that need to get pulled in.
+	_, _ = gitCommand("-C", r.infraDir, "pull", "origin", gitbranch)
 
 	if _, err = os.Stat(fullJobConfig); err != nil && os.IsNotExist(err) {
 		// no job to fork for this project
@@ -455,7 +455,6 @@ func (r *releaseData) forkProwJobs() error {
 			"--title", fmt.Sprintf("Release configs for %s/%s release branch %s", r.org, r.repo, r.newBranch),
 			"--body", "adds new release configs",
 			"--source", fmt.Sprintf("kubevirt:%s", gitbranch),
-			"--labels", "lgtm,approved",
 			"--confirm",
 		)
 		bytes, err := cmd.CombinedOutput()
