@@ -139,7 +139,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - automation/test.sh
+        - echo bla && automation/test.sh
         env:
         - name: TARGET
           value: k8s-1.21-sig-operator
