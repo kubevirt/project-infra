@@ -46,7 +46,7 @@ spec:
           containerPort: 9090
         args:
         - --dir=/data
-        - --min-percent-blocks-free=3
+        - --min-percent-blocks-free=30
         volumeMounts:
         - name: cache
           mountPath: /data

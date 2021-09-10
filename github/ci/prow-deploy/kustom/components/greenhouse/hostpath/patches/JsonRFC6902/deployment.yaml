@@ -1,4 +1,0 @@
----
-- op: replace
-  path: /spec/template/spec/containers/0/args/1
-  value: --min-percent-blocks-free=30
