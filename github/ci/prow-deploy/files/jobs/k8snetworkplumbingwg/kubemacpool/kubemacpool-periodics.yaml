@@ -80,10 +80,8 @@ periodics:
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
+    cluster: ibm-prow-jobs
     spec:
-      nodeSelector:
-        type: vm
-        zone: ci
       containers:
         - image: quay.io/kubevirtci/flakefinder:v20210824-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-168-g42274555c
           env:
