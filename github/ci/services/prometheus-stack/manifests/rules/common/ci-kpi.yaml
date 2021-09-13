@@ -1,0 +1,83 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    group: kubevirtci
+  name: ci-kpi
+spec:
+  groups:
+  - name: ci-kpi
+    rules:
+    - alert: KubevirtCILongMergeQueue
+      annotations:
+        message: 'kubevirt/kubevirt average merge queue length is longer than 8 PRs'
+      expr: |
+        cihealth_avg_merge_queue_lenght_total > 8
+      for: 1m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: KubevirtCIVeryLongMergeQueue
+      annotations:
+        message: 'kubevirt/kubevirt average merge queue length is longer than 15 PRs'
+      expr: |
+        cihealth_avg_merge_queue_lenght_total > 15
+      for: 1m
+      labels:
+        severity: critical
+        namespace: monitoring
+    - alert: KubevirtCILongTimeToMerge
+      annotations:
+        message: 'kubevirt/kubevirt average time to merge is longer than 1 days'
+      expr: |
+        cihealth_avg_time_to_merge_days > 1
+      for: 1m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: KubevirtCIVeryLongTimeToMerge
+      annotations:
+        message: 'kubevirt/kubevirt average time to merge is longer than 3 days'
+      expr: |
+        cihealth_avg_time_to_merge_days > 3
+      for: 1m
+      labels:
+        severity: critical
+        namespace: monitoring
+    - alert: KubevirtCIHighRetestsToMerge
+      annotations:
+        message: 'kubevirt/kubevirt average retests to merge is greater than 3'
+      expr: |
+        cihealth_avg_retests_to_merge_total > 3
+      for: 1m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: KubevirtCIVeryHighRetestsToMerge
+      annotations:
+        message: 'kubevirt/kubevirt average retests to merge is greater than 6'
+      expr: |
+        cihealth_avg_retests_to_merge_total > 6
+      for: 1m
+      labels:
+        severity: critical
+        namespace: monitoring
+    - alert: KubevirtCILowMergedPRs
+      annotations:
+        message: 'kubevirt/kubevirt weekly average merged PRs is lower than 10'
+      expr: |
+        cihealth_avg_merged_prs_total < 10
+      for: 1m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: KubevirtCIVeryLowMergedPRs
+      annotations:
+        message: 'kubevirt/kubevirt weekly average merged PRs is lower than 7'
+      expr: |
+        cihealth_avg_merged_prs_total < 7
+      for: 1m
+      labels:
+        severity: critical
+        namespace: monitoring
