@@ -233,7 +233,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -243,7 +243,6 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.22
-    optional: true
     spec:
       containers:
       - command:
