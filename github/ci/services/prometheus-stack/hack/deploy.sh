@@ -23,7 +23,7 @@ main(){
 
     bazelisk run //github/ci/services/prometheus-stack:${environment}-service-monitors.apply
 
-    bazelisk run //github/ci/services/prometheus-stack:${environment}-alert-rules.apply
+    bazelisk run //github/ci/services/prometheus-stack:${environment}-rules.apply
 }
 
 main "${@}"

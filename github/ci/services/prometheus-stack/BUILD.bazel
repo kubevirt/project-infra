@@ -73,11 +73,11 @@ PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
 
 [
     k8s_deploy(
-        name = "%s-alert-rules" % NAME,
+        name = "%s-rules" % NAME,
         cluster = CLUSTER,
         manifests = glob([
-            "manifests/alert-rules/common/*.yaml",
-            "manifests/alert-rules/%s/*.yaml" % NAME,
+            "manifests/rules/common/*.yaml",
+            "manifests/rules/%s/*.yaml" % NAME,
         ]),
         namespace = "monitoring",
         user = USER,
