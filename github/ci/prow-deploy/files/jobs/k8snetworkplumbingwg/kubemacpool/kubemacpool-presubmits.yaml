@@ -23,7 +23,7 @@ presubmits:
           type: vm
           zone: ci
         containers:
-          - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
+          - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210419-444033d
             securityContext:
               privileged: true
             command:
@@ -53,7 +53,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
+          - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210419-444033d
             securityContext:
               privileged: true
             resources:

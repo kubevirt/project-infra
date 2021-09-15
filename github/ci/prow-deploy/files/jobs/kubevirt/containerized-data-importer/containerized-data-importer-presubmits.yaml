@@ -22,7 +22,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -56,7 +56,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -90,7 +90,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -124,7 +124,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -158,7 +158,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -191,7 +191,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -225,7 +225,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -259,7 +259,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -289,7 +289,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -320,7 +320,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -351,7 +351,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -382,7 +382,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"

@@ -211,7 +211,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/autoowners@sha256:538278fcafba229ab38f0f112955a237ee69f842adaf7f480cac8f385dcdb924
+    - image: quay.io/kubevirtci/autoowners:v20210615-aa22a23
       env:
       - name: GIT_ASKPASS
         value: "./hack/git-askpass.sh"
@@ -250,7 +250,7 @@ periodics:
       type: vm
       zone: ci
     containers:
-      - image: quay.io/kubevirtci/indexpagecreator@sha256:43fa17a6a92b74df3474d95b102f2b675ff9570c2bef1c80f74fb72aaf7fc434
+      - image: quay.io/kubevirtci/indexpagecreator:v20210428-c869d6302-dirty
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
