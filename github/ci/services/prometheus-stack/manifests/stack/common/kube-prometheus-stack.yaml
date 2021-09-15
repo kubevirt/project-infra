@@ -1256,6 +1256,12 @@ spec:
     name: prometheus-stack-kube-prom-prometheus-scrape-confg
     key: additional-scrape-configs.yaml
   portName: web
+  thanos:
+    baseImage: quay.io/thanos/thanos
+    version: v0.21.1
+    objectStorageConfig:
+      key: thanos.yaml
+      name: thanos-objstore-config
 ---
 # Source: kube-prometheus-stack/templates/alertmanager/servicemonitor.yaml
 apiVersion: monitoring.coreos.com/v1
