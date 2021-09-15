@@ -20,7 +20,7 @@ periodics:
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
-      image: quay.io/kubevirtci/flakefinder:v20210824-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-168-g42274555c
+      image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
       name: ""
       resources: {}
       volumeMounts:
@@ -60,7 +60,7 @@ periodics:
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
-      image: quay.io/kubevirtci/flakefinder:v20210824-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-168-g42274555c
+      image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
       name: ""
       resources: {}
       volumeMounts:
@@ -100,7 +100,7 @@ periodics:
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
-      image: quay.io/kubevirtci/flakefinder:v20210824-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-168-g42274555c
+      image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
       name: ""
       resources: {}
       volumeMounts:
@@ -140,7 +140,7 @@ periodics:
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
-      image: quay.io/kubevirtci/flakefinder:v20210824-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-168-g42274555c
+      image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
       name: ""
       resources: {}
       volumeMounts:
