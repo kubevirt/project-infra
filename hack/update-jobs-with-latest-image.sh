@@ -1,20 +1,18 @@
 #!/bin/bash
 set -euo pipefail
+set -x
+
+if ! command -V skopeo; then
+    echo "skopeo required!"
+    exit 1
+fi
 
 IMAGE_NAME="$1"
+latest_image_tag=$(skopeo list-tags "docker://$IMAGE_NAME" | jq -r '.Tags[]' | sort -rV | head -1)
+IMAGE_NAME_WITH_TAG="$IMAGE_NAME:$latest_image_tag"
 
-job_dir="$(readlink --canonicalize $(cd "$(cd "$(dirname $0)" && pwd)"'/../github/ci/prow-deploy/files/jobs' && pwd))"
+replace_regex='s#'"$IMAGE_NAME"'(@sha256\:|:v[a-z0-9]+-).*$#'"$IMAGE_NAME_WITH_TAG"'#g'
 
-docker pull "$IMAGE_NAME"
-sha_id=$(docker images --digests "$IMAGE_NAME" | grep 'latest ' | head -1 | awk '{ print $3 }')
-
-command -V skopeo && image_tag=$(skopeo inspect "docker://$IMAGE_NAME@$sha_id" | jq -r ' [ .RepoTags[] | select( test( "latest" ) != true ) ] | sort | .[-1] ' )
-
-replace_regex='s#'"$IMAGE_NAME"'(@sha256\:[a-z0-9]+|:v[a-z0-9]+-[a-z0-9]+)#'"$IMAGE_NAME"
-if [ -n "$image_tag" ]; then
-    replace_regex+=':'"$image_tag"'#g'
-else
-    replace_regex+='@'"$sha_id"'#g'
-fi
+job_dir="$(readlink --canonicalize "$(cd "$(cd "$(dirname $0)" && pwd)"'/../github/ci/prow-deploy/files/jobs' && pwd)")"
 
 find "$job_dir" -regextype egrep -regex '.*-(periodics|presubmits|postsubmits)\.yaml' -exec sed -i -E $replace_regex {} +
