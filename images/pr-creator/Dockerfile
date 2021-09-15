@@ -20,4 +20,8 @@ RUN set -x && \
     chmod +x /usr/local/bin/labels-checker && \
     cd .. && rm -rf ./project-infra
 
+RUN dnf install -y \
+        skopeo && \
+    dnf -y clean all
+
 ENV GIT_ASKPASS=/usr/local/bin/git-askpass.sh
