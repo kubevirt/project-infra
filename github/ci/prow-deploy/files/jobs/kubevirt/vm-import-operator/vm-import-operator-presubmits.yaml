@@ -1,6 +1,6 @@
 presubmits:
   kubevirt/vm-import-operator:
-  - name: pull-vm-import-operator-e2e-k8s-1.18
+  - name: pull-vm-import-operator-e2e-k8s-1.20
     always_run: true
     optional: false
     decorate: true
@@ -22,7 +22,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.18 && automation/test.sh"
+            - "export TARGET=k8s-1.20 && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
