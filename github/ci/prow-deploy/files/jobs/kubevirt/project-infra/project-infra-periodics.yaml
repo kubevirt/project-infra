@@ -26,6 +26,7 @@ periodics:
           -label:needs-rebase
           -label:needs-ok-to-test
           repo:kubevirt/kubevirt
+          repo:kubevirt/kubevirtci
       - --token=/etc/github/oauth
       - |-
         --comment=/retest
@@ -41,7 +42,7 @@ periodics:
     - name: token
       secret:
         secretName:  commenter-oauth-token
-- name: periodic-test-infra-close
+- name: periodic-project-infra-close
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
@@ -79,7 +80,7 @@ periodics:
       secret:
         secretName: oauth-token
 
-- name: periodic-test-infra-close-build-watcher-triage
+- name: periodic-project-infra-close-build-watcher-triage
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
@@ -116,7 +117,7 @@ periodics:
       secret:
         secretName: oauth-token
 
-- name: periodic-test-infra-rotten
+- name: periodic-project-infra-rotten
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
@@ -157,7 +158,7 @@ periodics:
       secret:
         secretName: oauth-token
 
-- name: periodic-test-infra-stale
+- name: periodic-project-infra-stale
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
