@@ -7,7 +7,6 @@ resources:
   - ../../components/docker-mirror-proxy/base
   - ../../components/greenhouse/base
   - resources/docker-mirror-proxy_pvc.yaml
-  - resources/ingress-class.yaml
   - resources/hook-rbac.yaml
   - resources/horologium-rbac.yaml
   - resources/sinker-rbac.yaml
