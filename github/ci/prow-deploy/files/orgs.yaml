@@ -698,13 +698,25 @@ orgs:
       ssp-maintainers:
         description: ""
         maintainers:
-          - danielBelenky
+          - dhiller
+          - dominikholler
         members:
           - omeryahud
         privacy: closed
         repos:
           kubevirt-ssp-operator: read
           ssp-operator: read
+      ssp-admin:
+        description: "Administration group to check for issues in ssp repos"
+        maintainers:
+        - dhiller
+        - dominikholler
+        - ksimon1
+        privacy: closed
+        repos:
+          kubevirt-ssp-operator: admin
+          ssp-operator: admin
+          kvm-info-nfd-plugin: admin
       team-ux-review:
         description: ""
         maintainers:
