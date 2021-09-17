@@ -4,7 +4,18 @@ RUN printf '#!/bin/bash\n\
 echo "Docker in Docker enabled, initializing..."\n\
 printf '=%.0s' {1..80}; echo\n\
 # If we have opted in to docker in docker, start the docker daemon,\n\
-service docker start\n\
+(\n\
+    if [ -f "/etc/default/docker" ]; then\n\
+        source /etc/default/docker\n\
+    fi\n\
+    /usr/bin/dockerd \
+        -p /var/run/docker.pid \
+        --data-root=/docker-graph \
+        --init-path /usr/libexec/docker/docker-init \
+        --userland-proxy-path /usr/libexec/docker/docker-proxy \
+        ${DOCKER_OPTS} \
+            >/var/log/dockerd.log 2>&1 &\n\
+)\n\
 # the service can be started but the docker socket not ready, wait for ready\n\
 WAIT_N=0\n\
 MAX_WAIT=5\n\

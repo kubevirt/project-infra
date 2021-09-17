@@ -38,8 +38,6 @@ spec:
           value: "1200s"
         - name: PROXY_READ_TIMEOUT
           value: "1200s"
-        - name: PROXY_CONNECT_TIMEOUT
-          value: "1200s"
         - name: PROXY_SEND_TIMEOUT
           value: "1200s"
         volumeMounts:
