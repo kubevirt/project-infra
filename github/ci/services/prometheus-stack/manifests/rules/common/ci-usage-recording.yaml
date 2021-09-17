@@ -1,0 +1,56 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    group: kubevirtci
+  name: ci-usage-recording
+spec:
+  groups:
+  - name: ci-usage-per-pr.rules
+    rules:
+    - expr: |
+        sum without(container,endpoint,instance,job,job_cluster,namespace,org,pod,service) (kubevirt_ci_job_memory_bytes{job_cluster="prow-workloads"})
+      record: job_name_repo_type:kubevirt_ci_job_memory_bytes_all:sum
+    - expr: |
+        sum without(container,endpoint,instance,job,job_cluster,namespace,org,pod,service,always_run,prometheus,prometheus_replica) (kubevirt_ci_job_memory_bytes{job_cluster="prow-workloads",repo="kubevirt",always_run="true",branches=""})
+      record: job_name_repo_type:kubevirt_ci_job_memory_bytes_per_pr:sum
+    - expr: |
+        sum by(job_name) (increase(prow_job_runtime_seconds_sum[24h]))
+      record: job_name:prow_job_runtime_seconds_sum:increase24h
+    - expr: |
+        sum by(job_name) (increase(prow_job_runtime_seconds_sum[6h]))
+      record: job_name:prow_job_runtime_seconds_sum:increase6h
+    - expr: |
+        sum by(job_name) (increase(prow_job_runtime_seconds_sum[3h]))
+      record: job_name:prow_job_runtime_seconds_sum:increase3h
+    - expr: |
+        sum by(job_name) (increase(prow_job_runtime_seconds_count[24h])) > 0
+      record: job_name:prow_job_runtime_seconds_count:increase24h
+    - expr: |
+        job_name:prow_job_runtime_seconds_sum:increase24h
+        /
+        job_name:prow_job_runtime_seconds_count:increase24h
+      record: job_name:prow_job_runtime_seconds:mean24h
+    - expr: |
+        job_name_repo_type:kubevirt_ci_job_memory_bytes_per_pr:sum * on(job_name) group_right job_name:prow_job_runtime_seconds:mean24h
+      record: job_name:prow_memory_per_job:mean24h
+    - expr: |
+        sum(job_name:prow_memory_per_job:mean24h) / ( 3600 * 1024 * 1024 * 1024)
+      record: none:prow_memoryhour_per_job:mean24h
+  - name: node-capacity.rules
+    rules:
+    - expr: |
+        sum by(instance)(node_memory_MemTotal_bytes)
+      record: instance:node_memory:sum
+    - expr: |
+        sum without(cluster,container,domainname,endpoint,job,machine,namespace,pod,prometheus,prometheus_replica,release,service,sysname,version) (node_uname_info)
+      record: instance:node_uname_info:sum
+    - expr: |
+        sum(instance:node_uname_info:sum{cluster="prow-workloads", nodename=~"bare-metal-.*"} * on(instance) group_left instance:node_memory:sum) * 24 * 0.96 / (1024 * 1024 * 1024)
+      record: none:node_memoryhour:sum
+    - expr: |
+        sum by(instance)(node_memory_MemTotal_bytes - node_memory_MemFree_bytes)
+      record: instance:node_used_memory:sum
+  - name: last-ci-usage.rules
+    rules: []

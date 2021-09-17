@@ -4238,6 +4238,12 @@ data:
         },
         {
           "type": "panel",
+          "id": "stat",
+          "name": "Stat",
+          "version": ""
+        },
+        {
+          "type": "panel",
           "id": "table",
           "name": "Table",
           "version": ""
@@ -4260,6 +4266,7 @@ data:
       "gnetId": null,
       "graphTooltip": 0,
       "id": null,
+      "iteration": 1631804052959,
       "links": [],
       "panels": [
         {
@@ -4329,7 +4336,7 @@ data:
             ]
           },
           "gridPos": {
-            "h": 23,
+            "h": 14,
             "w": 12,
             "x": 0,
             "y": 0
@@ -4348,7 +4355,7 @@ data:
           "pluginVersion": "7.4.0",
           "targets": [
             {
-              "expr": "((sum without(container,endpoint,instance,job,job_cluster,namespace,org,pod,service) (kubevirt_ci_job_memory_bytes{job_cluster=\"prow-workloads\"}) * on(job_name) group_left sum by(job_name) (increase(prow_job_runtime_seconds_sum[24h]))) > 0) / ( 3600 * 1024 * 1024 * 1024)",
+              "expr": "((job_name_repo_type:kubevirt_ci_job_memory_bytes_all:sum * on(job_name) group_left job_name:prow_job_runtime_seconds_sum:increase24h) > 0) / ( 3600 * 1024 * 1024 * 1024)",
               "format": "table",
               "instant": true,
               "interval": "",
@@ -4356,16 +4363,19 @@ data:
               "refId": "A"
             }
           ],
-          "title": "Average Gib * hour per lane in the last 24h",
+          "title": "Total Gib * hour per lane in the last 24h",
           "transformations": [
             {
               "id": "organize",
               "options": {
                 "excludeByName": {
                   "Time": true,
+                  "always_run": true,
+                  "branches": true,
                   "cluster": true,
                   "prometheus": true,
-                  "prometheus_replica": true
+                  "prometheus_replica": true,
+                  "skip_branches": true
                 },
                 "indexByName": {},
                 "renameByName": {}
@@ -4373,6 +4383,279 @@ data:
             }
           ],
           "type": "table"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_PROMETHEUS}",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 14,
+            "w": 12,
+            "x": 12,
+            "y": 0
+          },
+          "hiddenSeries": false,
+          "id": 6,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.4.0",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(instance:node_uname_info:sum{cluster=\"prow-workloads\", nodename=~\"bare-metal-.*\"} * on(instance) group_left instance:node_used_memory:sum )",
+              "interval": "",
+              "legendFormat": "Total memory used ",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(sum without(cluster,container,domainname,endpoint,job,machine,namespace,nodename,pod,prometheus,prometheus_replica,release,service,sysname,version) (node_uname_info{cluster=\"prow-workloads\",nodename=~\"bare-metal.*\"}) * on(instance) group_left sum by(instance)(node_memory_MemTotal_bytes) )",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "Total memory available",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Historical memory utilization in the workloads cluster",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "bytes",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 4,
+            "x": 0,
+            "y": 14
+          },
+          "id": 12,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "7.4.0",
+          "targets": [
+            {
+              "expr": "sum(instance:node_uname_info:sum{cluster=\"prow-workloads\", nodename=~\"bare-metal-.*\"} * on(instance) group_left instance:node_memory:sum) * 24 * 0.96 / (1024 * 1024 * 1024)",
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Total Gib * h capacity in the last 24h",
+          "type": "stat"
+        },
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 4,
+            "x": 4,
+            "y": 14
+          },
+          "id": 10,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "7.4.0",
+          "targets": [
+            {
+              "expr": "none:prow_memoryhour_per_job:mean24h",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Gib * h per full PR build in the last 24h ",
+          "type": "stat"
+        },
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 4,
+            "x": 8,
+            "y": 14
+          },
+          "id": 14,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "7.4.0",
+          "targets": [
+            {
+              "expr": "(sum(instance:node_uname_info:sum{cluster=\"prow-workloads\", nodename=~\"bare-metal-.*\"} * on(instance) group_left instance:node_memory:sum) * 24 * 0.96 / (1024 * 1024 * 1024)) / sum(none:prow_memoryhour_per_job:mean24h)",
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Full PR build capacity",
+          "type": "stat"
         },
         {
           "datasource": "${DS_PROMETHEUS}",
@@ -4408,7 +4691,7 @@ data:
             "h": 8,
             "w": 4,
             "x": 12,
-            "y": 0
+            "y": 14
           },
           "id": 4,
           "options": {
@@ -4426,7 +4709,7 @@ data:
           "pluginVersion": "7.4.0",
           "targets": [
             {
-              "expr": "(sum (((sum without(container,endpoint,instance,job,job_cluster,namespace,org,pod,service) (kubevirt_ci_job_memory_bytes{job_cluster=\"prow-workloads\"}) * on(job_name) group_left sum by(job_name) (increase(prow_job_runtime_seconds_sum[24h]))) > 0) / ( 3600 * 1024 * 1024 * 1024)) / (24 * 10 * 225)) * 100",
+              "expr": "(sum (((job_name_repo_type:kubevirt_ci_job_memory_bytes_all:sum * on(job_name) group_left job_name:prow_job_runtime_seconds_sum:increase24h) > 0) / ( 3600 * 1024 * 1024 * 1024)) / (24 * 10 * 225)) * 100",
               "format": "table",
               "instant": true,
               "interval": "",
@@ -4471,7 +4754,7 @@ data:
             "h": 8,
             "w": 4,
             "x": 16,
-            "y": 0
+            "y": 14
           },
           "id": 7,
           "options": {
@@ -4489,7 +4772,7 @@ data:
           "pluginVersion": "7.4.0",
           "targets": [
             {
-              "expr": "(sum (((sum without(container,endpoint,instance,job,job_cluster,namespace,org,pod,service) (kubevirt_ci_job_memory_bytes{job_cluster=\"prow-workloads\"}) * on(job_name) group_left sum by(job_name) (increase(prow_job_runtime_seconds_sum[6h]))) > 0) / ( 3600 * 1024 * 1024 * 1024)) / (6 * 10 * 225)) * 100",
+              "expr": "(sum (((job_name_repo_type:kubevirt_ci_job_memory_bytes_all:sum * on(job_name) group_left job_name:prow_job_runtime_seconds_sum:increase6h) > 0) / ( 3600 * 1024 * 1024 * 1024)) / (6 * 10 * 225)) * 100",
               "format": "table",
               "instant": true,
               "interval": "",
@@ -4534,7 +4817,7 @@ data:
             "h": 8,
             "w": 4,
             "x": 20,
-            "y": 0
+            "y": 14
           },
           "id": 8,
           "options": {
@@ -4552,7 +4835,7 @@ data:
           "pluginVersion": "7.4.0",
           "targets": [
             {
-              "expr": "(sum (((sum without(container,endpoint,instance,job,job_cluster,namespace,org,pod,service) (kubevirt_ci_job_memory_bytes{job_cluster=\"prow-workloads\"}) * on(job_name) group_left sum by(job_name) (increase(prow_job_runtime_seconds_sum[3h]))) > 0) / ( 3600 * 1024 * 1024 * 1024)) / (3 * 10 * 225)) * 100",
+              "expr": "(sum (((job_name_repo_type:kubevirt_ci_job_memory_bytes_all:sum * on(job_name) group_left job_name:prow_job_runtime_seconds_sum:increase3h) > 0) / ( 3600 * 1024 * 1024 * 1024)) / (3 * 10 * 225)) * 100",
               "format": "table",
               "instant": true,
               "interval": "",
@@ -4562,110 +4845,6 @@ data:
           ],
           "title": "Average utilization in the last 3h",
           "type": "gauge"
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "${DS_PROMETHEUS}",
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "unit": "bytes"
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 15,
-            "w": 12,
-            "x": 12,
-            "y": 8
-          },
-          "hiddenSeries": false,
-          "id": 6,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "alertThreshold": true
-          },
-          "percentage": false,
-          "pluginVersion": "7.4.0",
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "sum(sum without(cluster,container,domainname,endpoint,job,machine,namespace,nodename,pod,prometheus,prometheus_replica,release,service,sysname,version) (node_uname_info{cluster=\"prow-workloads\",nodename=~\"bare-metal.*\"}) * on(instance) group_left sum by(instance)(node_memory_MemTotal_bytes - node_memory_MemFree_bytes) )",
-              "interval": "",
-              "legendFormat": "Total memory used ",
-              "refId": "A"
-            },
-            {
-              "expr": "sum(sum without(cluster,container,domainname,endpoint,job,machine,namespace,nodename,pod,prometheus,prometheus_replica,release,service,sysname,version) (node_uname_info{cluster=\"prow-workloads\",nodename=~\"bare-metal.*\"}) * on(instance) group_left sum by(instance)(node_memory_MemTotal_bytes) )",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "Total memory available",
-              "refId": "B"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Historical utilization",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "bytes",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
         }
       ],
       "refresh": false,
@@ -4673,7 +4852,19 @@ data:
       "style": "dark",
       "tags": [],
       "templating": {
-        "list": []
+        "list": [
+          {
+            "datasource": "Prometheus",
+            "description": null,
+            "error": null,
+            "filters": [],
+            "hide": 0,
+            "label": null,
+            "name": "Filters",
+            "skipUrlSync": false,
+            "type": "adhoc"
+          }
+        ]
       },
       "time": {
         "from": "now-24h",
@@ -4687,7 +4878,7 @@ data:
       "timezone": "",
       "title": "CI Infrastructure Utilization",
       "uid": "qFDyvVinx",
-      "version": 14
+      "version": 51
     }
 ---
 # Source: grafana/templates/tests/test-configmap.yaml
