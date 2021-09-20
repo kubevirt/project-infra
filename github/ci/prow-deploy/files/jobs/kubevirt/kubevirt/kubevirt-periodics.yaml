@@ -1251,6 +1251,10 @@ periodics:
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
   labels:
     preset-bazel-cache: "true"
     preset-bazel-unnested: "true"
@@ -1293,6 +1297,10 @@ periodics:
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
   labels:
     preset-bazel-cache: "true"
     preset-bazel-unnested: "true"
@@ -1335,6 +1343,10 @@ periodics:
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
   labels:
     preset-bazel-cache: "true"
     preset-bazel-unnested: "true"
@@ -1377,6 +1389,10 @@ periodics:
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
   labels:
     preset-bazel-cache: "true"
     preset-bazel-unnested: "true"
