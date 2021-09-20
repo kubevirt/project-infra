@@ -11,7 +11,7 @@ spec:
     rules:
     - alert: KubevirtCILongMergeQueue
       annotations:
-        message: 'kubevirt/kubevirt average merge queue length is longer than 8 PRs'
+        message: 'kubevirt/kubevirt weekly average merge queue length is longer than 8 PRs (current value: {{ $value }})'
       expr: |
         cihealth_avg_merge_queue_lenght_total > 8
       for: 1m
@@ -20,7 +20,7 @@ spec:
         namespace: monitoring
     - alert: KubevirtCIVeryLongMergeQueue
       annotations:
-        message: 'kubevirt/kubevirt average merge queue length is longer than 15 PRs'
+        message: 'kubevirt/kubevirt weekly average merge queue length is longer than 15 PRs (current value: {{ $value }})'
       expr: |
         cihealth_avg_merge_queue_lenght_total > 15
       for: 1m
@@ -29,7 +29,7 @@ spec:
         namespace: monitoring
     - alert: KubevirtCILongTimeToMerge
       annotations:
-        message: 'kubevirt/kubevirt average time to merge is longer than 1 days'
+        message: 'kubevirt/kubevirt weekly average time to merge is longer than 1 days (current value: {{ $value }})'
       expr: |
         cihealth_avg_time_to_merge_days > 1
       for: 1m
@@ -38,7 +38,7 @@ spec:
         namespace: monitoring
     - alert: KubevirtCIVeryLongTimeToMerge
       annotations:
-        message: 'kubevirt/kubevirt average time to merge is longer than 3 days'
+        message: 'kubevirt/kubevirt weekly average time to merge is longer than 3 days (current value: {{ $value }})'
       expr: |
         cihealth_avg_time_to_merge_days > 3
       for: 1m
@@ -47,7 +47,7 @@ spec:
         namespace: monitoring
     - alert: KubevirtCIHighRetestsToMerge
       annotations:
-        message: 'kubevirt/kubevirt average retests to merge is greater than 3'
+        message: 'kubevirt/kubevirt weekly average retests to merge is greater than 3 (current value: {{ $value }})'
       expr: |
         cihealth_avg_retests_to_merge_total > 3
       for: 1m
@@ -56,7 +56,7 @@ spec:
         namespace: monitoring
     - alert: KubevirtCIVeryHighRetestsToMerge
       annotations:
-        message: 'kubevirt/kubevirt average retests to merge is greater than 6'
+        message: 'kubevirt/kubevirt weekly average retests to merge is greater than 6 (current value: {{ $value }})'
       expr: |
         cihealth_avg_retests_to_merge_total > 6
       for: 1m
@@ -65,7 +65,7 @@ spec:
         namespace: monitoring
     - alert: KubevirtCILowMergedPRs
       annotations:
-        message: 'kubevirt/kubevirt weekly average merged PRs is lower than 10'
+        message: 'kubevirt/kubevirt weekly average merged PRs is lower than 10 (current value: {{ $value }})'
       expr: |
         cihealth_avg_merged_prs_total < 10
       for: 1m
@@ -74,7 +74,7 @@ spec:
         namespace: monitoring
     - alert: KubevirtCIVeryLowMergedPRs
       annotations:
-        message: 'kubevirt/kubevirt weekly average merged PRs is lower than 7'
+        message: 'kubevirt/kubevirt weekly average merged PRs is lower than 7 (current value: {{ $value }})'
       expr: |
         cihealth_avg_merged_prs_total < 7
       for: 1m
