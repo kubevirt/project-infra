@@ -689,7 +689,7 @@ periodics:
       - -c
       args:
       - |
-        if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=prow-job-image-bump --ensure-labels-missing=lgtm,approved,hold --github-token-path=/etc/github/oauth; then
+        if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=prow-job-image-bump --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
           hack/git-pr.sh -c "hack/bump-prow-job-images.sh" -b prow-job-image-bump -r project-infra -T main
         fi
       volumeMounts:
