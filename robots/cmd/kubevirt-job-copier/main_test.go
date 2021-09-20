@@ -260,6 +260,99 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 			},
 			wantJobStatesToReportInSerialization: true,
 		},
+		{
+			name: "extra_refs field exists for new provider job",
+			args: args{
+				jobConfig: &config.JobConfig{
+					Periodics: []config.Periodic{
+						{
+							JobBase: config.JobBase{
+								Labels: map[string]string{},
+								Name: createPeriodicJobName(semver("1", "21", "0"), "sig-network"),
+								Spec: &corev1.PodSpec{
+									Containers: []corev1.Container{
+										{
+											Env: []corev1.EnvVar{},
+										},
+									},
+								},
+								UtilityConfig: config.UtilityConfig{
+									ExtraRefs: []v1.Refs{
+										{
+											Org:            "kubevirt",
+											Repo:           "kubevirt",
+											BaseRef:        "main",
+																				},
+									},
+								},
+							},
+							Interval: "",
+							Cron:     "0 1,9,17 * * *",
+							Tags:     nil,
+						},
+					},
+				},
+				targetProviderReleaseSemver: semver("1", "22", "0"),
+				sourceProviderReleaseSemver: semver("1", "21", "0"),
+			},
+			wantUpdated: true,
+			wantJobConfig: &config.JobConfig{
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Labels: map[string]string{},
+							Name:   createPeriodicJobName(semver("1", "21", "0"), "sig-network"),
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{},
+									},
+								},
+							},
+							UtilityConfig: config.UtilityConfig{
+								ExtraRefs: []v1.Refs{
+									{
+										Org:            "kubevirt",
+										Repo:           "kubevirt",
+										BaseRef:        "main",
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "0 1,9,17 * * *",
+						Tags:     nil,
+					},
+					{
+						JobBase: config.JobBase{
+							Annotations: map[string]string{},
+							Labels:      map[string]string{},
+							Name:        createPeriodicJobName(semver("1", "22", "0"), "sig-network"),
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{},
+									},
+								},
+							},
+							UtilityConfig: config.UtilityConfig{
+								ExtraRefs: []v1.Refs{
+									{
+										Org:            "kubevirt",
+										Repo:           "kubevirt",
+										BaseRef:        "main",
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "10 2,10,18 * * *",
+						Tags:     nil,
+					},
+				},
+			},
+			wantJobStatesToReportInSerialization: false,
+		},
 	}
 	temp, err := os.MkdirTemp("", "jobconfig")
 	panicOn(err)
