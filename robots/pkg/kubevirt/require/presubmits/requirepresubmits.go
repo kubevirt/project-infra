@@ -11,12 +11,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package presubmits
 
 import (
 	"context"
-	"flag"
 	"fmt"
+	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
 
@@ -32,111 +32,127 @@ import (
 const orgAndRepoForJobConfig = "kubevirt/kubevirt"
 
 type options struct {
-	port int
+	jobConfigPathKubevirtPresubmits string
+}
 
-	dryRun bool
+var requirePresubmitsCommand = &cobra.Command{
+	Use: "presubmits",
+	Short: "kubevirt require presubmits requires presubmit job definitions in project-infra for kubevirt/kubevirt repo",
+	Run: func(cmd *cobra.Command, args []string) {
 
-	TokenPath                      string
-	endpoint                       string
-	jobConfigPathKubevirtPresubmit string
+		err := cmd.InheritedFlags().Parse(args)
+		if err != nil {
+			fmt.Println(fmt.Errorf("failed to parse args: %v", err))
+			os.Exit(1)
+		}
+
+		if err := o.Validate(); err != nil {
+			log().WithError(err).Error("Invalid arguments provided.")
+			os.Exit(1)
+		}
+
+		run(cmd)
+	},
+}
+
+var o = options{}
+
+func NewRequirePresubmitsCommand() *cobra.Command {
+	return requirePresubmitsCommand
+}
+
+func init() {
+	requirePresubmitsCommand.PersistentFlags().StringVar(&o.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The directory of the kubevirt presubmit job definitions")
 }
 
 func (o *options) Validate() error {
-	if _, err := os.Stat(o.jobConfigPathKubevirtPresubmit); os.IsNotExist(err) {
-		return fmt.Errorf("jobConfigPathKubevirtPresubmit is required: %v", err)
+	if _, err := os.Stat(o.jobConfigPathKubevirtPresubmits); os.IsNotExist(err) {
+		return fmt.Errorf("jobConfigPathKubevirtPresubmits is required: %v", err)
 	}
 	return nil
 }
 
-func gatherOptions() options {
-	o := options{}
-	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	fs.BoolVar(&o.dryRun, "dry-run", true, "Whether the file should get modified or just modifications printed to stdout.")
-	fs.StringVar(&o.TokenPath, "github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
-	fs.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
-	fs.StringVar(&o.jobConfigPathKubevirtPresubmit, "job-config-path-kubevirt-presubmit", "", "The directory of the kubevirt presubmit job definitions")
-	err := fs.Parse(os.Args[1:])
-	if err != nil {
-		fmt.Println(fmt.Errorf("failed to parse args: %v", err))
-		os.Exit(1)
-	}
-	return o
-}
-
-func main() {
+func run(cmd *cobra.Command) {
 
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	// TODO: Use global option from the prow config.
 	logrus.SetLevel(logrus.DebugLevel)
-	log := logrus.StandardLogger().WithField("robot", "kubevirt-presubmit-requirer")
 
-	o := gatherOptions()
-	if err := o.Validate(); err != nil {
-		log.WithError(err).Error("Invalid arguments provided.")
-		os.Exit(1)
+	tokenPath, err := cmd.InheritedFlags().GetString("github-token-path")
+	if err != nil {
+		log().Panicln(err)
+	}
+	endPoint, err := cmd.InheritedFlags().GetString("github-endpoint")
+	if err != nil {
+		log().Panicln(err)
 	}
 
 	ctx := context.Background()
 	var client *github.Client
-	if o.TokenPath == "" {
+	if tokenPath == "" {
 		var err error
-		client, err = github.NewEnterpriseClient(o.endpoint, o.endpoint, nil)
+		client, err = github.NewEnterpriseClient(endPoint, endPoint, nil)
 		if err != nil {
-			log.Panicln(err)
+			log().Panicln(err)
 		}
 	} else {
-		token, err := ioutil.ReadFile(o.TokenPath)
+		token, err := ioutil.ReadFile(tokenPath)
 		if err != nil {
-			log.Panicln(err)
+			log().Panicln(err)
 		}
 		ts := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: string(token)},
 		)
-		client, err = github.NewEnterpriseClient(o.endpoint, o.endpoint, oauth2.NewClient(ctx, ts))
+		client, err = github.NewEnterpriseClient(endPoint, endPoint, oauth2.NewClient(ctx, ts))
 		if err != nil {
-			log.Panicln(err)
+			log().Panicln(err)
 		}
 	}
 
-	jobConfig, err := config.ReadJobConfig(o.jobConfigPathKubevirtPresubmit)
+	jobConfig, err := config.ReadJobConfig(o.jobConfigPathKubevirtPresubmits)
 	if err != nil {
-		log.Panicln(err)
+		log().Panicln(err)
 	}
 
 	releases, _, err := client.Repositories.ListReleases(ctx, "kubernetes", "kubernetes", nil)
 	if err != nil {
-		log.Panicln(err)
+		log().Panicln(err)
 	}
 	releases = querier.ValidReleases(releases)
 	if len(releases) == 0 {
-		log.Info("No release found, nothing to do.")
+		log().Info("No release found, nothing to do.")
 		os.Exit(0)
 	}
 
 	latestReleaseSemver := querier.ParseRelease(releases[0])
 
+	dryRun, err := cmd.InheritedFlags().GetBool("dry-run")
+	if err != nil {
+		log().Panicln(err)
+	}
+
 	updated := UpdatePresubmitsAlwaysRunAndOptionalFields(&jobConfig, latestReleaseSemver)
-	if !updated && !o.dryRun {
-		log.Info(fmt.Sprintf("presubmit jobs for %v weren't modified, nothing to do.", latestReleaseSemver))
+	if !updated && !dryRun {
+		log().Info(fmt.Sprintf("presubmit jobs for %v weren't modified, nothing to do.", latestReleaseSemver))
 		os.Exit(0)
 	}
 
 	marshalledConfig, err := yaml.Marshal(&jobConfig)
 	if err != nil {
-		log.WithError(err).Error("Failed to marshall jobconfig")
+		log().WithError(err).Error("Failed to marshall jobconfig")
 	}
 
-	if o.dryRun {
+	if dryRun {
 		_, err = os.Stdout.Write(marshalledConfig)
 		if err != nil {
-			log.WithError(err).Error("Failed to write jobconfig")
+			log().WithError(err).Error("Failed to write jobconfig")
 		}
 		os.Exit(0)
 	}
 
-	err = ioutil.WriteFile(o.jobConfigPathKubevirtPresubmit, marshalledConfig, os.ModePerm)
+	err = ioutil.WriteFile(o.jobConfigPathKubevirtPresubmits, marshalledConfig, os.ModePerm)
 	if err != nil {
-		log.WithError(err).Error("Failed to write jobconfig")
+		log().WithError(err).Error("Failed to write jobconfig")
 	}
 }
 
@@ -179,4 +195,8 @@ func UpdatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, lat
 
 func createPresubmitJobName(latestReleaseSemver *querier.SemVer, sigName string) string {
 	return fmt.Sprintf("pull-kubevirt-e2e-k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
+}
+
+func log() *logrus.Entry {
+	return logrus.StandardLogger().WithField("robot", "kubevirt require presubmit")
 }

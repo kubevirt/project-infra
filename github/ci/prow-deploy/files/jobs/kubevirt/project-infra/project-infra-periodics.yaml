@@ -567,7 +567,7 @@ periodics:
             curl --fail -L https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 --output ${bazel_dir}/bazelisk &&
             chmod a+x ${bazel_dir}/bazelisk &&
             export PATH=${PATH}:${bazel_dir} &&
-            hack/git-pr.sh -c "bazelisk run //robots/cmd/kubevirt-presubmit-requirer:kubevirt-presubmit-requirer -- -job-config-path-kubevirt-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml -github-token-path= -dry-run=false" -r project-infra -b require-kubevirt-presubmits -T main
+            hack/git-pr.sh -c "bazelisk run //robots/cmd/kubevirt require presubmits -- -job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml -github-token-path= -dry-run=false" -r project-infra -b require-kubevirt-presubmits -T main
         volumeMounts:
           - name: token
             mountPath: /etc/github
@@ -609,7 +609,7 @@ periodics:
         curl --fail -L https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 --output ${bazel_dir}/bazelisk &&
         chmod a+x ${bazel_dir}/bazelisk &&
         export PATH=${PATH}:${bazel_dir} &&
-        hack/git-pr.sh -c "bazelisk run //robots/cmd/kubevirt-job-copier:kubevirt-job-copier -- -job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml -job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml -github-token-path= -dry-run=false" -r project-infra -b copy-kubevirt-jobs -T main
+        hack/git-pr.sh -c "bazelisk run //robots/cmd/kubevirt copy jobs -- -job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml -job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml -github-token-path= -dry-run=false" -r project-infra -b copy-kubevirt-jobs -T main
       volumeMounts:
       - name: token
         mountPath: /etc/github

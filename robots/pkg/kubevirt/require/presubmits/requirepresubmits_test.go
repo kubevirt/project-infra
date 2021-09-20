@@ -1,4 +1,4 @@
-package main
+package presubmits
 
 import (
 	"k8s.io/test-infra/prow/config"

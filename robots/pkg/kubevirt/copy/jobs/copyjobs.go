@@ -11,12 +11,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package jobs
 
 import (
 	"context"
-	"flag"
 	"fmt"
+	"github.com/spf13/cobra"
 	"os"
 	"regexp"
 	"strconv"
@@ -34,17 +34,35 @@ import (
 const orgAndRepoForJobConfig = "kubevirt/kubevirt"
 
 type options struct {
-	port int
-
-	dryRun bool
-
-	TokenPath                       string
-	endpoint                        string
 	jobConfigPathKubevirtPresubmits string
 	jobConfigPathKubevirtPeriodics  string
 }
 
 var cronRegex *regexp.Regexp
+
+var o = options{}
+
+var copyJobsCommand = &cobra.Command{
+	Use: "jobs",
+	Short: "kubevirt copy jobs copies presubmit job definitions in project-infra for kubevirt/kubevirt repo",
+	Run: func(cmd *cobra.Command, args []string) {
+		err := cmd.InheritedFlags().Parse(args)
+		if err != nil {
+			fmt.Println(fmt.Errorf("failed to parse args: %v", err))
+			os.Exit(1)
+		}
+
+		if err := o.Validate(); err != nil {
+			log().WithError(err).Fatal("Invalid arguments provided.")
+		}
+
+		run(cmd)
+	},
+}
+
+func NewCopyJobsCommand() *cobra.Command {
+	return copyJobsCommand
+}
 
 func init() {
 	var err error
@@ -52,9 +70,12 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	copyJobsCommand.PersistentFlags().StringVar(&o.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The path to the kubevirt presubmit job definitions")
+	copyJobsCommand.PersistentFlags().StringVar(&o.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
 }
 
 func (o *options) Validate() error {
+	log().Infof("options: %+v", o)
 	if _, err := os.Stat(o.jobConfigPathKubevirtPresubmits); os.IsNotExist(err) {
 		return fmt.Errorf("jobConfigPathKubevirtPresubmits is required: %v", err)
 	}
@@ -64,49 +85,38 @@ func (o *options) Validate() error {
 	return nil
 }
 
-func gatherOptions() options {
-	o := options{}
-	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	fs.BoolVar(&o.dryRun, "dry-run", true, "Whether the file should get modified or just modifications printed to stdout.")
-	fs.StringVar(&o.TokenPath, "github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
-	fs.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
-	fs.StringVar(&o.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The path to the kubevirt presubmit job definitions")
-	fs.StringVar(&o.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
-	err := fs.Parse(os.Args[1:])
-	if err != nil {
-		fmt.Println(fmt.Errorf("failed to parse args: %v", err))
-		os.Exit(1)
-	}
-	return o
-}
-
-func main() {
+func run(cmd *cobra.Command) {
 
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	// TODO: Use global option from the prow config.
 	logrus.SetLevel(logrus.DebugLevel)
-	o := gatherOptions()
-	if err := o.Validate(); err != nil {
-		log().WithError(err).Fatal("Invalid arguments provided.")
-	}
 
 	ctx := context.Background()
 	var client *github.Client
-	if o.TokenPath == "" {
+
+	tokenPath, err := cmd.InheritedFlags().GetString("github-token-path")
+	if err != nil {
+		log().Panicln(err)
+	}
+	endPoint, err := cmd.InheritedFlags().GetString("github-endpoint")
+	if err != nil {
+		log().Panicln(err)
+	}
+	if tokenPath == "" {
 		var err error
-		client, err = github.NewEnterpriseClient(o.endpoint, o.endpoint, nil)
+		client, err = github.NewEnterpriseClient(endPoint, endPoint, nil)
 		if err != nil {
 			log().Panicln(err)
 		}
 	} else {
-		token, err := os.ReadFile(o.TokenPath)
+		token, err := os.ReadFile(tokenPath)
 		if err != nil {
 			log().Panicln(err)
 		}
 		ts := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: string(token)},
 		)
-		client, err = github.NewEnterpriseClient(o.endpoint, o.endpoint, oauth2.NewClient(ctx, ts))
+		client, err = github.NewEnterpriseClient(endPoint, endPoint, oauth2.NewClient(ctx, ts))
 		if err != nil {
 			log().Panicln(err)
 		}
@@ -138,8 +148,13 @@ func main() {
 			log().WithField("jobConfigPath", jobConfigPath).WithError(err).Fatal("Failed to read jobconfig")
 		}
 
+		dryRun, err := cmd.InheritedFlags().GetBool("dry-run")
+		if err != nil {
+			log().Panicln(err)
+		}
+
 		updated := jobConfigCopyFunc(&jobConfig, targetRelease, sourceRelease)
-		if !updated && !o.dryRun {
+		if !updated && !dryRun {
 			log().WithField("jobConfigPath", jobConfigPath).Info(fmt.Sprintf("presubmit jobs for %v weren't modified, nothing to do.", targetRelease))
 			continue
 		}
@@ -149,7 +164,7 @@ func main() {
 			log().WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to marshall jobconfig")
 		}
 
-		if o.dryRun {
+		if dryRun {
 			_, err = os.Stdout.Write(marshalledConfig)
 			if err != nil {
 				log().WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to write jobconfig")
@@ -342,5 +357,5 @@ func advanceCronExpression (sourceCronExpr string) string {
 }
 
 func log() *logrus.Entry {
-	return logrus.StandardLogger().WithField("robot", "kubevirt-job-copier")
+	return logrus.StandardLogger().WithField("robot", "kubevirt copy jobs")
 }
