@@ -10,7 +10,7 @@ We have a setup in which the main components are running in the same cluster as
 Prow control plane. Metrics from the rest of clusters are aggregated and
 accessible from the main cluster. The architecture of the stack looks like this:
 
-[monitoring stack](monitoring-stack.png)
+![monitoring stack](monitoring-stack.svg)
 
 These are the components involved:
 * Control plane cluster:
@@ -28,8 +28,12 @@ metrics.
   * Compactor: optimizes indices of blocks uploaded to permanent storage, executes
   downsampling to improve query performance on medium/large time ranges and enforces
   data retention (currently set to 40 days).
-* Workloads clusters: they only run Prometheus and sidecar components described
-above, the sidecar service must be accessible from the control plane cluster.
+  * Alertmanager: receives alerts from Prometheus and sends them to the configured
+  receivers (currently only slack).
+* Workloads clusters: they only run Prometheus, sidecar and Alertmanager components
+described above, the sidecar service must be accessible from the control plane cluster.
+We deploy separated instances of Alertmanager instead of leveraging Thanos Ruler to
+prevent single points of failure and decoupling the alerting pipelines of each cluster.
 * GCS bucket: permanent store of persisted blocks.
 
 ## Deployment
