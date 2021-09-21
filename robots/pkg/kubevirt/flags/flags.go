@@ -19,8 +19,9 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
-)
 
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
+)
 
 const (
 	FlagDryRun = "dry-run"
@@ -34,9 +35,13 @@ type GlobalOptions struct {
 	GitHubEndPoint string
 }
 
+type CommandOptions interface {
+	Validate() error
+}
+
 var Options = GlobalOptions{}
 
-func (o *GlobalOptions) Validate() error {
+func (o GlobalOptions) Validate() error {
 	logrus.StandardLogger().WithField("robot", "kubevirt").Infof("Options: %+v", Options)
 
 	if o.GitHubTokenPath != "" {
@@ -55,4 +60,21 @@ func AddPersistentFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().BoolVar(&Options.DryRun, FlagDryRun, true, "Whether the file should get modified or just modifications printed to stdout.")
 	cmd.PersistentFlags().StringVar(&Options.GitHubTokenPath, FlagGitHubTokenPath, "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
 	cmd.PersistentFlags().StringVar(&Options.GitHubEndPoint, FlagGitHubEndpoint, "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
+}
+
+func ParseFlagsOrExit(cmd *cobra.Command, args []string, cmdOpts CommandOptions) {
+	err := cmd.InheritedFlags().Parse(args)
+	if err != nil {
+		fmt.Println(fmt.Errorf("failed to parse args: %v", err))
+		os.Exit(1)
+	}
+
+	validateOptions(Options)
+	validateOptions(cmdOpts)
+}
+
+func validateOptions(cmdOpts CommandOptions) {
+	if err := cmdOpts.Validate(); err != nil {
+		log.Log().WithError(err).Fatal("Invalid arguments provided.")
+	}
 }

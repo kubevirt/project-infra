@@ -28,9 +28,9 @@ var copyCommand = &cobra.Command{
 }
 
 func init() {
-	copyCommand.AddCommand(NewCopyJobsCommand())
+	copyCommand.AddCommand(CopyJobsCommand())
 }
 
-func NewCopyCommand() *cobra.Command {
+func CopyCommand() *cobra.Command {
 	return copyCommand
 }

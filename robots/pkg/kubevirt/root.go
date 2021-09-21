@@ -34,8 +34,8 @@ var rootCmd = &cobra.Command{
 func init() {
 	flags.AddPersistentFlags(rootCmd)
 
-	rootCmd.AddCommand(copy.NewCopyCommand())
-	rootCmd.AddCommand(require.NewRequireCommand())
+	rootCmd.AddCommand(copy.CopyCommand())
+	rootCmd.AddCommand(require.RequireCommand())
 }
 
 func Execute()  {

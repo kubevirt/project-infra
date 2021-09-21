@@ -34,13 +34,12 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
-type options struct {
+type copyJobOptions struct {
 	jobConfigPathKubevirtPresubmits string
 	jobConfigPathKubevirtPeriodics  string
 }
 
-func (o *options) validate() error {
-	log.Log().Infof("options: %+v", o)
+func (o copyJobOptions) Validate() error {
 	if _, err := os.Stat(o.jobConfigPathKubevirtPresubmits); os.IsNotExist(err) {
 		return fmt.Errorf("jobConfigPathKubevirtPresubmits is required: %v", err)
 	}
@@ -52,31 +51,15 @@ func (o *options) validate() error {
 
 var cronRegex *regexp.Regexp
 
-var o = options{}
+var copyJobsOpts = copyJobOptions{}
 
 var copyJobsCommand = &cobra.Command{
 	Use: "jobs",
 	Short: "kubevirt copy jobs copies presubmit job definitions in project-infra for kubevirt/kubevirt repo",
-	Run: func(cmd *cobra.Command, args []string) {
-		err := cmd.InheritedFlags().Parse(args)
-		if err != nil {
-			fmt.Println(fmt.Errorf("failed to parse args: %v", err))
-			os.Exit(1)
-		}
-
-		if err := flags.Options.Validate(); err != nil {
-			log.Log().WithError(err).Fatal("Invalid arguments provided.")
-		}
-
-		if err := o.validate(); err != nil {
-			log.Log().WithError(err).Fatal("Invalid arguments provided.")
-		}
-
-		run()
-	},
+	Run: run,
 }
 
-func NewCopyJobsCommand() *cobra.Command {
+func CopyJobsCommand() *cobra.Command {
 	return copyJobsCommand
 }
 
@@ -86,11 +69,12 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	copyJobsCommand.PersistentFlags().StringVar(&o.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The path to the kubevirt presubmit job definitions")
-	copyJobsCommand.PersistentFlags().StringVar(&o.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
+	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The path to the kubevirt presubmit job definitions")
+	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
 }
 
-func run() {
+func run(cmd *cobra.Command, args []string) {
+	flags.ParseFlagsOrExit(cmd, args, copyJobsOpts)
 
 	ctx := context.Background()
 	client := github2.NewGitHubClient(ctx)
@@ -112,8 +96,8 @@ func run() {
 	}
 
 	jobConfigs := map[string]func(*config.JobConfig, *querier.SemVer, *querier.SemVer) bool{
-		o.jobConfigPathKubevirtPresubmits: func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return copyPresubmitJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
-		o.jobConfigPathKubevirtPeriodics:  func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return copyPeriodicJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
+		copyJobsOpts.jobConfigPathKubevirtPresubmits: func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return copyPresubmitJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
+		copyJobsOpts.jobConfigPathKubevirtPeriodics:  func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return copyPeriodicJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
 	}
 	for jobConfigPath, jobConfigCopyFunc := range jobConfigs {
 		jobConfig, err := config.ReadJobConfig(jobConfigPath)

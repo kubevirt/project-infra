@@ -28,9 +28,9 @@ var requireCommand = &cobra.Command{
 }
 
 func init() {
-	requireCommand.AddCommand(NewRequirePresubmitsCommand())
+	requireCommand.AddCommand(RequirePresubmitsCommand())
 }
 
-func NewRequireCommand() *cobra.Command {
+func RequireCommand() *cobra.Command {
 	return requireCommand
 }

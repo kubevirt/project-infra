@@ -25,17 +25,17 @@ import (
 	"sigs.k8s.io/yaml"
 
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/flags"
-	github2 "kubevirt.io/project-infra/robots/pkg/kubevirt/github"
+	kv_github "kubevirt.io/project-infra/robots/pkg/kubevirt/github"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
-type options struct {
+type requirePresubmitsOptions struct {
 	jobConfigPathKubevirtPresubmits string
 }
 
-func (o *options) validate() error {
+func (o requirePresubmitsOptions) Validate() error {
 	if _, err := os.Stat(o.jobConfigPathKubevirtPresubmits); os.IsNotExist(err) {
 		return fmt.Errorf("jobConfigPathKubevirtPresubmits is required: %v", err)
 	}
@@ -45,43 +45,26 @@ func (o *options) validate() error {
 var requirePresubmitsCommand = &cobra.Command{
 	Use: "presubmits",
 	Short: "kubevirt require presubmits requires presubmit job definitions in project-infra for kubevirt/kubevirt repo",
-	Run: func(cmd *cobra.Command, args []string) {
-
-		err := cmd.InheritedFlags().Parse(args)
-		if err != nil {
-			fmt.Println(fmt.Errorf("failed to parse args: %v", err))
-			os.Exit(1)
-		}
-
-		if err := flags.Options.Validate(); err != nil {
-			log.Log().WithError(err).Fatal("Invalid arguments provided.")
-		}
-
-		if err := o.validate(); err != nil {
-			log.Log().WithError(err).Error("Invalid arguments provided.")
-			os.Exit(1)
-		}
-
-		run()
-	},
+	Run: run,
 }
 
-var o = options{}
+var requirePresubmitsOpts = requirePresubmitsOptions{}
 
-func NewRequirePresubmitsCommand() *cobra.Command {
+func RequirePresubmitsCommand() *cobra.Command {
 	return requirePresubmitsCommand
 }
 
 func init() {
-	requirePresubmitsCommand.PersistentFlags().StringVar(&o.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The directory of the kubevirt presubmit job definitions")
+	requirePresubmitsCommand.PersistentFlags().StringVar(&requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The directory of the kubevirt presubmit job definitions")
 }
 
-func run() {
+func run(cmd *cobra.Command, args []string) {
+	flags.ParseFlagsOrExit(cmd, args, requirePresubmitsOpts)
 
 	ctx := context.Background()
-	client := github2.NewGitHubClient(ctx)
+	client := kv_github.NewGitHubClient(ctx)
 
-	jobConfig, err := config.ReadJobConfig(o.jobConfigPathKubevirtPresubmits)
+	jobConfig, err := config.ReadJobConfig(requirePresubmitsOpts.jobConfigPathKubevirtPresubmits)
 	if err != nil {
 		log.Log().Panicln(err)
 	}
@@ -117,7 +100,7 @@ func run() {
 		os.Exit(0)
 	}
 
-	err = ioutil.WriteFile(o.jobConfigPathKubevirtPresubmits, marshalledConfig, os.ModePerm)
+	err = ioutil.WriteFile(requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, marshalledConfig, os.ModePerm)
 	if err != nil {
 		log.Log().WithError(err).Error("Failed to write jobconfig")
 	}
