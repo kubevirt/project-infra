@@ -12,25 +12,15 @@
  *
  */
 
-package require
+package jobconfig
 
-import (
-	"fmt"
-	"github.com/spf13/cobra"
-)
+const OrgAndRepoForJobConfig = "kubevirt/kubevirt"
 
-var requireCommand = &cobra.Command{
-	Use:   "require",
-	Short: "kubevirt require requires job definitions in project-infra for kubevirt/kubevirt repo",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
-	},
+var SigNames = []string{
+	"sig-network",
+	"sig-storage",
+	"sig-compute",
+	"operator",
 }
 
-func init() {
-	requireCommand.AddCommand(NewRequirePresubmitsCommand())
-}
 
-func NewRequireCommand() *cobra.Command {
-	return requireCommand
-}

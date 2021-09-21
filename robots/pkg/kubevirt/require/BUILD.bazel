@@ -11,6 +11,7 @@ go_library(
     deps = [
         "//robots/pkg/kubevirt/flags:go_default_library",
         "//robots/pkg/kubevirt/github:go_default_library",
+        "//robots/pkg/kubevirt/jobconfig:go_default_library",
         "//robots/pkg/kubevirt/log:go_default_library",
         "//robots/pkg/querier:go_default_library",
         "@com_github_spf13_cobra//:go_default_library",
@@ -24,6 +25,7 @@ go_test(
     srcs = ["presubmits_test.go"],
     embed = [":go_default_library"],
     deps = [
+        "//robots/pkg/kubevirt/jobconfig:go_default_library",
         "//robots/pkg/querier:go_default_library",
         "@io_k8s_test_infra//prow/config:go_default_library",
     ],

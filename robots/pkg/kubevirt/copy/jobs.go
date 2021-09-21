@@ -1,15 +1,16 @@
 /*
-Copyright 2021 The KubeVirt Authors.
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ * Copyright 2021 The KubeVirt Authors.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
 package copy
 
@@ -17,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/spf13/cobra"
-	github2 "kubevirt.io/project-infra/robots/pkg/kubevirt/github"
 	"os"
 	"regexp"
 	"strconv"
@@ -28,11 +28,11 @@ import (
 	"sigs.k8s.io/yaml"
 
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/flags"
+	github2 "kubevirt.io/project-infra/robots/pkg/kubevirt/github"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
-
-const orgAndRepoForJobConfig = "kubevirt/kubevirt"
 
 type options struct {
 	jobConfigPathKubevirtPresubmits string
@@ -112,8 +112,8 @@ func run() {
 	}
 
 	jobConfigs := map[string]func(*config.JobConfig, *querier.SemVer, *querier.SemVer) bool{
-		o.jobConfigPathKubevirtPresubmits: func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return CopyPresubmitJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
-		o.jobConfigPathKubevirtPeriodics:  func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return CopyPeriodicJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
+		o.jobConfigPathKubevirtPresubmits: func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return copyPresubmitJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
+		o.jobConfigPathKubevirtPeriodics:  func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return copyPeriodicJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
 	}
 	for jobConfigPath, jobConfigCopyFunc := range jobConfigs {
 		jobConfig, err := config.ReadJobConfig(jobConfigPath)
@@ -166,21 +166,14 @@ func getSourceAndTargetRelease(releases []*github.RepositoryRelease) (targetRele
 	return
 }
 
-var sigNames = []string{
-	"sig-network",
-	"sig-storage",
-	"sig-compute",
-	"operator",
-}
-
-func CopyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProviderReleaseSemver *querier.SemVer, sourceProviderReleaseSemver *querier.SemVer) (updated bool) {
+func copyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProviderReleaseSemver *querier.SemVer, sourceProviderReleaseSemver *querier.SemVer) (updated bool) {
 	allPresubmitJobs := map[string]config.Presubmit{}
-	for index := range jobConfig.PresubmitsStatic[orgAndRepoForJobConfig] {
-		job := jobConfig.PresubmitsStatic[orgAndRepoForJobConfig][index]
+	for index := range jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] {
+		job := jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig][index]
 		allPresubmitJobs[job.Name] = job
 	}
 
-	for _, sigName := range sigNames {
+	for _, sigName := range jobconfig.SigNames {
 		targetJobName := createPresubmitJobName(targetProviderReleaseSemver, sigName)
 		sourceJobName := createPresubmitJobName(sourceProviderReleaseSemver, sigName)
 
@@ -224,7 +217,7 @@ func CopyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProvider
 		}
 		newJob.Name = targetJobName
 		newJob.Optional = true
-		jobConfig.PresubmitsStatic[orgAndRepoForJobConfig] = append(jobConfig.PresubmitsStatic[orgAndRepoForJobConfig], newJob)
+		jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] = append(jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig], newJob)
 
 		updated = true
 	}
@@ -232,14 +225,14 @@ func CopyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProvider
 	return
 }
 
-func CopyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderReleaseSemver *querier.SemVer, sourceProviderReleaseSemver *querier.SemVer) (updated bool) {
+func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderReleaseSemver *querier.SemVer, sourceProviderReleaseSemver *querier.SemVer) (updated bool) {
 	allPeriodicJobs := map[string]config.Periodic{}
 	for index := range jobConfig.Periodics {
 		job := jobConfig.Periodics[index]
 		allPeriodicJobs[job.Name] = job
 	}
 
-	for _, sigName := range sigNames {
+	for _, sigName := range jobconfig.SigNames {
 		targetJobName := createPeriodicJobName(targetProviderReleaseSemver, sigName)
 		sourceJobName := createPeriodicJobName(sourceProviderReleaseSemver, sigName)
 

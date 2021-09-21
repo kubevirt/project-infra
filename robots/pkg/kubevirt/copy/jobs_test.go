@@ -1,3 +1,17 @@
+/*
+ * Copyright 2021 The KubeVirt Authors.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package copy
 
 import (
@@ -359,11 +373,11 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 	defer os.RemoveAll(temp)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotUpdated := CopyPeriodicJobsForNewProvider(tt.args.jobConfig, tt.args.targetProviderReleaseSemver, tt.args.sourceProviderReleaseSemver); gotUpdated != tt.wantUpdated {
-				t.Errorf("CopyPeriodicJobsForNewProvider() = %v, want %v", gotUpdated, tt.wantUpdated)
+			if gotUpdated := copyPeriodicJobsForNewProvider(tt.args.jobConfig, tt.args.targetProviderReleaseSemver, tt.args.sourceProviderReleaseSemver); gotUpdated != tt.wantUpdated {
+				t.Errorf("copyPeriodicJobsForNewProvider() = %v, want %v", gotUpdated, tt.wantUpdated)
 			}
 			if tt.wantUpdated && !reflect.DeepEqual(tt.args.jobConfig, tt.wantJobConfig) {
-				t.Errorf("CopyPeriodicJobsForNewProvider() = %v", deep.Equal(tt.args.jobConfig, tt.wantJobConfig))
+				t.Errorf("copyPeriodicJobsForNewProvider() = %v", deep.Equal(tt.args.jobConfig, tt.wantJobConfig))
 			}
 			marshalledConfig, err := yaml.Marshal(&tt.args.jobConfig)
 			panicOn(err)
@@ -375,7 +389,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 			configString := string(file)
 			gotJobStatesToReportInSerialization := strings.Contains(configString, "job_states_to_report")
 			if tt.wantJobStatesToReportInSerialization != gotJobStatesToReportInSerialization {
-				t.Errorf("CopyPeriodicJobsForNewProvider(): wantJobStatesToReportInSerialization: want %t, got %t", tt.wantJobStatesToReportInSerialization, gotJobStatesToReportInSerialization)
+				t.Errorf("copyPeriodicJobsForNewProvider(): wantJobStatesToReportInSerialization: want %t, got %t", tt.wantJobStatesToReportInSerialization, gotJobStatesToReportInSerialization)
 			}
 		})
 	}

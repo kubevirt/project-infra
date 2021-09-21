@@ -1,15 +1,16 @@
 /*
-Copyright 2021 The KubeVirt Authors.
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ * Copyright 2021 The KubeVirt Authors.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
 package require
 
@@ -25,17 +26,16 @@ import (
 
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/flags"
 	github2 "kubevirt.io/project-infra/robots/pkg/kubevirt/github"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
-
-const orgAndRepoForJobConfig = "kubevirt/kubevirt"
 
 type options struct {
 	jobConfigPathKubevirtPresubmits string
 }
 
-func (o *options) Validate() error {
+func (o *options) validate() error {
 	if _, err := os.Stat(o.jobConfigPathKubevirtPresubmits); os.IsNotExist(err) {
 		return fmt.Errorf("jobConfigPathKubevirtPresubmits is required: %v", err)
 	}
@@ -57,7 +57,7 @@ var requirePresubmitsCommand = &cobra.Command{
 			log.Log().WithError(err).Fatal("Invalid arguments provided.")
 		}
 
-		if err := o.Validate(); err != nil {
+		if err := o.validate(); err != nil {
 			log.Log().WithError(err).Error("Invalid arguments provided.")
 			os.Exit(1)
 		}
@@ -98,7 +98,7 @@ func run() {
 
 	latestReleaseSemver := querier.ParseRelease(releases[0])
 
-	updated := UpdatePresubmitsAlwaysRunAndOptionalFields(&jobConfig, latestReleaseSemver)
+	updated := updatePresubmitsAlwaysRunAndOptionalFields(&jobConfig, latestReleaseSemver)
 	if !updated && !flags.Options.DryRun {
 		log.Log().Info(fmt.Sprintf("presubmit jobs for %v weren't modified, nothing to do.", latestReleaseSemver))
 		os.Exit(0)
@@ -123,16 +123,14 @@ func run() {
 	}
 }
 
-func UpdatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer) (updated bool) {
-	jobsToCheck := map[string]string{
-		createPresubmitJobName(latestReleaseSemver, "sig-network"): "",
-		createPresubmitJobName(latestReleaseSemver, "sig-storage"): "",
-		createPresubmitJobName(latestReleaseSemver, "sig-compute"): "",
-		createPresubmitJobName(latestReleaseSemver, "operator"): "",
+func updatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer) (updated bool) {
+	jobsToCheck := map[string]string{}
+	for _, sigName := range jobconfig.SigNames {
+		jobsToCheck[createPresubmitJobName(latestReleaseSemver, sigName)] = ""
 	}
 
-	for index := range jobConfig.PresubmitsStatic[orgAndRepoForJobConfig] {
-		job := &jobConfig.PresubmitsStatic[orgAndRepoForJobConfig][index]
+	for index := range jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] {
+		job := &jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig][index]
 		name := job.Name
 		if _, exists := jobsToCheck[name]; !exists {
 			continue
