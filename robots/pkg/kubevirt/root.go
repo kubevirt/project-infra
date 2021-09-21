@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/copy"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/flags"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/require"
 	"os"
 )
@@ -30,9 +31,7 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.PersistentFlags().Bool( "dry-run", true, "Whether the file should get modified or just modifications printed to stdout.")
-	rootCmd.PersistentFlags().String("github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
-	rootCmd.PersistentFlags().String("github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
+	flags.AddPersistentFlags(rootCmd)
 
 	rootCmd.AddCommand(copy.NewCopyCommand())
 	rootCmd.AddCommand(require.NewRequireCommand())
