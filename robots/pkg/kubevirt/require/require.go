@@ -16,12 +16,10 @@ package require
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/require/presubmits"
 )
 
 var requireCommand = &cobra.Command{
-	Use: "require",
+	Use:   "require",
 	Short: "kubevirt require requires job definitions in project-infra for kubevirt/kubevirt repo",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
@@ -29,7 +27,7 @@ var requireCommand = &cobra.Command{
 }
 
 func init() {
-	requireCommand.AddCommand(presubmits.NewRequirePresubmitsCommand())
+	requireCommand.AddCommand(NewRequirePresubmitsCommand())
 }
 
 func NewRequireCommand() *cobra.Command {

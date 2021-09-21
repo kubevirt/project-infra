@@ -16,11 +16,10 @@ package copy
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/copy/jobs"
 )
 
 var copyCommand = &cobra.Command{
-	Use: "copy",
+	Use:   "copy",
 	Short: "kubevirt copy copies job definitions in project-infra for kubevirt/kubevirt repo from existing provider jobs",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
@@ -28,7 +27,7 @@ var copyCommand = &cobra.Command{
 }
 
 func init() {
-	copyCommand.AddCommand(jobs.NewCopyJobsCommand())
+	copyCommand.AddCommand(NewCopyJobsCommand())
 }
 
 func NewCopyCommand() *cobra.Command {

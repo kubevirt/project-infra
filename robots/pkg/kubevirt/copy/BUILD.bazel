@@ -1,12 +1,36 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "go_default_library",
-    srcs = ["copy.go"],
+    srcs = [
+        "copy.go",
+        "jobs.go",
+    ],
     importpath = "kubevirt.io/project-infra/robots/pkg/kubevirt/copy",
     visibility = ["//visibility:public"],
     deps = [
-        "//robots/pkg/kubevirt/copy/jobs:go_default_library",
+        "//robots/pkg/kubevirt/flags:go_default_library",
+        "//robots/pkg/kubevirt/github:go_default_library",
+        "//robots/pkg/kubevirt/log:go_default_library",
+        "//robots/pkg/querier:go_default_library",
+        "@com_github_google_go_github//github:go_default_library",
         "@com_github_spf13_cobra//:go_default_library",
+        "@io_k8s_sigs_yaml//:go_default_library",
+        "@io_k8s_test_infra//prow/config:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["jobs_test.go"],
+    embed = [":go_default_library"],
+    deps = [
+        "//robots/pkg/querier:go_default_library",
+        "@com_github_go_test_deep//:go_default_library",
+        "@com_github_google_go_github//github:go_default_library",
+        "@io_k8s_api//core/v1:go_default_library",
+        "@io_k8s_sigs_yaml//:go_default_library",
+        "@io_k8s_test_infra//prow/apis/prowjobs/v1:go_default_library",
+        "@io_k8s_test_infra//prow/config:go_default_library",
     ],
 )
