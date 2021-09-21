@@ -1,0 +1,47 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    group: kubevirtci
+  name: ci-usage-alerting
+spec:
+  groups:
+  - name: ci-usage-alerting.rules
+    rules:
+    - alert: KubevirtCILowMemoryCapacity
+      annotations:
+        message: 'The workloads cluster memory capacity has been below 20% for more than 1 hour'
+      expr: |
+        (sum (((job_name_repo_type:kubevirt_ci_job_memory_bytes_all:sum * on(job_name) group_left job_name:prow_job_runtime_seconds_sum:increase3h) > 0) / ( 3600 * 1024 * 1024 * 1024)) / (3 * 10 * 225)) * 100 > 80
+      for: 1h
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: KubevirtCIVeryLowMemoryCapacity
+      annotations:
+        message: 'The workloads cluster memory capacity has been below 5% for more than 1 hour'
+      expr: |
+        (sum (((job_name_repo_type:kubevirt_ci_job_memory_bytes_all:sum * on(job_name) group_left job_name:prow_job_runtime_seconds_sum:increase3h) > 0) / ( 3600 * 1024 * 1024 * 1024)) / (3 * 10 * 225)) * 100 > 95
+      for: 1h
+      labels:
+        severity: critical
+        namespace: monitoring
+    - alert: KubevirtCILowBuildCapacity
+      annotations:
+        message: 'The workloads cluster build capacity has been below 100 PRs for more than 1 hour'
+      expr: |
+        (sum(instance:node_uname_info:sum{cluster="prow-workloads", nodename=~"bare-metal-.*"} * on(instance) group_left instance:node_memory:sum) * 24 * 0.96 / (1024 * 1024 * 1024)) / sum(none:prow_memoryhour_per_job:mean24h) < 100
+      for: 1h
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: KubevirtCIVeryLowBuildCapacity
+      annotations:
+        message: 'The workloads cluster build capacity has been below 50 PRs for more than 1 hour'
+      expr: |
+        (sum(instance:node_uname_info:sum{cluster="prow-workloads", nodename=~"bare-metal-.*"} * on(instance) group_left instance:node_memory:sum) * 24 * 0.96 / (1024 * 1024 * 1024)) / sum(none:prow_memoryhour_per_job:mean24h) < 50
+      for: 1h
+      labels:
+        severity: critical
+        namespace: monitoring
