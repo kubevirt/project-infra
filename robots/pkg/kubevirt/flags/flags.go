@@ -16,7 +16,6 @@ package flags
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
 
@@ -42,8 +41,6 @@ type CommandOptions interface {
 var Options = GlobalOptions{}
 
 func (o GlobalOptions) Validate() error {
-	logrus.StandardLogger().WithField("robot", "kubevirt").Infof("Options: %+v", Options)
-
 	if o.GitHubTokenPath != "" {
 		if fileInfo, err := os.Stat(o.GitHubTokenPath); !os.IsNotExist(err) {
 			if fileInfo.IsDir() {
