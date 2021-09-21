@@ -15,7 +15,7 @@ for image_dir in "${IMAGES[@]}"; do
     image_name="quay.io/kubevirtci/${image_dir/#\.\//}"
     if ! "$PROJECT_INFRA_ROOT/hack/update-jobs-with-latest-image.sh" "$image_name"; then
         echo "Failed to update prow jobs using image $image_name"
-    else
-        echo "Updated prow jobs using image $image_name"
+        exit 1
     fi
+    echo "Updated prow jobs using image $image_name"
 done
