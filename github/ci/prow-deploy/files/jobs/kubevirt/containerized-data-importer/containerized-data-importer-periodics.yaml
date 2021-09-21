@@ -198,6 +198,7 @@ periodics:
         - "/bin/sh"
         - "-c"
         - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
           make builder-push
       # docker-in-docker needs privileged mode
       securityContext:
