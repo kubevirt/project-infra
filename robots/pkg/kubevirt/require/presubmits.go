@@ -20,6 +20,7 @@ import (
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"k8s.io/test-infra/prow/config"
 	"sigs.k8s.io/yaml"
@@ -42,9 +43,30 @@ func (o requirePresubmitsOptions) Validate() error {
 	return nil
 }
 
+const shortUsage = "kubevirt require presubmits moves presubmit job definitions for kubevirt to being required to merge"
+
 var requirePresubmitsCommand = &cobra.Command{
 	Use: "presubmits",
-	Short: "kubevirt require presubmits requires presubmit job definitions in project-infra for kubevirt/kubevirt repo",
+	Short: shortUsage,
+	Long: fmt.Sprintf(`%s
+
+For each of the sigs (%s)
+it aims to make the jobs for the latest kubevirtci provider
+required and run on every PR. This is done in two stages.
+First it sets for a job that doesn't always run the
+
+	always_run: true
+	optional: false
+
+flag. This will make the job run on every PR but failing checks
+will not block the merge.
+
+On second stage, it removes the
+
+	optional: false
+
+which makes the job required to pass for merges to occur with tide.
+`, shortUsage, strings.Join(jobconfig.SigNames, ", ")),
 	Run: run,
 }
 

@@ -66,12 +66,14 @@ func ParseFlagsOrExit(cmd *cobra.Command, args []string, cmdOpts CommandOptions)
 		os.Exit(1)
 	}
 
-	validateOptions(Options)
-	validateOptions(cmdOpts)
+	validateOptions(cmd, Options)
+	validateOptions(cmd, cmdOpts)
 }
 
-func validateOptions(cmdOpts CommandOptions) {
+func validateOptions(cmd *cobra.Command, cmdOpts CommandOptions) {
 	if err := cmdOpts.Validate(); err != nil {
+		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
+
 		log.Log().WithError(err).Fatal("Invalid arguments provided.")
 	}
 }

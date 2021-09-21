@@ -53,9 +53,25 @@ var cronRegex *regexp.Regexp
 
 var copyJobsOpts = copyJobOptions{}
 
+const shortUse = "kubevirt copy jobs creates copies of the periodic and presubmit SIG jobs for latest kubevirtci providers"
+
 var copyJobsCommand = &cobra.Command{
 	Use: "jobs",
-	Short: "kubevirt copy jobs copies presubmit job definitions in project-infra for kubevirt/kubevirt repo",
+	Short: shortUse,
+	Long: fmt.Sprintf(`%s
+
+For each of the sigs (%s)
+it checks whether a job to run with the latest k8s version exists.
+If not, it copies the existing job for the previously latest kubevirtci provider and
+adjusts it to run with an eventually soon-to-be-existing new kubevirtci provider.
+
+Presubmit jobs will be created with
+
+	always_run: false
+	optional: true
+
+to avoid them failing all the time until the new provider is integrated into kubevirt/kubevirt.
+`, shortUse, strings.Join(jobconfig.SigNames, ", ")),
 	Run: run,
 }
 
