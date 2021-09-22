@@ -86,6 +86,7 @@ tide:
     kubevirt/kubevirt-tutorial: squash
     kubevirt/community: squash
     kubevirt/hostpath-provisioner: squash
+    kubevirt/hostpath-provisioner-operator: squash
     kubevirt/katacoda-scenarios: squash
     kubevirt/demo: squash
     k8snetworkplumbingwg/ovs-cni: squash
@@ -140,6 +141,7 @@ tide:
     - kubevirt/kubevirt
     - kubevirt/containerized-data-importer
     - kubevirt/hostpath-provisioner
+    - kubevirt/hostpath-provisioner-operator
     - k8snetworkplumbingwg/ovs-cni
     - kubevirt/macvtap-cni
     - kubevirt/cluster-network-addons-operator
