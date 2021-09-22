@@ -17,6 +17,7 @@ package remove
 import (
 	"context"
 	"fmt"
+	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
 	"k8s.io/test-infra/prow/config"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
@@ -98,6 +99,10 @@ func run(cmd *cobra.Command, args []string) {
 		os.Exit(0)
 	}
 
+	removeOldJobsIfNewOnesExist(releases)
+}
+
+func removeOldJobsIfNewOnesExist(releases []*github.RepositoryRelease) {
 	jobConfigKubevirtPresubmits, err := config.ReadJobConfig(removeJobsOpts.jobConfigPathKubevirtPresubmits)
 	if err != nil {
 		log.Log().WithField("jobConfigPathKubevirtPresubmits", removeJobsOpts.jobConfigPathKubevirtPresubmits).WithError(err).Fatal("Failed to read jobconfig")
@@ -106,7 +111,7 @@ func run(cmd *cobra.Command, args []string) {
 	result, message := ensureLatestJobsAreRequired(jobConfigKubevirtPresubmits, querier.ParseRelease(releases[0]))
 	if result != ALL_JOBS_ARE_REQUIRED {
 		log.Log().Infof("Not all presubmits for k8s %s are required, nothing to do.\n%s", releases[0], message)
-		os.Exit(0)
+		return
 	}
 
 	var requiredReleases []*querier.SemVer
@@ -116,7 +121,7 @@ func run(cmd *cobra.Command, args []string) {
 	jobsExist, message := ensurePresubmitJobsExistForReleases(jobConfigKubevirtPresubmits, requiredReleases)
 	if !jobsExist {
 		log.Log().Infof("Not all required jobs for k8s versions %s exist, nothing to do.\n%s", requiredReleases, message)
-		os.Exit(0)
+		return
 	}
 
 	jobConfigKubevirtPeriodics, err := config.ReadJobConfig(removeJobsOpts.jobConfigPathKubevirtPeriodics)

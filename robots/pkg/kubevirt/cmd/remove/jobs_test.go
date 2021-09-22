@@ -15,12 +15,17 @@
 package remove
 
 import (
+	"crypto/sha256"
 	"github.com/go-test/deep"
+	"github.com/google/go-github/github"
+	"io"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/test-infra/prow/apis/prowjobs/v1"
 	"k8s.io/test-infra/prow/config"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"kubevirt.io/project-infra/robots/pkg/querier"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 )
@@ -415,6 +420,106 @@ func Test_deletePresubmitJobsForRelease(t *testing.T) {
 	}
 }
 
+func Test_removeOldJobsIfNewOnesExist(t *testing.T) {
+	type args struct {
+		releases []*github.RepositoryRelease
+		removeJobsOpts removeJobsOptions
+	}
+	tests := []struct {
+		name string
+		args args
+		wantModification bool
+	}{
+		{
+			name: "should modify",
+			args: args{
+				releases: []*github.RepositoryRelease{
+					newRelease("v1.22.0"),
+					newRelease("v1.21.0"),
+					newRelease("v1.20.0"),
+					newRelease("v1.19.0"),
+				},
+				removeJobsOpts: removeJobsOptions{
+					jobConfigPathKubevirtPeriodics: "testdata/should_modify/kubevirt-periodics.yaml",
+					jobConfigPathKubevirtPresubmits: "testdata/should_modify/kubevirt-presubmits.yaml",
+				},
+			},
+			wantModification: true,
+		},
+		{
+			name: "should not modify",
+			args: args{
+				releases: []*github.RepositoryRelease{
+					newRelease("v1.22.0"),
+					newRelease("v1.21.0"),
+					newRelease("v1.20.0"),
+					newRelease("v1.19.0"),
+				},
+				removeJobsOpts: removeJobsOptions{
+					jobConfigPathKubevirtPeriodics: "testdata/should_not_modify/kubevirt-periodics.yaml",
+					jobConfigPathKubevirtPresubmits: "testdata/should_not_modify/kubevirt-presubmits.yaml",
+				},
+			},
+			wantModification: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tempDir, err := os.MkdirTemp("", "removeOldJobsIfNewOnesExist-")
+			checkErr(err)
+			defer os.RemoveAll(tempDir)
+
+			copyFiles([]string{tt.args.removeJobsOpts.jobConfigPathKubevirtPeriodics, tt.args.removeJobsOpts.jobConfigPathKubevirtPresubmits}, tempDir)
+			removeJobsOpts = removeJobsOptions{
+				jobConfigPathKubevirtPeriodics: filepath.Join(tempDir, filepath.Base(tt.args.removeJobsOpts.jobConfigPathKubevirtPeriodics)),
+				jobConfigPathKubevirtPresubmits: filepath.Join(tempDir, filepath.Base(tt.args.removeJobsOpts.jobConfigPathKubevirtPresubmits)),
+			}
+			removeOldJobsIfNewOnesExist(tt.args.releases)
+
+			sum256OrigPeriodics, sum256TempCopyPeriodics := hashFiles(tt.args.removeJobsOpts.jobConfigPathKubevirtPeriodics, removeJobsOpts.jobConfigPathKubevirtPeriodics)
+			sum256OrigPresubmits, sum256TempCopyPresubmits := hashFiles(tt.args.removeJobsOpts.jobConfigPathKubevirtPresubmits, removeJobsOpts.jobConfigPathKubevirtPresubmits)
+
+			if tt.wantModification {
+				if reflect.DeepEqual(sum256OrigPeriodics, sum256TempCopyPeriodics) {
+					t.Errorf("removeOldJobsIfNewOnesExist(), wantModification %v, got %v", tt.wantModification, false)
+				}
+				if reflect.DeepEqual(sum256OrigPresubmits, sum256TempCopyPresubmits) {
+					t.Errorf("removeOldJobsIfNewOnesExist(), wantModification %v, got %v", tt.wantModification, false)
+				}
+			} else {
+				if !reflect.DeepEqual(sum256OrigPeriodics, sum256TempCopyPeriodics) {
+					t.Errorf("removeOldJobsIfNewOnesExist(), wantModification %v, got %v", tt.wantModification, true)
+				}
+				if !reflect.DeepEqual(sum256OrigPresubmits, sum256TempCopyPresubmits) {
+					t.Errorf("removeOldJobsIfNewOnesExist(), wantModification %v, got %v", tt.wantModification, true)
+				}
+			}
+		})
+	}
+}
+
+func hashFiles(original string, tempCopy string) ([32]byte, [32]byte) {
+	file, err := os.ReadFile(original)
+	checkErr(err)
+	sum256 := sha256.Sum256(file)
+	file2, err := os.ReadFile(tempCopy)
+	checkErr(err)
+	sum256_2 := sha256.Sum256(file2)
+	return sum256, sum256_2
+}
+
+func copyFiles(srcPaths []string, destDir string) {
+	for _, srcPath := range srcPaths {
+		open, err := os.Open(srcPath)
+		checkErr(err)
+		baseName := filepath.Base(srcPath)
+		create, err := os.Create(filepath.Join(destDir, baseName))
+		checkErr(err)
+		_, err = io.Copy(create, open)
+		checkErr(err)
+	}
+}
+
 func newMinorSemver(major, minor string) *querier.SemVer {
 	return &querier.SemVer{
 		Major: major,
@@ -435,4 +540,16 @@ func createPresubmitJobForRelease(semver *querier.SemVer, sigName string, always
 		},
 	}
 	return res
+}
+
+func newRelease(version string) *github.RepositoryRelease {
+	result := github.RepositoryRelease{}
+	result.TagName = &version
+	return &result
+}
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
