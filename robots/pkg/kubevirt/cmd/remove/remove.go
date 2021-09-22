@@ -12,38 +12,25 @@
  *
  */
 
-package cmd
+package remove
 
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/remove"
-	"os"
-
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/copy"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/require"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "kubevirt",
-	Short: "kubevirt alters job definitions in project-infra for kubevirt/kubevirt repo",
+var removeCommand = &cobra.Command{
+	Use:   "remove",
+	Short: "kubevirt remove removes old job definitions in project-infra for kubevirt/kubevirt repo",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
 	},
 }
 
 func init() {
-	flags.AddPersistentFlags(rootCmd)
-
-	rootCmd.AddCommand(copy.CopyCommand())
-	rootCmd.AddCommand(require.RequireCommand())
-	rootCmd.AddCommand(remove.RemoveCommand())
+	removeCommand.AddCommand(RemoveJobsCommand())
 }
 
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+func RemoveCommand() *cobra.Command {
+	return removeCommand
 }

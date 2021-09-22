@@ -18,6 +18,7 @@ require (
 	github.com/prometheus/client_golang v1.11.0
 	github.com/shurcooL/githubv4 v0.0.0-20210725200734-83ba7b4c9228 // indirect
 	github.com/sirupsen/logrus v1.8.1
+	github.com/spf13/cobra v1.1.3 // indirect
 	golang.org/x/mod v0.4.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	google.golang.org/api v0.32.0
