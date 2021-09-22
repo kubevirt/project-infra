@@ -2,7 +2,7 @@ postsubmits:
   kubevirt/community:
     - name: postsubmit-community-update-kubevirt-devstats-repo-sql
       branches:
-        - master
+        - main
       cluster: ibm-prow-jobs
       always_run: false
       run_if_changed: "sigs.yaml"
