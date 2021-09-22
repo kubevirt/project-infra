@@ -1416,7 +1416,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.22-operator
+        value: k8s-1.22
       - name: KUBEVIRT_E2E_FOCUS
         value: \[sig-operator\]
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
