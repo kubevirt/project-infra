@@ -25,7 +25,7 @@ import (
 	"k8s.io/test-infra/prow/config"
 	"sigs.k8s.io/yaml"
 
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/flags"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
 	kv_github "kubevirt.io/project-infra/robots/pkg/kubevirt/github"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
@@ -46,7 +46,7 @@ func (o requirePresubmitsOptions) Validate() error {
 const shortUsage = "kubevirt require presubmits moves presubmit job definitions for kubevirt to being required to merge"
 
 var requirePresubmitsCommand = &cobra.Command{
-	Use: "presubmits",
+	Use:   "presubmits",
 	Short: shortUsage,
 	Long: fmt.Sprintf(`%s
 

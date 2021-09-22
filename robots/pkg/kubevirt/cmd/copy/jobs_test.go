@@ -146,7 +146,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 			checks that in the case of explicitly leaving the job_states_to_report empty, which implies that we do not
 			want to report in any case, this empty config is preserved in the resulting modified version that has been
 			written to storage.
-		 */
+		*/
 		{
 			name: "reporterconfig with empty job states slice is preserved even with no job state to report",
 			args: args{
@@ -247,10 +247,10 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 								UtilityConfig: config.UtilityConfig{
 									ExtraRefs: []v1.Refs{
 										{
-											Org:            "kubevirt",
-											Repo:           "kubevirt",
-											BaseRef:        "main",
-																				},
+											Org:     "kubevirt",
+											Repo:    "kubevirt",
+											BaseRef: "main",
+										},
 									},
 								},
 							},
@@ -280,9 +280,9 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 							UtilityConfig: config.UtilityConfig{
 								ExtraRefs: []v1.Refs{
 									{
-										Org:            "kubevirt",
-										Repo:           "kubevirt",
-										BaseRef:        "main",
+										Org:     "kubevirt",
+										Repo:    "kubevirt",
+										BaseRef: "main",
 									},
 								},
 							},
@@ -306,9 +306,9 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 							UtilityConfig: config.UtilityConfig{
 								ExtraRefs: []v1.Refs{
 									{
-										Org:            "kubevirt",
-										Repo:           "kubevirt",
-										BaseRef:        "main",
+										Org:     "kubevirt",
+										Repo:    "kubevirt",
+										BaseRef: "main",
 									},
 								},
 							},

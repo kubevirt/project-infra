@@ -25,7 +25,7 @@ import (
 	"k8s.io/test-infra/prow/config"
 	"sigs.k8s.io/yaml"
 
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/flags"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
 	github2 "kubevirt.io/project-infra/robots/pkg/kubevirt/github"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
@@ -52,7 +52,7 @@ var copyJobsOpts = copyJobOptions{}
 const shortUse = "kubevirt copy jobs creates copies of the periodic and presubmit SIG jobs for latest kubevirtci providers"
 
 var copyJobsCommand = &cobra.Command{
-	Use: "jobs",
+	Use:   "jobs",
 	Short: shortUse,
 	Long: fmt.Sprintf(`%s
 
@@ -103,8 +103,12 @@ func run(cmd *cobra.Command, args []string) {
 	}
 
 	jobConfigs := map[string]func(*config.JobConfig, *querier.SemVer, *querier.SemVer) bool{
-		copyJobsOpts.jobConfigPathKubevirtPresubmits: func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return copyPresubmitJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
-		copyJobsOpts.jobConfigPathKubevirtPeriodics:  func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool { return copyPeriodicJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver) },
+		copyJobsOpts.jobConfigPathKubevirtPresubmits: func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool {
+			return copyPresubmitJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver)
+		},
+		copyJobsOpts.jobConfigPathKubevirtPeriodics: func(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer, secondLatestReleaseSemver *querier.SemVer) bool {
+			return copyPeriodicJobsForNewProvider(jobConfig, latestReleaseSemver, secondLatestReleaseSemver)
+		},
 	}
 	for jobConfigPath, jobConfigCopyFunc := range jobConfigs {
 		jobConfig, err := config.ReadJobConfig(jobConfigPath)
@@ -278,4 +282,3 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 
 	return
 }
-

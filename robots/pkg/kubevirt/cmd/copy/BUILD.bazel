@@ -6,10 +6,10 @@ go_library(
         "copy.go",
         "jobs.go",
     ],
-    importpath = "kubevirt.io/project-infra/robots/pkg/kubevirt/copy",
+    importpath = "kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/copy",
     visibility = ["//visibility:public"],
     deps = [
-        "//robots/pkg/kubevirt/flags:go_default_library",
+        "//robots/pkg/kubevirt/cmd/flags:go_default_library",
         "//robots/pkg/kubevirt/github:go_default_library",
         "//robots/pkg/kubevirt/jobconfig:go_default_library",
         "//robots/pkg/kubevirt/log:go_default_library",

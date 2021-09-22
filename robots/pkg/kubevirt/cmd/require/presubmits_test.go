@@ -31,7 +31,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 		name             string
 		args             args
 		wantNewJobConfig config.JobConfig
-		wantUpdated    	 bool
+		wantUpdated      bool
 	}{
 		{
 			name: "no job exists",
@@ -183,7 +183,7 @@ func createPresubmitJobForRelease(semver *querier.SemVer, sigName string, always
 		AlwaysRun: alwaysRun,
 		Optional:  optional,
 		JobBase: config.JobBase{
-			Name:           jobconfig.CreatePresubmitJobName(semver, sigName),
+			Name: jobconfig.CreatePresubmitJobName(semver, sigName),
 		},
 		Reporter: config.Reporter{
 			SkipReport: skipReport,

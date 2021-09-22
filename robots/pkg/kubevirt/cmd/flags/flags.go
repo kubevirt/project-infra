@@ -23,15 +23,15 @@ import (
 )
 
 const (
-	FlagDryRun = "dry-run"
+	FlagDryRun          = "dry-run"
 	FlagGitHubTokenPath = "github-token-path"
-	FlagGitHubEndpoint = "github-endpoint"
+	FlagGitHubEndpoint  = "github-endpoint"
 )
 
 type GlobalOptions struct {
-	DryRun bool
+	DryRun          bool
 	GitHubTokenPath string
-	GitHubEndPoint string
+	GitHubEndPoint  string
 }
 
 type CommandOptions interface {

@@ -19,7 +19,7 @@ import (
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 	"io/ioutil"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/flags"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
 )
 
@@ -46,4 +46,3 @@ func NewGitHubClient(ctx context.Context) *github.Client {
 	}
 	return client
 }
-

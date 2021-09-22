@@ -6,10 +6,10 @@ go_library(
         "presubmits.go",
         "require.go",
     ],
-    importpath = "kubevirt.io/project-infra/robots/pkg/kubevirt/require",
+    importpath = "kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/require",
     visibility = ["//visibility:public"],
     deps = [
-        "//robots/pkg/kubevirt/flags:go_default_library",
+        "//robots/pkg/kubevirt/cmd/flags:go_default_library",
         "//robots/pkg/kubevirt/github:go_default_library",
         "//robots/pkg/kubevirt/jobconfig:go_default_library",
         "//robots/pkg/kubevirt/log:go_default_library",

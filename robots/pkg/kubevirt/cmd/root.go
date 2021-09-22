@@ -12,19 +12,20 @@
  *
  */
 
-package kubevirt
+package cmd
 
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/copy"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/flags"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/require"
 	"os"
+
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/copy"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/require"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
 )
 
 var rootCmd = &cobra.Command{
-	Use: "kubevirt",
+	Use:   "kubevirt",
 	Short: "kubevirt alters job definitions in project-infra for kubevirt/kubevirt repo",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
@@ -38,7 +39,7 @@ func init() {
 	rootCmd.AddCommand(require.RequireCommand())
 }
 
-func Execute()  {
+func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
