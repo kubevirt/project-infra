@@ -14,6 +14,35 @@
 # limitations under the License.
 
 # Includes basic workspace setup, with gcloud and a bootstrap runner
+FROM fedora:34 AS builder
+
+ENV PKG_CONFIG_PATH="/usr/lib/pkgconfig"
+
+WORKDIR /app
+
+ENV GIMME_GO_VERSION=1.16.8
+
+# Cache latest stable golang version
+RUN curl -sL -o /bin/gimme https://raw.githubusercontent.com/travis-ci/gimme/master/gimme && \
+    chmod +x /bin/gimme && \
+    mkdir -p /etc/setup.mixin.d/ && \
+    echo 'eval $(gimme ${GIMME_GO_VERSION})' > /etc/setup.mixin.d/golang.sh
+RUN . /etc/setup.mixin.d/golang.sh
+
+RUN dnf install -y \
+    git \
+    gpgme-devel \
+    libseccomp-devel.x86_64 \
+    libseccomp-devel.x86_64 \
+    make \
+    systemd-devel && \
+    git clone https://github.com/containers/podman && \
+    cd podman && \
+    . /etc/setup.mixin.d/golang.sh && \
+    dnf install -y gcc glibc-static && \
+    make install.tools && \
+    make binaries
+
 FROM fedora:34
 
 WORKDIR /workspace
@@ -70,25 +99,29 @@ RUN wget -q https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.ta
     gcloud components install alpha beta kubectl && \
     gcloud info | tee /workspace/gcloud-info.txt
 
+#
+# BEGIN: PODMAN IN CONTAINER SETUP
+#
+
+RUN dnf -y update; dnf -y reinstall shadow-utils && \
+    dnf -y install crun podman --exclude container-selinux && \
+    rm -rf /var/cache /var/log/dnf* /var/log/yum.* && \
+    ln -s /usr/bin/podman /usr/bin/docker && \
+    dnf update -y --refresh --enablerepo=updates-testing podman
+
+COPY --from=builder /app/podman/bin/podman /usr/bin/podman
+
+VOLUME /var/lib/containers
+
+COPY containers.conf /etc/containers/containers.conf
+COPY 87-podman.conflist /etc/cni/net.d/
+
+RUN chmod 644 /etc/containers/containers.conf
+
+ENV _CONTAINERS_USERNS_CONFIGURED=""
 
 #
-# BEGIN: DOCKER IN DOCKER SETUP
-#
-# Install packages
-
-RUN dnf install -y \
-        kmod \
-        procps-ng \
-        moby-engine && \
-    dnf -y clean all
-
-# Create directory for docker storage location
-# NOTE this should be mounted and persisted as a volume ideally (!)
-# We will make a fallback one now just in case
-RUN mkdir /docker-graph
-
-#
-# END: DOCKER IN DOCKER SETUP
+# END: PODMAN IN CONTAINER SETUP
 #
 
 
@@ -106,8 +139,8 @@ RUN USE_BAZEL_VERSION=4.1.0 bazel version && \
 # create mixin directories
 RUN mkdir -p /etc/setup.mixin.d/ && mkdir -p /etc/teardown.mixin.d/
 
-# note the runner is also responsible for making docker in docker function if
-# env DOCKER_IN_DOCKER_ENABLED is set and similarly responsible for generating
+# note the runner is also responsible for making podman in sontainer function if
+# env PODMAN_IN_CONTAINER_ENABLED is set and similarly responsible for generating
 # .bazelrc files if bazel remote caching is enabled
 COPY ["entrypoint.sh", "runner.sh", "create_bazel_cache_rcs.sh", \
         "/usr/local/bin/"]
