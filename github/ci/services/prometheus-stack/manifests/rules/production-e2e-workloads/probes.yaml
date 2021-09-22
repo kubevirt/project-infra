@@ -1,0 +1,29 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    group: kubevirtci
+  name: probes
+spec:
+  groups:
+  - name: probes
+    rules:
+    - alert: KubevirtCIDeckNotRespondingShort
+      annotations:
+        message: 'https://prow.ci.kubevirt.io has been down for 5m'
+      expr: |
+        probe_success != 1
+      for: 5m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: KubevirtCIDeckNotRespondingLong
+      annotations:
+        message: 'https://prow.ci.kubevirt.io has been down for 10m'
+      expr: |
+        probe_success != 1
+      for: 10m
+      labels:
+        severity: critical
+        namespace: monitoring
