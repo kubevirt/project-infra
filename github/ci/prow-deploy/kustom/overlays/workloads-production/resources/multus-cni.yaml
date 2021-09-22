@@ -151,7 +151,7 @@ spec:
       serviceAccountName: multus
       containers:
       - name: kube-multus
-        image: nfvpe/multus:v3.7
+        image: quay.io/kubevirtci/multus:v3.7
         command: ["/entrypoint.sh"]
         args:
         - "--multus-conf-file=auto"
