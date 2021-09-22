@@ -34,5 +34,5 @@ data:
               type: vm
               zone: ci
             containers:
-              - image: hello-world
+              - image: quay.io/kubevirtci/hello-world
                 command: ["/bin/true"]

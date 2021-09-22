@@ -16,7 +16,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
       - name: mirror-proxy
-        image: rpardini/docker-registry-proxy:0.6.2
+        image: ghcr.io/rpardini/docker-registry-proxy:0.6.2
         env:
         - name: ENABLE_MANIFEST_CACHE
           value: "true"
