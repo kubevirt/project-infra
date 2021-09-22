@@ -14,7 +14,38 @@
 # limitations under the License.
 
 # Includes basic workspace setup, with gcloud and a bootstrap runner
-FROM fedora:34
+FROM fedora:36 AS builder
+
+ENV PKG_CONFIG_PATH="/usr/lib/pkgconfig"
+ENV PODMAN_VERSION="v4.0.3"
+
+WORKDIR /app
+
+ENV GIMME_GO_VERSION=1.16.8
+
+# Cache latest stable golang version
+RUN curl -sL -o /bin/gimme https://raw.githubusercontent.com/travis-ci/gimme/master/gimme && \
+    chmod +x /bin/gimme && \
+    mkdir -p /etc/setup.mixin.d/ && \
+    echo 'eval $(gimme ${GIMME_GO_VERSION})' > /etc/setup.mixin.d/golang.sh
+RUN cat /etc/setup.mixin.d/golang.sh
+RUN . /etc/setup.mixin.d/golang.sh
+
+RUN dnf install -y \
+    git \
+    gpgme-devel \
+    libseccomp-devel \
+    make \
+    systemd-devel && \
+    git clone https://github.com/containers/podman && \
+    cd podman && \
+    git checkout ${PODMAN_VERSION} && \
+    . /etc/setup.mixin.d/golang.sh && \
+    dnf install -y gcc glibc-static && \
+    make install.tools && \
+    make binaries
+
+FROM fedora:36
 
 WORKDIR /workspace
 RUN mkdir -p /workspace
@@ -73,23 +104,27 @@ RUN wget -q https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.ta
     gcloud info | tee /workspace/gcloud-info.txt
 
 #
-# BEGIN: DOCKER IN DOCKER SETUP
+# BEGIN: PODMAN IN CONTAINER SETUP
 #
-# Install packages
 
-RUN dnf install -y \
-        kmod \
-        procps-ng \
-        moby-engine && \
-    dnf -y clean all
+RUN dnf -y update; dnf -y reinstall shadow-utils && \
+    dnf -y install crun podman --exclude container-selinux && \
+    dnf -y clean all && \
+    ln -s /usr/bin/podman /usr/bin/docker
 
-# Create directory for docker storage location
-# NOTE this should be mounted and persisted as a volume ideally (!)
-# We will make a fallback one now just in case
-RUN mkdir /docker-graph
+COPY --from=builder /app/podman/bin/podman /usr/bin/podman
+
+VOLUME /var/lib/containers
+
+COPY containers.conf /etc/containers/containers.conf
+COPY 87-podman.conflist /etc/cni/net.d/
+
+RUN chmod 644 /etc/containers/containers.conf
+
+ENV _CONTAINERS_USERNS_CONFIGURED=""
 
 #
-# END: DOCKER IN DOCKER SETUP
+# END: PODMAN IN CONTAINER SETUP
 #
 
 # Cache the most commonly used bazel versions in the container
@@ -106,12 +141,12 @@ RUN USE_BAZEL_VERSION=4.1.0 bazel version && \
 # create mixin directories
 RUN mkdir -p /etc/setup.mixin.d/ && mkdir -p /etc/teardown.mixin.d/
 
-# Workaround error when running buildah
-# 'overlay' is not supported over overlayfs, a mount_program is required: backing file system is unsupported for this graph driver
-RUN sed -i -e 's,#mount_program,mount_program,' /etc/containers/storage.conf
+# Trust git repositories used for e2e jobs
+RUN git config --global --add safe.directory '*'
 
-# note the runner is also responsible for making docker in docker function if
-# env DOCKER_IN_DOCKER_ENABLED is set and similarly responsible for generating
+# note the runner is also responsible for making podman in container function if
+# env PODMAN_IN_CONTAINER_ENABLED is set and similarly responsible for generating
+
 # .bazelrc files if bazel remote caching is enabled
 COPY ["entrypoint.sh", "runner.sh", "create_bazel_cache_rcs.sh", \
         "/usr/local/bin/"]

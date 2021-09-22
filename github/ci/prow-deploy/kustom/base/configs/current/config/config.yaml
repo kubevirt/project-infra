@@ -419,6 +419,21 @@ presets:
   - name: docker-graph
     mountPath: /docker-graph
 - labels:
+    preset-pinc-enabled: "true"
+  env:
+  - name: PODMAN_IN_CONTAINER_ENABLED
+    value: "true"
+  - name: KIND_EXPERIMENTAL_PROVIDER
+    value: "podman"
+  - name: PODMAN_IN_CONTAINER_IPV6_ENABLED
+    value: "true"
+  volumes:
+  - name: podman-data
+    emptyDir: {}
+  volumeMounts:
+  - name: podman-data
+    mountPath: /var/lib/containers
+- labels:
     preset-docker-mirror: "true"
   volumes:
   - name: docker-config
@@ -433,6 +448,10 @@ presets:
   env:
   - name: CA_CERT_FILE
     value: /etc/docker-mirror-proxy/ca.crt
+  - name: CONTAINER_HTTP_PROXY
+    value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+  - name: CONTAINER_HTTPS_PROXY
+    value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
   volumes:
   - name: docker-mirror-proxy-ca-cert
     configMap:
