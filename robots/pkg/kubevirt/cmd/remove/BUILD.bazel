@@ -14,8 +14,8 @@ go_library(
         "//robots/pkg/kubevirt/jobconfig:go_default_library",
         "//robots/pkg/kubevirt/log:go_default_library",
         "//robots/pkg/querier:go_default_library",
-        "@com_github_google_go_github//github:go_default_library",
         "@com_github_spf13_cobra//:go_default_library",
+        "@io_k8s_sigs_yaml//:go_default_library",
         "@io_k8s_test_infra//prow/config:go_default_library",
     ],
 )
@@ -24,5 +24,12 @@ go_test(
     name = "go_default_test",
     srcs = ["jobs_test.go"],
     embed = [":go_default_library"],
-    deps = ["@io_k8s_test_infra//prow/config:go_default_library"],
+    deps = [
+        "//robots/pkg/kubevirt/jobconfig:go_default_library",
+        "//robots/pkg/querier:go_default_library",
+        "@com_github_go_test_deep//:go_default_library",
+        "@io_k8s_api//core/v1:go_default_library",
+        "@io_k8s_test_infra//prow/apis/prowjobs/v1:go_default_library",
+        "@io_k8s_test_infra//prow/config:go_default_library",
+    ],
 )

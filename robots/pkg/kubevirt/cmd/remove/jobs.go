@@ -25,6 +25,7 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
 	"kubevirt.io/project-infra/robots/pkg/querier"
 	"os"
+	"sigs.k8s.io/yaml"
 	"strings"
 )
 
@@ -112,15 +113,93 @@ func run(cmd *cobra.Command, args []string) {
 	for _, release := range releases[0:3] {
 		requiredReleases = append(requiredReleases, querier.ParseRelease(release))
 	}
-	jobsExist, message := ensureJobsExistForReleases(jobConfigKubevirtPresubmits, requiredReleases)
+	jobsExist, message := ensurePresubmitJobsExistForReleases(jobConfigKubevirtPresubmits, requiredReleases)
 	if !jobsExist {
 		log.Log().Infof("Not all required jobs for k8s versions %s exist, nothing to do.\n%s", requiredReleases, message)
 		os.Exit(0)
 	}
-	panic(fmt.Errorf("TODO"))
+
+	jobConfigKubevirtPeriodics, err := config.ReadJobConfig(removeJobsOpts.jobConfigPathKubevirtPeriodics)
+	if err != nil {
+		log.Log().WithField("jobConfigKubevirtPeriodics", removeJobsOpts.jobConfigPathKubevirtPeriodics).WithError(err).Fatal("Failed to read jobconfig")
+	}
+	targetRelease := querier.ParseRelease(releases[3:4][0])
+	if updated := deletePeriodicJobsForRelease(&jobConfigKubevirtPeriodics, targetRelease); updated {
+		writeJobConfig(&jobConfigKubevirtPeriodics, removeJobsOpts.jobConfigPathKubevirtPeriodics)
+	}
+
+	if updated := deletePresubmitJobsForRelease(&jobConfigKubevirtPresubmits, targetRelease); updated {
+		writeJobConfig(&jobConfigKubevirtPresubmits, removeJobsOpts.jobConfigPathKubevirtPresubmits)
+	}
 }
 
-func ensureJobsExistForReleases(jobConfigKubevirtPresubmits config.JobConfig, requiredReleases []*querier.SemVer) (allJobsExist bool, message string) {
+func deletePresubmitJobsForRelease(jobConfig *config.JobConfig, targetRelease *querier.SemVer) (updated bool) {
+	toDeleteJobNames := map[string]struct{}{}
+	for _, sigName := range jobconfig.SigNames {
+		toDeleteJobNames[jobconfig.CreatePresubmitJobName(targetRelease, sigName)] = struct{}{}
+	}
+
+	var newPresubmits []config.Presubmit
+
+	for _, presubmit := range jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] {
+		if _, exists := toDeleteJobNames[presubmit.Name]; exists {
+			updated = true
+			continue
+		}
+		newPresubmits = append(newPresubmits, presubmit)
+	}
+
+	if updated {
+		jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] = newPresubmits
+	}
+
+	return updated
+}
+
+func deletePeriodicJobsForRelease(jobConfig *config.JobConfig, release *querier.SemVer) (updated bool) {
+	toDeleteJobNames := map[string]struct{}{}
+	for _, sigName := range jobconfig.SigNames {
+		toDeleteJobNames[jobconfig.CreatePeriodicJobName(release, sigName)] = struct{}{}
+	}
+
+	var newPeriodics []config.Periodic
+
+	for _, periodic := range jobConfig.Periodics {
+		if _, exists := toDeleteJobNames[periodic.Name]; exists {
+			updated = true
+			continue
+		}
+		newPeriodics = append(newPeriodics, periodic)
+	}
+
+	if updated {
+		jobConfig.Periodics = newPeriodics
+	}
+
+	return updated
+}
+
+func writeJobConfig(jobConfigToWrite *config.JobConfig, jobConfigPath string) {
+	marshalledConfig, err := yaml.Marshal(jobConfigToWrite)
+	if err != nil {
+		log.Log().WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to marshall jobconfig")
+	}
+
+	if flags.Options.DryRun {
+		_, err = os.Stdout.Write(marshalledConfig)
+		if err != nil {
+			log.Log().WithField("jobConfigPath", jobConfigPath).WithError(err).Fatal("Failed to write jobconfig")
+		}
+	} else {
+		err = os.WriteFile(jobConfigPath, marshalledConfig, os.ModePerm)
+		if err != nil {
+			log.Log().WithField("jobConfigPath", jobConfigPath).WithError(err).Fatal("Failed to write jobconfig")
+		}
+		log.Log().WithField("jobConfigPath", jobConfigPath).Info("Updated jobconfig file")
+	}
+}
+
+func ensurePresubmitJobsExistForReleases(jobConfigKubevirtPresubmits config.JobConfig, requiredReleases []*querier.SemVer) (allJobsExist bool, message string) {
 	allJobsExist = true
 	messages := []string{}
 

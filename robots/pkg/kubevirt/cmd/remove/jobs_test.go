@@ -15,16 +15,20 @@
 package remove
 
 import (
+	"github.com/go-test/deep"
+	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/test-infra/prow/apis/prowjobs/v1"
 	"k8s.io/test-infra/prow/config"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"kubevirt.io/project-infra/robots/pkg/querier"
+	"reflect"
 	"testing"
 )
 
 func Test_ensureLatestJobsAreRequired(t *testing.T) {
 	type args struct {
 		jobConfigKubevirtPresubmits config.JobConfig
-		release *querier.SemVer
+		release                     *querier.SemVer
 	}
 	tests := []struct {
 		name string
@@ -103,8 +107,8 @@ func Test_ensureJobsExistForReleases(t *testing.T) {
 		wantAllJobsExist bool
 	}{
 		{
-			name:             "jobs missing",
-			args:             args{
+			name: "jobs missing",
+			args: args{
 				jobConfigKubevirtPresubmits: config.JobConfig{},
 				requiredReleases: []*querier.SemVer{
 					newMinorSemver("1", "37"),
@@ -114,8 +118,8 @@ func Test_ensureJobsExistForReleases(t *testing.T) {
 			wantAllJobsExist: false,
 		},
 		{
-			name:             "jobs exist",
-			args:             args{
+			name: "jobs exist",
+			args: args{
 				jobConfigKubevirtPresubmits: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
 						jobconfig.OrgAndRepoForJobConfig: {
@@ -138,13 +142,275 @@ func Test_ensureJobsExistForReleases(t *testing.T) {
 			wantAllJobsExist: true,
 		},
 	}
-		for _, tt := range tests {
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotAllJobsExist, gotMessage := ensureJobsExistForReleases(tt.args.jobConfigKubevirtPresubmits, tt.args.requiredReleases)
+			gotAllJobsExist, gotMessage := ensurePresubmitJobsExistForReleases(tt.args.jobConfigKubevirtPresubmits, tt.args.requiredReleases)
 			if gotAllJobsExist != tt.wantAllJobsExist {
-				t.Errorf("ensureJobsExistForReleases() gotAllJobsExist = %v, want %v", gotAllJobsExist, tt.wantAllJobsExist)
+				t.Errorf("ensurePresubmitJobsExistForReleases() gotAllJobsExist = %v, want %v", gotAllJobsExist, tt.wantAllJobsExist)
 			}
 			t.Logf("message: %s", gotMessage)
+		})
+	}
+}
+
+func Test_deletePeriodicJobsForRelease(t *testing.T) {
+	type args struct {
+		jobConfig *config.JobConfig
+		release   *querier.SemVer
+	}
+	tests := []struct {
+		name          string
+		args          args
+		wantUpdated   bool
+		wantJobConfig *config.JobConfig
+	}{
+		{
+			name: "no jobs to delete",
+			args: args{
+				jobConfig: &config.JobConfig{
+					Periodics: []config.Periodic{
+						{
+							JobBase: config.JobBase{
+								Labels: map[string]string{},
+								ReporterConfig: &v1.ReporterConfig{
+									Slack: &v1.SlackReporterConfig{
+										JobStatesToReport: []v1.ProwJobState{},
+									},
+								},
+								Name: jobconfig.CreatePeriodicJobName(newMinorSemver("1", "20"), "sig-network"),
+								Spec: &corev1.PodSpec{
+									Containers: []corev1.Container{
+										{
+											Env: []corev1.EnvVar{},
+										},
+									},
+								},
+							},
+							Interval: "",
+							Cron:     "0 1,9,17 * * *",
+							Tags:     nil,
+						},
+					},
+				},
+				release: newMinorSemver("1", "19"),
+			},
+			wantUpdated: false,
+		},
+		{
+			name: "one job to delete",
+			args: args{
+				jobConfig: &config.JobConfig{
+					Periodics: []config.Periodic{
+						{
+							JobBase: config.JobBase{
+								Labels: map[string]string{},
+								ReporterConfig: &v1.ReporterConfig{
+									Slack: &v1.SlackReporterConfig{
+										JobStatesToReport: []v1.ProwJobState{},
+									},
+								},
+								Name: jobconfig.CreatePeriodicJobName(newMinorSemver("1", "20"), "sig-network"),
+								Spec: &corev1.PodSpec{
+									Containers: []corev1.Container{
+										{
+											Env: []corev1.EnvVar{},
+										},
+									},
+								},
+							},
+							Interval: "",
+							Cron:     "0 1,9,17 * * *",
+							Tags:     nil,
+						},
+						{
+							JobBase: config.JobBase{
+								Labels: map[string]string{},
+								ReporterConfig: &v1.ReporterConfig{
+									Slack: &v1.SlackReporterConfig{
+										JobStatesToReport: []v1.ProwJobState{},
+									},
+								},
+								Name: jobconfig.CreatePeriodicJobName(newMinorSemver("1", "19"), "sig-network"),
+								Spec: &corev1.PodSpec{
+									Containers: []corev1.Container{
+										{
+											Env: []corev1.EnvVar{},
+										},
+									},
+								},
+							},
+							Interval: "",
+							Cron:     "0 1,9,17 * * *",
+							Tags:     nil,
+						},
+					},
+				},
+				release: newMinorSemver("1", "19"),
+			},
+			wantUpdated: true,
+			wantJobConfig: &config.JobConfig{
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Labels: map[string]string{},
+							ReporterConfig: &v1.ReporterConfig{
+								Slack: &v1.SlackReporterConfig{
+									JobStatesToReport: []v1.ProwJobState{},
+								},
+							},
+							Name: jobconfig.CreatePeriodicJobName(newMinorSemver("1", "20"), "sig-network"),
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{},
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "0 1,9,17 * * *",
+						Tags:     nil,
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := deletePeriodicJobsForRelease(tt.args.jobConfig, tt.args.release); got != tt.wantUpdated {
+				t.Errorf("deletePeriodicJobsForRelease() = %v, want %v", got, tt.wantUpdated)
+			}
+			if tt.wantUpdated && !reflect.DeepEqual(tt.args.jobConfig, tt.wantJobConfig) {
+				t.Errorf("deletePeriodicJobsForRelease() = %v", deep.Equal(tt.args.jobConfig, tt.wantJobConfig))
+			}
+		})
+	}
+}
+
+func Test_deletePresubmitJobsForRelease(t *testing.T) {
+	type args struct {
+		jobConfig     *config.JobConfig
+		targetRelease *querier.SemVer
+	}
+	tests := []struct {
+		name          string
+		args          args
+		wantUpdated   bool
+		wantJobConfig *config.JobConfig
+	}{
+		{
+			name: "no jobs to delete",
+			args: args{
+				jobConfig: &config.JobConfig{
+					PresubmitsStatic: map[string][]config.Presubmit{
+						jobconfig.OrgAndRepoForJobConfig: {
+							{
+								JobBase: config.JobBase{
+									Labels: map[string]string{},
+									ReporterConfig: &v1.ReporterConfig{
+										Slack: &v1.SlackReporterConfig{
+											JobStatesToReport: []v1.ProwJobState{},
+										},
+									},
+									Name: jobconfig.CreatePresubmitJobName(newMinorSemver("1", "20"), "sig-network"),
+									Spec: &corev1.PodSpec{
+										Containers: []corev1.Container{
+											{
+												Env: []corev1.EnvVar{},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				targetRelease: newMinorSemver("1", "19"),
+			},
+			wantUpdated: false,
+		},
+		{
+			name: "one job to delete",
+			args: args{
+				jobConfig: &config.JobConfig{
+					PresubmitsStatic: map[string][]config.Presubmit{
+						jobconfig.OrgAndRepoForJobConfig: {
+							{
+								JobBase: config.JobBase{
+									Labels: map[string]string{},
+									ReporterConfig: &v1.ReporterConfig{
+										Slack: &v1.SlackReporterConfig{
+											JobStatesToReport: []v1.ProwJobState{},
+										},
+									},
+									Name: jobconfig.CreatePresubmitJobName(newMinorSemver("1", "20"), "sig-network"),
+									Spec: &corev1.PodSpec{
+										Containers: []corev1.Container{
+											{
+												Env: []corev1.EnvVar{},
+											},
+										},
+									},
+								},
+							},
+							{
+								JobBase: config.JobBase{
+									Labels: map[string]string{},
+									ReporterConfig: &v1.ReporterConfig{
+										Slack: &v1.SlackReporterConfig{
+											JobStatesToReport: []v1.ProwJobState{},
+										},
+									},
+									Name: jobconfig.CreatePresubmitJobName(newMinorSemver("1", "19"), "sig-network"),
+									Spec: &corev1.PodSpec{
+										Containers: []corev1.Container{
+											{
+												Env: []corev1.EnvVar{},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				targetRelease: newMinorSemver("1", "19"),
+			},
+			wantUpdated: true,
+			wantJobConfig: &config.JobConfig{
+				PresubmitsStatic: map[string][]config.Presubmit{
+					jobconfig.OrgAndRepoForJobConfig: {
+						{
+							JobBase: config.JobBase{
+								Labels: map[string]string{},
+								ReporterConfig: &v1.ReporterConfig{
+									Slack: &v1.SlackReporterConfig{
+										JobStatesToReport: []v1.ProwJobState{},
+									},
+								},
+								Name: jobconfig.CreatePresubmitJobName(newMinorSemver("1", "20"), "sig-network"),
+								Spec: &corev1.PodSpec{
+									Containers: []corev1.Container{
+										{
+											Env: []corev1.EnvVar{},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := deletePresubmitJobsForRelease(tt.args.jobConfig, tt.args.targetRelease); got != tt.wantUpdated {
+				t.Errorf("deletePresubmitJobsForRelease() = %v, wantUpdated %v", got, tt.wantUpdated)
+			}
+			if tt.wantUpdated && !reflect.DeepEqual(tt.args.jobConfig, tt.wantJobConfig) {
+				t.Errorf("deletePresubmitJobsForRelease() = %v", deep.Equal(tt.args.jobConfig, tt.wantJobConfig))
+			}
 		})
 	}
 }
