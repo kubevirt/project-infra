@@ -273,9 +273,11 @@ postsubmits:
               privileged: true
             resources:
               requests:
-                memory: "4Gi"
+                memory: "16Gi"
+                cpu: "500m"
               limits:
-                memory: "4Gi"
+                memory: "16Gi"
+                cpu: "500m"
     - name: post-project-infra-prow-control-plane-deployment
       always_run: false
       run_if_changed: "github/ci/prow-deploy/.*"

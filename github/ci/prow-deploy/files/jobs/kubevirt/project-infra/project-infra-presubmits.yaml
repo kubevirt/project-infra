@@ -256,9 +256,11 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "4Gi"
+              memory: "16Gi"
+              cpu: "500m"
             limits:
-              memory: "4Gi"
+              memory: "16Gi"
+              cpu: "500m"
   - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/.*"
