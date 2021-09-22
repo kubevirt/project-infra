@@ -131,7 +131,7 @@ func run(cmd *cobra.Command, args []string) {
 func updatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer) (updated bool) {
 	jobsToCheck := map[string]string{}
 	for _, sigName := range jobconfig.SigNames {
-		jobsToCheck[createPresubmitJobName(latestReleaseSemver, sigName)] = ""
+		jobsToCheck[jobconfig.CreatePresubmitJobName(latestReleaseSemver, sigName)] = ""
 	}
 
 	for index := range jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] {
@@ -161,8 +161,4 @@ func updatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, lat
 	}
 
 	return
-}
-
-func createPresubmitJobName(latestReleaseSemver *querier.SemVer, sigName string) string {
-	return fmt.Sprintf("pull-kubevirt-e2e-k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
 }

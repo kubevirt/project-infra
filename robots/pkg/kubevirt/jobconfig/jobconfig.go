@@ -14,6 +14,15 @@
 
 package jobconfig
 
+import (
+	"fmt"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
+	"kubevirt.io/project-infra/robots/pkg/querier"
+	"regexp"
+	"strconv"
+	"strings"
+)
+
 const OrgAndRepoForJobConfig = "kubevirt/kubevirt"
 
 var SigNames = []string{
@@ -23,4 +32,41 @@ var SigNames = []string{
 	"operator",
 }
 
+var cronRegex *regexp.Regexp
 
+func init() {
+	var err error
+	cronRegex, err = regexp.Compile("[0-9] [0-9]+,[0-9]+,[0-9]+ \\* \\* \\*")
+	if err != nil {
+		panic(err)
+	}
+}
+
+func CreatePresubmitJobName(latestReleaseSemver *querier.SemVer, sigName string) string {
+	return fmt.Sprintf("pull-kubevirt-e2e-k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
+}
+
+func CreatePeriodicJobName(latestReleaseSemver *querier.SemVer, sigName string) string {
+	return fmt.Sprintf("periodic-kubevirt-e2e-k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
+}
+
+func CreateTargetValue(latestReleaseSemver *querier.SemVer, sigName string) string {
+	return fmt.Sprintf("k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
+}
+
+// AdvanceCronExpression advances source cron expression to +1h10m
+// cron expression must have format of i.e. "0 1,9,17 * * *" or it will panic
+func AdvanceCronExpression(sourceCronExpr string) string {
+	if !cronRegex.MatchString(sourceCronExpr) {
+		log.Log().WithField("cronRegex", cronRegex).WithField("sourceCronExpr", sourceCronExpr).Fatal("cronRegex doesn't match")
+	}
+	parts := strings.Split(sourceCronExpr, " ")
+	mins, err := strconv.ParseInt(parts[0], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	mins = (mins + 10) % 60
+	firstHour, err := strconv.ParseInt(strings.Split(parts[1], ",")[0], 10, 64)
+	firstHour = (firstHour + 1) % 8
+	return fmt.Sprintf("%d %d,%d,%d * * *", mins, firstHour, firstHour+8, firstHour+16)
+}

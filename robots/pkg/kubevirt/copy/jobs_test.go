@@ -16,6 +16,7 @@ package copy
 
 import (
 	"fmt"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"os"
 	"path"
 	"reflect"
@@ -31,53 +32,6 @@ import (
 
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
-
-func Test_advanceCronExpression(t *testing.T) {
-	type args struct {
-		sourceCronExpr string
-	}
-	tests := []struct {
-		name string
-		args args
-		want string
-	}{
-		{
-			name: "zero one nine seventeen",
-			args: args{
-				sourceCronExpr: "0 1,9,17 * * *",
-			},
-			want: "10 2,10,18 * * *",
-		},
-		{
-			name: "fifty one nine seventeen",
-			args: args{
-				sourceCronExpr: "50 1,9,17 * * *",
-			},
-			want: "0 2,10,18 * * *",
-		},
-		{
-			name: "zero eight sixteen twentyfour",
-			args: args{
-				sourceCronExpr: "0 8,16,24 * * *",
-			},
-			want: "10 1,9,17 * * *",
-		},
-		{
-			name: "zero seven fifteen twentythree",
-			args: args{
-				sourceCronExpr: "0 7,15,23 * * *",
-			},
-			want: "10 0,8,16 * * *",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := advanceCronExpression(tt.args.sourceCronExpr); got != tt.want {
-				t.Errorf("advanceCronExpression() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 func Test_getSourceAndTargetRelease(t *testing.T) {
 	type args struct {
@@ -206,7 +160,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 										JobStatesToReport: []v1.ProwJobState{},
 									},
 								},
-								Name: createPeriodicJobName(semver("1", "21", "0"), "sig-network"),
+								Name: jobconfig.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
 								Spec: &corev1.PodSpec{
 									Containers: []corev1.Container{
 										{
@@ -230,7 +184,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 					{
 						JobBase: config.JobBase{
 							Labels: map[string]string{},
-							Name:   createPeriodicJobName(semver("1", "21", "0"), "sig-network"),
+							Name:   jobconfig.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
 							ReporterConfig: &v1.ReporterConfig{
 								Slack: &v1.SlackReporterConfig{
 									JobStatesToReport: []v1.ProwJobState{},
@@ -252,7 +206,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 						JobBase: config.JobBase{
 							Annotations: map[string]string{},
 							Labels:      map[string]string{},
-							Name:        createPeriodicJobName(semver("1", "22", "0"), "sig-network"),
+							Name:        jobconfig.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
 							ReporterConfig: &v1.ReporterConfig{
 								Slack: &v1.SlackReporterConfig{
 									JobStatesToReport: []v1.ProwJobState{},
@@ -282,7 +236,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 						{
 							JobBase: config.JobBase{
 								Labels: map[string]string{},
-								Name: createPeriodicJobName(semver("1", "21", "0"), "sig-network"),
+								Name:   jobconfig.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
 								Spec: &corev1.PodSpec{
 									Containers: []corev1.Container{
 										{
@@ -315,7 +269,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 					{
 						JobBase: config.JobBase{
 							Labels: map[string]string{},
-							Name:   createPeriodicJobName(semver("1", "21", "0"), "sig-network"),
+							Name:   jobconfig.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
 							Spec: &corev1.PodSpec{
 								Containers: []corev1.Container{
 									{
@@ -341,7 +295,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 						JobBase: config.JobBase{
 							Annotations: map[string]string{},
 							Labels:      map[string]string{},
-							Name:        createPeriodicJobName(semver("1", "22", "0"), "sig-network"),
+							Name:        jobconfig.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
 							Spec: &corev1.PodSpec{
 								Containers: []corev1.Container{
 									{

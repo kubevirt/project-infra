@@ -19,8 +19,6 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/google/go-github/github"
@@ -48,8 +46,6 @@ func (o copyJobOptions) Validate() error {
 	}
 	return nil
 }
-
-var cronRegex *regexp.Regexp
 
 var copyJobsOpts = copyJobOptions{}
 
@@ -80,11 +76,6 @@ func CopyJobsCommand() *cobra.Command {
 }
 
 func init() {
-	var err error
-	cronRegex, err = regexp.Compile("[0-9] [0-9]+,[0-9]+,[0-9]+ \\* \\* \\*")
-	if err != nil {
-		panic(err)
-	}
 	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The path to the kubevirt presubmit job definitions")
 	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
 }
@@ -174,8 +165,8 @@ func copyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProvider
 	}
 
 	for _, sigName := range jobconfig.SigNames {
-		targetJobName := createPresubmitJobName(targetProviderReleaseSemver, sigName)
-		sourceJobName := createPresubmitJobName(sourceProviderReleaseSemver, sigName)
+		targetJobName := jobconfig.CreatePresubmitJobName(targetProviderReleaseSemver, sigName)
+		sourceJobName := jobconfig.CreatePresubmitJobName(sourceProviderReleaseSemver, sigName)
 
 		if _, exists := allPresubmitJobs[targetJobName]; exists {
 			log.Log().WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Target job exists, nothing to do")
@@ -211,7 +202,7 @@ func copyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProvider
 				continue
 			}
 			newEnvVar := *envVar.DeepCopy()
-			newEnvVar.Value = createTargetValue(targetProviderReleaseSemver, sigName)
+			newEnvVar.Value = jobconfig.CreateTargetValue(targetProviderReleaseSemver, sigName)
 			newJob.Spec.Containers[0].Env[index] = newEnvVar
 			break
 		}
@@ -233,8 +224,8 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 	}
 
 	for _, sigName := range jobconfig.SigNames {
-		targetJobName := createPeriodicJobName(targetProviderReleaseSemver, sigName)
-		sourceJobName := createPeriodicJobName(sourceProviderReleaseSemver, sigName)
+		targetJobName := jobconfig.CreatePeriodicJobName(targetProviderReleaseSemver, sigName)
+		sourceJobName := jobconfig.CreatePeriodicJobName(sourceProviderReleaseSemver, sigName)
 
 		if _, exists := allPeriodicJobs[targetJobName]; exists {
 			log.Log().WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Target job exists, nothing to do")
@@ -254,7 +245,7 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 			newJob.Annotations[k] = v
 		}
 		newJob.Cluster = allPeriodicJobs[sourceJobName].Cluster
-		newJob.Cron = advanceCronExpression(allPeriodicJobs[sourceJobName].Cron)
+		newJob.Cron = jobconfig.AdvanceCronExpression(allPeriodicJobs[sourceJobName].Cron)
 		newJob.Decorate = allPeriodicJobs[sourceJobName].Decorate
 		newJob.DecorationConfig = allPeriodicJobs[sourceJobName].DecorationConfig.DeepCopy()
 		copy(newJob.ExtraRefs, allPeriodicJobs[sourceJobName].ExtraRefs)
@@ -275,7 +266,7 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 				continue
 			}
 			newEnvVar := *envVar.DeepCopy()
-			newEnvVar.Value = createTargetValue(targetProviderReleaseSemver, sigName)
+			newEnvVar.Value = jobconfig.CreateTargetValue(targetProviderReleaseSemver, sigName)
 			newJob.Spec.Containers[0].Env[index] = newEnvVar
 			break
 		}
@@ -288,31 +279,3 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 	return
 }
 
-func createPresubmitJobName(latestReleaseSemver *querier.SemVer, sigName string) string {
-	return fmt.Sprintf("pull-kubevirt-e2e-k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
-}
-
-func createPeriodicJobName(latestReleaseSemver *querier.SemVer, sigName string) string {
-	return fmt.Sprintf("periodic-kubevirt-e2e-k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
-}
-
-func createTargetValue(latestReleaseSemver *querier.SemVer, sigName string) string {
-	return fmt.Sprintf("k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
-}
-
-// advanceCronExpression advances source cron expression to +1h10m
-// cron expression must have format of i.e. "0 1,9,17 * * *" or it will panic
-func advanceCronExpression (sourceCronExpr string) string {
-	if !cronRegex.MatchString(sourceCronExpr) {
-		log.Log().WithField("cronRegex", cronRegex).WithField("sourceCronExpr", sourceCronExpr).Fatal("cronRegex doesn't match")
-	}
-	parts := strings.Split(sourceCronExpr, " ")
-	mins, err := strconv.ParseInt(parts[0], 10, 64)
-	if err != nil {
-		panic(err)
-	}
-	mins = ( mins + 10 ) % 60
-	firstHour, err := strconv.ParseInt(strings.Split(parts[1], ",")[0], 10, 64)
-	firstHour = ( firstHour + 1 ) % 8
-	return fmt.Sprintf("%d %d,%d,%d * * *", mins, firstHour, firstHour + 8, firstHour + 16)
-}

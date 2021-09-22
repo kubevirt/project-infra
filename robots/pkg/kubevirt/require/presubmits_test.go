@@ -183,7 +183,7 @@ func createPresubmitJobForRelease(semver *querier.SemVer, sigName string, always
 		AlwaysRun: alwaysRun,
 		Optional:  optional,
 		JobBase: config.JobBase{
-			Name:           createPresubmitJobName(semver, sigName),
+			Name:           jobconfig.CreatePresubmitJobName(semver, sigName),
 		},
 		Reporter: config.Reporter{
 			SkipReport: skipReport,
