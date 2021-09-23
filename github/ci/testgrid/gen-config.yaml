@@ -3,6 +3,8 @@ dashboards:
 - name: kubevirt-presubmits
 - name: kubevirt-periodics
 - name: kubevirt-libguestfs-appliance-periodics
+- name: kubevirt-hyperconverged-cluster-operator-presubmits
+- name: kubevirt-hyperconverged-cluster-operator-periodics
 
 dashboard_groups:
 - name: kubevirt
@@ -11,3 +13,5 @@ dashboard_groups:
   - kubevirt-presubmits
   - kubevirt-periodics
   - kubevirt-libguestfs-appliance-periodics
+  - kubevirt-hyperconverged-cluster-operator-presubmits
+  - kubevirt-hyperconverged-cluster-operator-periodics

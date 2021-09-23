@@ -5,6 +5,7 @@ presubmits:
     - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
+      testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
     always_run: true
     optional: false
     decorate: true
