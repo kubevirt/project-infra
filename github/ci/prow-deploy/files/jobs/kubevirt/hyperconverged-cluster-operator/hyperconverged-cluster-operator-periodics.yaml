@@ -3,7 +3,7 @@ periodics:
   cron: "2 2 * * *"
   decorate: true
   annotations:
-    testgrid-create-test-group: "false"
+    testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-periodics
   decoration_config:
     timeout: 1h
     grace_period: 5m
