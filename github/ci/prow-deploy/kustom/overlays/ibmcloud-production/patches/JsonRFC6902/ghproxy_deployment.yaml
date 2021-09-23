@@ -4,3 +4,8 @@
   path: /spec/template/spec/tolerations
 - op: remove
   path: /spec/template/spec/nodeSelector
+- op: add
+  path: /spec/strategy
+  value:
+    rollingUpdate:
+      maxUnavailable: 1
