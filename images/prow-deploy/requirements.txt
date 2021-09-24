@@ -1,7 +1,7 @@
-ansible == 2.9.20
+ansible == 4.2.0
 kubernetes == 11.0.0
 kubernetes-validate == 1.19.0
-molecule == 3.1.5
-molecule-docker == 0.2.4
+molecule == 3.5.1
+molecule-docker == 1.0.2
 openshift == 0.11.2
 selinux == 0.2.1
