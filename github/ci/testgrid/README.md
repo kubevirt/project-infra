@@ -53,4 +53,4 @@ This configuration applies to postsumbit and periodic jobs. Presubmit jobs can b
 
 ## Workflow
 
-Once the changes in dashboards or jobs are merged, a Prow job generates a PR on `kubernetes/test-infra`. When it is merged, the changes will be accessible on [TestGrid](https://testgrid.k8s.io).
+The process for updating the configuration of KubeVirt's dashboards is automated. Once the changes in dashboards or jobs are merged, a postsumit Prow job uploads the configuration to a GCS bucket. The testgrid instance that runs at https://testgrid.k8s.io will read kubevirt's group config from that bucket, once this is done the latest changes will be live.
