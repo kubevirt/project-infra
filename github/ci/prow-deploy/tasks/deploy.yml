@@ -12,7 +12,7 @@
 
 - name: Launch deployment
   shell: |
-    kustomize build overlays/{{ deploy_environment }} | kubectl apply --server-side -f -
+    kustomize build overlays/{{ deploy_environment }} | kubectl apply --server-side --force-conflicts -f -
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
   environment:
