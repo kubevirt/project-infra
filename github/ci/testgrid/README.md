@@ -2,10 +2,8 @@
 
 [TestGrid](https://testgrid.k8s.io) is an interactive dashboard for viewing tests results in a grid. It parses JUnit reports for generating a grid view from the tests.
 There is one dashboard group called `kubevirt` which contains all the KubeVirt dashboards.
-TestGrid configuration is stored inside the [kubernetes/test-infra](https://github.com/kubernetes/test-infra/tree/master/config/testgrids/kubevirt) repository in the `/config/testgrids/kubevirt/` directory.
 
-TestGrid is automatically updated by Prow using the tool called [transfigure.sh](https://github.com/kubernetes/test-infra/tree/master/testgrid/cmd/transfigure).
-It creates a pull request each time the TestGrid configuration file in the `kubernetes/test-infra` is changed. The changes appear when the owner of the `/config/testgrids/kubevirt/` folder approves them. For more information, see the `transfigure` [README.md](https://github.com/kubernetes/test-infra/blob/master/testgrid/cmd/transfigure/README.md) file.
+TestGrid configuration is stored on a GCS bucket at `gs://kubevirt-prow/testgrid/config`, which is read by testgrid. The job for pushing the config is defined [here](../prow-deploy/files/jobs/kubevirt/project-infra/project-infra-postsubmits.yaml#L757). Testgrid config merger is configured to read KubeVirt's config from the GCS bucket [here](https://github.com/kubernetes/test-infra/blob/master/config/mergelists/prod.yaml).
 
 ## Adding new dashboard
 
