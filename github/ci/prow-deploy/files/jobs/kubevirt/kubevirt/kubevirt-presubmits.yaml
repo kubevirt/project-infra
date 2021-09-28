@@ -389,6 +389,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
+    optional: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -517,6 +518,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
+    optional: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1633,4 +1635,4 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external        
+        type: bare-metal-external
