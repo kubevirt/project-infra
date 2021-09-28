@@ -68,7 +68,7 @@ On second stage, it removes the
 
 which makes the job required to pass for merges to occur with tide.
 `, shortUsage, strings.Join(prowjobconfigs.SigNames, ", ")),
-	Run: run,
+	RunE: run,
 }
 
 var requirePresubmitsOpts = requirePresubmitsOptions{}
@@ -81,28 +81,28 @@ func init() {
 	requirePresubmitsCommand.PersistentFlags().StringVar(&requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The directory of the kubevirt presubmit job definitions")
 }
 
-func run(cmd *cobra.Command, args []string) {
+func run(cmd *cobra.Command, args []string) error {
 	flags.ParseFlagsOrExit(cmd, args, requirePresubmitsOpts)
 
 	ctx := context.Background()
 	client, err := kv_github.NewGitHubClient(ctx)
 	if err != nil {
-		log.Log().Panicln(err)
+		return err
 	}
 
 	jobConfig, err := config.ReadJobConfig(requirePresubmitsOpts.jobConfigPathKubevirtPresubmits)
 	if err != nil {
-		log.Log().Panicln(err)
+		return fmt.Errorf("failed to read jobconfig %s: %v", requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, err)
 	}
 
 	releases, _, err := client.Repositories.ListReleases(ctx, "kubernetes", "kubernetes", nil)
 	if err != nil {
-		log.Log().Panicln(err)
+		return fmt.Errorf("failed to list releases: %v", err)
 	}
 	releases = querier.ValidReleases(releases)
 	if len(releases) == 0 {
 		log.Log().Info("No release found, nothing to do.")
-		os.Exit(0)
+		return nil
 	}
 
 	latestReleaseSemver := querier.ParseRelease(releases[0])
@@ -110,26 +110,27 @@ func run(cmd *cobra.Command, args []string) {
 	updated := updatePresubmitsAlwaysRunAndOptionalFields(&jobConfig, latestReleaseSemver)
 	if !updated && !flags.Options.DryRun {
 		log.Log().Info(fmt.Sprintf("presubmit jobs for %v weren't modified, nothing to do.", latestReleaseSemver))
-		os.Exit(0)
+		return nil
 	}
 
 	marshalledConfig, err := yaml.Marshal(&jobConfig)
 	if err != nil {
-		log.Log().WithError(err).Error("Failed to marshall jobconfig")
+		return fmt.Errorf("failed to marshall jobconfig %s: %v", requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, err)
 	}
 
 	if flags.Options.DryRun {
 		_, err = os.Stdout.Write(marshalledConfig)
 		if err != nil {
-			log.Log().WithError(err).Error("Failed to write jobconfig")
+			return fmt.Errorf("failed to write jobconfig %s: %v", requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, err)
 		}
-		os.Exit(0)
+		return nil
 	}
 
 	err = ioutil.WriteFile(requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, marshalledConfig, os.ModePerm)
 	if err != nil {
-		log.Log().WithError(err).Error("Failed to write jobconfig")
+		return fmt.Errorf("failed to write jobconfig %s: %v", requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, err)
 	}
+	return nil
 }
 
 func updatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer) (updated bool) {
