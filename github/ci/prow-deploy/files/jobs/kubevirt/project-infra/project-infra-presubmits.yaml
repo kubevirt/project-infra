@@ -314,6 +314,33 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
+  - name: build-kubot-image
+    always_run: false
+    run_if_changed: "images/kubot/.*"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: phx-prow
+    spec:
+      nodeSelector:
+        type: vm
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b kubot quay.io kubevirtci"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+            limits:
+              memory: "4Gi"
   - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/.*"
@@ -545,6 +572,44 @@ presubmits:
               ./github/ci/services/kuberhealthy/hack/deploy.sh testing
 
               bazelisk test //github/ci/services/kuberhealthy/e2e:go_default_test --test_output=all --test_arg=-test.v
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          resources:
+            requests:
+              memory: "16Gi"
+            limits:
+              memory: "16Gi"
+  - name: pull-project-infra-kubot-deploy-test
+    optional: false
+    run_if_changed: "github/ci/services/kubot/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - |
+              # install kind
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
+              chmod +x ./kind && mv ./kind /usr/local/bin/kind
+
+              # create test cluster
+              kind create cluster --image quay.io/kubevirtci/kind:v1.21.1
+
+              ./github/ci/services/kubot/hack/deploy.sh testing
+
+              bazelisk test //github/ci/services/kubot/e2e:go_default_test --test_output=all --test_arg=-test.v
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true

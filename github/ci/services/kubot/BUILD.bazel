@@ -1,0 +1,23 @@
+load("@com_adobe_rules_gitops//gitops:defs.bzl", "k8s_deploy")
+
+[
+    k8s_deploy(
+        name = NAME,
+        cluster = CLUSTER,
+        manifests = glob([
+            "manifests/*.yaml",
+        ]),
+        namespace = "kubot",
+        patches = glob([
+            "patches/%s/*.yaml" % NAME,
+        ]),
+        secrets_srcs = glob([
+            "secrets/%s/**/*" % NAME,
+        ]),
+        user = USER,
+    )
+    for NAME, CLUSTER, USER in [
+        ("testing", "kind-kind", "kind-kind"),
+        ("production", "ibm-cluster", "ibm-prow-jobs-automation"),
+    ]
+]
