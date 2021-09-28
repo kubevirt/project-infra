@@ -28,8 +28,8 @@ import (
 
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
 	kv_github "kubevirt.io/project-infra/robots/pkg/kubevirt/github"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/prowjobconfigs"
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
@@ -67,7 +67,7 @@ On second stage, it removes the
 	optional: false
 
 which makes the job required to pass for merges to occur with tide.
-`, shortUsage, strings.Join(jobconfig.SigNames, ", ")),
+`, shortUsage, strings.Join(prowjobconfigs.SigNames, ", ")),
 	Run: run,
 }
 
@@ -131,12 +131,12 @@ func run(cmd *cobra.Command, args []string) {
 
 func updatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer) (updated bool) {
 	jobsToCheck := map[string]string{}
-	for _, sigName := range jobconfig.SigNames {
-		jobsToCheck[jobconfig.CreatePresubmitJobName(latestReleaseSemver, sigName)] = ""
+	for _, sigName := range prowjobconfigs.SigNames {
+		jobsToCheck[prowjobconfigs.CreatePresubmitJobName(latestReleaseSemver, sigName)] = ""
 	}
 
-	for index := range jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] {
-		job := &jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig][index]
+	for index := range jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] {
+		job := &jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig][index]
 		name := job.Name
 		if _, exists := jobsToCheck[name]; !exists {
 			continue

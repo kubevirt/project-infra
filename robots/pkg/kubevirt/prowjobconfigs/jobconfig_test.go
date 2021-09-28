@@ -12,7 +12,7 @@
  *
  */
 
-package jobconfig
+package prowjobconfigs
 
 import "testing"
 

@@ -20,7 +20,7 @@ import (
 
 	"k8s.io/test-infra/prow/config"
 
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/prowjobconfigs"
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
@@ -40,14 +40,14 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 			args: args{
 				jobConfig: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
-						jobconfig.OrgAndRepoForJobConfig: {},
+						prowjobconfigs.OrgAndRepoForJobConfig: {},
 					},
 				},
 				latestReleaseSemver: newMinorSemver("1", "37"),
 			},
 			wantNewJobConfig: config.JobConfig{
 				PresubmitsStatic: map[string][]config.Presubmit{
-					jobconfig.OrgAndRepoForJobConfig: {},
+					prowjobconfigs.OrgAndRepoForJobConfig: {},
 				},
 			},
 			wantUpdated: false,
@@ -57,7 +57,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 			args: args{
 				jobConfig: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
-						jobconfig.OrgAndRepoForJobConfig: {
+						prowjobconfigs.OrgAndRepoForJobConfig: {
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", false, true, true),
 						},
 					},
@@ -66,7 +66,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 			},
 			wantNewJobConfig: config.JobConfig{
 				PresubmitsStatic: map[string][]config.Presubmit{
-					jobconfig.OrgAndRepoForJobConfig: {
+					prowjobconfigs.OrgAndRepoForJobConfig: {
 						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", false, true, true),
 					},
 				},
@@ -78,7 +78,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 			args: args{
 				jobConfig: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
-						jobconfig.OrgAndRepoForJobConfig: {
+						prowjobconfigs.OrgAndRepoForJobConfig: {
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-other", false, true, true),
 						},
 					},
@@ -87,7 +87,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 			},
 			wantNewJobConfig: config.JobConfig{
 				PresubmitsStatic: map[string][]config.Presubmit{
-					jobconfig.OrgAndRepoForJobConfig: {
+					prowjobconfigs.OrgAndRepoForJobConfig: {
 						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-other", false, true, true),
 					},
 				},
@@ -99,7 +99,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 			args: args{
 				jobConfig: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
-						jobconfig.OrgAndRepoForJobConfig: {
+						prowjobconfigs.OrgAndRepoForJobConfig: {
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", false, true, true),
 						},
 					},
@@ -108,7 +108,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 			},
 			wantNewJobConfig: config.JobConfig{
 				PresubmitsStatic: map[string][]config.Presubmit{
-					jobconfig.OrgAndRepoForJobConfig: {
+					prowjobconfigs.OrgAndRepoForJobConfig: {
 						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, true, false),
 					},
 				},
@@ -120,7 +120,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 			args: args{
 				jobConfig: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
-						jobconfig.OrgAndRepoForJobConfig: {
+						prowjobconfigs.OrgAndRepoForJobConfig: {
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, true, false),
 						},
 					},
@@ -129,7 +129,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 			},
 			wantNewJobConfig: config.JobConfig{
 				PresubmitsStatic: map[string][]config.Presubmit{
-					jobconfig.OrgAndRepoForJobConfig: {
+					prowjobconfigs.OrgAndRepoForJobConfig: {
 						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false),
 					},
 				},
@@ -141,7 +141,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 			args: args{
 				jobConfig: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
-						jobconfig.OrgAndRepoForJobConfig: {
+						prowjobconfigs.OrgAndRepoForJobConfig: {
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false),
 						},
 					},
@@ -150,7 +150,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 			},
 			wantNewJobConfig: config.JobConfig{
 				PresubmitsStatic: map[string][]config.Presubmit{
-					jobconfig.OrgAndRepoForJobConfig: {
+					prowjobconfigs.OrgAndRepoForJobConfig: {
 						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false),
 					},
 				},
@@ -185,7 +185,7 @@ func createPresubmitJobForRelease(semver *querier.SemVer, sigName string, always
 		AlwaysRun: alwaysRun,
 		Optional:  optional,
 		JobBase: config.JobBase{
-			Name: jobconfig.CreatePresubmitJobName(semver, sigName),
+			Name: prowjobconfigs.CreatePresubmitJobName(semver, sigName),
 		},
 		Reporter: config.Reporter{
 			SkipReport: skipReport,

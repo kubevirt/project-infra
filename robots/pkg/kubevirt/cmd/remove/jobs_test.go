@@ -28,7 +28,7 @@ import (
 	v1 "k8s.io/test-infra/prow/apis/prowjobs/v1"
 	"k8s.io/test-infra/prow/config"
 
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/prowjobconfigs"
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
@@ -47,7 +47,7 @@ func Test_ensureLatestJobsAreRequired(t *testing.T) {
 			args: args{
 				jobConfigKubevirtPresubmits: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
-						jobconfig.OrgAndRepoForJobConfig: {
+						prowjobconfigs.OrgAndRepoForJobConfig: {
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", false, true, true),
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-compute", false, true, true),
 						},
@@ -62,7 +62,7 @@ func Test_ensureLatestJobsAreRequired(t *testing.T) {
 			args: args{
 				jobConfigKubevirtPresubmits: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
-						jobconfig.OrgAndRepoForJobConfig: {
+						prowjobconfigs.OrgAndRepoForJobConfig: {
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false),
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-compute", true, false, false),
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-storage", true, false, false),
@@ -79,7 +79,7 @@ func Test_ensureLatestJobsAreRequired(t *testing.T) {
 			args: args{
 				jobConfigKubevirtPresubmits: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
-						jobconfig.OrgAndRepoForJobConfig: {
+						prowjobconfigs.OrgAndRepoForJobConfig: {
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false),
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-compute", true, false, false),
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-storage", true, false, false),
@@ -129,7 +129,7 @@ func Test_ensureJobsExistForReleases(t *testing.T) {
 			args: args{
 				jobConfigKubevirtPresubmits: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
-						jobconfig.OrgAndRepoForJobConfig: {
+						prowjobconfigs.OrgAndRepoForJobConfig: {
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false),
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-compute", true, false, false),
 							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-storage", true, false, false),
@@ -184,7 +184,7 @@ func Test_deletePeriodicJobsForRelease(t *testing.T) {
 										JobStatesToReport: []v1.ProwJobState{},
 									},
 								},
-								Name: jobconfig.CreatePeriodicJobName(newMinorSemver("1", "20"), "sig-network"),
+								Name: prowjobconfigs.CreatePeriodicJobName(newMinorSemver("1", "20"), "sig-network"),
 								Spec: &corev1.PodSpec{
 									Containers: []corev1.Container{
 										{
@@ -216,7 +216,7 @@ func Test_deletePeriodicJobsForRelease(t *testing.T) {
 										JobStatesToReport: []v1.ProwJobState{},
 									},
 								},
-								Name: jobconfig.CreatePeriodicJobName(newMinorSemver("1", "20"), "sig-network"),
+								Name: prowjobconfigs.CreatePeriodicJobName(newMinorSemver("1", "20"), "sig-network"),
 								Spec: &corev1.PodSpec{
 									Containers: []corev1.Container{
 										{
@@ -237,7 +237,7 @@ func Test_deletePeriodicJobsForRelease(t *testing.T) {
 										JobStatesToReport: []v1.ProwJobState{},
 									},
 								},
-								Name: jobconfig.CreatePeriodicJobName(newMinorSemver("1", "19"), "sig-network"),
+								Name: prowjobconfigs.CreatePeriodicJobName(newMinorSemver("1", "19"), "sig-network"),
 								Spec: &corev1.PodSpec{
 									Containers: []corev1.Container{
 										{
@@ -265,7 +265,7 @@ func Test_deletePeriodicJobsForRelease(t *testing.T) {
 									JobStatesToReport: []v1.ProwJobState{},
 								},
 							},
-							Name: jobconfig.CreatePeriodicJobName(newMinorSemver("1", "20"), "sig-network"),
+							Name: prowjobconfigs.CreatePeriodicJobName(newMinorSemver("1", "20"), "sig-network"),
 							Spec: &corev1.PodSpec{
 								Containers: []corev1.Container{
 									{
@@ -310,7 +310,7 @@ func Test_deletePresubmitJobsForRelease(t *testing.T) {
 			args: args{
 				jobConfig: &config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
-						jobconfig.OrgAndRepoForJobConfig: {
+						prowjobconfigs.OrgAndRepoForJobConfig: {
 							{
 								JobBase: config.JobBase{
 									Labels: map[string]string{},
@@ -319,7 +319,7 @@ func Test_deletePresubmitJobsForRelease(t *testing.T) {
 											JobStatesToReport: []v1.ProwJobState{},
 										},
 									},
-									Name: jobconfig.CreatePresubmitJobName(newMinorSemver("1", "20"), "sig-network"),
+									Name: prowjobconfigs.CreatePresubmitJobName(newMinorSemver("1", "20"), "sig-network"),
 									Spec: &corev1.PodSpec{
 										Containers: []corev1.Container{
 											{
@@ -341,7 +341,7 @@ func Test_deletePresubmitJobsForRelease(t *testing.T) {
 			args: args{
 				jobConfig: &config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
-						jobconfig.OrgAndRepoForJobConfig: {
+						prowjobconfigs.OrgAndRepoForJobConfig: {
 							{
 								JobBase: config.JobBase{
 									Labels: map[string]string{},
@@ -350,7 +350,7 @@ func Test_deletePresubmitJobsForRelease(t *testing.T) {
 											JobStatesToReport: []v1.ProwJobState{},
 										},
 									},
-									Name: jobconfig.CreatePresubmitJobName(newMinorSemver("1", "20"), "sig-network"),
+									Name: prowjobconfigs.CreatePresubmitJobName(newMinorSemver("1", "20"), "sig-network"),
 									Spec: &corev1.PodSpec{
 										Containers: []corev1.Container{
 											{
@@ -368,7 +368,7 @@ func Test_deletePresubmitJobsForRelease(t *testing.T) {
 											JobStatesToReport: []v1.ProwJobState{},
 										},
 									},
-									Name: jobconfig.CreatePresubmitJobName(newMinorSemver("1", "19"), "sig-network"),
+									Name: prowjobconfigs.CreatePresubmitJobName(newMinorSemver("1", "19"), "sig-network"),
 									Spec: &corev1.PodSpec{
 										Containers: []corev1.Container{
 											{
@@ -386,7 +386,7 @@ func Test_deletePresubmitJobsForRelease(t *testing.T) {
 			wantUpdated: true,
 			wantJobConfig: &config.JobConfig{
 				PresubmitsStatic: map[string][]config.Presubmit{
-					jobconfig.OrgAndRepoForJobConfig: {
+					prowjobconfigs.OrgAndRepoForJobConfig: {
 						{
 							JobBase: config.JobBase{
 								Labels: map[string]string{},
@@ -395,7 +395,7 @@ func Test_deletePresubmitJobsForRelease(t *testing.T) {
 										JobStatesToReport: []v1.ProwJobState{},
 									},
 								},
-								Name: jobconfig.CreatePresubmitJobName(newMinorSemver("1", "20"), "sig-network"),
+								Name: prowjobconfigs.CreatePresubmitJobName(newMinorSemver("1", "20"), "sig-network"),
 								Spec: &corev1.PodSpec{
 									Containers: []corev1.Container{
 										{
@@ -535,7 +535,7 @@ func createPresubmitJobForRelease(semver *querier.SemVer, sigName string, always
 		AlwaysRun: alwaysRun,
 		Optional:  optional,
 		JobBase: config.JobBase{
-			Name: jobconfig.CreatePresubmitJobName(semver, sigName),
+			Name: prowjobconfigs.CreatePresubmitJobName(semver, sigName),
 		},
 		Reporter: config.Reporter{
 			SkipReport: skipReport,

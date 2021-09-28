@@ -28,8 +28,8 @@ import (
 
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
 	github2 "kubevirt.io/project-infra/robots/pkg/kubevirt/github"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/prowjobconfigs"
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
@@ -68,7 +68,7 @@ Presubmit jobs will be created with
 	optional: true
 
 to avoid them failing all the time until the new provider is integrated into kubevirt/kubevirt.
-`, shortUse, strings.Join(jobconfig.SigNames, ", ")),
+`, shortUse, strings.Join(prowjobconfigs.SigNames, ", ")),
 	Run: run,
 }
 
@@ -164,14 +164,14 @@ func getSourceAndTargetRelease(releases []*github.RepositoryRelease) (targetRele
 
 func copyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProviderReleaseSemver *querier.SemVer, sourceProviderReleaseSemver *querier.SemVer) (updated bool) {
 	allPresubmitJobs := map[string]config.Presubmit{}
-	for index := range jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] {
-		job := jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig][index]
+	for index := range jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] {
+		job := jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig][index]
 		allPresubmitJobs[job.Name] = job
 	}
 
-	for _, sigName := range jobconfig.SigNames {
-		targetJobName := jobconfig.CreatePresubmitJobName(targetProviderReleaseSemver, sigName)
-		sourceJobName := jobconfig.CreatePresubmitJobName(sourceProviderReleaseSemver, sigName)
+	for _, sigName := range prowjobconfigs.SigNames {
+		targetJobName := prowjobconfigs.CreatePresubmitJobName(targetProviderReleaseSemver, sigName)
+		sourceJobName := prowjobconfigs.CreatePresubmitJobName(sourceProviderReleaseSemver, sigName)
 
 		if _, exists := allPresubmitJobs[targetJobName]; exists {
 			log.Log().WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Target job exists, nothing to do")
@@ -207,13 +207,13 @@ func copyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProvider
 				continue
 			}
 			newEnvVar := *envVar.DeepCopy()
-			newEnvVar.Value = jobconfig.CreateTargetValue(targetProviderReleaseSemver, sigName)
+			newEnvVar.Value = prowjobconfigs.CreateTargetValue(targetProviderReleaseSemver, sigName)
 			newJob.Spec.Containers[0].Env[index] = newEnvVar
 			break
 		}
 		newJob.Name = targetJobName
 		newJob.Optional = true
-		jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] = append(jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig], newJob)
+		jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] = append(jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig], newJob)
 
 		updated = true
 	}
@@ -228,9 +228,9 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 		allPeriodicJobs[job.Name] = job
 	}
 
-	for _, sigName := range jobconfig.SigNames {
-		targetJobName := jobconfig.CreatePeriodicJobName(targetProviderReleaseSemver, sigName)
-		sourceJobName := jobconfig.CreatePeriodicJobName(sourceProviderReleaseSemver, sigName)
+	for _, sigName := range prowjobconfigs.SigNames {
+		targetJobName := prowjobconfigs.CreatePeriodicJobName(targetProviderReleaseSemver, sigName)
+		sourceJobName := prowjobconfigs.CreatePeriodicJobName(sourceProviderReleaseSemver, sigName)
 
 		if _, exists := allPeriodicJobs[targetJobName]; exists {
 			log.Log().WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Target job exists, nothing to do")
@@ -250,7 +250,7 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 			newJob.Annotations[k] = v
 		}
 		newJob.Cluster = allPeriodicJobs[sourceJobName].Cluster
-		newJob.Cron = jobconfig.AdvanceCronExpression(allPeriodicJobs[sourceJobName].Cron)
+		newJob.Cron = prowjobconfigs.AdvanceCronExpression(allPeriodicJobs[sourceJobName].Cron)
 		newJob.Decorate = allPeriodicJobs[sourceJobName].Decorate
 		newJob.DecorationConfig = allPeriodicJobs[sourceJobName].DecorationConfig.DeepCopy()
 		copy(newJob.ExtraRefs, allPeriodicJobs[sourceJobName].ExtraRefs)
@@ -271,7 +271,7 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 				continue
 			}
 			newEnvVar := *envVar.DeepCopy()
-			newEnvVar.Value = jobconfig.CreateTargetValue(targetProviderReleaseSemver, sigName)
+			newEnvVar.Value = prowjobconfigs.CreateTargetValue(targetProviderReleaseSemver, sigName)
 			newJob.Spec.Containers[0].Env[index] = newEnvVar
 			break
 		}

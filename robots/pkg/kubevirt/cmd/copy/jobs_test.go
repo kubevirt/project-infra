@@ -24,7 +24,7 @@ import (
 
 	"sigs.k8s.io/yaml"
 
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/prowjobconfigs"
 
 	"github.com/go-test/deep"
 	"github.com/google/go-github/github"
@@ -162,7 +162,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 										JobStatesToReport: []v1.ProwJobState{},
 									},
 								},
-								Name: jobconfig.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
+								Name: prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
 								Spec: &corev1.PodSpec{
 									Containers: []corev1.Container{
 										{
@@ -186,7 +186,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 					{
 						JobBase: config.JobBase{
 							Labels: map[string]string{},
-							Name:   jobconfig.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
+							Name:   prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
 							ReporterConfig: &v1.ReporterConfig{
 								Slack: &v1.SlackReporterConfig{
 									JobStatesToReport: []v1.ProwJobState{},
@@ -208,7 +208,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 						JobBase: config.JobBase{
 							Annotations: map[string]string{},
 							Labels:      map[string]string{},
-							Name:        jobconfig.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
+							Name:        prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
 							ReporterConfig: &v1.ReporterConfig{
 								Slack: &v1.SlackReporterConfig{
 									JobStatesToReport: []v1.ProwJobState{},
@@ -238,7 +238,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 						{
 							JobBase: config.JobBase{
 								Labels: map[string]string{},
-								Name:   jobconfig.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
+								Name:   prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
 								Spec: &corev1.PodSpec{
 									Containers: []corev1.Container{
 										{
@@ -271,7 +271,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 					{
 						JobBase: config.JobBase{
 							Labels: map[string]string{},
-							Name:   jobconfig.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
+							Name:   prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
 							Spec: &corev1.PodSpec{
 								Containers: []corev1.Container{
 									{
@@ -297,7 +297,7 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 						JobBase: config.JobBase{
 							Annotations: map[string]string{},
 							Labels:      map[string]string{},
-							Name:        jobconfig.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
+							Name:        prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
 							Spec: &corev1.PodSpec{
 								Containers: []corev1.Container{
 									{

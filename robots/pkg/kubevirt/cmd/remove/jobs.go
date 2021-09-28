@@ -27,8 +27,8 @@ import (
 
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
 	github2 "kubevirt.io/project-infra/robots/pkg/kubevirt/github"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/prowjobconfigs"
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
@@ -70,7 +70,7 @@ Example:
 This will lead to each of the sigs periodic and presubmit jobs for 1.19 being removed
 
 See kubevirt k8s version compatibility: https://github.com/kubevirt/kubevirt/blob/main/docs/kubernetes-compatibility.md#kubernetes-version-compatibility 
-`, shortUsage, strings.Join(jobconfig.SigNames, ", ")),
+`, shortUsage, strings.Join(prowjobconfigs.SigNames, ", ")),
 	Run: run,
 }
 
@@ -142,13 +142,13 @@ func removeOldJobsIfNewOnesExist(releases []*github.RepositoryRelease) {
 
 func deletePresubmitJobsForRelease(jobConfig *config.JobConfig, targetRelease *querier.SemVer) (updated bool) {
 	toDeleteJobNames := map[string]struct{}{}
-	for _, sigName := range jobconfig.SigNames {
-		toDeleteJobNames[jobconfig.CreatePresubmitJobName(targetRelease, sigName)] = struct{}{}
+	for _, sigName := range prowjobconfigs.SigNames {
+		toDeleteJobNames[prowjobconfigs.CreatePresubmitJobName(targetRelease, sigName)] = struct{}{}
 	}
 
 	var newPresubmits []config.Presubmit
 
-	for _, presubmit := range jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] {
+	for _, presubmit := range jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] {
 		if _, exists := toDeleteJobNames[presubmit.Name]; exists {
 			updated = true
 			continue
@@ -157,7 +157,7 @@ func deletePresubmitJobsForRelease(jobConfig *config.JobConfig, targetRelease *q
 	}
 
 	if updated {
-		jobConfig.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] = newPresubmits
+		jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] = newPresubmits
 	}
 
 	return updated
@@ -165,8 +165,8 @@ func deletePresubmitJobsForRelease(jobConfig *config.JobConfig, targetRelease *q
 
 func deletePeriodicJobsForRelease(jobConfig *config.JobConfig, release *querier.SemVer) (updated bool) {
 	toDeleteJobNames := map[string]struct{}{}
-	for _, sigName := range jobconfig.SigNames {
-		toDeleteJobNames[jobconfig.CreatePeriodicJobName(release, sigName)] = struct{}{}
+	for _, sigName := range prowjobconfigs.SigNames {
+		toDeleteJobNames[prowjobconfigs.CreatePeriodicJobName(release, sigName)] = struct{}{}
 	}
 
 	var newPeriodics []config.Periodic
@@ -212,12 +212,12 @@ func ensurePresubmitJobsExistForReleases(jobConfigKubevirtPresubmits config.JobC
 
 	requiredJobNames := map[string]struct{}{}
 	for _, release := range requiredReleases {
-		for _, sigName := range jobconfig.SigNames {
-			requiredJobNames[jobconfig.CreatePresubmitJobName(release, sigName)] = struct{}{}
+		for _, sigName := range prowjobconfigs.SigNames {
+			requiredJobNames[prowjobconfigs.CreatePresubmitJobName(release, sigName)] = struct{}{}
 		}
 	}
 
-	for _, presubmit := range jobConfigKubevirtPresubmits.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] {
+	for _, presubmit := range jobConfigKubevirtPresubmits.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] {
 		if _, exists := requiredJobNames[presubmit.Name]; !exists {
 			continue
 		}
@@ -245,10 +245,10 @@ func ensureLatestJobsAreRequired(jobConfigKubevirtPresubmits config.JobConfig, r
 	result = ALL_JOBS_ARE_REQUIRED
 	messages := []string{}
 	requiredJobNames := map[string]struct{}{}
-	for _, sigName := range jobconfig.SigNames {
-		requiredJobNames[jobconfig.CreatePresubmitJobName(release, sigName)] = struct{}{}
+	for _, sigName := range prowjobconfigs.SigNames {
+		requiredJobNames[prowjobconfigs.CreatePresubmitJobName(release, sigName)] = struct{}{}
 	}
-	for _, presubmit := range jobConfigKubevirtPresubmits.PresubmitsStatic[jobconfig.OrgAndRepoForJobConfig] {
+	for _, presubmit := range jobConfigKubevirtPresubmits.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] {
 		if _, exists := requiredJobNames[presubmit.Name]; !exists {
 			continue
 		}

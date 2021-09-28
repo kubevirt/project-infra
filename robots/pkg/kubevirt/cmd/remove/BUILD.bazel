@@ -11,8 +11,8 @@ go_library(
     deps = [
         "//robots/pkg/kubevirt/cmd/flags:go_default_library",
         "//robots/pkg/kubevirt/github:go_default_library",
-        "//robots/pkg/kubevirt/jobconfig:go_default_library",
         "//robots/pkg/kubevirt/log:go_default_library",
+        "//robots/pkg/kubevirt/prowjobconfigs:go_default_library",
         "//robots/pkg/querier:go_default_library",
         "@com_github_google_go_github//github:go_default_library",
         "@com_github_spf13_cobra//:go_default_library",
@@ -27,7 +27,7 @@ go_test(
     data = glob(["testdata/**"]),
     embed = [":go_default_library"],
     deps = [
-        "//robots/pkg/kubevirt/jobconfig:go_default_library",
+        "//robots/pkg/kubevirt/prowjobconfigs:go_default_library",
         "//robots/pkg/querier:go_default_library",
         "@com_github_go_test_deep//:go_default_library",
         "@com_github_google_go_github//github:go_default_library",
