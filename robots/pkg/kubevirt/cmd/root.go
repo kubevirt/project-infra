@@ -16,7 +16,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 
@@ -43,9 +42,6 @@ func init() {
 	rootCmd.AddCommand(remove.RemoveCommand())
 }
 
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+func Execute() error {
+	return rootCmd.Execute()
 }

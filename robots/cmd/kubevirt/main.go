@@ -4,9 +4,12 @@ import (
 	"os"
 
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
 )
 
 func main() {
-	cmd.Execute()
+	if err := cmd.Execute(); err != nil {
+		log.Log().Fatal(err)
+	}
 	os.Exit(0)
 }

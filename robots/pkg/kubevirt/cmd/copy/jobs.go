@@ -72,7 +72,7 @@ Presubmit jobs will be created with
 
 to avoid them failing all the time until the new provider is integrated into kubevirt/kubevirt.
 `, shortUse, strings.Join(prowjobconfigs.SigNames, ", ")),
-	Run: run,
+	RunE: run,
 }
 
 func CopyJobsCommand() *cobra.Command {
@@ -84,7 +84,7 @@ func init() {
 	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
 }
 
-func run(cmd *cobra.Command, args []string) {
+func run(cmd *cobra.Command, args []string) error {
 	flags.ParseFlagsOrExit(cmd, args, copyJobsOpts)
 
 	ctx := context.Background()
@@ -92,13 +92,13 @@ func run(cmd *cobra.Command, args []string) {
 
 	releases, _, err := client.Repositories.ListReleases(ctx, "kubernetes", "kubernetes", nil)
 	if err != nil {
-		log.Log().Panicln(err)
+		return err
 	}
 	releases = querier.ValidReleases(releases)
 	targetRelease, sourceRelease, err := getSourceAndTargetRelease(releases)
 	if err != nil {
 		log.Log().WithError(err).Info("Cannot determine source and target release.")
-		os.Exit(0)
+		return nil
 	}
 
 	jobConfigs := map[string]func(*config.JobConfig, *querier.SemVer, *querier.SemVer) bool{
@@ -112,7 +112,7 @@ func run(cmd *cobra.Command, args []string) {
 	for jobConfigPath, jobConfigCopyFunc := range jobConfigs {
 		jobConfig, err := config.ReadJobConfig(jobConfigPath)
 		if err != nil {
-			log.Log().WithField("jobConfigPath", jobConfigPath).WithError(err).Fatal("Failed to read jobconfig")
+			return fmt.Errorf("failed to read jobconfig %s: %v", jobConfigPath, err)
 		}
 
 		updated := jobConfigCopyFunc(&jobConfig, targetRelease, sourceRelease)
@@ -123,22 +123,23 @@ func run(cmd *cobra.Command, args []string) {
 
 		marshalledConfig, err := yaml.Marshal(&jobConfig)
 		if err != nil {
-			log.Log().WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to marshall jobconfig")
+			return fmt.Errorf("failed to marshall jobconfig %s: %v", jobConfigPath, err)
 		}
 
 		if flags.Options.DryRun {
 			_, err = os.Stdout.Write(marshalledConfig)
 			if err != nil {
-				log.Log().WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to write jobconfig")
+				return fmt.Errorf("failed to write jobconfig %s to stdout: %v", jobConfigPath, err)
 			}
 			continue
 		}
 
 		err = os.WriteFile(jobConfigPath, marshalledConfig, os.ModePerm)
 		if err != nil {
-			log.Log().WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to write jobconfig")
+			return fmt.Errorf("failed to write jobconfig %s: %v", jobConfigPath, err)
 		}
 	}
+	return nil
 }
 
 func getSourceAndTargetRelease(releases []*github.RepositoryRelease) (targetRelease *querier.SemVer, sourceRelease *querier.SemVer, err error) {
