@@ -47,7 +47,10 @@ func (o removeJobsOptions) Validate() error {
 	return nil
 }
 
-const shortUsage = "kubevirt remove jobs removes presubmit and periodic job definitions for kubevirt for unsupported kubevirtci providers"
+const (
+	shortUsage                    = "kubevirt remove jobs removes presubmit and periodic job definitions for kubevirt for unsupported kubevirtci providers"
+	fourReleasesRequiredAtMinimum = 4
+)
 
 var removeJobsCommand = &cobra.Command{
 	Use:   "jobs",
@@ -71,7 +74,7 @@ This will lead to each of the sigs periodic and presubmit jobs for 1.19 being re
 
 See kubevirt k8s version compatibility: https://github.com/kubevirt/kubevirt/blob/main/docs/kubernetes-compatibility.md#kubernetes-version-compatibility 
 `, shortUsage, strings.Join(prowjobconfigs.SigNames, ", ")),
-	Run: run,
+	RunE: run,
 }
 
 var removeJobsOpts = removeJobsOptions{}
@@ -85,7 +88,7 @@ func init() {
 	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
 }
 
-func run(cmd *cobra.Command, args []string) {
+func run(cmd *cobra.Command, args []string) error {
 	flags.ParseFlagsOrExit(cmd, args, removeJobsOpts)
 
 	ctx := context.Background()
@@ -93,27 +96,27 @@ func run(cmd *cobra.Command, args []string) {
 
 	releases, _, err := client.Repositories.ListReleases(ctx, "kubernetes", "kubernetes", nil)
 	if err != nil {
-		log.Log().Panicln(err)
+		return fmt.Errorf("failed to list releases: %v", err)
 	}
 	releases = querier.ValidReleases(releases)
-	if len(releases) < 4 {
-		log.Log().Info("Not enough releases found, nothing to do.")
-		os.Exit(0)
-	}
-
-	removeOldJobsIfNewOnesExist(releases)
+	return removeOldJobsIfNewOnesExist(releases)
 }
 
-func removeOldJobsIfNewOnesExist(releases []*github.RepositoryRelease) {
+func removeOldJobsIfNewOnesExist(releases []*github.RepositoryRelease) error {
+	if len(releases) < fourReleasesRequiredAtMinimum {
+		log.Log().Info("Not enough releases found, nothing to do.")
+		return nil
+	}
+
 	jobConfigKubevirtPresubmits, err := config.ReadJobConfig(removeJobsOpts.jobConfigPathKubevirtPresubmits)
 	if err != nil {
-		log.Log().WithField("jobConfigPathKubevirtPresubmits", removeJobsOpts.jobConfigPathKubevirtPresubmits).WithError(err).Fatal("Failed to read jobconfig")
+		return fmt.Errorf("failed to read jobconfig %s: %v", removeJobsOpts.jobConfigPathKubevirtPresubmits, err)
 	}
 
 	result, message := ensureLatestJobsAreRequired(jobConfigKubevirtPresubmits, querier.ParseRelease(releases[0]))
 	if result != ALL_JOBS_ARE_REQUIRED {
 		log.Log().Infof("Not all presubmits for k8s %s are required, nothing to do.\n%s", releases[0], message)
-		return
+		return nil
 	}
 
 	var requiredReleases []*querier.SemVer
@@ -123,21 +126,28 @@ func removeOldJobsIfNewOnesExist(releases []*github.RepositoryRelease) {
 	jobsExist, message := ensurePresubmitJobsExistForReleases(jobConfigKubevirtPresubmits, requiredReleases)
 	if !jobsExist {
 		log.Log().Infof("Not all required jobs for k8s versions %s exist, nothing to do.\n%s", requiredReleases, message)
-		return
+		return nil
 	}
 
 	jobConfigKubevirtPeriodics, err := config.ReadJobConfig(removeJobsOpts.jobConfigPathKubevirtPeriodics)
 	if err != nil {
-		log.Log().WithField("jobConfigKubevirtPeriodics", removeJobsOpts.jobConfigPathKubevirtPeriodics).WithError(err).Fatal("Failed to read jobconfig")
+		return fmt.Errorf("failed to read jobconfig %s: %v", removeJobsOpts.jobConfigPathKubevirtPeriodics, err)
 	}
 	targetRelease := querier.ParseRelease(releases[3:4][0])
 	if updated := deletePeriodicJobsForRelease(&jobConfigKubevirtPeriodics, targetRelease); updated {
-		writeJobConfig(&jobConfigKubevirtPeriodics, removeJobsOpts.jobConfigPathKubevirtPeriodics)
+		err := writeJobConfig(&jobConfigKubevirtPeriodics, removeJobsOpts.jobConfigPathKubevirtPeriodics)
+		if err != nil {
+			return fmt.Errorf("failed to update periodics %s: %v", removeJobsOpts.jobConfigPathKubevirtPeriodics, err)
+		}
 	}
 
 	if updated := deletePresubmitJobsForRelease(&jobConfigKubevirtPresubmits, targetRelease); updated {
-		writeJobConfig(&jobConfigKubevirtPresubmits, removeJobsOpts.jobConfigPathKubevirtPresubmits)
+		err := writeJobConfig(&jobConfigKubevirtPresubmits, removeJobsOpts.jobConfigPathKubevirtPresubmits)
+		if err != nil {
+			return fmt.Errorf("failed to update presubmits %s: %v", removeJobsOpts.jobConfigPathKubevirtPresubmits, err)
+		}
 	}
+	return nil
 }
 
 func deletePresubmitJobsForRelease(jobConfig *config.JobConfig, targetRelease *querier.SemVer) (updated bool) {
@@ -186,24 +196,25 @@ func deletePeriodicJobsForRelease(jobConfig *config.JobConfig, release *querier.
 	return updated
 }
 
-func writeJobConfig(jobConfigToWrite *config.JobConfig, jobConfigPath string) {
+func writeJobConfig(jobConfigToWrite *config.JobConfig, jobConfigPath string) error {
 	marshalledConfig, err := yaml.Marshal(jobConfigToWrite)
 	if err != nil {
-		log.Log().WithField("jobConfigPath", jobConfigPath).WithError(err).Error("Failed to marshall jobconfig")
+		return fmt.Errorf("failed to marshall jobconfig %s: %v", jobConfigPath, err)
 	}
 
 	if flags.Options.DryRun {
 		_, err = os.Stdout.Write(marshalledConfig)
 		if err != nil {
-			log.Log().WithField("jobConfigPath", jobConfigPath).WithError(err).Fatal("Failed to write jobconfig")
+			return fmt.Errorf("failed to write jobconfig %s: %v", jobConfigPath, err)
 		}
 	} else {
 		err = os.WriteFile(jobConfigPath, marshalledConfig, os.ModePerm)
 		if err != nil {
-			log.Log().WithField("jobConfigPath", jobConfigPath).WithError(err).Fatal("Failed to write jobconfig")
+			return fmt.Errorf("failed to write jobconfig %s: %v", jobConfigPath, err)
 		}
 		log.Log().WithField("jobConfigPath", jobConfigPath).Info("Updated jobconfig file")
 	}
+	return nil
 }
 
 func ensurePresubmitJobsExistForReleases(jobConfigKubevirtPresubmits config.JobConfig, requiredReleases []*querier.SemVer) (allJobsExist bool, message string) {
