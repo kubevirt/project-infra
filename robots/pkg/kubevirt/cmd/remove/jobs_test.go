@@ -125,7 +125,29 @@ func Test_ensureJobsExistForReleases(t *testing.T) {
 			wantAllJobsExist: false,
 		},
 		{
-			name: "jobs exist",
+			name: "some jobs are missing",
+			args: args{
+				jobConfigKubevirtPresubmits: config.JobConfig{
+					PresubmitsStatic: map[string][]config.Presubmit{
+						prowjobconfigs.OrgAndRepoForJobConfig: {
+							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false),
+							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-compute", true, false, false),
+							createPresubmitJobForRelease(newMinorSemver("1", "37"), "operator", true, false, false),
+							createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", true, false, false),
+							createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-compute", true, false, false),
+							createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-storage", true, false, false),
+						},
+					},
+				},
+				requiredReleases: []*querier.SemVer{
+					newMinorSemver("1", "37"),
+					newMinorSemver("1", "42"),
+				},
+			},
+			wantAllJobsExist: false,
+		},
+		{
+			name: "all jobs exist",
 			args: args{
 				jobConfigKubevirtPresubmits: config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
