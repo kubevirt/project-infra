@@ -170,7 +170,7 @@ func deletePresubmitJobsForRelease(jobConfig *config.JobConfig, targetRelease *q
 		jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] = newPresubmits
 	}
 
-	return updated
+	return
 }
 
 func deletePeriodicJobsForRelease(jobConfig *config.JobConfig, release *querier.SemVer) (updated bool) {
@@ -193,7 +193,7 @@ func deletePeriodicJobsForRelease(jobConfig *config.JobConfig, release *querier.
 		jobConfig.Periodics = newPeriodics
 	}
 
-	return updated
+	return
 }
 
 func writeJobConfig(jobConfigToWrite *config.JobConfig, jobConfigPath string) error {
