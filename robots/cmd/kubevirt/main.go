@@ -1,8 +1,9 @@
 package main
 
 import (
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd"
 	"os"
+
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd"
 )
 
 func main() {

@@ -16,18 +16,20 @@ package remove
 
 import (
 	"crypto/sha256"
-	"github.com/go-test/deep"
-	"github.com/google/go-github/github"
 	"io"
-	corev1 "k8s.io/api/core/v1"
-	v1 "k8s.io/test-infra/prow/apis/prowjobs/v1"
-	"k8s.io/test-infra/prow/config"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
-	"kubevirt.io/project-infra/robots/pkg/querier"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
+
+	"github.com/go-test/deep"
+	"github.com/google/go-github/github"
+	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/test-infra/prow/apis/prowjobs/v1"
+	"k8s.io/test-infra/prow/config"
+
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
+	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
 func Test_ensureLatestJobsAreRequired(t *testing.T) {
@@ -422,12 +424,12 @@ func Test_deletePresubmitJobsForRelease(t *testing.T) {
 
 func Test_removeOldJobsIfNewOnesExist(t *testing.T) {
 	type args struct {
-		releases []*github.RepositoryRelease
+		releases       []*github.RepositoryRelease
 		removeJobsOpts removeJobsOptions
 	}
 	tests := []struct {
-		name string
-		args args
+		name             string
+		args             args
 		wantModification bool
 	}{
 		{
@@ -440,7 +442,7 @@ func Test_removeOldJobsIfNewOnesExist(t *testing.T) {
 					newRelease("v1.19.0"),
 				},
 				removeJobsOpts: removeJobsOptions{
-					jobConfigPathKubevirtPeriodics: "testdata/should_modify/kubevirt-periodics.yaml",
+					jobConfigPathKubevirtPeriodics:  "testdata/should_modify/kubevirt-periodics.yaml",
 					jobConfigPathKubevirtPresubmits: "testdata/should_modify/kubevirt-presubmits.yaml",
 				},
 			},
@@ -456,7 +458,7 @@ func Test_removeOldJobsIfNewOnesExist(t *testing.T) {
 					newRelease("v1.19.0"),
 				},
 				removeJobsOpts: removeJobsOptions{
-					jobConfigPathKubevirtPeriodics: "testdata/should_not_modify/kubevirt-periodics.yaml",
+					jobConfigPathKubevirtPeriodics:  "testdata/should_not_modify/kubevirt-periodics.yaml",
 					jobConfigPathKubevirtPresubmits: "testdata/should_not_modify/kubevirt-presubmits.yaml",
 				},
 			},
@@ -471,7 +473,7 @@ func Test_removeOldJobsIfNewOnesExist(t *testing.T) {
 
 			copyFiles([]string{tt.args.removeJobsOpts.jobConfigPathKubevirtPeriodics, tt.args.removeJobsOpts.jobConfigPathKubevirtPresubmits}, tempDir)
 			removeJobsOpts = removeJobsOptions{
-				jobConfigPathKubevirtPeriodics: filepath.Join(tempDir, filepath.Base(tt.args.removeJobsOpts.jobConfigPathKubevirtPeriodics)),
+				jobConfigPathKubevirtPeriodics:  filepath.Join(tempDir, filepath.Base(tt.args.removeJobsOpts.jobConfigPathKubevirtPeriodics)),
 				jobConfigPathKubevirtPresubmits: filepath.Join(tempDir, filepath.Base(tt.args.removeJobsOpts.jobConfigPathKubevirtPresubmits)),
 			}
 			removeOldJobsIfNewOnesExist(tt.args.releases)

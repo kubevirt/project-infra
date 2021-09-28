@@ -16,8 +16,9 @@ package flags
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
 )

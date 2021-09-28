@@ -17,10 +17,11 @@ package require
 import (
 	"context"
 	"fmt"
-	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/spf13/cobra"
 
 	"k8s.io/test-infra/prow/config"
 	"sigs.k8s.io/yaml"

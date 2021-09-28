@@ -16,11 +16,12 @@ package jobconfig
 
 import (
 	"fmt"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
-	"kubevirt.io/project-infra/robots/pkg/querier"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
+	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
 const OrgAndRepoForJobConfig = "kubevirt/kubevirt"

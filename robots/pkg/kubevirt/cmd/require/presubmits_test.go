@@ -15,11 +15,13 @@
 package require
 
 import (
-	"k8s.io/test-infra/prow/config"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
-	"kubevirt.io/project-infra/robots/pkg/querier"
 	"reflect"
 	"testing"
+
+	"k8s.io/test-infra/prow/config"
+
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
+	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
 func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {

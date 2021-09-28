@@ -17,17 +17,19 @@ package remove
 import (
 	"context"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
 	"k8s.io/test-infra/prow/config"
+	"sigs.k8s.io/yaml"
+
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
 	github2 "kubevirt.io/project-infra/robots/pkg/kubevirt/github"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
 	"kubevirt.io/project-infra/robots/pkg/querier"
-	"os"
-	"sigs.k8s.io/yaml"
-	"strings"
 )
 
 type removeJobsOptions struct {

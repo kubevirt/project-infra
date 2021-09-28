@@ -16,13 +16,15 @@ package copy
 
 import (
 	"fmt"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 	"os"
 	"path"
 	"reflect"
-	"sigs.k8s.io/yaml"
 	"strings"
 	"testing"
+
+	"sigs.k8s.io/yaml"
+
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/jobconfig"
 
 	"github.com/go-test/deep"
 	"github.com/google/go-github/github"
