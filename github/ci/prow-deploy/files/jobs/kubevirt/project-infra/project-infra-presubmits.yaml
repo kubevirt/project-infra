@@ -92,7 +92,7 @@ presubmits:
               memory: "1Gi"
   - name: build-bootstrap-image
     always_run: false
-    run_if_changed: "images/.*"
+    run_if_changed: "images/bootstrap/.*"
     decorate: true
     labels:
       preset-dind-enabled: "true"
@@ -109,6 +109,32 @@ presubmits:
             - "/bin/bash"
             - "-ce"
             - "cd images && ./publish_image.sh -b bootstrap quay.io kubevirtci"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
+  - name: build-golang-image
+    always_run: false
+    run_if_changed: "images/golang/.*"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: phx-prow
+    spec:
+      nodeSelector:
+        type: vm
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
             - "cd images && ./publish_image.sh -b golang quay.io kubevirtci"
           # docker-in-docker needs privileged mode
           securityContext:
@@ -261,6 +287,33 @@ presubmits:
             limits:
               memory: "16Gi"
               cpu: "500m"
+  - name: build-vm-image-builder-image
+    always_run: false
+    run_if_changed: "images/bootstrap/.*"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: phx-prow
+    spec:
+      nodeSelector:
+        type: vm
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b vm-image-builder quay.io kubevirtci"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
   - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/.*"
