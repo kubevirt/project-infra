@@ -265,14 +265,16 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 			newJob.UtilityConfig.ExtraRefs = append(newJob.UtilityConfig.ExtraRefs, extraRef)
 		}
 
-		for index, envVar := range newJob.Spec.Containers[0].Env {
-			if envVar.Name != "TARGET" {
-				continue
+		for containerIndex, container := range newJob.Spec.Containers {
+			for envVarIndex, envVar := range container.Env {
+				if envVar.Name != "TARGET" {
+					continue
+				}
+				newEnvVar := *envVar.DeepCopy()
+				newEnvVar.Value = prowjobconfigs.CreateTargetValue(targetProviderReleaseSemver, sigName)
+				newJob.Spec.Containers[containerIndex].Env[envVarIndex] = newEnvVar
+				break
 			}
-			newEnvVar := *envVar.DeepCopy()
-			newEnvVar.Value = prowjobconfigs.CreateTargetValue(targetProviderReleaseSemver, sigName)
-			newJob.Spec.Containers[0].Env[index] = newEnvVar
-			break
 		}
 		newJob.Name = targetJobName
 		jobConfig.Periodics = append(jobConfig.Periodics, newJob)

@@ -131,7 +131,7 @@ func Test_getSourceAndTargetRelease(t *testing.T) {
 	}
 }
 
-func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
+func Test_copyPeriodicJobsForNewProvider(t *testing.T) {
 	type args struct {
 		jobConfig                   *config.JobConfig
 		targetProviderReleaseSemver *querier.SemVer
@@ -311,6 +311,111 @@ func TestCopyPeriodicJobsForNewProvider(t *testing.T) {
 										Org:     "kubevirt",
 										Repo:    "kubevirt",
 										BaseRef: "main",
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "10 2,10,18 * * *",
+						Tags:     nil,
+					},
+				},
+			},
+			wantJobStatesToReportInSerialization: false,
+		},
+		{
+			name: "have multiple containers, check TARGET env var",
+			args: args{
+				jobConfig: &config.JobConfig{
+					Periodics: []config.Periodic{
+						{
+							JobBase: config.JobBase{
+								Labels: map[string]string{},
+								Name:   prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
+								Spec: &corev1.PodSpec{
+									Containers: []corev1.Container{
+										{
+											Env: []corev1.EnvVar{
+												{
+													Name:  "Test1",
+													Value: "Blah1",
+												},
+											},
+										},
+										{
+											Env: []corev1.EnvVar{
+												{
+													Name:  "TARGET",
+													Value: "k8s-1.21-sig-network",
+												},
+											},
+										},
+									},
+								},
+							},
+							Interval: "",
+							Cron:     "0 1,9,17 * * *",
+							Tags:     nil,
+						},
+					},
+				},
+				targetProviderReleaseSemver: semver("1", "22", "0"),
+				sourceProviderReleaseSemver: semver("1", "21", "0"),
+			},
+			wantUpdated: true,
+			wantJobConfig: &config.JobConfig{
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Labels: map[string]string{},
+							Name:   prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{
+											{
+												Name:  "Test1",
+												Value: "Blah1",
+											},
+										},
+									},
+									{
+										Env: []corev1.EnvVar{
+											{
+												Name:  "TARGET",
+												Value: "k8s-1.21-sig-network",
+											},
+										},
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "0 1,9,17 * * *",
+						Tags:     nil,
+					},
+					{
+						JobBase: config.JobBase{
+							Annotations: map[string]string{},
+							Labels:      map[string]string{},
+							Name:        prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{
+											{
+												Name:  "Test1",
+												Value: "Blah1",
+											},
+										},
+									},
+									{
+										Env: []corev1.EnvVar{
+											{
+												Name:  "TARGET",
+												Value: "k8s-1.22-sig-network",
+											},
+										},
 									},
 								},
 							},
