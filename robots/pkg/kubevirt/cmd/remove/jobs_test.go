@@ -554,7 +554,7 @@ func newMinorSemver(major, minor string) *querier.SemVer {
 }
 
 func createPresubmitJobForRelease(semver *querier.SemVer, sigName string, alwaysRun, optional, skipReport bool) config.Presubmit {
-	res := config.Presubmit{
+	return config.Presubmit{
 		AlwaysRun: alwaysRun,
 		Optional:  optional,
 		JobBase: config.JobBase{
@@ -564,7 +564,6 @@ func createPresubmitJobForRelease(semver *querier.SemVer, sigName string, always
 			SkipReport: skipReport,
 		},
 	}
-	return res
 }
 
 func newRelease(version string) *github.RepositoryRelease {
