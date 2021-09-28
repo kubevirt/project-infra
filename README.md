@@ -38,25 +38,21 @@ depending on billing alerts. See [README](limiter/README.md)
   information
 
   * `robots/cmd/flakefinder`: Tool to create statistics from failed tests of PRs.
-  See [README](robots/flakefinder/README.md)
-
-  * `robots/cmd/flake-issue-creator`: Tool to create kubevirt/kubevirt issues from
-  flake test results
+  See [README](robots/cmd/flakefinder/README.md)
 
   * `robots/cmd/indexpagecreator`: Creates flakefinder index page
 
-  * `robots/cmd/kubevirt-job-copier`: Creates copies of the SIG jobs (periodic and presubmit) to enable testing kubevirt with kubevirtci
+  * `robots/cmd/kubevirt`: Provides commands to manipulate the SIG jobs (periodic and presubmit) that are testing kubevirt with kubevirtci
+    
+    See [README](robots/cmd/kubevirt/README.md)
 
   * `robots/cmd/kubevirtci-bumper`: Tool to automatically bump kubevirtci providers.
-  See [README](robots/kubevirtci-bumper/README.md)
+  See [README](robots/cmd/kubevirtci-bumper/README.md)
 
   * `robots/cmd/kubevirtci-presubmit-creator`: Creates kubevirtci presubmit job
   definitions for new providers
 
   * `robots/cmd/labels-checker`: Checks whether a PR has certain labels
-
-  * `robots/cmd/kubevirt-presubmit-requirer`: Updates kubevirt presubmit jobs
-  definitions to make required jobs related to new providers
 
   * `robots/cmd/uploader`: Tool to mirror bazel dependencies on GCS. See
   [README](plugins/cmd/uploader/README.md)
