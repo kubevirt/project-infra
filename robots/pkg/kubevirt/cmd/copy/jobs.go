@@ -33,6 +33,11 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
+const (
+	shortUse                      = "kubevirt copy jobs creates copies of the periodic and presubmit SIG jobs for latest kubevirtci providers"
+	sourceAndTargetReleaseDoExist = 2
+)
+
 type copyJobOptions struct {
 	jobConfigPathKubevirtPresubmits string
 	jobConfigPathKubevirtPeriodics  string
@@ -49,8 +54,6 @@ func (o copyJobOptions) Validate() error {
 }
 
 var copyJobsOpts = copyJobOptions{}
-
-const shortUse = "kubevirt copy jobs creates copies of the periodic and presubmit SIG jobs for latest kubevirtci providers"
 
 var copyJobsCommand = &cobra.Command{
 	Use:   "jobs",
@@ -92,11 +95,6 @@ func run(cmd *cobra.Command, args []string) {
 		log.Log().Panicln(err)
 	}
 	releases = querier.ValidReleases(releases)
-	if len(releases) < 2 {
-		log.Log().Info("No two releases found, nothing to do.")
-		os.Exit(0)
-	}
-
 	targetRelease, sourceRelease, err := getSourceAndTargetRelease(releases)
 	if err != nil {
 		log.Log().WithError(err).Info("Cannot determine source and target release.")
@@ -144,7 +142,7 @@ func run(cmd *cobra.Command, args []string) {
 }
 
 func getSourceAndTargetRelease(releases []*github.RepositoryRelease) (targetRelease *querier.SemVer, sourceRelease *querier.SemVer, err error) {
-	if len(releases) < 2 {
+	if len(releases) < sourceAndTargetReleaseDoExist {
 		err = fmt.Errorf("less than two releases")
 		return
 	}
