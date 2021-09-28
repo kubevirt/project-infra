@@ -16,35 +16,35 @@ package github
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
 )
 
-func NewGitHubClient(ctx context.Context) *github.Client {
+func NewGitHubClient(ctx context.Context) (*github.Client, error) {
 	var client *github.Client
 	if flags.Options.GitHubTokenPath == "" {
 		var err error
 		client, err = github.NewEnterpriseClient(flags.Options.GitHubEndPoint, flags.Options.GitHubEndPoint, nil)
 		if err != nil {
-			log.Log().Panicln(err)
+			return nil, fmt.Errorf("failed to create github client: %v", err)
 		}
 	} else {
 		token, err := ioutil.ReadFile(flags.Options.GitHubTokenPath)
 		if err != nil {
-			log.Log().Panicln(err)
+			return nil, fmt.Errorf("failed to read github token file %s: %v", flags.Options.GitHubTokenPath, err)
 		}
 		ts := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: string(token)},
 		)
 		client, err = github.NewEnterpriseClient(flags.Options.GitHubEndPoint, flags.Options.GitHubEndPoint, oauth2.NewClient(ctx, ts))
 		if err != nil {
-			log.Log().Panicln(err)
+			return nil, fmt.Errorf("failed to create github client: %v", err)
 		}
 	}
-	return client
+	return client, nil
 }

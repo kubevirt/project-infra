@@ -85,7 +85,10 @@ func run(cmd *cobra.Command, args []string) {
 	flags.ParseFlagsOrExit(cmd, args, requirePresubmitsOpts)
 
 	ctx := context.Background()
-	client := kv_github.NewGitHubClient(ctx)
+	client, err := kv_github.NewGitHubClient(ctx)
+	if err != nil {
+		log.Log().Panicln(err)
+	}
 
 	jobConfig, err := config.ReadJobConfig(requirePresubmitsOpts.jobConfigPathKubevirtPresubmits)
 	if err != nil {

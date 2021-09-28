@@ -88,7 +88,10 @@ func run(cmd *cobra.Command, args []string) error {
 	flags.ParseFlagsOrExit(cmd, args, copyJobsOpts)
 
 	ctx := context.Background()
-	client := github2.NewGitHubClient(ctx)
+	client, err := github2.NewGitHubClient(ctx)
+	if err != nil {
+		return err
+	}
 
 	releases, _, err := client.Repositories.ListReleases(ctx, "kubernetes", "kubernetes", nil)
 	if err != nil {
