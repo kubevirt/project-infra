@@ -498,10 +498,15 @@ func Test_removeOldJobsIfNewOnesExist(t *testing.T) {
 				jobConfigPathKubevirtPeriodics:  filepath.Join(tempDir, filepath.Base(tt.args.removeJobsOpts.jobConfigPathKubevirtPeriodics)),
 				jobConfigPathKubevirtPresubmits: filepath.Join(tempDir, filepath.Base(tt.args.removeJobsOpts.jobConfigPathKubevirtPresubmits)),
 			}
-			removeOldJobsIfNewOnesExist(tt.args.releases)
+			err = removeOldJobsIfNewOnesExist(tt.args.releases)
+			if err != nil {
+				t.Errorf("removeOldJobsIfNewOnesExist(), unexpected error %v", err)
+			}
 
-			sum256OrigPeriodics, sum256TempCopyPeriodics := hashFiles(tt.args.removeJobsOpts.jobConfigPathKubevirtPeriodics, removeJobsOpts.jobConfigPathKubevirtPeriodics)
-			sum256OrigPresubmits, sum256TempCopyPresubmits := hashFiles(tt.args.removeJobsOpts.jobConfigPathKubevirtPresubmits, removeJobsOpts.jobConfigPathKubevirtPresubmits)
+			sum256OrigPeriodics := hashFile(tt.args.removeJobsOpts.jobConfigPathKubevirtPeriodics)
+			sum256TempCopyPeriodics := hashFile(removeJobsOpts.jobConfigPathKubevirtPeriodics)
+			sum256OrigPresubmits := hashFile(tt.args.removeJobsOpts.jobConfigPathKubevirtPresubmits)
+			sum256TempCopyPresubmits := hashFile(removeJobsOpts.jobConfigPathKubevirtPresubmits)
 
 			if tt.wantModification {
 				if reflect.DeepEqual(sum256OrigPeriodics, sum256TempCopyPeriodics) {
@@ -522,14 +527,10 @@ func Test_removeOldJobsIfNewOnesExist(t *testing.T) {
 	}
 }
 
-func hashFiles(original string, tempCopy string) ([32]byte, [32]byte) {
-	file, err := os.ReadFile(original)
+func hashFile(filePath string) [32]byte {
+	file, err := os.ReadFile(filePath)
 	checkErr(err)
-	sum256 := sha256.Sum256(file)
-	file2, err := os.ReadFile(tempCopy)
-	checkErr(err)
-	sum256_2 := sha256.Sum256(file2)
-	return sum256, sum256_2
+	return sha256.Sum256(file)
 }
 
 func copyFiles(srcPaths []string, destDir string) {
