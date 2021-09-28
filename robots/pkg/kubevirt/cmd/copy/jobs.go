@@ -85,7 +85,10 @@ func init() {
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	flags.ParseFlagsOrExit(cmd, args, copyJobsOpts)
+	err := flags.ParseFlags(cmd, args, copyJobsOpts)
+	if err != nil {
+		return err
+	}
 
 	ctx := context.Background()
 	client, err := github2.NewGitHubClient(ctx)

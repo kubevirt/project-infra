@@ -5,8 +5,5 @@ go_library(
     srcs = ["flags.go"],
     importpath = "kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags",
     visibility = ["//visibility:public"],
-    deps = [
-        "//robots/pkg/kubevirt/log:go_default_library",
-        "@com_github_spf13_cobra//:go_default_library",
-    ],
+    deps = ["@com_github_spf13_cobra//:go_default_library"],
 )

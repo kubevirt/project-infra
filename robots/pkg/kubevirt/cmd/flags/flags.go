@@ -19,8 +19,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
 )
 
 const (
@@ -60,21 +58,31 @@ func AddPersistentFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringVar(&Options.GitHubEndPoint, FlagGitHubEndpoint, "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
 }
 
-func ParseFlagsOrExit(cmd *cobra.Command, args []string, cmdOpts CommandOptions) {
+func ParseFlags(cmd *cobra.Command, args []string, cmdOpts CommandOptions) error {
 	err := cmd.InheritedFlags().Parse(args)
 	if err != nil {
-		fmt.Println(fmt.Errorf("failed to parse args: %v", err))
-		os.Exit(1)
+		return fmt.Errorf("failed to parse args: %v", err)
 	}
 
-	validateOptions(cmd, Options)
-	validateOptions(cmd, cmdOpts)
+	err = validateOptions(cmd, Options)
+	if err != nil {
+		return err
+	}
+	err = validateOptions(cmd, cmdOpts)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func validateOptions(cmd *cobra.Command, cmdOpts CommandOptions) {
+func validateOptions(cmd *cobra.Command, cmdOpts CommandOptions) error {
 	if err := cmdOpts.Validate(); err != nil {
-		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
+		_, err2 := fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
+		if err2 != nil {
+			return err2
+		}
 
-		log.Log().WithError(err).Fatal("Invalid arguments provided.")
+		return fmt.Errorf("invalid arguments provided: %v", err)
 	}
+	return nil
 }

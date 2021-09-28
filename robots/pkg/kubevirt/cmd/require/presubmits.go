@@ -82,7 +82,10 @@ func init() {
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	flags.ParseFlagsOrExit(cmd, args, requirePresubmitsOpts)
+	err := flags.ParseFlags(cmd, args, requirePresubmitsOpts)
+	if err != nil {
+		return err
+	}
 
 	ctx := context.Background()
 	client, err := kv_github.NewGitHubClient(ctx)
