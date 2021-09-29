@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["jobconfig.go"],
+    importpath = "kubevirt.io/project-infra/robots/pkg/kubevirt/prowjobconfigs",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//robots/pkg/kubevirt/log:go_default_library",
+        "//robots/pkg/querier:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["jobconfig_test.go"],
+    embed = [":go_default_library"],
+)
