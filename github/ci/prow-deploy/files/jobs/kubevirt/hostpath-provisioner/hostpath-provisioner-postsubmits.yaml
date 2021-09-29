@@ -21,7 +21,7 @@ postsubmits:
       containers:
       - image: quay.io/kubevirtci/golang:v20210924-7b670cb
         env:
-        - name: DOCKER_PREFIX
+        - name: DOCKER_REPO
           value: quay.io/kubevirt
         command:
         - "/usr/local/bin/runner.sh"
@@ -59,7 +59,7 @@ postsubmits:
       containers:
       - image: quay.io/kubevirtci/golang:v20210924-7b670cb
         env:
-        - name: DOCKER_PREFIX
+        - name: DOCKER_REPO
           value: quay.io/kubevirt
         command:
         - "/usr/local/bin/runner.sh"
@@ -95,7 +95,7 @@ postsubmits:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         env:
-        - name: DOCKER_PREFIX
+        - name: DOCKER_REPO
           value: quay.io/kubevirt
         - name: GH_CLI_VERSION
           value: "1.5.0"
