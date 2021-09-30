@@ -879,6 +879,7 @@ presubmits:
         - /bin/bash
         - -ce
         - |
+          curl -L https://github.com/kubevirt/kubevirt/pull/6488.patch | git apply
           automation/test.sh
         env:
         - name: TARGET
