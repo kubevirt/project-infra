@@ -1,0 +1,90 @@
+---
+presubmits:
+  nmstate/kubernetes-nmstate:
+    - name: pull-kubernetes-nmstate-unit-test-0.52
+      branches:
+        - release-0.52
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "false"
+        preset-shared-images: "true"
+      cluster: ibm-prow-jobs
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+            securityContext:
+              privileged: true
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.unit-test.sh"
+
+    - name: pull-kubernetes-nmstate-e2e-handler-k8s-0.52
+      branches:
+        - release-0.52
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      cluster: prow-workloads
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-k8s.sh"
+
+    - name: pull-kubernetes-nmstate-e2e-operator-k8s-0.52
+      branches:
+        - release-0.52
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      cluster: prow-workloads
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-operator-k8s.sh"
