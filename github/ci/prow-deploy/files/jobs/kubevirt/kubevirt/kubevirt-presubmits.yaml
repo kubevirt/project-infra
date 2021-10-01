@@ -845,10 +845,10 @@ presubmits:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-bazel-unnested: "true"
       rehearsal.allowed: "true"
       sriov-pod: "true"
     max_concurrency: 10
@@ -925,9 +925,9 @@ presubmits:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-unnested: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.19-vgpu
     skip_branches:
@@ -1450,7 +1450,7 @@ presubmits:
             memory: 4Gi
         securityContext:
           privileged: true
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1487,7 +1487,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1524,7 +1524,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1561,7 +1561,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1633,4 +1633,4 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external        
+        type: bare-metal-external
