@@ -625,7 +625,7 @@ periodics:
       command: [ "/bin/sh" , "-c" ]
       args:
       - |
-        git-pr.sh -c "bazel run //robots/cmd/kubevirt remove jobs -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= -dry-run=false" -r project-infra -b copy-kubevirt-jobs -T main
+        git-pr.sh -c "bazel run //robots/cmd/kubevirt remove jobs -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" -r project-infra -b copy-kubevirt-jobs -T main
       volumeMounts:
       - name: token
         mountPath: /etc/github
