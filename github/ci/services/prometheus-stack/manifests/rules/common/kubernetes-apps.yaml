@@ -4,10 +4,10 @@ kind: PrometheusRule
 metadata:
   labels:
     group: kubevirtci
-  name: kubernetes-apps
+  name: kubernetes-apps-common
 spec:
   groups:
-  - name: kubernetes-apps
+  - name: kubernetes-apps-common
     rules:
     - alert: KubePodCrashLooping
       annotations:
