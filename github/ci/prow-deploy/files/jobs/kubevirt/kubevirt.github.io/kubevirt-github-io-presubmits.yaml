@@ -13,13 +13,3 @@ presubmits:
                 value: "true"
             command: ["/bin/sh", "-c"]
             args: ["/usr/local/bin/bundle install && bundle exec rake"]
-    - name: kubevirt-io-presubmit-markdown-linter
-      decorate: true
-      always_run: true
-      skip_report: false
-      cluster: ibm-prow-jobs
-      spec:
-        containers:
-          - image: quay.io/kubevirtci/ruby:v20210628-647402e
-            command: ["/bin/sh", "-c"]
-            args: ["/bin/make check_lint"]
