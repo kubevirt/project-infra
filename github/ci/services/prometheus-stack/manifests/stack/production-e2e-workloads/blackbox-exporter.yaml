@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blackbox-exporter
+  labels:
+    app: blackbox-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blackbox-exporter
+  template:
+    metadata:
+      labels:
+        app: blackbox-exporter
+    spec:
+      containers:
+      - name: blackbox-exporter
+        image: quay.io/kubevirtci/blackbox-exporter:v0.19.0
+        args:
+        - --config.file=/etc/blackbox-exporter/config.yaml
+        ports:
+        - name: metrics
+          containerPort: 9115
+        volumeMounts:
+        - name: config
+          mountPath: /etc/blackbox-exporter
+          readOnly: true
+      volumes:
+      - name: config
+        configMap:
+          name: blackbox-exporter
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blackbox-exporter
+  labels:
+    app: blackbox-exporter
+data:
+  config.yaml: |
+    modules:
+      http_2xx:
+        prober: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blackbox-exporter
+  labels:
+    app: blackbox-exporter
+spec:
+  selector:
+    app: blackbox-exporter
+  ports:
+  - name: metrics
+    port: 9115
+    targetPort: 9115
