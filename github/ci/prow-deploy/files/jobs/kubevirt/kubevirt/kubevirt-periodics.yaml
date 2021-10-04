@@ -123,6 +123,9 @@ periodics:
     testgrid-create-test-group: "false"
   cluster: phx-prow
   decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 3h0m0s
   interval: 168h
   name: periodic-publish-kubevirt-flakefinder-four-weekly-report
   spec:
