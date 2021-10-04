@@ -97,7 +97,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-hpp-unit-test
-    cluster: prow-workloads
+    cluster: phx-prow
     skip_branches:
       - release-\d+\.\d+
     annotations:
