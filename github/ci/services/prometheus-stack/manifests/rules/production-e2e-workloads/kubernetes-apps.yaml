@@ -4,10 +4,10 @@ kind: PrometheusRule
 metadata:
   labels:
     group: kubevirtci
-  name: kubernetes-apps
+  name: kubernetes-apps-cluster
 spec:
   groups:
-  - name: kubernetes-apps
+  - name: kubernetes-apps-cluster
     rules:
     - alert: KubePodNotReady
       annotations:
