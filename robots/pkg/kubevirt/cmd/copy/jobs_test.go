@@ -324,6 +324,113 @@ func Test_copyPeriodicJobsForNewProvider(t *testing.T) {
 			wantJobStatesToReportInSerialization: false,
 		},
 		{
+			name: "annotations and labels are copied",
+			args: args{
+				jobConfig: &config.JobConfig{
+					Periodics: []config.Periodic{
+						{
+							JobBase: config.JobBase{
+								Annotations: map[string]string{
+									"your-annotation": "value-goes-here",
+								},
+								Labels: map[string]string{
+									"your-label": "value-goes-here",
+								},
+								Name: prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
+								Spec: &corev1.PodSpec{
+									Containers: []corev1.Container{
+										{
+											Env: []corev1.EnvVar{},
+										},
+									},
+								},
+								UtilityConfig: config.UtilityConfig{
+									ExtraRefs: []v1.Refs{
+										{
+											Org:     "kubevirt",
+											Repo:    "kubevirt",
+											BaseRef: "main",
+										},
+									},
+								},
+							},
+							Interval: "",
+							Cron:     "0 1,9,17 * * *",
+							Tags:     nil,
+						},
+					},
+				},
+				targetProviderReleaseSemver: semver("1", "22", "0"),
+				sourceProviderReleaseSemver: semver("1", "21", "0"),
+			},
+			wantUpdated: true,
+			wantJobConfig: &config.JobConfig{
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Annotations: map[string]string{
+								"your-annotation": "value-goes-here",
+							},
+							Labels: map[string]string{
+								"your-label": "value-goes-here",
+							},
+							Name: prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{},
+									},
+								},
+							},
+							UtilityConfig: config.UtilityConfig{
+								ExtraRefs: []v1.Refs{
+									{
+										Org:     "kubevirt",
+										Repo:    "kubevirt",
+										BaseRef: "main",
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "0 1,9,17 * * *",
+						Tags:     nil,
+					},
+					{
+						JobBase: config.JobBase{
+							Annotations: map[string]string{
+								"your-annotation": "value-goes-here",
+							},
+							Labels: map[string]string{
+								"your-label": "value-goes-here",
+							},
+							Name: prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{},
+									},
+								},
+							},
+							UtilityConfig: config.UtilityConfig{
+								ExtraRefs: []v1.Refs{
+									{
+										Org:     "kubevirt",
+										Repo:    "kubevirt",
+										BaseRef: "main",
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "10 2,10,18 * * *",
+						Tags:     nil,
+					},
+				},
+			},
+			wantJobStatesToReportInSerialization: false,
+		},
+		{
 			name: "have multiple containers, check TARGET env var",
 			args: args{
 				jobConfig: &config.JobConfig{
@@ -428,6 +535,109 @@ func Test_copyPeriodicJobsForNewProvider(t *testing.T) {
 			},
 			wantJobStatesToReportInSerialization: false,
 		},
+		{
+			name: "target job exists, nothing to do",
+			args: args{
+				jobConfig: &config.JobConfig{
+					Periodics: []config.Periodic{
+						{
+							JobBase: config.JobBase{
+								Labels: map[string]string{},
+								Name:   prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
+								Spec: &corev1.PodSpec{
+									Containers: []corev1.Container{
+										{
+											Env: []corev1.EnvVar{
+												{
+													Name:  "TARGET",
+													Value: "k8s-1.21-sig-network",
+												},
+											},
+										},
+									},
+								},
+							},
+							Interval: "",
+							Cron:     "0 1,9,17 * * *",
+							Tags:     nil,
+						},
+						{
+							JobBase: config.JobBase{
+								Annotations: map[string]string{},
+								Labels:      map[string]string{},
+								Name:        prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
+								Spec: &corev1.PodSpec{
+									Containers: []corev1.Container{
+										{
+											Env: []corev1.EnvVar{
+												{
+													Name:  "TARGET",
+													Value: "k8s-1.22-sig-network",
+												},
+											},
+										},
+									},
+								},
+							},
+							Interval: "",
+							Cron:     "10 2,10,18 * * *",
+							Tags:     nil,
+						},
+					},
+				},
+				targetProviderReleaseSemver: semver("1", "22", "0"),
+				sourceProviderReleaseSemver: semver("1", "21", "0"),
+			},
+			wantUpdated: false,
+			wantJobConfig: &config.JobConfig{
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Labels: map[string]string{},
+							Name:   prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{
+											{
+												Name:  "TARGET",
+												Value: "k8s-1.21-sig-network",
+											},
+										},
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "0 1,9,17 * * *",
+						Tags:     nil,
+					},
+					{
+						JobBase: config.JobBase{
+							Annotations: map[string]string{},
+							Labels:      map[string]string{},
+							Name:        prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{
+											{
+												Name:  "TARGET",
+												Value: "k8s-1.22-sig-network",
+											},
+										},
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "10 2,10,18 * * *",
+						Tags:     nil,
+					},
+				},
+			},
+			wantJobStatesToReportInSerialization: false,
+		},
 	}
 	temp, err := os.MkdirTemp("", "jobconfig")
 	panicOn(err)
@@ -473,5 +683,155 @@ func semver(major, minor, patch string) *querier.SemVer {
 		Major: major,
 		Minor: minor,
 		Patch: patch,
+	}
+}
+
+func Test_copyPresubmitJobsForNewProvider(t *testing.T) {
+	type args struct {
+		jobConfig                   *config.JobConfig
+		targetProviderReleaseSemver *querier.SemVer
+		sourceProviderReleaseSemver *querier.SemVer
+	}
+	tests := []struct {
+		name          string
+		args          args
+		wantUpdated   bool
+		wantJobConfig *config.JobConfig
+	}{
+		{
+			name: "copies SkipBranches",
+			args: args{
+				jobConfig: &config.JobConfig{
+					PresubmitsStatic: map[string][]config.Presubmit{
+						prowjobconfigs.OrgAndRepoForJobConfig: {
+							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
+						},
+					},
+				},
+				targetProviderReleaseSemver: newMinorSemver("1", "42"),
+				sourceProviderReleaseSemver: newMinorSemver("1", "37"),
+			},
+			wantUpdated: true,
+			wantJobConfig: &config.JobConfig{
+				PresubmitsStatic: map[string][]config.Presubmit{
+					prowjobconfigs.OrgAndRepoForJobConfig: {
+						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
+						createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
+					},
+				},
+			},
+		},
+		{
+			name: "copies Branches",
+			args: args{
+				jobConfig: &config.JobConfig{
+					PresubmitsStatic: map[string][]config.Presubmit{
+						prowjobconfigs.OrgAndRepoForJobConfig: {
+							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher(nil, []string{"release-\\d+\\.\\d+"})),
+						},
+					},
+				},
+				targetProviderReleaseSemver: newMinorSemver("1", "42"),
+				sourceProviderReleaseSemver: newMinorSemver("1", "37"),
+			},
+			wantUpdated: true,
+			wantJobConfig: &config.JobConfig{
+				PresubmitsStatic: map[string][]config.Presubmit{
+					prowjobconfigs.OrgAndRepoForJobConfig: {
+						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher(nil, []string{"release-\\d+\\.\\d+"})),
+						createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher(nil, []string{"release-\\d+\\.\\d+"})),
+					},
+				},
+			},
+		},
+		{
+			name: "target job exists already",
+			args: args{
+				jobConfig: &config.JobConfig{
+					PresubmitsStatic: map[string][]config.Presubmit{
+						prowjobconfigs.OrgAndRepoForJobConfig: {
+							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
+							createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
+						},
+					},
+				},
+				targetProviderReleaseSemver: newMinorSemver("1", "42"),
+				sourceProviderReleaseSemver: newMinorSemver("1", "37"),
+			},
+			wantUpdated: false,
+			wantJobConfig: &config.JobConfig{
+				PresubmitsStatic: map[string][]config.Presubmit{
+					prowjobconfigs.OrgAndRepoForJobConfig: {
+						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
+						createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotUpdated := copyPresubmitJobsForNewProvider(tt.args.jobConfig, tt.args.targetProviderReleaseSemver, tt.args.sourceProviderReleaseSemver); gotUpdated != tt.wantUpdated {
+				t.Errorf("copyPresubmitJobsForNewProvider() = %v, want %v", gotUpdated, tt.wantUpdated)
+			}
+			if !reflect.DeepEqual(tt.args.jobConfig, tt.wantJobConfig) {
+				t.Errorf("copyPresubmitJobsForNewProvider(), diff: %v",
+					deep.Equal(tt.args.jobConfig, tt.wantJobConfig))
+			}
+		})
+	}
+}
+
+func newMinorSemver(major, minor string) *querier.SemVer {
+	return &querier.SemVer{
+		Major: major,
+		Minor: minor,
+		Patch: "0",
+	}
+}
+
+func createPresubmitJobForRelease(semver *querier.SemVer, sigName string, alwaysRun, optional, skipReport bool, brancher config.Brancher) config.Presubmit {
+	res := config.Presubmit{
+		AlwaysRun: alwaysRun,
+		Optional:  optional,
+		JobBase: config.JobBase{
+			Annotations: map[string]string{
+				"fork-per-release":    "true",
+				"testgrid-dashboards": "kubevirt-presubmits",
+			},
+			Labels: map[string]string{
+				"preset-docker-mirror-proxy": "true",
+				"preset-shared-images":       "true",
+			},
+			Name: prowjobconfigs.CreatePresubmitJobName(semver, sigName),
+			Spec: &corev1.PodSpec{
+				Containers: []corev1.Container{
+					{
+						Env: []corev1.EnvVar{
+							{
+								Name:  "WHATEVER",
+								Value: "should stay unchanged",
+							},
+							{
+								Name:  "TARGET",
+								Value: prowjobconfigs.CreateTargetValue(semver, sigName),
+							},
+						},
+					},
+				},
+			},
+		},
+		Reporter: config.Reporter{
+			SkipReport: skipReport,
+		},
+		Brancher: brancher,
+	}
+	return res
+}
+
+func createJobBrancher(skipBranches []string, branches []string) config.Brancher {
+	return config.Brancher{
+		SkipBranches: skipBranches,
+		Branches:     branches,
 	}
 }
