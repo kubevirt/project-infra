@@ -22,7 +22,7 @@ postsubmits:
           type: vm
           zone: ci
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+          - image: quay.io/kubevirtci/bootstrap:v20211004-a19e71e
             env:
             - name: GIT_ASKPASS
               value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
