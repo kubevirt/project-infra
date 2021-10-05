@@ -205,6 +205,8 @@ func copyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProvider
 		}
 		newJob.MaxConcurrency = allPresubmitJobs[sourceJobName].MaxConcurrency
 		newJob.Spec = allPresubmitJobs[sourceJobName].Spec.DeepCopy()
+		newJob.Brancher.SkipBranches = allPresubmitJobs[sourceJobName].Brancher.SkipBranches
+		newJob.Brancher.Branches = allPresubmitJobs[sourceJobName].Brancher.Branches
 
 		newJob.AlwaysRun = false
 		for index, envVar := range newJob.Spec.Containers[0].Env {
