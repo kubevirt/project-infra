@@ -30,6 +30,14 @@ Commands provided
     
         bazel run //robots/cmd/kubevirt remove jobs -- --help
 
+ * **kubevirt remove always_run**
+
+    sets always_run to false on presubmit job definitions for kubevirt for unsupported kubevirtci providers
+
+    Basic usage:
+
+        bazel run //robots/cmd/kubevirt remove always_run -- --help
+
 Building
 --------
 

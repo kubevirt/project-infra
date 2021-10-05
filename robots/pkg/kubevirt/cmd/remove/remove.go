@@ -22,14 +22,14 @@ import (
 
 var removeCommand = &cobra.Command{
 	Use:   "remove",
-	Short: "kubevirt remove removes old job definitions in project-infra for kubevirt/kubevirt repo",
+	Short: "kubevirt remove phases out old job definitions in project-infra for kubevirt/kubevirt repo",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
 	},
 }
 
 func init() {
-	removeCommand.AddCommand(RemoveJobsCommand())
+	removeCommand.AddCommand(RemoveJobsCommand(), RemoveAlwaysRunCommand())
 }
 
 func RemoveCommand() *cobra.Command {

@@ -22,6 +22,8 @@ import (
 	"strings"
 	"testing"
 
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/release"
+
 	"sigs.k8s.io/yaml"
 
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/prowjobconfigs"
@@ -47,11 +49,11 @@ func Test_getSourceAndTargetRelease(t *testing.T) {
 		wantErr           error
 	}{
 		{
-			name: "has one patch release for latest",
+			name: "has one patch Release for latest",
 			args: args{
 				releases: []*github.RepositoryRelease{
-					release("v1.22.0"),
-					release("v1.21.3"),
+					release.Release("v1.22.0"),
+					release.Release("v1.21.3"),
 				},
 			},
 			wantTargetRelease: &querier.SemVer{
@@ -70,9 +72,9 @@ func Test_getSourceAndTargetRelease(t *testing.T) {
 			name: "has two patch releases for latest",
 			args: args{
 				releases: []*github.RepositoryRelease{
-					release("v1.22.1"),
-					release("v1.22.0"),
-					release("v1.21.3"),
+					release.Release("v1.22.1"),
+					release.Release("v1.22.0"),
+					release.Release("v1.21.3"),
 				},
 			},
 			wantTargetRelease: &querier.SemVer{
@@ -88,10 +90,10 @@ func Test_getSourceAndTargetRelease(t *testing.T) {
 			wantErr: nil,
 		},
 		{
-			name: "has one release only, should err",
+			name: "has one Release only, should err",
 			args: args{
 				releases: []*github.RepositoryRelease{
-					release("v1.22.1"),
+					release.Release("v1.22.1"),
 				},
 			},
 			wantTargetRelease: nil,
@@ -102,8 +104,8 @@ func Test_getSourceAndTargetRelease(t *testing.T) {
 			name: "has two major same releases",
 			args: args{
 				releases: []*github.RepositoryRelease{
-					release("v1.22.1"),
-					release("v1.22.0"),
+					release.Release("v1.22.1"),
+					release.Release("v1.22.0"),
 				},
 			},
 			wantTargetRelease: &querier.SemVer{
@@ -112,7 +114,7 @@ func Test_getSourceAndTargetRelease(t *testing.T) {
 				Patch: "1",
 			},
 			wantSourceRelease: nil,
-			wantErr:           fmt.Errorf("no source release found"),
+			wantErr:           fmt.Errorf("no source Release found"),
 		},
 	}
 	for _, tt := range tests {
@@ -672,12 +674,6 @@ func panicOn(err error) {
 	}
 }
 
-func release(version string) *github.RepositoryRelease {
-	result := github.RepositoryRelease{}
-	result.TagName = &version
-	return &result
-}
-
 func semver(major, minor, patch string) *querier.SemVer {
 	return &querier.SemVer{
 		Major: major,
@@ -704,7 +700,7 @@ func Test_copyPresubmitJobsForNewProvider(t *testing.T) {
 				jobConfig: &config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
 						prowjobconfigs.OrgAndRepoForJobConfig: {
-							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
+							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"Release-\\d+\\.\\d+"}, nil)),
 						},
 					},
 				},
@@ -715,8 +711,8 @@ func Test_copyPresubmitJobsForNewProvider(t *testing.T) {
 			wantJobConfig: &config.JobConfig{
 				PresubmitsStatic: map[string][]config.Presubmit{
 					prowjobconfigs.OrgAndRepoForJobConfig: {
-						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
-						createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
+						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"Release-\\d+\\.\\d+"}, nil)),
+						createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher([]string{"Release-\\d+\\.\\d+"}, nil)),
 					},
 				},
 			},
@@ -727,7 +723,7 @@ func Test_copyPresubmitJobsForNewProvider(t *testing.T) {
 				jobConfig: &config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
 						prowjobconfigs.OrgAndRepoForJobConfig: {
-							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher(nil, []string{"release-\\d+\\.\\d+"})),
+							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher(nil, []string{"Release-\\d+\\.\\d+"})),
 						},
 					},
 				},
@@ -738,8 +734,8 @@ func Test_copyPresubmitJobsForNewProvider(t *testing.T) {
 			wantJobConfig: &config.JobConfig{
 				PresubmitsStatic: map[string][]config.Presubmit{
 					prowjobconfigs.OrgAndRepoForJobConfig: {
-						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher(nil, []string{"release-\\d+\\.\\d+"})),
-						createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher(nil, []string{"release-\\d+\\.\\d+"})),
+						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher(nil, []string{"Release-\\d+\\.\\d+"})),
+						createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher(nil, []string{"Release-\\d+\\.\\d+"})),
 					},
 				},
 			},
@@ -750,8 +746,8 @@ func Test_copyPresubmitJobsForNewProvider(t *testing.T) {
 				jobConfig: &config.JobConfig{
 					PresubmitsStatic: map[string][]config.Presubmit{
 						prowjobconfigs.OrgAndRepoForJobConfig: {
-							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
-							createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
+							createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"Release-\\d+\\.\\d+"}, nil)),
+							createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher([]string{"Release-\\d+\\.\\d+"}, nil)),
 						},
 					},
 				},
@@ -762,8 +758,8 @@ func Test_copyPresubmitJobsForNewProvider(t *testing.T) {
 			wantJobConfig: &config.JobConfig{
 				PresubmitsStatic: map[string][]config.Presubmit{
 					prowjobconfigs.OrgAndRepoForJobConfig: {
-						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
-						createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher([]string{"release-\\d+\\.\\d+"}, nil)),
+						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"Release-\\d+\\.\\d+"}, nil)),
+						createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher([]string{"Release-\\d+\\.\\d+"}, nil)),
 					},
 				},
 			},
@@ -796,7 +792,7 @@ func createPresubmitJobForRelease(semver *querier.SemVer, sigName string, always
 		Optional:  optional,
 		JobBase: config.JobBase{
 			Annotations: map[string]string{
-				"fork-per-release":    "true",
+				"fork-per-Release":    "true",
 				"testgrid-dashboards": "kubevirt-presubmits",
 			},
 			Labels: map[string]string{
