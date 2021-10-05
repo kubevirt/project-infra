@@ -1468,6 +1468,8 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-sig-network
     optional: true
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
       - command:
@@ -1505,6 +1507,8 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-sig-storage
     optional: true
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
       - command:
@@ -1542,6 +1546,8 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-sig-compute
     optional: true
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
       - command:
@@ -1579,6 +1585,8 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-operator
     optional: true
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
       - command:
@@ -1615,6 +1623,8 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-sig-compute-realtime
     optional: true
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
       - command:
