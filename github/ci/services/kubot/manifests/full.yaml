@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: kubot
-        image: quay.io/kubevirtci/kubot:v20211005-40e0259
+        image: quay.io/kubevirtci/kubot:v20211006-f5b21af
         ports:
         - containerPort: 8080
           name: http

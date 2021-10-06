@@ -6,7 +6,7 @@ module.exports = (robot) ->
 
   fs.exists './kubeconfig', (exists) ->
     unless exists
-      fs.cp '/etc/kubeconfig/config', './kubeconfig', (error) ->
+      fs.cp '/etc/kubeconfig/config', './kubeconfig', { dereference: true }, (error) ->
         if error
           console.log "Could not copy kubeconfig: #{error}"
 

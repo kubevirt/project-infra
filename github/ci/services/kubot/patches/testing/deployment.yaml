@@ -11,3 +11,6 @@ spec:
         command:
         - bin/hubot
         tty: true
+        env: null
+        volumeMounts: null
+      volumes: null
