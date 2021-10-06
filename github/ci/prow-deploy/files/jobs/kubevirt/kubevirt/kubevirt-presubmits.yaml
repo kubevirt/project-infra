@@ -379,6 +379,49 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_E2E_SKIP
           value: Multus|SRIOV|GPU|Macvtap|MediatedDevices
+        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.20-cgroupsv2-rook-ceph
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.20
+        - name: KUBEVIRT_CGROUPV2
+          value: "true"
+        - name: KUBEVIRT_E2E_SKIP
+          value: Multus|SRIOV|GPU|Macvtap|MediatedDevices
         - name: KUBEVIRT_STORAGE
           value: rook-ceph-default
         image: quay.io/kubevirtci/bootstrap:v20210906-994b913

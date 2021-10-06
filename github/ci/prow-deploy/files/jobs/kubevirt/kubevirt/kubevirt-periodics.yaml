@@ -1467,8 +1467,6 @@ periodics:
             value: "true"
           - name: KUBEVIRT_E2E_SKIP
             value: Multus|SRIOV|GPU|Macvtap|MediatedDevices
-          - name: KUBEVIRT_STORAGE
-            value: rook-ceph-default
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
