@@ -29,3 +29,12 @@ spec:
       labels:
         severity: critical
         namespace: monitoring
+    - alert: KubernetesDiskPressure
+      annotations:
+        summary: Kubernetes disk pressure (instance {{ $labels.instance }})
+        description: "{{ $labels.node }} has DiskPressure condition\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: kube_node_status_condition{condition="DiskPressure",status="true"} == 1
+      for: 2m
+      labels:
+        severity: critical
+        namespace: monitoring
