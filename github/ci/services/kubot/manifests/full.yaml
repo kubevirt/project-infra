@@ -1,0 +1,63 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubot
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubot
+  labels:
+    app: kubot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubot
+  template:
+    metadata:
+      labels:
+        app: kubot
+    spec:
+      containers:
+      - name: kubot
+        image: quay.io/kubevirtci/kubot:v20211006-f5b21af
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: HUBOT_SLACK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: slack-token
+              key: token
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          initialDelaySeconds: 20
+          periodSeconds: 20
+          httpGet:
+            path: /health
+            port: http
+        readinessProbe:
+          initialDelaySeconds: 20
+          periodSeconds: 20
+          httpGet:
+            path: /health
+            port: http
+        resources:
+          requests:
+            cpu: 100m
+            memory: 1Gi
+          limits:
+            cpu: 100m
+            memory: 1Gi
+        volumeMounts:
+        - mountPath: /etc/kubeconfig
+          name: kubeconfig
+          readOnly: true
+      volumes:
+      - name: kubeconfig
+        secret:
+          defaultMode: 420
+          secretName: kubeconfig

@@ -23,6 +23,7 @@ import (
 )
 
 const poll = 5 * time.Second
+const timeout = 200 * time.Second
 
 type stopChan struct {
 	c chan struct{}
@@ -298,14 +299,14 @@ func isDaemonsetReady(resource *appsv1.DaemonSet) bool {
 func waitForControllerWithTimeout(controller cache.Controller, stop *stopChan, name, namespace string) {
 	go controller.Run(stop.c)
 
-	timeout := time.After(100 * time.Second)
-	tick := time.Tick(5 * time.Second)
+	timeoutCh := time.After(timeout)
+	tickCh := time.Tick(poll)
 	for {
 		select {
-		case <-timeout:
+		case <-timeoutCh:
 			stop.closeOnce()
 			log.Fatalf("Resource %q in namespace %q not ready in time\n", name, namespace)
-		case <-tick:
+		case <-tickCh:
 			log.Printf("Waiting for resource %q to be ready in namespace %q...\n", name, namespace)
 		case <-stop.c:
 			log.Printf("Resource %q in namespace %q is ready\n", name, namespace)

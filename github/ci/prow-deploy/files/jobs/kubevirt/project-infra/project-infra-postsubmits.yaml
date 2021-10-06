@@ -341,6 +341,38 @@ postsubmits:
                 memory: "1Gi"
               limits:
                 memory: "1Gi"
+    - name: publish-kubot-image
+      always_run: false
+      run_if_changed: "images/kubot/.*"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-dind-enabled: "true"
+        preset-kubevirtci-quay-credential: "true"
+      cluster: phx-prow
+      spec:
+        nodeSelector:
+          type: vm
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cd images
+                ./publish_image.sh kubot quay.io kubevirtci
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "4Gi"
+              limits:
+                memory: "4Gi"
     - name: post-project-infra-prow-control-plane-deployment
       always_run: false
       run_if_changed: "github/ci/prow-deploy/.*"
@@ -799,6 +831,61 @@ postsubmits:
               extract_secret 'kubeconfig' ~/.kube/config
 
               ./github/ci/services/kuberhealthy/hack/deploy.sh production
+          resources:
+            requests:
+              memory: "8Gi"
+            limits:
+              memory: "8Gi"
+          volumeMounts:
+          - name: token
+            mountPath: /etc/github
+          - name: pgp-bot-key
+            mountPath: /etc/pgp
+            readOnly: true
+        volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
+        - name: pgp-bot-key
+          secret:
+            secretName: pgp-bot-key
+    - name: post-project-infra-kubot-deployment
+      always_run: false
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      run_if_changed: "github/ci/services/kubot.*"
+      branches:
+      - ^main$
+      labels:
+        preset-bazel-cache: "true"
+        preset-docker-mirror-proxy: "true"
+      cluster: ibm-prow-jobs
+      spec:
+        securityContext:
+          runAsUser: 0
+        containers:
+        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          env:
+          - name: GIT_ASKPASS
+            value: "./hack/git-askpass.sh"
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - |
+              # install yq
+              curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+              chmod +x ./yq && mv ./yq /usr/local/bin/yq
+
+              source ./hack/manage-secrets.sh
+              decrypt_secrets
+
+              extract_secret 'kubeconfig' ~/.kube/config
+              extract_secret 'kubeconfig' ./github/ci/services/kubot/secrets/production/kubeconfig/config
+              extract_secret 'kubot.slackToken' ./github/ci/services/kubot/secrets/production/slack-token/token
+
+              ./github/ci/services/kubot/hack/deploy.sh production
           resources:
             requests:
               memory: "8Gi"

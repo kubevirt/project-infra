@@ -1,0 +1,16 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubot
+spec:
+  template:
+    spec:
+      containers:
+      - name: kubot
+        command:
+        - bin/hubot
+        tty: true
+        env: null
+        volumeMounts: null
+      volumes: null
