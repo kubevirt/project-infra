@@ -106,10 +106,7 @@ func runAlwaysRunCommand(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to list releases: %v", err)
 	}
 	releases = querier.ValidReleases(releases)
-	allReleases := make([]*querier.SemVer, 0, len(releases))
-	for _, release := range releases {
-		allReleases = append(allReleases, querier.ParseRelease(release))
-	}
+	allReleases := release.AsSemVers(releases)
 	latestMinorReleases := release.GetLatestMinorReleases(allReleases)
 	if len(latestMinorReleases) < fourReleasesRequiredAtMinimum {
 		log.Log().Info("Not enough minor releases found, nothing to do.")

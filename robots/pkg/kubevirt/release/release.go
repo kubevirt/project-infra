@@ -36,3 +36,11 @@ func Release(version string) *github.RepositoryRelease {
 	result.TagName = &version
 	return &result
 }
+
+func AsSemVers(releases []*github.RepositoryRelease) []*querier.SemVer {
+	semVers := make([]*querier.SemVer, 0, len(releases))
+	for _, theRelease := range releases {
+		semVers = append(semVers, querier.ParseRelease(theRelease))
+	}
+	return semVers
+}

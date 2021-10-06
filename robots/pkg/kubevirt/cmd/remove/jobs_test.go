@@ -94,9 +94,9 @@ func Test_ensureLatestJobsAreRequired(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, message := ensureLatestJobsAreRequired(tt.args.jobConfigKubevirtPresubmits, tt.args.release)
+			got, message := ensureSigJobsAreRequired(tt.args.jobConfigKubevirtPresubmits, tt.args.release)
 			if got != tt.want {
-				t.Errorf("ensureLatestJobsAreRequired() = %v, want %v", got, tt.want)
+				t.Errorf("ensureSigJobsAreRequired() = %v, want %v", got, tt.want)
 			}
 			t.Logf("message: %s", message)
 		})
@@ -173,9 +173,9 @@ func Test_ensureJobsExistForReleases(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotAllJobsExist, gotMessage := ensurePresubmitJobsExistForReleases(tt.args.jobConfigKubevirtPresubmits, tt.args.requiredReleases)
+			gotAllJobsExist, gotMessage := ensureSigPresubmitJobsExistForReleases(tt.args.jobConfigKubevirtPresubmits, tt.args.requiredReleases)
 			if gotAllJobsExist != tt.wantAllJobsExist {
-				t.Errorf("ensurePresubmitJobsExistForReleases() gotAllJobsExist = %v, want %v", gotAllJobsExist, tt.wantAllJobsExist)
+				t.Errorf("ensureSigPresubmitJobsExistForReleases() gotAllJobsExist = %v, want %v", gotAllJobsExist, tt.wantAllJobsExist)
 			}
 			t.Logf("message: %s", gotMessage)
 		})
@@ -306,11 +306,11 @@ func Test_deletePeriodicJobsForRelease(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := deletePeriodicJobsForRelease(tt.args.jobConfig, tt.args.release); got != tt.wantUpdated {
-				t.Errorf("deletePeriodicJobsForRelease() = %v, want %v", got, tt.wantUpdated)
+			if got := deleteSigPeriodicJobsForRelease(tt.args.jobConfig, tt.args.release); got != tt.wantUpdated {
+				t.Errorf("deleteSigPeriodicJobsForRelease() = %v, want %v", got, tt.wantUpdated)
 			}
 			if tt.wantUpdated && !reflect.DeepEqual(tt.args.jobConfig, tt.wantJobConfig) {
-				t.Errorf("deletePeriodicJobsForRelease() = %v", deep.Equal(tt.args.jobConfig, tt.wantJobConfig))
+				t.Errorf("deleteSigPeriodicJobsForRelease() = %v", deep.Equal(tt.args.jobConfig, tt.wantJobConfig))
 			}
 		})
 	}
@@ -434,11 +434,11 @@ func Test_deletePresubmitJobsForRelease(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := deletePresubmitJobsForRelease(tt.args.jobConfig, tt.args.targetRelease); got != tt.wantUpdated {
-				t.Errorf("deletePresubmitJobsForRelease() = %v, wantUpdated %v", got, tt.wantUpdated)
+			if got := deleteSigPresubmitJobsForRelease(tt.args.jobConfig, tt.args.targetRelease); got != tt.wantUpdated {
+				t.Errorf("deleteSigPresubmitJobsForRelease() = %v, wantUpdated %v", got, tt.wantUpdated)
 			}
 			if tt.wantUpdated && !reflect.DeepEqual(tt.args.jobConfig, tt.wantJobConfig) {
-				t.Errorf("deletePresubmitJobsForRelease() = %v", deep.Equal(tt.args.jobConfig, tt.wantJobConfig))
+				t.Errorf("deleteSigPresubmitJobsForRelease() = %v", deep.Equal(tt.args.jobConfig, tt.wantJobConfig))
 			}
 		})
 	}
