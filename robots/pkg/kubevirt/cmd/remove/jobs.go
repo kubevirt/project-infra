@@ -20,6 +20,8 @@ import (
 	"os"
 	"strings"
 
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/release"
+
 	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
 	"k8s.io/test-infra/prow/config"
@@ -109,29 +111,27 @@ func run(cmd *cobra.Command, args []string) error {
 }
 
 func removeOldJobsIfNewOnesExist(releases []*github.RepositoryRelease) error {
-	if len(releases) < fourReleasesRequiredAtMinimum {
-		log.Log().Info("Not enough releases found, nothing to do.")
-		return nil
-	}
-
 	jobConfigKubevirtPresubmits, err := config.ReadJobConfig(removeJobsOpts.jobConfigPathKubevirtPresubmits)
 	if err != nil {
 		return fmt.Errorf("failed to read jobconfig %s: %v", removeJobsOpts.jobConfigPathKubevirtPresubmits, err)
 	}
 
-	result, message := ensureLatestJobsAreRequired(jobConfigKubevirtPresubmits, querier.ParseRelease(releases[0]))
+	latestMinorReleases := release.GetLatestMinorReleases(release.AsSemVers(releases))
+	if len(latestMinorReleases) < fourReleasesRequiredAtMinimum {
+		log.Log().Info("Not enough minor releases found, nothing to do.")
+		return nil
+	}
+
+	result, message := ensureSigJobsAreRequired(jobConfigKubevirtPresubmits, latestMinorReleases[0])
 	if result != ALL_JOBS_ARE_REQUIRED {
 		log.Log().Infof("Not all presubmits for k8s %s are required, nothing to do.\n%s", releases[0], message)
 		return nil
 	}
 
-	var requiredReleases []*querier.SemVer
-	for _, release := range releases[0:3] {
-		requiredReleases = append(requiredReleases, querier.ParseRelease(release))
-	}
-	jobsExist, message := ensurePresubmitJobsExistForReleases(jobConfigKubevirtPresubmits, requiredReleases)
+	threeLatestRequiredMinorReleases := latestMinorReleases[0:3]
+	jobsExist, message := ensureSigPresubmitJobsExistForReleases(jobConfigKubevirtPresubmits, threeLatestRequiredMinorReleases)
 	if !jobsExist {
-		log.Log().Infof("Not all required jobs for k8s versions %s exist, nothing to do.\n%s", requiredReleases, message)
+		log.Log().Infof("Not all required jobs for k8s versions %s exist, nothing to do.\n%s", threeLatestRequiredMinorReleases, message)
 		return nil
 	}
 
@@ -139,15 +139,15 @@ func removeOldJobsIfNewOnesExist(releases []*github.RepositoryRelease) error {
 	if err != nil {
 		return fmt.Errorf("failed to read jobconfig %s: %v", removeJobsOpts.jobConfigPathKubevirtPeriodics, err)
 	}
-	targetRelease := querier.ParseRelease(releases[3:4][0])
-	if updated := deletePeriodicJobsForRelease(&jobConfigKubevirtPeriodics, targetRelease); updated {
+	targetRelease := latestMinorReleases[3:4][0]
+	if updated := deleteSigPeriodicJobsForRelease(&jobConfigKubevirtPeriodics, targetRelease); updated {
 		err := writeJobConfig(&jobConfigKubevirtPeriodics, removeJobsOpts.jobConfigPathKubevirtPeriodics)
 		if err != nil {
 			return fmt.Errorf("failed to update periodics %s: %v", removeJobsOpts.jobConfigPathKubevirtPeriodics, err)
 		}
 	}
 
-	if updated := deletePresubmitJobsForRelease(&jobConfigKubevirtPresubmits, targetRelease); updated {
+	if updated := deleteSigPresubmitJobsForRelease(&jobConfigKubevirtPresubmits, targetRelease); updated {
 		err := writeJobConfig(&jobConfigKubevirtPresubmits, removeJobsOpts.jobConfigPathKubevirtPresubmits)
 		if err != nil {
 			return fmt.Errorf("failed to update presubmits %s: %v", removeJobsOpts.jobConfigPathKubevirtPresubmits, err)
@@ -156,7 +156,7 @@ func removeOldJobsIfNewOnesExist(releases []*github.RepositoryRelease) error {
 	return nil
 }
 
-func deletePresubmitJobsForRelease(jobConfig *config.JobConfig, targetRelease *querier.SemVer) (updated bool) {
+func deleteSigPresubmitJobsForRelease(jobConfig *config.JobConfig, targetRelease *querier.SemVer) (updated bool) {
 	toDeleteJobNames := map[string]struct{}{}
 	for _, sigName := range prowjobconfigs.SigNames {
 		toDeleteJobNames[prowjobconfigs.CreatePresubmitJobName(targetRelease, sigName)] = struct{}{}
@@ -179,7 +179,7 @@ func deletePresubmitJobsForRelease(jobConfig *config.JobConfig, targetRelease *q
 	return
 }
 
-func deletePeriodicJobsForRelease(jobConfig *config.JobConfig, release *querier.SemVer) (updated bool) {
+func deleteSigPeriodicJobsForRelease(jobConfig *config.JobConfig, release *querier.SemVer) (updated bool) {
 	toDeleteJobNames := map[string]struct{}{}
 	for _, sigName := range prowjobconfigs.SigNames {
 		toDeleteJobNames[prowjobconfigs.CreatePeriodicJobName(release, sigName)] = struct{}{}
@@ -223,7 +223,7 @@ func writeJobConfig(jobConfigToWrite *config.JobConfig, jobConfigPath string) er
 	return nil
 }
 
-func ensurePresubmitJobsExistForReleases(jobConfigKubevirtPresubmits config.JobConfig, requiredReleases []*querier.SemVer) (allJobsExist bool, message string) {
+func ensureSigPresubmitJobsExistForReleases(jobConfigKubevirtPresubmits config.JobConfig, requiredReleases []*querier.SemVer) (allJobsExist bool, message string) {
 	allJobsExist = true
 	messages := []string{}
 
@@ -258,7 +258,7 @@ const (
 	ALL_JOBS_ARE_REQUIRED
 )
 
-func ensureLatestJobsAreRequired(jobConfigKubevirtPresubmits config.JobConfig, release *querier.SemVer) (result latestJobsRequiredCheckResult, message string) {
+func ensureSigJobsAreRequired(jobConfigKubevirtPresubmits config.JobConfig, release *querier.SemVer) (result latestJobsRequiredCheckResult, message string) {
 	result = ALL_JOBS_ARE_REQUIRED
 	messages := []string{}
 	requiredJobNames := map[string]struct{}{}

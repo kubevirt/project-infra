@@ -103,7 +103,7 @@ func run(cmd *cobra.Command, args []string) error {
 	releases = querier.ValidReleases(releases)
 	targetRelease, sourceRelease, err := getSourceAndTargetRelease(releases)
 	if err != nil {
-		log.Log().WithError(err).Info("Cannot determine source and target release.")
+		log.Log().WithError(err).Info("Cannot determine source and target Release.")
 		return nil
 	}
 
@@ -162,7 +162,7 @@ func getSourceAndTargetRelease(releases []*github.RepositoryRelease) (targetRele
 		}
 	}
 	if sourceRelease == nil {
-		err = fmt.Errorf("no source release found")
+		err = fmt.Errorf("no source Release found")
 	}
 	return
 }
