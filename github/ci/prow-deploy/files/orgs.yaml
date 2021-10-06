@@ -493,6 +493,10 @@ orgs:
       web-ui-operator:
         description: Operator for web-ui
         has_projects: true
+      containerized-data-importer-api:
+        description: Containerized Data Importer API definitions
+        default_branch: main
+        has_projects: true
     teams:
       QE:
         description: ""
@@ -542,6 +546,14 @@ orgs:
           - brybacki
         repos:
           kubevirt-velero-plugin: admin
+      containerized-data-importer-api-maintainers:
+        description: ""
+        maintainers:
+          - mhenriks
+          - awels
+          - aglitke
+        repos:
+          containerized-data-importer-api: admin
       maintainers:
         description: ""
         maintainers:
