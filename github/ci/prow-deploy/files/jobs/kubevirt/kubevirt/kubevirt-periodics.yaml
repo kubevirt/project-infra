@@ -1478,3 +1478,69 @@ periodics:
         resources:
           requests:
             memory: "29Gi"
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 0 6 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 1h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    ci.kubevirt.io/prometheus: ""
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+  name: periodic-kubevirt-e2e-k8s-1.22-sig-performance-realtime
+  reporter_config:
+    slack:
+      job_states_to_report: []
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - |
+        # Create k8s cluster
+        make cluster-up
+
+        # Push and deploy kubevirt
+        make cluster-sync
+
+        FUNC_TEST_ARGS="--noColor --seed=42" make realtime-perftest
+      env:
+      - name: KUBEVIRT_PROVIDER
+        value: k8s-1.22
+      - name: KUBEVIRT_STORAGE
+        value: rook-ceph-default
+      - name: KUBEVIRT_MEMORY_SIZE
+        value: 9G
+      - name: KUBEVIRT_NUM_NODES
+        value: "2"
+      - name: KUBEVIRT_E2E_REALTIME_PERF_TEST
+        value: "true"
+      - name: KUBEVIRT_E2E_CYCLIC_DURATION_IN_SECONDS
+        value: "60"
+      - name: KUBEVIRT_E2E_REALTIME_LATENCY_THRESHOLD_IN_MICROSECONDS
+        value: "40"
+      - name: KUBEVIRT_HUGEPAGES_2M
+        value: "512"
+      - name: KUBEVIRT_REALTIME_SCHEDULER
+        value: "true"
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+      name: ""
+      resources:
+        requests:
+          cpu: "10"
+          memory: 26Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
