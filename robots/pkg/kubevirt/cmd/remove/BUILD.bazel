@@ -25,7 +25,10 @@ go_library(
 
 go_test(
     name = "go_default_test",
-    srcs = ["jobs_test.go"],
+    srcs = [
+        "always_run_test.go",
+        "jobs_test.go",
+    ],
     data = glob(["testdata/**"]),
     embed = [":go_default_library"],
     deps = [

@@ -113,6 +113,12 @@ func runAlwaysRunCommand(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
+	result, message := ensureSigJobsDoAlwaysRun(jobConfig, latestMinorReleases[0])
+	if result != ALL_JOBS_DO_ALWAYS_RUN {
+		log.Log().Infof("Not all presubmits for k8s %s do run always, nothing to do.\n%s", latestMinorReleases[0], message)
+		return nil
+	}
+
 	targetReleaseSemver := latestMinorReleases[3]
 	log.Log().Infof("Targeting release %v", targetReleaseSemver)
 
@@ -161,5 +167,38 @@ func updatePresubmitsAlwaysRunField(jobConfig *config.JobConfig, latestReleaseSe
 		}
 	}
 
+	return
+}
+
+type latestJobsAlwaysRunCheckResult int
+
+const (
+	NOT_ALL_ALWAYS_RUN_JOBS_EXIST latestJobsAlwaysRunCheckResult = iota
+	NOT_ALL_JOBS_DO_ALWAYS_RUN
+	ALL_JOBS_DO_ALWAYS_RUN
+)
+
+func ensureSigJobsDoAlwaysRun(jobConfigKubevirtPresubmits config.JobConfig, release *querier.SemVer) (result latestJobsAlwaysRunCheckResult, message string) {
+	result = ALL_JOBS_DO_ALWAYS_RUN
+	messages := []string{}
+	requiredJobNames := map[string]struct{}{}
+	for _, sigName := range prowjobconfigs.SigNames {
+		requiredJobNames[prowjobconfigs.CreatePresubmitJobName(release, sigName)] = struct{}{}
+	}
+	for _, presubmit := range jobConfigKubevirtPresubmits.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] {
+		if _, exists := requiredJobNames[presubmit.Name]; !exists {
+			continue
+		}
+		delete(requiredJobNames, presubmit.Name)
+		if !presubmit.AlwaysRun {
+			messages = append(messages, fmt.Sprintf("job %s is not running always", presubmit.Name))
+			result = NOT_ALL_JOBS_DO_ALWAYS_RUN
+		}
+	}
+	if len(requiredJobNames) > 0 {
+		messages = append(messages, fmt.Sprintf("jobs missing: %v", requiredJobNames))
+		result = NOT_ALL_ALWAYS_RUN_JOBS_EXIST
+	}
+	message = strings.Join(messages, ", ")
 	return
 }

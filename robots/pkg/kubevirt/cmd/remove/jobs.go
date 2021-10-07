@@ -124,7 +124,7 @@ func removeOldJobsIfNewOnesExist(releases []*github.RepositoryRelease) error {
 
 	result, message := ensureSigJobsAreRequired(jobConfigKubevirtPresubmits, latestMinorReleases[0])
 	if result != ALL_JOBS_ARE_REQUIRED {
-		log.Log().Infof("Not all presubmits for k8s %s are required, nothing to do.\n%s", releases[0], message)
+		log.Log().Infof("Not all presubmits for k8s %s are required, nothing to do.\n%s", latestMinorReleases[0], message)
 		return nil
 	}
 
