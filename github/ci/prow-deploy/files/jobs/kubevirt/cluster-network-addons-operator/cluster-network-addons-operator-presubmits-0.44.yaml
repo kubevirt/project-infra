@@ -1,7 +1,7 @@
 ---
 presubmits:
   kubevirt/cluster-network-addons-operator:
-    - name: pull-e2e-cluster-network-addons-operator-lifecycle-k8s
+    - name: pull-e2e-cnao-lifecycle-k8s-0.44
       branches:
         - release-0.44
       always_run: true
@@ -31,7 +31,7 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-lifecycle-k8s.sh"
-    - name: pull-e2e-cluster-network-addons-operator-workflow-k8s
+    - name: pull-e2e-cnao-workflow-k8s-0.44
       branches:
         - release-0.44
       always_run: true
@@ -61,7 +61,7 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-workflow-k8s.sh"
-    - name: pull-cluster-network-addons-operator-unit-test
+    - name: pull-cnao-unit-test-0.44
       branches:
         - release-0.44
       always_run: true
@@ -90,7 +90,7 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.unit-test.sh"
-    - name: pull-e2e-cluster-network-addons-operator-kubemacpool-functests
+    - name: pull-e2e-cnao-kubemacpool-functests-0.44
       branches:
         - release-0.44
       always_run: true
@@ -121,7 +121,7 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-kubemacpool-functests.sh"
-    - name: pull-e2e-cluster-network-addons-operator-multus-functests
+    - name: pull-e2e-cnao-multus-functests-0.44
       branches:
         - release-0.44
       annotations:
@@ -154,7 +154,7 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-multus-functests.sh"
-    - name: pull-e2e-cluster-network-addons-operator-br-marker-functests
+    - name: pull-e2e-cnao-br-marker-functests-0.44
       branches:
         - release-0.44
       annotations:
@@ -187,7 +187,7 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-bridge-marker-functests.sh"
-    - name: pull-e2e-cluster-network-addons-operator-nmstate-functests
+    - name: pull-e2e-cnao-nmstate-functests-0.44
       branches:
         - release-0.44
       annotations:
@@ -220,7 +220,7 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-nmstate-functests.sh"
-    - name: pull-e2e-cluster-network-addons-operator-ovs-cni-functests
+    - name: pull-e2e-cnao-ovs-cni-functests-0.44
       branches:
         - release-0.44
       annotations:
@@ -253,7 +253,7 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-ovs-cni-functests.sh"
-    - name: pull-e2e-cluster-network-addons-operator-macvtap-cni-functests
+    - name: pull-e2e-cnao-macvtap-cni-functests-0.44
       branches:
         - release-0.44
       annotations:
