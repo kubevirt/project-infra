@@ -6,10 +6,12 @@ filters:
     approvers:
     - aglitke
     - awels
+    - brybacki
     - mhenriks
     reviewers:
     - aglitke
     - awels
+    - brybacki
     - maya-r
     - mhenriks
 options: {}
