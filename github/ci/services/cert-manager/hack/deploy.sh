@@ -5,6 +5,9 @@ set -eo pipefail
 main(){
     local environment=${1}
 
+    # deploy rbac
+    bazelisk run //github/ci/services/cert-manager:${environment}-rbac.apply
+
     # deploy base resources
     bazelisk run //github/ci/services/cert-manager:${environment}-base.apply
 
