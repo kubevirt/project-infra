@@ -17,7 +17,27 @@ PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
         name = NAME,
         cluster = CLUSTER,
         manifests = glob([
-            "manifests/*.yaml",
+            "manifests/rbac/*.yaml",
+        ]),
+        namespace = "kube-system",
+        patches = glob([
+            "patches/*.yaml",
+        ]),
+        user = USER,
+    )
+    for NAME, CLUSTER, USER in [
+        ("testing-rbac", TESTING_CLUSTER, TESTING_USER),
+        ("production-control-plane-rbac", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+        ("production-e2e-workloads-rbac", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+    ]
+]
+
+[
+    k8s_deploy(
+        name = NAME,
+        cluster = CLUSTER,
+        manifests = glob([
+            "manifests/base/*.yaml",
         ]),
         namespace = "cert-manager",
         patches = glob([
