@@ -1,0 +1,221 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    group: kubevirtci
+  name: node-exporter-alerting
+spec:
+  groups:
+  - name: node-exporter_disk.rules
+    rules:
+    - alert: HostOutOfDiskSpace
+      annotations:
+        summary: Host out of disk space (instance {{ $labels.instance }})
+        description: "Disk is almost full (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+      for: 2m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostDiskWillFillIn24Hours
+      annotations:
+        summary: Host disk will fill in 24 hours (instance {{ $labels.instance }})
+        description: "Filesystem is predicted to run out of space within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs"}[1h], 24 * 3600) < 0 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+      for: 2m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostUnusualDiskReadRate
+      annotations:
+        summary: Host unusual disk read rate (instance {{ $labels.instance }})
+        description: "Disk is probably reading too much data (> 400 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: sum by (instance) (rate(node_disk_read_bytes_total[2m])) / 1024 / 1024 > 400
+      for: 5m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostUnusualDiskWriteRate
+      annotations:
+        summary: Host unusual disk write rate (instance {{ $labels.instance }})
+        description: "Disk is probably writing too much data (> 200 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: sum by (instance) (rate(node_disk_written_bytes_total[2m])) / 1024 / 1024 > 200
+      for: 5m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostUnusualDiskReadLatency
+      annotations:
+        summary: Host unusual disk read latency (instance {{ $labels.instance }})
+        description: "Disk latency is growing (read operations > 200ms)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: rate(node_disk_read_time_seconds_total[1m]) / rate(node_disk_reads_completed_total[1m]) > 0.2 and rate(node_disk_reads_completed_total[1m]) > 0
+      for: 2m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostUnusualDiskWriteLatency
+      annotations:
+        summary: Host unusual disk write latency (instance {{ $labels.instance }})
+        description: "Disk latency is growing (write operations > 700ms)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: rate(node_disk_write_time_seconds_total[1m]) / rate(node_disk_writes_completed_total[1m]) > 0.7 and rate(node_disk_writes_completed_total[1m]) > 0
+      for: 2m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostOutOfInodes
+      annotations:
+        summary: Host out of inodes (instance {{ $labels.instance }})
+        description: "Disk is almost running out of available inodes (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: node_filesystem_files_free{mountpoint ="/rootfs"} / node_filesystem_files{mountpoint="/rootfs"} * 100 < 10 and ON (instance, device, mountpoint) node_filesystem_readonly{mountpoint="/rootfs"} == 0
+      for: 2m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostInodesWillFillIn24Hours
+      annotations:
+        summary: Host inodes will fill in 24 hours (instance {{ $labels.instance }})
+        description: "Filesystem is predicted to run out of inodes within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: node_filesystem_files_free{mountpoint ="/rootfs"} / node_filesystem_files{mountpoint="/rootfs"} * 100 < 10 and predict_linear(node_filesystem_files_free{mountpoint="/rootfs"}[1h], 24 * 3600) < 0 and ON (instance, device, mountpoint) node_filesystem_readonly{mountpoint="/rootfs"} == 0
+      for: 2m
+      labels:
+        severity: warning
+        namespace: monitoring
+
+  - name: node-exporter_memory.rules
+    rules:
+    - alert: HostOutOfMemory
+      annotations:
+        summary: Host out of memory (instance {{ $labels.instance }})
+        description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+      for: 2m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostMemoryUnderMemoryPressure
+      annotations:
+        summary: Host memory under memory pressure (instance {{ $labels.instance }})
+        description: "The node is under heavy memory pressure. High rate of major page faults\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: rate(node_vmstat_pgmajfault[1m]) > 1000
+      for: 2m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostOomKillDetected
+      annotations:
+        summary: Host OOM kill detected (instance {{ $labels.instance }})
+        description: "OOM kill detected\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: increase(node_vmstat_oom_kill[1m]) > 0
+      for: 0m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostEdacCorrectableErrorsDetected
+      annotations:
+        summary: Host EDAC Correctable Errors detected (instance {{ $labels.instance }})
+        description: "Host {{ $labels.instance }} has had {{ printf \"%.0f\" $value }} correctable memory errors reported by EDAC in the last 5 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: increase(node_edac_correctable_errors_total[1m]) > 0
+      for: 0m
+      labels:
+        severity: info
+        namespace: monitoring
+    - alert: HostEdacUncorrectableErrorsDetected
+      annotations:
+        summary: Host EDAC Uncorrectable Errors detected (instance {{ $labels.instance }})
+        description: "Host {{ $labels.instance }} has had {{ printf \"%.0f\" $value }} uncorrectable memory errors reported by EDAC in the last 5 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: node_edac_uncorrectable_errors_total > 0
+      for: 0m
+      labels:
+        severity: warning
+        namespace: monitoring
+
+  - name: node-exporter_network.rules
+    rules:
+    - alert: HostUnusualNetworkThroughputIn
+      annotations:
+        summary: Host unusual network throughput in (instance {{ $labels.instance }})
+        description: "Host network interfaces are probably receiving too much data (> 3000 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: sum by (instance) (rate(node_network_receive_bytes_total[2m])) / 1024 / 1024 > 3000
+      for: 5m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostUnusualNetworkThroughputOut
+      annotations:
+        summary: Host unusual network throughput out (instance {{ $labels.instance }})
+        description: "Host network interfaces are probably sending too much data (> 3000 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: sum by (instance) (rate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 3000
+      for: 5m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostNetworkReceiveErrors
+      annotations:
+        summary: Host Network Receive Errors (instance {{ $labels.instance }})
+        description: "Host {{ $labels.instance }} interface {{ $labels.device }} has encountered {{ printf \"%.0f\" $value }} receive errors in the last two minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: rate(node_network_receive_errs_total[2m]) / rate(node_network_receive_packets_total[2m]) > 0.01
+      for: 2m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostNetworkTransmitErrors
+      annotations:
+        summary: Host Network Transmit Errors (instance {{ $labels.instance }})
+        description: "Host {{ $labels.instance }} interface {{ $labels.device }} has encountered {{ printf \"%.0f\" $value }} transmit errors in the last two minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: rate(node_network_transmit_errs_total[2m]) / rate(node_network_transmit_packets_total[2m]) > 0.01
+      for: 2m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: HostConntrackLimit
+      annotations:
+        summary: Host conntrack limit (instance {{ $labels.instance }})
+        description: "The number of conntrack is approaching limit\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: node_nf_conntrack_entries / node_nf_conntrack_entries_limit > 0.8
+      for: 5m
+      labels:
+        severity: warning
+        namespace: monitoring
+
+  - name: node-exporter_cpu.rules
+    rules:
+#    - alert: HostHighCpuLoad
+#      annotations:
+#        summary: Host high CPU load (instance {{ $labels.instance }})
+#        description: "CPU load is > 95%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+#      expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 95
+#      for: 2m
+#      labels:
+#        severity: warning
+#        namespace: monitoring
+    - alert: HostContextSwitching
+      annotations:
+        summary: Host context switching (instance {{ $labels.instance }})
+        description: "Context switching is growing on node (> 8000 / s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: (rate(node_context_switches_total[5m])) / (count without(cpu, mode) (node_cpu_seconds_total{mode="idle"})) > 8000
+      for: 3m
+      labels:
+        severity: warning
+        namespace: monitoring
+
+  - name: node-exporter_misc.rules
+    rules:
+    - alert: HostClockSkew
+      annotations:
+        summary: Host clock skew (instance {{ $labels.instance }})
+        description: "Clock skew detected. Clock is out of sync.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      expr: (node_timex_offset_seconds > 0.05 and deriv(node_timex_offset_seconds[5m]) >= 0) or (node_timex_offset_seconds < -0.05 and deriv(node_timex_offset_seconds[5m]) <= 0)
+      for: 20m
+      labels:
+        severity: warning
+        namespace: monitoring
+#    - alert: HostClockNotSynchronising
+#      annotations:
+#        summary: Host clock not synchronising (instance {{ $labels.instance }})
+#        description: "Clock not synchronising.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+#      expr: min_over_time(node_timex_sync_status[1m]) == 0 and node_timex_maxerror_seconds >= 16
+#      for: 20m
+#      labels:
+#        severity: warning
+#        namespace: monitoring
