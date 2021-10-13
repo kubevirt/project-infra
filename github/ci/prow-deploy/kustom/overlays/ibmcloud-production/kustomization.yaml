@@ -151,7 +151,7 @@ patches:
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
-      version: v1beta1
+      version: v1
       kind: Role
       namespace: default
       name: .*
@@ -179,14 +179,14 @@ patches:
     path: patches/JsonRFC6902/prow-jobs-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
-      version: v1beta1
+      version: v1
       kind: RoleBinding
       namespace: test-pods
       name: .*
     path: patches/JsonRFC6902/prow-jobs-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
-      version: v1beta1
+      version: v1
       kind: ClusterRoleBinding
       name: prow-rehearse
     path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
@@ -199,21 +199,21 @@ patches:
     path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
-      version: v1beta1
+      version: v1
       kind: RoleBinding
       namespace: test-pods
       name: .*
     path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
-      version: v1beta1
+      version: v1
       kind: RoleBinding
       namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
-      version: v1beta1
+      version: v1
       kind: Role
       namespace: test-pods
       name: .*
@@ -252,7 +252,7 @@ patches:
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
       group: batch
-      version: v1beta1
+      version: v1
       kind: CronJob
       namespace: ""
       name: .*
