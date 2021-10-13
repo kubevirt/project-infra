@@ -6,6 +6,7 @@ resources:
   - resources/bootstrap.yaml
   - resources/ingress-controller.yaml
   - resources/multus-cni.yaml
+  - resources/metrics-server.yaml
   - ../../components/docker-mirror-proxy/base
   - ../../components/greenhouse/base
 
