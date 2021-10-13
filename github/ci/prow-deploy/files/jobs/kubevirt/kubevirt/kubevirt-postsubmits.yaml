@@ -62,6 +62,52 @@ postsubmits:
       - name: gcs
         secret:
           secretName: gcs
+  - name: push-update-testing-manifests-on-kubevirt-tag
+    branches:
+    - ^v0\.3[46]\.[0-9]+$
+    cluster: ibm-prow-jobs
+    always_run: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /etc/gcs/service-account.json
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
+        - |
+          set -xe
+          DOCKER_TAG="$(git tag --points-at HEAD | head -1)"
+          if [ -z "$DOCKER_TAG" ]; then
+            echo "commit $(git show -s --format=%h) doesn't have a tag, exiting..."
+            exit 0
+          fi
+          make manifests
+          gsutil -m rm -r "gs://kubevirt-prow/devel/release/kubevirt/kubevirt/$DOCKER_TAG" || true
+          gsutil cp -r "_out/manifests/testing" "gs://kubevirt-prow/devel/release/kubevirt/kubevirt/$DOCKER_TAG/manifests/"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+        volumeMounts:
+        - name: gcs
+          mountPath: /etc/gcs
+          readOnly: true
+      volumes:
+      - name: gcs
+        secret:
+          secretName: gcs
   - name: push-kubevirt-main
     branches:
     - main
