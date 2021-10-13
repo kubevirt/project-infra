@@ -401,11 +401,11 @@ func (r *releaseData) forkProwJobs() error {
 			return err
 		}
 
-		_, err = gitCommand("-C", r.infraDir, "pull", "origin", gitbranch)
-		if err != nil {
-			return err
-		}
 	}
+	// ignore error here, we're just trying to make sure we've synced
+	// and pulled down any changes from the origin branch in github
+	// in case there are non local changes that need to get pulled in.
+	_, _ = gitCommand("-C", r.infraDir, "pull", "origin", gitbranch)
 
 	if _, err = os.Stat(fullJobConfig); err != nil && os.IsNotExist(err) {
 		// no job to fork for this project
@@ -455,7 +455,6 @@ func (r *releaseData) forkProwJobs() error {
 			"--title", fmt.Sprintf("Release configs for %s/%s release branch %s", r.org, r.repo, r.newBranch),
 			"--body", "adds new release configs",
 			"--source", fmt.Sprintf("kubevirt:%s", gitbranch),
-			"--labels", "lgtm,approved",
 			"--confirm",
 		)
 		bytes, err := cmd.CombinedOutput()
@@ -468,21 +467,23 @@ func (r *releaseData) forkProwJobs() error {
 	return nil
 }
 
-func (r *releaseData) cutNewBranch() error {
+func (r *releaseData) cutNewBranch(skipProw bool) error {
 
-	// checkout project infra project in order to update jobs for new branch
-	err := r.checkoutProjectInfra()
-	if err != nil {
-		return err
-	}
+	if !skipProw {
+		// checkout project infra project in order to update jobs for new branch
+		err := r.checkoutProjectInfra()
+		if err != nil {
+			return err
+		}
 
-	err = r.forkProwJobs()
-	if err != nil {
-		return err
+		err = r.forkProwJobs()
+		if err != nil {
+			return err
+		}
 	}
 
 	// checkout remote branch
-	err = r.checkoutUpstream()
+	err := r.checkoutUpstream()
 	if err != nil {
 		return err
 	}
@@ -1106,6 +1107,7 @@ func main() {
 	gitEmail := flag.String("git-email", "", "git user email")
 	skipReleaseNotes := flag.Bool("skip-release-notes", false, "skip generating release notes for a tag")
 	force := flag.Bool("force", false, "force a release or release branch to occur despite blockers or other warnings")
+	skipProw := flag.Bool("skip-prow", false, "skip creating prow configs")
 	promoteRC := flag.String("promote-release-candidate", "", "The tag of an rc release that will be promoted to an official release")
 
 	autoRelease := flag.Bool("auto-release", false, "Automatically perform branch cutting an releases based on time intervals")
@@ -1204,7 +1206,7 @@ func main() {
 			log.Fatal("ERROR Branch is blocked")
 		}
 
-		err = r.cutNewBranch()
+		err = r.cutNewBranch(*skipProw)
 		if err != nil {
 			log.Fatalf("ERROR Creating Branch: %s ", err)
 		}

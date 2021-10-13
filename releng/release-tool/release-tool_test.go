@@ -391,6 +391,7 @@ func TestCutNewBranch(t *testing.T) {
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/kubevirt/https-project-infra config user.name fake-user]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/kubevirt/https-project-infra config user.email fake-email@fake.fake]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/kubevirt/https-project-infra checkout -b fake-org_fake-repo_release-0.2_configs]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/kubevirt/https-project-infra pull origin fake-org_fake-repo_release-0.2_configs]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [clone https://fake-token@github.com/fake-org/fake-repo.git %s/fake-org/https-fake-repo]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo config user.name fake-user]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo config user.email fake-email@fake.fake]", r.cacheDir))
@@ -404,7 +405,7 @@ func TestCutNewBranch(t *testing.T) {
 		return "", nil
 	}
 
-	err := r.cutNewBranch()
+	err := r.cutNewBranch(false)
 	if err != nil {
 		t.Errorf("got unexpected error %s", err)
 	} else if len(expectedGitCommands) != len(seenGitCommands) {
