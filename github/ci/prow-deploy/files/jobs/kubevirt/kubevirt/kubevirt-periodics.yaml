@@ -1119,7 +1119,7 @@ periodics:
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-cluster-sync-test-ARM
+  name: periodic-kubevirt-cluster-sync-test-ARM64
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1133,6 +1133,10 @@ periodics:
         # install yq
         curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
         chmod +x ./yq && mv ./yq /usr/local/bin/yq
+
+        # get kubectl
+        curl -L "https://dl.k8s.io/release/v1.19.7/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+        chmod +x /usr/local/bin/kubectl
 
         # get kubeconfig
         source ../project-infra/hack/manage-secrets.sh
@@ -1160,7 +1164,7 @@ periodics:
       - name: BUILD_ARCH
         value: crossbuild-aarch64
       - name: KUBEVIRT_E2E_FOCUS
-        value: test_id:1464
+        value: arm64
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
