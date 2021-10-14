@@ -56,6 +56,7 @@ spec:
         ports:
           - name: http
             containerPort: 3128
+            protocol: TCP
         resources:
           requests:
             cpu: 300m

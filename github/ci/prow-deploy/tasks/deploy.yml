@@ -12,7 +12,14 @@
 
 - name: Launch deployment
   shell: |
-    kustomize build overlays/{{ deploy_environment }} | kubectl apply --server-side --force-conflicts -f -
+    # for now cant execute "kubectl apply --server-side" reliably on
+    # "workloads-production" env (which runs k8s 1.19)
+    APPLY_OPTIONS=
+    if [ "{{deploy_environment}}" != "workloads-production" ]; then
+      APPLY_OPTIONS="--server-side --force-conflicts"
+    fi
+
+    kustomize build overlays/{{ deploy_environment }} | kubectl apply ${APPLY_OPTIONS} -f -
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
   environment:

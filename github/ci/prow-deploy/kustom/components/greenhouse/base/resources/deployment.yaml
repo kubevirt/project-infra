@@ -42,8 +42,10 @@ spec:
         ports:
         - name: cache
           containerPort: 8080
+          protocol: TCP
         - name: metrics
           containerPort: 9090
+          protocol: TCP
         args:
         - --dir=/data
         - --min-percent-blocks-free=30
@@ -52,11 +54,11 @@ spec:
           mountPath: /data
         resources:
           requests:
-            cpu: 1.2
-            memory: 3Gi
+            cpu: "1.2"
+            memory: "3Gi"
           limits:
-            cpu: 1.2
-            memory: 3Gi
+            cpu: "1.2"
+            memory: "3Gi"
       volumes:
       - name: cache
         persistentVolumeClaim:

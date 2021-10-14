@@ -8,3 +8,4 @@ spec:
     app: docker-mirror-proxy
   ports:
   - port: 3128
+    protocol: TCP
