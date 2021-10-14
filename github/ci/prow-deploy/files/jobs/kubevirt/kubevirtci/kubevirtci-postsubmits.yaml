@@ -57,3 +57,38 @@ postsubmits:
           resources:
             requests:
               memory: "8Gi"
+
+    - name: publish-fedora-realtime-container-image
+      annotations:
+        testgrid-create-test-group: "false"
+        rehearsal.allowed: "true"
+      always_run: false
+      run_if_changed: "cluster-provision/images/vm-image-builder/fedora-realtime/.*"
+      decorate: true
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-kubevirtci-quay-credential: "true"        
+      cluster: prow-workloads
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/vm-image-builder:v20210928-7fbacd6
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-ce"
+              - |
+                curl -L https://github.com/kubevirt/kubevirtci/pull/690.patch | git apply
+                cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io
+                /usr/sbin/libvirtd > /var/log/libvirt/libvirtd.log 2>&1 &
+                /usr/sbin/virtlogd > /var/log/libvirt/virtlogd.log 2>&1 &
+                ./cluster-provision/images/vm-image-builder/create-containerdisk.sh fedora-realtime
+                ./cluster-provision/images/vm-image-builder/publish-containerdisk.sh fedora-realtime quay.io/kubevirt/fedora-realtime-container-disk:v$(date +%Y%m%d)-$(git rev-parse --short HEAD)
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "2Gi"
+              limits:
+                memory: "2Gi"
