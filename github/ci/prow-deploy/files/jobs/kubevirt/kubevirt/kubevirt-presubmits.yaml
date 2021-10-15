@@ -1805,6 +1805,10 @@ presubmits:
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
+    extra_refs:
+    - base_ref: main
+      org: kubevirt
+      repo: project-infra
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
