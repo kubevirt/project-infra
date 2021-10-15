@@ -1810,8 +1810,11 @@ presubmits:
       org: kubevirt
       repo: project-infra
     labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
       preset-shared-images: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-arm64
