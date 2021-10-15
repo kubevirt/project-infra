@@ -497,6 +497,10 @@ orgs:
         description: Containerized Data Importer API definitions
         default_branch: main
         has_projects: true
+      api:
+        description: KubeVirt API definition
+        default_branch: main
+        has_projects: true
     teams:
       QE:
         description: ""
@@ -554,6 +558,13 @@ orgs:
           - aglitke
         repos:
           containerized-data-importer-api: admin
+      api:
+        description: ""
+        maintainers:
+          - mhenriks
+          - rmohr
+        repos:
+          api: admin
       maintainers:
         description: ""
         maintainers:
