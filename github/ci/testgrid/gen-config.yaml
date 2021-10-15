@@ -5,6 +5,19 @@ dashboards:
 - name: kubevirt-libguestfs-appliance-periodics
 - name: kubevirt-hyperconverged-cluster-operator-presubmits
 - name: kubevirt-hyperconverged-cluster-operator-periodics
+- name: kubevirt-hyperconverged-cluster-operator-openshift-ci-presubmits
+  dashboard_tab:
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-azure
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-azure
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
 
 dashboard_groups:
 - name: kubevirt
@@ -15,3 +28,8 @@ dashboard_groups:
   - kubevirt-libguestfs-appliance-periodics
   - kubevirt-hyperconverged-cluster-operator-presubmits
   - kubevirt-hyperconverged-cluster-operator-periodics
+  - kubevirt-hyperconverged-cluster-operator-openshift-ci-presubmits
+
+test_groups:
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-azure
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-azure
