@@ -7,8 +7,298 @@ dashboards:
 - name: kubevirt-hyperconverged-cluster-operator-periodics
 - name: kubevirt-hyperconverged-cluster-operator-openshift-ci-presubmits
   dashboard_tab:
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index-hco-upgrade-bundle
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index-hco-upgrade-bundle
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index-hco-upgrade-prev-bundle
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index-hco-upgrade-prev-bundle
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-aws
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-aws
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-azure
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-azure
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-azure-sno
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-azure-sno
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-gcp
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-gcp
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-kv-smoke-azure
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-kv-smoke-azure
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-kv-smoke-gcp
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-kv-smoke-gcp
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-index-aws
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-index-aws
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-index-azure
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-index-azure
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-index-azure-sno
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-index-azure-sno
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-aws
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-aws
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
   - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-azure
     test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-azure
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-azure-sno
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-azure-sno
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-images
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-images
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-ci-index
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-ci-index
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-ci-index-hco-upgrade-bundle
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-ci-index-hco-upgrade-bundle
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-ci-index-hco-upgrade-prev-bundle
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-ci-index-hco-upgrade-prev-bundle
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-image-index-aws
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-image-index-aws
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-image-index-gcp
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-image-index-gcp
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-upgrade-index-aws
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-upgrade-index-aws
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-upgrade-index-gcp
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-upgrade-index-gcp
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-images
+    test_group_name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-images
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+- name: kubevirt-hyperconverged-cluster-operator-openshift-ci-periodics
+  dashboard_tab:
+  - name: periodic-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-deploy-nightly-main-aws
+    test_group_name: periodic-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-deploy-nightly-main-aws
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+- name: kubevirt-hyperconverged-cluster-operator-openshift-ci-postsubmits
+  dashboard_tab:
+  - name: branch-ci-kubevirt-hyperconverged-cluster-operator-main-images
+    test_group_name: branch-ci-kubevirt-hyperconverged-cluster-operator-main-images
+    open_test_template:
+      url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
+    open_bug_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/issues/
+    results_url_template:
+      url: https://prow.ci.openshift.org/job-history/<gcs_prefix>
+    code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
+    code_search_url_template:
+      url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+  - name: branch-ci-kubevirt-hyperconverged-cluster-operator-main-okd-images
+    test_group_name: branch-ci-kubevirt-hyperconverged-cluster-operator-main-okd-images
     open_test_template:
       url: https://prow.ci.openshift.org/view/gcs/<gcs_prefix>/<changelist>
     open_bug_template:
@@ -29,7 +319,61 @@ dashboard_groups:
   - kubevirt-hyperconverged-cluster-operator-presubmits
   - kubevirt-hyperconverged-cluster-operator-periodics
   - kubevirt-hyperconverged-cluster-operator-openshift-ci-presubmits
+  - kubevirt-hyperconverged-cluster-operator-openshift-ci-periodics
+  - kubevirt-hyperconverged-cluster-operator-openshift-ci-postsubmits
 
 test_groups:
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index-hco-upgrade-bundle
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index-hco-upgrade-bundle
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index-hco-upgrade-prev-bundle
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index-hco-upgrade-prev-bundle
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-aws
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-aws
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-azure
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-azure
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-azure-sno
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-azure-sno
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-gcp
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-image-index-gcp
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-kv-smoke-azure
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-kv-smoke-azure
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-kv-smoke-gcp
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-kv-smoke-gcp
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-index-aws
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-index-aws
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-index-azure
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-index-azure
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-index-azure-sno
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-index-azure-sno
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-aws
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-aws
   - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-azure
     name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-azure
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-azure-sno
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-upgrade-prev-index-azure-sno
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-images
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-images
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-ci-index
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-ci-index
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-ci-index-hco-upgrade-bundle
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-ci-index-hco-upgrade-bundle
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-ci-index-hco-upgrade-prev-bundle
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-ci-index-hco-upgrade-prev-bundle
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-image-index-aws
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-image-index-aws
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-image-index-gcp
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-image-index-gcp
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-upgrade-index-aws
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-upgrade-index-aws
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-upgrade-index-gcp
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-hco-e2e-upgrade-index-gcp
+  - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-images
+    name: pull-ci-kubevirt-hyperconverged-cluster-operator-main-okd-images
+  - gcs_prefix: origin-ci-test/logs/periodic-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-deploy-nightly-main-aws
+    name: periodic-ci-kubevirt-hyperconverged-cluster-operator-main-hco-e2e-deploy-nightly-main-aws
+  - gcs_prefix: origin-ci-test/logs/branch-ci-kubevirt-hyperconverged-cluster-operator-main-images
+    name: branch-ci-kubevirt-hyperconverged-cluster-operator-main-images
+  - gcs_prefix: origin-ci-test/logs/branch-ci-kubevirt-hyperconverged-cluster-operator-main-okd-images
+    name: branch-ci-kubevirt-hyperconverged-cluster-operator-main-okd-images
