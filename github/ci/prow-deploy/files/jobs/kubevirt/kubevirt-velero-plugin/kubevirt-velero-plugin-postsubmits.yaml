@@ -1,0 +1,123 @@
+postsubmits:
+  kubevirt/kubevirt-velero-plugin:
+  - name: push-release-kvp-images
+    branches:
+    - release-v\d+\.\d+
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20210924-7b670cb
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          # Only push images on tags
+          [ -z "$(git tag --points-at HEAD | head -1)" ] ||
+          DOCKER_TAG="$(git tag --points-at HEAD | head -1)" make push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: push-latest-kvp-images
+    branches:
+    - main
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20210924-7b670cb
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          make push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: push-release-kvp-tag
+    branches:
+    - release-v\d+\.\d+
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "false"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        - name: GH_CLI_VERSION
+          value: "1.5.0"
+        - name: GITHUB_TOKEN_PATH
+          value: /etc/github/oauth
+        - name: GITHUB_REPOSITORY
+          value: kubevirt/kubevirt-velero-plugin
+        - name: GIT_USER_NAME
+          value: kubevirt-bot
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
+        - ./hack/release.sh
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+        volumeMounts:
+        - name: token
+          mountPath: /etc/github
+      volumes:
+      - name: token
+        secret:
+          secretName: oauth-token
