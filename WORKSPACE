@@ -34,13 +34,6 @@ http_archive(
 )
 
 http_archive(
-    name = "com_github_bazelbuild_buildtools",
-    sha256 = "069617be63d72c2c70a14d832102a98d65fe12e02661f7c42797bc390c80017f",
-    strip_prefix = "buildtools-2.2.0",
-    url = "https://github.com/bazelbuild/buildtools/archive/2.2.0.tar.gz",
-)
-
-http_archive(
     name = "com_google_protobuf",
     sha256 = "9748c0d90e54ea09e5e75fb7fac16edce15d2028d4356f32211cfa3c0e956564",
     strip_prefix = "protobuf-3.11.4",
@@ -52,7 +45,6 @@ load("//:go_third_party.bzl", "go_deps")
 # gazelle:repository_macro go_third_party.bzl%go_deps
 go_deps()
 
-load("@com_github_bazelbuild_buildtools//buildifier:deps.bzl", "buildifier_dependencies")
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 
 go_rules_dependencies()
