@@ -40,6 +40,7 @@ presubmits:
         - -ce
         - |
           trap "echo teardown && make cluster-down" EXIT ERR SIGINT SIGTERM
+          curl -L https://github.com/kubevirt/kubevirtci/pull/694.patch | git apply
           make cluster-up
         env:
         - name: GIMME_GO_VERSION
