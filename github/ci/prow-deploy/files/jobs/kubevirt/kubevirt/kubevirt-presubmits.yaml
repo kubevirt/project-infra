@@ -1837,6 +1837,8 @@ presubmits:
               value: "aarch64_test"
             - name: KUBECONFIG
               value: "/kubeconfig"
+            - name: kubectl
+              value: "/usr/local/bin/kubectl"
             - name: IMAGE_PULL_POLICY
               value: "Always"
             - name: BUILD_ARCH
