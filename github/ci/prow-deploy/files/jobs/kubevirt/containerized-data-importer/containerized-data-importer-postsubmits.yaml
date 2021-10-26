@@ -121,3 +121,50 @@ postsubmits:
       - name: token
         secret:
           secretName: oauth-token
+  - name: push-containerized-data-importer-main
+    branches:
+    - main
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "false"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        - name: GH_CLI_VERSION
+          value: "1.5.0"
+        - name: GITHUB_TOKEN_PATH
+          value: /etc/github/oauth
+        - name: GITHUB_REPOSITORY
+          value: kubevirt/containerized-data-importer
+        - name: GIT_USER_NAME
+          value: kubevirt-bot
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
+        - ./automation/postsubmit-main.sh
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+        volumeMounts:
+        - name: token
+          mountPath: /etc/github
+      volumes:
+      - name: token
+        secret:
+          secretName: oauth-token
