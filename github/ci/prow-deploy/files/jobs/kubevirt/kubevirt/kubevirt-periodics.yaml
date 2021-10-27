@@ -873,6 +873,88 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
+  cron: 0 40 22,10 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 30m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+  name: periodic-kubevirt-e2e-k8s-1.22-sriov
+  reporter_config:
+    slack:
+      job_states_to_report: []
+  spec:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: sriov-pod
+              operator: In
+              values:
+              - "true"
+          topologyKey: kubernetes.io/hostname
+        - labelSelector:
+            matchExpressions:
+            - key: sriov-pod-multi
+              operator: In
+              values:
+              - "true"
+          topologyKey: kubernetes.io/hostname
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -ce
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: kind-1.22-sriov
+      - name: GIMME_GO_VERSION
+        value: 1.13.8
+      image: quay.io/kubevirtci/golang:v20210316-d295087
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: /lib/modules
+        name: modules
+        readOnly: true
+      - mountPath: /sys/fs/cgroup
+        name: cgroup
+      - mountPath: /dev/vfio/
+        name: vfio
+    nodeSelector:
+      hardwareSupport: sriov-nic
+    volumes:
+    - hostPath:
+        path: /lib/modules
+        type: Directory
+      name: modules
+    - hostPath:
+        path: /sys/fs/cgroup
+        type: Directory
+      name: cgroup
+    - hostPath:
+        path: /dev/vfio/
+        type: Directory
+      name: vfio
+- annotations:
+    k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
   cron: 0 22,10 * * *
   decorate: true
   decoration_config:
