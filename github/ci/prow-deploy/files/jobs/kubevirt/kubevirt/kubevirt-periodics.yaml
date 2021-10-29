@@ -1211,6 +1211,9 @@ periodics:
       - /bin/sh
       - -c
       - |
+        # Build the perfscale-audit binary
+        make bazel-build
+
         # Create k8s cluster
         make cluster-up
 
