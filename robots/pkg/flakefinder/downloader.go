@@ -46,7 +46,7 @@ const (
 var testJobNameRegex *regexp.Regexp
 
 func init() {
-	testJobNameRegex = regexp.MustCompile(".*-(e2e-[a-z\\d]+)$")
+	testJobNameRegex = regexp.MustCompile(".*-(e2e(-[a-z\\d]+)?)$")
 }
 
 func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*JobResult, error) {
@@ -197,7 +197,7 @@ func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client
 				}
 
 				submatches := testJobNameRegex.FindStringSubmatch(lastJobDirectoryPathElement)
-				testJobName := submatches[len(submatches)-1]
+				testJobName := submatches[1] // take the first submatch here, see regex for details
 				openShiftCIPath := path.Join(artifactsDirPath, fmt.Sprintf("%s/test/artifacts", testJobName), "junit.functest.xml")
 				data, err = readGcsObject(ctx, client, bucket, openShiftCIPath)
 				if err == storage.ErrObjectNotExist {

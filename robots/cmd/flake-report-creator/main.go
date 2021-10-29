@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"regexp"
 	"strings"
 	"time"
@@ -36,14 +37,13 @@ import (
 
 func flagOptions() options {
 	o := options{}
-	flag.StringVar(&o.org, "org", Org, "GitHub org name")
-	flag.StringVar(&o.repo, "repo", Repo, "GitHub org name")
-	flag.StringVar(&o.bucketName, "bucket-name", Repo, "The name of the GCS bucket")
-	flag.StringVar(&o.gcsBaseUrl, "gcs-http-link-base-url", GCSBaseUrl, "The GCS http base url to link to job results")
+	flag.StringVar(&o.bucketName, "bucket-name", "", "The name of the GCS bucket")
 	flag.Var(&o.jobDataPathes, "job-data-path", "Path below the same bucket to retrieve the data from. May occur more than once")
 	flag.StringVar(&o.outputFile, "output-file", "", "Path to output file, if not given, a temporary file will be used")
 	flag.BoolVar(&o.overwrite, "overwrite", false, "Whether to overwrite output file")
 	flag.StringVar(&o.matchingSubDirRegExp, "sub-dir-regex", "", "Regular expression for matching sub directories (will optimize runtime)")
+	flag.BoolVar(&o.useSubDirs, "use-sub-dirs", true, "Whether to fetch the subdirectories of each data path and then retrieve the data or to try to directly retrieve the data")
+	flag.DurationVar(&o.startFrom, "start-from", 14*24*time.Hour, "The duration when the report data should be fetched")
 	flag.Parse()
 	return o
 }
@@ -71,21 +71,20 @@ type options struct {
 	outputFile           string
 	overwrite            bool
 	matchingSubDirRegExp string
+	useSubDirs           bool
+	startFrom            time.Duration
 }
 
 type SimpleReportParams struct {
 	flakefinder.Params
-	GCSBaseUrl string
-	BucketName string
+	BucketName    string
+	JobDataPathes []string
 }
 
-const Org = "kubevirt"
-const Repo = "kubevirt"
-const GCSBaseUrl = "https://prow.ci.kubevirt.io/view/gcs"
 const ReportTemplate = `
 <html>
 <head>
-    <title>{{ $.Org }}/{{ $.Repo }} - flakefinder report</title>
+    <title>flakefinder report</title>
     <meta charset="UTF-8">
     <style>
         table, th, td {
@@ -130,6 +129,13 @@ const ReportTemplate = `
 	</style>
 </head>
 <body>
+<h1>flakefinder report</h1>
+
+<div>
+	Data since {{ $.StartOfReport }}<br/>
+	Bucket: {{ $.BucketName }}<br/>
+	Pathes: {{ range $path := $.JobDataPathes }}<code>{{ $path }},</code>{{ end }}
+</div>
 <table>
     <tr>
         <td></td>
@@ -199,21 +205,31 @@ func main() {
 		log.Fatal(fmt.Errorf("failed to write report: %v", err))
 	}
 
+	startOfReport := time.Now().Add(-1 * o.startFrom)
+
 	reports := []*flakefinder.JobResult{}
 	var subDirRegex *regexp.Regexp
 	if o.matchingSubDirRegExp != "" {
 		subDirRegex = regexp.MustCompile(o.matchingSubDirRegExp)
 	}
 	for _, dataPath := range o.jobDataPathes {
-		subDirs, err := flakefinder.ListGcsObjects(ctx, storageClient, o.bucketName, dataPath+"/", "/")
-		if err != nil {
-			log.Printf("failed to list objects for dataPath %v: %v", dataPath, err)
-		}
-		for _, subDir := range subDirs {
-			if subDirRegex != nil && !subDirRegex.MatchString(subDir) {
-				continue
+		if o.useSubDirs {
+			subDirs, err := flakefinder.ListGcsObjects(ctx, storageClient, o.bucketName, dataPath+"/", "/")
+			if err != nil {
+				log.Printf("failed to list objects for dataPath %v: %v", dataPath, err)
 			}
-			results, err := flakefinder.FindUnitTestFilesForPeriodicJob(ctx, storageClient, o.bucketName, []string{dataPath, subDir}, minTime, maxTime)
+			for _, subDir := range subDirs {
+				if subDirRegex != nil && !subDirRegex.MatchString(subDir) {
+					continue
+				}
+				results, err := flakefinder.FindUnitTestFilesForPeriodicJob(ctx, storageClient, o.bucketName, []string{dataPath, subDir}, startOfReport, maxTime)
+				if err != nil {
+					log.Printf("failed to load JUnit files for job %v: %v", path.Join(dataPath, subDir), err)
+				}
+				reports = append(reports, results...)
+			}
+		} else {
+			results, err := flakefinder.FindUnitTestFilesForPeriodicJob(ctx, storageClient, o.bucketName, []string{dataPath}, startOfReport, maxTime)
 			if err != nil {
 				log.Printf("failed to load JUnit files for job %v: %v", dataPath, err)
 			}
@@ -221,11 +237,11 @@ func main() {
 		}
 	}
 
-	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, maxTime, Org, Repo, minTime)
+	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, maxTime, o.org, o.repo, startOfReport)
 
 	log.Printf("writing output file to %s", o.outputFile)
 
-	err = flakefinder.WriteTemplateToOutput(ReportTemplate, SimpleReportParams{parameters, o.gcsBaseUrl, o.bucketName}, reportOutputWriter)
+	err = flakefinder.WriteTemplateToOutput(ReportTemplate, SimpleReportParams{parameters, o.bucketName, o.jobDataPathes}, reportOutputWriter)
 	if err != nil {
 		log.Fatal(fmt.Errorf("failed to write report: %v", err))
 	}
