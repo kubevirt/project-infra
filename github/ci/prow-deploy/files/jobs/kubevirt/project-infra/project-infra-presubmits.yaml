@@ -365,12 +365,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-ce"
-            - |
-              cd github/ci/prow-deploy/
-              molecule test
-              tmp=$(mktemp -d)
-              docker cp instance:$ARTIFACTS $tmp
-              cp -ar $tmp/artifacts/* $ARTIFACTS
+            - "github/ci/prow-deploy/hack/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -380,22 +375,23 @@ presubmits:
             limits:
               memory: "29Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: gcs
             mountPath: /etc/gcs
             readOnly: true
           - name: molecule-docker
             mountPath: /tmp/prow-deploy-molecule
+          - name: pgp-bot-key
+            mountPath: /etc/pgp
+            readOnly: true
       volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
       - name: gcs
         secret:
           secretName: gcs
       - name: molecule-docker
         emptyDir: {}
+      - name: pgp-bot-key
+        secret:
+          secretName: pgp-bot-key
   - name: pull-project-infra-cert-manager-deploy-test
     optional: false
     run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
