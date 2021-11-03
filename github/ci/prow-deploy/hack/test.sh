@@ -8,12 +8,6 @@ main(){
 
     base_dir=${project_infra_root}/github/ci/prow-deploy
 
-    source ${project_infra_root}/hack/manage-secrets.sh
-    decrypt_secrets
-
-    mkdir -p /etc/github
-    extract_secret 'githubUnprivileged.token' /etc/github/oauth
-
     cd ${base_dir}
 
     molecule test

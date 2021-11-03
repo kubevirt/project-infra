@@ -23,6 +23,11 @@ secretGenerator:
     files:
       - oauth=secrets/oauth-token
     type: Opaque
+  - name: unprivileged-oauth-token
+    namespace: kubevirt-prow-jobs
+    files:
+      - oauth=secrets/unprivileged-oauth-token
+    type: Opaque
   - name: gcs
     namespace: kubevirt-prow-jobs
     files:
