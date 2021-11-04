@@ -3551,13 +3551,16 @@ spec:
         ports:
         - name: http
           containerPort: 80
+          protocol: "TCP"
         - name: https
           containerPort: 443
-
+          protocol: "TCP"
         - name: prometheus
           containerPort: 9113
+          protocol: "TCP"
         - name: readiness-port
           containerPort: 8081
+          protocol: "TCP"
         readinessProbe:
           httpGet:
             path: /nginx-ready

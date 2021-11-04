@@ -428,6 +428,7 @@ postsubmits:
             secretName: gcs
     - name: post-project-infra-prow-workloads-cluster-deployment
       always_run: false
+      run_if_changed: "github/ci/prow-deploy/kustom/overlays/workloads-production/.*|github/ci/prow-deploy/kustom/componenets/.*"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
