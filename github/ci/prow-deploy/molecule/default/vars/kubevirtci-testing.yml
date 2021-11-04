@@ -17,3 +17,6 @@ SRIOVNodes:
   capacity: 2
 
 ansible_python_interpreter: /usr/bin/python3
+
+githubUnprivileged:
+  token: "test"

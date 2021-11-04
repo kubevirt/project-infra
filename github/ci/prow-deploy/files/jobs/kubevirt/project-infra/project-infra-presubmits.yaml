@@ -359,8 +359,8 @@ presubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-          - name: GIT_ASKPASS
-            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
+          - name: GITHUB_TOKEN
+            value: "/etc/github/oauth"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -383,6 +383,8 @@ presubmits:
           - name: pgp-bot-key
             mountPath: /etc/pgp
             readOnly: true
+          - name: unprivileged-token
+            mountPath: /etc/github
       volumes:
       - name: gcs
         secret:
@@ -392,6 +394,9 @@ presubmits:
       - name: pgp-bot-key
         secret:
           secretName: pgp-bot-key
+      - name: unprivileged-token
+        secret:
+          secretName: unprivileged-oauth-token
   - name: pull-project-infra-cert-manager-deploy-test
     optional: false
     run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
