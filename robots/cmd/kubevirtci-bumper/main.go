@@ -1,5 +1,5 @@
 /*
-Copyright 2010 The KubeVirt Authors.
+Copyright 2020 The KubeVirt Authors.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -39,6 +39,7 @@ type options struct {
 	endpoint               string
 	ensureLatest           bool
 	ensureLatestThreeMinor string
+	ensureOnlyLatestThree  bool
 	major                  int
 	providerDir            string
 	clusterUpDir           string
@@ -57,11 +58,15 @@ func (o *options) Validate() error {
 		semver := querier.SemVerMajorRegex.FindStringSubmatch(o.ensureLatestThreeMinor)
 		o.major, _ = strconv.Atoi(semver[1])
 	}
+	if o.ensureOnlyLatestThree {
+		o.major = 1
+		tasks++
+	}
 
 	if tasks == 0 {
 		return fmt.Errorf("Either -ensure-latest or -ensure-last-three-minor-of must be specified.")
 	} else if tasks > 1 {
-		return fmt.Errorf("Only one of -ensure-latest or -ensure-last-three-minor-of can be specified at the same time.")
+		return fmt.Errorf("only one of -ensure-latest, -ensure-last-three-minor-of or -ensure-only-latest-three can be specified at the same time")
 	}
 	return nil
 }
@@ -73,6 +78,7 @@ func gatherOptions() options {
 	fs.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
 	fs.BoolVar(&o.ensureLatest, "ensure-latest", false, "Ensure that we have a provider for the latest k8s release")
 	fs.StringVar(&o.ensureLatestThreeMinor, "ensure-last-three-minor-of", "", "Ensure that the last three minor releases of the given major release are up to date (e.g. v1 or 2)")
+	fs.BoolVar(&o.ensureOnlyLatestThree, "ensure-only-latest-three", false, "Ensure that only the latest three minor releases of the given major release exist (aka remove older providers)")
 	fs.StringVar(&o.providerDir, "k8s-provider-dir", "", "The directory of the k8s providers")
 	fs.StringVar(&o.clusterUpDir, "cluster-up-dir", "", "The directory of the cluster up configurations")
 	fs.Parse(os.Args[1:])
@@ -84,7 +90,7 @@ func main() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	// TODO: Use global option from the prow config.
 	logrus.SetLevel(logrus.DebugLevel)
-	log := logrus.StandardLogger().WithField("robot", "release-querier")
+	log := logrus.StandardLogger().WithField("robot", "kubevirtci-bumper")
 
 	o := gatherOptions()
 	if err := o.Validate(); err != nil {
@@ -128,11 +134,12 @@ func main() {
 		log.WithError(err).Errorf("Failed to check directory '%s'", o.providerDir)
 	}
 
+	if len(releases) == 0 {
+		log.Info("No release found.")
+		os.Exit(0)
+	}
+
 	if o.ensureLatest {
-		if len(releases) == 0 {
-			log.Info("No release found.")
-			os.Exit(0)
-		}
 		err := kubevirtci.EnsureProviderExists(o.providerDir, o.clusterUpDir, releases[0])
 		if err != nil {
 			log.WithError(err).Info("Failed to ensure that a provider for the given release exists.")
@@ -142,6 +149,12 @@ func main() {
 		err := kubevirtci.BumpMinorReleaseOfProvider(o.providerDir, minors)
 		if err != nil {
 			log.WithError(err).Info("Failed to update the providers for the last minor releases.")
+		}
+	} else if o.ensureOnlyLatestThree {
+		minors := querier.LastThreeMinor(uint(o.major), releases)
+		err := kubevirtci.DropUnsupportedProviders(o.providerDir, o.clusterUpDir, minors)
+		if err != nil {
+			log.WithError(err).Info("Failed to remove unsupported providers.")
 		}
 	}
 }

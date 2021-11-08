@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -48,15 +49,57 @@ func bumpRelease(providerDir string, release *github.RepositoryRelease) error {
 }
 
 // Drop providers which run k8s versions which are not supported anymore
-func DropUnsupporedProviders(existing []querier.SemVer, supportedReleases []*github.RepositoryRelease) error {
-	// TODO implement me
-	// TODO jobs need to be removed
+func DropUnsupportedProviders(providerDir, clusterUpDir string, supportedReleases []*github.RepositoryRelease) error {
+	if len(supportedReleases) == 0 {
+		return fmt.Errorf("No supported releases provided")
+	}
+	dirEntries, err := os.ReadDir(providerDir)
+	if err != nil {
+		return err
+	}
+	for _, entry := range dirEntries {
+		if !isProviderDirectory(entry) {
+			continue
+		}
+		if isSupportedProvider(entry, supportedReleases) {
+			continue
+		}
+		err = deleteProvider(providerDir, clusterUpDir, entry)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
+}
+
+func isProviderDirectory(entry os.DirEntry) bool {
+	if !entry.IsDir() {
+		return false
+	}
+	return SemVerMinorRegex.MatchString(entry.Name())
+}
+
+func isSupportedProvider(entry os.DirEntry, supportedReleases []*github.RepositoryRelease) bool {
+	for _, supportedRelease := range supportedReleases {
+		release := querier.ParseRelease(supportedRelease)
+		if majorMinor(release) == entry.Name() {
+			return true
+		}
+	}
+	return false
+}
+
+func deleteProvider(providerDir, clusterUpDir string, entry os.DirEntry) error {
+	err := os.RemoveAll(path.Join(providerDir, entry.Name()))
+	if err != nil {
+		return err
+	}
+	err = os.RemoveAll(path.Join(clusterUpDir, fmt.Sprintf("k8s-%s", entry.Name())))
+	return err
 }
 
 // EnsureProviderExists will search for a predecessor provider, copy its content and set the version file accordingly
 // If a provider already exists, it will do nothing.
-// TODO new jobs need to be created
 func EnsureProviderExists(providerDir string, clusterUpDir string, release *github.RepositoryRelease) error {
 	existing, err := ReadExistingProviders(providerDir)
 	if err != nil {
@@ -73,8 +116,8 @@ func EnsureProviderExists(providerDir string, clusterUpDir string, release *gith
 			return nil
 		}
 		// First smaller existing provider. Copy the provider.
-		sourceProviderDir := filepath.Join(providerDir, fmt.Sprintf("%s.%s", rel.Major, rel.Minor))
-		targetProviderDir := filepath.Join(providerDir, fmt.Sprintf("%s.%s", semver.Major, semver.Minor))
+		sourceProviderDir := filepath.Join(providerDir, majorMinor(&rel))
+		targetProviderDir := filepath.Join(providerDir, majorMinor(&semver))
 
 		err = copyRecursive(sourceProviderDir, targetProviderDir)
 		if err != nil {
@@ -95,11 +138,13 @@ func EnsureProviderExists(providerDir string, clusterUpDir string, release *gith
 			return err
 		}
 
-		// TODO change all old references in docs to new version
-
 		break
 	}
 	return nil
+}
+
+func majorMinor(release *querier.SemVer) string {
+	return fmt.Sprintf("%s.%s", release.Major, release.Minor)
 }
 
 func copyRecursive(sourceDir string, targetDir string) error {
