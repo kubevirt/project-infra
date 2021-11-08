@@ -163,50 +163,6 @@ periodics:
       secret:
         secretName: gcs
 - annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cluster: prow-workloads
-  cron: 0 1,9,17 * * *
-  decorate: true
-  decoration_config:
-    grace_period: 5m0s
-    timeout: 4h0m0s
-  extra_refs:
-  - base_ref: main
-    org: kubevirt
-    repo: kubevirt
-  labels:
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.19-sig-network
-  reporter_config:
-    slack:
-      job_states_to_report: []
-  spec:
-    containers:
-    - command:
-      - /usr/local/bin/runner.sh
-      - /bin/sh
-      - -c
-      - automation/test.sh
-      env:
-      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-        value: "true"
-      - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: TARGET
-        value: k8s-1.19-sig-network
-      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
-      resources:
-        requests:
-          memory: 29Gi
-      securityContext:
-        privileged: true
-    nodeSelector:
-      type: bare-metal-external
-- annotations:
     testgrid-alert-email: bodnopoz@redhat.com, kubevirtci-sysprep-test@googlegroups.com
     testgrid-alert-stale-results-hours: "1"
     testgrid-dashboards: kubevirt-periodics
@@ -255,52 +211,6 @@ periodics:
     - name: win-sysprep
       secret:
         secretName: win-sysprep-001
-- annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cluster: prow-workloads
-  cron: 40 3,11,19 * * *
-  decorate: true
-  decoration_config:
-    grace_period: 5m0s
-    timeout: 4h0m0s
-  extra_refs:
-  - base_ref: main
-    org: kubevirt
-    repo: kubevirt
-  labels:
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.19-sig-compute
-  reporter_config:
-    slack:
-      job_states_to_report: []
-  spec:
-    containers:
-    - command:
-      - /usr/local/bin/runner.sh
-      - /bin/sh
-      - -c
-      - automation/test.sh
-      env:
-      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-        value: "true"
-      - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: TARGET
-        value: k8s-1.19-sig-compute
-      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
-      resources:
-        requests:
-          memory: 29Gi
-      securityContext:
-        privileged: true
-    nodeSelector:
-      type: bare-metal-external
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
@@ -1430,53 +1340,52 @@ periodics:
         privileged: true
     nodeSelector:
       type: bare-metal-external
-- name: periodic-kubevirt-e2e-k8s-1.20-cgroupsv2
-  annotations:
+- annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cron: "0 9,17,0 * * *"
+  cluster: prow-workloads
+  cron: 0 9,17,0 * * *
   decorate: true
   decoration_config:
-    timeout: 7h
-    grace_period: 5m
+    grace_period: 5m0s
+    timeout: 7h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
   labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-  extra_refs:
-    - org: kubevirt
-      repo: kubevirt
-      base_ref: main
-      work_dir: true
-  cluster: prow-workloads
+  name: periodic-kubevirt-e2e-k8s-1.20-cgroupsv2
   reporter_config:
     slack:
       job_states_to_report: []
   spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: TARGET
+        value: k8s-1.20
+      - name: KUBEVIRT_CGROUPV2
+        value: "true"
+      - name: KUBEVIRT_E2E_SKIP
+        value: Multus|SRIOV|GPU|Macvtap|MediatedDevices
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
     nodeSelector:
       type: bare-metal-external
-    containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-        env:
-          - name: TARGET
-            value: "k8s-1.20"
-          - name: KUBEVIRT_CGROUPV2
-            value: "true"
-          - name: KUBEVIRT_E2E_SKIP
-            value: Multus|SRIOV|GPU|Macvtap|MediatedDevices
-        command:
-          - "/usr/local/bin/runner.sh"
-          - "/bin/sh"
-          - "-c"
-          - "automation/test.sh"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
