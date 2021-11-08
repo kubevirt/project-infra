@@ -2,7 +2,7 @@ orgs:
   kubevirt:
     admins:
       - caniszczyk
-      - codificat
+      - mazzystr
       - davidvossel
       - dhiller
       - fabiand
@@ -571,7 +571,6 @@ orgs:
         maintainers:
           - fabiand
           - davidvossel
-          - codificat
           - rmohr
           - kubevirt-bot
         members:
@@ -774,7 +773,7 @@ orgs:
         description: ""
         maintainers:
           - fabiand
-          - codificat
+          - mazzystr
         members:
           - matthewcarleton
           - mazzystr
