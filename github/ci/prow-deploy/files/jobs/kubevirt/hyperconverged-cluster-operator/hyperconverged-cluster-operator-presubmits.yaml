@@ -34,3 +34,41 @@ presubmits:
         resources:
           requests:
             memory: "29Gi"
+  - name: publish-hco-test-utils-image
+    always_run: false
+    run_if_changed: "tests/build/.*"
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-dind-enabled: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: vm
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20210419-444033d
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/bash"
+        - "-c"
+        - |
+          cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io && \
+          GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/oauth) PUSH_IMAGE=false ./hack/build-in-docker.sh
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: github-token
+          mountPath: /etc/github
+        resources:
+          requests:
+            memory: "1Gi"
+          limits:
+            memory: "1Gi"
+      volumes:
+      - name: github-token
+        secret:
+          secretName: oauth-token
