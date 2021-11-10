@@ -34,7 +34,7 @@ presubmits:
         resources:
           requests:
             memory: "29Gi"
-  - name: publish-hco-test-utils-image
+  - name: build-hco-test-utils-image
     always_run: false
     run_if_changed: "tests/build/.*"
     annotations:
@@ -49,7 +49,7 @@ presubmits:
       nodeSelector:
         type: vm
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210419-444033d
+      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
