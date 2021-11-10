@@ -651,7 +651,8 @@ orgs:
         members:
           - pkliczewski
           - mmirecki
-          - yuvalturg
+          - nunnatsa
+          - tiraboschi
         privacy: closed
         repos:
           must-gather: admin
@@ -714,6 +715,11 @@ orgs:
           - isaacdorfman
         repos:
           terraform-provider-kubevirt: admin
+      rerun-jobs-hco:
+        description: can rerun failed job in the hyperconverged-cluster-operator repository
+        maintainers:
+        - nunnatsa
+        - tiraboschi
       sig-security:
         description: ""
         maintainers:
