@@ -572,7 +572,6 @@ orgs:
         maintainers:
           - fabiand
           - davidvossel
-          - codificat
           - rmohr
           - kubevirt-bot
         members:
@@ -604,7 +603,7 @@ orgs:
           kubevirt-ansible: write
           kubevirt-ssp-operator: read
           kubevirt-tutorial: write
-          kubevirt.github.io: write
+          kubevirt.github.io: admin
           kubevirtci: write
           libvirt: write
           node-maintenance-operator: write
@@ -612,7 +611,7 @@ orgs:
           qe-tools: read
           run: write
           storage-demo: write
-          user-guide: write
+          user-guide: admin
           v2v-job: write
           vAdvisor: write
       member:
@@ -781,12 +780,9 @@ orgs:
         description: ""
         maintainers:
           - fabiand
-          - codificat
         members:
           - cwilkers
-          - matthewcarleton
           - mazzystr
-          - AdamJ
         privacy: closed
         repos:
           cloud-image-builder: admin
