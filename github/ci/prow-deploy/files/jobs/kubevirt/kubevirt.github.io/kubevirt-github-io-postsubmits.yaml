@@ -1,8 +1,8 @@
 postsubmits:
   kubevirt/kubevirt.github.io:
-  - name: push-kubevirt.github.io-master-build-and-push-to-gh-pages
+  - name: push-kubevirt.github.io-main-build-and-push-to-gh-pages
     branches:
-    - ^master$
+    - ^main$
     annotations:
       testgrid-create-test-group: "false"
       preset-docker-mirror-proxy: "true"
