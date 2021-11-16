@@ -603,7 +603,7 @@ orgs:
           kubevirt-ansible: write
           kubevirt-ssp-operator: read
           kubevirt-tutorial: write
-          kubevirt.github.io: admin
+          kubevirt.github.io: write
           kubevirtci: write
           libvirt: write
           node-maintenance-operator: write
@@ -611,7 +611,7 @@ orgs:
           qe-tools: read
           run: write
           storage-demo: write
-          user-guide: admin
+          user-guide: write
           v2v-job: write
           vAdvisor: write
       member:
@@ -787,5 +787,8 @@ orgs:
         repos:
           cloud-image-builder: admin
           community: admin
-          kubevirt.github.io: admin
-          user-guide: admin
+          kubevirt.github.io: write
+          user-guide: write
+          demo: write
+          katacoda-scenarios: write
+          kubevirt-tutorial: write
