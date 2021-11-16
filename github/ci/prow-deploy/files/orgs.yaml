@@ -222,6 +222,7 @@ orgs:
       client-go:
         description: Go client for kubevirt
         has_projects: true
+        default_branch: main
       client-python:
         description: An auto-generated python SDK to interact with KubeVirt resources
         has_projects: false
