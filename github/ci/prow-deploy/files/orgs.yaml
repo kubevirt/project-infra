@@ -776,7 +776,7 @@ orgs:
           web-ui: write
           web-ui-components: write
           web-ui-operator: write
-      website-maintainers:
+      community-team:
         description: ""
         maintainers:
           - fabiand
