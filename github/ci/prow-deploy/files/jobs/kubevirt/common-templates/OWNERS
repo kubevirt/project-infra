@@ -2,14 +2,11 @@
 # See the OWNERS docs: https://git.k8s.io/community/contributors/guide/owners.md
 
 approvers:
+- akrejcir
 - ksimon1
-- omeryahud
 options: {}
 reviewers:
 - akrejcir
 - borod108
 - ksimon1
-- omeryahud
 - rnetser
-- shwetaap
-- vatsalparekh
