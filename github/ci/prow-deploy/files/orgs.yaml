@@ -787,3 +787,5 @@ orgs:
         repos:
           cloud-image-builder: admin
           community: admin
+          kubevirt.github.io: admin
+          user-guide: admin
