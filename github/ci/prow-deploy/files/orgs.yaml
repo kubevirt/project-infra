@@ -506,6 +506,10 @@ orgs:
         description: KubeVirt API definition
         default_branch: main
         has_projects: true
+      containerdisks:
+        description: Officially built and maintained containerdisks of the KubeVirt project
+        default_branch: main
+        has_projects: true
     teams:
       QE:
         description: ""

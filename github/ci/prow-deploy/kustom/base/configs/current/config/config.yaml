@@ -78,6 +78,7 @@ tide:
     kubevirt/libguestfs-appliance: merge
     kubevirt/containerized-data-importer: squash
     kubevirt/cluster-api-provider-kubevirt: merge
+    kubevirt/containerdisks: squash
     kubevirt/kubevirt: merge
     kubevirt/machine-remediation-operator: squash
     kubevirt/project-infra: squash
@@ -141,6 +142,7 @@ tide:
     - needs-rebase
     - "dco-signoff: no"
   - repos:
+    - kubevirt/containerdisks
     - kubevirt/kubevirt
     - kubevirt/containerized-data-importer
     - kubevirt/hostpath-provisioner
@@ -276,6 +278,10 @@ branch-protection:
                 contexts:
                   - continuous-integration/travis-ci/pr
         project-infra:
+          branches:
+            main:
+              protect: true
+        containerdisks:
           branches:
             main:
               protect: true
