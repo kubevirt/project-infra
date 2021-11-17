@@ -222,6 +222,7 @@ orgs:
       client-go:
         description: Go client for kubevirt
         has_projects: true
+        default_branch: main
       client-python:
         description: An auto-generated python SDK to interact with KubeVirt resources
         has_projects: false
@@ -364,7 +365,7 @@ orgs:
         homepage: https://www.kubevirt.io/
       kubevirt.github.io:
         allow_rebase_merge: false
-        default_branch: master
+        default_branch: main
         description: KubeVirt website repo, documentation at https://kubevirt.io/user-guide/
         has_projects: false
         has_wiki: false

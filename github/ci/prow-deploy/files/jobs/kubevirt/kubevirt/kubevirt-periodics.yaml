@@ -548,7 +548,11 @@ periodics:
   extra_refs:
   - base_ref: main
     org: kubevirt
+    repo: project-infra
+  - base_ref: main
+    org: kubevirt
     repo: kubevirt
+    workdir: true
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
@@ -596,11 +600,16 @@ periodics:
         gsutil cp ./_out/tests/tests.test gs://$bucket_dir/testing/
         gsutil cp ./_out/commit gs://$bucket_dir/commit
         gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
+        unset DOCKER_TAG # we want to publish to main
+        export PULL_BASE_REF=main
+        hack/publish-staging.sh
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       - name: DOCKER_PREFIX
         value: quay.io/kubevirt
+      - name: GIT_ASKPASS
+        value: ../project-infra/hack/git-askpass.sh
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
@@ -609,11 +618,16 @@ periodics:
       securityContext:
         privileged: true
       volumeMounts:
+      - mountPath: /etc/github
+        name: token
       - mountPath: /etc/gcs
         name: gcs
     nodeSelector:
       type: bare-metal-external
     volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
