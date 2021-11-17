@@ -49,6 +49,7 @@ RUN dnf install -y dnf-plugins-core && \
     rsync \
     rsync-daemon \
     sudo \
+    skopeo \
     wget \
     gettext \
     iproute &&\
