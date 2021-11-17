@@ -149,6 +149,12 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/cluster-api-provider-kubevirt:
+  - trigger
+  - owners-label
+  - lgtm
+  - approve
+
   kubevirt/kubevirt-ansible:
   - release-note
 
@@ -375,6 +381,7 @@ triggers:
   - kubevirt/cloud-image-builder
   - kubevirt/kubevirt-tutorial
   - kubevirt/containerized-data-importer
+  - kubevirt/cluster-api-provider-kubevirt
   - kubevirt/hostpath-provisioner
   - kubevirt/hostpath-provisioner-operator
   - kubevirt/katacoda-scenarios
@@ -415,6 +422,7 @@ approve:
   - kubevirt/kubevirt
   - kubevirt/bridge-marker
   - kubevirt/containerized-data-importer
+  - kubevirt/cluster-api-provider-kubevirt
   - kubevirt/hostpath-provisioner
   - kubevirt/hostpath-provisioner-operator
   - kubevirt/katacoda-scenarios
@@ -455,6 +463,7 @@ lgtm:
   - kubevirt/kubevirt
   - kubevirt/bridge-marker
   - kubevirt/containerized-data-importer
+  - kubevirt/cluster-api-provider-kubevirt
   - kubevirt/hostpath-provisioner
   - kubevirt/hostpath-provisioner-operator
   - kubevirt/katacoda-scenarios

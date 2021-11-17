@@ -264,6 +264,9 @@ orgs:
       containerized-data-importer:
         description: Data Import Service for kubernetes, designed with kubevirt in mind.
         has_projects: true
+      cluster-api-provider-kubevirt:
+        description: Cluster API Provider for KubeVirt
+        has_projects: false
       controller-lifecycle-operator-sdk:
         has_projects: true
       cpu-nfd-plugin:
