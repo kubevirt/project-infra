@@ -555,7 +555,6 @@ postsubmits:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"
           command:
-            - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
             - "./github/ci/prow-workloads/hack/deploy.sh"
@@ -606,7 +605,6 @@ postsubmits:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"
           command:
-            - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
             - "./github/ci/prow-performance-workloads/hack/bootstrap.sh"
@@ -657,7 +655,6 @@ postsubmits:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"
           command:
-            - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
             - "./github/ci/prow-performance-workloads/hack/deploy.sh"
