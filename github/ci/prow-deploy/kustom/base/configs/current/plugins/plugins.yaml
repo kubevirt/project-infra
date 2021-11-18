@@ -112,6 +112,13 @@ plugins:
   - lgtm
   - approve
 
+  kubevirt/containerdisks:
+  - trigger
+  - release-note
+  - owners-label
+  - lgtm
+  - approve
+
   kubevirt/bridge-marker:
   - trigger
   - release-note
@@ -377,6 +384,7 @@ triggers:
   - kubevirt/machine-remediation-operator
   - kubevirt/kubevirtci
   - kubevirt/kubevirt
+  - kubevirt/containerdisks
   - kubevirt/kubevirt.github.io
   - kubevirt/cloud-image-builder
   - kubevirt/kubevirt-tutorial
@@ -415,6 +423,7 @@ approve:
   - kubevirt/project-infra
   - kubevirt/machine-remediation-operator
   - kubevirt/kubevirtci
+  - kubevirt/containerdisks
   - kubevirt/kubevirt.github.io
   - kubevirt/cloud-image-builder
   - kubevirt/community
@@ -461,6 +470,7 @@ lgtm:
   - kubevirt/community
   - kubevirt/kubevirt-tutorial
   - kubevirt/kubevirt
+  - kubevirt/containerdisks
   - kubevirt/bridge-marker
   - kubevirt/containerized-data-importer
   - kubevirt/cluster-api-provider-kubevirt
