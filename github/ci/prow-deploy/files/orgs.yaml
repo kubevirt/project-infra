@@ -575,7 +575,6 @@ orgs:
         maintainers:
           - fabiand
           - davidvossel
-          - codificat
           - rmohr
           - kubevirt-bot
         members:
@@ -780,17 +779,19 @@ orgs:
           web-ui: write
           web-ui-components: write
           web-ui-operator: write
-      website-maintainers:
+      community-team:
         description: ""
         maintainers:
           - fabiand
-          - codificat
         members:
           - cwilkers
-          - matthewcarleton
           - mazzystr
-          - AdamJ
         privacy: closed
         repos:
           cloud-image-builder: admin
           community: admin
+          kubevirt.github.io: write
+          user-guide: write
+          demo: write
+          katacoda-scenarios: write
+          kubevirt-tutorial: write
