@@ -10,16 +10,16 @@ This tool enables a user to create an ad-hoc report of any GCS directories that 
 Usage
 -----
 
-**Example 1:** we want to create a report from all job runs of two PRs on openshift-ci.  But we want to skip all jobs that don't match a certain regular expression.
+**Example 1:** we want to create a report from job runs of two PRs on openshift-ci.  But we want to skip all jobs that don't match a certain regular expression.
 
 *NB1: we use `start-from` here as some test results would have been skipped, as this was a quite long running PR*
 *NB2: we use `sub-dir-regex` here to filter out other unimportant jobs (openshift-ci related validation checks i.e)*
 
 ```bash
 $ bazel run //robots/cmd/flake-report-creator -- \
+    --bucket-name=origin-ci-test \
     --start-from=720h \
     --sub-dir-regex='.*-(e2e-[a-z\d]+)$' \
-    --bucket-name=origin-ci-test \
     --job-data-path=pr-logs/pull/openshift_release/23021 \
     --job-data-path=pr-logs/pull/openshift_release/22352
 
@@ -29,12 +29,31 @@ $ bazel run //robots/cmd/flake-report-creator -- \
 
 Result: ![Example 1 Report](./example_1.png)
 
-**Example 2:** we want to create a report over a set of periodics on openshift-ci.
+**Example 2:** we want to create a report over a set of selected pull requests for kubevirtci,
+but we only want to see the e2e jobs.
 
 The default values will create a report for the last 14 days.
 
 ```bash
-$ bazel run //robots/cmd/flake-report-creator -- --bucket-name=origin-ci-test \
+$ bazel run //robots/cmd/flake-report-creator -- \
+    --bucket-name=kubevirt-prow \
+    --sub-dir-regex='^pull-kubevirt-e2e-k8s-.*' \
+    --job-data-path=pr-logs/pull/kubevirt_kubevirt/6812 \
+    --job-data-path=pr-logs/pull/kubevirt_kubevirt/6815 \
+    --job-data-path=pr-logs/pull/kubevirt_kubevirt/6818
+...
+2021/10/29 17:24:49 main.go:242: writing output file to /tmp/flakefinder-3053258374.html
+```
+
+Result: ![Example 2 Report](./example_2.png)
+
+**Example 3:** we want to create a report over a set of periodics on openshift-ci.
+
+The default values will create a report for the last 14 days.
+
+```bash
+$ bazel run //robots/cmd/flake-report-creator -- \
+    --bucket-name=origin-ci-test \
     --use-sub-dirs=false \
     --job-data-path=logs/periodic-ci-kubevirt-kubevirt-main-0.34_4.6-e2e \
     --job-data-path=logs/periodic-ci-kubevirt-kubevirt-main-0.36_4.7-e2e \
@@ -45,14 +64,15 @@ $ bazel run //robots/cmd/flake-report-creator -- --bucket-name=origin-ci-test \
 2021/10/29 16:39:54 main.go:241: writing output file to /tmp/flakefinder-1095073378.html
 ```
 
-Result: ![Example 2 Report](./example_2.png)
+Result: ![Example 3 Report](./example_3.png)
 
-**Example 3:** we want to create a report over a set of selected periodics for kubevirtci.
+**Example 4:** we want to create a report over a set of selected periodics for kubevirtci.
 
 The default values will create a report for the last 14 days.
 
 ```bash
-$ bazel run //robots/cmd/flake-report-creator -- --bucket-name=kubevirt-prow \
+$ bazel run //robots/cmd/flake-report-creator -- \
+    --bucket-name=kubevirt-prow \
     --use-sub-dirs=false \
     --job-data-path=logs/periodic-kubevirt-e2e-k8s-1.22-sig-storage \
     --job-data-path=logs/periodic-kubevirt-e2e-k8s-1.21-sig-storage \
@@ -63,4 +83,4 @@ INFO[0118] Skipping test results before 2021-10-15 17:22:50.286379347 +0200 CEST
 2021/10/29 17:24:49 main.go:242: writing output file to /tmp/flakefinder-3053258374.html
 ```
 
-Result: ![Example 3 Report](./example_3.png)
+Result: ![Example 4 Report](./example_4.png)
