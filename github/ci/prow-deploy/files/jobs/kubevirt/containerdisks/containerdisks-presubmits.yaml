@@ -1,0 +1,28 @@
+presubmits:
+  kubevirt/containerdisks:
+  - always_run: true
+    optional: true
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-containerdisks-build
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - ./build.sh -b
+        image: quay.io/kubevirtci/bootstrap:v20211118-96b0e0c
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
