@@ -1,7 +1,7 @@
 presubmits:
   kubevirt/hostpath-provisioner-operator:
   - name: pull-hostpath-provisioner-operator-unit-test
-    cluster: phx-prow
+    cluster: ibm-prow-jobs
     annotations:
       fork-per-release: "true"
     always_run: true

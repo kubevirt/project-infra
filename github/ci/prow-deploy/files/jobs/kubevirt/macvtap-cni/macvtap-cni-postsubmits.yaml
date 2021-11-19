@@ -12,11 +12,8 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
-        nodeSelector:
-          type: vm
-          zone: ci
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
             command:
@@ -37,11 +34,8 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
-        nodeSelector:
-          type: vm
-          zone: ci
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
             command:

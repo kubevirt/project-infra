@@ -1,7 +1,7 @@
 periodics:
 - annotations:
     testgrid-create-test-group: "false"
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   cron: 5 * * * *
   decorate: true
   name: periodic-kubevirt-flakefinder-hourly-rolling-window-report
@@ -29,9 +29,6 @@ periodics:
       - mountPath: /etc/gcs
         name: gcs
         readOnly: true
-    nodeSelector:
-      type: vm
-      zone: ci
     volumes:
     - name: token
       secret:
@@ -41,7 +38,7 @@ periodics:
         secretName: gcs
 - annotations:
     testgrid-create-test-group: "false"
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   cron: 45 0 * * *
   decorate: true
   name: periodic-publish-kubevirt-flakefinder-weekly-report
@@ -69,9 +66,6 @@ periodics:
       - mountPath: /etc/gcs
         name: gcs
         readOnly: true
-    nodeSelector:
-      type: vm
-      zone: ci
     volumes:
     - name: token
       secret:
@@ -81,7 +75,7 @@ periodics:
         secretName: gcs
 - annotations:
     testgrid-create-test-group: "false"
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   cron: 25 0 * * *
   decorate: true
   name: periodic-publish-kubevirt-flakefinder-daily-report
@@ -109,9 +103,6 @@ periodics:
       - mountPath: /etc/gcs
         name: gcs
         readOnly: true
-    nodeSelector:
-      type: vm
-      zone: ci
     volumes:
     - name: token
       secret:
@@ -121,7 +112,7 @@ periodics:
         secretName: gcs
 - annotations:
     testgrid-create-test-group: "false"
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -152,9 +143,6 @@ periodics:
       - mountPath: /etc/gcs
         name: gcs
         readOnly: true
-    nodeSelector:
-      type: vm
-      zone: ci
     volumes:
     - name: token
       secret:
@@ -960,7 +948,7 @@ periodics:
       name: vfio
 - annotations:
     testgrid-create-test-group: "false"
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   cron: 15 22 * * 0
   decorate: true
   decoration_config:

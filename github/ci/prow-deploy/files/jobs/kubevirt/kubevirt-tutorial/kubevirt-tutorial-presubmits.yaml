@@ -8,10 +8,8 @@ presubmits:
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
-        nodeSelector:
-          region: primary
         containers:
           - image: gcr.io/k8s-testimages/bootstrap:v20191001-e584f29
             command:

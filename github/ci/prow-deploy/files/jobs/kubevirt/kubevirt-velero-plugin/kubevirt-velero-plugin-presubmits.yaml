@@ -1,7 +1,7 @@
 presubmits:
   kubevirt/kubevirt-velero-plugin:
   - name: pull-kvp-unit-test
-    cluster: phx-prow
+    cluster: ibm-prow-jobs
     skip_branches:
       - release-\d+\.\d+
     annotations:

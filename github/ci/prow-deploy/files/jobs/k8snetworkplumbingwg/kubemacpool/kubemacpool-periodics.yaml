@@ -2,13 +2,10 @@ periodics:
   - name: periodic-publish-kubemacpool-flakefinder-weekly-report
     cron: "50 0 * * *"
     decorate: true
-    cluster: phx-prow
+    cluster: ibm-prow-jobs
     annotations:
       testgrid-create-test-group: "false"
     spec:
-      nodeSelector:
-        type: vm
-        zone: ci
       containers:
         - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
           env:
@@ -39,14 +36,11 @@ periodics:
             secretName: gcs
   - name: periodic-publish-kubemacpool-flakefinder-daily-report
     cron: "30 0 * * *"
-    cluster: phx-prow
+    cluster: ibm-prow-jobs
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
     spec:
-      nodeSelector:
-        type: vm
-        zone: ci
       containers:
         - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
           env:

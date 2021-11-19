@@ -16,11 +16,8 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
-        nodeSelector:
-          type: vm
-          zone: ci
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
             securityContext:

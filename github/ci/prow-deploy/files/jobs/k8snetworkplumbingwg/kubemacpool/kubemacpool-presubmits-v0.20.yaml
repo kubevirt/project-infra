@@ -10,16 +10,13 @@ presubmits:
       decoration_config:
         timeout: 3h
         grace_period: 5m
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       max_concurrency: 6
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       spec:
-        nodeSelector:
-          type: vm
-          zone: ci
         containers:
           - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
             securityContext:

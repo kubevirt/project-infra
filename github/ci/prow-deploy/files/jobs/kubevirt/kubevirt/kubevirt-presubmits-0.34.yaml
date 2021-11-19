@@ -535,7 +535,7 @@ presubmits:
     context: pull-kubevirt-build-release-0.34
     optional: false
     skip_report: false
-    cluster: phx-prow
+    cluster: ibm-prow-jobs
     spec:
       containers:
       - command:
