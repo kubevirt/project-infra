@@ -16,12 +16,7 @@ Usage
 *NB2: we use `sub-dir-regex` here to filter out other unimportant jobs (openshift-ci related validation checks i.e)*
 
 ```bash
-$ bazel run //robots/cmd/flake-report-creator -- \
-    --bucket-name=origin-ci-test \
-    --start-from=720h \
-    --sub-dir-regex='.*-(e2e-[a-z\d]+)$' \
-    --job-data-path=pr-logs/pull/openshift_release/23021 \
-    --job-data-path=pr-logs/pull/openshift_release/22352
+$ bazel run //robots/cmd/flake-report-creator -- --ci-system=openshift --presubmits 22352,23021
 
 ...
 2021/10/29 12:57:54 main.go:216: writing output file to /tmp/flakefinder-3764038013.html
@@ -35,12 +30,7 @@ but we only want to see the e2e jobs.
 The default values will create a report for the last 14 days.
 
 ```bash
-$ bazel run //robots/cmd/flake-report-creator -- \
-    --bucket-name=kubevirt-prow \
-    --sub-dir-regex='^pull-kubevirt-e2e-k8s-.*' \
-    --job-data-path=pr-logs/pull/kubevirt_kubevirt/6812 \
-    --job-data-path=pr-logs/pull/kubevirt_kubevirt/6815 \
-    --job-data-path=pr-logs/pull/kubevirt_kubevirt/6818
+$ bazel run //robots/cmd/flake-report-creator -- --ci-system=kubevirt --presubmits 6812,6815,6818
 ...
 2021/10/29 17:24:49 main.go:242: writing output file to /tmp/flakefinder-3053258374.html
 ```
@@ -52,14 +42,7 @@ Result: ![Example 2 Report](./example_2.png)
 The default values will create a report for the last 14 days.
 
 ```bash
-$ bazel run //robots/cmd/flake-report-creator -- \
-    --bucket-name=origin-ci-test \
-    --use-sub-dirs=false \
-    --job-data-path=logs/periodic-ci-kubevirt-kubevirt-main-0.34_4.6-e2e \
-    --job-data-path=logs/periodic-ci-kubevirt-kubevirt-main-0.36_4.7-e2e \
-    --job-data-path=logs/periodic-ci-kubevirt-kubevirt-main-0.41_4.8-e2e \
-    --job-data-path=logs/periodic-ci-kubevirt-kubevirt-main-0.44_4.9-e2e \
-    --job-data-path=logs/periodic-ci-kubevirt-kubevirt-main-nightly_4.10-e2e
+$ bazel run //robots/cmd/flake-report-creator -- --ci-system=openshift --periodics 0.34,0.36,0.41,4.10
 ...
 2021/10/29 16:39:54 main.go:241: writing output file to /tmp/flakefinder-1095073378.html
 ```
@@ -71,12 +54,7 @@ Result: ![Example 3 Report](./example_3.png)
 The default values will create a report for the last 14 days.
 
 ```bash
-$ bazel run //robots/cmd/flake-report-creator -- \
-    --bucket-name=kubevirt-prow \
-    --use-sub-dirs=false \
-    --job-data-path=logs/periodic-kubevirt-e2e-k8s-1.22-sig-storage \
-    --job-data-path=logs/periodic-kubevirt-e2e-k8s-1.21-sig-storage \
-    --job-data-path=logs/periodic-kubevirt-e2e-k8s-1.20-sig-storage
+$ bazel run //robots/cmd/flake-report-creator -- --ci-system=kubevirt --periodics 1.21,1.22
 
 ...
 INFO[0118] Skipping test results before 2021-10-15 17:22:50.286379347 +0200 CEST m=-1209599.993786708 for logs/periodic-kubevirt-e2e-k8s-1.20-sig-storage/1449002154302902272 in bucket 'kubevirt-prow' 
