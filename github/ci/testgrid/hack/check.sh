@@ -32,7 +32,8 @@ run_tests(){
     (
         ${PROJECT_INFRA_ROOT}/hack/create_bazel_cache_rcs.sh
         cd ${TEST_INFRA_ROOT}
-        bazel test //config/tests/... //hack:verify-spelling
+        bazel test --test_output=all --test_verbose_timeout_warnings $(bazel query //config/tests/testgrids/...)
+        bazel test --test_output=all --test_verbose_timeout_warnings //hack:verify-spelling
     )
 }
 

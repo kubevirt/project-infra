@@ -2,6 +2,8 @@ presubmits:
   kubevirt/containerdisks:
   - always_run: true
     optional: true
+    annotations:
+      testgrid-create-test-group: "false"
     cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
