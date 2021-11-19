@@ -12,10 +12,8 @@ periodics:
         repo: kubevirt-tutorial
         base_ref: main
         path_alias: kubevirt-tutorial
-    cluster: phx-prow
+    cluster: ibm-prow-jobs
     spec:
-      nodeSelector:
-        region: primary
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
           command:

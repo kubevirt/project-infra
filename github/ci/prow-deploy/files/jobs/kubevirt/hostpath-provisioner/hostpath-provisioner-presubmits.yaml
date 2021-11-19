@@ -48,7 +48,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
-    cluster: phx-prow
+    cluster: ibm-prow-jobs
     spec:
       containers:
         - image: quay.io/kubevirtci/golang:v20210924-7b670cb
@@ -97,7 +97,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-hpp-unit-test
-    cluster: phx-prow
+    cluster: ibm-prow-jobs
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -126,4 +126,3 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-

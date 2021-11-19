@@ -4,7 +4,7 @@ periodics:
   decorate: true
   annotations:
     testgrid-create-test-group: "false"
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
     containers:
     - image: gcr.io/k8s-prow/commenter:v20210720-5548472063
@@ -47,11 +47,8 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
     - image: gcr.io/k8s-prow/commenter:v20210720-5548472063
       command:
@@ -85,11 +82,8 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
     - image: gcr.io/k8s-prow/commenter:v20210720-5548472063
       command:
@@ -122,11 +116,8 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
     - image: gcr.io/k8s-prow/commenter:v20210720-5548472063
       command:
@@ -163,11 +154,8 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
     - image: gcr.io/k8s-prow/commenter:v20210720-5548472063
       command:
@@ -245,11 +233,8 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
       - image: quay.io/kubevirtci/indexpagecreator@sha256:43fa17a6a92b74df3474d95b102f2b675ff9570c2bef1c80f74fb72aaf7fc434
         env:
@@ -288,7 +273,7 @@ periodics:
   - org: kubevirt
     repo: containerized-data-importer
     base_ref: main
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
     securityContext:
       runAsUser: 0
@@ -342,7 +327,7 @@ periodics:
   - org: kubevirt
     repo: kubevirtci
     base_ref: main
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
     securityContext:
       runAsUser: 0
@@ -386,7 +371,7 @@ periodics:
   - org: kubevirt
     repo: kubevirtci
     base_ref: main
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
     securityContext:
       runAsUser: 0
@@ -420,7 +405,7 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
     securityContext:
       runAsUser: 0
@@ -461,7 +446,7 @@ periodics:
     workdir: true
   interval: 1h
   max_concurrency: 1
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
     containers:
     - name: peribolos

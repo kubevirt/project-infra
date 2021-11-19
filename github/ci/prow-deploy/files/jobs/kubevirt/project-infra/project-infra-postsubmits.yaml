@@ -63,7 +63,7 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
         nodeSelector:
           type: vm
@@ -95,7 +95,7 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
         nodeSelector:
           type: vm
@@ -127,7 +127,7 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
         nodeSelector:
           type: vm
@@ -160,7 +160,7 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
         nodeSelector:
           type: vm
@@ -193,7 +193,7 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
         nodeSelector:
           type: vm
@@ -225,7 +225,7 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
         nodeSelector:
           type: vm
@@ -319,7 +319,7 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
         nodeSelector:
           type: vm
@@ -351,7 +351,7 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
         nodeSelector:
           type: vm

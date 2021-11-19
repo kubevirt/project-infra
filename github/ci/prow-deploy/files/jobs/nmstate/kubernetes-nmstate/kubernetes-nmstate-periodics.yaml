@@ -4,11 +4,8 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
       env:
@@ -42,11 +39,8 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
       env:
@@ -80,11 +74,8 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: phx-prow
+  cluster: ibm-prow-jobs
   spec:
-    nodeSelector:
-      type: vm
-      zone: ci
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
       env:

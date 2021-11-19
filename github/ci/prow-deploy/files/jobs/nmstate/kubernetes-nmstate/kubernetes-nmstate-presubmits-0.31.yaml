@@ -15,11 +15,8 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror: "false"
         preset-shared-images: "true"
-      cluster: phx-prow
+      cluster: ibm-prow-jobs
       spec:
-        nodeSelector:
-          type: vm
-          zone: ci
         containers:
           - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
             securityContext:
