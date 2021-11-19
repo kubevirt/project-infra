@@ -1,0 +1,36 @@
+periodics:
+- annotations:
+  cluster: ibm-prow-jobs
+  cron: 0 2 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 1h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: containerdisks
+    workdir: true
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-quay-credential: "true"
+  max_concurrency: 1
+  name: periodic-containerdisks-push-nightly
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - |
+        set -e
+        cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+        ./build.sh
+      image: quay.io/kubevirtci/bootstrap:v20211118-96b0e0c
+      name: ""
+      resources:
+        requests:
+          memory: 4Gi
+      securityContext:
+        privileged: true
