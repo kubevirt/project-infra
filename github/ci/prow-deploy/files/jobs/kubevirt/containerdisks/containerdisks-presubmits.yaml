@@ -19,7 +19,7 @@ presubmits:
         - /bin/sh
         - -c
         - ./build.sh -b
-        image: quay.io/kubevirtci/bootstrap:v20211118-96b0e0c
+        image: quay.io/kubevirtci/bootstrap:v20211122-ca88fb4
         name: ""
         resources:
           requests:
