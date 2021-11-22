@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Includes basic workspace setup, with gcloud and a bootstrap runner
-FROM fedora:32
+FROM fedora:34
 
 WORKDIR /workspace
 RUN mkdir -p /workspace
@@ -26,15 +26,17 @@ ARG IMAGE_ARG
 ENV IMAGE=${IMAGE_ARG}
 
 # Install packages
-RUN dnf install -y dnf-plugins-core && \
-  dnf -y install \
+RUN dnf install -y \
     cpio \
+    dnf-plugins-core \
     findutils \
     gcc \
     gcc-c++ \
+    gettext \
     git \
     glibc-devel \
     glibc-static \
+    iproute \
     java-11-openjdk-devel \
     jq \
     libstdc++-static \
@@ -48,11 +50,9 @@ RUN dnf install -y dnf-plugins-core && \
     redhat-rpm-config \
     rsync \
     rsync-daemon \
-    sudo \
     skopeo \
-    wget \
-    gettext \
-    iproute &&\
+    sudo \
+    wget &&\
   dnf -y clean all
 
 # Install gcloud
