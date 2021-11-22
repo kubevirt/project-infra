@@ -1,7 +1,0 @@
----
-- hosts: local
-  gather_facts: False
-  vars:
-    ansible_python_interpreter: '{{ ansible_playbook_python }}'
-  roles:
-    - remote-cluster

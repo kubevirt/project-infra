@@ -1,5 +1,0 @@
----
-- hosts: prow
-  gather_facts: False
-  roles:
-    - prometheus

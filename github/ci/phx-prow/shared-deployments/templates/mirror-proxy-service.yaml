@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: docker-mirror-proxy
-spec:
-  selector:
-    app: docker-mirror-proxy
-  ports:
-  - port: 3128

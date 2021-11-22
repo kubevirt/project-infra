@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mirror-config
-data:
-  config.yml: |
-{{ mirrorConfig | indent(width=4, indentfirst=True) }}

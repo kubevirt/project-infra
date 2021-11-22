@@ -12,8 +12,6 @@ is available)
 
 * `github/ci`: Infrastructure code for our main deployments:
 
-  * `github/ci/phx-prow`: Ansible code for provisioning phx-prow cluster
-
   * `github/ci/prow-deploy`: Ansible code for testing and deploying Prow components,
   includes Prow configuration under github/ci/prow-deploy/files
 
@@ -43,7 +41,7 @@ depending on billing alerts. See [README](limiter/README.md)
   * `robots/cmd/indexpagecreator`: Creates flakefinder index page
 
   * `robots/cmd/kubevirt`: Provides commands to manipulate the SIG jobs (periodic and presubmit) that are testing kubevirt with kubevirtci
-    
+
     See [README](robots/cmd/kubevirt/README.md)
 
   * `robots/cmd/kubevirtci-bumper`: Tool to automatically bump kubevirtci providers.

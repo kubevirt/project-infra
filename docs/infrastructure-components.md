@@ -79,7 +79,7 @@ testing and the image artifacts are stored here.
 
 #### Connected clusters
 
-* Workloads and phx-prow, the control plane schedules CI jobs on them.
+* Workloads, the control plane schedules CI jobs on it.
 
 #### Exposed services
 
@@ -118,33 +118,6 @@ testing and the image artifacts are stored here.
 #### Connected clusters
 
 Control plane, it sends prow jobs here to be executed and retrieves its state.
-
-#### Exposed services
-
-None.
-
-### phx-prow
-
-Old cluster where Prow control plane used to run. It is still used to run some
-jobs.
-
-#### Context
-
-phx-prow
-
-#### Components
-
-* [docker proxy]: acts as a cache for docker images, reducing the need to access
-external registries.
-
-#### External services
-
-* Quay: we mainly use quay as our container image registry, the images used for
-testing and the image artifacts are stored here.
-
-#### Connected clusters
-
-The Control plane cluster sends prow jobs here to be executed and retrieves its state.
 
 #### Exposed services
 
