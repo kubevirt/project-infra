@@ -186,6 +186,10 @@ tide:
         dashboard:
           skip-unknown-contexts: true
           from-branch-protection: true
+     nmstate:
+      repos:
+        kubevirt-nmstate:
+          skip-unknown-contexts: true
 
 slack_reporter_configs:
   '*':
