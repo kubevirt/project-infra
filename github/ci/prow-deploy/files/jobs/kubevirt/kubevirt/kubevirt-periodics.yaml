@@ -516,7 +516,7 @@ periodics:
         value: k8s-1.21
       - name: KUBEVIRT_E2E_FOCUS
         value: \[sig-operator\]
-      image: quay.io/kubevirtci/golang:v20210906-994b913
+      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
       name: ""
       resources:
         requests:
@@ -598,7 +598,7 @@ periodics:
         value: quay.io/kubevirt
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
-      image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+      image: quay.io/kubevirtci/golang:v20210906-994b913
       name: ""
       resources:
         requests:
