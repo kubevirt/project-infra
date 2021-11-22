@@ -10,10 +10,8 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: prow-workloads
+      cluster: ibm-prow-jobs
       spec:
-        nodeSelector:
-          type: vm
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
             command:

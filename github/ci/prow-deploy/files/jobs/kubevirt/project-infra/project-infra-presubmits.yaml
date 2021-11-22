@@ -70,8 +70,6 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
-      nodeSelector:
-        type: vm
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
@@ -97,8 +95,6 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
-      nodeSelector:
-        type: vm
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
@@ -124,8 +120,6 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
-      nodeSelector:
-        type: vm
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
@@ -151,8 +145,6 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
-      nodeSelector:
-        type: vm
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
@@ -180,8 +172,6 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
-      nodeSelector:
-        type: vm
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
@@ -209,8 +199,6 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
-      nodeSelector:
-        type: vm
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
@@ -294,8 +282,6 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
-      nodeSelector:
-        type: vm
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
@@ -321,8 +307,6 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
-      nodeSelector:
-        type: vm
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
           command:
