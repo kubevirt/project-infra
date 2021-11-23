@@ -188,7 +188,7 @@ tide:
             from-branch-protection: true
       nmstate:
         repos:
-          kubevirt-nmstate:
+          kubernetes-nmstate:
             skip-unknown-contexts: true
 
 slack_reporter_configs:
