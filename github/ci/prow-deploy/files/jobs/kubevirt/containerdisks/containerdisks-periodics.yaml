@@ -1,5 +1,6 @@
 periodics:
 - annotations:
+    testgrid-create-test-group: "false"
   cluster: ibm-prow-jobs
   cron: 0 2 * * *
   decorate: true
