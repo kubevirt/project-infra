@@ -407,7 +407,7 @@ periodics:
       secret:
         secretName: oauth-token
 - name: periodic-kubevirtci-cluster-unsupported-version-remover
-  interval: 24h
+  cron: "30 3 * * *"
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
@@ -423,7 +423,7 @@ periodics:
   - org: kubevirt
     repo: kubevirtci
     base_ref: main
-  cluster: prow-workloads
+  cluster: ibm-prow-jobs
   spec:
     securityContext:
       runAsUser: 0

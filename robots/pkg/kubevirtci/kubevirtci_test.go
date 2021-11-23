@@ -460,7 +460,7 @@ func TestDropUnsupportedProviders(t *testing.T) {
 			targetProviderDir := path.Join(tempDir, tt.args.providerDir)
 			err = DropUnsupportedProviders(targetProviderDir, targetClusterUpDir, tt.args.supportedReleases)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("DropUnsupportedProviders() error = %v, wantErr %v", err, tt.wantErr)
+				t.Fatalf("DropUnsupportedProviders() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if err == nil {
