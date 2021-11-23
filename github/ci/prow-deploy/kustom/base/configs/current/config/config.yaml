@@ -181,15 +181,15 @@ tide:
     '*': https://prow.ci.kubevirt.io/pr
   context_options:
     orgs:
-     kubevirt:
-      repos:
-        dashboard:
-          skip-unknown-contexts: true
-          from-branch-protection: true
-     nmstate:
-      repos:
-        kubevirt-nmstate:
-          skip-unknown-contexts: true
+      kubevirt:
+        repos:
+          dashboard:
+            skip-unknown-contexts: true
+            from-branch-protection: true
+      nmstate:
+        repos:
+          kubevirt-nmstate:
+            skip-unknown-contexts: true
 
 slack_reporter_configs:
   '*':
