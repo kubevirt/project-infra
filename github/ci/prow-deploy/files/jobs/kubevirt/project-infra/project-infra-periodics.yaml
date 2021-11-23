@@ -391,6 +391,54 @@ periodics:
     - name: token
       secret:
         secretName: oauth-token
+- name: periodic-kubevirtci-cluster-unsupported-version-remover
+  cron: "30 3 * * *"
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    workdir: true
+  - org: kubevirt
+    repo: kubevirtci
+    base_ref: main
+  cluster: ibm-prow-jobs
+  spec:
+    securityContext:
+      runAsUser: 0
+    containers:
+      - image: quay.io/kubevirtci/pr-creator:v20210915-8bb373f
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - |
+            set -e
+            TEMP_FILE=$(mktemp)
+            bazel run //robots/cmd/kubevirt check providers -- \
+              --job-config-path-kubevirt-presubmits=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml \
+              --job-config-path-kubevirt-periodics=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml \
+              --output-file=${TEMP_FILE} \
+              --overwrite=true \
+              --github-token-path= \
+              --dry-run=false
+            cat ${TEMP_FILE}
+            git-pr.sh -c "bazel run //robots/cmd/kubevirtci-bumper:kubevirtci-bumper -- -ensure-only-latest-three --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" -p ../kubevirtci -r kubevirtci -b remove-unsupported-versions -T main
+        volumeMounts:
+        - name: token
+          mountPath: /etc/github
+        resources:
+          requests:
+            memory: "200Mi"
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
 - name: periodic-kubevirtci-provider-presubmit-creator
   interval: 24h
   max_concurrency: 1

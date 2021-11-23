@@ -7,9 +7,7 @@ kubevirtci-bumper
 
 1. Ensuring that we have a provider for the latest minor release by copying a predecessor provider
 2. Ensuring that the last three minor releases are up-to-date
-3. Not yet implemented: Dropping unsuppored k8s providers automatically
-4. Not yet implemented: Cloning and Dropping correspnding prow jobs
-5. Not yet implemented: Create PRs agains kubevirtci and project-infra
+3. Dropping unsupported k8s providers automatically
 
 Example
 =======

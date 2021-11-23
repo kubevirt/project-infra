@@ -12,39 +12,26 @@
  *
  */
 
-package cmd
+package check
 
 import (
 	"fmt"
 
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/check"
-
 	"github.com/spf13/cobra"
-
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/remove"
-
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/copy"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/require"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "kubevirt",
-	Short: "kubevirt alters job definitions in project-infra for kubevirt/kubevirt repo",
+var checkCommand = &cobra.Command{
+	Use:   "check",
+	Short: "kubevirt check checks job definitions in project-infra for kubevirt/kubevirt repo",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
 	},
 }
 
 func init() {
-	flags.AddPersistentFlags(rootCmd)
-
-	rootCmd.AddCommand(copy.CopyCommand())
-	rootCmd.AddCommand(require.RequireCommand())
-	rootCmd.AddCommand(remove.RemoveCommand())
-	rootCmd.AddCommand(check.CheckCommand())
+	checkCommand.AddCommand(CheckProvidersCommand())
 }
 
-func Execute() error {
-	return rootCmd.Execute()
+func CheckCommand() *cobra.Command {
+	return checkCommand
 }

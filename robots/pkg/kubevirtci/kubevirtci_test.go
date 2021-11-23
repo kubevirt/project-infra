@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"reflect"
 	"sort"
@@ -333,4 +334,191 @@ func release(tagName string, released bool) *github.RepositoryRelease {
 		release.PublishedAt = &github.Timestamp{time.Now()}
 	}
 	return release
+}
+
+type testScenario struct {
+	dirsBefore         []string
+	clusterUpDirsAfter []string
+	providerDirsAfter  []string
+}
+
+func TestDropUnsupportedProviders(t *testing.T) {
+	type args struct {
+		scenario          testScenario
+		providerDir       string
+		clusterUpDir      string
+		supportedReleases []*github.RepositoryRelease
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "no supported releases provokes error",
+			args: args{
+				scenario: testScenario{
+					dirsBefore: []string{
+						"cluster-provision/k8s/1.19",
+						"cluster-provision/k8s/1.20",
+						"cluster-provision/k8s/1.21",
+						"cluster-up/cluster/k8s-1.19",
+						"cluster-up/cluster/k8s-1.20",
+						"cluster-up/cluster/k8s-1.21",
+					},
+				},
+				providerDir:       "cluster-provision/k8s",
+				clusterUpDir:      "cluster-up/cluster",
+				supportedReleases: []*github.RepositoryRelease{},
+			},
+			wantErr: true,
+		},
+		{
+			name: "only supported providers left",
+			args: args{
+				scenario: testScenario{
+					dirsBefore: []string{
+						"cluster-provision/k8s/1.19",
+						"cluster-provision/k8s/1.20",
+						"cluster-provision/k8s/1.21",
+						"cluster-up/cluster/k8s-1.19",
+						"cluster-up/cluster/k8s-1.20",
+						"cluster-up/cluster/k8s-1.21",
+					},
+					providerDirsAfter: []string{
+						"1.19",
+						"1.20",
+						"1.21",
+					},
+					clusterUpDirsAfter: []string{
+						"k8s-1.19",
+						"k8s-1.20",
+						"k8s-1.21",
+					},
+				},
+				providerDir:  "cluster-provision/k8s",
+				clusterUpDir: "cluster-up/cluster",
+				supportedReleases: []*github.RepositoryRelease{
+					{
+						TagName: strPointer("v1.19.3"),
+					},
+					{
+						TagName: strPointer("v1.20.2"),
+					},
+					{
+						TagName: strPointer("v1.21.1"),
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "unsupported providers should get deleted",
+			args: args{
+				scenario: testScenario{
+					dirsBefore: []string{
+						"cluster-provision/k8s/1.19",
+						"cluster-provision/k8s/1.20",
+						"cluster-provision/k8s/1.21",
+						"cluster-up/cluster/k8s-1.19",
+						"cluster-up/cluster/k8s-1.20",
+						"cluster-up/cluster/k8s-1.21",
+					},
+					providerDirsAfter: []string{
+						"1.20",
+						"1.21",
+					},
+					clusterUpDirsAfter: []string{
+						"k8s-1.20",
+						"k8s-1.21",
+					},
+				},
+				providerDir:  "cluster-provision/k8s",
+				clusterUpDir: "cluster-up/cluster",
+				supportedReleases: []*github.RepositoryRelease{
+					{
+						TagName: strPointer("v1.20.2"),
+					},
+					{
+						TagName: strPointer("v1.21.1"),
+					},
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tempDir, err := os.MkdirTemp("", "dropProviders-")
+			panicOnErr(err)
+			defer os.RemoveAll(tempDir)
+			for _, dir := range tt.args.scenario.dirsBefore {
+				panicOnErr(mkDirs(path.Join(tempDir, dir)))
+			}
+
+			targetClusterUpDir := path.Join(tempDir, tt.args.clusterUpDir)
+			targetProviderDir := path.Join(tempDir, tt.args.providerDir)
+			err = DropUnsupportedProviders(targetProviderDir, targetClusterUpDir, tt.args.supportedReleases)
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("DropUnsupportedProviders() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if err == nil {
+				checkForSuperfluousDirEntries(t, err, targetClusterUpDir, tt.args.scenario.clusterUpDirsAfter)
+				checkForRequiredDirEntries(t, targetClusterUpDir, tt.args.scenario.clusterUpDirsAfter)
+				checkForSuperfluousDirEntries(t, err, targetProviderDir, tt.args.scenario.providerDirsAfter)
+				checkForRequiredDirEntries(t, targetProviderDir, tt.args.scenario.providerDirsAfter)
+			}
+		})
+	}
+}
+
+func checkForSuperfluousDirEntries(t *testing.T, err error, pathToCheck string, listOfEntriesThatShouldExist []string) {
+	dirEntries, err := os.ReadDir(pathToCheck)
+	for _, entry := range dirEntries {
+		found := false
+		for _, clusterUpDir := range listOfEntriesThatShouldExist {
+			if clusterUpDir == entry.Name() {
+				found = true
+			}
+		}
+		if !found {
+			t.Errorf("DropUnsupportedProviders() error = dir %v should not exist", entry.Name())
+		}
+	}
+}
+
+func checkForRequiredDirEntries(t *testing.T, pathToCheck string, requiredEntries []string) {
+	for _, entry := range requiredEntries {
+		pathShouldExist := path.Join(pathToCheck, entry)
+		_, err := os.Stat(pathShouldExist)
+		if os.IsNotExist(err) {
+			t.Errorf("DropUnsupportedProviders() error = dir %v should exist", pathShouldExist)
+			continue
+		}
+		panicOnErr(err)
+	}
+}
+
+func mkDirs(dir string) error {
+	_, err := os.Stat(dir)
+	if os.IsNotExist(err) {
+		parent, _ := path.Split(dir)
+		parent = strings.TrimSuffix(parent, "/")
+		err := mkDirs(parent)
+		if err != nil {
+			return err
+		}
+		return os.Mkdir(dir, 0777)
+	}
+	return nil
+}
+
+func panicOnErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func strPointer(input string) *string {
+	return &input
 }
