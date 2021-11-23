@@ -1,0 +1,8 @@
+---
+- name: NetworkManager DNS config
+  lineinfile:
+    path: /etc/sysconfig/network-scripts/ifcfg-bond1
+    regexp: '^DNS1='
+    line: DNS1=8.8.8.8
+- name: reboot to apply changes
+  reboot:

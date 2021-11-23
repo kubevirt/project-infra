@@ -587,7 +587,7 @@ postsubmits:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
           - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
+            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           command:
             - "/bin/bash"
             - "-c"
@@ -637,7 +637,7 @@ postsubmits:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
           - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
+            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           command:
             - "/bin/bash"
             - "-c"

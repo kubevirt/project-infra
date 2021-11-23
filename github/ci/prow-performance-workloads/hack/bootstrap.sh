@@ -7,7 +7,7 @@ main(){
 
     cd ${BASE_DIR}
 
-    ansible-playbook -i inventory/prow-performance-workloads/hosts.yaml  --become --become-user=root --private-key ~/.ssh/id_rsa bootstrap.yml
+    ansible-playbook -i inventory/prow-performance-workloads/hosts.yml  --become --become-user=root --private-key ~/.ssh/id_rsa bootstrap.yml
 }
 
 main "$@"
