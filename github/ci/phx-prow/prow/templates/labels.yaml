@@ -1,9 +1,0 @@
-apiVersion: v1
-data:
-  labels.yaml: |
-{{ prowLabelsConfig | indent(width=4, indentfirst=True) }}
-kind: ConfigMap
-metadata:
-  creationTimestamp: null
-  name: label-config
-
