@@ -590,14 +590,13 @@ periodics:
         gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
         unset DOCKER_TAG # we want to publish to main
         export PULL_BASE_REF=main
+        export GIT_ASKPASS=$PWD/../project-infra/hack/git-askpass.sh
         hack/publish-staging.sh
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       - name: DOCKER_PREFIX
         value: quay.io/kubevirt
-      - name: GIT_ASKPASS
-        value: ../project-infra/hack/git-askpass.sh
       image: quay.io/kubevirtci/golang:v20210906-994b913
       name: ""
       resources:
