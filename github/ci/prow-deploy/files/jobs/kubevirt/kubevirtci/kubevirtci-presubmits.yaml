@@ -93,6 +93,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     max_concurrency: 2
     name: check-provision-k8s-1.19
+    optional: true
     spec:
       containers:
       - command:
