@@ -92,33 +92,6 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 2
-    name: check-provision-k8s-1.19
-    optional: true
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.19 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20210316-d295087
-        name: ""
-        resources:
-          requests:
-            memory: 8Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: true
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      timeout: 3h0m0s
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-    max_concurrency: 2
     name: check-provision-k8s-1.20
     spec:
       containers:
