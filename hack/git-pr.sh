@@ -44,8 +44,9 @@ description_command=
 title=
 body=
 head_branch=
+release_note_none=
 
-while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:d:h:" opt; do
+while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:d:h:R" opt; do
     case "${opt}" in
         D )
             dry_run=true
@@ -95,6 +96,9 @@ while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:d:h:" opt; do
         h )
             head_branch="${OPTARG}"
             ;;
+        R )
+            release_note_none=true
+            ;;
         \? )
             usage
             exit 1
@@ -141,6 +145,10 @@ git add -A
 if git diff --name-only --exit-code HEAD; then
     echo "Nothing changed" >&2
     exit 0
+fi
+
+if [ -n "$release_note_none" ]; then
+    summary+='\n\n```release-note\nNONE\n```'
 fi
 
 if [ -z "$dry_run" ]; then
