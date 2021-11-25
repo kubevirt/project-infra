@@ -972,7 +972,7 @@ periodics:
       - /bin/bash
       - -c
       - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
-        -p ../kubevirt -T main
+        -p ../kubevirt -T main -R
       env:
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
