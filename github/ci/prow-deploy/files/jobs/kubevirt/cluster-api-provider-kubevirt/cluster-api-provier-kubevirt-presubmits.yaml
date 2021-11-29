@@ -1,0 +1,31 @@
+presubmits:
+  kubevirt/cluster-api-provider-kubevirt:
+  - always_run: true
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-cluster-api-provider-kubevirt-e2e
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make functest
+        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
