@@ -27,6 +27,7 @@ RUN curl -sL -o /bin/gimme https://raw.githubusercontent.com/travis-ci/gimme/mas
     chmod +x /bin/gimme && \
     mkdir -p /etc/setup.mixin.d/ && \
     echo 'eval $(gimme ${GIMME_GO_VERSION})' > /etc/setup.mixin.d/golang.sh
+RUN cat /etc/setup.mixin.d/golang.sh
 RUN . /etc/setup.mixin.d/golang.sh
 
 RUN dnf install -y \
