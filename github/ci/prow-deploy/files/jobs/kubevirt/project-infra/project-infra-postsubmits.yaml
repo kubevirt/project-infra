@@ -85,7 +85,7 @@ postsubmits:
                 memory: "1Gi"
     - name: publish-bootstrap-image
       always_run: false
-      run_if_changed: "images/bootstrap/.*"
+      run_if_changed: "images/golang/.*|images/bootstrap/.*"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -105,35 +105,6 @@ postsubmits:
                 cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
                 ./publish_image.sh bootstrap quay.io kubevirtci
-            # docker-in-docker needs privileged mode
-            securityContext:
-              privileged: true
-            resources:
-              requests:
-                memory: "1Gi"
-              limits:
-                memory: "1Gi"
-    - name: publish-golang-image
-      always_run: false
-      run_if_changed: "images/golang/.*"
-      annotations:
-        testgrid-create-test-group: "false"
-      decorate: true
-      max_concurrency: 1
-      labels:
-        preset-dind-enabled: "true"
-        preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
-      spec:
-        containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-            command:
-              - "/usr/local/bin/runner.sh"
-              - "/bin/bash"
-              - "-c"
-              - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                cd images
                 ./publish_image.sh golang quay.io kubevirtci
             # docker-in-docker needs privileged mode
             securityContext:
