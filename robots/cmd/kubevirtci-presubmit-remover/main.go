@@ -17,18 +17,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"time"
-
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
-	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
-	prowjobs "k8s.io/test-infra/prow/apis/prowjobs/v1"
+	"io/ioutil"
 	"k8s.io/test-infra/prow/config"
+	"kubevirt.io/project-infra/robots/pkg/kubevirt/release"
+	"os"
 	"sigs.k8s.io/yaml"
 
 	"kubevirt.io/project-infra/robots/pkg/querier"
@@ -73,7 +68,7 @@ func main() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	// TODO: Use global option from the prow config.
 	logrus.SetLevel(logrus.DebugLevel)
-	log := logrus.StandardLogger().WithField("robot", "kubevirtci-presubmit-creator")
+	log := logrus.StandardLogger().WithField("robot", "kubevirtci-presubmit-remover")
 
 	o := gatherOptions()
 	if err := o.Validate(); err != nil {
@@ -118,15 +113,19 @@ func main() {
 		os.Exit(0)
 	}
 
-	latestReleaseSemver := querier.ParseRelease(releases[0])
+	latestMinorReleases := release.GetLatestMinorReleases(release.AsSemVers(releases))
+	if len(latestMinorReleases) < 3 {
+		log.Info("Not enough minor releases found, nothing to do.")
+	}
 
-	newJobConfig, exists := AddNewPresubmitIfNotExists(jobConfig, latestReleaseSemver)
-	if exists && !o.dryRun {
-		log.Info(fmt.Sprintf("presubmit job for %v exists, nothing to do.", latestReleaseSemver))
+	targetRelease := latestMinorReleases[3]
+	updated := deletePresubmitJobForRelease(&jobConfig, targetRelease)
+	if !updated {
+		log.Info("Not updated, nothing to do")
 		os.Exit(0)
 	}
 
-	marshalledConfig, err := yaml.Marshal(newJobConfig)
+	marshalledConfig, err := yaml.Marshal(jobConfig)
 	if err != nil {
 		log.WithError(err).Error("Failed to marshall jobconfig")
 	}
@@ -143,71 +142,28 @@ func main() {
 	if err != nil {
 		log.WithError(err).Error("Failed to write jobconfig")
 	}
+
 }
 
-func AddNewPresubmitIfNotExists(jobConfig config.JobConfig, latestReleaseSemver *querier.SemVer) (newJobConfig config.JobConfig, jobExists bool) {
-	newJobConfig = jobConfig
-	kubevirtciJobs := make(map[string]config.Presubmit, len(newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig]))
-	for _, job := range newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig] {
-		kubevirtciJobs[job.Name] = job
+func deletePresubmitJobForRelease(jobConfig *config.JobConfig, targetReleaseSemver *querier.SemVer) (updated bool) {
+	toDeleteJobNames := map[string]struct{}{}
+	toDeleteJobNames[createKubevirtciPresubmitJobName(targetReleaseSemver)] = struct{}{}
+
+	var newPresubmits []config.Presubmit
+
+	for _, presubmit := range jobConfig.PresubmitsStatic[OrgAndRepoForJobConfig] {
+		if _, exists := toDeleteJobNames[presubmit.Name]; exists {
+			updated = true
+			continue
+		}
+		newPresubmits = append(newPresubmits, presubmit)
 	}
 
-	wantedCheckProvisionJobName := createKubevirtciPresubmitJobName(latestReleaseSemver)
-	if _, exists := kubevirtciJobs[wantedCheckProvisionJobName]; exists {
-		return newJobConfig, true
+	if updated {
+		jobConfig.PresubmitsStatic[OrgAndRepoForJobConfig] = newPresubmits
 	}
 
-	newPresubmitJobForRelease := CreatePresubmitJobForRelease(latestReleaseSemver)
-	newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig] = append(newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig], newPresubmitJobForRelease)
-	return newJobConfig, false
-}
-
-func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
-	yes := true
-	res := config.Presubmit{
-		AlwaysRun: false,
-		Optional:  true,
-		JobBase: config.JobBase{
-			UtilityConfig: config.UtilityConfig{
-				Decorate: &yes,
-				DecorationConfig: &prowapi.DecorationConfig{
-					Timeout: &prowjobs.Duration{3 * time.Hour},
-				},
-			},
-			Name:           fmt.Sprintf("check-provision-k8s-%s.%s", semver.Major, semver.Minor),
-			MaxConcurrency: 1,
-			Labels: map[string]string{
-				"preset-dind-enabled":  "true",
-				"preset-docker-mirror-proxy": "true",
-			},
-			Cluster: "prow-workloads",
-			Spec: &v1.PodSpec{
-				NodeSelector: map[string]string{
-					"type": "bare-metal-external",
-				},
-				Containers: []v1.Container{
-					{
-						Image: "quay.io/kubevirtci/golang:v20210316-d295087",
-						Command: []string{
-							"/usr/local/bin/runner.sh",
-							"/bin/sh",
-							"-c",
-							fmt.Sprintf("cd cluster-provision/k8s/%s.%s && ../provision.sh", semver.Major, semver.Minor),
-						},
-						SecurityContext: &v1.SecurityContext{
-							Privileged: &yes,
-						},
-						Resources: v1.ResourceRequirements{
-							Requests: v1.ResourceList{
-								v1.ResourceMemory: *resource.NewQuantity(8*1024*1024*1024, resource.BinarySI),
-							},
-						},
-					},
-				},
-			},
-		},
-	}
-	return res
+	return
 }
 
 func createKubevirtciPresubmitJobName(latestReleaseSemver *querier.SemVer) string {
