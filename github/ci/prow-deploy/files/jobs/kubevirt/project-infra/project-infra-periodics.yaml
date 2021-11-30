@@ -508,7 +508,7 @@ periodics:
               --github-token-path= \
               --dry-run=false
             cat ${TEMP_FILE}
-            git-pr.sh -c "bazel run //robots/cmd/kubevirtci-presubmit-creator:kubevirtci-presubmit-remover -- --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b remove-kubevirtci-presubmit -T main
+            git-pr.sh -c "bazel run //robots/cmd/kubevirtci-presubmit-remover:kubevirtci-presubmit-remover -- --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b remove-kubevirtci-presubmit -T main
         volumeMounts:
         - name: token
           mountPath: /etc/github
