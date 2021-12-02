@@ -281,12 +281,15 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: quay.io/kubevirtci/golang:v20211129-3b6e9a6
             securityContext:
               privileged: true
             resources:
               requests:
                 memory: "29Gi"
+            env:
+              - name: GIMME_GO_VERSION
+                value: "1.16"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
