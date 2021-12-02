@@ -28,6 +28,9 @@ periodics:
         set -e
         cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
         ./build.sh
+      env:
+      - name: GIMME_GO_VERSION
+        value: "1.16"
       image: quay.io/kubevirtci/golang:v20211129-3b6e9a6
       name: ""
       resources:
