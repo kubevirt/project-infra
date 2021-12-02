@@ -1,0 +1,33 @@
+presubmits:
+  kubernetes-sigs/cluster-api-provider-kubevirt:
+  - always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 3h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-kubernetes-sigs-cluster-api-provider-kubevirt-e2e
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make functest
+        image: quay.io/kubevirtci/golang:v20211129-3b6e9a6
+        name: ""
+        resources:
+          requests:
+            memory: 16Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external

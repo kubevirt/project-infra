@@ -22,6 +22,11 @@ config_updater:
           - kubevirt-prow
 
 plugins:
+  # we don't get events from there, it has no effect
+  # but it is needed to host jobs on our prow and still
+  # have a consistent valid config.
+  kubernetes-sigs/cluster-api-provider-kubevirt:
+  - trigger
   kubevirt/must-gather:
   - trigger
   - release-note
