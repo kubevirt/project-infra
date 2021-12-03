@@ -16,6 +16,9 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
+      branches:
+        - main
+        - release*
       cluster: ibm-prow-jobs
       spec:
         containers:
