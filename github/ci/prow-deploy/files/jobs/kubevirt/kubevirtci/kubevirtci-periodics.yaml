@@ -97,3 +97,38 @@ periodics:
       resources:
         requests:
           memory: "8Gi"
+- name: periodic-kubevirtci-bump-cdi
+  cron: "30 1 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+  max_concurrency: 1
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirtci
+    base_ref: main
+    workdir: true
+  labels:
+    preset-docker-mirror: "true"
+  cluster: prow-workloads
+  spec:
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: gcs
+      secret:
+        secretName: gcs
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20210907-eaf738f
+      command: ["/bin/sh", "-c"]
+      args:
+      - git-pr.sh -c "./hack/bump-cdi.sh" -b bump-cdi -p $(pwd) -T main
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+      resources:
+        requests:
+          memory: "200Mi"
