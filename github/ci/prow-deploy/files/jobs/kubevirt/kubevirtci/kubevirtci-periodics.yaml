@@ -125,7 +125,7 @@ periodics:
     - image: quay.io/kubevirtci/pr-creator:v20210907-eaf738f
       command: ["/bin/sh", "-c"]
       args:
-      - git-pr.sh -c "./hack/bump-cdi.sh" -b bump-cdi -p $(pwd) -T main
+      - git-pr.sh -c "./hack/bump-cdi.sh" -r kubevirtci -b bump-cdi -T main -p $(pwd)
       volumeMounts:
       - name: token
         mountPath: /etc/github
