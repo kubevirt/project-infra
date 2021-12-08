@@ -168,3 +168,48 @@ postsubmits:
       - name: token
         secret:
           secretName: oauth-token
+  - name: push-containerized-data-importer-builder
+    branches:
+    - main
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "false"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /etc/gcs/service-account.json
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - |
+            cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+            make builder-push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+        volumeMounts:
+        - name: token
+          mountPath: /etc/github
+      volumes:
+      - name: token
+        secret:
+          secretName: oauth-token
