@@ -49,10 +49,10 @@ presubmits:
           value: kind-1.19-sriov
         - name: KUBEVIRT_NUM_NODES
           value: "3"
-        - name: "RUN_KUBEVIRT_CONFORMANCE"
+        - name: RUN_KUBEVIRT_CONFORMANCE
           value: "true"
-        - name: "SONOBUOY_EXTRA_ARGS"
-          value: "--plugin-env kubevirt-conformance.E2E_FOCUS=SRIOV"
+        - name: SONOBUOY_EXTRA_ARGS
+          value: --plugin-env kubevirt-conformance.E2E_FOCUS=SRIOV
         image: quay.io/kubevirtci/golang:v20210316-d295087
         name: ""
         resources:
@@ -132,10 +132,10 @@ presubmits:
           value: kind-1.22-sriov
         - name: KUBEVIRT_NUM_NODES
           value: "3"
-        - name: "RUN_KUBEVIRT_CONFORMANCE"
+        - name: RUN_KUBEVIRT_CONFORMANCE
           value: "true"
-        - name: "SONOBUOY_EXTRA_ARGS"
-          value: "--plugin-env kubevirt-conformance.E2E_FOCUS=SRIOV"
+        - name: SONOBUOY_EXTRA_ARGS
+          value: --plugin-env kubevirt-conformance.E2E_FOCUS=SRIOV
         image: quay.io/kubevirtci/golang:v20210316-d295087
         name: ""
         resources:
@@ -313,6 +313,33 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.22 && ../provision.sh
+        image: quay.io/kubevirtci/golang:v20210316-d295087
+        name: ""
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 1
+    name: check-provision-k8s-1.23
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cd cluster-provision/k8s/1.23 && ../provision.sh
         image: quay.io/kubevirtci/golang:v20210316-d295087
         name: ""
         resources:
