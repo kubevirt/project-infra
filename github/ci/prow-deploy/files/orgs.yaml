@@ -617,7 +617,7 @@ orgs:
           libvirt: write
           node-maintenance-operator: write
           project-infra: write
-          qe-tools: read
+          qe-tools: admin
           run: write
           storage-demo: write
           user-guide: write
