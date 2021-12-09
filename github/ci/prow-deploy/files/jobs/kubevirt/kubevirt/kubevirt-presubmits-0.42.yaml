@@ -764,7 +764,7 @@ presubmits:
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
     branches:
     - release-0.42
-    cluster: ibm-prow-jobs
+    cluster: prow-workloads
     context: pull-kubevirt-e2e-kind-1.17-sriov
     decorate: true
     decoration_config:
