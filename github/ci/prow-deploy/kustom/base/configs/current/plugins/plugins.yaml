@@ -343,6 +343,12 @@ plugins:
   - lgtm
   - owners-label
 
+  kubevirt/qe-tools:
+  - approve
+  - lgtm
+  - owners-label
+  - trigger
+
 external_plugins:
   libguestfs-appliance:
   - name: needs-rebase
@@ -411,6 +417,7 @@ triggers:
   - kubevirt/community
   - kubevirt/terraform-provider-kubevirt
   - kubevirt/kubevirt-velero-plugin
+  - kubevirt/qe-tools
 - repos:
   - virtblocks/virtblocks
 - repos:
@@ -455,6 +462,7 @@ approve:
   - kubevirt/user-guide
   - kubevirt/terraform-provider-kubevirt
   - kubevirt/kubevirt-velero-plugin
+  - kubevirt/qe-tools
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -497,6 +505,7 @@ lgtm:
   - kubevirt/user-guide
   - kubevirt/terraform-provider-kubevirt
   - kubevirt/kubevirt-velero-plugin
+  - kubevirt/qe-tools
   review_acts_as_lgtm: true
 
 override:
