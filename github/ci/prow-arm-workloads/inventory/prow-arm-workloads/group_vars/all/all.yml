@@ -1,0 +1,5 @@
+#apiserver_loadbalancer_domain_name: "kubevirt-sm-lb01-2007274-dal09.clb.appdomain.cloud"
+#loadbalancer_apiserver:
+#  port: 6443
+download_container: false
+skip_downloads: false
