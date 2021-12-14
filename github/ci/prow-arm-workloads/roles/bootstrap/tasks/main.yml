@@ -1,0 +1,99 @@
+---
+- name: disable swap
+  block:
+    - name: swapoff
+      shell: |
+        swapoff -a
+    - name: comment swap entry from fstab
+      replace:
+        path: /etc/fstab
+        regexp: '(.*swap.*)'
+        replace: '#\1'
+    - name: mask systemctl swap unit
+      systemd:
+        name: dev-sda3.swap
+        masked: yes
+
+- name: enable mirrors for yum repos
+  block:
+    - name: find repo files
+      find:
+        paths: '/etc/yum.repos.d'
+        patterns: 'CentOS-Linux-*'
+      register: repo_entries
+      changed_when: False
+
+    - name: uncomment mirrorlist lines
+      lineinfile:
+        path: '{{ item.path }}'
+        regexp: '#(\s?mirrorlist.*)'
+        line: '\1'
+        backrefs: yes
+      with_items: '{{ repo_entries.files }}'
+
+    - name: comment baseurl line
+      lineinfile:
+        path: '{{ item.path }}'
+        regexp: '^baseurl(.*)'
+        line: '# baseurl\1'
+        backrefs: yes
+      with_items: '{{ repo_entries.files }}'
+
+- name: remove uneeded packages
+  yum:
+    name:
+      - podman
+      - runc
+      - containerd
+    state: absent
+
+- name: NetworkManager DNS config
+  lineinfile:
+    path: /etc/sysconfig/network-scripts/ifcfg-bond0
+    regexp: '^DNS1='
+    line: DNS1=8.8.8.8
+
+- name: ip6 modules
+  block:
+    - name: insert modules
+      shell: |
+        modprobe ip6_tables
+        modprobe ip6table_filter
+        modprobe ip6table_nat
+        modprobe ip6t_MASQUERADE
+
+    - name: make module insertion permanent
+      copy:
+        dest: /etc/modules-load.d/ip6.conf
+        content: |
+          ip6_tables
+          ip6table_filter
+          ip6table_nat
+          ip6t_MASQUERADE
+
+- name: net bridge settings
+  copy:
+    dest: /etc/sysctl.d/net.bridge.conf
+    content: |
+      net.bridge.bridge-nf-call-iptables = 1
+      net.bridge.bridge-nf-call-arptables = 1
+
+- name: nested kvm
+  lineinfile:
+    path: /etc/modprobe.d/kvm-intel.conf
+    create: yes
+    line: options kvm-intel nested=y
+
+- name: configure fs.inotify
+  copy:
+    dest: /etc/sysctl.d/fs.inotify.max_user_watches.conf
+    content: |
+      fs.inotify.max_user_watches=524288
+
+- name: additional kernel modules
+  include_tasks: additional_kernel_modules.yml
+  loop:
+    - openvswitch
+
+- name: reboot to apply changes
+  reboot:

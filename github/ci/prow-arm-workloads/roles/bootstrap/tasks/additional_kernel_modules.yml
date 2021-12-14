@@ -1,0 +1,10 @@
+---
+- name: insert module
+  shell: |
+    modprobe {{ item }}
+
+- name: make module insertion permanent
+  copy:
+    dest: /etc/modules-load.d/{{ item }}.conf
+    content: |
+      {{ item }}

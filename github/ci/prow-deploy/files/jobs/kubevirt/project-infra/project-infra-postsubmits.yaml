@@ -637,6 +637,106 @@ postsubmits:
         - name: gcs
           secret:
             secretName: gcs
+    - name: post-project-infra-prow-arm-workloads-bootstrap-nodes
+      always_run: false
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      branches:
+      # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+      - ^prow-arm-workloads-bootstrap-nodes-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+      labels:
+        preset-docker-mirror-proxy: "true"
+      skip_report: false
+      cluster: ibm-prow-jobs
+      spec:
+        securityContext:
+          runAsUser: 0
+        containers:
+        - image: quay.io/kubespray/kubespray:v2.15.0
+          env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/gcs/service-account.json
+          - name: GIT_ASKPASS
+            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
+          command:
+            - "/bin/bash"
+            - "-c"
+            - "./github/ci/prow-arm-workloads/hack/bootstrap.sh"
+          resources:
+            requests:
+              memory: "8Gi"
+            limits:
+              memory: "8Gi"
+          volumeMounts:
+          - name: token
+            mountPath: /etc/github
+          - name: gcs
+            mountPath: /etc/gcs
+            readOnly: true
+          - name: pgp-bot-key
+            mountPath: /etc/pgp
+            readOnly: true
+        volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
+        - name: pgp-bot-key
+          secret:
+            secretName: pgp-bot-key
+        - name: gcs
+          secret:
+            secretName: gcs
+    - name: post-project-infra-prow-arm-workloads-cluster-deployment
+      always_run: false
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      branches:
+      # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+      - ^prow-arm-workloads-cluster-deployment-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+      labels:
+        preset-docker-mirror-proxy: "true"
+      skip_report: false
+      cluster: ibm-prow-jobs
+      spec:
+        securityContext:
+          runAsUser: 0
+        containers:
+        - image: quay.io/kubespray/kubespray:v2.15.0
+          env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/gcs/service-account.json
+          - name: GIT_ASKPASS
+            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
+          command:
+            - "/bin/bash"
+            - "-c"
+            - "./github/ci/prow-arm-workloads/hack/deploy.sh"
+          resources:
+            requests:
+              memory: "8Gi"
+            limits:
+              memory: "8Gi"
+          volumeMounts:
+          - name: token
+            mountPath: /etc/github
+          - name: gcs
+            mountPath: /etc/gcs
+            readOnly: true
+          - name: pgp-bot-key
+            mountPath: /etc/pgp
+            readOnly: true
+        volumes:
+        - name: token
+          secret:
+            secretName: oauth-token
+        - name: pgp-bot-key
+          secret:
+            secretName: pgp-bot-key
+        - name: gcs
+          secret:
+            secretName: gcs
     - name: post-project-infra-cert-manager-deployment
       always_run: false
       annotations:

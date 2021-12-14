@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source $(dirname "$0")/common.sh
+
+main(){
+    setup
+
+    cd ${BASE_DIR}
+
+    ansible-playbook -i inventory/prow-arm-workloads/hosts.yml --become --become-user=root --private-key ~/.ssh/id_rsa bootstrap.yml
+}
+
+main "$@"
