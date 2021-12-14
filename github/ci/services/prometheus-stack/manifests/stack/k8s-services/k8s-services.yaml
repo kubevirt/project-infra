@@ -1,0 +1,124 @@
+---
+# Source: kube-prometheus-stack/templates/exporters/core-dns/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-stack-kube-prom-coredns
+  labels:
+    app: kube-prometheus-stack-coredns
+    jobLabel: coredns
+
+    chart: kube-prometheus-stack-13.6.0
+    release: "prometheus-stack"
+    heritage: "Helm"
+    group: kubevirtci
+  namespace: kube-system
+spec:
+  clusterIP: None
+  ports:
+    - name: http-metrics
+      port: 9153
+      protocol: TCP
+      targetPort: 9153
+  selector:
+    k8s-app: kube-dns
+---
+# Source: kube-prometheus-stack/templates/exporters/kube-controller-manager/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-stack-kube-prom-kube-controller-manager
+  labels:
+    app: kube-prometheus-stack-kube-controller-manager
+    jobLabel: kube-controller-manager
+
+    chart: kube-prometheus-stack-13.6.0
+    release: "prometheus-stack"
+    heritage: "Helm"
+    group: kubevirtci
+  namespace: kube-system
+spec:
+  clusterIP: None
+  ports:
+    - name: http-metrics
+      port: 10252
+      protocol: TCP
+      targetPort: 10252
+  selector:
+    component: kube-controller-manager
+  type: ClusterIP
+---
+# Source: kube-prometheus-stack/templates/exporters/kube-etcd/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-stack-kube-prom-kube-etcd
+  labels:
+    app: kube-prometheus-stack-kube-etcd
+    jobLabel: kube-etcd
+
+    chart: kube-prometheus-stack-13.6.0
+    release: "prometheus-stack"
+    heritage: "Helm"
+    group: kubevirtci
+  namespace: kube-system
+spec:
+  clusterIP: None
+  ports:
+    - name: http-metrics
+      port: 2379
+      protocol: TCP
+      targetPort: 2379
+  selector:
+    component: etcd
+  type: ClusterIP
+---
+# Source: kube-prometheus-stack/templates/exporters/kube-proxy/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-stack-kube-prom-kube-proxy
+  labels:
+    app: kube-prometheus-stack-kube-proxy
+    jobLabel: kube-proxy
+
+    chart: kube-prometheus-stack-13.6.0
+    release: "prometheus-stack"
+    heritage: "Helm"
+    group: kubevirtci
+  namespace: kube-system
+spec:
+  clusterIP: None
+  ports:
+    - name: http-metrics
+      port: 10249
+      protocol: TCP
+      targetPort: 10249
+  selector:
+    k8s-app: kube-proxy
+  type: ClusterIP
+---
+# Source: kube-prometheus-stack/templates/exporters/kube-scheduler/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-stack-kube-prom-kube-scheduler
+  labels:
+    app: kube-prometheus-stack-kube-scheduler
+    jobLabel: kube-scheduler
+
+    chart: kube-prometheus-stack-13.6.0
+    release: "prometheus-stack"
+    heritage: "Helm"
+    group: kubevirtci
+  namespace: kube-system
+spec:
+  clusterIP: None
+  ports:
+    - name: http-metrics
+      port: 10251
+      protocol: TCP
+      targetPort: 10251
+  selector:
+    component: kube-scheduler
+  type: ClusterIP
