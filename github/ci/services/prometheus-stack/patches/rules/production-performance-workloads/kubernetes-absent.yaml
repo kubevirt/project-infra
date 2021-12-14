@@ -1,0 +1,109 @@
+# Source: https://github.com/prometheus-operator/kube-prometheus/blob/6d013d4e4f980ba99cfdafa9432819d484e2f829/manifests/kubernetesControlPlane-prometheusRule.yaml
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    group: kubevirtci
+  name: kubernetes-absent
+spec:
+  groups:
+  - name: kubernetes-absent
+    rules:
+    - alert: AlertmanagerDown
+      annotations:
+        message: 'Alertmanager has disappeared from Prometheus target discovery.'
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-alertmanagerdown
+      expr: |
+        absent(up{job="prometheus-stack-kube-prom-alertmanager"} == 1)
+      for: 15m
+      labels:
+        severity: critical
+        namespace: monitoring
+    - alert: KubeStateMetricsDown
+      annotations:
+        message: 'KubeStateMetrics has disappeared from Prometheus target discovery.'
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubestatemetricsdown
+      expr: |
+        absent(up{job="kube-state-metrics"} == 1)
+      for: 15m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: KubeletDown
+      annotations:
+        message: 'Kubelet has disappeared from Prometheus target discovery.'
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubeletdown
+      expr: |
+        absent(up{job="kubelet"} == 1)
+      for: 15m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: NodeExporterDown
+      annotations:
+        message: 'NodeExporter has disappeared from Prometheus target discovery.'
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-nodeexporterdown
+      expr: |
+        absent(up{job="node-exporter-prometheus-node-exporter"} == 1)
+      for: 15m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: PrometheusDown
+      annotations:
+        message: 'Prometheus has disappeared from Prometheus target discovery.'
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-prometheusdown
+      expr: |
+        absent(up{job="prometheus-stack-kube-prom-prometheus"} == 1)
+      for: 15m
+      labels:
+        severity: warning
+        namespace: monitoring
+    - alert: PrometheusOperatorDown
+      annotations:
+        message: 'PrometheusOperator has disappeared from Prometheus target discovery.'
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-prometheusoperatordown
+      expr: |
+        absent(up{job="prometheus-stack-kube-prom-operator"} == 1)
+      for: 15m
+      labels:
+        severity: warning
+        namespace: monitoring
+  - name: kubernetes-system-scheduler
+    rules:
+    - alert: KubeSchedulerDown
+      annotations:
+        description: KubeScheduler has disappeared from Prometheus target discovery.
+        runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeschedulerdown
+        summary: Target disappeared from Prometheus target discovery.
+      expr: |
+        absent(up{job="kube-scheduler"} == 1)
+      for: 15m
+      labels:
+        severity: critical
+  - name: kubernetes-system-controller-manager
+    rules:
+    - alert: KubeControllerManagerDown
+      annotations:
+        description: KubeControllerManager has disappeared from Prometheus target
+          discovery.
+        runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubecontrollermanagerdown
+        summary: Target disappeared from Prometheus target discovery.
+      expr: |
+        absent(up{job="kube-controller-manager"} == 1)
+      for: 15m
+      labels:
+        severity: critical
+  - name: kubernetes-system-kube-proxy
+    rules:
+    - alert: KubeProxyDown
+      annotations:
+        description: KubeProxy has disappeared from Prometheus target discovery.
+        runbook_url: https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubeproxydown
+        summary: Target disappeared from Prometheus target discovery.
+      expr: |
+        absent(up{job="kube-proxy"} == 1)
+      for: 15m
+      labels:
+        severity: critical
