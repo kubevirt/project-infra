@@ -1,0 +1,22 @@
+---
+# Source: prometheus-node-exporter/templates/monitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: prometheus-stack-kube-prom-node-exporter
+    app.kubernetes.io/managed-by: Helm
+    chart: kube-prometheus-stack-13.6.0
+    heritage: "Helm"
+    release: node-exporter
+    group: kubevirtci
+  name: prometheus-kube-prometheus-node-exporter
+  namespace: default
+spec:
+  endpoints:
+  - port: metrics
+  jobLabel: release
+  selector:
+    matchLabels:
+      app: prometheus-node-exporter
+      release: node-exporter
