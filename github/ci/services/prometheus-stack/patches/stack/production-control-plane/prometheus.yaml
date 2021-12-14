@@ -14,3 +14,12 @@ spec:
     limits:
       cpu: 1
       memory: 12Gi
+  additionalScrapeConfigs:
+    name: prometheus-stack-kube-prom-prometheus-scrape-confg
+    key: additional-scrape-configs.yaml
+  thanos:
+    baseImage: quay.io/thanos/thanos
+    version: v0.21.1
+    objectStorageConfig:
+      key: thanos.yaml
+      name: thanos-objstore-config
