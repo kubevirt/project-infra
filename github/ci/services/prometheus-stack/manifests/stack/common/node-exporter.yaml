@@ -222,25 +222,3 @@ spec:
         - name: root
           hostPath:
             path: /
----
-# Source: prometheus-node-exporter/templates/monitor.yaml
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: node-exporter-prometheus-node-exporter
-  namespace: default
-  labels:
-    app: prometheus-node-exporter
-    heritage: Helm
-    release: node-exporter
-    chart: prometheus-node-exporter-1.15.0
-    group: kubevirtci
-spec:
-  selector:
-    matchLabels:
-      app: prometheus-node-exporter
-      release: node-exporter
-  endpoints:
-    - port: metrics
-      scheme: http
-      scrapeTimeout: 10s

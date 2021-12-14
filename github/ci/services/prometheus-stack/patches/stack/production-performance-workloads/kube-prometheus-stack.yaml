@@ -1,0 +1,114 @@
+---
+# Source: kube-prometheus-stack/templates/prometheus/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-stack-kube-prom-prometheus
+  labels:
+    app: kube-prometheus-stack-prometheus
+
+    chart: kube-prometheus-stack-13.6.0
+    release: "prometheus-stack"
+    heritage: "Helm"
+    group: kubevirtci
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus-stack-kube-prom-prometheus
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-k8s
+    namespace: default
+---
+# Source: kube-prometheus-stack/templates/prometheus/psp-clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-stack-kube-prom-prometheus-psp
+  labels:
+    app: kube-prometheus-stack-prometheus
+
+    chart: kube-prometheus-stack-13.6.0
+    release: "prometheus-stack"
+    heritage: "Helm"
+    group: kubevirtci
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus-stack-kube-prom-prometheus-psp
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-k8s
+    namespace: default
+---
+# Source: kube-prometheus-stack/templates/prometheus/prometheus.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus-stack-kube-prom-prometheus
+  namespace: default
+  labels:
+    app: kube-prometheus-stack-prometheus
+
+    chart: kube-prometheus-stack-13.6.0
+    release: "prometheus-stack"
+    heritage: "Helm"
+    group: kubevirtci
+spec:
+  alerting:
+    alertmanagers:
+      - namespace: monitoring
+        name: prometheus-stack-kube-prom-alertmanager
+        port: web
+        pathPrefix: "/"
+        apiVersion: v2
+  image: quay.io/prometheus/prometheus:v2.31.1
+  version: v2.31.1
+  externalUrl: http://prometheus-stack-kube-prom-prometheus.default:9090
+  paused: false
+  replicas: 1
+  shards: 1
+  logLevel:  info
+  logFormat:  logfmt
+  listenLocal: false
+  enableAdminAPI: false
+  scrapeInterval: 30s
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 300Gi
+        storageClassName: local-path
+  resources:
+    limits:
+      cpu: 4000m
+      memory: 10Gi
+    requests:
+      cpu: 500m
+      memory: 4Gi
+  retention: 12w
+  routePrefix: "/"
+  serviceAccountName: prometheus-k8s
+  serviceMonitorSelector:
+    matchLabels:      
+  serviceMonitorNamespaceSelector: {}
+  podMonitorSelector:
+    matchLabels:
+      group: kubevirtci
+  podMonitorNamespaceSelector: {}
+  probeSelector:
+    matchLabels:
+      release: "prometheus-stack"
+  probeNamespaceSelector: {}
+  securityContext:
+    fsGroup: 2000
+    runAsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  ruleNamespaceSelector: {}
+  ruleSelector:
+    matchLabels:
+      group: kubevirtci

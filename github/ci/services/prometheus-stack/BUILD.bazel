@@ -1,3 +1,4 @@
+# Bazel GitOps Rules is an alternative to rules_k8s: https://github.com/adobe/rules_gitops
 load("@com_adobe_rules_gitops//gitops:defs.bzl", "k8s_deploy")
 
 TEST_CLUSTER = "kind-kind"
@@ -12,9 +13,13 @@ PRODUCTION_CLUSTER_E2E_WORKLOADS = "prow-workloads-cluster"
 
 PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
 
+PRODUCTION_CLUSTER_PERFORMANCE_WORKLOADS = "cluster.local"
+
+PRODUCTION_USER_PERFORMANCE_WORKLOADS = "kubernetes-admin"
+
 [
     k8s_deploy(
-        name = NAME,
+        name = "%s-crds" % NAME,
         cluster = CLUSTER,
         manifests = glob([
             "crds/*.yaml",
@@ -23,9 +28,10 @@ PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
         user = USER,
     )
     for NAME, CLUSTER, USER in [
-        ("testing-crds", TEST_CLUSTER, TEST_USER),
-        ("production-control-plane-crds", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
-        ("production-e2e-workloads-crds", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+        ("testing", TEST_CLUSTER, TEST_USER),
+        ("production-control-plane", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+        ("production-e2e-workloads", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+        ("production-performance-workloads", PRODUCTION_CLUSTER_PERFORMANCE_WORKLOADS, PRODUCTION_USER_PERFORMANCE_WORKLOADS),
     ]
 ]
 
@@ -39,7 +45,7 @@ PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
         ]),
         namespace = "monitoring",
         patches = glob([
-            "patches/%s/*.yaml" % NAME,
+            "patches/stack/%s/*.yaml" % NAME,
         ]),
         secrets_srcs = glob([
             "secrets/%s/**/*" % NAME,
@@ -50,6 +56,26 @@ PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
         ("testing", TEST_CLUSTER, TEST_USER),
         ("production-control-plane", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
         ("production-e2e-workloads", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+        ("production-performance-workloads", PRODUCTION_CLUSTER_PERFORMANCE_WORKLOADS, PRODUCTION_USER_PERFORMANCE_WORKLOADS),
+    ]
+]
+
+
+[
+    k8s_deploy(
+        name = "%s-k8s-services" % NAME,
+        cluster = CLUSTER,
+        manifests = glob([
+            "manifests/stack/k8s-services/*.yaml",
+        ]),
+        namespace = "kube-system",
+        user = USER,
+    )
+    for NAME, CLUSTER, USER in [
+        ("testing", TEST_CLUSTER, TEST_USER),
+        ("production-control-plane", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+        ("production-e2e-workloads", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+        ("production-performance-workloads", PRODUCTION_CLUSTER_PERFORMANCE_WORKLOADS, PRODUCTION_USER_PERFORMANCE_WORKLOADS),
     ]
 ]
 
@@ -61,23 +87,30 @@ PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
             "manifests/service-monitors/common/*.yaml",
             "manifests/service-monitors/%s/*.yaml" % NAME,
         ]),
-        namespace = "kubevirt-prow",
+        patches = glob([
+            "patches/service-monitors/%s/*.yaml" % NAME,
+        ]),
+        namespace = NAMESPACE,
         user = USER,
     )
-    for NAME, CLUSTER, USER in [
-        ("testing", TEST_CLUSTER, TEST_USER),
-        ("production-control-plane", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
-        ("production-e2e-workloads", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+    for NAME, CLUSTER, USER, NAMESPACE in [
+        ("testing", TEST_CLUSTER, TEST_USER, "kubevirt-prow"),
+        ("production-control-plane", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE, "kubevirt-prow"),
+        ("production-e2e-workloads", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS, "kubevirt-prow"),
+        ("production-performance-workloads", PRODUCTION_CLUSTER_PERFORMANCE_WORKLOADS, PRODUCTION_USER_PERFORMANCE_WORKLOADS, "monitoring"),
     ]
 ]
 
 [
     k8s_deploy(
         name = "%s-rules" % NAME,
-        cluster = CLUSTER,
+        cluster = CLUSTER,     
         manifests = glob([
             "manifests/rules/common/*.yaml",
             "manifests/rules/%s/*.yaml" % NAME,
+        ]),
+        patches = glob([
+            "patches/rules/%s/*.yaml" % NAME,
         ]),
         namespace = "monitoring",
         user = USER,
@@ -86,5 +119,6 @@ PRODUCTION_USER_E2E_WORKLOADS = "prow-workloads-automation"
         ("testing", TEST_CLUSTER, TEST_USER),
         ("production-control-plane", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
         ("production-e2e-workloads", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+        ("production-performance-workloads", PRODUCTION_CLUSTER_PERFORMANCE_WORKLOADS, PRODUCTION_USER_PERFORMANCE_WORKLOADS),
     ]
 ]

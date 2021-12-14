@@ -834,6 +834,11 @@ postsubmits:
 
               ./github/ci/services/prometheus-stack/hack/deploy.sh production-control-plane
               ./github/ci/services/prometheus-stack/hack/deploy.sh production-e2e-workloads
+
+              extract_secret 'kubeconfigPerf' ~/.kube/config
+              extract_secret 'grafanaUserPerf' ./github/ci/services/prometheus-stack/secrets/production-performance-workloads/grafana/admin-user
+              extract_secret 'grafanaPasswordPerf' ./github/ci/services/prometheus-stack/secrets/production-performance-workloads/grafana/admin-password
+              ./github/ci/services/prometheus-stack/hack/deploy.sh production-performance-workloads
           resources:
             requests:
               memory: "8Gi"

@@ -1,0 +1,15 @@
+---
+# Source: kube-prometheus-stack/templates/prometheus/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus-k8s
+  namespace: default
+  labels:
+    app: kube-prometheus-stack-prometheus
+    chart: kube-prometheus-stack-13.6.0
+    release: "prometheus-stack"
+    heritage: "Helm"
+    group: kubevirtci
+imagePullSecrets:
+  []
