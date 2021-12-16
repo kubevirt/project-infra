@@ -553,7 +553,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubespray/kubespray:v2.15.0
+        - image: quay.io/kubespray/kubespray:v2.17.1
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
@@ -603,7 +603,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubespray/kubespray:v2.15.0
+        - image: quay.io/kubespray/kubespray:v2.17.1
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
