@@ -13,10 +13,11 @@ usage and interactions flow, see the pull request interactions [sequence diagram
 
 ![infra-layout](infra-layout.svg)
 
-## Clusters
+## Prow clusters
 
-Our infrastructure includes the following clusters. For each of them, this
-document provides the following fields:
+Our infrastructure includes several clusters connected directly to Prow, in other
+words, Prow can schedule jobs on them. they will be described next, For each of
+them this document provides the following fields:
 
 * Prow context: context name of the cluster in the master kubeconfig used by Prow
 to access it. It is also the value of the `cluster` field in the Prow jobs that
@@ -122,6 +123,26 @@ Control plane, it sends prow jobs here to be executed and retrieves its state.
 #### Exposed services
 
 None.
+
+## External KubeVirtCI clusters
+
+There are several clusters that are also used to run jobs, but in this case
+using the external provider feature of KubeVirtCI. The jobs are scheduled in one
+of the Prow Clusters described above and during the execution they connect to an
+external cluster and run tests on it. There are several considerations to take
+into account:
+* The jobs won't create an independent KubeVirtCI cluster, so for each cluster
+only one job can be run concurrently.
+* The credentials to access the cluster in the form of a kubeconfig filemust be
+provided separately, they are not included in Prow's main kubeconfig.
+
+### ARM cluster
+
+Used to run ARM test jobs.
+
+### Performance cluster
+
+Runs performance-related jobs.
 
 [Prow]: https://github.com/kubernetes/test-infra/tree/master/prow#readme
 ["Life of a Prow Job"]: https://github.com/kubernetes/test-infra/blob/master/prow/life_of_a_prow_job.md
