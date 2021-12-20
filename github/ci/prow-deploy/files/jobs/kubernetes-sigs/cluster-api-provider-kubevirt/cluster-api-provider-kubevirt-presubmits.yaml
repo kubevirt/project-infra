@@ -29,5 +29,8 @@ presubmits:
             memory: 16Gi
         securityContext:
           privileged: true
+        env:
+          - name: GIMME_GO_VERSION
+            value: "1.17"
       nodeSelector:
         type: bare-metal-external
