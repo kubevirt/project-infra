@@ -416,18 +416,20 @@ periodics:
       - image: quay.io/kubevirtci/pr-creator:v20210915-8bb373f
         command: ["/bin/sh"]
         args:
-          - "-c"
+          - "-ce"
           - |
-            set -e
             TEMP_FILE=$(mktemp)
-            bazel run //robots/cmd/kubevirt check providers -- \
+            if ! bazel run //robots/cmd/kubevirt check providers -- \
               --job-config-path-kubevirt-presubmits=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml \
               --job-config-path-kubevirt-periodics=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml \
               --output-file=${TEMP_FILE} \
               --overwrite=true \
               --github-token-path= \
-              --dry-run=false
-            cat ${TEMP_FILE}
+              --dry-run=false ; then
+              cat ${TEMP_FILE}
+              echo "unsupported kubevirtci providers are still in use, cancelling removal of unsupported kubevirtci providers!"
+              exit 0
+            fi
             git-pr.sh -c "bazel run //robots/cmd/kubevirtci-bumper:kubevirtci-bumper -- -ensure-only-latest-three --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" -p ../kubevirtci -r kubevirtci -b remove-unsupported-versions -T main
         volumeMounts:
         - name: token
@@ -496,18 +498,20 @@ periodics:
       - image: quay.io/kubevirtci/pr-creator:v20210915-8bb373f
         command: ["/bin/sh"]
         args:
-          - "-c"
+          - "-ce"
           - |
-            set -e
             TEMP_FILE=$(mktemp)
-            bazel run //robots/cmd/kubevirt check providers -- \
+            if ! bazel run //robots/cmd/kubevirt check providers -- \
               --job-config-path-kubevirt-presubmits=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml \
               --job-config-path-kubevirt-periodics=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml \
               --output-file=${TEMP_FILE} \
               --overwrite=true \
               --github-token-path= \
-              --dry-run=false
-            cat ${TEMP_FILE}
+              --dry-run=false ; then
+              cat ${TEMP_FILE}
+              echo "unsupported kubevirtci providers are still in use, cancelling removal of kubevirt presubmits!"
+              exit 0
+            fi
             git-pr.sh -c "bazel run //robots/cmd/kubevirtci-presubmit-remover:kubevirtci-presubmit-remover -- --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b remove-kubevirtci-presubmit -T main
         volumeMounts:
         - name: token
