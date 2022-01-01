@@ -1604,7 +1604,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    optional: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1621,6 +1620,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-ipv6-sig-network
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1641,7 +1641,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external        
+        type: bare-metal-external
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -1930,7 +1930,7 @@ presubmits:
       - name: pgp-bot-key
         secret:
           secretName: pgp-bot-key
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1969,7 +1969,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2008,7 +2008,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2047,7 +2047,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2100,10 +2100,10 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-e2e-k8s-1.22-sig-monitoring
     optional: true
-    skip_report: true
     run_if_changed: ^pkg/monitoring/.*|tests/monitoring/.*$
     skip_branches:
     - release-\d+\.\d+
+    skip_report: true
     spec:
       containers:
       - command:
