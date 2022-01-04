@@ -70,7 +70,6 @@ RUN wget -q https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.ta
     gcloud components install alpha beta kubectl && \
     gcloud info | tee /workspace/gcloud-info.txt
 
-
 #
 # BEGIN: DOCKER IN DOCKER SETUP
 #
@@ -90,7 +89,6 @@ RUN mkdir /docker-graph
 #
 # END: DOCKER IN DOCKER SETUP
 #
-
 
 # Cache the most commonly used bazel versions in the container
 RUN  curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 && \
