@@ -2100,7 +2100,6 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-e2e-k8s-1.22-sig-monitoring
     optional: true
-    skip_report: true
     run_if_changed: ^pkg/monitoring/.*|tests/monitoring/.*$
     skip_branches:
     - release-\d+\.\d+
