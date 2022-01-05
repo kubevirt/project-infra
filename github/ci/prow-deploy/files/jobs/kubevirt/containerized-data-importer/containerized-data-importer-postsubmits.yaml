@@ -183,8 +183,8 @@ postsubmits:
       grace_period: 5m
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "false"
-      preset-kubevirtci-quay-credential: "false"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
@@ -196,7 +196,7 @@ postsubmits:
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
-          - "-c"
+          - "-ce"
           - |
             cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
             make builder-push
@@ -209,7 +209,13 @@ postsubmits:
         volumeMounts:
         - name: token
           mountPath: /etc/github
+        - name: gcs
+          mountPath: /etc/gcs
+          readOnly: true
       volumes:
       - name: token
         secret:
           secretName: oauth-token
+      - name: gcs
+        secret:
+          secretName: gcs
