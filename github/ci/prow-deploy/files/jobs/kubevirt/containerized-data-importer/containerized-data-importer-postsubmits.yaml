@@ -19,7 +19,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      - image: quay.io/kubevirtci/bootstrap:v20220105-2d0a6e2
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -57,7 +57,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+      - image: quay.io/kubevirtci/bootstrap:v20220105-2d0a6e2
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -93,7 +93,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "false"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+      - image: quay.io/kubevirtci/bootstrap:v20220105-2d0a6e2
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -140,7 +140,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "false"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+      - image: quay.io/kubevirtci/bootstrap:v20220105-2d0a6e2
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -187,7 +187,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+      - image: quay.io/kubevirtci/bootstrap:v20220105-2d0a6e2
         env:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /etc/gcs/service-account.json

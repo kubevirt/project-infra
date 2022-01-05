@@ -127,7 +127,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+    - image: quay.io/kubevirtci/bootstrap:v20220105-2d0a6e2
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
