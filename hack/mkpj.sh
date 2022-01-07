@@ -3,7 +3,7 @@
 #
 # Adapted from https://github.com/kubernetes/test-infra/blob/master/config/mkpj.sh
 #
-# Usage: hack/mkpj.sh --job <job-name> | kubectl -n kubevirt-prow-jobs -f
+# Usage: hack/mkpj.sh --job <job-name> | kubectl create -n kubevirt-prow-jobs -f -
 #
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"

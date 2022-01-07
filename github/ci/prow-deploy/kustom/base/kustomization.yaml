@@ -34,7 +34,7 @@ resources:
   - manifests/test_infra/current/prow_controller_manager_deployment.yaml
   - manifests/test_infra/current/prow_controller_manager_rbac.yaml
   - manifests/test_infra/current/prow_controller_manager_service.yaml
-  - manifests/test_infra/current/prowjob_customresourcedefinition.yaml
+  - manifests/test_infra/current/prowjob-crd/prowjob_customresourcedefinition.yaml
   - manifests/test_infra/current/pushgateway_deployment.yaml
   - manifests/test_infra/current/sinker_deployment.yaml
   - manifests/test_infra/current/sinker_rbac.yaml
