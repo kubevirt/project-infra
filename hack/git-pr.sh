@@ -46,7 +46,7 @@ body=
 head_branch=
 release_note_none=
 
-while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:d:h:R" opt; do
+while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:d:h:R:B:" opt; do
     case "${opt}" in
         D )
             dry_run=true
@@ -99,6 +99,9 @@ while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:d:h:R" opt; do
         R )
             release_note_none=true
             ;;
+        B )
+            body="${OPTARG}"
+            ;;
         \? )
             usage
             exit 1
@@ -131,10 +134,14 @@ fi
 if [ -n "${description_command}" ]; then
     summary=$(eval "${description_command}")
     title=$(echo "$summary" | head -1)
-    body=$(echo "$summary" | sed '1,2d')
+    generated_body=$(echo "$summary" | sed '1,2d')
 else
     title="$summary"
-    body="Automatic run of \"${command}\". Please review"
+    generated_body="Automatic run of \"${command}\". Please review"
+fi
+
+if [ -z "${body}" ]; then
+    body="${generated_body}"
 fi
 
 if [ -z "${head_branch}" ]; then
