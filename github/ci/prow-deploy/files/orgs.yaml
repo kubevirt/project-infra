@@ -41,6 +41,7 @@ orgs:
       - beekhof
       - booxter
       - borod108
+      - brianmcarey
       - brybacki
       - crobinso
       - cwilkers
@@ -716,9 +717,12 @@ orgs:
           - dhiller
           - rmohr
           - fgimenez
+          - brianmcarey
         members:
           - phoracek
         privacy: closed
+        repos:
+          secrets: admin
       terraform-provider-kubevirt-maintainers:
         maintainers:
           - nirarg
