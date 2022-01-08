@@ -90,14 +90,14 @@ PRODUCTION_USER_PERFORMANCE_WORKLOADS = "kubernetes-admin"
         patches = glob([
             "patches/service-monitors/%s/*.yaml" % NAME,
         ]),
-        namespace = NAMESPACE,
+        namespace = "monitoring",
         user = USER,
     )
-    for NAME, CLUSTER, USER, NAMESPACE in [
-        ("testing", TEST_CLUSTER, TEST_USER, "kubevirt-prow"),
-        ("production-control-plane", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE, "kubevirt-prow"),
-        ("production-e2e-workloads", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS, "kubevirt-prow"),
-        ("production-performance-workloads", PRODUCTION_CLUSTER_PERFORMANCE_WORKLOADS, PRODUCTION_USER_PERFORMANCE_WORKLOADS, "monitoring"),
+    for NAME, CLUSTER, USER in [
+        ("testing", TEST_CLUSTER, TEST_USER),
+        ("production-control-plane", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
+        ("production-e2e-workloads", PRODUCTION_CLUSTER_E2E_WORKLOADS, PRODUCTION_USER_E2E_WORKLOADS),
+        ("production-performance-workloads", PRODUCTION_CLUSTER_PERFORMANCE_WORKLOADS, PRODUCTION_USER_PERFORMANCE_WORKLOADS),
     ]
 ]
 
