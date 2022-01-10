@@ -1,6 +1,7 @@
 presubmits:
   kubevirt/kubevirtci:
-  - always_run: true
+  - always_run: false
+    optional: true
     annotations:
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
     cluster: prow-workloads
