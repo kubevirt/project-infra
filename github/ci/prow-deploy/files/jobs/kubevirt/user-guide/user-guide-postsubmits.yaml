@@ -1,8 +1,8 @@
 postsubmits:
   kubevirt/user-guide:
-  - name: push-user-guide-master-build-and-push-to-gh-pages
+  - name: push-user-guide-main-build-and-push-to-gh-pages
     branches:
-    - ^master$
+    - ^main$
     annotations:
       testgrid-create-test-group: "false"
     decorate: true

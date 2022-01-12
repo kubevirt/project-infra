@@ -5,7 +5,7 @@ ENV LC_ALL=en_US.UTF-8
 
 # UPDATE BASE and land app frameworks and dependencies
 RUN mkdir -p /src && cd /src && \
-  curl https://raw.githubusercontent.com/kubevirt/user-guide/master/_config/src/Gemfile -o Gemfile && \
+  curl https://raw.githubusercontent.com/kubevirt/user-guide/main/_config/src/Gemfile -o Gemfile && \
   yum update -y && \
   yum install -y @development-tools \
     langpacks-en glibc-all-langpacks redhat-rpm-config openssl-devel gcc-c++ \
