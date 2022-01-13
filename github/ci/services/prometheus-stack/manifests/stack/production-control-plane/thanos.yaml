@@ -131,10 +131,10 @@ spec:
         resources:
           limits:
             cpu: 100m
-            memory: 800Mi
+            memory: 3.16Gi
           requests:
             cpu: 100m
-            memory: 800Mi
+            memory: 3.16Gi
         terminationMessagePolicy: FallbackToLogsOnError
       securityContext:
         fsGroup: 65534
@@ -278,10 +278,10 @@ spec:
         resources:
           limits:
             cpu: 0.42
-            memory: 1Gi
+            memory: 3.47Gi
           requests:
             cpu: 0.42
-            memory: 1Gi
+            memory: 3.47Gi
         terminationMessagePolicy: FallbackToLogsOnError
         volumeMounts:
         - mountPath: /var/thanos/store
