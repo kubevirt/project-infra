@@ -8,7 +8,7 @@ if ! command -V skopeo; then
 fi
 
 IMAGE_NAME="$1"
-latest_image_tag=$(skopeo list-tags "docker://$IMAGE_NAME" | jq -r '.Tags[]' | sort -rV | head -1)
+latest_image_tag=$(skopeo list-tags "docker://$IMAGE_NAME" | jq -r '.Tags[]' | tail -1)
 if [ -z "$latest_image_tag" ]; then
     echo "Couldn't find latest_image_tag"
     exit 1
