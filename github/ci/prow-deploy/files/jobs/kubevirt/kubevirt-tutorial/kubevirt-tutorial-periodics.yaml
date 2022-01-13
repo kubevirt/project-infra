@@ -15,7 +15,7 @@ periodics:
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+        - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"

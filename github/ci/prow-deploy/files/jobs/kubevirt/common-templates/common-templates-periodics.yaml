@@ -25,7 +25,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210331-b66b42e
+    - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210419-444033d
       env:
       - name: KUBEVIRT_NUM_NODES
         value: "3"
@@ -67,7 +67,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210331-b66b42e
+    - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210419-444033d
       env:
       - name: KUBEVIRT_NUM_NODES
         value: "3"

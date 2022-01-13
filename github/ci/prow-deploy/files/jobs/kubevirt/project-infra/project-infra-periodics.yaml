@@ -200,7 +200,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/autoowners@sha256:538278fcafba229ab38f0f112955a237ee69f842adaf7f480cac8f385dcdb924
+    - image: quay.io/kubevirtci/autoowners:v20210615-aa22a23
       env:
       - name: GIT_ASKPASS
         value: "./hack/git-askpass.sh"
@@ -236,7 +236,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-      - image: quay.io/kubevirtci/indexpagecreator@sha256:43fa17a6a92b74df3474d95b102f2b675ff9570c2bef1c80f74fb72aaf7fc434
+      - image: quay.io/kubevirtci/indexpagecreator:v20210428-c869d6302-dirty
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
@@ -376,7 +376,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20210915-8bb373f
+      - image: quay.io/kubevirtci/pr-creator:v20210920-0ef32ec
         command: ["/bin/sh"]
         args:
           - "-c"
@@ -413,7 +413,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20210915-8bb373f
+      - image: quay.io/kubevirtci/pr-creator:v20210920-0ef32ec
         command: ["/bin/sh"]
         args:
           - "-ce"
@@ -460,7 +460,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20210915-8bb373f
+      - image: quay.io/kubevirtci/pr-creator:v20210920-0ef32ec
         env:
         command: ["/bin/sh"]
         args:
@@ -495,7 +495,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20210915-8bb373f
+      - image: quay.io/kubevirtci/pr-creator:v20210920-0ef32ec
         command: ["/bin/sh"]
         args:
           - "-ce"
@@ -625,7 +625,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20210907-eaf738f
+      - image: quay.io/kubevirtci/pr-creator:v20210920-0ef32ec
         command: [ "/bin/sh" , "-c" ]
         args:
           - |
@@ -660,7 +660,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20210907-eaf738f
+    - image: quay.io/kubevirtci/pr-creator:v20210920-0ef32ec
       env:
       command: [ "/bin/sh" , "-c" ]
       args:
@@ -696,7 +696,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20210907-eaf738f
+    - image: quay.io/kubevirtci/pr-creator:v20210920-0ef32ec
       env:
       command: [ "/bin/sh" , "-c" ]
       args:
@@ -732,7 +732,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20210907-eaf738f
+    - image: quay.io/kubevirtci/pr-creator:v20210920-0ef32ec
       env:
       command: [ "/bin/sh" , "-c" ]
       args:
@@ -768,7 +768,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+      - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
@@ -810,7 +810,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20210915-8bb373f
+    - image: quay.io/kubevirtci/pr-creator:v20210920-0ef32ec
       command:
       - /usr/local/bin/runner.sh
       - /bin/sh
