@@ -4,6 +4,11 @@ Customization and deployment of a prometheus-based monitoring stack, including
 [prometheus operator], [alertmanager], [grafana] and [loki]. It uses internally
 these bazel [gitops rules].
 
+---
+**Note**
+
+Our manifests are based on the [helm chart for kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack).
+
 ## Layout
 
 We have a setup in which the main components are running in the same cluster as
