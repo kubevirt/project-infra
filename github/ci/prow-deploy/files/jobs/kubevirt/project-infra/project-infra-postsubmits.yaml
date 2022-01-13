@@ -13,7 +13,7 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -39,7 +39,7 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -66,7 +66,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -128,7 +128,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -159,7 +159,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -189,7 +189,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -219,7 +219,7 @@ postsubmits:
       cluster: prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -249,7 +249,7 @@ postsubmits:
       cluster: prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -281,7 +281,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -311,7 +311,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -344,7 +344,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20210715-d0c2b78
+        - image: quay.io/kubevirtci/prow-deploy:v20210924-5271db4
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
@@ -397,7 +397,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20210715-d0c2b78
+        - image: quay.io/kubevirtci/prow-deploy:v20210924-5271db4
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
@@ -450,7 +450,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20210715-d0c2b78
+        - image: quay.io/kubevirtci/prow-deploy:v20210924-5271db4
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
@@ -752,7 +752,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
           env:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"
@@ -804,7 +804,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
           env:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"
@@ -856,7 +856,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
           env:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"
@@ -907,7 +907,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
           env:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"
@@ -972,7 +972,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
           env:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"
@@ -1025,7 +1025,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
           env:
           - name: GIT_ASKPASS
             value: "./hack/git-askpass.sh"
@@ -1111,7 +1111,7 @@ postsubmits:
         preset-bazel-cache: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -1136,7 +1136,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
       spec:
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20211122-ca88fb4
+        - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
           command: ["/bin/sh"]
           args:
           - -c

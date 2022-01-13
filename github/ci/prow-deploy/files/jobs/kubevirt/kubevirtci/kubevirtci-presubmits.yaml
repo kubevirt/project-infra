@@ -53,7 +53,7 @@ presubmits:
           value: "true"
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=SRIOV
-        image: quay.io/kubevirtci/golang:v20210316-d295087
+        image: quay.io/kubevirtci/golang:v20220110-c066ff5
         name: ""
         resources:
           requests:
@@ -136,7 +136,7 @@ presubmits:
           value: "true"
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=SRIOV
-        image: quay.io/kubevirtci/golang:v20210316-d295087
+        image: quay.io/kubevirtci/golang:v20220110-c066ff5
         name: ""
         resources:
           requests:
@@ -183,7 +183,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.20 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20210316-d295087
+        image: quay.io/kubevirtci/golang:v20220110-c066ff5
         name: ""
         resources:
           requests:
@@ -209,7 +209,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.21 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20210316-d295087
+        image: quay.io/kubevirtci/golang:v20220110-c066ff5
         name: ""
         resources:
           requests:
@@ -235,7 +235,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.20 && CGROUPV2=true ../provision.sh
-        image: quay.io/kubevirtci/golang:v20210316-d295087
+        image: quay.io/kubevirtci/golang:v20220110-c066ff5
         name: ""
         resources:
           requests:
@@ -262,7 +262,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.21 && CGROUPV2=true ../provision.sh
-        image: quay.io/kubevirtci/golang:v20210316-d295087
+        image: quay.io/kubevirtci/golang:v20220110-c066ff5
         name: ""
         resources:
           requests:
@@ -287,7 +287,7 @@ presubmits:
         - /bin/bash
         - -c
         - cd cluster-provision/gocli/ && make all container
-        image: quay.io/kubevirtci/golang:v20210316-d295087
+        image: quay.io/kubevirtci/golang:v20220110-c066ff5
         name: ""
         resources:
           requests:
@@ -313,7 +313,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.22 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20210316-d295087
+        image: quay.io/kubevirtci/golang:v20220110-c066ff5
         name: ""
         resources:
           requests:
@@ -339,7 +339,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.22-ipv6 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20210316-d295087
+        image: quay.io/kubevirtci/golang:v20220110-c066ff5
         name: ""
         resources:
           requests:
@@ -365,7 +365,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.23 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20210316-d295087
+        image: quay.io/kubevirtci/golang:v20220110-c066ff5
         name: ""
         resources:
           requests:

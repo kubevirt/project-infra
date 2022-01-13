@@ -21,7 +21,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20210924-7b670cb
+        - image: quay.io/kubevirtci/golang:v20220110-c066ff5
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -51,7 +51,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20210924-7b670cb
+        - image: quay.io/kubevirtci/golang:v20220110-c066ff5
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -84,7 +84,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20210924-7b670cb
+        - image: quay.io/kubevirtci/golang:v20220110-c066ff5
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -114,7 +114,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20210924-7b670cb
+        - image: quay.io/kubevirtci/golang:v20220110-c066ff5
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
