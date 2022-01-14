@@ -4932,12 +4932,18 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 18,
-            "w": 6,
+            "h": 19,
+            "w": 3,
             "x": 0,
             "y": 0
           },
           "id": 8,
+          "links": [
+            {
+              "title": "CI Infrastructure Utilization Dashboard",
+              "url": "https://grafana.ci.kubevirt.io/d/qFDyvVinx/ci-infrastructure-utilization?orgId=1"
+            }
+          ],
           "options": {
             "reduceOptions": {
               "calcs": [
@@ -4979,9 +4985,9 @@ data:
           "fill": 2,
           "fillGradient": 0,
           "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 6,
+            "h": 7,
+            "w": 21,
+            "x": 3,
             "y": 0
           },
           "hiddenSeries": false,
@@ -4997,6 +5003,13 @@ data:
           },
           "lines": true,
           "linewidth": 1,
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Triggered jobs",
+              "url": "https://prow.ci.kubevirt.io/?state=triggered"
+            }
+          ],
           "nullPointMode": "null",
           "options": {
             "alertThreshold": true
@@ -5067,7 +5080,7 @@ data:
               {
                 "evaluator": {
                   "params": [
-                    125
+                    200
                   ],
                   "type": "gt"
                 },
@@ -5083,7 +5096,7 @@ data:
                 },
                 "reducer": {
                   "params": [],
-                  "type": "max"
+                  "type": "avg"
                 },
                 "type": "query"
               }
@@ -5110,10 +5123,10 @@ data:
           "fill": 0,
           "fillGradient": 0,
           "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 6,
-            "y": 9
+            "h": 6,
+            "w": 21,
+            "x": 3,
+            "y": 7
           },
           "hiddenSeries": false,
           "id": 2,
@@ -5128,6 +5141,13 @@ data:
           },
           "lines": true,
           "linewidth": 1,
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Pending jobs",
+              "url": "https://prow.ci.kubevirt.io/?state=pending"
+            }
+          ],
           "nullPointMode": "null",
           "options": {
             "alertThreshold": true
@@ -5156,7 +5176,7 @@ data:
               "fill": true,
               "line": true,
               "op": "gt",
-              "value": 125,
+              "value": 200,
               "visible": true
             }
           ],
@@ -5164,6 +5184,109 @@ data:
           "timeRegions": [],
           "timeShift": null,
           "title": "prowjobs pending",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 0,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 6,
+            "w": 21,
+            "x": 3,
+            "y": 13
+          },
+          "hiddenSeries": false,
+          "id": 9,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Failed jobs",
+              "url": "https://prow.ci.kubevirt.io/?state=failure"
+            }
+          ],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.4.0",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum by (type) (clamp_min(delta(prowjobs{state=~\"failure\"}[15m]),0))",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{type}}",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "new failed jobs / 15m",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -5227,7 +5350,7 @@ data:
       "timezone": "",
       "title": "Prow job load",
       "uid": "acSjBD17z",
-      "version": 5
+      "version": 19
     }
 ---
 # Source: grafana/templates/tests/test-configmap.yaml
