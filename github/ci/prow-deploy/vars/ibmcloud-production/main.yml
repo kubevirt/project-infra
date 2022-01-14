@@ -1,5 +1,5 @@
 testinfra_dir: /tmp/test-infra
-kubectl_exec: /usr/local/bin/kubectl
+kubectl_exec: kubectl
 bootstrap_full_config: true
 reconcile_github_webhooks: true
 project_infra_root: /home/prow/go/src/github.com/kubevirt/project-infra
