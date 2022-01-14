@@ -194,7 +194,7 @@ spec:
         summary: Host context switching (instance {{ $labels.instance }})
         description: "Context switching is growing on node (> 8000 / s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
       expr: (rate(node_context_switches_total[5m])) / (count without(cpu, mode) (node_cpu_seconds_total{mode="idle"})) > 8000
-      for: 3m
+      for: 6m
       labels:
         severity: warning
         namespace: monitoring
