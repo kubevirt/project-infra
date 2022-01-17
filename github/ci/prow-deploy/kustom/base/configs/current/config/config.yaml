@@ -369,7 +369,7 @@ branch-protection:
               protect: true
         user-guide:
           branches:
-            master:
+            main:
               protect: true
             gh-pages:
               protect: true
