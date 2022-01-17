@@ -1028,14 +1028,101 @@ periodics:
   labels:
     preset-bazel-cache: "true"
     preset-bazel-unnested: "true"
-    preset-dind-enabled: "true"
-    preset-docker-mirror-proxy: "true"
     preset-kubevirtci-quay-credential: "true"
-    preset-shared-images: "true"
   reporter_config:
     slack:
       job_states_to_report: []
-  name: periodic-kubevirt-performance-cluster-density-test
+  name: periodic-kubevirt-performance-cluster-100-density-test
+  max_concurrency: 1
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - |
+        # install yq
+        curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+        chmod +x ./yq && mv ./yq /usr/local/bin/yq
+
+        # get kubectl
+        curl -L "https://dl.k8s.io/release/v1.19.7/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+        chmod +x /usr/local/bin/kubectl
+
+        # get kubeconfig
+        source ../project-infra/hack/manage-secrets.sh
+        decrypt_secrets
+        extract_secret 'kubeconfigPerf' /kubeconfig
+
+        # login quay.io
+        cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+        
+        # run test
+        ./automation/perfscale-test.sh
+      env:
+      - name: TARGET
+        value: external
+      - name: KUBEVIRT_PROVIDER
+        value: external
+      - name: DOCKER_PREFIX
+        value: quay.io/kubevirtci
+      - name: DOCKER_TAG
+        value: perfscale_test
+      - name: KUBECONFIG
+        value: /kubeconfig
+      - name: PROMETHEUS_PORT
+        value: "9090"
+      - name: PERFAUDIT
+        value: "true"
+      - name: kubectl
+        value: /usr/local/bin/kubectl
+      - name: IMAGE_PULL_POLICY
+        value: Always
+      - name: GIT_ASKPASS
+        value: ../project-infra/hack/git-askpass.sh
+      image: quay.io/kubevirtci/golang:v20220110-4643253
+      resources:
+        requests:
+          memory: 4Gi
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: /etc/github
+        name: token
+      - mountPath: /etc/pgp
+        name: pgp-bot-key
+        readOnly: true
+    volumes:
+    - name: token
+      secret:
+        secretName: oauth-token
+    - name: pgp-bot-key
+      secret:
+        secretName: pgp-bot-key
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: ibm-prow-jobs
+  cron: 40 15 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  - base_ref: main
+    org: kubevirt
+    repo: project-infra
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-kubevirtci-quay-credential: "true"
+  reporter_config:
+    slack:
+      job_states_to_report: []
+  name: periodic-kubevirt-performance-cluster-scale-density-test
   max_concurrency: 1
   spec:
     containers:
@@ -1060,40 +1147,17 @@ periodics:
         # login quay.io
         cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
 
-        # run the test
-        make clean
-        make bazel-build
-        make cluster-sync
-        make cluster-deploy
-        start_timestamp=$(date -u +%Y-%m-%dT%TZ
-        sleep 30
-        _out/cmd/perfscale-load-generator/perfscale-load-generator \
-          -container-prefix $DOCKER_PREFIX \
-          -container-tag $DOCKER_TAG \
-          -v 6 \
-          -workload tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-density.yaml
-
-        # collect metrics      
-        kubectl -n monitoring port-forward service/prometheus-stack-kube-prom-prometheus ${PROMETHEUS_PORT} &> /dev/null &
-        sleep 30
-        stop_timestamp=$(date -u +%Y-%m-%dT%TZ)
-        cat <<EOF >perfscale-audit-cfg.json
-        {
-          "prometheusURL": "http://127.0.0.1:${PROMETHEUS_PORT}",
-          "startTime": "$start_timestamp",
-          "endTime": "$stop_timestamp"
-        }
-        EOF
-        _out/cmd/perfscale-audit/perfscale-audit -config-file perfscale-audit-cfg.json
+        # run test
+        ./automation/perfscale-test.sh
       env:
       - name: TARGET
         value: external
       - name: KUBEVIRT_PROVIDER
         value: external
-      - name: KUBEVIRT_STORAGE
-        value: hpp
       - name: DOCKER_PREFIX
         value: quay.io/kubevirtci
+      - name: DOCKER_TAG
+        value: perfscale_test
       - name: KUBECONFIG
         value: /kubeconfig
       - name: PROMETHEUS_PORT
@@ -1102,9 +1166,11 @@ periodics:
         value: /usr/local/bin/kubectl
       - name: IMAGE_PULL_POLICY
         value: Always
+      - name: PERFSCALE_WORKLOAD
+        value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-density-scale.yaml
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
-      image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+      image: quay.io/kubevirtci/golang:v20220110-4643253
       resources:
         requests:
           memory: 4Gi
