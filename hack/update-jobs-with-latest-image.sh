@@ -27,4 +27,4 @@ IMAGE_NAME_WITH_TAG="$IMAGE_NAME:$latest_image_tag"
 
 replace_regex='s#'"$IMAGE_NAME"'(@sha256\:|:v[a-z0-9]+-).*$#'"$IMAGE_NAME_WITH_TAG"'#g'
 
-find "$job_dir" -regextype egrep -regex '.*-(periodics|presubmits|postsubmits)\.yaml' -exec sed -i -E "$replace_regex" {} +
+find "$job_dir" -regextype egrep -regex '.*-(periodics|presubmits|postsubmits)(-master|-main)?\.yaml' -exec sed -i -E "$replace_regex" {} +
