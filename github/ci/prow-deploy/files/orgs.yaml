@@ -463,6 +463,7 @@ orgs:
         has_projects: false
         has_wiki: false
         homepage: https://kubevirt.io/user-guide
+        default_branch: main
       v2v-job:
         allow_rebase_merge: false
         allow_squash_merge: false
