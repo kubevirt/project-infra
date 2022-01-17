@@ -385,7 +385,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -401,7 +401,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-cgroupsv2-rook-ceph
+    name: pull-kubevirt-e2e-k8s-1.23-sig-storage-cgroupsv2
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -414,13 +414,9 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.20
+          value: k8s-1.23-sig-storage
         - name: KUBEVIRT_CGROUPV2
           value: "true"
-        - name: KUBEVIRT_E2E_SKIP
-          value: Multus|SRIOV|GPU|Macvtap|MediatedDevices
-        - name: KUBEVIRT_STORAGE
-          value: rook-ceph-default
         image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
         name: ""
         resources:
