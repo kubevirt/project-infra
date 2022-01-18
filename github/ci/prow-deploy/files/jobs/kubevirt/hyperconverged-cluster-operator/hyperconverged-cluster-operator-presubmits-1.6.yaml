@@ -1,0 +1,33 @@
+presubmits:
+  kubevirt/hyperconverged-cluster-operator:
+  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.21
+    branches:
+    - release-1.6
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    max_concurrency: 6
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210419-444033d
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "export TARGET=k8s-1.21 && automation/test.sh"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "29Gi"
