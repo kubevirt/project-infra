@@ -23,13 +23,10 @@ presubmits:
           - image: quay.io/kubevirtci/golang:v20220110-c066ff5
             securityContext:
               privileged: true
-            env:
-              - name: GIMME_GO_VERSION
-                value: "1.16"
             command:
-              - "/usr/local/bin/runner.sh"
               - "/bin/sh"
               - "-c"
+              - "/usr/local/bin/runner.sh"
               - "automation/check-patch.unit-test.sh"
     - name: pull-kubernetes-nmstate-e2e-handler-k8s
       skip_branches:
@@ -58,10 +55,8 @@ presubmits:
             resources:
               requests:
                 memory: "29Gi"
-            env:
-              - name: GIMME_GO_VERSION
-                value: "1.16"
             command:
+              - "export GIMME_GO_VERSION=`grep '^go' go.mod |sed 's/go //'`"
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
               - "-c"
@@ -94,10 +89,8 @@ presubmits:
             resources:
               requests:
                 memory: "29Gi"
-            env:
-              - name: GIMME_GO_VERSION
-                value: "1.16"
             command:
+              - "export GIMME_GO_VERSION=`grep '^go' go.mod |sed 's/go //'`"
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
               - "-c"
@@ -160,10 +153,8 @@ presubmits:
             resources:
               requests:
                 memory: "29Gi"
-            env:
-              - name: GIMME_GO_VERSION
-                value: "1.16"
             command:
+              - "export GIMME_GO_VERSION=`grep '^go' go.mod |sed 's/go //'`"
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
               - "-c"

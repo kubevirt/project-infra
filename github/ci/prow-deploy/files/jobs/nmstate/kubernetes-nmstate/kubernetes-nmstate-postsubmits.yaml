@@ -30,9 +30,8 @@ postsubmits:
               value: kubevirt-bot
             - name: GITHUB_EMAIL
               value: kubevirtbot@redhat.com
-            - name: GIMME_GO_VERSION
-              value: "1.16"
             command:
+              - "export GIMME_GO_VERSION=`grep '^go' go.mod |sed 's/go //'`"
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
@@ -74,9 +73,8 @@ postsubmits:
               value: kubevirt-bot
             - name: GITHUB_EMAIL
               value: kubevirtbot@redhat.com
-            - name: GIMME_GO_VERSION
-              value: "1.16"
             command:
+              - "export GIMME_GO_VERSION=`grep '^go' go.mod |sed 's/go //'`"
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
