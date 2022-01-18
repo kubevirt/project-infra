@@ -54,7 +54,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: gcr.io/k8s-testimages/bootstrap:v20210913-fc7c4e8
             securityContext:
               privileged: true
             resources:
@@ -86,7 +86,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: gcr.io/k8s-testimages/bootstrap:v20210913-fc7c4e8
             securityContext:
               privileged: true
             resources:
@@ -118,7 +118,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
+          - image: gcr.io/k8s-testimages/bootstrap:v20210913-fc7c4e8
             securityContext:
               privileged: true
             resources:
