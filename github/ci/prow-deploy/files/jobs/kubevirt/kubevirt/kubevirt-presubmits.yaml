@@ -442,7 +442,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-sig-compute-nonroot
+    name: pull-kubevirt-e2e-k8s-1.23-sig-compute-nonroot
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -454,7 +454,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.20-sig-compute
+          value: k8s-1.23-sig-compute
         - name: FEATURE_GATES
           value: NonRoot
         - name: KUBEVIRT_NONROOT
@@ -484,7 +484,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-sig-network-nonroot
+    name: pull-kubevirt-e2e-k8s-1.23-sig-network-nonroot
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -497,7 +497,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.20-sig-network
+          value: k8s-1.23-sig-network
         - name: FEATURE_GATES
           value: NonRoot
         - name: KUBEVIRT_NONROOT
@@ -527,7 +527,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-sig-storage-nonroot
+    name: pull-kubevirt-e2e-k8s-1.23-sig-storage-nonroot
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -540,7 +540,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.20-sig-storage
+          value: k8s-1.23-sig-storage
         - name: FEATURE_GATES
           value: NonRoot
         - name: KUBEVIRT_NONROOT
@@ -570,7 +570,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-operator-nonroot
+    name: pull-kubevirt-e2e-k8s-1.23-operator-nonroot
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -582,7 +582,7 @@ presubmits:
         - ' automation/test.sh'
         env:
         - name: TARGET
-          value: k8s-1.20-sig-operator
+          value: k8s-1.23-sig-operator
         - name: FEATURE_GATES
           value: NonRoot
         - name: KUBEVIRT_NONROOT
