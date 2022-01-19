@@ -361,7 +361,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-cgroupsv2
+    name: pull-kubevirt-e2e-k8s-1.23-sig-compute-cgroupsv2
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -373,7 +373,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.20-sig-compute
+          value: k8s-1.23-sig-compute
         - name: KUBEVIRT_CGROUPV2
           value: "true"
         image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
