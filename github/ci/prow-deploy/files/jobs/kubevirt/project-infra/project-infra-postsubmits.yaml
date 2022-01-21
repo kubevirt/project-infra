@@ -815,6 +815,7 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
+          volumeMounts:
           - name: pgp-bot-key
             mountPath: /etc/pgp
             readOnly: true
