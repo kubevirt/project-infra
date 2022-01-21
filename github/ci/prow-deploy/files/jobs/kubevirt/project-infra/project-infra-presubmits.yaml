@@ -329,6 +329,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-github-credentials: "true"
     cluster: prow-workloads
     spec:
       nodeSelector:
@@ -340,8 +341,6 @@ presubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-          - name: GITHUB_TOKEN
-            value: "/etc/github/oauth"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -364,8 +363,6 @@ presubmits:
           - name: pgp-bot-key
             mountPath: /etc/pgp
             readOnly: true
-          - name: unprivileged-token
-            mountPath: /etc/github
       volumes:
       - name: gcs
         secret:
@@ -375,9 +372,6 @@ presubmits:
       - name: pgp-bot-key
         secret:
           secretName: pgp-bot-key
-      - name: unprivileged-token
-        secret:
-          secretName: unprivileged-oauth-token
   - name: pull-project-infra-cert-manager-deploy-test
     optional: false
     run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
@@ -629,6 +623,8 @@ presubmits:
     run_if_changed: '^github/ci/prow-deploy/files/orgs\.yaml$'
     annotations:
       testgrid-create-test-group: "false"
+    labels:
+      preset-github-credentials: "true"
     decorate: true
     decoration_config:
       timeout: 1h
@@ -653,20 +649,15 @@ presubmits:
         - --fix-team-repos=false
         - --fix-repos=true
         - --confirm=false
-        volumeMounts:
-        - name: token
-          mountPath: /etc/github
         resources:
           requests:
             memory: "200Mi"
-      volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
   - name: pull-prow-kubevirt-labels-update-precheck
     run_if_changed: '^github/ci/prow-deploy/files/labels\.yaml$'
     annotations:
       testgrid-create-test-group: "false"
+    labels:
+      preset-github-credentials: "true"
     decorate: true
     decoration_config:
       timeout: 1h
@@ -683,19 +674,13 @@ presubmits:
         - --confirm=false
         - --orgs=kubevirt
         - --token=/etc/github/oauth
-        volumeMounts:
-        - name: oauth
-          mountPath: /etc/github
-          readOnly: true
       restartPolicy: Never
-      volumes:
-      - name: oauth
-        secret:
-          secretName: oauth-token
   - name: pull-prow-nmstate-labels-update-precheck
     run_if_changed: '^github/ci/prow-deploy/files/labels\.yaml$'
     annotations:
       testgrid-create-test-group: "false"
+    labels:
+      preset-github-credentials: "true"
     decorate: true
     decoration_config:
       timeout: 1h
@@ -712,12 +697,5 @@ presubmits:
         - --confirm=false
         - --only=nmstate/kubernetes-nmstate
         - --token=/etc/github/oauth
-        volumeMounts:
-        - name: oauth
-          mountPath: /etc/github
-          readOnly: true
       restartPolicy: Never
-      volumes:
-      - name: oauth
-        secret:
-          secretName: oauth-token
+     
