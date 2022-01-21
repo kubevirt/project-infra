@@ -1104,7 +1104,7 @@ periodics:
         value: Always
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
-      image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+      image: quay.io/kubevirtci/golang:v20220110-c066ff5
       resources:
         requests:
           memory: 4Gi
