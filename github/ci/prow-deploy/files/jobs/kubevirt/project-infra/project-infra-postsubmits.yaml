@@ -338,6 +338,7 @@ postsubmits:
       - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -348,8 +349,6 @@ postsubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-          - name: GIT_ASKPASS
-            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           - name: DEPLOY_ENVIRONMENT
             value: ibmcloud-production
           command:
@@ -363,8 +362,6 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: gcs
             mountPath: /etc/gcs
             readOnly: true
@@ -372,9 +369,6 @@ postsubmits:
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -391,6 +385,7 @@ postsubmits:
       - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -401,8 +396,6 @@ postsubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-          - name: GIT_ASKPASS
-            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           - name: DEPLOY_ENVIRONMENT
             value: workloads-production
           command:
@@ -416,8 +409,6 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: gcs
             mountPath: /etc/gcs
             readOnly: true
@@ -425,9 +416,6 @@ postsubmits:
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -444,6 +432,7 @@ postsubmits:
       - ^prow-workloads-bootstrap-nodes-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -454,8 +443,6 @@ postsubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-          - name: GIT_ASKPASS
-            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           - name: DEPLOY_ENVIRONMENT
             value: workloads-production
           command:
@@ -469,8 +456,6 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: gcs
             mountPath: /etc/gcs
             readOnly: true
@@ -478,9 +463,6 @@ postsubmits:
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -497,6 +479,7 @@ postsubmits:
       - ^prow-workloads-services-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -507,8 +490,6 @@ postsubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-          - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
           command:
             - "/bin/bash"
             - "-c"
@@ -519,8 +500,6 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: gcs
             mountPath: /etc/gcs
             readOnly: true
@@ -528,9 +507,6 @@ postsubmits:
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -547,6 +523,7 @@ postsubmits:
       - ^prow-performance-workloads-bootstrap-nodes-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -557,8 +534,6 @@ postsubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-          - name: GIT_ASKPASS
-            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           command:
             - "/bin/bash"
             - "-c"
@@ -569,8 +544,6 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: gcs
             mountPath: /etc/gcs
             readOnly: true
@@ -578,9 +551,6 @@ postsubmits:
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -597,6 +567,7 @@ postsubmits:
       - ^prow-performance-workload-cluster-deployment-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -607,8 +578,6 @@ postsubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-          - name: GIT_ASKPASS
-            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           command:
             - "/bin/bash"
             - "-c"
@@ -619,8 +588,6 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: gcs
             mountPath: /etc/gcs
             readOnly: true
@@ -628,9 +595,6 @@ postsubmits:
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -647,6 +611,7 @@ postsubmits:
       - ^prow-arm-workloads-bootstrap-nodes-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -657,8 +622,6 @@ postsubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-          - name: GIT_ASKPASS
-            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           command:
             - "/bin/bash"
             - "-c"
@@ -669,8 +632,6 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: gcs
             mountPath: /etc/gcs
             readOnly: true
@@ -678,9 +639,6 @@ postsubmits:
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -697,6 +655,7 @@ postsubmits:
       - ^prow-arm-workloads-cluster-deployment-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -707,8 +666,6 @@ postsubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
-          - name: GIT_ASKPASS
-            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           command:
             - "/bin/bash"
             - "-c"
@@ -719,8 +676,6 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: gcs
             mountPath: /etc/gcs
             readOnly: true
@@ -728,9 +683,6 @@ postsubmits:
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -747,15 +699,13 @@ postsubmits:
       - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
         containers:
         - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
-          env:
-          - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -777,15 +727,10 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: pgp-bot-key
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -799,15 +744,13 @@ postsubmits:
       - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
         containers:
         - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
-          env:
-          - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -829,15 +772,10 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: pgp-bot-key
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -851,15 +789,13 @@ postsubmits:
       - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
         containers:
         - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
-          env:
-          - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -879,16 +815,10 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: pgp-bot-key
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -902,15 +832,13 @@ postsubmits:
       - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
         containers:
         - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
-          env:
-          - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -945,15 +873,10 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: pgp-bot-key
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -967,15 +890,13 @@ postsubmits:
       - ^main$
       labels:
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
         containers:
         - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
-          env:
-          - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -997,15 +918,10 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: pgp-bot-key
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
@@ -1020,15 +936,13 @@ postsubmits:
       labels:
         preset-bazel-cache: "true"
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
           runAsUser: 0
         containers:
         - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
-          env:
-          - name: GIT_ASKPASS
-            value: "./hack/git-askpass.sh"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -1052,15 +966,10 @@ postsubmits:
             limits:
               memory: "8Gi"
           volumeMounts:
-          - name: token
-            mountPath: /etc/github
           - name: pgp-bot-key
             mountPath: /etc/pgp
             readOnly: true
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
