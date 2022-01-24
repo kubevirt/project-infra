@@ -26,6 +26,7 @@ import (
 	"github.com/google/go-github/v28/github"
 	"io/ioutil"
 	"path"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -41,6 +42,12 @@ const (
 	finishedJSON = "finished.json"
 	startedJSON  = "started.json"
 )
+
+var testJobNameRegex *regexp.Regexp
+
+func init() {
+	testJobNameRegex = regexp.MustCompile(".*-(e2e(-[a-z\\d]+)?)$")
+}
 
 func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*JobResult, error) {
 
@@ -130,9 +137,9 @@ func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 	return reports, nil
 }
 
-func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client, bucket string, periodicJobDir []string, startOfReport time.Time, endOfReport time.Time) ([]*JobResult, error) {
+func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client, bucket string, jobDirectorySegments []string, startOfReport time.Time, endOfReport time.Time) ([]*JobResult, error) {
 
-	dirOfJobs := path.Join(periodicJobDir...)
+	dirOfJobs := path.Join(jobDirectorySegments...)
 
 	jobDirs, err := ListGcsObjects(ctx, client, bucket, dirOfJobs+"/", "/")
 	if err != nil {
@@ -177,9 +184,27 @@ func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client
 			artifactsDirPath := path.Join(buildDirPath, "artifacts")
 			profilePath = path.Join(artifactsDirPath, "junit.functest.xml")
 			data, err := readGcsObject(ctx, client, bucket, profilePath)
+			lastJobDirectoryPathElement := jobDirectorySegments[len(jobDirectorySegments)-1]
 			if err == storage.ErrObjectNotExist {
-				logrus.Infof("Didn't find object '%s' in bucket '%s'\n", profilePath, bucket)
-				continue
+
+				// Fallback to find data in openshift-ci artifact storage
+				// poor mans guess:
+				// try to find file matching in subfolder "{test-name}/test/artifacts"
+				// fetch ending from the end of the base path, so we assume that this naming convention matches the test
+				// job name in openshift release config
+				if !testJobNameRegex.MatchString(lastJobDirectoryPathElement) {
+					continue
+				}
+
+				submatches := testJobNameRegex.FindStringSubmatch(lastJobDirectoryPathElement)
+				testJobName := submatches[1] // take the first submatch here, see regex for details
+				openShiftCIPath := path.Join(artifactsDirPath, fmt.Sprintf("%s/test/artifacts", testJobName), "junit.functest.xml")
+				data, err = readGcsObject(ctx, client, bucket, openShiftCIPath)
+				if err == storage.ErrObjectNotExist {
+					logrus.Infof("Didn't find object '%s' in bucket '%s'\n", profilePath, bucket)
+					logrus.Infof("Didn't find object '%s' in bucket '%s'\n", openShiftCIPath, bucket)
+					continue
+				}
 			}
 			if err != nil {
 				return nil, err
@@ -188,7 +213,7 @@ func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client
 			if err != nil {
 				return nil, err
 			}
-			reports = append(reports, &JobResult{Job: periodicJobDir[len(periodicJobDir)-1], JUnit: report, BuildNumber: buildNumber})
+			reports = append(reports, &JobResult{Job: lastJobDirectoryPathElement, JUnit: report, BuildNumber: buildNumber})
 		}
 	}
 

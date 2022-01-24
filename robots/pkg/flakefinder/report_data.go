@@ -135,6 +135,8 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 		}
 	}
 
+	sort.Strings(headers)
+
 	testsSortedByRelevance := SortTestsByRelevance(data, tests)
 	parameters := Params{
 		Data:            data,
