@@ -26,7 +26,40 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "./hack/test.sh"
+            - "export HPP_CR_TYPE=legacy && ./hack/test.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "29Gi"
+  - name: pull-hostpath-provisioner-e2e-k8s-ceph
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20220110-c066ff5
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "export KUBEVIRT_STORAGE=rook-ceph-default && export HPP_CR_TYPE=storagepool-pvc-template && ./hack/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
