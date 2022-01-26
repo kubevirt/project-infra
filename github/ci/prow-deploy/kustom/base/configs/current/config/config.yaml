@@ -549,6 +549,7 @@ presets:
   - name: github-token
     secret:
       secretName: oauth-token
+      defaultMode: 0400
   volumeMounts:
     - name: github-token
       mountPath: /etc/github

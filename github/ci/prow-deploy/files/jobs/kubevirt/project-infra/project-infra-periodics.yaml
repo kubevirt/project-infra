@@ -4,8 +4,6 @@ periodics:
   decorate: true
   annotations:
     testgrid-create-test-group: "false"
-  labels:
-    preset-github-credentials: "true"
   cluster: ibm-prow-jobs
   spec:
     containers:
@@ -37,6 +35,13 @@ periodics:
       - --template
       - --ceiling=1
       - --confirm
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+    volumes:
+    - name: token
+      secret:
+        secretName:  commenter-oauth-token
 - name: periodic-project-infra-close
   interval: 1h
   annotations:
