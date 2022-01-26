@@ -33,38 +33,6 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-lifecycle-k8s.sh"
-    - name: pull-e2e-cluster-network-addons-operator-lifecycle-okd
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
-      always_run: false
-      optional: true
-      decorate: true
-      decoration_config:
-        timeout: 3h
-        grace_period: 5m
-      max_concurrency: 6
-      labels:
-        preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
-        preset-shared-images: "true"
-      cluster: prow-workloads
-      spec:
-        nodeSelector:
-          type: bare-metal-external
-        containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20210913-fc7c4e8
-            securityContext:
-              privileged: true
-            resources:
-              requests:
-                memory: "29Gi"
-            command:
-              - "/usr/local/bin/runner.sh"
-              - "/bin/sh"
-              - "-c"
-              - "automation/check-patch.e2e-lifecycle-okd.sh"
     - name: pull-e2e-cluster-network-addons-operator-workflow-k8s
       skip_branches:
         - release-\d+\.\d+
@@ -86,7 +54,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20210913-fc7c4e8
+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
             securityContext:
               privileged: true
             resources:
@@ -97,38 +65,6 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-workflow-k8s.sh"
-    - name: pull-e2e-cluster-network-addons-operator-workflow-okd
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
-      always_run: false
-      optional: true
-      decorate: true
-      decoration_config:
-        timeout: 3h
-        grace_period: 5m
-      max_concurrency: 6
-      cluster: prow-workloads
-      labels:
-        preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
-        preset-shared-images: "true"
-      spec:
-        nodeSelector:
-          type: bare-metal-external
-        containers:
-          - image: gcr.io/k8s-testimages/bootstrap:v20210913-fc7c4e8
-            securityContext:
-              privileged: true
-            resources:
-              requests:
-                memory: "29Gi"
-            command:
-              - "/usr/local/bin/runner.sh"
-              - "/bin/sh"
-              - "-c"
-              - "automation/check-patch.e2e-workflow-okd.sh"
     - name: pull-e2e-cluster-network-addons-operator-kubemacpool-functests
       skip_branches:
         - release-\d+\.\d+
