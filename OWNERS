@@ -5,17 +5,16 @@ filters:
       - davidvossel
       - dhiller
       - enp0s3
-      - fgimenez
       - phoracek
       - rmohr
       - tiraboschi
       - vladikr
+      - brianmcarey
     approvers:
       - aglitke
       - davidvossel
       - dhiller
       - enp0s3
-      - fgimenez
       - phoracek
       - rmohr
       - tiraboschi
