@@ -2,15 +2,11 @@
 # See the OWNERS docs: https://git.k8s.io/community/contributors/guide/owners.md
 
 approvers:
-- codificat
 - cwilkers
 - fabiand
-- mazzystr
 - rmohr
 options: {}
 reviewers:
-- codificat
 - cwilkers
 - jean-edouard
 - jobbler
-- mazzystr
