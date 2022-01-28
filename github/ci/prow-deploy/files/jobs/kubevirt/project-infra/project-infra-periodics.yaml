@@ -46,6 +46,8 @@ periodics:
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   cluster: ibm-prow-jobs
   spec:
@@ -69,18 +71,12 @@ periodics:
       - --template
       - --ceiling=10
       - --confirm
-      volumeMounts:
-      - name: token
-        mountPath: /etc/github
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
-
 - name: periodic-project-infra-close-build-watcher-triage
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   cluster: ibm-prow-jobs
   spec:
@@ -103,18 +99,12 @@ periodics:
       - --template
       - --ceiling=10
       - --confirm
-      volumeMounts:
-      - name: token
-        mountPath: /etc/github
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
-
 - name: periodic-project-infra-rotten
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   cluster: ibm-prow-jobs
   spec:
@@ -141,18 +131,12 @@ periodics:
       - --template
       - --ceiling=10
       - --confirm
-      volumeMounts:
-      - name: token
-        mountPath: /etc/github
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
-
 - name: periodic-project-infra-stale
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   cluster: ibm-prow-jobs
   spec:
@@ -179,18 +163,12 @@ periodics:
       - --template
       - --ceiling=10
       - --confirm
-      volumeMounts:
-      - name: token
-        mountPath: /etc/github
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
-
 - name: periodic-project-infra-autoowners
   interval: 24h
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   extra_refs:
   - org: kubevirt
@@ -201,9 +179,6 @@ periodics:
   spec:
     containers:
     - image: quay.io/kubevirtci/autoowners:v20210615-aa22a23
-      env:
-      - name: GIT_ASKPASS
-        value: "./hack/git-askpass.sh"
       command:
       - "autoowners"
       args:
@@ -221,13 +196,6 @@ periodics:
       - --config-subdir=jobs
       - --github-token-path=/etc/github/oauth
       - --git-signoff=true
-      volumeMounts:
-      - name: token
-        mountPath: /etc/github
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 - name: periodic-update-flakefinder-indexpage
   interval: 24h
   annotations:
@@ -258,6 +226,8 @@ periodics:
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -280,8 +250,6 @@ periodics:
     containers:
       - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
         env:
-        - name: GIT_ASKPASS
-          value: ../project-infra/hack/git-askpass.sh
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /etc/gcs/service-account.json
         command: ["/bin/sh"]
@@ -295,8 +263,6 @@ periodics:
             hack/git-pr.sh -c "bazelisk run //robots/cmd/uploader:uploader -- -workspace ${PWD}/../containerized-data-importer/WORKSPACE -dry-run=false" -p ../containerized-data-importer -r containerized-data-importer -T main -L lgtm,approved,release-note-none
             hack/git-pr.sh -c "bazelisk run //robots/cmd/uploader:uploader -- -workspace ${PWD}/WORKSPACE -dry-run=false" -p ${PWD} -r project-infra -T main -L lgtm,approved,release-note-none
         volumeMounts:
-        - name: token
-          mountPath: /etc/github
         - name: gcs
           mountPath: /etc/gcs
           readOnly: true
@@ -304,9 +270,6 @@ periodics:
           requests:
             memory: "200Mi"
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
@@ -315,6 +278,8 @@ periodics:
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -333,9 +298,6 @@ periodics:
       runAsUser: 0
     containers:
       - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
-        env:
-        - name: GIT_ASKPASS
-          value: ../project-infra/hack/git-askpass.sh
         command: ["/bin/sh"]
         args:
           - "-c"
@@ -344,21 +306,16 @@ periodics:
             chmod a+x ${bazel_dir}/bazelisk &&
             export PATH=${PATH}:${bazel_dir} &&
             hack/git-pr.sh -c "bazelisk run //robots/cmd/kubevirtci-bumper:kubevirtci-bumper -- -ensure-last-three-minor-of v1 --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s" -p ../kubevirtci -r kubevirtci -b patch-version-bump -T main
-        volumeMounts:
-        - name: token
-          mountPath: /etc/github
         resources:
           requests:
             memory: "200Mi"
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 - name: periodic-kubevirtci-cluster-minorversion-updater
   interval: 24h
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -381,21 +338,16 @@ periodics:
         args:
           - "-c"
           - git-pr.sh -c "bazel run //robots/cmd/kubevirtci-bumper:kubevirtci-bumper -- -ensure-latest --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" -p ../kubevirtci -r kubevirtci -b minor-version-bump -T main
-        volumeMounts:
-        - name: token
-          mountPath: /etc/github
         resources:
           requests:
             memory: "200Mi"
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 - name: periodic-kubevirtci-cluster-unsupported-version-remover
   cron: "30 3 * * *"
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -431,21 +383,16 @@ periodics:
               exit 0
             fi
             git-pr.sh -c "bazel run //robots/cmd/kubevirtci-bumper:kubevirtci-bumper -- -ensure-only-latest-three --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" -p ../kubevirtci -r kubevirtci -b remove-unsupported-versions -T main
-        volumeMounts:
-        - name: token
-          mountPath: /etc/github
         resources:
           requests:
             memory: "200Mi"
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 - name: periodic-kubevirtci-provider-presubmit-creator
   interval: 24h
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -466,21 +413,16 @@ periodics:
         args:
           - "-c"
           - git-pr.sh -c "bazel run //robots/cmd/kubevirtci-presubmit-creator:kubevirtci-presubmit-creator -- --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b create-kubevirtci-presubmit -T main
-        volumeMounts:
-        - name: token
-          mountPath: /etc/github
         resources:
           requests:
             memory: "200Mi"
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 - name: periodic-kubevirtci-provider-presubmit-remover
   interval: 24h
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -513,19 +455,14 @@ periodics:
               exit 0
             fi
             git-pr.sh -c "bazel run //robots/cmd/kubevirtci-presubmit-remover:kubevirtci-presubmit-remover -- --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b remove-kubevirtci-presubmit -T main
-        volumeMounts:
-        - name: token
-          mountPath: /etc/github
         resources:
           requests:
             memory: "200Mi"
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 - name: periodic-kubevirt-org-github-config-updater
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -556,21 +493,16 @@ periodics:
       - --fix-team-repos=true
       - --fix-repos=true
       - --confirm=true
-      volumeMounts:
-      - name: token
-        mountPath: /etc/github
       resources:
         requests:
           memory: "200Mi"
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 - name: periodic-project-infra-prow-bump
   cron: "10 6 * * 5"
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -589,28 +521,20 @@ periodics:
       runAsUser: 0
     containers:
       - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
-        env:
-        - name: GIT_ASKPASS
-          value: hack/git-askpass.sh
         command: ["/bin/sh"]
         args:
           - "-c"
           - hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra -T main -B "Bump Prow /cc @kubevirt/prow-job-taskforce"
-        volumeMounts:
-        - name: token
-          mountPath: /etc/github
         resources:
           requests:
             memory: "200Mi"
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 - name: periodic-kubevirt-presubmit-requirer
   cron: "0 1 1 * *"
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -630,22 +554,16 @@ periodics:
         args:
           - |
             git-pr.sh -c "bazel run //robots/cmd/kubevirt require presubmits -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b require-kubevirt-presubmits -T main
-        volumeMounts:
-          - name: token
-            mountPath: /etc/github
         resources:
           requests:
             memory: "200Mi"
-    volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
-
 - name: periodic-kubevirt-job-copier
   cron: "20 0 * * *"
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -666,22 +584,17 @@ periodics:
       args:
       - |
         git-pr.sh -c "bazel run //robots/cmd/kubevirt copy jobs -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" -r project-infra -b copy-kubevirt-jobs -T main
-      volumeMounts:
-      - name: token
-        mountPath: /etc/github
       resources:
         requests:
           memory: "200Mi"
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 
 - name: periodic-kubevirt-job-remover
   cron: "30 0 * * *"
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -702,22 +615,17 @@ periodics:
       args:
       - |
         git-pr.sh -c "bazel run //robots/cmd/kubevirt remove jobs -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" -r project-infra -b remove-kubevirt-jobs -T main
-      volumeMounts:
-      - name: token
-        mountPath: /etc/github
       resources:
         requests:
           memory: "200Mi"
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 
 - name: periodic-kubevirt-job-always-run-disabler
   cron: "45 0 * * *"
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -738,16 +646,9 @@ periodics:
       args:
       - |
         git-pr.sh -c "bazel run //robots/cmd/kubevirt remove always_run -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b disable-kubevirt-jobs -T main
-      volumeMounts:
-      - name: token
-        mountPath: /etc/github
       resources:
         requests:
           memory: "200Mi"
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 
 - name: periodic-project-infra-mirror-istioctl
   cron: "25 1 * * 1"
@@ -796,6 +697,8 @@ periodics:
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   decoration_config:
     timeout: 1h
@@ -820,13 +723,6 @@ periodics:
         if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=prow-job-image-bump --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
           hack/git-pr.sh -c "hack/bump-prow-job-images.sh" -b prow-job-image-bump -r project-infra -T main
         fi
-      volumeMounts:
-      - name: token
-        mountPath: /etc/github
       resources:
         requests:
           memory: "200Mi"
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
