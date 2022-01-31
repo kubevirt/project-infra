@@ -16,6 +16,7 @@ main(){
 
     # run playbook
     cd ${base_dir}
+    export GIT_ASKPASS=${project_infra_root}/hack/git-askpass.sh
     cat << EOF > inventory
 [local]
 localhost ansible_connection=local
