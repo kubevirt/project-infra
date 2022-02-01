@@ -5,6 +5,7 @@ require (
 	cloud.google.com/go/storage v1.12.0
 	github.com/Masterminds/semver v1.5.0
 	github.com/bazelbuild/buildtools v0.0.0-20200922170545-10384511ce98
+	github.com/bndr/gojenkins v1.1.0 // indirect
 	github.com/go-git/go-git/v5 v5.3.0
 	github.com/go-test/deep v1.0.7
 	github.com/golang/mock v1.5.0
