@@ -1668,6 +1668,8 @@ presubmits:
           value: Migration
         - name: KUBEVIRT_NUM_NODES
           value: "3"
+        - name: KUBEVIRT_STORAGE
+          value: "rook-ceph-default"
         image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
         name: ""
         resources:
