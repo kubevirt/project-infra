@@ -10,6 +10,7 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
+        preset-github-credentials: "true"
       cluster: ibm-prow-jobs
       spec:
         containers:
@@ -22,10 +23,3 @@ postsubmits:
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
-            volumeMounts:
-              - name: github-token
-                mountPath: /etc/github
-        volumes:
-          - name: github-token
-            secret:
-              secretName: oauth-token
