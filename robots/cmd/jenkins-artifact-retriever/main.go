@@ -29,6 +29,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"sync"
 	"time"
 )
 
@@ -165,6 +166,7 @@ func RunJenkinsReport(jenkinsBaseUrl string, cnvVersions ...string) {
 	if err != nil {
 		log.Fatalf("failed to contact jenkins %s: %v", jenkinsBaseUrl, err)
 	}
+
 	log.Printf("Fetching jobs")
 	jobs, err := jenkins.GetAllJobs(ctx)
 	if err != nil {
@@ -175,9 +177,19 @@ func RunJenkinsReport(jenkinsBaseUrl string, cnvVersions ...string) {
 	startOfReport := time.Now().Add(-1 * opts.startFrom)
 	endOfReport := time.Now()
 
+	junitReportsFromMatchingJobs := fetchJunitReportsFromMatchingJobs(startOfReport, endOfReport, cnvVersions, jobs, ctx)
+	writeReportToFile(startOfReport, endOfReport, junitReportsFromMatchingJobs)
+
+}
+
+func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time.Time, cnvVersions []string, jobs []*gojenkins.Job, ctx context.Context) []*flakefinder.JobResult {
 	reports := []*flakefinder.JobResult{}
+
+	reportChan := make(chan []*flakefinder.JobResult)
+	var wg sync.WaitGroup
+
 	for _, cnvVersion := range cnvVersions {
-		log.Printf( "Filtering jobs for CNV %s matching %s", cnvVersion, opts.jobNamePattern)
+		log.Printf("Filtering jobs for CNV %s matching %s", cnvVersion, opts.jobNamePattern)
 		compile, err := regexp.Compile(fmt.Sprintf(opts.jobNamePattern, cnvVersion))
 		if err != nil {
 			log.Fatalf("failed to fetch jobs: %v", err)
@@ -187,72 +199,101 @@ func RunJenkinsReport(jenkinsBaseUrl string, cnvVersions ...string) {
 				continue
 			}
 
-			log.Printf("Job %s matches", job.GetName())
-
-			// fetch junit files from x last completed builds
-			log.Printf("Fetching builds")
-			ids, err := job.GetAllBuildIds(ctx)
+			log.Printf("Fetching last build")
+			lastBuild, err := job.GetLastBuild(ctx)
 			if err != nil {
-				log.Fatalf("failed to fetch build ids: %v", err)
+				log.Fatalf("failed to fetch last build: %v", err)
 			}
 
-			log.Printf("Fetching completed builds from %s - %s period", startOfReport, endOfReport)
-			var completedBuilds []*gojenkins.Build
-			for i := 0; i < len(ids); i++ {
-				log.Printf("Fetching build no %d", ids[i].Number)
-				build, err := job.GetBuild(ctx, ids[i].Number)
-				if err != nil {
-					log.Fatalf("failed to fetch build data: %v", err)
-				}
+			wg.Add(1)
+			go func(job *gojenkins.Job, lastBuild *gojenkins.Build, ctx context.Context) {
+				log.Printf("Job %s matches", job.GetName())
 
-				if build.GetResult() != "SUCCESS" &&
-					build.GetResult() != "UNSTABLE" {
-					log.Printf("Skipping %s builds", build.GetResult())
-					continue
-				}
+				completedBuilds := fetchCompletedBuildsForJob(startOfReport, endOfReport, lastBuild, job, ctx)
+				junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(completedBuilds)
+				reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job)
 
-				buildTime := msecsToTime(build.Info().Timestamp)
-				log.Printf("Build %d ran at %v", build.Info().Number, buildTime)
-				if buildTime.Before(startOfReport) {
-					log.Printf("Skipping remaining builds for %s", job.GetName())
-					break
-				}
-
-				completedBuilds = append(completedBuilds, build)
-			}
-			log.Printf("Fetched %d completed builds from %s - %s period", len(completedBuilds), startOfReport, endOfReport)
-
-			log.Printf("Fetch junit files from artifacts for %d completed builds", len(completedBuilds))
-			artifacts := []gojenkins.Artifact{}
-			for _, completedBuild := range completedBuilds {
-				for _, artifact := range completedBuild.GetArtifacts() {
-					if !fileNameRegex.MatchString(artifact.FileName) {
-						continue
-					}
-					artifacts = append(artifacts, artifact)
-				}
-			}
-			log.Printf("Fetched %d junit files from artifacts", len(artifacts))
-
-			// fetch artifacts
-			reportsPerJob := []*flakefinder.JobResult{}
-			for _, artifact := range artifacts {
-				data, err := artifact.GetData(ctx)
-				if err != nil {
-					log.Fatalf("failed to fetch artifact data: %v", err)
-				}
-				report, err := junit.Ingest(data)
-				if err != nil {
-					log.Fatalf("failed to fetch artifact data: %v", err)
-				}
-				reportsPerJob = append(reportsPerJob, &flakefinder.JobResult{Job: job.GetName(), JUnit: report, BuildNumber: int(artifact.Build.Info().Number)})
-			}
-
-			reports = append(reports, reportsPerJob...)
+				reportChan <- reportsPerJob
+			}(job, lastBuild, ctx)
 		}
 	}
 
-	// create report
+	go func() {
+		for reportsPerJob := range reportChan {
+			reports = append(reports, reportsPerJob...)
+			wg.Done()
+		}
+	}()
+
+	wg.Wait()
+	return reports
+}
+
+func fetchCompletedBuildsForJob(startOfReport time.Time, endOfReport time.Time, lastBuild *gojenkins.Build, job *gojenkins.Job, ctx context.Context) []*gojenkins.Build {
+	log.Printf("Fetching completed builds from %s - %s period", startOfReport.Format(time.RFC3339), endOfReport.Format(time.RFC3339))
+	var completedBuilds []*gojenkins.Build
+	for i := lastBuild.GetBuildNumber(); i > 0; i-- {
+		log.Printf("Fetching build no %d", i)
+		build, err := job.GetBuild(ctx, i)
+		if err != nil {
+			log.Fatalf("failed to fetch build data: %v", err)
+		}
+
+		if build.GetResult() != "SUCCESS" &&
+			build.GetResult() != "UNSTABLE" {
+			log.Printf("Skipping %s builds", build.GetResult())
+			continue
+		}
+
+		buildTime := msecsToTime(build.Info().Timestamp)
+		log.Printf("Build %d ran at %s", build.Info().Number, buildTime.Format(time.RFC3339))
+		if buildTime.Before(startOfReport) {
+			log.Printf("Skipping remaining builds for %s", job.GetName())
+			break
+		}
+
+		completedBuilds = append(completedBuilds, build)
+	}
+	log.Printf("Fetched %d completed builds from %s - %s period", len(completedBuilds), startOfReport, endOfReport)
+	return completedBuilds
+}
+
+func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build) []gojenkins.Artifact {
+	log.Printf("Fetch junit files from artifacts for %d completed builds", len(completedBuilds))
+	artifacts := []gojenkins.Artifact{}
+	for _, completedBuild := range completedBuilds {
+		for _, artifact := range completedBuild.GetArtifacts() {
+			if !fileNameRegex.MatchString(artifact.FileName) {
+				continue
+			}
+			artifacts = append(artifacts, artifact)
+		}
+	}
+	log.Printf("Fetched %d junit files from artifacts", len(artifacts))
+	return artifacts
+}
+
+func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, ctx context.Context, job *gojenkins.Job) []*flakefinder.JobResult {
+	reportsPerJob := []*flakefinder.JobResult{}
+	for _, artifact := range junitFilesFromArtifacts {
+		data, err := artifact.GetData(ctx)
+		if err != nil {
+			log.Fatalf("failed to fetch artifact data: %v", err)
+		}
+		report, err := junit.Ingest(data)
+		if err != nil {
+			log.Fatalf("failed to fetch artifact data: %v", err)
+		}
+		reportsPerJob = append(reportsPerJob, &flakefinder.JobResult{Job: job.GetName(), JUnit: report, BuildNumber: int(artifact.Build.Info().Number)})
+	}
+	return reportsPerJob
+}
+
+func msecsToTime(msecs int64) time.Time {
+	return time.Unix(msecs / 1000, msecs % 1000)
+}
+
+func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports []*flakefinder.JobResult) {
 	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, endOfReport, "kubevirt", "kubevirt", startOfReport)
 
 	outputFile, err := os.CreateTemp("", "flakefinder-*.html")
@@ -271,9 +312,4 @@ func RunJenkinsReport(jenkinsBaseUrl string, cnvVersions ...string) {
 	if err != nil {
 		log.Fatalf("failed to write report: %v", err)
 	}
-
-}
-
-func msecsToTime(msecs int64) time.Time {
-	return time.Unix(msecs / 1000, msecs % 1000)
 }
