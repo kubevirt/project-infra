@@ -27,6 +27,7 @@ import (
 	"github.com/joshdk/go-junit"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"log"
+	"net/http"
 	"os"
 	"regexp"
 	"sync"
@@ -231,29 +232,36 @@ func main() {
 func RunJenkinsReport(jenkinsBaseUrl string, cnvVersions ...string) {
 	ctx := context.Background()
 
+	// limit http client connections to avoid 504 errors, looks like we are getting rate limited
+	client := &http.Client{
+		Transport:     &http.Transport{
+			MaxConnsPerHost: 5,
+		},
+	}
+
 	log.Printf("Creating client for %s", jenkinsBaseUrl)
-	jenkins := gojenkins.CreateJenkins(nil, jenkinsBaseUrl)
+	jenkins := gojenkins.CreateJenkins(client, jenkinsBaseUrl)
 	_, err := jenkins.Init(ctx)
 	if err != nil {
 		log.Fatalf("failed to contact jenkins %s: %v", jenkinsBaseUrl, err)
 	}
 
 	log.Printf("Fetching jobs")
-	jobs, err := jenkins.GetAllJobs(ctx)
+	jobNames, err := jenkins.GetAllJobNames(ctx)
 	if err != nil {
 		log.Fatalf("failed to fetch jobs: %v", err)
 	}
-	log.Printf("Fetched %d jobs", len(jobs))
+	log.Printf("Fetched %d jobs", len(jobNames))
 
 	startOfReport := time.Now().Add(-1 * opts.startFrom)
 	endOfReport := time.Now()
 
-	junitReportsFromMatchingJobs := fetchJunitReportsFromMatchingJobs(startOfReport, endOfReport, cnvVersions, jobs, ctx)
+	junitReportsFromMatchingJobs := fetchJunitReportsFromMatchingJobs(startOfReport, endOfReport, cnvVersions, jobNames, jenkins, ctx)
 	writeReportToFile(startOfReport, endOfReport, junitReportsFromMatchingJobs)
 
 }
 
-func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time.Time, cnvVersions []string, jobs []*gojenkins.Job, ctx context.Context) []*flakefinder.JobResult {
+func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time.Time, cnvVersions []string, jobNames []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) []*flakefinder.JobResult {
 	reports := []*flakefinder.JobResult{}
 
 	reportChan := make(chan []*flakefinder.JobResult)
@@ -265,27 +273,32 @@ func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time
 		if err != nil {
 			log.Fatalf("failed to fetch jobs: %v", err)
 		}
-		for _, job := range jobs {
-			if !compile.MatchString(job.GetName()) {
+		for _, jobName := range jobNames {
+			if !compile.MatchString(jobName.Name) {
 				continue
 			}
 
-			log.Printf("Fetching last build")
-			lastBuild, err := job.GetLastBuild(ctx)
-			if err != nil {
-				log.Fatalf("failed to fetch last build: %v", err)
-			}
-
 			wg.Add(1)
-			go func(job *gojenkins.Job, lastBuild *gojenkins.Build, ctx context.Context) {
-				log.Printf("Job %s matches", job.GetName())
+			go func(jobName gojenkins.InnerJob, ctx context.Context) {
+				log.Printf("Job %s matches", jobName)
+
+				log.Printf("Fetching job %s", jobName)
+				job, err := jenkins.GetJob(ctx, jobName.Name)
+				if err != nil {
+					log.Fatalf("failed to fetch job %s: %v", jobName, err)
+				}
+
+				lastBuild, err := job.GetLastBuild(ctx)
+				if err != nil {
+					log.Fatalf("failed to fetch last build for job %s: %v", jobName, err)
+				}
 
 				completedBuilds := fetchCompletedBuildsForJob(startOfReport, endOfReport, lastBuild, job, ctx)
 				junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(completedBuilds)
 				reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job)
 
 				reportChan <- reportsPerJob
-			}(job, lastBuild, ctx)
+			}(jobName, ctx)
 		}
 	}
 
