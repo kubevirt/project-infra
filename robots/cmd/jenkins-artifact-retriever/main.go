@@ -36,6 +36,7 @@ import (
 const (
 	defaultJenkinsBaseUrl        = "https://main-jenkins-csb-cnvqe.apps.ocp-c1.prod.psi.redhat.com/"
 	defaultJenkinsJobNamePattern = "^test-kubevirt-cnv-%s-(compute|network|operator|storage)(-[a-z0-9]+)?$"
+	defaultCNVVersions = "4.10"
 	ReportTemplate               = `
 <html>
 <head>
@@ -81,20 +82,73 @@ const (
             text-align: right;
 			width: 100%;
         }
+
+
+        /* Popup container - can be anything you want */
+        .popup {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* The actual popup */
+        .popup .popuptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #555;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 8px;
+            position: absolute;
+            z-index: 1;
+            left: 50%;
+            margin-left: -110px;
+        }
+
+        .nowrap {
+            white-space: nowrap;
+        }
+
+        /* Toggle this class - hide and show the popup */
+        .popup .show {
+            visibility: visible;
+            -webkit-animation: fadeIn 1s;
+            animation: fadeIn 1s;
+        }
+
+        /* Add animation (fade in the popup) */
+        @-webkit-keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity:1 ;}
+        }
+
 	</style>
 </head>
 <body>
 <h1>flakefinder report</h1>
 
 <div>
-	Data since {{ $.StartOfReport }}<br/>
+	Data range from {{ $.StartOfReport }} till {{ $.EndOfReport }}<br/>
 </div>
+
+{{ if not .Headers }}
+	<div>No failing tests! 🙂</div>
+{{ else }}
 <table>
     <tr>
         <td></td>
         <td></td>
         {{ range $header := $.Headers }}
-        <td>{{ $header }}</td>
+        <td><a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/">{{ $header }}</a></td>
         {{ end }}
     </tr>
     {{ range $row, $test := $.Tests }}
@@ -108,8 +162,13 @@ const (
         </td>
         {{else}}
         <td class="{{ (index $.Data $test $header).Severity }} center">
-            <div id="r{{$row}}c{{$col}}">
+            <div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup" >
                 <span class="tests_failed" title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span class="tests_passed" title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span class="tests_skipped" title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>
+                <div class="popuptext" id="targetr{{$row}}c{{$col}}">
+                    {{ range $Job := (index $.Data $test $header).Jobs }}
+                    <div class="{{.Severity}} nowrap">{{ if ne .PR 0 }}<a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/{{.BuildNumber}}">{{.BuildNumber}}</a>{{ else }}<a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/{{.BuildNumber}}">{{.BuildNumber}}</a>{{ end }}</div>
+                    {{ end }}
+                </div>
             </div>
             {{end}}
         </td>
@@ -117,6 +176,15 @@ const (
     </tr>
     {{ end }}
 </table>
+{{ end }}
+
+<script>
+    function popup(id) {
+        var popup = document.getElementById("target" + id);
+        popup.classList.toggle("show");
+    }
+</script>
+
 </body>
 </html>
 `
@@ -134,7 +202,8 @@ func init() {
 func flagOptions() options {
 	o := options{}
 	flag.StringVar(&o.endpoint, "endpoint", defaultJenkinsBaseUrl, "jenkins base url")
-	flag.StringVar(&o.jobNamePattern, "jobNamePattern", defaultJenkinsJobNamePattern, "jenkins job name pattern to filter jobs for for the report")
+	flag.StringVar(&o.jobNamePattern, "jobNamePattern", defaultJenkinsJobNamePattern, "jenkins job name pattern to filter jobs for for the report (note the pattern that is used for injecting the CNV version)")
+	flag.StringVar(&o.cnvVersions, "cnvVersions", defaultCNVVersions, "comma separated list of cnv versions to report")
 	flag.DurationVar(&o.startFrom, "startFrom", 14*24*time.Hour, "The duration when the report data should be fetched")
 	flag.Parse()
 	return o
@@ -144,17 +213,19 @@ type options struct {
 	endpoint       string
 	jobNamePattern string
 	startFrom      time.Duration
+	cnvVersions    string
 }
 
-type SimpleReportParams struct {
+type JenkinsReportParams struct {
 	flakefinder.Params
+	JenkinsBaseURL string
 }
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	log.SetPrefix("jenkins-flake-reporter")
 	opts = flagOptions()
-	RunJenkinsReport(defaultJenkinsBaseUrl, "4.10")
+	RunJenkinsReport(defaultJenkinsBaseUrl, opts.cnvVersions)
 }
 
 func RunJenkinsReport(jenkinsBaseUrl string, cnvVersions ...string) {
@@ -258,6 +329,10 @@ func fetchCompletedBuildsForJob(startOfReport time.Time, endOfReport time.Time, 
 	return completedBuilds
 }
 
+func msecsToTime(msecs int64) time.Time {
+	return time.Unix(msecs / 1000, msecs % 1000)
+}
+
 func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build) []gojenkins.Artifact {
 	log.Printf("Fetch junit files from artifacts for %d completed builds", len(completedBuilds))
 	artifacts := []gojenkins.Artifact{}
@@ -289,10 +364,6 @@ func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, 
 	return reportsPerJob
 }
 
-func msecsToTime(msecs int64) time.Time {
-	return time.Unix(msecs / 1000, msecs % 1000)
-}
-
 func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports []*flakefinder.JobResult) {
 	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, endOfReport, "kubevirt", "kubevirt", startOfReport)
 
@@ -308,7 +379,7 @@ func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports [
 	}
 	defer reportOutputWriter.Close()
 
-	err = flakefinder.WriteTemplateToOutput(ReportTemplate, SimpleReportParams{parameters}, reportOutputWriter)
+	err = flakefinder.WriteTemplateToOutput(ReportTemplate, JenkinsReportParams{Params: parameters, JenkinsBaseURL: opts.endpoint}, reportOutputWriter)
 	if err != nil {
 		log.Fatalf("failed to write report: %v", err)
 	}
