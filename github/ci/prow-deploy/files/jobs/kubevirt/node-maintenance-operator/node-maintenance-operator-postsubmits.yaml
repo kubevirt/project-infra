@@ -60,7 +60,7 @@ postsubmits:
           - "-c"
           - |
             cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
-            VERSION=${$(git tag --points-at HEAD | head -1)#v} make container-build container-push bundle bundle-build bundle-push catalog-build catalog-push must-gather-build must-gather-push
+            TAG=$(git tag --points-at HEAD | head -1) && export VERSION=${TAG#v} && make container-build container-push bundle bundle-build bundle-push catalog-build catalog-push
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
