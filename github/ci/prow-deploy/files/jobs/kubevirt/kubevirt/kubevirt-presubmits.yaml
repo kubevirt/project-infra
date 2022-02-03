@@ -1857,6 +1857,7 @@ presubmits:
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
       preset-shared-images: "true"
     max_concurrency: 1
@@ -1908,8 +1909,6 @@ presubmits:
           value: crossbuild-aarch64
         - name: KUBEVIRT_E2E_FOCUS
           value: arm64
-        - name: GIT_ASKPASS
-          value: ../project-infra/hack/git-askpass.sh
         image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
         name: ""
         resources:
@@ -1918,17 +1917,12 @@ presubmits:
         securityContext:
           privileged: true
         volumeMounts:
-        - mountPath: /etc/github
-          name: token
         - mountPath: /etc/pgp
           name: pgp-bot-key
           readOnly: true
       nodeSelector:
         type: bare-metal-external
       volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
       - name: pgp-bot-key
         secret:
           secretName: pgp-bot-key
