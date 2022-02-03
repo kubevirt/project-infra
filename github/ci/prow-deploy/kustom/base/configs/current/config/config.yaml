@@ -542,7 +542,7 @@ presets:
     preset-github-credentials: "true"
   env:
   - name: GIT_ASKPASS
-    value: /go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh
+    value: ../project-infra/hack/git-askpass.sh
   - name: GITHUB_TOKEN
     value: "/etc/github/oauth"
   volumes:
