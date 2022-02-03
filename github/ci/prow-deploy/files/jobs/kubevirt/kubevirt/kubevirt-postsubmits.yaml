@@ -17,6 +17,7 @@ postsubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
@@ -50,15 +51,10 @@ postsubmits:
           requests:
             memory: "8Gi"
         volumeMounts:
-        - name: token
-          mountPath: /etc/github
         - name: gcs
           mountPath: /etc/gcs
           readOnly: true
       volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
       - name: gcs
         secret:
           secretName: gcs
@@ -124,6 +120,7 @@ postsubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
@@ -147,15 +144,10 @@ postsubmits:
           requests:
             memory: "8Gi"
         volumeMounts:
-        - name: token
-          mountPath: /etc/github
         - name: gcs
           mountPath: /etc/gcs
           readOnly: true
       volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
       - name: gcs
         secret:
           secretName: gcs
