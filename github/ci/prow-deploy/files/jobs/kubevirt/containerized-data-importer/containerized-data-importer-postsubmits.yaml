@@ -91,6 +91,7 @@ postsubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "false"
+      preset-github-credentials: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
@@ -114,13 +115,6 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
-        volumeMounts:
-        - name: token
-          mountPath: /etc/github
-      volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
   - name: push-containerized-data-importer-main
     branches:
     - main
@@ -138,6 +132,7 @@ postsubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "false"
+      preset-github-credentials: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
@@ -161,13 +156,6 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
-        volumeMounts:
-        - name: token
-          mountPath: /etc/github
-      volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
   - name: push-containerized-data-importer-builder
     branches:
     - main
@@ -185,6 +173,7 @@ postsubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
+      preset-github-credentials: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
@@ -207,15 +196,10 @@ postsubmits:
           requests:
             memory: "8Gi"
         volumeMounts:
-        - name: token
-          mountPath: /etc/github
         - name: gcs
           mountPath: /etc/gcs
           readOnly: true
       volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
       - name: gcs
         secret:
           secretName: gcs

@@ -3,6 +3,8 @@ periodics:
   cron: "55 0 * * *"
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   cluster: ibm-prow-jobs
   spec:
@@ -21,15 +23,10 @@ periodics:
       - --repo=cluster-network-addons-operator
       - --skip_results_before_start_of_report=false
       volumeMounts:
-      - name: token
-        mountPath: /etc/github
       - name: gcs
         mountPath: /etc/gcs
         readOnly: true
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
@@ -37,6 +34,8 @@ periodics:
   cron: "15 1 * * *"
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   cluster: ibm-prow-jobs
   spec:
@@ -55,15 +54,10 @@ periodics:
       - --repo=cluster-network-addons-operator
       - --skip_results_before_start_of_report=false
       volumeMounts:
-      - name: token
-        mountPath: /etc/github
       - name: gcs
         mountPath: /etc/gcs
         readOnly: true
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
@@ -71,6 +65,8 @@ periodics:
   interval: 168h
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   decorate: true
   cluster: ibm-prow-jobs
   spec:
@@ -89,15 +85,10 @@ periodics:
       - --repo=cluster-network-addons-operator
       - --skip_results_before_start_of_report=false
       volumeMounts:
-      - name: token
-        mountPath: /etc/github
       - name: gcs
         mountPath: /etc/gcs
         readOnly: true
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
