@@ -2,6 +2,9 @@ postsubmits:
   kubevirt/cluster-network-addons-operator:
     - name: release-cluster-network-addons-operator
       run_if_changed: "^version/version.go"
+      branches:
+      - ^main$
+      - ^release-.*$
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
