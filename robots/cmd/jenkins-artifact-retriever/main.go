@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"github.com/bndr/gojenkins"
 	"github.com/joshdk/go-junit"
+	junit_merge "kubevirt.io/project-infra/robots/cmd/jenkins-artifact-retriever/junit-merge"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"log"
 	"net/http"
@@ -362,7 +363,12 @@ func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build) []gojenkin
 }
 
 func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, ctx context.Context, job *gojenkins.Job) []*flakefinder.JobResult {
-	reportsPerJob := []*flakefinder.JobResult{}
+
+	// problem: we might encounter multiple junit artifacts per job run, we need to merge them into
+	// 			one so the report builder can handle the results
+
+	// step 1: download the report junit data and store them in a slice per build
+	artifactsPerBuild := map[int64][][]junit.Suite{}
 	for _, artifact := range junitFilesFromArtifacts {
 		data, err := artifact.GetData(ctx)
 		if err != nil {
@@ -372,8 +378,18 @@ func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, 
 		if err != nil {
 			log.Fatalf("failed to fetch artifact data: %v", err)
 		}
-		reportsPerJob = append(reportsPerJob, &flakefinder.JobResult{Job: job.GetName(), JUnit: report, BuildNumber: int(artifact.Build.Info().Number)})
+		buildNumber := artifact.Build.Info().Number
+		artifactsPerBuild[buildNumber] = append(artifactsPerBuild[buildNumber], report)
 	}
+
+	// step 2: merge all the suites for a build into one suite per build
+	reportsPerJob := []*flakefinder.JobResult{}
+	for buildNumber, artifacts := range artifactsPerBuild {
+		// TODO: evaluate conflicts somehow
+		mergedResult, _ := junit_merge.Merge(artifacts)
+		reportsPerJob = append(reportsPerJob, &flakefinder.JobResult{Job: job.GetName(), JUnit: mergedResult, BuildNumber: int(buildNumber)})
+	}
+
 	return reportsPerJob
 }
 
