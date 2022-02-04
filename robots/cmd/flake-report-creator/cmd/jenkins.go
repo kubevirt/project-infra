@@ -17,29 +17,31 @@
  *
  */
 
-package main
+package cmd
 
 import (
 	"context"
-	"flag"
 	"fmt"
-	"github.com/bndr/gojenkins"
-	"github.com/joshdk/go-junit"
-	junit_merge "kubevirt.io/project-infra/robots/cmd/jenkins-artifact-retriever/junit-merge"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"github.com/spf13/cobra"
 	"log"
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 	"sync"
 	"time"
+
+	"github.com/bndr/gojenkins"
+	"github.com/joshdk/go-junit"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	junitMerge "kubevirt.io/project-infra/robots/pkg/flakefinder/junit-merge"
 )
 
 const (
 	defaultJenkinsBaseUrl        = "https://main-jenkins-csb-cnvqe.apps.ocp-c1.prod.psi.redhat.com/"
 	defaultJenkinsJobNamePattern = "^test-kubevirt-cnv-%s-(compute|network|operator|storage)(-[a-z0-9]+)?$"
-	defaultCNVVersions = "4.10"
-	ReportTemplate               = `
+	defaultCNVVersions           = "4.10"
+	JenkinsReportTemplate        = `
 <html>
 <head>
     <title>flakefinder report</title>
@@ -190,28 +192,42 @@ const (
 </body>
 </html>
 `
+	jenkinsShortUsage = "flake-report-creator jenkins creates reports from junit xml artifact files generated during jenkins builds"
 )
 
 var (
 	fileNameRegex *regexp.Regexp
-	opts          options
+	opts          jenkinsOptions
+	jenkinsCommand = &cobra.Command{
+		Use:   "jenkins",
+		Short: jenkinsShortUsage,
+		Long: jenkinsShortUsage + `
+
+Examples:
+
+# create a report over all kubevirt testing jenkins jobs matching the default CNV versions for the last 14 days
+$ flake-report-creator jenkins
+
+# create a report as above for the last 3 days
+$ flake-report-creator jenkins --startFrom=72h
+
+# create a report over kubevirt testing jobs for compute and storage ocs for the default CNV versions for the last 24 hours
+$ flake-report-creator jenkins --startFrom=24h --jobNamePattern='^test-kubevirt-cnv-%s-(compute|storage)-ocs$'
+`,
+		RunE: runJenkinsReport,
+	}
 )
 
 func init() {
+	opts = jenkinsOptions{}
+	jenkinsCommand.PersistentFlags().StringVar(&opts.endpoint, "endpoint", defaultJenkinsBaseUrl, "jenkins base url")
+	jenkinsCommand.PersistentFlags().StringVar(&opts.jobNamePattern, "jobNamePattern", defaultJenkinsJobNamePattern, "jenkins job name pattern to filter jobs for for the report (note the pattern that is used for injecting the CNV version)")
+	jenkinsCommand.PersistentFlags().StringVar(&opts.cnvVersions, "cnvVersions", defaultCNVVersions, "comma separated list of cnv versions to report")
+	jenkinsCommand.PersistentFlags().DurationVar(&opts.startFrom, "startFrom", 14*24*time.Hour, "The duration when the report data should be fetched")
 	fileNameRegex = regexp.MustCompile("^(partial\\.)junit\\.functest(\\.1)\\.xml$")
 }
 
-func flagOptions() options {
-	o := options{}
-	flag.StringVar(&o.endpoint, "endpoint", defaultJenkinsBaseUrl, "jenkins base url")
-	flag.StringVar(&o.jobNamePattern, "jobNamePattern", defaultJenkinsJobNamePattern, "jenkins job name pattern to filter jobs for for the report (note the pattern that is used for injecting the CNV version)")
-	flag.StringVar(&o.cnvVersions, "cnvVersions", defaultCNVVersions, "comma separated list of cnv versions to report")
-	flag.DurationVar(&o.startFrom, "startFrom", 14*24*time.Hour, "The duration when the report data should be fetched")
-	flag.Parse()
-	return o
-}
-
-type options struct {
+type jenkinsOptions struct {
 	endpoint       string
 	jobNamePattern string
 	startFrom      time.Duration
@@ -223,34 +239,48 @@ type JenkinsReportParams struct {
 	JenkinsBaseURL string
 }
 
-func main() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.SetPrefix("jenkins-flake-reporter")
-	opts = flagOptions()
-	RunJenkinsReport(defaultJenkinsBaseUrl, opts.cnvVersions)
+func JenkinsCommand() *cobra.Command {
+	return jenkinsCommand
 }
 
-func RunJenkinsReport(jenkinsBaseUrl string, cnvVersions ...string) {
+func runJenkinsReport(cmd *cobra.Command, args []string) error {
+	err := cmd.InheritedFlags().Parse(args)
+	if err != nil {
+		return err
+	}
+
+	if err = globalOpts.Validate(); err != nil {
+		_, err2 := fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString(), err)
+		if err2 != nil {
+			return err2
+		}
+		return fmt.Errorf("invalid arguments provided: %v", err)
+	}
+
+	log.SetPrefix("flake-report-creator jenkins ")
+
+	cnvVersions := strings.Split(opts.cnvVersions, ",")
+
 	ctx := context.Background()
 
 	// limit http client connections to avoid 504 errors, looks like we are getting rate limited
 	client := &http.Client{
-		Transport:     &http.Transport{
+		Transport: &http.Transport{
 			MaxConnsPerHost: 5,
 		},
 	}
 
-	log.Printf("Creating client for %s", jenkinsBaseUrl)
-	jenkins := gojenkins.CreateJenkins(client, jenkinsBaseUrl)
-	_, err := jenkins.Init(ctx)
+	log.Printf("Creating client for %s", opts.endpoint)
+	jenkins := gojenkins.CreateJenkins(client, opts.endpoint)
+	_, err = jenkins.Init(ctx)
 	if err != nil {
-		log.Fatalf("failed to contact jenkins %s: %v", jenkinsBaseUrl, err)
+		return fmt.Errorf("failed to contact jenkins %s: %v", opts.endpoint, err)
 	}
 
 	log.Printf("Fetching jobs")
 	jobNames, err := jenkins.GetAllJobNames(ctx)
 	if err != nil {
-		log.Fatalf("failed to fetch jobs: %v", err)
+		return fmt.Errorf("failed to fetch jobs: %v", err)
 	}
 	log.Printf("Fetched %d jobs", len(jobNames))
 
@@ -260,6 +290,7 @@ func RunJenkinsReport(jenkinsBaseUrl string, cnvVersions ...string) {
 	junitReportsFromMatchingJobs := fetchJunitReportsFromMatchingJobs(startOfReport, endOfReport, cnvVersions, jobNames, jenkins, ctx)
 	writeReportToFile(startOfReport, endOfReport, junitReportsFromMatchingJobs)
 
+	return nil
 }
 
 func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time.Time, cnvVersions []string, jobNames []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) []*flakefinder.JobResult {
@@ -344,7 +375,7 @@ func fetchCompletedBuildsForJob(startOfReport time.Time, endOfReport time.Time, 
 }
 
 func msecsToTime(msecs int64) time.Time {
-	return time.Unix(msecs / 1000, msecs % 1000)
+	return time.Unix(msecs/1000, msecs%1000)
 }
 
 func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build) []gojenkins.Artifact {
@@ -364,7 +395,7 @@ func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build) []gojenkin
 
 func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, ctx context.Context, job *gojenkins.Job) []*flakefinder.JobResult {
 
-	// problem: we might encounter multiple junit artifacts per job run, we need to merge them into
+	// problem: we might encounter multiple junit artifacts per job runJenkinsReport, we need to merge them into
 	// 			one so the report builder can handle the results
 
 	// step 1: download the report junit data and store them in a slice per build
@@ -386,7 +417,7 @@ func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, 
 	reportsPerJob := []*flakefinder.JobResult{}
 	for buildNumber, artifacts := range artifactsPerBuild {
 		// TODO: evaluate conflicts somehow
-		mergedResult, _ := junit_merge.Merge(artifacts)
+		mergedResult, _ := junitMerge.Merge(artifacts)
 		reportsPerJob = append(reportsPerJob, &flakefinder.JobResult{Job: job.GetName(), JUnit: mergedResult, BuildNumber: int(buildNumber)})
 	}
 
@@ -396,19 +427,15 @@ func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, 
 func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports []*flakefinder.JobResult) {
 	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, endOfReport, "kubevirt", "kubevirt", startOfReport)
 
-	outputFile, err := os.CreateTemp("", "flakefinder-*.html")
-	if err != nil {
-		log.Fatalf("failed to write report: %v", err)
-	}
-	log.Printf("writing output to %s", outputFile.Name())
+	log.Printf("writing output to %s", globalOpts.outputFile)
 
-	reportOutputWriter, err := os.OpenFile(outputFile.Name(), os.O_CREATE|os.O_WRONLY, 0644)
+	reportOutputWriter, err := os.OpenFile(globalOpts.outputFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil && err != os.ErrNotExist {
 		log.Fatalf("failed to write report: %v", err)
 	}
 	defer reportOutputWriter.Close()
 
-	err = flakefinder.WriteTemplateToOutput(ReportTemplate, JenkinsReportParams{Params: parameters, JenkinsBaseURL: opts.endpoint}, reportOutputWriter)
+	err = flakefinder.WriteTemplateToOutput(JenkinsReportTemplate, JenkinsReportParams{Params: parameters, JenkinsBaseURL: opts.endpoint}, reportOutputWriter)
 	if err != nil {
 		log.Fatalf("failed to write report: %v", err)
 	}
