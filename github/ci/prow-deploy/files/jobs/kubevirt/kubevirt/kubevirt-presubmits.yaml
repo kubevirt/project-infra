@@ -1663,7 +1663,7 @@ presubmits:
             - automation/test.sh
           env:
             - name: TARGET
-              value: k8s-1.21-sig-compute
+              value: k8s-1.21-sig-compute-migrations
             - name: KUBEVIRT_NUM_NODES
               value: "3"
             - name: KUBEVIRT_STORAGE
@@ -1706,7 +1706,7 @@ presubmits:
             - automation/test.sh
           env:
             - name: TARGET
-              value: k8s-1.22-sig-compute
+              value: k8s-1.22-sig-compute-migrations
             - name: KUBEVIRT_NUM_NODES
               value: "3"
             - name: KUBEVIRT_STORAGE
@@ -1749,7 +1749,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.23-sig-compute
+          value: k8s-1.23-sig-compute-migrations
         - name: KUBEVIRT_NUM_NODES
           value: "3"
         - name: KUBEVIRT_STORAGE
