@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["merge.go"],
+    importpath = "kubevirt.io/project-infra/robots/pkg/flakefinder/junit-merge",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_joshdk_go_junit//:go_default_library"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["merge_test.go"],
+    data = glob(["testdata/**"]),
+    embed = [":go_default_library"],
+    deps = ["@com_github_joshdk_go_junit//:go_default_library"],
+)

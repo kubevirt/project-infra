@@ -60,7 +60,6 @@ PRODUCTION_USER_PERFORMANCE_WORKLOADS = "kubernetes-admin"
     ]
 ]
 
-
 [
     k8s_deploy(
         name = "%s-k8s-services" % NAME,
@@ -87,10 +86,10 @@ PRODUCTION_USER_PERFORMANCE_WORKLOADS = "kubernetes-admin"
             "manifests/service-monitors/common/*.yaml",
             "manifests/service-monitors/%s/*.yaml" % NAME,
         ]),
+        namespace = "monitoring",
         patches = glob([
             "patches/service-monitors/%s/*.yaml" % NAME,
         ]),
-        namespace = "monitoring",
         user = USER,
     )
     for NAME, CLUSTER, USER in [
@@ -104,15 +103,15 @@ PRODUCTION_USER_PERFORMANCE_WORKLOADS = "kubernetes-admin"
 [
     k8s_deploy(
         name = "%s-rules" % NAME,
-        cluster = CLUSTER,     
+        cluster = CLUSTER,
         manifests = glob([
             "manifests/rules/common/*.yaml",
             "manifests/rules/%s/*.yaml" % NAME,
         ]),
+        namespace = "monitoring",
         patches = glob([
             "patches/rules/%s/*.yaml" % NAME,
         ]),
-        namespace = "monitoring",
         user = USER,
     )
     for NAME, CLUSTER, USER in [
