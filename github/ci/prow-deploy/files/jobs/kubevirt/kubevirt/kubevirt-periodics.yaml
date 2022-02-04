@@ -1,6 +1,8 @@
 periodics:
 - annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   cluster: ibm-prow-jobs
   cron: 5 * * * *
   decorate: true
@@ -24,20 +26,17 @@ periodics:
       name: ""
       resources: {}
       volumeMounts:
-      - mountPath: /etc/github
-        name: token
       - mountPath: /etc/gcs
         name: gcs
         readOnly: true
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
 - annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   cluster: ibm-prow-jobs
   cron: 45 0 * * *
   decorate: true
@@ -61,20 +60,17 @@ periodics:
       name: ""
       resources: {}
       volumeMounts:
-      - mountPath: /etc/github
-        name: token
       - mountPath: /etc/gcs
         name: gcs
         readOnly: true
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
 - annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   cluster: ibm-prow-jobs
   cron: 25 0 * * *
   decorate: true
@@ -98,20 +94,17 @@ periodics:
       name: ""
       resources: {}
       volumeMounts:
-      - mountPath: /etc/github
-        name: token
       - mountPath: /etc/gcs
         name: gcs
         readOnly: true
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
 - annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
   cluster: ibm-prow-jobs
   decorate: true
   decoration_config:
@@ -138,15 +131,10 @@ periodics:
       name: ""
       resources: {}
       volumeMounts:
-      - mountPath: /etc/github
-        name: token
       - mountPath: /etc/gcs
         name: gcs
         readOnly: true
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
@@ -544,6 +532,7 @@ periodics:
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
+    preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-shared-images: "true"
   max_concurrency: 1
@@ -605,16 +594,11 @@ periodics:
       securityContext:
         privileged: true
       volumeMounts:
-      - mountPath: /etc/github
-        name: token
       - mountPath: /etc/gcs
         name: gcs
     nodeSelector:
       type: bare-metal-external
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
@@ -881,6 +865,7 @@ periodics:
     preset-bazel-unnested: "true"
     preset-dind-enabled: "true"
     preset-docker-mirror: "true"
+    preset-github-credentials: "true"
   max_concurrency: 1
   name: bump-kubevirt-rpms-weekly
   spec:
@@ -891,8 +876,6 @@ periodics:
       - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
         -p ../kubevirt -T main -R
       env:
-      - name: GIT_ASKPASS
-        value: ../project-infra/hack/git-askpass.sh
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
@@ -903,14 +886,9 @@ periodics:
       securityContext:
         privileged: true
       volumeMounts:
-      - mountPath: /etc/github
-        name: token
       - mountPath: /etc/gcs
         name: gcs
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
@@ -935,6 +913,7 @@ periodics:
     preset-bazel-unnested: "true"
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
+    preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-shared-images: "true"
   name: periodic-kubevirt-cluster-sync-test-ARM64
@@ -985,8 +964,6 @@ periodics:
         value: crossbuild-aarch64
       - name: KUBEVIRT_E2E_FOCUS
         value: arm64
-      - name: GIT_ASKPASS
-        value: ../project-infra/hack/git-askpass.sh
       image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
       name: ""
       resources:
@@ -995,17 +972,12 @@ periodics:
       securityContext:
         privileged: true
       volumeMounts:
-      - mountPath: /etc/github
-        name: token
       - mountPath: /etc/pgp
         name: pgp-bot-key
         readOnly: true
     nodeSelector:
       type: bare-metal-external
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: pgp-bot-key
       secret:
         secretName: pgp-bot-key
@@ -1177,15 +1149,10 @@ periodics:
       securityContext:
         privileged: true
       volumeMounts:
-      - mountPath: /etc/github
-        name: token
       - mountPath: /etc/pgp
         name: pgp-bot-key
         readOnly: true
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: pgp-bot-key
       secret:
         secretName: pgp-bot-key
