@@ -22,8 +22,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/spf13/cobra"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -31,8 +29,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/spf13/cobra"
+
 	"github.com/bndr/gojenkins"
 	"github.com/joshdk/go-junit"
+	log "github.com/sirupsen/logrus"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	junitMerge "kubevirt.io/project-infra/robots/pkg/flakefinder/junit-merge"
 )
@@ -196,8 +197,8 @@ const (
 )
 
 var (
-	fileNameRegex *regexp.Regexp
-	opts          jenkinsOptions
+	fileNameRegex  *regexp.Regexp
+	opts           jenkinsOptions
 	jenkinsCommand = &cobra.Command{
 		Use:   "jenkins",
 		Short: jenkinsShortUsage,
@@ -216,6 +217,7 @@ $ flake-report-creator jenkins --startFrom=24h --jobNamePattern='^test-kubevirt-
 `,
 		RunE: runJenkinsReport,
 	}
+	jLog = log.StandardLogger().WithField("type", "jenkins")
 )
 
 func init() {
@@ -224,14 +226,16 @@ func init() {
 	jenkinsCommand.PersistentFlags().StringVar(&opts.jobNamePattern, "jobNamePattern", defaultJenkinsJobNamePattern, "jenkins job name pattern to filter jobs for for the report (note the pattern that is used for injecting the CNV version)")
 	jenkinsCommand.PersistentFlags().StringVar(&opts.cnvVersions, "cnvVersions", defaultCNVVersions, "comma separated list of cnv versions to report")
 	jenkinsCommand.PersistentFlags().DurationVar(&opts.startFrom, "startFrom", 14*24*time.Hour, "The duration when the report data should be fetched")
+	jenkinsCommand.PersistentFlags().IntVar(&opts.maxConnsPerHost, "maxConnsPerHost", 5, "The maximum number of connections to the endpoint (to avoid getting rate limited)")
 	fileNameRegex = regexp.MustCompile("^(partial\\.)junit\\.functest(\\.1)\\.xml$")
 }
 
 type jenkinsOptions struct {
-	endpoint       string
-	jobNamePattern string
-	startFrom      time.Duration
-	cnvVersions    string
+	endpoint        string
+	jobNamePattern  string
+	startFrom       time.Duration
+	cnvVersions     string
+	maxConnsPerHost int
 }
 
 type JenkinsReportParams struct {
@@ -257,8 +261,6 @@ func runJenkinsReport(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("invalid arguments provided: %v", err)
 	}
 
-	log.SetPrefix("flake-report-creator jenkins ")
-
 	cnvVersions := strings.Split(opts.cnvVersions, ",")
 
 	ctx := context.Background()
@@ -266,23 +268,23 @@ func runJenkinsReport(cmd *cobra.Command, args []string) error {
 	// limit http client connections to avoid 504 errors, looks like we are getting rate limited
 	client := &http.Client{
 		Transport: &http.Transport{
-			MaxConnsPerHost: 5,
+			MaxConnsPerHost: opts.maxConnsPerHost,
 		},
 	}
 
-	log.Printf("Creating client for %s", opts.endpoint)
+	jLog.Printf("Creating client for %s", opts.endpoint)
 	jenkins := gojenkins.CreateJenkins(client, opts.endpoint)
 	_, err = jenkins.Init(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to contact jenkins %s: %v", opts.endpoint, err)
 	}
 
-	log.Printf("Fetching jobs")
+	jLog.Printf("Fetching jobs")
 	jobNames, err := jenkins.GetAllJobNames(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to fetch jobs: %v", err)
 	}
-	log.Printf("Fetched %d jobs", len(jobNames))
+	jLog.Printf("Fetched %d jobs", len(jobNames))
 
 	startOfReport := time.Now().Add(-1 * opts.startFrom)
 	endOfReport := time.Now()
@@ -300,10 +302,10 @@ func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time
 	var wg sync.WaitGroup
 
 	for _, cnvVersion := range cnvVersions {
-		log.Printf("Filtering jobs for CNV %s matching %s", cnvVersion, opts.jobNamePattern)
+		jLog.Printf("Filtering jobs for CNV %s matching %s", cnvVersion, opts.jobNamePattern)
 		compile, err := regexp.Compile(fmt.Sprintf(opts.jobNamePattern, cnvVersion))
 		if err != nil {
-			log.Fatalf("failed to fetch jobs: %v", err)
+			jLog.Fatalf("failed to fetch jobs: %v", err)
 		}
 		for _, jobName := range jobNames {
 			if !compile.MatchString(jobName.Name) {
@@ -311,26 +313,24 @@ func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time
 			}
 
 			wg.Add(1)
-			go func(jobName gojenkins.InnerJob, ctx context.Context) {
-				log.Printf("Job %s matches", jobName)
-
-				log.Printf("Fetching job %s", jobName)
-				job, err := jenkins.GetJob(ctx, jobName.Name)
+			go func(innerJob gojenkins.InnerJob, ctx context.Context, fLog *log.Entry) {
+				fLog.Printf("Fetching job")
+				job, err := jenkins.GetJob(ctx, innerJob.Name)
 				if err != nil {
-					log.Fatalf("failed to fetch job %s: %v", jobName, err)
+					fLog.Fatalf("failed to fetch job: %v", err)
 				}
 
 				lastBuild, err := job.GetLastBuild(ctx)
 				if err != nil {
-					log.Fatalf("failed to fetch last build for job %s: %v", jobName, err)
+					fLog.Fatalf("failed to fetch last build: %v", err)
 				}
 
-				completedBuilds := fetchCompletedBuildsForJob(startOfReport, endOfReport, lastBuild, job, ctx)
-				junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(completedBuilds)
-				reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job)
+				completedBuilds := fetchCompletedBuildsForJob(startOfReport, endOfReport, lastBuild, job, ctx, fLog)
+				junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(completedBuilds, fLog)
+				reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job, fLog)
 
 				reportChan <- reportsPerJob
-			}(jobName, ctx)
+			}(jobName, ctx, jLog.WithField("job", jobName.Name))
 		}
 	}
 
@@ -345,32 +345,32 @@ func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time
 	return reports
 }
 
-func fetchCompletedBuildsForJob(startOfReport time.Time, endOfReport time.Time, lastBuild *gojenkins.Build, job *gojenkins.Job, ctx context.Context) []*gojenkins.Build {
-	log.Printf("Fetching completed builds from %s - %s period", startOfReport.Format(time.RFC3339), endOfReport.Format(time.RFC3339))
+func fetchCompletedBuildsForJob(startOfReport time.Time, endOfReport time.Time, lastBuild *gojenkins.Build, job *gojenkins.Job, ctx context.Context, fLog *log.Entry) []*gojenkins.Build {
+	fLog.Printf("Fetching completed builds")
 	var completedBuilds []*gojenkins.Build
 	for i := lastBuild.GetBuildNumber(); i > 0; i-- {
-		log.Printf("Fetching build no %d", i)
+		fLog.Printf("Fetching build no %d", i)
 		build, err := job.GetBuild(ctx, i)
 		if err != nil {
-			log.Fatalf("failed to fetch build data: %v", err)
+			fLog.Fatalf("failed to fetch build data: %v", err)
 		}
 
 		if build.GetResult() != "SUCCESS" &&
 			build.GetResult() != "UNSTABLE" {
-			log.Printf("Skipping %s builds", build.GetResult())
+			fLog.Printf("Skipping build with state %s", build.GetResult())
 			continue
 		}
 
 		buildTime := msecsToTime(build.Info().Timestamp)
-		log.Printf("Build %d ran at %s", build.Info().Number, buildTime.Format(time.RFC3339))
+		fLog.Printf("Build %d ran at %s", build.Info().Number, buildTime.Format(time.RFC3339))
 		if buildTime.Before(startOfReport) {
-			log.Printf("Skipping remaining builds for %s", job.GetName())
+			fLog.Printf("Skipping remaining builds")
 			break
 		}
 
 		completedBuilds = append(completedBuilds, build)
 	}
-	log.Printf("Fetched %d completed builds from %s - %s period", len(completedBuilds), startOfReport, endOfReport)
+	fLog.Printf("Fetched %d completed builds", len(completedBuilds))
 	return completedBuilds
 }
 
@@ -378,8 +378,8 @@ func msecsToTime(msecs int64) time.Time {
 	return time.Unix(msecs/1000, msecs%1000)
 }
 
-func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build) []gojenkins.Artifact {
-	log.Printf("Fetch junit files from artifacts for %d completed builds", len(completedBuilds))
+func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build, fLog *log.Entry) []gojenkins.Artifact {
+	fLog.Printf("Fetch junit files from artifacts for %d completed builds", len(completedBuilds))
 	artifacts := []gojenkins.Artifact{}
 	for _, completedBuild := range completedBuilds {
 		for _, artifact := range completedBuild.GetArtifacts() {
@@ -389,31 +389,33 @@ func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build) []gojenkin
 			artifacts = append(artifacts, artifact)
 		}
 	}
-	log.Printf("Fetched %d junit files from artifacts", len(artifacts))
+	fLog.Printf("Fetched %d junit files from artifacts", len(artifacts))
 	return artifacts
 }
 
-func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, ctx context.Context, job *gojenkins.Job) []*flakefinder.JobResult {
+func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, ctx context.Context, job *gojenkins.Job, fLog *log.Entry) []*flakefinder.JobResult {
 
 	// problem: we might encounter multiple junit artifacts per job runJenkinsReport, we need to merge them into
 	// 			one so the report builder can handle the results
 
 	// step 1: download the report junit data and store them in a slice per build
+	fLog.Printf("Download %d artifacts and convert to reports", len(junitFilesFromArtifacts))
 	artifactsPerBuild := map[int64][][]junit.Suite{}
 	for _, artifact := range junitFilesFromArtifacts {
 		data, err := artifact.GetData(ctx)
 		if err != nil {
-			log.Fatalf("failed to fetch artifact data: %v", err)
+			fLog.Fatalf("failed to fetch artifact data: %v", err)
 		}
 		report, err := junit.Ingest(data)
 		if err != nil {
-			log.Fatalf("failed to fetch artifact data: %v", err)
+			fLog.Fatalf("failed to fetch artifact data: %v", err)
 		}
 		buildNumber := artifact.Build.Info().Number
 		artifactsPerBuild[buildNumber] = append(artifactsPerBuild[buildNumber], report)
 	}
 
 	// step 2: merge all the suites for a build into one suite per build
+	fLog.Printf("Merge reports for %d builds", len(artifactsPerBuild))
 	reportsPerJob := []*flakefinder.JobResult{}
 	for buildNumber, artifacts := range artifactsPerBuild {
 		// TODO: evaluate conflicts somehow
@@ -427,16 +429,16 @@ func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, 
 func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports []*flakefinder.JobResult) {
 	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, endOfReport, "kubevirt", "kubevirt", startOfReport)
 
-	log.Printf("writing output to %s", globalOpts.outputFile)
+	jLog.Printf("writing output to %s", globalOpts.outputFile)
 
 	reportOutputWriter, err := os.OpenFile(globalOpts.outputFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil && err != os.ErrNotExist {
-		log.Fatalf("failed to write report: %v", err)
+		jLog.Fatalf("failed to write report: %v", err)
 	}
 	defer reportOutputWriter.Close()
 
 	err = flakefinder.WriteTemplateToOutput(JenkinsReportTemplate, JenkinsReportParams{Params: parameters, JenkinsBaseURL: opts.endpoint}, reportOutputWriter)
 	if err != nil {
-		log.Fatalf("failed to write report: %v", err)
+		jLog.Fatalf("failed to write report: %v", err)
 	}
 }

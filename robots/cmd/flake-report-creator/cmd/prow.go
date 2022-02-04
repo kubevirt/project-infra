@@ -22,7 +22,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"path"
 	"regexp"
@@ -30,6 +29,7 @@ import (
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
 	"cloud.google.com/go/storage"
@@ -321,8 +321,6 @@ func runProwReport(cmd *cobra.Command, args []string) error {
 
 		return fmt.Errorf("invalid arguments provided: %v", err)
 	}
-
-	log.SetPrefix("flake-report-creator prow ")
 
 	ctx := context.Background()
 	storageClient, err := storage.NewClient(ctx)

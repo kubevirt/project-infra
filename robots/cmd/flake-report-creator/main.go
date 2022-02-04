@@ -1,14 +1,10 @@
 package main
 
 import (
+	log "github.com/sirupsen/logrus"
 	"kubevirt.io/project-infra/robots/cmd/flake-report-creator/cmd"
-	"log"
 	"os"
 )
-
-func init() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-}
 
 func main() {
 	if err := cmd.Execute(); err != nil {

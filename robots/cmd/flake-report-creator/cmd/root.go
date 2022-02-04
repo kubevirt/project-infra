@@ -22,8 +22,8 @@ import (
 )
 
 type GlobalOptions struct {
-	outputFile           string
-	overwrite            bool
+	outputFile string
+	overwrite  bool
 }
 
 func (o *GlobalOptions) Validate() error {
@@ -50,12 +50,12 @@ func (o *GlobalOptions) Validate() error {
 
 var (
 	rootCmd = &cobra.Command{
-	Use:   "flake-report-creator",
-	Short: "flake-report-creator creates reports from junit artifacts of kubevirt ci builds",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
-	},
-}
+		Use:   "flake-report-creator",
+		Short: "flake-report-creator creates reports from junit artifacts of kubevirt ci builds",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
+		},
+	}
 	globalOpts = GlobalOptions{}
 )
 
