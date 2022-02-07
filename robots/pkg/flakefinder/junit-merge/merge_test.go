@@ -1,11 +1,12 @@
 package junit_merge
 
 import (
-	"github.com/joshdk/go-junit"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
+
+	"github.com/joshdk/go-junit"
 )
 
 func Test_merge(t *testing.T) {
@@ -13,22 +14,22 @@ func Test_merge(t *testing.T) {
 		suites [][]junit.Suite
 	}
 	tests := []struct {
-		name    string
-		args    args
+		name          string
+		args          args
 		want          []junit.Suite
 		wantConflicts bool
 	}{
 		{
-			name:    "test name conflict at merge",
-			args:    args{
+			name: "test name conflict at merge",
+			args: args{
 				suites: loadTestData("testdata/conflict"),
 			},
 			want:          nil,
 			wantConflicts: true,
 		},
 		{
-			name:    "network data test",
-			args:    args{
+			name: "network data test",
+			args: args{
 				suites: loadTestData("testdata/network"),
 			},
 			want:          nil,
@@ -42,7 +43,7 @@ func Test_merge(t *testing.T) {
 				t.Errorf("merge() hasConflicts = %v, wantConflicts %v", hasConflicts, tt.wantConflicts)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if tt.want != nil && !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("merge() got = %v, want %v", got, tt.want)
 			}
 		})
