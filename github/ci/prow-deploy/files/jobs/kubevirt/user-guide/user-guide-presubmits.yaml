@@ -1,0 +1,13 @@
+presubmits:
+  kubevirt/user-guide:
+  - name: check-links-user-guide
+    always_run: false
+    skip_report: true
+    decorate: true
+    cluster: ibm-prow-jobs
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/kubevirt-userguide:v20210120-7cfa0f5
+        command: [ "/bin/bash", "-c" ]
+        args:
+        - "rake -- -u"
