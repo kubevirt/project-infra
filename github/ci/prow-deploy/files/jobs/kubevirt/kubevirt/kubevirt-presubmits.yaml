@@ -1634,7 +1634,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1651,7 +1651,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.21-sig-compute-migrations
-    optional: true
+    optional: false
     skip_branches:
       - release-\d+\.\d+
     spec:
@@ -1666,8 +1666,6 @@ presubmits:
               value: k8s-1.21-sig-compute-migrations
             - name: KUBEVIRT_NUM_NODES
               value: "3"
-            - name: KUBEVIRT_STORAGE
-              value: "rook-ceph-default"
           image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
           name: ""
           resources:
@@ -1677,7 +1675,7 @@ presubmits:
             privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1694,7 +1692,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-sig-compute-migrations
-    optional: true
+    optional: false
     skip_branches:
       - release-\d+\.\d+
     spec:
@@ -1709,8 +1707,6 @@ presubmits:
               value: k8s-1.22-sig-compute-migrations
             - name: KUBEVIRT_NUM_NODES
               value: "3"
-            - name: KUBEVIRT_STORAGE
-              value: "rook-ceph-default"
           image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
           name: ""
           resources:
@@ -1720,7 +1716,7 @@ presubmits:
             privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1737,7 +1733,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-compute-migrations
-    optional: true
+    optional: false
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1752,8 +1748,6 @@ presubmits:
           value: k8s-1.23-sig-compute-migrations
         - name: KUBEVIRT_NUM_NODES
           value: "3"
-        - name: KUBEVIRT_STORAGE
-          value: "rook-ceph-default"
         image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
         name: ""
         resources:
