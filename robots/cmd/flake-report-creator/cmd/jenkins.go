@@ -197,7 +197,7 @@ const (
 )
 
 var (
-	fileNameRegex  *regexp.Regexp
+	fileNameRegex  = regexp.MustCompile("^((merged|partial)\\.)?junit\\.functest(\\.[0-9]+)?\\.xml$")
 	opts           jenkinsOptions
 	jenkinsCommand = &cobra.Command{
 		Use:   "jenkins",
@@ -227,7 +227,6 @@ func init() {
 	jenkinsCommand.PersistentFlags().StringVar(&opts.cnvVersions, "cnvVersions", defaultCNVVersions, "comma separated list of cnv versions to report")
 	jenkinsCommand.PersistentFlags().DurationVar(&opts.startFrom, "startFrom", 14*24*time.Hour, "The duration when the report data should be fetched")
 	jenkinsCommand.PersistentFlags().IntVar(&opts.maxConnsPerHost, "maxConnsPerHost", 5, "The maximum number of connections to the endpoint (to avoid getting rate limited)")
-	fileNameRegex = regexp.MustCompile("^(partial\\.)junit\\.functest(\\.1)\\.xml$")
 }
 
 type jenkinsOptions struct {
@@ -411,7 +410,7 @@ func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build, fLog *log.
 
 func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, ctx context.Context, job *gojenkins.Job, fLog *log.Entry) []*flakefinder.JobResult {
 
-	// problem: we might encounter multiple junit artifacts per job runJenkinsReport, we need to merge them into
+	// problem: we might encounter multiple junit artifacts per job run, we need to merge them into
 	// 			one so the report builder can handle the results
 
 	// step 1: download the report junit data and store them in a slice per build
