@@ -1,0 +1,694 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <testsuite name="Tests Suite" tests="118" failures="0" errors="0" time="2721.264">
+      <testcase name="[sig-compute]oc/kubectl integration [test_id:3812]explain vm/vmi [test_id:3810]explain vm" classname="Tests Suite" time="8.402754"></testcase>
+      <testcase name="[sig-compute]oc/kubectl integration [test_id:3812]explain vm/vmi [test_id:5181]explain vmsnapshotcontent" classname="Tests Suite" time="4.715111952"></testcase>
+      <testcase name="[sig-compute]oc/kubectl integration [test_id:5183]vmirs have validation" classname="Tests Suite" time="6.129158451"></testcase>
+      <testcase name="[sig-compute]oc/kubectl integration [rfe_id:3423][vendor:cnv-qe@redhat.com][level:component]oc/kubectl get vm/vmi tests should verify set of wide columns for [test_id:3468]virtualmachine" classname="Tests Suite" time="13.080170285"></testcase>
+      <testcase name="[crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute] USB Redirection [crit:medium][vendor:cnv-qe@redhat.com][level:component] A VirtualMachineInstance without usbredir support should fail to connect to VMI&#39;s usbredir socket" classname="Tests Suite" time="11.657828024"></testcase>
+      <testcase name="[crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute] USB Redirection [crit:medium][vendor:cnv-qe@redhat.com][level:component] A VirtualMachineInstance with usbredir support with an usbredir connection Should work in parallel" classname="Tests Suite" time="15.485892048"></testcase>
+      <testcase name="[sig-compute]Dry-Run requests VirtualMachineInstances [test_id:7629]update a VirtualMachineInstance" classname="Tests Suite" time="4.477169829"></testcase>
+      <testcase name="[sig-compute]Dry-Run requests VirtualMachineInstances [test_id:7630]patch a VirtualMachineInstance" classname="Tests Suite" time="6.380727028"></testcase>
+      <testcase name="[sig-compute]Dry-Run requests VirtualMachines [test_id:7633]update a VirtualMachine" classname="Tests Suite" time="6.403581203"></testcase>
+      <testcase name="[sig-compute]Dry-Run requests Migrations [test_id:7636]delete a migration" classname="Tests Suite" time="6.452847158"></testcase>
+      <testcase name="[sig-compute]Dry-Run requests VMI Presets [test_id:7639]create a VMI preset" classname="Tests Suite" time="6.151846186"></testcase>
+      <testcase name="[sig-compute]Dry-Run requests VMI Presets [test_id:7642]patch a VMI preset" classname="Tests Suite" time="6.178590267"></testcase>
+      <testcase name="[sig-compute]Dry-Run requests VMI ReplicaSets [test_id:7645]update a VMI replicaset" classname="Tests Suite" time="6.418304796"></testcase>
+      <testcase name="[sig-compute]Dry-Run requests KubeVirt CR [test_id:7648]delete a KubeVirt CR" classname="Tests Suite" time="6.26241838"></testcase>
+      <testcase name="[sig-compute]Dry-Run requests VM Snapshots [test_id:7651]create a VM Snapshot" classname="Tests Suite" time="6.212106633"></testcase>
+      <testcase name="[sig-compute]Dry-Run requests VM Snapshots [test_id:7654]patch a VM Snapshot" classname="Tests Suite" time="6.155735571"></testcase>
+      <testcase name="[sig-compute]Dry-Run requests VM Restores [test_id:7657]update a VM Restore" classname="Tests Suite" time="8.253199284"></testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [test_id:1620]should start it" classname="Tests Suite" time="16.391040033"></testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [test_id:3195]should carry annotations to pod" classname="Tests Suite" time="14.328554628"></testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [test_id:3197]should log libvirtd debug logs when enabled" classname="Tests Suite" time="13.655858438"></testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance with boot order [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]should be able to boot from selected disk [test_id:1627]Alpine as first boot" classname="Tests Suite" time="23.508702046"></testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance when virt-launcher crashes [Serial][test_id:1631]should be stopped and have Failed phase" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]when virt-handler crashes [test_id:1632]should recover and continue management" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]when virt-handler is responsive [test_id:1633]should indicate that a node is ready for vmis" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]when virt-handler is responsive [test_id:3198]device plugins should re-register if the kubelet restarts" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]when virt-handler is not responsive [test_id:1634]the node controller should mark the node as unschedulable when the virt-handler heartbeat has timedout" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]with node tainted [test_id:1635]the vmi with tolerations should be scheduled" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]with node tainted [test_id:1636]the vmi without tolerations should not be scheduled" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance with affinity [test_id:1637]the vmi with node affinity and no conflicts should be scheduled" classname="Tests Suite" time="14.56485842"></testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]with default cpu model [test_id:3199]should set default cpu model when vmi doesn&#39;t have it set" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]with default cpu model [test_id:3200]should not set default cpu model when vmi has it set" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]with default cpu model [sig-compute][test_id:3201]should set cpu model to default when vmi does not have it set and default cpu model is not set" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]with node feature discovery [test_id:1639]the vmi with cpu.model matching a nfd label on a node should be scheduled" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]with node feature discovery the vmi with HyperV feature matching a nfd label on a node should be scheduled" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]with node feature discovery the vmi with EVMCS HyperV feature should have correct hyperv and cpu features auto filled" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]with node feature discovery [test_id:1640]the vmi with cpu.model that cannot match an nfd label on node should not be scheduled" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]with node feature discovery [test_id:3202]the vmi with cpu.features matching nfd labels on a node should be scheduled" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]with node feature discovery [test_id:3203]the vmi with cpu.features that cannot match nfd labels on a node should not be scheduled" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance [Serial]with node feature discovery [test_id:3204]the vmi with cpu.feature policy &#39;forbid&#39; should not be scheduled on a node with that cpu feature label" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance with non default namespace [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]should log libvirt start and stop lifecycle events of the domain [test_id:1641]kubevirt-test-default" classname="Tests Suite" time="19.106981212"></testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Creating a VirtualMachineInstance VM Accelerated Mode [test_id:1647]should not enable emulation in virt-launcher" classname="Tests Suite" time="14.454019577"></testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Delete a VirtualMachineInstance&#39;s Pod [test_id:1650]should result in the VirtualMachineInstance moving to a finalized state" classname="Tests Suite" time="16.633460232"></testcase>
+      <testcase name="[rfe_id:273][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIlifecycle [rfe_id:273][crit:high][vendor:cnv-qe@redhat.com][level:component]Delete a VirtualMachineInstance with ACPI and some grace period seconds [rfe_id:273][crit:medium][vendor:cnv-qe@redhat.com][level:component]should result in vmi status succeeded [test_id:1654]with default grace period seconds" classname="Tests Suite" time="23.062663761"></testcase>
+      <testcase name="[sig-compute]Guest Access Credentials with qemu guest agent [test_id:6221]should propagate user password" classname="Tests Suite" time="52.386715354"></testcase>
+      <testcase name="[sig-compute]Guest Access Credentials with qemu guest agent [test_id:6223]should update guest agent for user password" classname="Tests Suite" time="40.286340461"></testcase>
+      <testcase name="[rfe_id:3064][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Pausing A valid VMI when paused via virtctl multiple times [test_id:3225]should signal unpaused state with removed condition at the end" classname="Tests Suite" time="27.087030188"></testcase>
+      <testcase name="[rfe_id:3064][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Pausing A valid VMI should not appear as ready when paused" classname="Tests Suite" time="18.776932722"></testcase>
+      <testcase name="[rfe_id:3064][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Pausing A valid VM when paused via virtctl [test_id:3081]should gracefully handle pausing the VM again" classname="Tests Suite" time="17.800169383"></testcase>
+      <testcase name="[rfe_id:3064][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Pausing A valid VM when paused via virtctl [test_id:3082]should gracefully handle unpausing again" classname="Tests Suite" time="19.819344601"></testcase>
+      <testcase name="[rfe_id:3064][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Pausing A valid VM when paused via virtctl [test_id:3226]should be restarted successfully into unpaused state" classname="Tests Suite" time="32.141241596"></testcase>
+      <testcase name="[rfe_id:3064][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Pausing A valid VM when unpaused via virtctl with --dry-run flag [test_id:7674]should not unpaused" classname="Tests Suite" time="22.95143144"></testcase>
+      <testcase name="[rfe_id:127][crit:medium][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VNC [rfe_id:127][crit:medium][vendor:cnv-qe@redhat.com][level:component]A new VirtualMachineInstance [rfe_id:127][crit:medium][vendor:cnv-qe@redhat.com][level:component]should upgrade websocket connection which look like coming from a browser [test_id:1612]for vnc" classname="Tests Suite" time="12.519134622"></testcase>
+      <testcase name="[rfe_id:127][crit:medium][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VNC [rfe_id:127][crit:medium][vendor:cnv-qe@redhat.com][level:component]A new VirtualMachineInstance [test_id:1614]should upgrade websocket connections without a subprotocol given" classname="Tests Suite" time="11.604526779"></testcase>
+      <testcase name="[sig-performance][Serial] Control Plane Performance Density Testing Density test [small] create a batch of 100 VMIs should sucessfully create all VMIS" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:588][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachineInstanceReplicaSet [rfe_id:588][crit:medium][vendor:cnv-qe@redhat.com][level:component]should scale [test_id:1405]to three, to two and then to zero replicas" classname="Tests Suite" time="7.590210217"></testcase>
+      <testcase name="[rfe_id:588][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachineInstanceReplicaSet [rfe_id:588][crit:medium][vendor:cnv-qe@redhat.com][level:component]should scale with scale subresource [test_id:1407]to three, to two and then to zero replicas" classname="Tests Suite" time="8.040551781"></testcase>
+      <testcase name="[rfe_id:588][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachineInstanceReplicaSet [rfe_id:588][crit:medium][vendor:cnv-qe@redhat.com][level:component]should scale with the horizontal pod autoscaler [test_id:1410]to five, to six and then to one replicas" classname="Tests Suite" time="50.709458105"></testcase>
+      <testcase name="[rfe_id:588][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachineInstanceReplicaSet [test_id:1417]should not scale when paused and scale when resume" classname="Tests Suite" time="10.592442032"></testcase>
+      <testcase name="[rfe_id:588][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachineInstanceReplicaSet [test_id:4121]should create and verify kubectl/oc output for vm replicaset" classname="Tests Suite" time="5.846118053"></testcase>
+      <testcase name="[sig-compute]VMI with external kernel boot with illegal definition ensure rejection of VMI defined with image but without initrd &amp; kernel paths" classname="Tests Suite" time="5.369091225"></testcase>
+      <testcase name="[sig-compute]Configurations when requesting virtio-transitional models [test_id:6957]should start and run the guest" classname="Tests Suite" time="25.768793624"></testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition [rfe_id:2262][crit:medium][vendor:cnv-qe@redhat.com][level:component]with EFI bootloader method [Serial][test_id:1668]should use EFI without secure boot" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition [rfe_id:2262][crit:medium][vendor:cnv-qe@redhat.com][level:component]with EFI bootloader method [Serial][test_id:4437]should enable EFI secure boot" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition [rfe_id:140][crit:medium][vendor:cnv-qe@redhat.com][level:component]with diverging guest memory from requested memory [test_id:1669]should show the requested guest memory inside the VMI" classname="Tests Suite" time="18.922789007"></testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition [rfe_id:989]test cpu_allocation_ratio virt-launchers pod cpu requests should be proportional to the number of vCPUs" classname="Tests Suite" time="13.620475964"></testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition [rfe_id:609][crit:medium][vendor:cnv-qe@redhat.com][level:component]Support memory over commitment test [test_id:731]Check OverCommit status on VMI" classname="Tests Suite" time="14.775939302"></testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition [rfe_id:3078][crit:medium][vendor:cnv-qe@redhat.com][level:component]with usb controller [test_id:3117]should start the VMI with usb controller when usb device is present" classname="Tests Suite" time="18.629887754"></testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition [rfe_id:3078][crit:medium][vendor:cnv-qe@redhat.com][level:component]with usb controller [test_id:3118]should start the VMI without usb controller" classname="Tests Suite" time="21.884176092"></testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition [rfe_id:140][crit:medium][vendor:cnv-qe@redhat.com][level:component]with namespace memory limits lower than VMI required memory [test_id:1670]should failed to start the VMI" classname="Tests Suite" time="4.621352065"></testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition [rfe_id:140][crit:medium][vendor:cnv-qe@redhat.com][level:component]with namespace limits higher than VMI requests [test_id:3120]should start the VMI with the right default settings from namespace limits" classname="Tests Suite" time="6.426529733"></testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition [rfe_id:893][crit:medium][vendor:cnv-qe@redhat.com][level:component]with rng [test_id:1674]should have the virtio rng device present when present" classname="Tests Suite" time="22.677001901"></testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition with volumes, disks and filesystem defined [test_id:6960]should reject disk with missing volume" classname="Tests Suite" time="4.420597818"></testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition with volumes, disks and filesystem defined [test_id:6961]should reject volume with missing disk / file system" classname="Tests Suite" time="6.202980679"></testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition [Serial]using defaultRuntimeClass configuration should apply runtimeClassName to pod when set" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations VirtualMachineInstance definition [Serial]using defaultRuntimeClass configuration should not apply runtimeClassName to pod when not set" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations [rfe_id:140][crit:medium][vendor:cnv-qe@redhat.com][level:component]with CPU spec [rfe_id:140][crit:medium][vendor:cnv-qe@redhat.com][level:component]when CPU model defined [test_id:1678]should report defined CPU model" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations [rfe_id:140][crit:medium][vendor:cnv-qe@redhat.com][level:component]with CPU spec [rfe_id:140][crit:medium][vendor:cnv-qe@redhat.com][level:component]when CPU model equals to passthrough [test_id:1679]should report exactly the same model as node CPU" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations [rfe_id:140][crit:medium][vendor:cnv-qe@redhat.com][level:component]with CPU spec [rfe_id:140][crit:medium][vendor:cnv-qe@redhat.com][level:component]when CPU model not defined [test_id:1680]should report CPU model from libvirt capabilities" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations [rfe_id:140][crit:medium][vendor:cnv-qe@redhat.com][level:component]with CPU spec when CPU features defined [test_id:3123]should start a Virtual Machine with matching features" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations [Serial][rfe_id:2869][crit:medium][vendor:cnv-qe@redhat.com][level:component]with machine type settings [test_id:3124]should set machine type from VMI spec" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations [Serial][rfe_id:2869][crit:medium][vendor:cnv-qe@redhat.com][level:component]with machine type settings [test_id:3125]should allow creating VM without Machine defined" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations [Serial][rfe_id:2869][crit:medium][vendor:cnv-qe@redhat.com][level:component]with machine type settings [test_id:6964]should allow creating VM defined with Machine with an empty Type" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations [Serial][rfe_id:2869][crit:medium][vendor:cnv-qe@redhat.com][level:component]with machine type settings [Serial][test_id:3126]should set machine type from kubevirt-config" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations with a custom scheduler [test_id:4631]should set the custom scheduler on the pod" classname="Tests Suite" time="7.225714256"></testcase>
+      <testcase name="[sig-compute]Configurations [rfe_id:140][crit:medium][vendor:cnv-qe@redhat.com][level:component]with CPU request settings [Serial][test_id:3129]should set CPU request from kubevirt-config" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations [Serial][rfe_id:904][crit:medium][vendor:cnv-qe@redhat.com][level:component][storage-req]with driver cache and io settings and PVC [test_id:1681]should set appropriate cache modes" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations [Serial][rfe_id:904][crit:medium][vendor:cnv-qe@redhat.com][level:component][storage-req]with driver cache and io settings and PVC [test_id:5360]should set appropriate IO modes" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations Block size configuration set [test_id:6965][storage-req]Should set BlockIO when using custom block sizes" classname="Tests Suite" time="5.365774051">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Configurations [rfe_id:898][crit:medium][vendor:cnv-qe@redhat.com][level:component]New VirtualMachineInstance with all supported drives [test_id:3906]should configure custom Pci address" classname="Tests Suite" time="23.706561948"></testcase>
+      <testcase name="[sig-compute]Configurations With ephemeral CD-ROM For various bus types [test_id:3776] Should be rejected when using virtio" classname="Tests Suite" time="4.516751301"></testcase>
+      <testcase name="[sig-compute]Configurations Custom PCI Addresses configuration should configure custom pci address [test_id:5270]across all available PCI functions of a single slot" classname="Tests Suite" time="47.706420241000004"></testcase>
+      <testcase name="[sig-compute]Configurations Check KVM CPUID advertisement [test_id:5272]test cpuid default" classname="Tests Suite" time="35.057362627"></testcase>
+      <testcase name="[Serial][sig-monitoring]Prometheus Alerts Up metrics VirtOperatorDown should be triggered when virt-operator is down" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service [label:masquerade_binding_connectivity]Should expose a Cluster IP service on a VMI and connect to it [test_id:1531] over default IPv4 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service [label:masquerade_binding_connectivity]Should expose a Cluster IP service on a VMI and connect to it over IPv6 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service [label:masquerade_binding_connectivity]Should expose a Cluster IP service on a VMI and connect to it over dual stack, primary ipv4" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service [label:masquerade_binding_connectivity]Should expose a Cluster IP service on a VMI and connect to it over dual stack, primary ipv6" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service with string target-port Should expose a ClusterIP service and connect to the vm on port 80 [test_id:1532] over default IPv4 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service with string target-port Should expose a ClusterIP service and connect to the vm on port 80 over IPv6 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service with string target-port Should expose a ClusterIP service and connect to the vm on port 80 over dual stack, primary ipv4" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service with string target-port Should expose a ClusterIP service and connect to the vm on port 80 over dual stack, primary ipv6" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service with ports on the vmi defined Should expose a ClusterIP service and connect to all ports defined on the vmi [test_id:1533] over default IPv4 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service with ports on the vmi defined Should expose a ClusterIP service and connect to all ports defined on the vmi over IPv6 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service with ports on the vmi defined Should expose a ClusterIP service and connect to all ports defined on the vmi over dual stack, primary ipv4" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service with ports on the vmi defined Should expose a ClusterIP service and connect to all ports defined on the vmi over dual stack, primary ipv6" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service with IPFamilyPolicy Should expose a ClusterIP service with the correct IPFamilyPolicy over SingleStack IPv4 IP family policy" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service with IPFamilyPolicy Should expose a ClusterIP service with the correct IPFamilyPolicy over PreferDualStack IP family policy" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose ClusterIP service with IPFamilyPolicy Should expose a ClusterIP service with the correct IPFamilyPolicy over RequireDualStack IP family policy" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose NodePort service [label:masquerade_binding_connectivity]Should expose a NodePort service on a VMI and connect to it [test_id:1534] over default IPv4 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose NodePort service [label:masquerade_binding_connectivity]Should expose a NodePort service on a VMI and connect to it over IPv6 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose NodePort service [label:masquerade_binding_connectivity]Should expose a NodePort service on a VMI and connect to it over dual stack, primary ipv4" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VM Expose NodePort service [label:masquerade_binding_connectivity]Should expose a NodePort service on a VMI and connect to it over dual stack, primary ipv6" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose UDP service on a VMI Expose ClusterIP UDP service [label:masquerade_binding_connectivity]Should expose a ClusterIP service on a VMI and connect to it [test_id:1535] over default IPv4 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose UDP service on a VMI Expose ClusterIP UDP service [label:masquerade_binding_connectivity]Should expose a ClusterIP service on a VMI and connect to it over IPv6 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose UDP service on a VMI Expose ClusterIP UDP service [label:masquerade_binding_connectivity]Should expose a ClusterIP service on a VMI and connect to it over dual stack, primary ipv4" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose UDP service on a VMI Expose ClusterIP UDP service [label:masquerade_binding_connectivity]Should expose a ClusterIP service on a VMI and connect to it over dual stack, primary ipv6" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose UDP service on a VMI Expose NodePort UDP service [label:masquerade_binding_connectivity]Should expose a NodePort service on a VMI and connect to it [test_id:1536] over default IPv4 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose UDP service on a VMI Expose NodePort UDP service [label:masquerade_binding_connectivity]Should expose a NodePort service on a VMI and connect to it over IPv6 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose UDP service on a VMI Expose NodePort UDP service [label:masquerade_binding_connectivity]Should expose a NodePort service on a VMI and connect to it over dual stack, primary ipv4" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose UDP service on a VMI Expose NodePort UDP service [label:masquerade_binding_connectivity]Should expose a NodePort service on a VMI and connect to it over dual stack, primary ipv6" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VMI replica set Expose ClusterIP service [label:masquerade_binding_connectivity]Should create a ClusterIP service on VMRS and connect to it [test_id:1537] over default IPv4 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VMI replica set Expose ClusterIP service [label:masquerade_binding_connectivity]Should create a ClusterIP service on VMRS and connect to it over IPv6 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VMI replica set Expose ClusterIP service [label:masquerade_binding_connectivity]Should create a ClusterIP service on VMRS and connect to it over dual stack, primary ipv4" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose service on a VMI replica set Expose ClusterIP service [label:masquerade_binding_connectivity]Should create a ClusterIP service on VMRS and connect to it over dual stack, primary ipv6" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose a VM as a service. Expose a VM as a ClusterIP service. [label:masquerade_binding_connectivity]Connect to ClusterIP service that was set when VM was offline. [test_id:1538] over default IPv4 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose a VM as a service. Expose a VM as a ClusterIP service. [label:masquerade_binding_connectivity]Connect to ClusterIP service that was set when VM was offline. over IPv6 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose a VM as a service. Expose a VM as a ClusterIP service. [label:masquerade_binding_connectivity]Connect to ClusterIP service that was set when VM was offline. over dual stack, primary ipv4" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose a VM as a service. Expose a VM as a ClusterIP service. [label:masquerade_binding_connectivity]Connect to ClusterIP service that was set when VM was offline. over dual stack, primary ipv6" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose a VM as a service. Expose a VM as a ClusterIP service. [label:masquerade_binding_connectivity]Should verify the exposed service is functional before and after VM restart. [test_id:345] over default IPv4 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose a VM as a service. Expose a VM as a ClusterIP service. [label:masquerade_binding_connectivity]Should verify the exposed service is functional before and after VM restart. over IPv6 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose a VM as a service. Expose a VM as a ClusterIP service. [label:masquerade_binding_connectivity]Should verify the exposed service is functional before and after VM restart. over dual stack, primary ipv4" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose a VM as a service. Expose a VM as a ClusterIP service. [label:masquerade_binding_connectivity]Should verify the exposed service is functional before and after VM restart. over dual stack, primary ipv6" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose a VM as a service. Expose a VM as a ClusterIP service. [label:masquerade_binding_connectivity]Should Verify an exposed service of a VM is not functional after VM deletion. [test_id:343] over default IPv4 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose a VM as a service. Expose a VM as a ClusterIP service. [label:masquerade_binding_connectivity]Should Verify an exposed service of a VM is not functional after VM deletion. over IPv6 IP family" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose a VM as a service. Expose a VM as a ClusterIP service. [label:masquerade_binding_connectivity]Should Verify an exposed service of a VM is not functional after VM deletion. over dual stack, primary ipv4" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose a VM as a service. Expose a VM as a ClusterIP service. [label:masquerade_binding_connectivity]Should Verify an exposed service of a VM is not functional after VM deletion. over dual stack, primary ipv6" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:150][crit:high][vendor:cnv-qe@redhat.com][level:component]Networkpolicy when three cirros VMs with default networking are started and serverVMI start an HTTP server on port 80 and 81 and connectivity between VMI/s is blocked by Default-deny networkpolicy [test_id:1511] should fail to reach serverVMI from clientVMI" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:150][crit:high][vendor:cnv-qe@redhat.com][level:component]Networkpolicy when three cirros VMs with default networking are started and serverVMI start an HTTP server on port 80 and 81 and connectivity between VMI/s is blocked by Default-deny networkpolicy [test_id:1512] should fail to reach clientVMI from serverVMI" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:150][crit:high][vendor:cnv-qe@redhat.com][level:component]Networkpolicy when three cirros VMs with default networking are started and serverVMI start an HTTP server on port 80 and 81 and connectivity between VMI/s is blocked by Default-deny networkpolicy [test_id:369] should deny http traffic for ports 80/81 from clientVMI to serverVMI" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:150][crit:high][vendor:cnv-qe@redhat.com][level:component]Networkpolicy when three cirros VMs with default networking are started and serverVMI start an HTTP server on port 80 and 81 and vms limited by allow same namespace networkpolicy when client vmi is on default namespace [Conformance][test_id:1513] should succeed pinging between two VMI/s in the same namespace" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:150][crit:high][vendor:cnv-qe@redhat.com][level:component]Networkpolicy when three cirros VMs with default networking are started and serverVMI start an HTTP server on port 80 and 81 and vms limited by allow same namespace networkpolicy when client vmi is on alternative namespace [Conformance][test_id:1514] should fail pinging between two VMI/s each on different namespaces" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:150][crit:high][vendor:cnv-qe@redhat.com][level:component]Networkpolicy when three cirros VMs with default networking are started and serverVMI start an HTTP server on port 80 and 81 and ingress traffic to VMI identified via label at networkprofile&#39;s labelSelector is blocked when client vmi is on alternative namespace [test_id:1515] should fail to reach serverVMI from clientVMIAlternativeNamespace" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:150][crit:high][vendor:cnv-qe@redhat.com][level:component]Networkpolicy when three cirros VMs with default networking are started and serverVMI start an HTTP server on port 80 and 81 and ingress traffic to VMI identified via label at networkprofile&#39;s labelSelector is blocked when client vmi is on default namespace [test_id:1515] should fail to reach serverVMI from clientVMI" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:150][crit:high][vendor:cnv-qe@redhat.com][level:component]Networkpolicy when three cirros VMs with default networking are started and serverVMI start an HTTP server on port 80 and 81 and ingress traffic to VMI identified via label at networkprofile&#39;s labelSelector is blocked when client vmi is on default namespace when another client vmi is on an alternative namespace [test_id:1517] should success to reach clientVMI from clientVMIAlternativeNamespace" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:150][crit:high][vendor:cnv-qe@redhat.com][level:component]Networkpolicy when three cirros VMs with default networking are started and serverVMI start an HTTP server on port 80 and 81 and TCP connectivity on ports 80 and 81 between VMI/s is allowed by networkpolicy [test_id:2774] should allow http traffic for ports 80 and 81 from clientVMI to serverVMI" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [rfe_id:150][crit:high][vendor:cnv-qe@redhat.com][level:component]Networkpolicy when three cirros VMs with default networking are started and serverVMI start an HTTP server on port 80 and 81 and TCP connectivity on ports 80 between VMI/s is allowed by networkpolicy [test_id:2775] should allow http traffic at port 80 and deny at port 81 from clientVMI to serverVMI" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="virt-operator basic tests [sig-compute][Serial]Obsolete ConfigMap should emit event if the obsolete kubevirt-config configMap still exists" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [test_id:1746]should have created and available condition" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator should reconcile components checking updating resource is reverted to original state for  [test_id:6254] deployments" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator should reconcile components checking updating resource is reverted to original state for  [test_id:6255] customresourcedefinitions" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator should reconcile components checking updating resource is reverted to original state for  [test_id:6256] poddisruptionbudgets" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator should reconcile components checking updating resource is reverted to original state for  [test_id:6308] daemonsets" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator should reconcile components [test_id:6309] checking updating service is reverted to original state" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]should start a VM [test_id:3144]using virt-launcher with a shasum" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [test_id:6987]should apply component configuration test VirtualMachineInstancesPerNode" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [test_id:4744]should apply component customization [QUARANTINE]test applying and removing a patch" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]should update kubevirt [release-blocker][test_id:3145]from previous release to target tested release by patching KubeVirt CR" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]should update kubevirt [release-blocker][test_id:3145]from previous release to target tested release by updating virt-operator" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]infrastructure management [test_id:3146]should be able to delete and re-create kubevirt install" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]infrastructure management [rfe_id:3578][crit:high][vendor:cnv-qe@redhat.com][level:component] deleting with BlockUninstallIfWorkloadsExist [test_id:3683]should be blocked if a workload exists" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]infrastructure management [test_id:3148]should be able to create kubevirt install with custom image tag" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]infrastructure management [test_id:3149]should be able to create kubevirt install with image prefix" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]infrastructure management [test_id:3150]should be able to update kubevirt install with custom image tag" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]infrastructure management [test_id:3151]should be able to update kubevirt install when operator updates if no custom image tag is set" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]infrastructure management [test_id:3152]should fail if KV object already exists" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]infrastructure management [test_id:4612]should create non-namespaces resources without owner references" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]infrastructure management [test_id:4613]should remove owner references on non-namespaces resources when updating a resource" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]infrastructure management [test_id:5010]should be able to update product related labels of kubevirt install" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]infrastructure management [rfe_id:2897][crit:medium][vendor:cnv-qe@redhat.com][level:component]With OpenShift cluster [test_id:2910]Should have kubevirt SCCs created" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2897][crit:medium][vendor:cnv-qe@redhat.com][level:component]Dynamic feature detection [test_id:3153]Ensure infra can handle dynamically detecting DataVolume Support" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2897][crit:medium][vendor:cnv-qe@redhat.com][level:component]With ServiceMonitor Disabled [test_id:3154]Should not create RBAC Role or RoleBinding for ServiceMonitor" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator With PrometheusRule Enabled [test_id:4614]Checks if the kubevirt PrometheusRule cr exists and verify it&#39;s spec" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator With PrometheusRule Disabled [test_id:4615]Checks that we do not deploy a PrometheusRule cr when not needed" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2937][crit:medium][vendor:cnv-qe@redhat.com][level:component]With ServiceMonitor Enabled [test_id:2936]Should allow Prometheus to scrape KubeVirt endpoints" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:2937][crit:medium][vendor:cnv-qe@redhat.com][level:component]With ServiceMonitor Enabled [test_id:4616]Should patch our namespace labels with openshift.io/cluster-monitoring=true" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [test_id:4617]should adopt previously unmanaged entities by updating its metadata" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:4356]Node Placement [test_id:4927]should dynamically update infra config" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:4356]Node Placement [test_id:4928]should dynamically update workloads config" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:4356]Node Placement should reject infra placement configuration with incorrect toleration operator" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator [rfe_id:4356]Node Placement should reject workload placement configuration with incorrect toleraion operator" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator Replicas should fail to set replicas to 0" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator Replicas should dynamically adjust virt- pod count and PDBs" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator Replicas should update new single-replica CRs with a finalizer and be stable" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator Certificate Rotation [test_id:6257]should accept valid cert rotation parameters" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator Certificate Rotation [test_id:6258]should reject combining deprecated and new cert rotation parameters" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator Certificate Rotation [test_id:6259]should reject CA expires before rotation" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator Certificate Rotation [test_id:6260]should reject Cert expires before rotation" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[Serial][sig-operator]Operator Certificate Rotation [test_id:6261]should reject Cert rotates after CA expires" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute-realtime][Serial]Realtime should start the realtime VM when no mask is specified" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute-realtime][Serial]Realtime should start the realtime VM when realtime mask is specified" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]IOThreads IOThreads Policies [test_id:4122]Should honor shared ioThreadsPolicy for single disk" classname="Tests Suite" time="15.066032418"></testcase>
+      <testcase name="[sig-compute]IOThreads IOThreads Policies [ref_id:2065] should honor auto ioThreadPolicy [test_id:3097]for one CPU" classname="Tests Suite" time="25.208924475"></testcase>
+      <testcase name="[sig-compute]IOThreads IOThreads Policies [ref_id:2065] should honor auto ioThreadPolicy [test_id:3095] for three CPUs" classname="Tests Suite" time="26.233924108"></testcase>
+      <testcase name="[sig-compute]IOThreads IOThreads Policies [test_id:4025]Should place io and emulator threads on the same pcpu with auto ioThreadsPolicy" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:609][sig-compute]VMIheadless [rfe_id:609]Creating a VirtualMachineInstance with headless [test_id:707]should create headless vmi without any issue" classname="Tests Suite" time="13.603335022"></testcase>
+      <testcase name="[rfe_id:609][sig-compute]VMIheadless [rfe_id:609]Creating a VirtualMachineInstance with headless [test_id:737][posneg:positive]should match memory with overcommit enabled" classname="Tests Suite" time="14.54819898"></testcase>
+      <testcase name="[rfe_id:609][sig-compute]VMIheadless [rfe_id:609]Creating a VirtualMachineInstance with headless [test_id:713]should have more memory on pod when headless" classname="Tests Suite" time="23.885586873"></testcase>
+      <testcase name="[rfe_id:609][sig-compute]VMIheadless [rfe_id:609]Creating a VirtualMachineInstance without headless [test_id:714][posneg:negative]should have one vnc graphic device in xml" classname="Tests Suite" time="14.426456142"></testcase>
+      <testcase name="[sig-storage] Hotplug Offline VM Should add volumes on an offline VM with DataVolume" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug Offline VM Should add volumes on an offline VM with PersistentVolume" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug WFFC storage Should be able to add and use WFFC local storage calling endpoints directly" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug WFFC storage Should be able to add and use WFFC local storage using virtctl" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM should add/remove volume with DataVolume immediate attach" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM should add/remove volume with PersistentVolume immediate attach" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM should add/remove volume with DataVolume wait for VM to finish starting" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM should add/remove volume with PersistentVolume wait for VM to finish starting" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM should add/remove volume with DataVolume immediate attach, VMI directly" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM should add/remove volume with PersistentVolume immediate attach, VMI directly" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM should add/remove volume with Block DataVolume immediate attach" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM Should be able to add and remove multiple volumes with VMs" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM Should be able to add and remove multiple volumes with VMIs" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM Should be able to add and remove multiple volumes with VMs and block" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM Should be able to add and remove and re-add multiple volumes with VMs" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM Should be able to add and remove and re-add multiple volumes with VMIs" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM Should be able to add and remove and re-add multiple volumes [Serial] with VMs and block" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM should permanently add hotplug volume when added to VM, but still unpluggable after restart" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM should reject hotplugging a volume with the same name as an existing volume" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] Online VM should allow hotplugging both a filesystem and block volume" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug [storage-req] VMI migration should allow live migration with attached hotplug volumes" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug hostpath should attach a hostpath based volume to running VM" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug iothreads should allow adding and removing hotplugged volumes" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug hostpath-separate-device should attach a hostpath based volume to running VM" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug virtctl should add volume according to options with default" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug virtctl should add volume according to options [test_id:7803]with dry-run" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug virtctl should remove volume according to options with default" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-storage] Hotplug virtctl should remove volume according to options [test_id:7829]with dry-run" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]CloudInitHookSidecars VMI definition with CloudInit hook sidecar [test_id:3167]should successfully start with hook sidecar annotation" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]CloudInitHookSidecars VMI definition with CloudInit hook sidecar [test_id:3168]should call Collect and PreCloudInitIso on the hook sidecar" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]CloudInitHookSidecars VMI definition with CloudInit hook sidecar [test_id:3169]should have cloud-init user-data from sidecar" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Soft reboot Soft reboot VMI when soft reboot vmi with agent connected via API should succeed" classname="Tests Suite" time="72.494053754"></testcase>
+      <testcase name="[crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Soft reboot Soft reboot VMI when soft reboot vmi with ACPI feature enabled via virtctl should succeed" classname="Tests Suite" time="55.393033018"></testcase>
+      <testcase name="[crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Soft reboot Soft reboot VMI when soft reboot vmi after paused and unpaused via virtctl should failed to soft reboot a paused vmi" classname="Tests Suite" time="76.620578921"></testcase>
+      <testcase name="[rfe_id:609][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VMIPreset [rfe_id:613]MatchLabels [test_id:672] Should match multiple VMs via MatchLabel" classname="Tests Suite" time="7.480693785"></testcase>
+      <testcase name="[rfe_id:127][posneg:negative][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Console [rfe_id:127][posneg:negative][crit:medium][vendor:cnv-qe@redhat.com][level:component]A new VirtualMachineInstance with a serial console with an alpine image should return that we are running alpine [test_id:4636]with ContainerDisk" classname="Tests Suite" time="19.100674017"></testcase>
+      <testcase name="[rfe_id:127][posneg:negative][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Console [rfe_id:127][posneg:negative][crit:medium][vendor:cnv-qe@redhat.com][level:component]A new VirtualMachineInstance with a serial console with an alpine image should return that we are running alpine [test_id:4638][storage-req]with Block Disk" classname="Tests Suite" time="4.483449233">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:127][posneg:negative][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Console [rfe_id:127][posneg:negative][crit:medium][vendor:cnv-qe@redhat.com][level:component]A new VirtualMachineInstance with a serial console [test_id:1590]should be able to reconnect to console multiple times" classname="Tests Suite" time="21.57042014"></testcase>
+      <testcase name="[rfe_id:127][posneg:negative][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]Console [rfe_id:127][posneg:negative][crit:medium][vendor:cnv-qe@redhat.com][level:component]A new VirtualMachineInstance with a serial console [test_id:1594]should fail waiting for the expecter" classname="Tests Suite" time="34.912186381"></testcase>
+      <testcase name="[Serial][Sysprep][sig-compute]Syspreped VirtualMachineInstance [ref_id:5105]should create the Admin user as specified in the Autounattend.xml [test_id:5843]Should run echo command on machine using the credentials specified in the Autounattend.xml file" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Live Migration All containers should complete in source virt-launcher pod after migration" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface SSH traffic With VMI having explicit ports specified should ssh to VMI with Istio proxy" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface SSH traffic With VMI having no explicit ports specified should ssh to VMI with Istio proxy" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Inbound traffic With VMI having explicit ports specified request to VMI should reach HTTP server on service declared port on VMI with explicit ports" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Inbound traffic With VMI having explicit ports specified request to VMI should reach HTTP server on service undeclared port on VMI with explicit ports" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Inbound traffic With VMI having no explicit ports specified request to VMI should reach HTTP server on service declared port on VMI with no explicit ports" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Inbound traffic With VMI having no explicit ports specified request to VMI should reach HTTP server on service undeclared port on VMI with no explicit ports" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Inbound traffic With VMI having no explicit ports specified Should not be able to reach service running on Istio restricted port" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Inbound traffic With PeerAuthentication enforcing mTLS With VMI having explicit ports specified client outside mesh should NOT reach VMI HTTP server on service declared port on VMI with explicit ports" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Inbound traffic With PeerAuthentication enforcing mTLS With VMI having explicit ports specified client outside mesh should NOT reach VMI HTTP server on service undeclared port on VMI with explicit ports" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Inbound traffic With PeerAuthentication enforcing mTLS With VMI having no explicit ports specified client outside mesh should NOT reach VMI HTTP server on service declared port on VMI with no explicit ports" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Inbound traffic With PeerAuthentication enforcing mTLS With VMI having no explicit ports specified client outside mesh should NOT reach VMI HTTP server on service undeclared port on VMI with no explicit ports" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Outbound traffic VMI with explicit ports Should be able to reach http server outside of mesh" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Outbound traffic VMI with no explicit ports Should be able to reach http server outside of mesh" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Outbound traffic With Sidecar allowing only registered external services VMI with explicit ports Should not be able to reach http service outside of mesh" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-network] [Serial] Istio Virtual Machine with masquerade interface Outbound traffic With Sidecar allowing only registered external services VMI with no explicit ports Should not be able to reach http service outside of mesh" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:3423][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]VmWatch [test_id:6870]Should update vm status with the proper columns using &#39;kubectl get vm -w&#39;" classname="Tests Suite" time="30.253115119"></testcase>
+      <testcase name="[sig-compute]Subresource Api [rfe_id:1195][crit:medium][vendor:cnv-qe@redhat.com][level:component] Rbac Authorization For Version Command with authenticated user [test_id:3172]should be allowed to access subresource version endpoint" classname="Tests Suite" time="11.207888574"></testcase>
+      <testcase name="[sig-compute]Subresource Api [rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component] VirtualMachine subresource with a restart endpoint [test_id:1304] should restart a VM" classname="Tests Suite" time="24.988679875"></testcase>
+      <testcase name="[sig-compute]Subresource Api [rfe_id:1195][crit:medium][vendor:cnv-qe@redhat.com][level:component] the openapi spec for the subresources [test_id:3177]should be aggregated into the apiserver openapi spec" classname="Tests Suite" time="4.675589315"></testcase>
+      <testcase name="[sig-compute]Subresource Api VirtualMachineInstance subresource Freeze Unfreeze should fail [test_id:7476]Freeze without guest agent" classname="Tests Suite" time="16.132884513"></testcase>
+      <testcase name="[sig-compute]Subresource Api VirtualMachineInstance subresource Freeze Unfreeze commands [test_id:7480]Multi Freeze Unfreeze calls should succeed" classname="Tests Suite" time="45.733276062"></testcase>
+      <testcase name="[rfe_id:588][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]ContainerDisk should [test_id:3247]generate and set Always pull policy" classname="Tests Suite" time="5.94393984"></testcase>
+      <testcase name="[rfe_id:588][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]ContainerDisk should [test_id:3249]pass through Never pull policy to the pod" classname="Tests Suite" time="6.566546746"></testcase>
+      <testcase name="[rfe_id:588][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]ContainerDisk [rfe_id:273][crit:medium][vendor:cnv-qe@redhat.com][level:component]Starting and stopping the same VirtualMachineInstance with ephemeral registry disk [test_id:1463][Conformance] should success multiple times" classname="Tests Suite" time="36.86339515"></testcase>
+      <testcase name="[sig-network] Infosource VMI with 3 interfaces should have the expected entries in vmi status" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]Health Monitoring A VirtualMachineInstance with a watchdog device [test_id:4641]should be shut down when the watchdog expires" classname="Tests Suite" time="32.491621697"></testcase>
+      <testcase name="[sig-compute]MultiQueue MultiQueue Behavior should be able to create a multi-queue VMI when requesting a single vCPU" classname="Tests Suite" time="16.165204817"></testcase>
+      <testcase name="[sig-compute]Controller devices with ephemeral disk a scsi controller should NOT appear if disabled" classname="Tests Suite" time="10.603524602"></testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given cpu/memory in requests/limits should allow float type" classname="Tests Suite" time="17.989168905"></testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given [test_id:1521]should remove VirtualMachineInstance once the VM is marked for deletion [Serial][storage-req]with Filesystem Disk" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given [test_id:1521]should remove VirtualMachineInstance once the VM is marked for deletion [Serial][storage-req]with Block Disk" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given [test_id:1522]should remove owner references on the VirtualMachineInstance if it is orphan deleted" classname="Tests Suite" time="6.489151779"></testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given [test_id:1524]should recreate VirtualMachineInstance if the VirtualMachineInstance&#39;s pod gets deleted" classname="Tests Suite" time="27.850739716"></testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given [test_id:1528]should survive guest shutdown, multiple times" classname="Tests Suite" time="85.660304957"></testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given [test_id:6869]should report an error status when image pull error occurs" classname="Tests Suite" time="50.978025561"></testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given Using virtctl interface Using RunStrategyAlways [test_id:3163]should stop a running VM" classname="Tests Suite" time="20.693275053"></testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given Using virtctl interface Using RunStrategyAlways [test_id:4119]should migrate a running VM" classname="Tests Suite" time="28.723387196"></testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given Using virtctl interface Using RunStrategyRerunOnFailure [test_id:2187] should restart a running VM" classname="Tests Suite" time="21.914372104"></testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given Using virtctl interface Using RunStrategyHalted [test_id:2037] should start a stopped VM" classname="Tests Suite" time="15.74526822"></testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given Using virtctl interface Using RunStrategyManual [test_id:2036] should start" classname="Tests Suite" time="14.619452214"></testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given Using virtctl interface Using RunStrategyManual [test_id:2035] should restart" classname="Tests Suite" time="37.061131884"></testcase>
+      <testcase name="[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given Using virtctl interface Using RunStrategyManual with a failing VMI and the kubevirt.io/keep-launcher-alive-after-failure annotation [test_id:6993]VMI launcher pod compute container should keep running" classname="Tests Suite" time="392.398025414"></testcase>
+      <testcase name="[rfe_id:151][crit:high][vendor:cnv-qe@redhat.com][level:component][sig-compute]CloudInit UserData [rfe_id:151][crit:medium][vendor:cnv-qe@redhat.com][level:component]A new VirtualMachineInstance with cloudInitConfigDrive userDataBase64 source [test_id:3178]should have cloud-init data" classname="Tests Suite" time="21.404790895"></testcase>
+      <testcase name="[rfe_id:151][crit:high][vendor:cnv-qe@redhat.com][level:component][sig-compute]CloudInit UserData [rfe_id:151][crit:medium][vendor:cnv-qe@redhat.com][level:component]A new VirtualMachineInstance with cloudInitNoCloud userData source [test_id:1617]should process provided cloud-init data" classname="Tests Suite" time="26.207898592"></testcase>
+      <testcase name="[rfe_id:151][crit:high][vendor:cnv-qe@redhat.com][level:component][sig-compute]CloudInit UserData [rfe_id:151][crit:medium][vendor:cnv-qe@redhat.com][level:component]A new VirtualMachineInstance [test_id:1618]should take user-data from k8s secret" classname="Tests Suite" time="21.754527848"></testcase>
+      <testcase name="[rfe_id:151][crit:high][vendor:cnv-qe@redhat.com][level:component][sig-compute]CloudInit UserData [rfe_id:151][crit:medium][vendor:cnv-qe@redhat.com][level:component]A new VirtualMachineInstance with cloudInitNoCloud networkData [test_id:3183]should have cloud-init network-config from k8s secret" classname="Tests Suite" time="21.487728982"></testcase>
+      <testcase name="[rfe_id:151][crit:high][vendor:cnv-qe@redhat.com][level:component][sig-compute]CloudInit UserData [rfe_id:151][crit:medium][vendor:cnv-qe@redhat.com][level:component]A new VirtualMachineInstance with cloudInitConfigDrive networkData [test_id:3185]should have cloud-init network-config with NetworkDataBase64 source" classname="Tests Suite" time="20.534284365"></testcase>
+      <testcase name="[rfe_id:151][crit:high][vendor:cnv-qe@redhat.com][level:component][sig-compute]CloudInit UserData [rfe_id:151][crit:medium][vendor:cnv-qe@redhat.com][level:component]A new VirtualMachineInstance with cloudInitConfigDrive networkData [test_id:3187]should have cloud-init userdata and network-config from separate k8s secrets with lowercase labels" classname="Tests Suite" time="21.772366"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access With default kubevirt service accounts should verify permissions on resources are correct for view, edit, and admin [test_id:527]given a vm" classname="Tests Suite" time="8.817963596"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access With default kubevirt service accounts should verify permissions on resources are correct for view, edit, and admin [test_id:529][crit:low]given a vmi replica set" classname="Tests Suite" time="8.631795323"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access With default kubevirt service accounts should verify permissions on resources are correct for view, edit, and admin [test_id:5244]given a vmsnapshotcontent" classname="Tests Suite" time="8.633608414"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access With default kubevirt service accounts should verify permissions on subresources are correct for view, edit, admin and default [test_id:3233]on vm stop" classname="Tests Suite" time="8.615187582"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access With default kubevirt service accounts should verify permissions on subresources are correct for view, edit, admin and default on vmi userlist" classname="Tests Suite" time="8.622902931"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access With default kubevirt service accounts should verify permissions on subresources are correct for view, edit, admin and default on vmi removevolume" classname="Tests Suite" time="8.617891921"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access With default kubevirt service accounts should verify permissions on subresources are correct for view, edit, admin and default on vmi softreboot" classname="Tests Suite" time="8.633013552"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access [rfe_id:2919][crit:high][vendor:cnv-qe@redhat.com][level:component] With regular OpenShift user should fail without admin rights for the project should verify permissions on resources are correct for view, edit, and admin given a vmpool" classname="Tests Suite" time="6.944972598"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access [rfe_id:2919][crit:high][vendor:cnv-qe@redhat.com][level:component] With regular OpenShift user should fail without admin rights for the project should verify permissions on resources are correct for view, edit, and admin [test_id:3235]given a vmi migration" classname="Tests Suite" time="21.392294994"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access [rfe_id:2919][crit:high][vendor:cnv-qe@redhat.com][level:component] With regular OpenShift user should fail without admin rights for the project should verify permissions on resources are correct for view, edit, and admin [test_id:5248]given a vmsrestore" classname="Tests Suite" time="21.333113984"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access [rfe_id:2919][crit:high][vendor:cnv-qe@redhat.com][level:component] With regular OpenShift user should fail without admin rights for the project should verify permissions on resources are correct for subresources [test_id:2921]given a vmi" classname="Tests Suite" time="20.669256306"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access [rfe_id:2919][crit:high][vendor:cnv-qe@redhat.com][level:component] With regular OpenShift user should succeed with admin rights for the project should verify permissions on resources are correct the test user [test_id:2920]given a vmi" classname="Tests Suite" time="22.47431862"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access [rfe_id:2919][crit:high][vendor:cnv-qe@redhat.com][level:component] With regular OpenShift user should succeed with admin rights for the project should verify permissions on resources are correct the test user [test_id:2916]given a vmi preset" classname="Tests Suite" time="21.202797642"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access [rfe_id:2919][crit:high][vendor:cnv-qe@redhat.com][level:component] With regular OpenShift user should succeed with admin rights for the project should verify permissions on resources are correct the test user [test_id:5249]given a vmsnapshot" classname="Tests Suite" time="21.600184544"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access [rfe_id:2919][crit:high][vendor:cnv-qe@redhat.com][level:component] With regular OpenShift user should succeed with admin rights for the project should verify permissions on resources are correct for subresources [test_id:2921]given a vmi" classname="Tests Suite" time="20.382233132"></testcase>
+      <testcase name="[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access [rfe_id:2919][crit:high][vendor:cnv-qe@redhat.com][level:component] With regular OpenShift user should succeed with admin rights for the project should verify permissions on resources are correct for subresources [test_id:2921]given a vmi" classname="Tests Suite" time="21.428586539"></testcase>
+      <testcase name="[sig-compute]HookSidecars [rfe_id:2667][crit:medium][vendor:cnv-qe@redhat.com][level:component] VMI definition with SM BIOS hook sidecar [test_id:3155]should successfully start with hook sidecar annotation" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]HookSidecars [rfe_id:2667][crit:medium][vendor:cnv-qe@redhat.com][level:component] VMI definition with SM BIOS hook sidecar [test_id:3156]should successfully start with hook sidecar annotation for v1alpha2" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]HookSidecars [rfe_id:2667][crit:medium][vendor:cnv-qe@redhat.com][level:component] VMI definition with SM BIOS hook sidecar [test_id:3157]should call Collect and OnDefineDomain on the hook sidecar" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]HookSidecars [rfe_id:2667][crit:medium][vendor:cnv-qe@redhat.com][level:component] VMI definition with SM BIOS hook sidecar [test_id:3158]should update domain XML with SM BIOS properties" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]HookSidecars [rfe_id:2667][crit:medium][vendor:cnv-qe@redhat.com][level:component] VMI definition with SM BIOS hook sidecar should not start with hook sidecar annotation when the version is not provided" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="[sig-compute]HookSidecars [rfe_id:2667][crit:medium][vendor:cnv-qe@redhat.com][level:component] VMI definition [Serial]with sidecar feature gate disabled [test_id:2666]should not start with hook sidecar annotation" classname="Tests Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+  </testsuite>

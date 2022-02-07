@@ -3,7 +3,6 @@ package junit_merge
 import (
 	"os"
 	"path/filepath"
-	"reflect"
 	"testing"
 
 	"github.com/joshdk/go-junit"
@@ -14,26 +13,43 @@ func Test_merge(t *testing.T) {
 		suites [][]junit.Suite
 	}
 	tests := []struct {
-		name          string
-		args          args
-		want          []junit.Suite
-		wantConflicts bool
+		name              string
+		args               args
+		wantTestsWithState []junit.Test
+		wantConflicts      bool
 	}{
 		{
 			name: "test name conflict at merge",
 			args: args{
 				suites: loadTestData("testdata/conflict"),
 			},
-			want:          nil,
-			wantConflicts: true,
+			wantTestsWithState: nil,
+			wantConflicts:      true,
 		},
 		{
 			name: "network data test",
 			args: args{
 				suites: loadTestData("testdata/network"),
 			},
-			want:          nil,
-			wantConflicts: false,
+			wantTestsWithState: nil,
+			wantConflicts:      false,
+		},
+		{
+			name: "successful test should override skipped",
+			args: args{
+				suites: loadTestData("testdata/testoverride"),
+			},
+			wantTestsWithState: []junit.Test{
+				{
+					Name:       "[rfe_id:1177][crit:medium][vendor:cnv-qe@redhat.com][level:component][sig-compute]VirtualMachine A valid VirtualMachine given Using virtctl interface Using RunStrategyAlways [test_id:4119]should migrate a running VM",
+					Classname:  "",
+					Duration:   0,
+					Status:     junit.StatusPassed,
+					Error:      nil,
+					Properties: nil,
+				},
+			},
+			wantConflicts:      true,
 		},
 	}
 	for _, tt := range tests {
@@ -43,8 +59,16 @@ func Test_merge(t *testing.T) {
 				t.Errorf("merge() hasConflicts = %v, wantConflicts %v", hasConflicts, tt.wantConflicts)
 				return
 			}
-			if tt.want != nil && !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("merge() got = %v, want %v", got, tt.want)
+			if tt.wantTestsWithState != nil {
+				testsByName := map[string]junit.Test{}
+				for _, test := range got[0].Tests {
+					testsByName[test.Name] = test
+				}
+				for _, expectedTestWithState := range tt.wantTestsWithState {
+					if expectedTestWithState.Status != testsByName[expectedTestWithState.Name].Status {
+						t.Errorf("merge() got = %v, want %v", testsByName[expectedTestWithState.Name], expectedTestWithState)
+					}
+				}
 			}
 		})
 	}
