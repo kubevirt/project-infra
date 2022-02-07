@@ -1000,6 +1000,7 @@ periodics:
   labels:
     preset-bazel-cache: "true"
     preset-bazel-unnested: "true"
+    preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
   reporter_config:
     slack:
@@ -1050,8 +1051,6 @@ periodics:
         value: /usr/local/bin/kubectl
       - name: IMAGE_PULL_POLICY
         value: Always
-      - name: GIT_ASKPASS
-        value: ../project-infra/hack/git-askpass.sh
       image: quay.io/kubevirtci/golang:v20220110-4643253
       resources:
         requests:
@@ -1059,15 +1058,10 @@ periodics:
       securityContext:
         privileged: true
       volumeMounts:
-      - mountPath: /etc/github
-        name: token
       - mountPath: /etc/pgp
         name: pgp-bot-key
         readOnly: true
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: pgp-bot-key
       secret:
         secretName: pgp-bot-key
