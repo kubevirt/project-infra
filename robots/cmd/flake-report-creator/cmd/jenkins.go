@@ -295,54 +295,70 @@ func runJenkinsReport(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time.Time, cnvVersions []string, jobNames []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) []*flakefinder.JobResult {
-	reports := []*flakefinder.JobResult{}
+func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time.Time, cnvVersions []string, innerJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) []*flakefinder.JobResult {
 
-	reportChan := make(chan []*flakefinder.JobResult)
-	var wg sync.WaitGroup
-
-	for _, cnvVersion := range cnvVersions {
-		jLog.Printf("Filtering jobs for CNV %s matching %s", cnvVersion, opts.jobNamePattern)
-		compile, err := regexp.Compile(fmt.Sprintf(opts.jobNamePattern, cnvVersion))
-		if err != nil {
-			jLog.Fatalf("failed to fetch jobs: %v", err)
-		}
-		for _, jobName := range jobNames {
-			if !compile.MatchString(jobName.Name) {
-				continue
-			}
-
-			wg.Add(1)
-			go func(innerJob gojenkins.InnerJob, ctx context.Context, fLog *log.Entry) {
-				fLog.Printf("Fetching job")
-				job, err := jenkins.GetJob(ctx, innerJob.Name)
-				if err != nil {
-					fLog.Fatalf("failed to fetch job: %v", err)
-				}
-
-				lastBuild, err := job.GetLastBuild(ctx)
-				if err != nil {
-					fLog.Fatalf("failed to fetch last build: %v", err)
-				}
-
-				completedBuilds := fetchCompletedBuildsForJob(startOfReport, endOfReport, lastBuild, job, ctx, fLog)
-				junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(completedBuilds, fLog)
-				reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job, fLog)
-
-				reportChan <- reportsPerJob
-			}(jobName, ctx, jLog.WithField("job", jobName.Name))
-		}
+	completeJobNamePattern := fmt.Sprintf(opts.jobNamePattern, fmt.Sprintf("(%s)", regexp.QuoteMeta(strings.Join(cnvVersions, "|"))))
+	jLog.Printf("Filtering jobs for CNV %s matching %s", strings.Join(cnvVersions, ", "), completeJobNamePattern)
+	compile, err := regexp.Compile(completeJobNamePattern)
+	if err != nil {
+		jLog.Fatalf("failed to fetch jobs: %v", err)
 	}
 
-	go func() {
-		for reportsPerJob := range reportChan {
-			reports = append(reports, reportsPerJob...)
-			wg.Done()
+	filteredJobs := []gojenkins.InnerJob{}
+	for _, innerJob := range innerJobs {
+		if !compile.MatchString(innerJob.Name) {
+			continue
 		}
-	}()
+		filteredJobs = append(filteredJobs, innerJob)
+	}
+	jLog.Printf("%d jobs left after filtering", len(filteredJobs))
+
+	reportChan := make(chan []*flakefinder.JobResult)
+
+	go runReportDataFetches(filteredJobs, jenkins, ctx, startOfReport, endOfReport, reportChan)
+
+	reports := []*flakefinder.JobResult{}
+	for reportsPerJob := range reportChan {
+		reports = append(reports, reportsPerJob...)
+	}
+
+	return reports
+}
+
+func runReportDataFetches(filteredJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context, startOfReport time.Time, endOfReport time.Time, reportChan chan []*flakefinder.JobResult) {
+	var wg sync.WaitGroup
+	wg.Add(len(filteredJobs))
+
+	defer close(reportChan)
+	for _, filteredJob := range filteredJobs {
+		go fetchReportDataForJob(filteredJob, jenkins, ctx, startOfReport, endOfReport, &wg, reportChan)
+	}
 
 	wg.Wait()
-	return reports
+}
+
+func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context, startOfReport time.Time, endOfReport time.Time, wg *sync.WaitGroup, reportChan chan []*flakefinder.JobResult) {
+	defer wg.Done()
+
+	fLog := jLog.WithField("job", filteredJob.Name)
+
+	fLog.Printf("Fetching job")
+	job, err := jenkins.GetJob(ctx, filteredJob.Name)
+	if err != nil {
+		fLog.Fatalf("failed to fetch job: %v", err)
+	}
+
+	fLog.Printf("Fetching last build")
+	lastBuild, err := job.GetLastBuild(ctx)
+	if err != nil {
+		fLog.Fatalf("failed to fetch last build: %v", err)
+	}
+
+	completedBuilds := fetchCompletedBuildsForJob(startOfReport, endOfReport, lastBuild, job, ctx, fLog)
+	junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(completedBuilds, fLog)
+	reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job, fLog)
+
+	reportChan <- reportsPerJob
 }
 
 func fetchCompletedBuildsForJob(startOfReport time.Time, endOfReport time.Time, lastBuild *gojenkins.Build, job *gojenkins.Job, ctx context.Context, fLog *log.Entry) []*gojenkins.Build {
