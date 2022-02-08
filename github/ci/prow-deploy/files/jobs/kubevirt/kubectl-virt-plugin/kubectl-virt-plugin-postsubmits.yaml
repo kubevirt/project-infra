@@ -12,15 +12,13 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
         volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: gcs
           secret:
             secretName: gcs
@@ -38,9 +36,6 @@ postsubmits:
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
-          volumeMounts:
-          - name: token
-            mountPath: /etc/github
           resources:
             requests:
               memory: "1Gi"

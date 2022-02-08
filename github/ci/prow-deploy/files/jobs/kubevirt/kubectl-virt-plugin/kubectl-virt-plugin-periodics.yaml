@@ -19,14 +19,13 @@ periodics:
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror: "true"
+    preset-github-credentials: "true"
     preset-shared-images: "true"
   cluster: ibm-prow-jobs
   spec:
     containers:
       - image: quay.io/kubevirtci/kubectl-virt-builder@sha256:49045b159c711cf307bdabeb5fd8889dae26a44753ec8c74a3e32fa3ba5fcde1
         env:
-          - name: GIT_ASKPASS
-            value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
           - name: GITHUB_USER
             value: kubevirt-bot
           - name: GITHUB_EMAIL
@@ -43,10 +42,3 @@ periodics:
         resources:
           requests:
             memory: "1Gi"
-        volumeMounts:
-          - name: token
-            mountPath: /etc/github
-    volumes:
-      - name: token
-        secret:
-          secretName: oauth-token

@@ -43,6 +43,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-dind-enabled: "true"
+      preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
@@ -58,15 +59,8 @@ presubmits:
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
-        volumeMounts:
-        - name: github-token
-          mountPath: /etc/github
         resources:
           requests:
             memory: "1Gi"
           limits:
             memory: "1Gi"
-      volumes:
-      - name: github-token
-        secret:
-          secretName: oauth-token
