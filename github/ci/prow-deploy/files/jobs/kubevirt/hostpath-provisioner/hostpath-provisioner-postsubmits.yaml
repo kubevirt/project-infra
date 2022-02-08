@@ -90,6 +90,7 @@ postsubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "false"
+      preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "false"
     spec:
       containers:
@@ -114,10 +115,3 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
-        volumeMounts:
-        - name: token
-          mountPath: /etc/github
-      volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
