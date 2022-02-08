@@ -25,7 +25,6 @@ import (
 	"net/http"
 	"os"
 	"regexp"
-	"strings"
 	"sync"
 	"time"
 
@@ -40,8 +39,8 @@ import (
 
 const (
 	defaultJenkinsBaseUrl        = "https://main-jenkins-csb-cnvqe.apps.ocp-c1.prod.psi.redhat.com/"
-	defaultJenkinsJobNamePattern = "^test-kubevirt-cnv-%s-(compute|network|operator|storage)(-[a-z0-9]+)?$"
-	defaultCNVVersions           = "4.10"
+	defaultJenkinsJobNamePattern = "^test-kubevirt-cnv-4.10-(compute|network|operator|storage)(-[a-z0-9]+)?$"
+	defaultArtifactFileNameRegex = "^((merged|partial)\\.)?junit\\.functest(\\.[0-9]+)?\\.xml$"
 	JenkinsReportTemplate        = `
 <html>
 <head>
@@ -197,7 +196,8 @@ const (
 )
 
 var (
-	fileNameRegex  = regexp.MustCompile("^((merged|partial)\\.)?junit\\.functest(\\.[0-9]+)?\\.xml$")
+	fileNameRegex  = regexp.MustCompile(defaultArtifactFileNameRegex)
+	jobNameRegexes []*regexp.Regexp
 	opts           jenkinsOptions
 	jenkinsCommand = &cobra.Command{
 		Use:   "jenkins",
@@ -206,14 +206,14 @@ var (
 
 Examples:
 
-# create a report over all kubevirt testing jenkins jobs matching the default CNV versions for the last 14 days
+# create a report over all kubevirt testing jenkins jobs matching the default job name pattern for the last 14 days
 $ flake-report-creator jenkins
 
 # create a report as above for the last 3 days
 $ flake-report-creator jenkins --startFrom=72h
 
-# create a report over kubevirt testing jobs for compute and storage ocs for the default CNV versions for the last 24 hours
-$ flake-report-creator jenkins --startFrom=24h --jobNamePattern='^test-kubevirt-cnv-%s-(compute|storage)-ocs$'
+# create a report over kubevirt testing jobs for compute and storage ocs for the given job name pattern for the last 24 hours
+$ flake-report-creator jenkins --startFrom=24h --jobNamePattern='^test-kubevirt-cnv-4\.10-(compute|storage)-ocs$'
 `,
 		RunE: runJenkinsReport,
 	}
@@ -221,20 +221,22 @@ $ flake-report-creator jenkins --startFrom=24h --jobNamePattern='^test-kubevirt-
 )
 
 func init() {
+	log.SetFormatter(&log.JSONFormatter{})
 	opts = jenkinsOptions{}
 	jenkinsCommand.PersistentFlags().StringVar(&opts.endpoint, "endpoint", defaultJenkinsBaseUrl, "jenkins base url")
-	jenkinsCommand.PersistentFlags().StringVar(&opts.jobNamePattern, "jobNamePattern", defaultJenkinsJobNamePattern, "jenkins job name pattern to filter jobs for for the report (note the pattern that is used for injecting the CNV version)")
-	jenkinsCommand.PersistentFlags().StringVar(&opts.cnvVersions, "cnvVersions", defaultCNVVersions, "comma separated list of cnv versions to report")
+	jenkinsCommand.PersistentFlags().StringArrayVar(&opts.jobNamePatterns, "jobNamePattern", []string{defaultJenkinsJobNamePattern}, "jenkins job name go regex pattern to filter jobs for the report. May appear multiple times.")
+	jenkinsCommand.PersistentFlags().StringVar(&opts.artifactFileNameRegex, "artifactFileNamePattern", defaultArtifactFileNameRegex, "artifact file name go regex pattern to fetch junit artifact files")
 	jenkinsCommand.PersistentFlags().DurationVar(&opts.startFrom, "startFrom", 14*24*time.Hour, "The duration when the report data should be fetched")
 	jenkinsCommand.PersistentFlags().IntVar(&opts.maxConnsPerHost, "maxConnsPerHost", 5, "The maximum number of connections to the endpoint (to avoid getting rate limited)")
 }
 
 type jenkinsOptions struct {
-	endpoint        string
-	jobNamePattern  string
-	startFrom       time.Duration
-	cnvVersions     string
-	maxConnsPerHost int
+	endpoint              string
+	jobNamePatterns       []string
+	startFrom             time.Duration
+	cnvVersions           string
+	maxConnsPerHost       int
+	artifactFileNameRegex string
 }
 
 type JenkinsReportParams struct {
@@ -260,7 +262,26 @@ func runJenkinsReport(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("invalid arguments provided: %v", err)
 	}
 
-	cnvVersions := strings.Split(opts.cnvVersions, ",")
+	fileNameRegex, err = regexp.Compile(opts.artifactFileNameRegex)
+	if err != nil {
+		_, err2 := fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString(), err)
+		if err2 != nil {
+			return err2
+		}
+		return fmt.Errorf("invalid arguments provided: %v", err)
+	}
+
+	for _, jobNamePattern := range opts.jobNamePatterns {
+		jobNameRegex, err := regexp.Compile(jobNamePattern)
+		if err != nil {
+			_, err2 := fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString(), err)
+			if err2 != nil {
+				return err2
+			}
+			jLog.Fatalf("failed to fetch jobs: %v", err)
+		}
+		jobNameRegexes = append(jobNameRegexes, jobNameRegex)
+	}
 
 	ctx := context.Background()
 
@@ -288,27 +309,23 @@ func runJenkinsReport(cmd *cobra.Command, args []string) error {
 	startOfReport := time.Now().Add(-1 * opts.startFrom)
 	endOfReport := time.Now()
 
-	junitReportsFromMatchingJobs := fetchJunitReportsFromMatchingJobs(startOfReport, endOfReport, cnvVersions, jobNames, jenkins, ctx)
+	junitReportsFromMatchingJobs := fetchJunitReportsFromMatchingJobs(startOfReport, endOfReport, jobNames, jenkins, ctx)
 	writeReportToFile(startOfReport, endOfReport, junitReportsFromMatchingJobs)
 
 	return nil
 }
 
-func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time.Time, cnvVersions []string, innerJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) []*flakefinder.JobResult {
-
-	completeJobNamePattern := fmt.Sprintf(opts.jobNamePattern, fmt.Sprintf("(%s)", regexp.QuoteMeta(strings.Join(cnvVersions, "|"))))
-	jLog.Printf("Filtering jobs for CNV %s matching %s", strings.Join(cnvVersions, ", "), completeJobNamePattern)
-	compile, err := regexp.Compile(completeJobNamePattern)
-	if err != nil {
-		jLog.Fatalf("failed to fetch jobs: %v", err)
-	}
+func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time.Time, innerJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) []*flakefinder.JobResult {
 
 	filteredJobs := []gojenkins.InnerJob{}
-	for _, innerJob := range innerJobs {
-		if !compile.MatchString(innerJob.Name) {
-			continue
+	for _, jobNameRegex := range jobNameRegexes {
+		jLog.Printf("Filtering for jobs matching %s", jobNameRegex)
+		for _, innerJob := range innerJobs {
+			if !jobNameRegex.MatchString(innerJob.Name) {
+				continue
+			}
+			filteredJobs = append(filteredJobs, innerJob)
 		}
-		filteredJobs = append(filteredJobs, innerJob)
 	}
 	jLog.Printf("%d jobs left after filtering", len(filteredJobs))
 
@@ -353,14 +370,14 @@ func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Je
 		fLog.Fatalf("failed to fetch last build: %v", err)
 	}
 
-	completedBuilds := fetchCompletedBuildsForJob(startOfReport, endOfReport, lastBuild, job, ctx, fLog)
+	completedBuilds := fetchCompletedBuildsForJob(startOfReport, lastBuild, job, ctx, fLog)
 	junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(completedBuilds, fLog)
 	reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job, fLog)
 
 	reportChan <- reportsPerJob
 }
 
-func fetchCompletedBuildsForJob(startOfReport time.Time, endOfReport time.Time, lastBuild *gojenkins.Build, job *gojenkins.Job, ctx context.Context, fLog *log.Entry) []*gojenkins.Build {
+func fetchCompletedBuildsForJob(startOfReport time.Time, lastBuild *gojenkins.Build, job *gojenkins.Job, ctx context.Context, fLog *log.Entry) []*gojenkins.Build {
 	fLog.Printf("Fetching completed builds")
 	var completedBuilds []*gojenkins.Build
 	for i := lastBuild.GetBuildNumber(); i > 0; i-- {
