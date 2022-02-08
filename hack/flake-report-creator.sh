@@ -6,7 +6,7 @@ docker run -v /etc/pki:/etc/pki -v /etc/ssl:/etc/ssl \
         -e GOOGLE_APPLICATION_CREDENTIALS="$GOOGLE_APPLICATION_CREDENTIALS" \
         -v "${tmp_dir}:/tmp:Z" \
         --network host \
-        quay.io/kubevirtci/flake-report-creator:v20220204-cc4b2a56 \
+        quay.io/kubevirtci/flake-report-creator:v20220208-fc7f17c2 \
         --overwrite --outputFile=/tmp/report.html \
         "$@"
 
