@@ -21,6 +21,7 @@ package cmd
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"os"
@@ -228,6 +229,7 @@ func init() {
 	jenkinsCommand.PersistentFlags().StringVar(&opts.artifactFileNameRegex, "artifactFileNamePattern", defaultArtifactFileNameRegex, "artifact file name go regex pattern to fetch junit artifact files")
 	jenkinsCommand.PersistentFlags().DurationVar(&opts.startFrom, "startFrom", 14*24*time.Hour, "The duration when the report data should be fetched")
 	jenkinsCommand.PersistentFlags().IntVar(&opts.maxConnsPerHost, "maxConnsPerHost", 5, "The maximum number of connections to the endpoint (to avoid getting rate limited)")
+	jenkinsCommand.PersistentFlags().BoolVar(&opts.insecureSkipVerify, "insecureSkipVerify", false, "Whether the tls verification should be skipped (this is insecure!)")
 }
 
 type jenkinsOptions struct {
@@ -237,6 +239,7 @@ type jenkinsOptions struct {
 	cnvVersions           string
 	maxConnsPerHost       int
 	artifactFileNameRegex string
+	insecureSkipVerify    bool
 }
 
 type JenkinsReportParams struct {
@@ -289,6 +292,9 @@ func runJenkinsReport(cmd *cobra.Command, args []string) error {
 	client := &http.Client{
 		Transport: &http.Transport{
 			MaxConnsPerHost: opts.maxConnsPerHost,
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: opts.insecureSkipVerify,
+			},
 		},
 	}
 
