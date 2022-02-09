@@ -340,6 +340,8 @@ presubmits:
           env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcs/service-account.json
+          - name: GITHUB_TOKEN
+            value: "/etc/github/oauth"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
