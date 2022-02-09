@@ -84,5 +84,5 @@ $ ./hack/flake-report-creator.sh jenkins
 **Example 2:** we want to create a report over the compute and network jobs from jenkins for the default CNV versions over the last 24 hours.
 
 ```bash
-$ ./hack/flake-report-creator.sh jenkins --startFrom=24h --jobNamePattern='^test-kubevirt-cnv-%s-(compute|storage)-ocs$'
+$ ./hack/flake-report-creator.sh jenkins --startFrom=24h --jobNamePattern='^test-kubevirt-cnv-4\.10-(compute|storage)-ocs$'
 ```
