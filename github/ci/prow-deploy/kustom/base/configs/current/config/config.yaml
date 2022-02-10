@@ -543,8 +543,6 @@ presets:
   env:
   - name: GIT_ASKPASS
     value: ../project-infra/hack/git-askpass.sh
-  - name: GITHUB_TOKEN
-    value: "/etc/github/oauth"
   volumes:
   - name: github-token
     secret:
