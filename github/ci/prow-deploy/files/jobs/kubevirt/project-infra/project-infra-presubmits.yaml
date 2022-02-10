@@ -611,6 +611,8 @@ presubmits:
     - org: kubernetes
       repo: test-infra
       base_ref: master
+    # TODO: make it required again after https://github.com/kubernetes/test-infra/pull/25175 is fixed
+    optional: true
     spec:
       containers:
       - image: gcr.io/k8s-prow/transfigure:v20210224-afd05eb414
@@ -702,4 +704,4 @@ presubmits:
         - --only=nmstate/kubernetes-nmstate
         - --token=/etc/github/oauth
       restartPolicy: Never
-     
+
