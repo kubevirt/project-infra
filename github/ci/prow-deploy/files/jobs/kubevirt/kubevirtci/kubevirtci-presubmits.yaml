@@ -177,6 +177,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     max_concurrency: 2
     name: check-provision-k8s-1.20
+    optional: true
     spec:
       containers:
       - command:
@@ -229,6 +230,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.20-cgroupsv2
+    optional: true
     spec:
       containers:
       - command:
