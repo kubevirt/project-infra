@@ -5,7 +5,7 @@ format:
 	gofmt -w .
 
 test:
-	bazel test //robots/cmd/flakefinder:* //robots/pkg/flakefinder:*
+	bazel test //robots/cmd/flakefinder:* //robots/pkg/flakefinder/...:*
 
 verify:
 	../build-verify.sh

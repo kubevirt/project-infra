@@ -111,7 +111,21 @@ load("@com_adobe_rules_gitops//gitops:repositories.bzl", "rules_gitops_repositor
 
 rules_gitops_repositories()
 
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
+
+go_repository(
+    name = "com_github_bazelbuild_buildtools",
+    importpath = "github.com/bazelbuild/buildtools",
+    sum = "h1:OhVnC5zU5QHQ+DUSmgOTPqPnJnrlFmrh2S0HKeHmpbw=",
+    version = "v0.0.0-20200922170545-10384511ce98",
+)
+
+go_repository(
+    name = "com_github_bndr_gojenkins",
+    importpath = "github.com/bndr/gojenkins",
+    sum = "h1:TWyJI6ST1qDAfH33DQb3G4mD8KkrBfyfSUoZBHQAvPI=",
+    version = "v1.1.0",
+)
 
 gazelle_dependencies()
 

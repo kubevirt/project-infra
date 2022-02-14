@@ -40,6 +40,13 @@ type JobFailures struct {
 	Failures    int
 }
 
+type Jobs []*Job
+func (jobs Jobs) Len() int 		{ return len(jobs) }
+func (jobs Jobs) Swap(i, j int) { jobs[i], jobs[j] = jobs[j], jobs[i]}
+
+type ByBuildNumber struct{ Jobs }
+func (b ByBuildNumber) Less(i, j int) bool { return b.Jobs[i].BuildNumber < b.Jobs[j].BuildNumber }
+
 func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport time.Time, org string, repo string, startOfReport time.Time) Params {
 	data := map[string]map[string]*Details{}
 	headers := []string{}
@@ -136,6 +143,12 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 	}
 
 	sort.Strings(headers)
+
+	for _, jobsByNames := range data {
+		for _, details := range jobsByNames {
+			sort.Sort(ByBuildNumber{details.Jobs})
+		}
+	}
 
 	testsSortedByRelevance := SortTestsByRelevance(data, tests)
 	parameters := Params{
