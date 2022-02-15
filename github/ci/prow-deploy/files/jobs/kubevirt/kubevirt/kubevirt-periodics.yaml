@@ -945,6 +945,7 @@ periodics:
   labels:
     preset-bazel-cache: "true"
     preset-bazel-unnested: "true"
+    preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
   max_concurrency: 1
   name: periodic-kubevirt-performance-cluster-scale-density-test
@@ -995,8 +996,6 @@ periodics:
         value: Always
       - name: PERFSCALE_WORKLOAD
         value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-density-scale.yaml
-      - name: GIT_ASKPASS
-        value: ../project-infra/hack/git-askpass.sh
       image: quay.io/kubevirtci/golang:v20220110-4643253
       name: ""
       resources:
