@@ -26,6 +26,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strconv"
 	"sync"
 	"time"
 
@@ -390,7 +391,16 @@ func fetchCompletedBuildsForJob(startOfReport time.Time, lastBuild *gojenkins.Bu
 		fLog.Printf("Fetching build no %d", i)
 		build, err := job.GetBuild(ctx, i)
 		if err != nil {
-			fLog.Fatalf("failed to fetch build data: %v", err)
+			fLog.Warnf("failed to fetch build data for build no %d: %v", i, err)
+			// fetch stringly typed error code produced by jenkins client
+			statusCode, err2 := strconv.Atoi(err.Error())
+			if err2 != nil {
+				fLog.Fatalf("Failed to get status code from error %v: %v", err, err2)
+			}
+			if statusCode == http.StatusNotFound {
+				continue
+			}
+			fLog.Fatalf("failed to fetch build data for build no %d: %v", i, err)
 		}
 
 		if build.GetResult() != "SUCCESS" &&
