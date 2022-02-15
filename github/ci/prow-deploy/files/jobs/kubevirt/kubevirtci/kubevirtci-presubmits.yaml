@@ -1,7 +1,6 @@
 presubmits:
   kubevirt/kubevirtci:
   - always_run: false
-    optional: true
     annotations:
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
     cluster: prow-workloads
@@ -16,6 +15,7 @@ presubmits:
       sriov-pod: "true"
     max_concurrency: 1
     name: check-up-kind-1.19-sriov
+    optional: true
     spec:
       affinity:
         podAntiAffinity:
@@ -167,33 +167,6 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-  - always_run: true
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      timeout: 3h0m0s
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-    max_concurrency: 2
-    name: check-provision-k8s-1.20
-    optional: true
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.20 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20220110-c066ff5
-        name: ""
-        resources:
-          requests:
-            memory: 8Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
     decorate: true
