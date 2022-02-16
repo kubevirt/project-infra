@@ -329,6 +329,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-gcs-credentials: "true"
     cluster: prow-workloads
     spec:
       nodeSelector:
@@ -338,8 +339,6 @@ presubmits:
       containers:
         - image: quay.io/kubevirtci/prow-deploy:v20210924-4c47964
           env:
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /etc/gcs/service-account.json
           - name: GITHUB_TOKEN
             value: "/etc/github/oauth"
           command:
@@ -356,9 +355,6 @@ presubmits:
             limits:
               memory: "29Gi"
           volumeMounts:
-          - name: gcs
-            mountPath: /etc/gcs
-            readOnly: true
           - name: molecule-docker
             mountPath: /tmp/prow-deploy-molecule
           - name: pgp-bot-key
@@ -367,9 +363,6 @@ presubmits:
           - name: unprivileged-token
             mountPath: /etc/github
       volumes:
-      - name: gcs
-        secret:
-          secretName: gcs
       - name: molecule-docker
         emptyDir: {}
       - name: pgp-bot-key
