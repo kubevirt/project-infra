@@ -21,6 +21,55 @@ Selecting the right builds:
 - Only shows test results for all lanes where a test at least failed once on one of the found lanes
 - Only take prow jobs into account which were run on the commit which got merged
 
+Reports entry page
+------------------
+
+The [flakefinder reports entry page](https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/index.html) shows an overview over all projects for which flakefinder reports are generated.
+
+How to read flakefinder reports
+-------------------------------
+
+Once you select a project, you are taken to the report overview page.
+
+### Project report overview page
+
+![Flakefinder reports entrypage for project](ff_overview.png)
+
+1. daily rolling window report (updated hourly), covers all PRs merged today
+1. daily report for yesterday, covers all PRs merged yesterday
+1. weekly report from yesterday, covers all PRs merged from six days before yesterday until yesterday
+
+_Not shown here: flakefinder reports for last four weeks (updated once a week)_
+
+### Project report details page
+
+In a nutshell the daily report of day x covers all merged PRs from the start of the day before until the runtime of the report.
+
+Each report contains rows for all tests where at least one test failed on any lane for all PRs that were merged at or after the report date. Rows are sorted according to severity of test failures (i.e the more test fails, the more the test appears at the top of the report
+
+Columns are:
+1. link index
+2. test name
+3. lane aggregation for the test under scope \
+   the numbers are: \
+   red: number of fails \
+   green: number of passes \
+   gray: number of skips
+
+**Example: Flakefinder weekly report for KubeVirt**
+
+![Flakefinder weekly report for KubeVirt](ff_weekly.png)
+
+#### Build popup
+When you click on the number where test failures occurred a popup opens:
+
+![The build popup](ff_build_popup.png)
+
+Here failed test runs are marked as red, also links to the Prow job details page and to the GitHub PR are available.
+
+_Note: The runtime of the reports can be found [here](https://prow.apps.ovirt.org/?job=*flakefinder*)._
+
+
 How to build flakefinder
 -------------------------
 
@@ -36,7 +85,7 @@ Prerequisites:
 
 #### Create a job definition using [`mkpj`](https://github.com/kubernetes/test-infra/tree/master/prow/cmd/mkpj)
 
-See job configurations [here](/github/ci/prow/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml), use one of the job names from that file.
+See job configurations [here](../../../github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml), use one of the job names from that file.
 
     mkpj --config-path config.yaml --job-config-path jobs/kubevirt/kubevirt-periodics.yaml --job periodic-publish-flakefinder-xxx-report > /tmp/prowjob.yaml
 
