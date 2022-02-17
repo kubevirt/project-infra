@@ -551,6 +551,20 @@ presets:
   volumeMounts:
     - name: github-token
       mountPath: /etc/github
+- labels:
+    preset-gcs-credentials: "true"
+  env:
+  - name: GOOGLE_APPLICATION_CREDENTIALS
+    value: /etc/gcs/service-account.json
+  volumes:
+  - name: gcs
+    secret:
+      secretName: gcs
+      defaultMode: 0400
+  volumeMounts:
+  - name: gcs
+    mountPath: /etc/gcs
+    readOnly: true
 # default preset with no labels, settings common to all jobs
 - env:
   - name: GOPROXY

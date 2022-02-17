@@ -200,26 +200,17 @@ periodics:
   interval: 24h
   annotations:
     testgrid-create-test-group: "false"
+  labels:
+    preset-gcs-credentials: "true"
   decorate: true
   cluster: ibm-prow-jobs
   spec:
     containers:
       - image: quay.io/kubevirtci/indexpagecreator:v20210428-c869d6302-dirty
-        env:
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /etc/gcs/service-account.json
         command:
           - "/app/robots/cmd/indexpagecreator/app.binary"
         args:
           - --dry-run=false
-        volumeMounts:
-          - name: gcs
-            mountPath: /etc/gcs
-            readOnly: true
-    volumes:
-      - name: gcs
-        secret:
-          secretName: gcs
 
 - name: periodic-kubevirt-mirror-uploader
   cron: "05 7 * * *"
@@ -227,6 +218,7 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   labels:
+    preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   decorate: true
   decoration_config:
@@ -249,9 +241,6 @@ periodics:
       runAsUser: 0
     containers:
       - image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
-        env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /etc/gcs/service-account.json
         command: ["/bin/sh"]
         args:
           - "-c"
@@ -262,17 +251,9 @@ periodics:
             hack/git-pr.sh -c "bazelisk run //robots/cmd/uploader:uploader -- -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ../kubevirt -r kubevirt -L lgtm,approved,release-note-none -T main &&
             hack/git-pr.sh -c "bazelisk run //robots/cmd/uploader:uploader -- -workspace ${PWD}/../containerized-data-importer/WORKSPACE -dry-run=false" -p ../containerized-data-importer -r containerized-data-importer -T main -L lgtm,approved,release-note-none
             hack/git-pr.sh -c "bazelisk run //robots/cmd/uploader:uploader -- -workspace ${PWD}/WORKSPACE -dry-run=false" -p ${PWD} -r project-infra -T main -L lgtm,approved,release-note-none
-        volumeMounts:
-        - name: gcs
-          mountPath: /etc/gcs
-          readOnly: true
         resources:
           requests:
             memory: "200Mi"
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
 - name: periodic-kubevirtci-cluster-patchversion-updater
   interval: 24h
   max_concurrency: 1
@@ -665,14 +646,13 @@ periodics:
       base_ref: main
       workdir: true
   labels:
+    preset-gcs-credentials: "true"
     preset-shared-images: "true"
   cluster: prow-workloads
   spec:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
         env:
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /etc/gcs/service-account.json
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
           - name: ISTIO_VERSIONS
@@ -683,14 +663,6 @@ periodics:
         resources:
           requests:
             memory: "2Gi"
-        volumeMounts:
-          - name: gcs
-            mountPath: /etc/gcs
-            readOnly: false
-    volumes:
-      - name: gcs
-        secret:
-          secretName: gcs
 
 - name: periodic-project-infra-prow-job-image-bump
   cron: "30 0 * * *"
