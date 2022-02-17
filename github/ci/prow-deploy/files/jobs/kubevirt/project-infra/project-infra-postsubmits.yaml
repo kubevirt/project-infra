@@ -779,6 +779,50 @@ postsubmits:
         - name: pgp-bot-key
           secret:
             secretName: pgp-bot-key
+    - name: post-project-infra-loki-deployment
+      always_run: false
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      run_if_changed: "github/ci/services/loki.*"
+      branches:
+      - ^main$
+      labels:
+        preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
+      cluster: ibm-prow-jobs
+      spec:
+        securityContext:
+          runAsUser: 0
+        containers:
+        - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - |
+              # install yq
+              curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+              chmod +x ./yq && mv ./yq /usr/local/bin/yq
+
+              source ./hack/manage-secrets.sh
+              decrypt_secrets
+              extract_secret 'kubeconfig' ~/.kube/config
+
+              ./github/ci/services/loki/hack/deploy.sh production-control-plane
+          resources:
+            requests:
+              memory: "8Gi"
+            limits:
+              memory: "8Gi"
+          volumeMounts:
+          - name: pgp-bot-key
+            mountPath: /etc/pgp
+            readOnly: true
+        volumes:
+        - name: pgp-bot-key
+          secret:
+            secretName: pgp-bot-key
     - name: post-project-infra-sippy-deployment
       always_run: false
       annotations:
