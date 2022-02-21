@@ -4,15 +4,13 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   labels:
+    preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   decorate: true
   cluster: ibm-prow-jobs
   spec:
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       command:
       - "/app/robots/cmd/flakefinder/app.binary"
       args:
@@ -22,28 +20,18 @@ periodics:
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
       - --repo=cluster-network-addons-operator
       - --skip_results_before_start_of_report=false
-      volumeMounts:
-      - name: gcs
-        mountPath: /etc/gcs
-        readOnly: true
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
 - name: periodic-publish-cnao-flakefinder-daily-report
   cron: "15 1 * * *"
   annotations:
     testgrid-create-test-group: "false"
   labels:
+    preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   decorate: true
   cluster: ibm-prow-jobs
   spec:
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       command:
       - "/app/robots/cmd/flakefinder/app.binary"
       args:
@@ -53,28 +41,18 @@ periodics:
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
       - --repo=cluster-network-addons-operator
       - --skip_results_before_start_of_report=false
-      volumeMounts:
-      - name: gcs
-        mountPath: /etc/gcs
-        readOnly: true
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
 - name: periodic-publish-cnao-flakefinder-four-weekly-report
   interval: 168h
   annotations:
     testgrid-create-test-group: "false"
   labels:
+    preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   decorate: true
   cluster: ibm-prow-jobs
   spec:
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       command:
       - "/app/robots/cmd/flakefinder/app.binary"
       args:
@@ -84,11 +62,3 @@ periodics:
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
       - --repo=cluster-network-addons-operator
       - --skip_results_before_start_of_report=false
-      volumeMounts:
-      - name: gcs
-        mountPath: /etc/gcs
-        readOnly: true
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
