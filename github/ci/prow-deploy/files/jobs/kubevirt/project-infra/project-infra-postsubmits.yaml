@@ -808,6 +808,7 @@ postsubmits:
               source ./hack/manage-secrets.sh
               decrypt_secrets
               extract_secret 'kubeconfig' ~/.kube/config
+              extract_secret 'gcsServiceAccount' ./github/ci/services/loki/secrets/production-control-plane/gcs/service-account.json
 
               ./github/ci/services/loki/hack/deploy.sh production-control-plane
           resources:

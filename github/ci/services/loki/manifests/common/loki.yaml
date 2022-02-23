@@ -190,7 +190,10 @@ spec:
               mountPath: /etc/loki
             - name: storage
               mountPath: "/data"
-              subPath: 
+              subPath:
+            - name: gcs
+              mountPath: /etc/gcs
+              readOnly: true
           ports:
             - name: http-metrics
               containerPort: 3100
@@ -215,6 +218,8 @@ spec:
           securityContext:
             readOnlyRootFilesystem: true
           env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/gcs/service-account.json
       nodeSelector:
         {}
       affinity:
@@ -228,3 +233,6 @@ spec:
             secretName: loki-config
         - name: storage
           emptyDir: {}
+        - name: gcs
+          secret:
+            secretName: gcs
