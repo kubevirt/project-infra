@@ -12,8 +12,9 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-gcs-credentials: "true"
         preset-github-credentials: "true"
+        preset-kubevirtci-quay-credential: "true"
       annotations:
         testgrid-create-test-group: "false"
         rehearsal.allowed: "true"
@@ -21,15 +22,8 @@ postsubmits:
       spec:
         nodeSelector:
           type: bare-metal-external
-        volumes:
-          - name: gcs
-            secret:
-              secretName: gcs
         containers:
           - image: gcr.io/k8s-testimages/kubekins-e2e@sha256:8c80c98d035a0f285ad49b964e5d0b62004844f3340407367841618e80e1503c
-            env:
-              - name: GOOGLE_APPLICATION_CREDENTIALS
-                value: /etc/gcs/service-account.json
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -37,11 +31,6 @@ postsubmits:
               - >
                 cat $QUAY_PASSWORD | docker login quay.io --username $(cat $QUAY_USER) --password-stdin &&
                 make push REPO=quay.io/kubevirt IMAGE=csi-driver TAG=latest
-            volumeMounts:
-              # docker-in-docker needs privileged mode
-              - name: gcs
-                mountPath: /etc/gcs
-                readOnly: false
             securityContext:
               privileged: true
             resources:

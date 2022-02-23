@@ -172,14 +172,13 @@ postsubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-gcs-credentials: "true"
       preset-github-credentials: "true"
+      preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
         env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /etc/gcs/service-account.json
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
         command:
@@ -195,11 +194,3 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
-        volumeMounts:
-        - name: gcs
-          mountPath: /etc/gcs
-          readOnly: true
-      volumes:
-      - name: gcs
-        secret:
-          secretName: gcs
