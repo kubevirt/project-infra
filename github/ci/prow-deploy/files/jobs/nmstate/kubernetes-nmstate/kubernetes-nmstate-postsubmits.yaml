@@ -3,6 +3,7 @@ postsubmits:
     - name: publish-kubernetes-nmstate
       skip_branches:
         - gh-pages
+        - release*
       always_run: true
       annotations:
         testgrid-create-test-group: "false"
@@ -18,7 +19,6 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       branches:
         - main
-        - release*
       cluster: ibm-prow-jobs
       spec:
         containers:
