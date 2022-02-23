@@ -1,12 +1,12 @@
 orgs:
   kubevirt:
     admins:
+      - brianmcarey
       - caniszczyk
       - codificat
       - davidvossel
       - dhiller
       - fabiand
-      - fgimenez
       - kubevirt-bot
       - rmohr
       - stoniko
@@ -41,7 +41,6 @@ orgs:
       - beekhof
       - booxter
       - borod108
-      - brianmcarey
       - brybacki
       - crobinso
       - cwilkers
@@ -65,6 +64,7 @@ orgs:
       - ezrasilvera
       - fabiendupont
       - fedepaol
+      - fgimenez
       - fossedihelm
       - fromanirh
       - gabrielecerami
