@@ -16,6 +16,7 @@ periodics:
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror: "true"
+    preset-gcs-credentials: "true"
   extra_refs:
    - org: kubevirt
      repo: libguestfs-appliance
@@ -25,9 +26,6 @@ periodics:
   spec:
     containers:
     - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -45,11 +43,3 @@ periodics:
       resources:
         requests:
           memory: "2Gi"
-      volumeMounts:
-        - name: gcs
-          mountPath: /etc/gcs
-          readOnly: false
-    volumes:
-      - name: gcs
-        secret:
-          secretName: gcs

@@ -18,10 +18,6 @@ postsubmits:
       spec:
         nodeSelector:
           type: bare-metal-external
-        volumes:
-        - name: gcs
-          secret:
-            secretName: gcs
         containers:
         - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
           command:

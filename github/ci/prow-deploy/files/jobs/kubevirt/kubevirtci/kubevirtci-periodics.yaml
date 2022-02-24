@@ -14,14 +14,13 @@ periodics:
       base_ref: main
       workdir: true
   labels:
+    preset-gcs-credentials: "true"
     preset-shared-images: "true"
   cluster: prow-workloads
   spec:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
         env:
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /etc/gcs/service-account.json
           - name: OS
             value: CentOS_8_Stream
           - name: BUCKET_DIR
@@ -40,14 +39,6 @@ periodics:
         resources:
           requests:
             memory: "2Gi"
-        volumeMounts:
-          - name: gcs
-            mountPath: /etc/gcs
-            readOnly: false
-    volumes:
-      - name: gcs
-        secret:
-          secretName: gcs
 - name: periodic-kubevirtci-bump-kubevirt
   cron: "0 */12 * * *"
   annotations:
@@ -66,18 +57,12 @@ periodics:
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror: "true"
+    preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   cluster: prow-workloads
   spec:
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
     containers:
     - image: quay.io/kubevirtci/pr-creator:v20210920-0ef32ec
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       command: ["/bin/sh", "-c"]
       args:
       - |
@@ -85,11 +70,6 @@ periodics:
         if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=bump-kubevirtci --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
           git-pr.sh -c "cd ../kubevirt && make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -p ../kubevirt -T main
         fi
-      volumeMounts:
-      # docker-in-docker needs privileged mode
-      - name: gcs
-        mountPath: /etc/gcs
-        readOnly: false
       securityContext:
         privileged: true
       resources:

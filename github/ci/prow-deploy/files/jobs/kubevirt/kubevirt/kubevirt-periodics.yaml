@@ -5,6 +5,7 @@ periodics:
   cron: 5 * * * *
   decorate: true
   labels:
+    preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   name: periodic-kubevirt-flakefinder-hourly-rolling-window-report
   spec:
@@ -19,26 +20,16 @@ periodics:
       - --pr_base_branch=main
       command:
       - /app/robots/cmd/flakefinder/app.binary
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
       name: ""
       resources: {}
-      volumeMounts:
-      - mountPath: /etc/gcs
-        name: gcs
-        readOnly: true
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
 - annotations:
     testgrid-create-test-group: "false"
   cluster: ibm-prow-jobs
   cron: 45 0 * * *
   decorate: true
   labels:
+    preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   name: periodic-publish-kubevirt-flakefinder-weekly-report
   spec:
@@ -53,26 +44,16 @@ periodics:
       - --pr_base_branch=main
       command:
       - /app/robots/cmd/flakefinder/app.binary
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
       name: ""
       resources: {}
-      volumeMounts:
-      - mountPath: /etc/gcs
-        name: gcs
-        readOnly: true
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
 - annotations:
     testgrid-create-test-group: "false"
   cluster: ibm-prow-jobs
   cron: 25 0 * * *
   decorate: true
   labels:
+    preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   name: periodic-publish-kubevirt-flakefinder-daily-report
   spec:
@@ -87,20 +68,9 @@ periodics:
       - --pr_base_branch=main
       command:
       - /app/robots/cmd/flakefinder/app.binary
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
       name: ""
       resources: {}
-      volumeMounts:
-      - mountPath: /etc/gcs
-        name: gcs
-        readOnly: true
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
 - annotations:
     testgrid-create-test-group: "false"
   cluster: ibm-prow-jobs
@@ -110,6 +80,7 @@ periodics:
     timeout: 4h0m0s
   interval: 168h
   labels:
+    preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   name: periodic-publish-kubevirt-flakefinder-four-weekly-report
   spec:
@@ -124,20 +95,9 @@ periodics:
       - --pr_base_branch=main
       command:
       - /app/robots/cmd/flakefinder/app.binary
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
       name: ""
       resources: {}
-      volumeMounts:
-      - mountPath: /etc/gcs
-        name: gcs
-        readOnly: true
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
 - annotations:
     testgrid-alert-email: bodnopoz@redhat.com, kubevirtci-sysprep-test@googlegroups.com
     testgrid-alert-stale-results-hours: "1"
@@ -392,6 +352,7 @@ periodics:
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
+    preset-gcs-credentials: "true"
     preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-shared-images: "true"
@@ -442,8 +403,6 @@ periodics:
         export GIT_ASKPASS=$PWD/../project-infra/hack/git-askpass.sh
         hack/publish-staging.sh
       env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       - name: DOCKER_PREFIX
         value: quay.io/kubevirt
       image: quay.io/kubevirtci/golang:v20220110-c066ff5
@@ -453,15 +412,8 @@ periodics:
           memory: 8Gi
       securityContext:
         privileged: true
-      volumeMounts:
-      - mountPath: /etc/gcs
-        name: gcs
     nodeSelector:
       type: bare-metal-external
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
 - annotations:
     testgrid-create-test-group: "false"
   cluster: prow-workloads
@@ -477,6 +429,7 @@ periodics:
   labels:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
+    preset-gcs-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-shared-images: "true"
   max_concurrency: 1
@@ -522,8 +475,6 @@ periodics:
         gsutil cp ./_out/commit gs://$bucket_dir/commit-arm64
         gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest-arm64
       env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       - name: DOCKER_PREFIX
         value: quay.io/kubevirt
       - name: BUILD_ARCH
@@ -535,15 +486,8 @@ periodics:
           memory: 8Gi
       securityContext:
         privileged: true
-      volumeMounts:
-      - mountPath: /etc/gcs
-        name: gcs
     nodeSelector:
       type: bare-metal-external
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
 - annotations:
     testgrid-create-test-group: "false"
   cluster: ibm-prow-jobs
@@ -554,6 +498,7 @@ periodics:
     timeout: 1h0m0s
   labels:
     preset-docker-mirror-proxy: "true"
+    preset-gcs-credentials: "true"
     preset-shared-images: "true"
   max_concurrency: 1
   name: periodic-kubevirt-clean-nightly-build
@@ -572,21 +517,11 @@ periodics:
             gsutil -m rm -r ${nightly_build_dir};
           fi;
         done
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
       name: ""
       resources:
         requests:
           memory: 200Mi
-      volumeMounts:
-      - mountPath: /etc/gcs
-        name: gcs
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
 - annotations:
     testgrid-dashboards: kubevirt-periodics
   cluster: prow-workloads
@@ -725,6 +660,7 @@ periodics:
     preset-bazel-unnested: "true"
     preset-dind-enabled: "true"
     preset-docker-mirror: "true"
+    preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   max_concurrency: 1
   name: bump-kubevirt-rpms-weekly
@@ -735,9 +671,6 @@ periodics:
       - -c
       - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
         -p ../kubevirt -T main -R
-      env:
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/service-account.json
       image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
       name: ""
       resources:
@@ -745,13 +678,6 @@ periodics:
           memory: 8Gi
       securityContext:
         privileged: true
-      volumeMounts:
-      - mountPath: /etc/gcs
-        name: gcs
-    volumes:
-    - name: gcs
-      secret:
-        secretName: gcs
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
