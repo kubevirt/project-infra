@@ -17,21 +17,15 @@ postsubmits:
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-gcs-credentials: "true"
         preset-github-credentials: "true"
+        preset-kubevirtci-quay-credential: "true"
       cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
-        volumes:
-        - name: gcs
-          secret:
-            secretName: gcs
         containers:
         - image: quay.io/kubevirtci/golang:v20220110-c066ff5
-          env:
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /etc/gcs/service-account.json
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
@@ -41,11 +35,7 @@ postsubmits:
             ./publish.sh &&
             echo "$(git tag --points-at HEAD | head -1)" > latest &&
             gsutil cp ./latest gs://kubevirt-prow/release/kubevirt/kubevirtci/latest
-          volumeMounts:
           # docker-in-docker needs privileged mode
-          - name: gcs
-            mountPath: /etc/gcs
-            readOnly: false
           securityContext:
             privileged: true
           resources:

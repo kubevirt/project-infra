@@ -17,6 +17,7 @@ postsubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-gcs-credentials: "true"
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
     spec:
@@ -27,8 +28,6 @@ postsubmits:
           value: quay.io/kubevirt
         - name: GH_CLI_VERSION
           value: "1.5.0"
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /etc/gcs/service-account.json
         - name: GITHUB_TOKEN_PATH
           value: /etc/github/oauth
         - name: GITHUB_REPOSITORY
@@ -50,14 +49,6 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
-        volumeMounts:
-        - name: gcs
-          mountPath: /etc/gcs
-          readOnly: true
-      volumes:
-      - name: gcs
-        secret:
-          secretName: gcs
   - name: push-update-testing-manifests-on-kubevirt-tag
     branches:
     - ^v0\.3[46]\.[0-9]+$
@@ -72,12 +63,10 @@ postsubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-gcs-credentials: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
-        env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /etc/gcs/service-account.json
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
@@ -96,14 +85,6 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
-        volumeMounts:
-        - name: gcs
-          mountPath: /etc/gcs
-          readOnly: true
-      volumes:
-      - name: gcs
-        secret:
-          secretName: gcs
   - name: push-kubevirt-main
     branches:
     - main
@@ -120,6 +101,7 @@ postsubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-gcs-credentials: "true"
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
     spec:
@@ -128,8 +110,6 @@ postsubmits:
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /etc/gcs/service-account.json
         - name: GIT_USER_NAME
           value: kubevirt-bot
         - name: GITHUB_TOKEN_PATH
@@ -143,14 +123,6 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
-        volumeMounts:
-        - name: gcs
-          mountPath: /etc/gcs
-          readOnly: true
-      volumes:
-      - name: gcs
-        secret:
-          secretName: gcs
   - name: push-kubevirt-goveralls
     cluster: ibm-prow-jobs
     branches:
