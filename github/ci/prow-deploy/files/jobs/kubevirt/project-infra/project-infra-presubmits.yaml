@@ -445,6 +445,43 @@ presubmits:
               memory: "16Gi"
             limits:
               memory: "16Gi"
+  - name: pull-project-infra-loki-deploy-test
+    optional: false
+    run_if_changed: "github/ci/services/loki/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - |
+              # install kind
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
+              chmod +x ./kind && mv ./kind /usr/local/bin/kind
+
+              # create test cluster
+              kind create cluster --image quay.io/kubevirtci/kind:v1.21.1
+
+              ./github/ci/services/loki/hack/deploy.sh testing
+
+              bazelisk test //github/ci/services/loki/e2e:go_default_test --test_output=all --test_arg=-test.v
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          resources:
+            requests:
+              memory: "16Gi"
+            limits:
+              memory: "16Gi"
   - name: pull-project-infra-sippy-deploy-test
     optional: false
     run_if_changed: "github/ci/services/sippy/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
