@@ -210,11 +210,11 @@ spec:
             initialDelaySeconds: 45
           resources:
             limits:
-              cpu: 200m
-              memory: 256Mi
+              cpu: 700m
+              memory: 3Gi
             requests:
-              cpu: 100m
-              memory: 128Mi
+              cpu: 500m
+              memory: 2Gi
           securityContext:
             readOnlyRootFilesystem: true
           env:
