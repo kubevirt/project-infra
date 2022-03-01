@@ -803,71 +803,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 1
-    name: pull-kubevirt-e2e-kind-1.19-vgpu
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/bash
-        - -ce
-        - |
-          automation/test.sh
-        env:
-        - name: TARGET
-          value: kind-1.19-vgpu
-        - name: GIMME_GO_VERSION
-          value: 1.13.8
-        image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
-        name: ""
-        resources:
-          requests:
-            memory: 18Gi
-        securityContext:
-          privileged: true
-        volumeMounts:
-        - mountPath: /lib/modules
-          name: modules
-          readOnly: true
-        - mountPath: /sys/fs/cgroup
-          name: cgroup
-        - mountPath: /dev/vfio/
-          name: vfio
-      nodeSelector:
-        hardwareSupport: gpu
-      volumes:
-      - hostPath:
-          path: /lib/modules
-          type: Directory
-        name: modules
-      - hostPath:
-          path: /sys/fs/cgroup
-          type: Directory
-        name: cgroup
-      - hostPath:
-          path: /dev/vfio/
-          type: Directory
-        name: vfio
-  - always_run: true
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      grace_period: 30m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-    max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.23-vgpu
-    optional: true
     skip_branches:
       - release-\d+\.\d+
-    skip_report: true
     spec:
       containers:
         - command:
