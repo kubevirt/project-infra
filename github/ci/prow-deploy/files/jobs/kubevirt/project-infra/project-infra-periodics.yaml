@@ -240,7 +240,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirt/builder:2202010936-905b3aae5
+      - image: quay.io/kubevirt/builder:2203011706-a6a84d038
         command: ["/bin/sh"]
         args:
           - "-c"
@@ -278,7 +278,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirt/builder:2202010936-905b3aae5
+      - image: quay.io/kubevirt/builder:2203011706-a6a84d038
         command: ["/bin/sh"]
         args:
           - "-c"
@@ -501,7 +501,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirt/builder:2202010936-905b3aae5
+      - image: quay.io/kubevirt/builder:2203011706-a6a84d038
         command: ["/bin/sh"]
         args:
           - "-c"
