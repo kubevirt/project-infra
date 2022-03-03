@@ -358,7 +358,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.22 && export KUBEVIRT_STORAGE=nfs && export CDI_E2E_SKIP=Destructive && automation/test.sh"
+            - "export TARGET=k8s-1.22 && export KUBEVIRT_DEPLOY_NFS_CSI=true && export KUBEVIRT_STORAGE=nfs && export CDI_E2E_SKIP=Destructive && automation/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
