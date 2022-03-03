@@ -16,3 +16,6 @@ presubmits:
         resources:
           requests:
             memory: "500Mi"
+        env:
+          - name: GIMME_GO_VERSION
+            value: "1.16"
