@@ -2042,11 +2042,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-e2e-k8s-1.22-sig-monitoring
-    optional: true
     run_if_changed: ^pkg/monitoring/.*|tests/monitoring/.*$
     skip_branches:
     - release-\d+\.\d+
-    skip_report: true
     spec:
       containers:
       - command:
