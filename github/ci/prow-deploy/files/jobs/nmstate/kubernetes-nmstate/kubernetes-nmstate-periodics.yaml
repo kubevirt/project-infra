@@ -7,7 +7,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
+    - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-g9b95333c9
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -42,7 +42,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
+    - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-g9b95333c9
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -77,7 +77,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
+    - image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-g9b95333c9
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
