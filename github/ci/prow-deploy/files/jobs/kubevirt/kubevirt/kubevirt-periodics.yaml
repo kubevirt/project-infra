@@ -837,6 +837,8 @@ periodics:
         value: /usr/local/bin/kubectl
       - name: IMAGE_PULL_POLICY
         value: Always
+      - name: PERFSCALE_WORKLOAD
+        value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-100.yaml
       image: quay.io/kubevirtci/golang:v20220211-d7d6c59
       name: ""
       resources:
@@ -901,8 +903,17 @@ periodics:
         # login quay.io
         cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
 
-        # run test
-        ./automation/perfscale-test.sh
+        # run test 200
+        PERFSCALE_WORKLOAD=$PERFSCALE_WORKLOAD_TWO_HUNDRED ./automation/perfscale-test.sh
+        sleep 10m
+
+        # run test 400
+        PERFSCALE_WORKLOAD=$PERFSCALE_WORKLOAD_FOUR_HUNDRED ./automation/perfscale-test.sh
+        sleep 10m
+
+        # run test 600
+        PERFSCALE_WORKLOAD=$PERFSCALE_WORKLOAD_SIX_HUNDRED ./automation/perfscale-test.sh
+        sleep 30s
       env:
       - name: TARGET
         value: external
@@ -920,8 +931,12 @@ periodics:
         value: /usr/local/bin/kubectl
       - name: IMAGE_PULL_POLICY
         value: Always
-      - name: PERFSCALE_WORKLOAD
-        value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-density-scale.yaml
+      - name: PERFSCALE_WORKLOAD_TWO_HUNDRED
+        value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-200.yaml
+      - name: PERFSCALE_WORKLOAD_FOUR_HUNDRED
+        value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-400.yaml
+      - name: PERFSCALE_WORKLOAD_SIX_HUNDRED
+        value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-600.yaml
       image: quay.io/kubevirtci/golang:v20220211-d7d6c59
       name: ""
       resources:
