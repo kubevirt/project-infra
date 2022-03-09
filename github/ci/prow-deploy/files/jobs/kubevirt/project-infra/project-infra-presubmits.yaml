@@ -643,6 +643,7 @@ presubmits:
     - org: kubernetes
       repo: test-infra
       base_ref: master
+    optional: true
     spec:
       containers:
       - image: gcr.io/k8s-prow/transfigure:v20210224-afd05eb414
