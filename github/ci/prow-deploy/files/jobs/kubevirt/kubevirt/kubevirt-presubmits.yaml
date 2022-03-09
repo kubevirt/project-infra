@@ -401,7 +401,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -419,6 +419,7 @@ presubmits:
     max_concurrency: 2
     name: pull-kubevirt-e2e-k8s-1.21-sig-performance
     optional: true
+    run_if_changed: ^pkg/virt-api/.*|^pkg/virt-handler/.*|^pkg/virt-controller/.*|^pkg/virt-launcher/.*
     skip_branches:
     - release-\d+\.\d+
     spec:
