@@ -3,8 +3,10 @@
 
 approvers:
 - cwilkers
+- davidvossel
 - fabiand
 - rmohr
+- vladikr
 options: {}
 reviewers:
 - cwilkers
