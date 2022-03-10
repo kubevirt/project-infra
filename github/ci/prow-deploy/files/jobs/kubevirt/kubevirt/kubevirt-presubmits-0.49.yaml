@@ -29,7 +29,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.21-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -65,7 +65,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.21-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -101,7 +101,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.21-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -137,7 +137,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.21-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -150,80 +150,7 @@ presubmits:
     branches:
     - release-0.49
     cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.20-sig-network
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-sig-network-0.49
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.20-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    branches:
-    - release-0.49
-    cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.20-sig-storage
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-sig-storage-0.49
-    optional: true
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.20-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: true
-    branches:
-    - release-0.49
-    cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.20-sig-compute
+    context: pull-kubevirt-e2e-k8s-1.23-sig-compute-cgroupsv2
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -235,7 +162,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-sig-compute-0.49
+    name: pull-kubevirt-e2e-k8s-1.23-sig-compute-cgroupsv2-0.49
     spec:
       containers:
       - command:
@@ -245,82 +172,10 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.20-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: true
-    branches:
-    - release-0.49
-    cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.20-operator
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 7h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-operator-0.49
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.20-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: true
-    branches:
-    - release-0.49
-    cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.20-cgroupsv2
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 7h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-cgroupsv2-0.49
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.20-sig-compute
+          value: k8s-1.23-sig-compute
         - name: KUBEVIRT_CGROUPV2
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -329,11 +184,11 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-0.49
     cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.20-cgroupsv2-rook-ceph
+    context: pull-kubevirt-e2e-k8s-1.23-sig-storage-cgroupsv2
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -345,7 +200,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-cgroupsv2-rook-ceph-0.49
+    name: pull-kubevirt-e2e-k8s-1.23-sig-storage-cgroupsv2-0.49
     optional: true
     spec:
       containers:
@@ -356,14 +211,10 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.20
+          value: k8s-1.23-sig-storage
         - name: KUBEVIRT_CGROUPV2
           value: "true"
-        - name: KUBEVIRT_E2E_SKIP
-          value: Multus|SRIOV|GPU|Macvtap|MediatedDevices
-        - name: KUBEVIRT_STORAGE
-          value: rook-ceph-default
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -376,7 +227,7 @@ presubmits:
     branches:
     - release-0.49
     cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.20-sig-compute-nonroot
+    context: pull-kubevirt-e2e-k8s-1.23-sig-compute-nonroot
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -388,7 +239,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-sig-compute-nonroot-0.49
+    name: pull-kubevirt-e2e-k8s-1.23-sig-compute-nonroot-0.49
     spec:
       containers:
       - command:
@@ -398,12 +249,12 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.20-sig-compute
+          value: k8s-1.23-sig-compute
         - name: FEATURE_GATES
-          value: NonRoot
+          value: NonRootExperimental
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -416,7 +267,7 @@ presubmits:
     branches:
     - release-0.49
     cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.20-sig-network-nonroot
+    context: pull-kubevirt-e2e-k8s-1.23-sig-network-nonroot
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -428,7 +279,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-sig-network-nonroot-0.49
+    name: pull-kubevirt-e2e-k8s-1.23-sig-network-nonroot-0.49
     optional: true
     spec:
       containers:
@@ -439,12 +290,12 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.20-sig-network
+          value: k8s-1.23-sig-network
         - name: FEATURE_GATES
-          value: NonRoot
+          value: NonRootExperimental
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -457,7 +308,7 @@ presubmits:
     branches:
     - release-0.49
     cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.20-sig-storage-nonroot
+    context: pull-kubevirt-e2e-k8s-1.23-sig-storage-nonroot
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -469,7 +320,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-sig-storage-nonroot-0.49
+    name: pull-kubevirt-e2e-k8s-1.23-sig-storage-nonroot-0.49
     optional: true
     spec:
       containers:
@@ -480,12 +331,12 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.20-sig-storage
+          value: k8s-1.23-sig-storage
         - name: FEATURE_GATES
-          value: NonRoot
+          value: NonRootExperimental
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -498,7 +349,7 @@ presubmits:
     branches:
     - release-0.49
     cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.20-operator-nonroot
+    context: pull-kubevirt-e2e-k8s-1.23-operator-nonroot
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -510,7 +361,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-operator-nonroot-0.49
+    name: pull-kubevirt-e2e-k8s-1.23-operator-nonroot-0.49
     spec:
       containers:
       - command:
@@ -520,12 +371,12 @@ presubmits:
         - ' automation/test.sh'
         env:
         - name: TARGET
-          value: k8s-1.20-sig-operator
+          value: k8s-1.23-sig-operator
         - name: FEATURE_GATES
-          value: NonRoot
+          value: NonRootExperimental
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -561,7 +412,7 @@ presubmits:
         env:
         - name: TARGET
           value: windows2016
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -619,10 +470,10 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: 1.13.8
         - name: FEATURE_GATES
-          value: NonRoot
+          value: NonRootExperimental
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -703,10 +554,10 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: 1.13.8
         - name: FEATURE_GATES
-          value: NonRoot
+          value: NonRootExperimental
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -785,7 +636,7 @@ presubmits:
           value: kind-1.22-sriov
         - name: GIMME_GO_VERSION
           value: 1.13.8
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -819,7 +670,7 @@ presubmits:
     branches:
     - release-0.49
     cluster: prow-workloads
-    context: pull-kubevirt-e2e-kind-1.19-vgpu
+    context: pull-kubevirt-e2e-kind-1.23-vgpu
     decorate: true
     decoration_config:
       grace_period: 30m0s
@@ -829,7 +680,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 1
-    name: pull-kubevirt-e2e-kind-1.19-vgpu-0.49
+    name: pull-kubevirt-e2e-kind-1.23-vgpu-0.49
     spec:
       containers:
       - command:
@@ -840,10 +691,10 @@ presubmits:
           automation/test.sh
         env:
         - name: TARGET
-          value: kind-1.19-vgpu
+          value: kind-1.23-vgpu
         - name: GIMME_GO_VERSION
           value: 1.13.8
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -898,14 +749,14 @@ presubmits:
           automation/test.sh
         env:
         - name: FEATURE_GATES
-          value: NonRoot
+          value: NonRootExperimental
         - name: NONROOT
           value: "true"
         - name: TARGET
           value: kind-1.19-vgpu
         - name: GIMME_GO_VERSION
           value: 1.13.8
-        image: quay.io/kubevirtci/golang:v20210316-d295087
+        image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -958,7 +809,7 @@ presubmits:
         - /bin/sh
         - -c
         - TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -988,7 +839,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1018,7 +869,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make verify-rpm-deps
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1048,7 +899,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make deps-sync && hack/verify-generate.sh
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1080,7 +931,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make gosec
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1108,7 +959,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1139,7 +990,7 @@ presubmits:
         env:
         - name: BUILD_ARCH
           value: crossbuild-aarch64
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1167,7 +1018,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1200,7 +1051,7 @@ presubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1236,7 +1087,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1264,7 +1115,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1293,7 +1144,7 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX="docker.io/kubevirt"
           && make olm-verify
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1321,7 +1172,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make prom-rules-verify
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1349,7 +1200,7 @@ presubmits:
         - /bin/sh
         - -c
         - hack/check-unassigned-tests.sh
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1383,7 +1234,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1420,7 +1271,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-ipv6-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1456,7 +1307,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1492,7 +1343,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1501,7 +1352,47 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
+    branches:
+    - release-0.49
+    cluster: prow-workloads
+    context: pull-kubevirt-e2e-k8s-1.21-sig-compute-migrations
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.21-sig-compute-migrations-0.49
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.21-sig-compute-migrations
+        - name: KUBEVIRT_NUM_NODES
+          value: "3"
+        - name: KUBEVIRT_STORAGE
+          value: rook-ceph-default
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
     branches:
     - release-0.49
     cluster: prow-workloads
@@ -1518,7 +1409,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-sig-compute-migrations-0.49
-    optional: true
     spec:
       containers:
       - command:
@@ -1528,12 +1418,97 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.22-sig-compute
-        - name: KUBEVIRT_E2E_FOCUS
-          value: Migration
+          value: k8s-1.22-sig-compute-migrations
         - name: KUBEVIRT_NUM_NODES
           value: "3"
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        - name: KUBEVIRT_STORAGE
+          value: rook-ceph-default
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.49
+    cluster: prow-workloads
+    context: pull-kubevirt-e2e-k8s-1.23-sig-compute-migrations
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.23-sig-compute-migrations-0.49
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.23-sig-compute-migrations
+        - name: KUBEVIRT_NUM_NODES
+          value: "3"
+        - name: KUBEVIRT_STORAGE
+          value: rook-ceph-default
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    branches:
+    - release-0.49
+    cluster: prow-workloads
+    context: pull-kubevirt-e2e-k8s-1.23-sig-compute-migrations-nonroot
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.23-sig-compute-migrations-nonroot-0.49
+    optional: false
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.23-sig-compute-migrations
+        - name: KUBEVIRT_NUM_NODES
+          value: "3"
+        - name: KUBEVIRT_STORAGE
+          value: "rook-ceph-default"
+        - name: FEATURE_GATES
+          value: NonRootExperimental
+        - name: KUBEVIRT_NONROOT
+          value: "true"
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1569,7 +1544,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1605,7 +1580,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-compute-realtime
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1632,6 +1607,7 @@ presubmits:
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
       preset-shared-images: "true"
     max_concurrency: 1
@@ -1681,9 +1657,7 @@ presubmits:
           value: crossbuild-aarch64
         - name: KUBEVIRT_E2E_FOCUS
           value: arm64
-        - name: GIT_ASKPASS
-          value: ../project-infra/hack/git-askpass.sh
-        image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1691,21 +1665,16 @@ presubmits:
         securityContext:
           privileged: true
         volumeMounts:
-        - mountPath: /etc/github
-          name: token
         - mountPath: /etc/pgp
           name: pgp-bot-key
           readOnly: true
       nodeSelector:
         type: bare-metal-external
       volumes:
-      - name: token
-        secret:
-          secretName: oauth-token
       - name: pgp-bot-key
         secret:
           secretName: pgp-bot-key
-  - always_run: false
+  - always_run: true
     branches:
     - release-0.49
     cluster: prow-workloads
@@ -1722,7 +1691,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-network-0.49
-    optional: true
     spec:
       containers:
       - command:
@@ -1733,7 +1701,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1742,7 +1710,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-0.49
     cluster: prow-workloads
@@ -1759,7 +1727,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-storage-0.49
-    optional: true
     spec:
       containers:
       - command:
@@ -1770,7 +1737,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1779,7 +1746,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-0.49
     cluster: prow-workloads
@@ -1796,7 +1763,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-compute-0.49
-    optional: true
     spec:
       containers:
       - command:
@@ -1807,7 +1773,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1816,7 +1782,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-0.49
     cluster: prow-workloads
@@ -1833,7 +1799,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-operator-0.49
-    optional: true
     spec:
       containers:
       - command:
@@ -1844,7 +1809,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
@@ -1879,7 +1844,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-monitoring
-        image: quay.io/kubevirtci/bootstrap:v20210906-994b913
+        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
           requests:
