@@ -803,6 +803,7 @@ presubmits:
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      vgpu: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.23-vgpu
     skip_branches:
@@ -837,6 +838,16 @@ presubmits:
               name: vfio
       nodeSelector:
         hardwareSupport: gpu
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: vgpu
+                    operator: In
+                    values:
+                      - "true"
       volumes:
         - hostPath:
             path: /lib/modules
@@ -862,6 +873,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      vgpu: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.19-vgpu-nonroot
     optional: true
@@ -901,6 +913,16 @@ presubmits:
           name: vfio
       nodeSelector:
         hardwareSupport: gpu
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: vgpu
+                    operator: In
+                    values:
+                      - "true"
       volumes:
       - hostPath:
           path: /lib/modules
