@@ -459,6 +459,10 @@ orgs:
         default_branch: main
         description: Terraform provider for Kubevirt platform
         has_projects: true
+      tekton-tasks-operator:
+        default_branch: main
+        description: Operator which deploys kubevirt-tekton-tasks in cluster
+        has_projects: true
       test-infra-containers:
         description: All containers which are useful for testing (tgtd, cinder, ceph, gluster, ...)
         has_projects: true
@@ -775,6 +779,22 @@ orgs:
           - serenamarie125
           - beanh66
         privacy: closed
+      tekton-tasks-operator-admin:
+        description: "Administration group to maintain settings in tekton operator repo"
+        maintainers:
+          - dominikholler
+          - ksimon1
+        privacy: closed
+        repos:
+          tekton-tasks-operator: admin
+      tekton-tasks-operator:
+        description: "People working in tekton operator repo"
+        maintainers:
+          - dominikholler
+          - ksimon1
+        privacy: closed
+        repos:
+          tekton-tasks-operator: write
       web-ui-maintainers:
         description: ""
         maintainers:
