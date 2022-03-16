@@ -182,8 +182,11 @@ presubmits:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.21 && ../provision.sh
+        - -ce
+        - |
+          curl -L https://github.com/kubevirt/kubevirtci/pull/762.patch | git apply
+          export PHASES=linux; (cd cluster-provision/k8s/1.21; ../provision.sh)
+          export PHASES=k8s; export CHECK_CLUSTER=true; (cd cluster-provision/k8s/1.21; ../provision.sh)
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
@@ -209,8 +212,11 @@ presubmits:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.21 && CGROUPV2=true ../provision.sh
+        - -ce
+        - |
+          curl -L https://github.com/kubevirt/kubevirtci/pull/762.patch | git apply
+          export PHASES=linux; (cd cluster-provision/k8s/1.21; CGROUPV2=true ../provision.sh)
+          export PHASES=k8s; export CHECK_CLUSTER=true; (cd cluster-provision/k8s/1.21; CGROUPV2=true ../provision.sh)        
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
@@ -260,8 +266,11 @@ presubmits:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.22 && ../provision.sh
+        - -ce
+        - |
+          curl -L https://github.com/kubevirt/kubevirtci/pull/762.patch | git apply
+          export PHASES=linux; (cd cluster-provision/k8s/1.22; ../provision.sh)
+          export PHASES=k8s; export CHECK_CLUSTER=true; (cd cluster-provision/k8s/1.22; ../provision.sh)
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
@@ -286,8 +295,11 @@ presubmits:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.22-ipv6 && ../provision.sh
+        - -ce
+        - |
+          curl -L https://github.com/kubevirt/kubevirtci/pull/762.patch | git apply
+          export PHASES=linux; (cd cluster-provision/k8s/1.22-ipv6; ../provision.sh)
+          export PHASES=k8s; export CHECK_CLUSTER=true; (cd cluster-provision/k8s/1.22-ipv6; ../provision.sh)
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
@@ -312,8 +324,11 @@ presubmits:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.23 && ../provision.sh
+        - -ce
+        - |
+          curl -L https://github.com/kubevirt/kubevirtci/pull/762.patch | git apply
+          export PHASES=linux; (cd cluster-provision/k8s/1.23; ../provision.sh)
+          export PHASES=k8s; export CHECK_CLUSTER=true; (cd cluster-provision/k8s/1.23; ../provision.sh)
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
