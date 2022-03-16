@@ -2,7 +2,7 @@ FROM quay.io/kubevirtci/bootstrap:v20210906-994b913
 
 RUN git clone https://github.com/kubernetes/test-infra.git && \
   cd test-infra && \
-  git checkout 689941423e01abb85b7ca6b9e317e3d035c60098 && \
+  git checkout 7c2afcc68a46adf07723596f88f625a03a6e8ef2 && \
   bazelisk build //prow/cmd/config-bootstrapper && \
   cp bazel-bin/prow/cmd/config-bootstrapper/config-bootstrapper_/config-bootstrapper /usr/local/bin && \
   config-bootstrapper --help && \
