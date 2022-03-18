@@ -34,7 +34,6 @@ filters:
     - vladikr
     - xpivarc
     - yuhaohaoyu
-    - zcahana
   pkg/virt-api/.*:
     reviewers:
     - matthewcarleton
