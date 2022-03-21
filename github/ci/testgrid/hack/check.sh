@@ -18,7 +18,7 @@ generate_config(){
 
     mkdir -p "${testgrid_dir}/${testgrid_subdir}"
 
-    /ko-app/configurator \
+    "${KO_DATA_PATH}/configurator" \
         --prow-config "${prow_config}" \
         --prow-job-config "${job_config}" \
         --output-yaml \
