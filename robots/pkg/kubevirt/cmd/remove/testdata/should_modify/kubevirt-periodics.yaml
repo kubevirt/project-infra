@@ -1218,7 +1218,7 @@ periodics:
         # Push and deploy kubevirt
         make cluster-sync
 
-        FUNC_TEST_ARGS="--noColor --seed=42" make perftest
+        FUNC_TEST_ARGS="--no-color --seed=42" make perftest
       env:
       - name: KUBEVIRT_PROVIDER
         value: k8s-1.21
