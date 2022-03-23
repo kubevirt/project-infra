@@ -29,8 +29,8 @@ periodics:
           repo:kubevirt/kubevirtci
       - --token=/etc/github/oauth
       - |-
-        --comment=/retest
-        This bot automatically retries jobs that failed/flaked on approved PRs.
+        --comment=/retest-required
+        This bot automatically retries required jobs that failed/flaked on approved PRs.
         Silence the bot with an `/lgtm cancel` or `/hold` comment for consistent failures.
       - --template
       - --ceiling=1
