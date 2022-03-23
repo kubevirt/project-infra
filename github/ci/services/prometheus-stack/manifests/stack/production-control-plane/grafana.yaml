@@ -4932,8 +4932,8 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 19,
-            "w": 3,
+            "h": 4,
+            "w": 2,
             "x": 0,
             "y": 0
           },
@@ -4971,6 +4971,42 @@ data:
           "type": "gauge"
         },
         {
+          "alert": {
+            "alertRuleTags": {},
+            "conditions": [
+              {
+                "evaluator": {
+                  "params": [
+                    20
+                  ],
+                  "type": "gt"
+                },
+                "operator": {
+                  "type": "and"
+                },
+                "query": {
+                  "params": [
+                    "C",
+                    "5m",
+                    "now"
+                  ]
+                },
+                "reducer": {
+                  "params": [],
+                  "type": "avg"
+                },
+                "type": "query"
+              }
+            ],
+            "executionErrorState": "alerting",
+            "for": "15m",
+            "frequency": "5m",
+            "handler": 1,
+            "message": "More than 20 ProwJobs in queue",
+            "name": "prowjobs in queue alert",
+            "noDataState": "no_data",
+            "notifications": []
+          },
           "aliasColors": {},
           "bars": false,
           "dashLength": 10,
@@ -4985,9 +5021,9 @@ data:
           "fill": 2,
           "fillGradient": 0,
           "gridPos": {
-            "h": 7,
-            "w": 21,
-            "x": 3,
+            "h": 5,
+            "w": 22,
+            "x": 2,
             "y": 0
           },
           "hiddenSeries": false,
@@ -5032,11 +5068,20 @@ data:
               "refId": "C"
             }
           ],
-          "thresholds": [],
+          "thresholds": [
+            {
+              "colorMode": "critical",
+              "fill": true,
+              "line": true,
+              "op": "gt",
+              "value": 20,
+              "visible": true
+            }
+          ],
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "prowjobs triggered",
+          "title": "prowjobs in queue",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -5074,6 +5119,67 @@ data:
           }
         },
         {
+          "datasource": "Cluster Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {},
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 50
+                  },
+                  {
+                    "color": "red",
+                    "value": 100
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 2,
+            "x": 0,
+            "y": 4
+          },
+          "id": 13,
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "text": {}
+          },
+          "pluginVersion": "7.4.0",
+          "targets": [
+            {
+              "expr": "sum (prowjobs{state=\"triggered\"})",
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "prowjobs in queue",
+          "type": "gauge"
+        },
+        {
           "alert": {
             "alertRuleTags": {},
             "conditions": [
@@ -5102,10 +5208,11 @@ data:
               }
             ],
             "executionErrorState": "alerting",
-            "for": "5m",
-            "frequency": "1m",
+            "for": "1h",
+            "frequency": "15m",
             "handler": 1,
-            "name": "prowjobs pending alert",
+            "message": "ProwJobs running exceed 200 for more than one hour.",
+            "name": "prowjobs running alert",
             "noDataState": "no_data",
             "notifications": []
           },
@@ -5124,9 +5231,9 @@ data:
           "fillGradient": 0,
           "gridPos": {
             "h": 6,
-            "w": 21,
-            "x": 3,
-            "y": 7
+            "w": 22,
+            "x": 2,
+            "y": 5
           },
           "hiddenSeries": false,
           "id": 2,
@@ -5183,7 +5290,7 @@ data:
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "prowjobs pending",
+          "title": "prowjobs running",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -5221,6 +5328,102 @@ data:
           }
         },
         {
+          "datasource": "Cluster Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {},
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 200
+                  },
+                  {
+                    "color": "red",
+                    "value": 250
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 2,
+            "x": 0,
+            "y": 8
+          },
+          "id": 11,
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "text": {}
+          },
+          "pluginVersion": "7.4.0",
+          "targets": [
+            {
+              "expr": "sum (prowjobs{state=\"pending\"})",
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "prowjobs running",
+          "type": "gauge"
+        },
+        {
+          "alert": {
+            "alertRuleTags": {},
+            "conditions": [
+              {
+                "evaluator": {
+                  "params": [
+                    30
+                  ],
+                  "type": "gt"
+                },
+                "operator": {
+                  "type": "and"
+                },
+                "query": {
+                  "params": [
+                    "B",
+                    "5m",
+                    "now"
+                  ]
+                },
+                "reducer": {
+                  "params": [],
+                  "type": "avg"
+                },
+                "type": "query"
+              }
+            ],
+            "executionErrorState": "alerting",
+            "for": "5m",
+            "frequency": "1m",
+            "handler": 1,
+            "name": "new failed jobs / 15m alert",
+            "noDataState": "no_data",
+            "notifications": []
+          },
           "aliasColors": {},
           "bars": false,
           "dashLength": 10,
@@ -5235,10 +5438,10 @@ data:
           "fill": 0,
           "fillGradient": 0,
           "gridPos": {
-            "h": 6,
-            "w": 21,
-            "x": 3,
-            "y": 13
+            "h": 5,
+            "w": 22,
+            "x": 2,
+            "y": 11
           },
           "hiddenSeries": false,
           "id": 9,
@@ -5282,7 +5485,16 @@ data:
               "refId": "B"
             }
           ],
-          "thresholds": [],
+          "thresholds": [
+            {
+              "colorMode": "critical",
+              "fill": true,
+              "line": true,
+              "op": "gt",
+              "value": 30,
+              "visible": true
+            }
+          ],
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
@@ -5322,6 +5534,78 @@ data:
             "align": false,
             "alignLevel": null
           }
+        },
+        {
+          "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {},
+              "mappings": [],
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "percentage",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 25
+                  },
+                  {
+                    "color": "red",
+                    "value": 50
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 2,
+            "x": 0,
+            "y": 12
+          },
+          "id": 12,
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Failed jobs",
+              "url": "https://prow.ci.kubevirt.io/?state=failure"
+            }
+          ],
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "text": {}
+          },
+          "pluginVersion": "7.4.0",
+          "targets": [
+            {
+              "expr": "100 * (sum (prowjobs{state=~\"failure\"})) / \n(sum (prowjobs{state=\"failure\"}) + sum (prowjobs{state=\"success\"}))",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "B"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "failed jobs %",
+          "type": "gauge"
         }
       ],
       "refresh": "1m",
@@ -5350,7 +5634,7 @@ data:
       "timezone": "",
       "title": "Prow job load",
       "uid": "acSjBD17z",
-      "version": 19
+      "version": 30
     }
 ---
 # Source: grafana/templates/tests/test-configmap.yaml
