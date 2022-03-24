@@ -374,6 +374,10 @@ func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Je
 	fLog.Printf("Fetching last build")
 	lastBuild, err := job.GetLastBuild(ctx)
 	if err != nil {
+		if statusCode := httpStatusOrDie(err, fLog); statusCode == http.StatusNotFound {
+			fLog.Printf("No last build found")
+			return
+		}
 		fLog.Fatalf("failed to fetch last build: %v", err)
 	}
 
@@ -392,12 +396,7 @@ func fetchCompletedBuildsForJob(startOfReport time.Time, lastBuild *gojenkins.Bu
 		build, err := job.GetBuild(ctx, i)
 		if err != nil {
 			fLog.Warnf("failed to fetch build data for build no %d: %v", i, err)
-			// fetch stringly typed error code produced by jenkins client
-			statusCode, err2 := strconv.Atoi(err.Error())
-			if err2 != nil {
-				fLog.Fatalf("Failed to get status code from error %v: %v", err, err2)
-			}
-			if statusCode == http.StatusNotFound {
+			if statusCode := httpStatusOrDie(err, fLog); statusCode == http.StatusNotFound {
 				continue
 			}
 			fLog.Fatalf("failed to fetch build data for build no %d: %v", i, err)
@@ -420,6 +419,16 @@ func fetchCompletedBuildsForJob(startOfReport time.Time, lastBuild *gojenkins.Bu
 	}
 	fLog.Printf("Fetched %d completed builds", len(completedBuilds))
 	return completedBuilds
+}
+
+// httpStatusOrDie fetches stringly typed error code produced by jenkins client or logs a fatal error if conversion to
+// int is not possible
+func httpStatusOrDie(err error, fLog *log.Entry) int {
+	statusCode, err2 := strconv.Atoi(err.Error())
+	if err2 != nil {
+		fLog.Fatalf("Failed to get status code from error %v: %v", err, err2)
+	}
+	return statusCode
 }
 
 func msecsToTime(msecs int64) time.Time {
