@@ -146,7 +146,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-0.49
     cluster: prow-workloads
@@ -184,7 +184,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.49
     cluster: prow-workloads
