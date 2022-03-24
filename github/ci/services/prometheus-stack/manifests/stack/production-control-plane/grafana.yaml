@@ -139,6 +139,10 @@ data:
     logs = /var/log/grafana
     plugins = /var/lib/grafana/plugins
     provisioning = /etc/grafana/provisioning
+    [unified_alerting]
+    enabled = true
+    [alerting]
+    enabled = false
     [auth.anonymous]
     enabled = true
     org_name = Main Org.
