@@ -194,6 +194,10 @@ spec:
             - name: gcs
               mountPath: /etc/gcs
               readOnly: true
+            - name: temp
+              mountPath: /tmp
+            - name: rules
+              mountPath: /tmp/loki/rules/fake
           ports:
             - name: http-metrics
               containerPort: 3100
@@ -233,6 +237,11 @@ spec:
             secretName: loki-config
         - name: storage
           emptyDir: {}
+        - name: temp
+          emptyDir: {}
         - name: gcs
           secret:
             secretName: gcs
+        - name: rules
+          configMap:
+            name: loki-alerting-rules
