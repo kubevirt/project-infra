@@ -240,8 +240,7 @@ orgs:
         has_projects: true
       cloud-provider-kubevirt:
         description: Kubernetes cloud-provider for KubeVirt
-        has_projects: false
-        has_wiki: false
+        has_projects: true
       cluster-api-provider-external:
         description: The external provider implementation of the Cluster Management API.
         has_projects: true
@@ -588,6 +587,13 @@ orgs:
           - rmohr
         repos:
           api: admin
+      cloud-provider-kubevirt-maintainers:
+        maintainers:
+          - nirarg
+          - davidvossel
+          - rmohr
+        repos:
+          cloud-provider-kubevirt: admin
       maintainers:
         description: ""
         maintainers:

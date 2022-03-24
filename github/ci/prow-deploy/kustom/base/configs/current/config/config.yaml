@@ -114,6 +114,7 @@ tide:
     kubevirt/terraform-provider-kubevirt: merge
     kubevirt/kubevirt-velero-plugin: squash
     kubevirt/qe-tools: merge
+    kubevirt/cloud-provider-kubevirt: merge
 
   queries:
   - repos:
@@ -133,6 +134,7 @@ tide:
     - kubevirt/terraform-provider-kubevirt
     - kubevirt/kubevirt-velero-plugin
     - kubevirt/qe-tools
+    - kubevirt/cloud-provider-kubevirt
     labels:
     - lgtm
     - approved
@@ -381,6 +383,10 @@ branch-protection:
               protect: true
         qe-tools:
           protect: true
+        cloud-provider-kubevirt:
+          branches:
+            main:
+              protect: true
     k8snetworkplumbingwg:
       repos:
         kubemacpool:
