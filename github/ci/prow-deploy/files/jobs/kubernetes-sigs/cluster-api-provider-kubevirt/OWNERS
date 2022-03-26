@@ -3,8 +3,10 @@
 
 approvers:
 - davidvossel
+- nirarg
 - rmohr
 options: {}
 reviewers:
 - davidvossel
+- nirarg
 - rmohr
