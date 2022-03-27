@@ -1,0 +1,37 @@
+presubmits:
+  kubevirt/cloud-provider-kubevirt:
+  - name: pull-cloud-provider-kubevirt-unit-tests
+    branches:
+      - main
+    annotations:
+      fork-per-release: "true"
+      testgrid-create-test-group: "false"
+    always_run: false
+    optional: true
+    skip_report: true
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 10m
+      grace_period: 5m
+    max_concurrency: 11
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "10Gi"
