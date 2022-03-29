@@ -22,7 +22,7 @@ data:
           labels:
               severity: "warning"
           annotations:
-              summary: "High percentage of errors in the logs"
+              description: "High percentage of errors in the logs"
         - alert: HighFailedLoginsGrafana
           expr: | 
             rate({app="grafana"} |= "Invalid username or password" [5m]) 
@@ -31,7 +31,7 @@ data:
           labels:
             severity: "warning"
           annotations:
-            summary: "High number of failed logins to Grafana"
+            description: "High number of failed logins to Grafana"
       - name: CiSearchLogAlerts
         rules:
         - alert: CiSearchFullPersistentVolume
@@ -42,4 +42,4 @@ data:
           labels:
             severity: "critical"
           annotations:
-            summary: "CI Search persistent volume is full"
+            description: "CI Search persistent volume is full"
