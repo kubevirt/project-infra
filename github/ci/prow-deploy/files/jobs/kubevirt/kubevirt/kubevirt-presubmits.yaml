@@ -861,7 +861,7 @@ presubmits:
             path: /dev/vfio/
             type: Directory
           name: vfio
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -875,7 +875,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       vgpu: "true"
     max_concurrency: 1
-    name: pull-kubevirt-e2e-kind-1.19-vgpu-nonroot
+    name: pull-kubevirt-e2e-kind-1.23-vgpu-nonroot
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -893,7 +893,7 @@ presubmits:
         - name: NONROOT
           value: "true"
         - name: TARGET
-          value: kind-1.19-vgpu
+          value: kind-1.23-vgpu
         - name: GIMME_GO_VERSION
           value: 1.13.8
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
