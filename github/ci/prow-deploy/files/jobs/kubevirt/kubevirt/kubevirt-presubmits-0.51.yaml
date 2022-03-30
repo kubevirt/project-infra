@@ -1304,7 +1304,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.51
     cluster: prow-workloads
@@ -1321,6 +1321,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-ipv6-sig-network-0.51
+    optional: true
     spec:
       containers:
       - command:
