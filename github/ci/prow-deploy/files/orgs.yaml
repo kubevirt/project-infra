@@ -732,8 +732,8 @@ orgs:
         maintainers:
           - dhiller
           - rmohr
-          - fgimenez
           - brianmcarey
+          - enp0s3
         members:
           - phoracek
         privacy: closed
