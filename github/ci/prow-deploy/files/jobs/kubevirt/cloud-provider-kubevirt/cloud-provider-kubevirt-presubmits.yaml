@@ -6,9 +6,9 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-create-test-group: "false"
-    always_run: false
-    optional: true
-    skip_report: true
+    always_run: true
+    optional: false
+    skip_report: false
     cluster: prow-workloads
     decorate: true
     decoration_config:
