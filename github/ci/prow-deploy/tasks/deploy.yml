@@ -59,6 +59,16 @@
     KUBECONFIG: "{{ kubeconfig_path }}"
   when: reconcile_github_webhooks
 
+# See https://github.com/kubernetes/test-infra/issues/25768
+- name: Rescale pushgateway deployment
+  shell: |
+    kubectl scale deployment --replicas=0 -n kubevirt-prow pushgateway
+    kubectl wait --for=delete pod/$(kubectl get pods -l=app=pushgateway -n kubevirt-prow --no-headers | awk '{ print $1 }') -n kubevirt-prow
+    kubectl scale deployment --replicas=1 -n kubevirt-prow pushgateway
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  when: rescale_pushgateway_deployment
+
 - name: Patch SRIOV nodes
   shell: |
     {{ project_infra_root }}/hack/patch_node.sh {{ item.name }} {{ item.capacity }}

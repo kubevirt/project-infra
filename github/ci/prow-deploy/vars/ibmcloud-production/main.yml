@@ -2,6 +2,7 @@ testinfra_dir: /tmp/test-infra
 kubectl_exec: kubectl
 bootstrap_full_config: true
 reconcile_github_webhooks: true
+rescale_pushgateway_deployment: true
 project_infra_root: /home/prow/go/src/github.com/kubevirt/project-infra
 secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/ibmcloud-production/secrets/'
 components_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/components'
