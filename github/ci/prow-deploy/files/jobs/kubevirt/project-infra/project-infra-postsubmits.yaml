@@ -434,7 +434,7 @@ postsubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
-            - "github/ci/prow-deploy/hack/bootstrap.sh"
+            - "github/ci/prow-workloads/hack/bootstrap.sh"
           resources:
             requests:
               memory: "8Gi"
