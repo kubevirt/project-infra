@@ -23,7 +23,7 @@ mkdir -p /tmp/cache/bazel
 echo "startup --output_user_root=/tmp/cache/bazel" >> "${HOME}/.bazelrc"
 echo "startup --output_user_root=/tmp/cache/bazel" >> "/etc/bazel.bazelrc"
 
-# Check if the job has opted-in to bazel remote caching and if so generate 
+# Check if the job has opted-in to bazel remote caching and if so generate
 # .bazelrc entries pointing to the remote cache
 export BAZEL_REMOTE_CACHE_ENABLED=${BAZEL_REMOTE_CACHE_ENABLED:-false}
 if [[ "${BAZEL_REMOTE_CACHE_ENABLED}" == "true" ]]; then
@@ -44,6 +44,10 @@ setup_ca(){
 # runs custom docker data root cleanup binary and debugs remaining resources
 cleanup_dind() {
     if [[ "${DOCKER_IN_DOCKER_ENABLED:-false}" == "true" ]]; then
+        if [[ "${DOCKER_DEBUG:-false}" == "true" ]]; then
+            echo "Copying docker log to ARTIFACTS"
+            cp /var/log/dockerd.log $ARTIFACTS
+        fi
         echo "Cleaning up after docker"
         docker ps -aq | xargs -r docker rm -f || true
         kill "$(</var/run/docker.pid)" || true
@@ -81,6 +85,19 @@ fi
 export DOCKER_IN_DOCKER_ENABLED=${DOCKER_IN_DOCKER_ENABLED:-false}
 if [[ "${DOCKER_IN_DOCKER_ENABLED}" == "true" ]]; then
     echo "Docker in Docker enabled, initializing..."
+
+    export DOCKER_DEBUG=${DOCKER_DEBUG:-false}
+    if [[ "${DOCKER_DEBUG}" == "true" ]]; then
+        mkdir -p /etc/docker/
+        # TODO: do not rely on this file not existing!
+        cat <<EOF >/etc/docker/daemon.json
+{
+  "debug": true,
+  "log-level": "debug"
+}
+EOF
+    fi
+
     printf '=%.0s' {1..80}; echo
     # If we have opted in to docker in docker, start the docker daemon,
     (
