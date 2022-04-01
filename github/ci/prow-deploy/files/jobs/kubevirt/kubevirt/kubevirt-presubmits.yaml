@@ -876,7 +876,7 @@ presubmits:
       vgpu: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.23-vgpu-nonroot
-    optional: true
+    optional: false
     skip_branches:
     - release-\d+\.\d+
     spec:
