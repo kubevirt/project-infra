@@ -37,7 +37,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -75,7 +75,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -113,7 +113,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -151,7 +151,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: false
     annotations:
       testgrid-create-test-group: "false"
@@ -191,7 +191,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -231,7 +231,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -272,7 +272,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -314,7 +314,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -357,7 +357,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -400,7 +400,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: false
     annotations:
       fork-per-release: "true"
@@ -461,7 +461,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -503,7 +503,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -541,7 +541,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: false
     annotations:
       fork-per-release: "true"
@@ -969,7 +969,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -1448,7 +1448,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -1486,7 +1486,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -1524,7 +1524,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -1562,7 +1562,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -1604,7 +1604,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -1646,7 +1646,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -1688,7 +1688,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -1735,7 +1735,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -1773,7 +1773,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: false
     annotations:
       fork-per-release: "true"
@@ -1811,7 +1811,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: false
     annotations:
       fork-per-release: "true"
@@ -1969,7 +1969,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -2007,7 +2007,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -2045,7 +2045,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -2083,7 +2083,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: false
     annotations:
       fork-per-release: "true"
@@ -2127,7 +2127,7 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
   - always_run: false
     annotations:
       fork-per-release: "true"
@@ -2205,4 +2205,4 @@ presubmits:
         securityContext:
           privileged: true
       nodeSelector:
-        type: bare-metal-external
+        variant: workload
