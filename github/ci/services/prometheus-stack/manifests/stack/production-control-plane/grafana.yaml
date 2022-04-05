@@ -364,7 +364,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "avg(pooledprs{org=\"kubevirt\",repo=\"kubevirt\",branch=\"master\"} and ((time() - updatetime) < 240)) or vector(0)",
+              "expr": "avg(pooledprs{org=\"kubevirt\",repo=\"kubevirt\",branch=\"main\"} and ((time() - updatetime) < 240)) or vector(0)",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
@@ -373,7 +373,7 @@ data:
               "refId": "A"
             },
             {
-              "expr": "sum(rate(merges_sum{org=\"kubevirt\",repo=\"kubevirt\",branch=\"master\"}[1d])) * 86400",
+              "expr": "sum(rate(merges_sum{org=\"kubevirt\",repo=\"kubevirt\",branch=\"main\"}[1d])) * 86400",
               "interval": "",
               "legendFormat": "Daily merge rate",
               "refId": "B"
@@ -383,7 +383,7 @@ data:
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Tide Daily Merge Rate: kubevirt/kubevirt:master",
+          "title": "Tide Daily Merge Rate: kubevirt/kubevirt:main",
           "tooltip": {
             "shared": true,
             "sort": 0,
