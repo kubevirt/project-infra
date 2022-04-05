@@ -52,6 +52,8 @@ RUN dnf install -y \
     rsync-daemon \
     skopeo \
     sudo \
+    buildah \
+    qemu-user-static \
     wget &&\
   dnf -y clean all
 
@@ -103,6 +105,10 @@ RUN USE_BAZEL_VERSION=4.1.0 bazel version && \
 
 # create mixin directories
 RUN mkdir -p /etc/setup.mixin.d/ && mkdir -p /etc/teardown.mixin.d/
+
+# Workaround error when running buildah
+# 'overlay' is not supported over overlayfs, a mount_program is required: backing file system is unsupported for this graph driver
+RUN sed -i -e 's,#mount_program,mount_program,' /etc/containers/storage.conf
 
 # note the runner is also responsible for making docker in docker function if
 # env DOCKER_IN_DOCKER_ENABLED is set and similarly responsible for generating
