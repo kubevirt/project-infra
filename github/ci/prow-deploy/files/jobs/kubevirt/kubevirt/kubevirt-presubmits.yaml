@@ -625,6 +625,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      priorityClassName: sriov
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -705,6 +706,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      priorityClassName: sriov
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -776,6 +778,7 @@ presubmits:
             path: /dev/vfio/
             type: Directory
           name: vfio
+      priorityClassName: vgpu
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -851,6 +854,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      priorityClassName: vgpu
   - always_run: true
     annotations:
       fork-per-release: "true"
