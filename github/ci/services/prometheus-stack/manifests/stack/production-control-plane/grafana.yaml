@@ -4895,25 +4895,35 @@ data:
             "hide": true,
             "iconColor": "rgba(0, 211, 255, 1)",
             "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            },
             "type": "dashboard"
           }
         ]
       },
       "editable": true,
-      "gnetId": null,
+      "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
       "id": 28,
+      "iteration": 1649259478352,
       "links": [],
+      "liveNow": false,
       "panels": [
         {
-          "datasource": "Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Wq7NJYPGk"
+          },
           "description": "",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "thresholds"
               },
-              "custom": {},
               "decimals": 0,
               "mappings": [],
               "max": 100,
@@ -4922,8 +4932,7 @@ data:
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4949,6 +4958,7 @@ data:
             }
           ],
           "options": {
+            "orientation": "auto",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
@@ -4960,7 +4970,7 @@ data:
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "7.4.0",
+          "pluginVersion": "8.4.0",
           "targets": [
             {
               "expr": "(sum (((job_name_repo_type:kubevirt_ci_job_memory_bytes_all:sum * on(job_name) group_left job_name:prow_job_runtime_seconds_sum:increase3h) > 0) / ( 3600 * 1024 * 1024 * 1024)) / (3 * 10 * 225)) * 100",
@@ -4976,7 +4986,9 @@ data:
         },
         {
           "alert": {
-            "alertRuleTags": {},
+            "alertRuleTags": {
+              "severity": "warning"
+            },
             "conditions": [
               {
                 "evaluator": {
@@ -5015,13 +5027,6 @@ data:
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": null,
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
           "fill": 2,
           "fillGradient": 0,
           "gridPos": {
@@ -5055,7 +5060,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.4.0",
+          "pluginVersion": "8.4.0",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -5065,7 +5070,12 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum by (type) (clamp_min(prowjobs{state=~\"triggered\"},0))",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum by (type) (clamp_min(prowjobs{state=~\"triggered\", job_name=~\"${job_name}\"},0))",
               "hide": false,
               "interval": "",
               "legendFormat": "",
@@ -5082,9 +5092,7 @@ data:
               "visible": true
             }
           ],
-          "timeFrom": null,
           "timeRegions": [],
-          "timeShift": null,
           "title": "prowjobs in queue",
           "tooltip": {
             "shared": true,
@@ -5093,51 +5101,43 @@ data:
           },
           "type": "graph",
           "xaxis": {
-            "buckets": null,
             "mode": "time",
-            "name": null,
             "show": true,
             "values": []
           },
           "yaxes": [
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             },
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             }
           ],
           "yaxis": {
-            "align": false,
-            "alignLevel": null
+            "align": false
           }
         },
         {
-          "datasource": "Cluster Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "T1tqjA6Gk"
+          },
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "thresholds"
               },
-              "custom": {},
               "mappings": [],
               "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#EAB839",
@@ -5160,6 +5160,7 @@ data:
           },
           "id": 13,
           "options": {
+            "orientation": "auto",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
@@ -5171,10 +5172,15 @@ data:
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "7.4.0",
+          "pluginVersion": "8.4.0",
           "targets": [
             {
-              "expr": "sum (prowjobs{state=\"triggered\"})",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "T1tqjA6Gk"
+              },
+              "exemplar": true,
+              "expr": "sum (prowjobs{state=\"triggered\", job_name=~\"${job_name}\"})",
               "interval": "",
               "legendFormat": "",
               "refId": "A"
@@ -5185,7 +5191,9 @@ data:
         },
         {
           "alert": {
-            "alertRuleTags": {},
+            "alertRuleTags": {
+              "severity": "warning"
+            },
             "conditions": [
               {
                 "evaluator": {
@@ -5224,13 +5232,6 @@ data:
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": null,
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
           "fill": 0,
           "fillGradient": 0,
           "gridPos": {
@@ -5264,7 +5265,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.4.0",
+          "pluginVersion": "8.4.0",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -5274,7 +5275,12 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum by (type) (prowjobs{state=~\"pending\"})",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum by (type) (prowjobs{state=~\"pending\", job_name=~\"${job_name}\"})",
               "hide": false,
               "interval": "",
               "legendFormat": "",
@@ -5291,9 +5297,7 @@ data:
               "visible": true
             }
           ],
-          "timeFrom": null,
           "timeRegions": [],
-          "timeShift": null,
           "title": "prowjobs running",
           "tooltip": {
             "shared": true,
@@ -5302,51 +5306,43 @@ data:
           },
           "type": "graph",
           "xaxis": {
-            "buckets": null,
             "mode": "time",
-            "name": null,
             "show": true,
             "values": []
           },
           "yaxes": [
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             },
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             }
           ],
           "yaxis": {
-            "align": false,
-            "alignLevel": null
+            "align": false
           }
         },
         {
-          "datasource": "Cluster Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "T1tqjA6Gk"
+          },
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "thresholds"
               },
-              "custom": {},
               "mappings": [],
               "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#EAB839",
@@ -5369,6 +5365,7 @@ data:
           },
           "id": 11,
           "options": {
+            "orientation": "auto",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
@@ -5380,10 +5377,15 @@ data:
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "7.4.0",
+          "pluginVersion": "8.4.0",
           "targets": [
             {
-              "expr": "sum (prowjobs{state=\"pending\"})",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "T1tqjA6Gk"
+              },
+              "exemplar": true,
+              "expr": "sum (prowjobs{state=\"pending\", job_name=~\"${job_name}\"})",
               "interval": "",
               "legendFormat": "",
               "refId": "A"
@@ -5394,7 +5396,9 @@ data:
         },
         {
           "alert": {
-            "alertRuleTags": {},
+            "alertRuleTags": {
+              "severity": "warning"
+            },
             "conditions": [
               {
                 "evaluator": {
@@ -5432,13 +5436,6 @@ data:
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": null,
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
           "fill": 0,
           "fillGradient": 0,
           "gridPos": {
@@ -5472,7 +5469,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.4.0",
+          "pluginVersion": "8.4.0",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -5482,7 +5479,12 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum by (type) (clamp_min(delta(prowjobs{state=~\"failure\"}[15m]),0))",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum by (type) (clamp_min(delta(prowjobs{state=~\"failure\", job_name=~\"${job_name}\"}[15m]),0))",
               "hide": false,
               "interval": "",
               "legendFormat": "{{type}}",
@@ -5499,9 +5501,7 @@ data:
               "visible": true
             }
           ],
-          "timeFrom": null,
           "timeRegions": [],
-          "timeShift": null,
           "title": "new failed jobs / 15m",
           "tooltip": {
             "shared": true,
@@ -5510,43 +5510,32 @@ data:
           },
           "type": "graph",
           "xaxis": {
-            "buckets": null,
             "mode": "time",
-            "name": null,
             "show": true,
             "values": []
           },
           "yaxes": [
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             },
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             }
           ],
           "yaxis": {
-            "align": false,
-            "alignLevel": null
+            "align": false
           }
         },
         {
-          "datasource": null,
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "thresholds"
               },
-              "custom": {},
               "mappings": [],
               "max": 100,
               "min": 0,
@@ -5554,8 +5543,7 @@ data:
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#EAB839",
@@ -5585,6 +5573,7 @@ data:
             }
           ],
           "options": {
+            "orientation": "auto",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
@@ -5596,31 +5585,54 @@ data:
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "7.4.0",
+          "pluginVersion": "8.4.0",
           "targets": [
             {
-              "expr": "100 * (sum (prowjobs{state=~\"failure\"})) / \n(sum (prowjobs{state=\"failure\"}) + sum (prowjobs{state=\"success\"}))",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "100 * (sum (prowjobs{state=~\"failure\", job_name=~\"${job_name}\"})) / \n(sum (prowjobs{state=\"failure\", job_name=~\"${job_name}\"}) + sum (prowjobs{state=\"success\", job_name=~\"${job_name}\"}))",
               "hide": false,
               "interval": "",
               "legendFormat": "",
               "refId": "B"
             }
           ],
-          "timeFrom": null,
-          "timeShift": null,
           "title": "failed jobs %",
           "type": "gauge"
         }
       ],
       "refresh": "1m",
-      "schemaVersion": 27,
+      "schemaVersion": 35,
       "style": "dark",
       "tags": [
         "prow",
         "load"
       ],
       "templating": {
-        "list": []
+        "list": [
+          {
+            "current": {
+              "selected": true,
+              "text": ".*",
+              "value": ".*"
+            },
+            "hide": 0,
+            "name": "job_name",
+            "options": [
+              {
+                "selected": true,
+                "text": ".*",
+                "value": ".*"
+              }
+            ],
+            "query": ".*",
+            "skipUrlSync": false,
+            "type": "textbox"
+          }
+        ]
       },
       "time": {
         "from": "now-3h",
@@ -5638,7 +5650,8 @@ data:
       "timezone": "",
       "title": "Prow job load",
       "uid": "acSjBD17z",
-      "version": 30
+      "version": 32,
+      "weekStart": ""
     }
 ---
 # Source: grafana/templates/tests/test-configmap.yaml
