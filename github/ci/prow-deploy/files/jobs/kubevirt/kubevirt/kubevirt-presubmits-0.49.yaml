@@ -503,6 +503,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      priorityClassName: sriov
   - always_run: false
     annotations:
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
@@ -587,6 +588,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      priorityClassName: sriov
   - always_run: true
     annotations:
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
@@ -666,6 +668,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      priorityClassName: sriov
   - always_run: true
     branches:
     - release-0.49
