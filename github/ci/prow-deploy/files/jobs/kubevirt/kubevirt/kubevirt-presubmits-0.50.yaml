@@ -787,6 +787,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      priorityClassName: vgpu
   - always_run: false
     branches:
     - release-0.50
@@ -850,6 +851,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      priorityClassName: vgpu
   - always_run: true
     branches:
     - release-0.50
