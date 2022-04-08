@@ -276,6 +276,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      priorityClassName: sriov
   - always_run: true
     branches:
     - release-0.39
