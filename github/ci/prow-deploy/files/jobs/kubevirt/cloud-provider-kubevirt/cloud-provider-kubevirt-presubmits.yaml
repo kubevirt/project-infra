@@ -29,6 +29,9 @@ presubmits:
             - "/bin/sh"
             - "-c"
             - "make test"
+          env:
+            - name: GIMME_GO_VERSION
+              value: "1.17"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
