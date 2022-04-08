@@ -496,7 +496,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "automation/orevious-hpp.sh"
+            - "automation/previous-hpp.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
