@@ -8,3 +8,85 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: kubevirt-prow-jobs
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: bare-metal-1
+  labels:
+    type: bare-metal-external
+    ci.kubevirt.io/cachenode: 'true'
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: bare-metal-2
+  labels:
+    type: bare-metal-external
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: bare-metal-3
+  labels:
+    type: bare-metal-external
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: bare-metal-4
+  labels:
+    type: bare-metal-external
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: bare-metal-5
+  labels:
+    type: bare-metal-external
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: bare-metal-6
+  labels:
+    type: bare-metal-external
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: bare-metal-7
+  labels:
+    type: bare-metal-external
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: bare-metal-8
+  labels:
+    type: bare-metal-external
+    hardwareSupport: gpu
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: bare-metal-9
+  labels:
+    type: bare-metal-external
+    hardwareSupport: gpu
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: bare-metal-sriov-1
+  labels:
+    type: bare-metal-external
+    hardwareSupport: sriov-nic
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: bare-metal-sriov-2
+  labels:
+    type: bare-metal-external
+    hardwareSupport: sriov-nic
