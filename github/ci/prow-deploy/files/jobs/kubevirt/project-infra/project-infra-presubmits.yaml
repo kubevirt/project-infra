@@ -646,7 +646,7 @@ presubmits:
     optional: true
     spec:
       containers:
-      - image: gcr.io/k8s-prow/transfigure:v20220323-f964c2fa00
+      - image: gcr.io/k8s-prow/transfigure:v20220411-ad5dbdfe6e
         command:
         - github/ci/testgrid/hack/check.sh
         securityContext:
