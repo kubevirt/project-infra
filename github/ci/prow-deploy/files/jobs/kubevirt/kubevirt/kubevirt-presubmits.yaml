@@ -2116,6 +2116,8 @@ presubmits:
           value: "1"
         - name: KUBEVIRT_WITH_CNAO
           value: "true"
+        - name: KUBEVIRT_STORAGE
+          value: "rook-ceph-default"
         image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
