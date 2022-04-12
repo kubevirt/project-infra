@@ -24,6 +24,15 @@ postsubmits:
       spec:
         nodeSelector:
           type: bare-metal-external
+        volumes:
+        - hostPath:
+            path: /lib/modules
+            type: Directory
+          name: modules
+        - hostPath:
+            path: /dev
+            type: Directory
+          name: devices
         containers:
         - image: quay.io/kubevirtci/golang:v20220211-d7d6c59
           command:
@@ -38,6 +47,12 @@ postsubmits:
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
+          volumeMounts:
+          - mountPath: /lib/modules
+            name: modules
+            readOnly: true
+          - mountPath: /dev
+            name: devices
           resources:
             requests:
               memory: "8Gi"
