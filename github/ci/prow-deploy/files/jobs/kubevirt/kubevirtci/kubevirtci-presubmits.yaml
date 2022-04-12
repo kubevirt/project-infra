@@ -323,3 +323,44 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: true
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 0h10m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 1
+    name: check-provision-alpine-with-test-tooling-container-disk
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cd cluster-provision/images/vm-image-builder && ./create-containerdisk.sh alpine-cloud-init
+        image: quay.io/kubevirtci/golang:v20220211-d7d6c59
+        name: ""
+        resources:
+          requests:
+            memory: 500M
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /dev
+          name: devices
+      nodeSelector:
+        type: bare-metal-external
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /dev
+          type: Directory
+        name: devices
