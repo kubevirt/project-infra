@@ -2109,7 +2109,9 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.23
+          value: "k8s-1.23"
+        - name: KUBEVIRT_E2E_FOCUS
+          value: ".*"
         - name: KUBEVIRT_NUM_NODES
           value: "1"
         - name: KUBEVIRT_INFRA_REPLICAS
