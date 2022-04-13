@@ -21,6 +21,7 @@ data:
           for: 10m
           labels:
               severity: "warning"
+              namespace: "monitoring"
           annotations:
               description: "High percentage of errors in the logs"
         - alert: HighFailedLoginsGrafana
@@ -30,6 +31,7 @@ data:
           for: 10m
           labels:
             severity: "warning"
+            namespace: "monitoring"
           annotations:
             description: "High number of failed logins to Grafana"
       - name: CiSearchLogAlerts
@@ -41,5 +43,6 @@ data:
           for: 10m
           labels:
             severity: "critical"
+            namespace: "monitoring"
           annotations:
             description: "CI Search persistent volume is full"
