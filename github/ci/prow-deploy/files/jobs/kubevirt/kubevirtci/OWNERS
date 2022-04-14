@@ -4,10 +4,10 @@
 filters:
   .*:
     approvers:
+    - awels
     - davidvossel
     - dhiller
     - enp0s3
-    - fgimenez
     - jean-edouard
     - phoracek
     - qinqon
@@ -15,10 +15,10 @@ filters:
     - stu-gott
     - vladikr
     reviewers:
+    - awels
     - davidvossel
     - dhiller
     - enp0s3
-    - fgimenez
     - jean-edouard
     - ormergi
     - oshoval
