@@ -643,12 +643,9 @@ presubmits:
     - org: kubernetes
       repo: test-infra
       base_ref: master
-    # TODO: make it required again after https://github.com/kubernetes/test-infra/issues/25938 is fixed
-    optional: true
-    skip_report: true
     spec:
       containers:
-      - image: gcr.io/k8s-prow/transfigure:v20210224-afd05eb414
+      - image: quay.io/projectquay/golang:1.17
         command:
         - github/ci/testgrid/hack/check.sh
         securityContext:
