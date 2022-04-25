@@ -1,22 +1,23 @@
-FROM quay.io/kubevirtci/bootstrap:v20201119-a5880e0
+FROM quay.io/kubevirtci/bootstrap:v20220405-a56be88
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends --no-upgrade \
+RUN dnf update -y \
+    && dnf install -y \
         ansible \
         expect \
         git \
         intltool \
-        libosinfo-1.0 \
-        libpython-dev \
-        libssl-dev \
+        libosinfo \
+        python3-devel \
+        openssl-devel\
         make \
         osinfo-db-tools \
-        python-gi \
+        python3-gobject \
         python3 \
         python3-pip \
         python3-yaml \
         rsync \
-        && rm -rf /var/lib/apt/lists/*
+        podman \
+        && dnf clean all -y
 RUN export KUSTOMIZE_DIR=/opt/kustomize \
     && mkdir -p $KUSTOMIZE_DIR \
     && cd $KUSTOMIZE_DIR \
