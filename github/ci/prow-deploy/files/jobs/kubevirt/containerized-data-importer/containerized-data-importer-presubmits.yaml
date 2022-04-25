@@ -123,256 +123,14 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.22-hpp
-    skip_branches:
-      - release-v\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 5h
-      grace_period: 5m
-    max_concurrency: 6
-    cluster: prow-workloads
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "export TARGET=k8s-1.22 && export KUBEVIRT_STORAGE=hpp && export CDI_E2E_SKIP=Destructive && automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.22-hpp-destructive
-    skip_branches:
-      - release-v\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 5h
-      grace_period: 5m
-    max_concurrency: 6
-    cluster: prow-workloads
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "export TARGET=k8s-1.22 && export KUBEVIRT_STORAGE=hpp && export KUBEVIRT_DEPLOY_PROMETHEUS=true && export CDI_E2E_FOCUS=Destructive && automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.22-hpp-istio
-    skip_branches:
-      - release-v\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 5h
-      grace_period: 5m
-    max_concurrency: 6
-    cluster: prow-workloads
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "export TARGET=k8s-1.22 && export KUBEVIRT_STORAGE=hpp && export CDI_E2E_SKIP=Destructive && export KUBEVIRT_DEPLOY_ISTIO=true && automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.21-hpp
-    skip_branches:
-      - release-v1.28
-      - release-v1.34
-      - release-v1.38
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 5h
-      grace_period: 5m
-    max_concurrency: 6
-    cluster: prow-workloads
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "export TARGET=k8s-1.21 && export KUBEVIRT_STORAGE=hpp && export KUBEVIRT_DEPLOY_PROMETHEUS=true && export CDI_E2E_SKIP=Destructive && automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.21-ceph
-    skip_branches:
-      - release-v1.28
-      - release-v1.34
-      - release-v1.38
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 5h
-      grace_period: 5m
-    max_concurrency: 6
-    cluster: prow-workloads
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "export TARGET=k8s-1.21 && export RANDOM_CR=true && export KUBEVIRT_STORAGE=rook-ceph-default && export CDI_E2E_SKIP=Destructive && automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.22-upg
-    skip_branches:
-      - release-v\d+\.\d+
-    annotations:
-      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-      fork-per-release: "true"
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 5h
-      grace_period: 5m
-    max_concurrency: 6
-    cluster: prow-workloads
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "export TARGET=k8s-1.22 && export KUBEVIRT_STORAGE=hpp && export MULTI_UPGRADE=true && export CDI_E2E_SKIP=Destructive && automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-k8s-1.22-nfs
-    skip_branches:
-      - release-v\d+\.\d+
-    annotations:
-      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-      fork-per-release: "true"
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 5h
-      grace_period: 5m
-    max_concurrency: 6
-    cluster: prow-workloads
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "export TARGET=k8s-1.22 && export KUBEVIRT_DEPLOY_NFS_CSI=true && export KUBEVIRT_STORAGE=nfs && export CDI_E2E_SKIP=Destructive && automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-hpp-latest
     skip_branches:
       - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -405,8 +163,8 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -439,8 +197,8 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -475,8 +233,8 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -511,8 +269,8 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -545,8 +303,8 @@ presubmits:
     annotations:
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
       fork-per-release: "true"
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
@@ -579,8 +337,8 @@ presubmits:
     annotations:
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
       fork-per-release: "true"
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
