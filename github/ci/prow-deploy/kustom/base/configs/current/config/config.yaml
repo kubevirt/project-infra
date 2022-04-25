@@ -574,7 +574,7 @@ presets:
 # default preset with no labels, settings common to all jobs
 - env:
   - name: GOPROXY
-    value: "https://proxy.golang.org|direct"
+    value: "https://proxy.golang.org|https://goproxy.io|direct"
 
 managed_webhooks:
   # This has to be true if any of the managed repo/org is using the legacy global token that is manually created.
