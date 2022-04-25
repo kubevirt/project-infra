@@ -645,7 +645,7 @@ presubmits:
       base_ref: master
     spec:
       containers:
-      - image: quay.io/projectquay/golang:1.17
+      - image: quay.io/kubevirtci/golang:v20220405-a56be88
         command:
         - github/ci/testgrid/hack/check.sh
         securityContext:
@@ -655,6 +655,9 @@ presubmits:
             memory: "8Gi"
           limits:
             memory: "8Gi"
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.16"
   - name: pull-kubevirt-org-github-config-updater
     run_if_changed: '^github/ci/prow-deploy/files/orgs\.yaml$'
     annotations:

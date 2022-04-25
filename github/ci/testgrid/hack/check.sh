@@ -4,6 +4,8 @@ set -euo pipefail
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_INFRA_ROOT=$(readlink -f --canonicalize ${BASEDIR}/../../../..)
+eval $(gimme ${GIMME_GO_VERSION})
+
 if [ -d ${PROJECT_INFRA_ROOT}/../../kubernetes/test-infra ]; then
     TEST_INFRA_ROOT=$(readlink -f --canonicalize ${PROJECT_INFRA_ROOT}/../../kubernetes/test-infra)
 fi
