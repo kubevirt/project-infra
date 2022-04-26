@@ -1,12 +1,12 @@
 periodics:
 - annotations:
     testgrid-create-test-group: "false"
-  cluster: ibm-prow-jobs
+  cluster: prow-workloads
   cron: 0 2 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
-    timeout: 1h0m0s
+    timeout: 7h0m0s
   extra_refs:
   - base_ref: main
     org: kubevirt
@@ -27,7 +27,7 @@ periodics:
       - |
         set -e
         cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-        ./build.sh
+        ./pipeline-periodic.sh
       env:
       - name: GIMME_GO_VERSION
         value: "1.17"
@@ -35,6 +35,6 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 4Gi
+          memory: 16Gi
       securityContext:
         privileged: true
