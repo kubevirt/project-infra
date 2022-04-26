@@ -332,14 +332,14 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 1
-    name: check-provision-alpine-with-test-tooling-container-disk
+    name: check-provision-alpine-with-test-tooling
     spec:
       containers:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cd cluster-provision/images/vm-image-builder && ./create-containerdisk.sh alpine-cloud-init
+        - dnf install -y genisoimage libvirt && cd cluster-provision/images/vm-image-builder && ./create-containerdisk.sh alpine-cloud-init
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
