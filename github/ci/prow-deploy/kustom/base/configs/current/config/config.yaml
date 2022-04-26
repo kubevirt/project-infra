@@ -505,6 +505,8 @@ presets:
     value: /etc/kubevirtci-cred/username
   - name: QUAY_PASSWORD
     value: /etc/kubevirtci-cred/password
+  - name: QUAY_OAUTH_TOKEN
+    value: /etc/kubevirtci-cred/token
   volumes:
   - name: kubevirtci-cred
     secret:
@@ -571,6 +573,7 @@ presets:
   - name: gcs
     mountPath: /etc/gcs
     readOnly: true
+
 # default preset with no labels, settings common to all jobs
 - env:
   - name: GOPROXY

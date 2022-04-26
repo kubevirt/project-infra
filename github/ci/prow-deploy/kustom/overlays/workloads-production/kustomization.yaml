@@ -46,6 +46,7 @@ secretGenerator:
     namespace: kubevirt-prow-jobs
     # username=quayUser
     # password=quayPass
+    # token=quayOAuthToken
     envs:
     - secrets/kubevirtci-quay-credential
     type: Opaque
