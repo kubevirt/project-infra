@@ -10,6 +10,26 @@ config_updater:
       clusters:
         default:
           - kubevirt-prow
+    github/ci/prow-deploy/files/jobs/kubevirt/**/*.yaml:
+      name: job-config-kubevirt
+      clusters:
+        default:
+          - kubevirt-prow
+    github/ci/prow-deploy/files/jobs/k8snetworkplumbingwg/**/*.yaml:
+      name: job-config-k8snetworkplumbingwg
+      clusters:
+        default:
+          - kubevirt-prow
+    github/ci/prow-deploy/files/jobs/kubernetes-sigs/**/*.yaml:
+      name: job-config-kubernetes-sigs
+      clusters:
+        default:
+          - kubevirt-prow
+    github/ci/prow-deploy/files/jobs/nmstate/**/*.yaml:
+      name: job-config-nmstate
+      clusters:
+        default:
+          - kubevirt-prow
     github/ci/prow-deploy/kustom/base/configs/current/plugins/plugins.yaml:
       name: plugins
       clusters:
