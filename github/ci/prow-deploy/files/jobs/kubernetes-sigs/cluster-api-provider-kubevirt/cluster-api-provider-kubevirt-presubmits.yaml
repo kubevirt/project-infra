@@ -21,7 +21,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - make functest
+        - make functest-ubuntu
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
