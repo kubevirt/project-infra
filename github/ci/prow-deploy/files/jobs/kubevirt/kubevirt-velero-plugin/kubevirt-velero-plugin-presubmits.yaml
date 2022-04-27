@@ -36,6 +36,7 @@ presubmits:
       - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
+      testgrid-dashboards: kubevirt-velero-plugin-presubmits
     always_run: true
     skip_report: false
     optional: false

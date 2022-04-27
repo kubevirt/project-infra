@@ -308,6 +308,7 @@ dashboards:
     code_search_path: https://github.com/kubevirt/hyperconverged-cluster-operator/search
     code_search_url_template:
       url: https://github.com/kubevirt/hyperconverged-cluster-operator/compare/<start-custom-0>...<end-custom-0>
+- name: kubevirt-velero-plugin-presubmits
 
 dashboard_groups:
 - name: kubevirt
@@ -321,6 +322,7 @@ dashboard_groups:
   - kubevirt-hyperconverged-cluster-operator-openshift-ci-presubmits
   - kubevirt-hyperconverged-cluster-operator-openshift-ci-periodics
   - kubevirt-hyperconverged-cluster-operator-openshift-ci-postsubmits
+  - kubevirt-velero-plugin-presubmits
 
 test_groups:
   - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index
