@@ -36,3 +36,87 @@ data:
             containers:
               - image: quay.io/kubevirtci/hello-world
                 command: ["/bin/true"]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: job-config-kubevirt
+  namespace: kubevirt-prow
+data:
+  kubevirt_test_job_config.yaml: |
+    presubmits:
+      kubevirt/testrepo:
+        - name: test-job
+          decorate: true
+          always_run: true
+          skip_report: false
+          spec:
+            nodeSelector:
+              type: vm
+              zone: ci
+            containers:
+              - image: quay.io/kubevirtci/hello-world
+                command: ["/bin/true"]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: job-config-k8snetworkplumbingwg
+  namespace: kubevirt-prow
+data:
+  k8snetworkplumbingwg_test_job_config.yaml: |
+    presubmits:
+      k8snetworkplumbingwg/testrepo:
+        - name: test-job
+          decorate: true
+          always_run: true
+          skip_report: false
+          spec:
+            nodeSelector:
+              type: vm
+              zone: ci
+            containers:
+              - image: quay.io/kubevirtci/hello-world
+                command: ["/bin/true"]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: job-config-kubernetes-sigs
+  namespace: kubevirt-prow
+data:
+  kubernetes-sigs_test_job_config.yaml: |
+    presubmits:
+      kubernetes-sigs/testrepo:
+        - name: test-job
+          decorate: true
+          always_run: true
+          skip_report: false
+          spec:
+            nodeSelector:
+              type: vm
+              zone: ci
+            containers:
+              - image: quay.io/kubevirtci/hello-world
+                command: ["/bin/true"]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: job-config-nmstate
+  namespace: kubevirt-prow
+data:
+  nmstate_test_job_config.yaml: |
+    presubmits:
+      nmstate/testrepo:
+        - name: test-job
+          decorate: true
+          always_run: true
+          skip_report: false
+          spec:
+            nodeSelector:
+              type: vm
+              zone: ci
+            containers:
+              - image: quay.io/kubevirtci/hello-world
+                command: ["/bin/true"]
