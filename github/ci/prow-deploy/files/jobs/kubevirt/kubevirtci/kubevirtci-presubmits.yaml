@@ -338,8 +338,12 @@ presubmits:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
+        - -xe
         - -c
-        - dnf install -y genisoimage libvirt && cd cluster-provision/images/vm-image-builder && ./create-containerdisk.sh alpine-cloud-init
+        - |
+          docker run -d --privileged -d -e 'container=docker' -p 10001:16509 -p 10002:22 -p 10003:5900  -v /sys/fs/cgroup:/sys/fs/cgroup:rw hrishikesh/libvirtd
+          cd cluster-provision/images/vm-image-builder
+          ./create-containerdisk.sh alpine-cloud-init
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
