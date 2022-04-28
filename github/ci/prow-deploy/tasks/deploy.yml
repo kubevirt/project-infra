@@ -20,7 +20,8 @@
       --plugin-config=$PLUGIN_CONFIG_PATH \
       --job-config-path=$JOB_CONFIG_PATH
   environment:
-    CONFIG_ROOT: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs"
+    # NOTE: the `--source-path`/`CONFIG_ROOT` MUST NOT contain parts of the relative path that we are using in the plugins config!
+    CONFIG_ROOT: "{{ project_infra_root }}/"
     JOB_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/files/jobs/"
     PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
     PLUGIN_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/plugins/plugins.yaml"
