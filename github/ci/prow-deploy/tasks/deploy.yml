@@ -10,21 +10,7 @@
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
 
-- name: Launch deployment
-  shell: |
-    # for now cant execute "kubectl apply --server-side" reliably on
-    # "workloads-production" env (which runs k8s 1.19)
-    APPLY_OPTIONS=
-    if [ "{{deploy_environment}}" != "workloads-production" ]; then
-      APPLY_OPTIONS="--server-side --force-conflicts"
-    fi
-
-    kustomize build overlays/{{ deploy_environment }} | kubectl apply ${APPLY_OPTIONS} -f -
-  args:
-    chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
-
+# Config needs to be there before the deployment is launched, the deployments depend on the configmaps being there
 - name: Bootstrap the full job config
   shell: |
     config-bootstrapper \
@@ -40,6 +26,21 @@
     PLUGIN_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/plugins/plugins.yaml"
     KUBECONFIG: "{{ kubeconfig_path }}"
   when: bootstrap_full_config
+
+- name: Launch deployment
+  shell: |
+    # for now cant execute "kubectl apply --server-side" reliably on
+    # "workloads-production" env (which runs k8s 1.19)
+    APPLY_OPTIONS=
+    if [ "{{deploy_environment}}" != "workloads-production" ]; then
+      APPLY_OPTIONS="--server-side --force-conflicts"
+    fi
+
+    kustomize build overlays/{{ deploy_environment }} | kubectl apply ${APPLY_OPTIONS} -f -
+  args:
+    chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
 
 - name: Reconcile webhooks for onboarded repositories
   shell: |
