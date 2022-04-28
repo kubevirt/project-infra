@@ -41,13 +41,5 @@ spec:
               configMap:
                 name: config
             - name: job-config
-              projected:
-                sources:
-                  - configMap:
-                      name: job-config-kubevirt
-                  - configMap:
-                      name: job-config-k8snetworkplumbingwg
-                  - configMap:
-                      name: job-config-kubernetes-sigs
-                  - configMap:
-                      name: job-config-nmstate
+              configMap:
+                name: job-config
