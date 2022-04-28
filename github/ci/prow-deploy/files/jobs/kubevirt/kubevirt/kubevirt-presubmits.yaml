@@ -409,7 +409,7 @@ presubmits:
     decorate: true
     decoration_config:
       grace_period: 5m0s
-      timeout: 1h0m0s
+      timeout: 1h30m0s
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
