@@ -1022,7 +1022,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
       spec:
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+        - image: quay.io/kubevirtci/bootstrap:v20220428-458d268
           command: ["/bin/sh"]
           args:
           - -c
