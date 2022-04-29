@@ -168,3 +168,38 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-operator-k8s.sh"
+    - name: pull-kubernetes-nmstate-e2e-upgrade-k8s
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+      always_run: true
+      optional: true
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      cluster: prow-workloads
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/golang:v20220211-d7d6c59
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            env:
+              - name: GIMME_GO_VERSION
+                value: "1.16"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-upgrade-k8s.sh"
