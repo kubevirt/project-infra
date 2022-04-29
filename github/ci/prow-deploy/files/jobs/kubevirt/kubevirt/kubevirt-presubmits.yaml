@@ -409,7 +409,7 @@ presubmits:
     decorate: true
     decoration_config:
       grace_period: 5m0s
-      timeout: 1h30m0s
+      timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
@@ -445,7 +445,7 @@ presubmits:
         - name: KUBEVIRT_STORAGE
           value: hpp
         - name: KUBEVIRT_MEMORY_SIZE
-          value: 9G
+          value: 10G
         - name: KUBEVIRT_NUM_NODES
           value: "4"
         - name: KUBEVIRT_DEPLOY_PROMETHEUS
@@ -457,7 +457,7 @@ presubmits:
         resources:
           requests:
             cpu: "12"
-            memory: 44Gi
+            memory: 48Gi
         securityContext:
           privileged: true
       nodeSelector:
