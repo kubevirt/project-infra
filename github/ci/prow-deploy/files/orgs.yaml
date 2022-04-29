@@ -738,6 +738,7 @@ orgs:
           - enp0s3
         members:
           - phoracek
+          - xpivarc
         privacy: closed
         repos:
           secrets: admin
