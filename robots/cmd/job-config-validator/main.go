@@ -95,8 +95,14 @@ func main() {
 		log.Errorf("Failed to fetch job config names in dir %q: %v", opts.jobConfigPath, err)
 	}
 
-	// remove each file that we find from the list
+	// remove each file for which we find a key in the configMap from the list
 	for key, _ := range configMap.Data {
+		if _, exists := jobConfigFileNames[key]; exists {
+			delete(jobConfigFileNames, key)
+		}
+	}
+	// If ConfigMapSpec is GZIP compressed the keys will be found there
+	for key, _ := range configMap.BinaryData {
 		if _, exists := jobConfigFileNames[key]; exists {
 			delete(jobConfigFileNames, key)
 		}
@@ -104,7 +110,7 @@ func main() {
 
 	// if there's anything left in the list, the job config is not complete
 	if len(jobConfigFileNames) > 0 {
-		log.Errorf("Expected entries in config map %q missing: %v", opts.configMapName, jobConfigFileNames)
+		log.Fatalf("Expected entries in config map %q missing: %v", opts.configMapName, jobConfigFileNames)
 	}
 }
 
