@@ -22,22 +22,22 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/opencontainers/runc/Godeps/_workspace/src/github.com/Sirupsen/logrus"
 	"io/fs"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	restclient "k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
 	"os"
 	"os/user"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/opencontainers/runc/Godeps/_workspace/src/github.com/Sirupsen/logrus"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	restclient "k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 func flagOptions() options {
 	o := options{}
-	flag.BoolVar(&o.isDryRun, "dry-run", true, "TODO")
 	flag.StringVar(&o.configMapName, "config-map-name", "job-config", "The name of the config map that contains the job config files")
 	flag.StringVar(&o.configMapNameSpace, "config-map-namespace", "kubevirt-prow", "The namespace of the config map that contains the job config files")
 	flag.StringVar(&o.jobConfigPath, "job-config-path", "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt", "The path to the job configuration files that need to be present")
@@ -55,7 +55,6 @@ func (o *options) validate() error {
 }
 
 type options struct {
-	isDryRun           bool
 	configMapName      string
 	jobConfigPath      string
 	configMapNameSpace string
@@ -122,6 +121,7 @@ func NewClientset() (*kubernetes.Clientset, error) {
 
 	return kubernetes.NewForConfig(config)
 }
+
 func GetConfig() (*restclient.Config, error) {
 	usr, err := user.Current()
 	if err != nil {
