@@ -184,11 +184,14 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.21 && ../provision.sh
+        env:
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 10G
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
           requests:
-            memory: 8Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -266,7 +269,10 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 8Gi
+            memory: 29Gi
+        env:
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 10G
         securityContext:
           privileged: true
       nodeSelector:
@@ -288,11 +294,14 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.22-ipv6 && ../provision.sh
+        env:
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 10G
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
           requests:
-            memory: 8Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -314,11 +323,14 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.23 && ../provision.sh
+        env:
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 10G
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
           requests:
-            memory: 8Gi
+            memory: 29Gi
         securityContext:
           privileged: true
       nodeSelector:
