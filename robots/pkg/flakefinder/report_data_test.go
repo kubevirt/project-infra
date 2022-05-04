@@ -1,6 +1,7 @@
 package flakefinder
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
@@ -60,13 +61,62 @@ var _ = Describe("report.go", func() {
 
 		It("returns tests of same severity sorted descending by number of severity points", func() {
 			data := map[string]map[string]*Details{
-				"t1": {"a": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}, "b": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: MostlyFlaky, Jobs: []*Job{}}},
-				"t2": {"a": &Details{Failed: 2, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}, "b": &Details{Failed: 2, Succeeded: 1, Skipped: 2, Severity: MildlyFlaky, Jobs: []*Job{}}},
-				"t3": {"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}, "b": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}},
+				"t1": {
+					"a": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}},
+					"b": &Details{Failed: 3, Succeeded: 1, Skipped: 2, Severity: MostlyFlaky, Jobs: []*Job{}},
+				},
+				"t2": {
+					"a": &Details{Failed: 2, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}},
+					"b": &Details{Failed: 2, Succeeded: 1, Skipped: 2, Severity: MildlyFlaky, Jobs: []*Job{}},
+				},
+				"t3": {
+					"a": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}},
+					"b": &Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}},
+				},
 			}
 
 			Expect(SortTestsByRelevance(data, tests)).To(BeEquivalentTo([]string{"t3", "t1", "t2"}))
 		})
+
+		DescribeTable("returns tests of same severity weighted by total number of tests", func(t1Failed, t2Failed, t3Failed, t1Succeeded, t2Succeeded, t3Succeeded []int, expected []string) {
+			data := map[string]map[string]*Details{}
+			data["t1"] = map[string]*Details{}
+			for index, failed := range t1Failed {
+				data["t1"][fmt.Sprint(index)] = &Details{Failed: failed, Succeeded: t1Succeeded[index], Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}
+			}
+			data["t2"] = map[string]*Details{}
+			for index, failed := range t2Failed {
+				data["t2"][fmt.Sprint(index)] = &Details{Failed: failed, Succeeded: t2Succeeded[index], Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}
+			}
+			data["t3"] = map[string]*Details{}
+			for index, failed := range t3Failed {
+				data["t3"][fmt.Sprint(index)] = &Details{Failed: failed, Succeeded: t3Succeeded[index], Skipped: 2, Severity: HeavilyFlaky, Jobs: []*Job{}}
+			}
+
+			Expect(SortTestsByRelevance(data, tests)).To(BeEquivalentTo(expected))
+		},
+			Entry("zeros shouldn't be a problem",
+				[]int{2}, []int{1}, []int{3}, []int{0}, []int{0}, []int{0}, []string{"t3", "t1", "t2"},
+			),
+			Entry("the more failures the higher",
+				[]int{2}, []int{1}, []int{3}, []int{1}, []int{1}, []int{1}, []string{"t3", "t1", "t2"},
+			),
+			Entry("multiple values with zeros",
+				[]int{2, 0}, []int{1, 0}, []int{3, 0}, []int{1, 0}, []int{1, 0}, []int{1, 0}, []string{"t3", "t1", "t2"},
+			),
+			Entry("multiple values",
+				[]int{4, 5}, []int{3, 4}, []int{6, 7}, []int{1, 1}, []int{1, 1}, []int{1, 1}, []string{"t3", "t1", "t2"},
+			),
+			Entry("errors high, ratios small",
+				[]int{6, 7}, []int{4, 5}, []int{11, 12}, []int{5, 6}, []int{3, 4}, []int{10, 11}, []string{"t3", "t1", "t2"},
+			),
+			Entry("higher ratio, the higher",
+				[]int{6, 7}, []int{4, 5}, []int{11, 12}, []int{3, 4}, []int{2, 3}, []int{2, 1}, []string{"t3", "t1", "t2"},
+			),
+			Entry("mixed lengths",
+				[]int{8, 10}, []int{3, 4, 5}, []int{22}, []int{2, 1}, []int{1, 2, 3}, []int{2}, []string{"t3", "t1", "t2"},
+			),
+		)
 
 	})
 

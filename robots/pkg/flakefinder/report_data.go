@@ -1,9 +1,10 @@
 package flakefinder
 
 import (
-	"github.com/joshdk/go-junit"
 	"sort"
 	"time"
+
+	"github.com/joshdk/go-junit"
 )
 
 type Params struct {
@@ -41,10 +42,12 @@ type JobFailures struct {
 }
 
 type Jobs []*Job
-func (jobs Jobs) Len() int 		{ return len(jobs) }
-func (jobs Jobs) Swap(i, j int) { jobs[i], jobs[j] = jobs[j], jobs[i]}
+
+func (jobs Jobs) Len() int      { return len(jobs) }
+func (jobs Jobs) Swap(i, j int) { jobs[i], jobs[j] = jobs[j], jobs[i] }
 
 type ByBuildNumber struct{ Jobs }
+
 func (b ByBuildNumber) Less(i, j int) bool { return b.Jobs[i].BuildNumber < b.Jobs[j].BuildNumber }
 
 func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport time.Time, org string, repo string, startOfReport time.Time) Params {
@@ -208,10 +211,17 @@ func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (
 			}
 			flakinessToTestNames[details.Severity] = append(flakinessToTestNames[details.Severity], test)
 
+			// if we only count the number of occurrences a test failed then tests with lower number of failures but same number of
+			// appearances might appear before tests that have higher number of failures.
+			// As we want to emphasize tests that have higher failure numbers over those that have less failures,
+			// we calculate the severity ratio as #tests_failed / #tests_succeeded, which gives us a basic ratio and
+			// then multiply that value by the number of failures. This yields:
+			severityRatio := 1 + int(float64(details.Failed*details.Failed)/float64(details.Succeeded+1))
 			if _, exists := testsToSeveritiesWithNumbers[test]; !exists {
-				testsToSeveritiesWithNumbers[test] = map[string]int{details.Severity: 0}
+				testsToSeveritiesWithNumbers[test] = map[string]int{details.Severity: severityRatio}
+			} else {
+				testsToSeveritiesWithNumbers[test][details.Severity] = testsToSeveritiesWithNumbers[test][details.Severity] + severityRatio
 			}
-			testsToSeveritiesWithNumbers[test][details.Severity] = testsToSeveritiesWithNumbers[test][details.Severity] + 1
 
 			foundTests[test] = struct{}{}
 		}
