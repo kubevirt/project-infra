@@ -371,27 +371,17 @@ func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Je
 		fLog.Fatalf("failed to fetch job: %v", err)
 	}
 
-	fLog.Printf("Fetching last build")
-	lastBuild, err := job.GetLastBuild(ctx)
-	if err != nil {
-		if statusCode := httpStatusOrDie(err, fLog); statusCode == http.StatusNotFound {
-			fLog.Printf("No last build found")
-			return
-		}
-		fLog.Fatalf("failed to fetch last build: %v", err)
-	}
-
-	completedBuilds := fetchCompletedBuildsForJob(startOfReport, lastBuild, job, ctx, fLog)
+	completedBuilds := fetchCompletedBuildsForJob(startOfReport, job.Raw.LastBuild.Number, job, ctx, fLog)
 	junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(completedBuilds, fLog)
 	reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job, fLog)
 
 	reportChan <- reportsPerJob
 }
 
-func fetchCompletedBuildsForJob(startOfReport time.Time, lastBuild *gojenkins.Build, job *gojenkins.Job, ctx context.Context, fLog *log.Entry) []*gojenkins.Build {
-	fLog.Printf("Fetching completed builds")
+func fetchCompletedBuildsForJob(startOfReport time.Time, lastBuildNumber int64, job *gojenkins.Job, ctx context.Context, fLog *log.Entry) []*gojenkins.Build {
+	fLog.Printf("Fetching completed builds, starting at %d", lastBuildNumber)
 	var completedBuilds []*gojenkins.Build
-	for i := lastBuild.GetBuildNumber(); i > 0; i-- {
+	for i := lastBuildNumber; i > 0; i-- {
 		fLog.Printf("Fetching build no %d", i)
 		build, err := job.GetBuild(ctx, i)
 		if err != nil {
