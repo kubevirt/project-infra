@@ -2,6 +2,7 @@ filters:
   ".*":
     reviewers:
       - aglitke
+      - brianmcarey
       - davidvossel
       - dhiller
       - enp0s3
@@ -9,9 +10,9 @@ filters:
       - rmohr
       - tiraboschi
       - vladikr
-      - brianmcarey
     approvers:
       - aglitke
+      - brianmcarey
       - davidvossel
       - dhiller
       - enp0s3
