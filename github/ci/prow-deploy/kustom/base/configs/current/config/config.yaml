@@ -115,6 +115,7 @@ tide:
     kubevirt/kubevirt-velero-plugin: squash
     kubevirt/qe-tools: merge
     kubevirt/cloud-provider-kubevirt: merge
+    kubevirt/secrets: merge
 
   queries:
   - repos:
@@ -135,6 +136,7 @@ tide:
     - kubevirt/kubevirt-velero-plugin
     - kubevirt/qe-tools
     - kubevirt/cloud-provider-kubevirt
+    - kubevirt/secrets
     labels:
     - lgtm
     - approved
@@ -367,7 +369,7 @@ branch-protection:
                   - ci/prow/openshift-e2e
         community:
           branches:
-            master:
+            main:
               protect: true
         user-guide:
           branches:
@@ -386,6 +388,10 @@ branch-protection:
         cloud-provider-kubevirt:
           branches:
             main:
+              protect: true
+        secrets:
+          branches:
+            master:
               protect: true
     k8snetworkplumbingwg:
       repos:
