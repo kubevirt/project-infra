@@ -20,7 +20,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /app/robots/cmd/flakefinder/app.binary
-      image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-g9b95333c9
+      image: quay.io/kubevirtci/flakefinder:v20220505-8aeca1a5
       name: ""
       resources: {}
 - annotations:
@@ -44,7 +44,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /app/robots/cmd/flakefinder/app.binary
-      image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-g9b95333c9
+      image: quay.io/kubevirtci/flakefinder:v20220505-8aeca1a5
       name: ""
       resources: {}
 - annotations:
@@ -68,7 +68,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /app/robots/cmd/flakefinder/app.binary
-      image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-g9b95333c9
+      image: quay.io/kubevirtci/flakefinder:v20220505-8aeca1a5
       name: ""
       resources: {}
 - annotations:
@@ -95,7 +95,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /app/robots/cmd/flakefinder/app.binary
-      image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-g9b95333c9
+      image: quay.io/kubevirtci/flakefinder:v20220505-8aeca1a5
       name: ""
       resources: {}
 - annotations:
