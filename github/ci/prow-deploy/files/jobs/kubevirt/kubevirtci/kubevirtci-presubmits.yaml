@@ -327,7 +327,7 @@ presubmits:
     cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 0h10m0s
+      timeout: 10m0s
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -339,7 +339,8 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - dnf install -y genisoimage libvirt && cd cluster-provision/images/vm-image-builder && ./create-containerdisk.sh alpine-cloud-init
+        - dnf install -y genisoimage libvirt && cd cluster-provision/images/vm-image-builder
+          && ./create-containerdisk.sh alpine-cloud-init
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
@@ -364,3 +365,30 @@ presubmits:
           path: /dev
           type: Directory
         name: devices
+  - always_run: false
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 1
+    name: check-provision-k8s-1.24
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cd cluster-provision/k8s/1.24 && ../provision.sh
+        image: quay.io/kubevirtci/golang:v20210316-d295087
+        name: ""
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
