@@ -4,11 +4,11 @@ require (
 	cloud.google.com/go v0.66.0
 	cloud.google.com/go/storage v1.12.0
 	github.com/Masterminds/semver v1.5.0
+	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/bazelbuild/buildtools v0.0.0-20200922170545-10384511ce98
-	github.com/bndr/gojenkins v1.1.0 // indirect
+	github.com/bndr/gojenkins v1.1.0
 	github.com/go-git/go-git/v5 v5.3.0
 	github.com/go-test/deep v1.0.7
-	github.com/golang/mock v1.5.0
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/go-github/v32 v32.0.0
@@ -17,9 +17,8 @@ require (
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.13.0
 	github.com/prometheus/client_golang v1.11.0
-	github.com/shurcooL/githubv4 v0.0.0-20210725200734-83ba7b4c9228 // indirect
 	github.com/sirupsen/logrus v1.8.1
-	github.com/spf13/cobra v1.1.3 // indirect
+	github.com/spf13/cobra v1.1.3
 	golang.org/x/mod v0.4.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	google.golang.org/api v0.32.0
