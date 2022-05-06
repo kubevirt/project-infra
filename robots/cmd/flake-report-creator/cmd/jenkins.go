@@ -84,26 +84,18 @@ const (
         .center {
             text-align:center
         }
-        .right {
-            text-align: right;
-			width: 100%;
-        }
 
-
-        /* Popup container - can be anything you want */
         .popup {
             position: relative;
             display: inline-block;
-            cursor: pointer;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
         }
 
-        /* The actual popup */
         .popup .popuptext {
-            visibility: hidden;
+            display: none;
             width: 220px;
             background-color: #555;
             text-align: center;
@@ -115,18 +107,16 @@ const (
             margin-left: -110px;
         }
 
-        .nowrap {
-            white-space: nowrap;
-        }
-
-        /* Toggle this class - hide and show the popup */
-        .popup .show {
-            visibility: visible;
+        .popup:hover .popuptext {
+            display: block;
             -webkit-animation: fadeIn 1s;
             animation: fadeIn 1s;
         }
 
-        /* Add animation (fade in the popup) */
+        .nowrap {
+            white-space: nowrap;
+        }
+
         @-webkit-keyframes fadeIn {
             from {opacity: 0;}
             to {opacity: 1;}
@@ -168,13 +158,13 @@ const (
         </td>
         {{else}}
         <td class="{{ (index $.Data $test $header).Severity }} center">
-            <div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup" >
-                <span class="tests_failed" title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span class="tests_passed" title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span class="tests_skipped" title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>
+            <div id="r{{$row}}c{{$col}}" class="popup" >
+                <span class="tests_failed" title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span class="tests_passed" title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span class="tests_skipped" title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>{{ if (index $.Data $test $header).Jobs }}
                 <div class="popuptext" id="targetr{{$row}}c{{$col}}">
                     {{ range $Job := (index $.Data $test $header).Jobs }}
                     <div class="{{.Severity}} nowrap">{{ if ne .PR 0 }}<a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/{{.BuildNumber}}">{{.BuildNumber}}</a>{{ else }}<a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/{{.BuildNumber}}">{{.BuildNumber}}</a>{{ end }}</div>
                     {{ end }}
-                </div>
+                </div>{{ end }}
             </div>
             {{end}}
         </td>
@@ -183,13 +173,6 @@ const (
     {{ end }}
 </table>
 {{ end }}
-
-<script>
-    function popup(id) {
-        var popup = document.getElementById("target" + id);
-        popup.classList.toggle("show");
-    }
-</script>
 
 </body>
 </html>
