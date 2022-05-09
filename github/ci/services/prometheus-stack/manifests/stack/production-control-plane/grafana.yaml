@@ -4909,7 +4909,7 @@ data:
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
       "id": 28,
-      "iteration": 1649259478352,
+      "iteration": 1652104583260,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -4932,7 +4932,8 @@ data:
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5078,7 +5079,7 @@ data:
               "expr": "sum by (type) (clamp_min(prowjobs{state=~\"triggered\", job_name=~\"${job_name}\"},0))",
               "hide": false,
               "interval": "",
-              "legendFormat": "",
+              "legendFormat": "{{type}}s - ${job_name}",
               "refId": "C"
             }
           ],
@@ -5137,7 +5138,8 @@ data:
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "#EAB839",
@@ -5283,7 +5285,7 @@ data:
               "expr": "sum by (type) (prowjobs{state=~\"pending\", job_name=~\"${job_name}\"})",
               "hide": false,
               "interval": "",
-              "legendFormat": "",
+              "legendFormat": "{{type}}s - ${job_name}",
               "refId": "C"
             }
           ],
@@ -5342,7 +5344,8 @@ data:
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "#EAB839",
@@ -5395,88 +5398,74 @@ data:
           "type": "gauge"
         },
         {
-          "alert": {
-            "alertRuleTags": {
-              "severity": "warning"
-            },
-            "conditions": [
-              {
-                "evaluator": {
-                  "params": [
-                    30
-                  ],
-                  "type": "gt"
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
                 },
-                "operator": {
-                  "type": "and"
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
                 },
-                "query": {
-                  "params": [
-                    "B",
-                    "5m",
-                    "now"
-                  ]
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
                 },
-                "reducer": {
-                  "params": [],
-                  "type": "avg"
-                },
-                "type": "query"
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
               }
-            ],
-            "executionErrorState": "alerting",
-            "for": "5m",
-            "frequency": "1m",
-            "handler": 1,
-            "name": "new failed jobs / 15m alert",
-            "noDataState": "no_data",
-            "notifications": []
+            },
+            "overrides": []
           },
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "fill": 0,
-          "fillGradient": 0,
           "gridPos": {
             "h": 5,
             "w": 22,
             "x": 2,
             "y": 11
           },
-          "hiddenSeries": false,
-          "id": 9,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [
-            {
-              "targetBlank": false,
-              "title": "Failed jobs",
-              "url": "https://prow.ci.kubevirt.io/?state=failure"
-            }
-          ],
-          "nullPointMode": "null",
+          "id": 16,
           "options": {
-            "alertThreshold": true
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
           },
-          "percentage": false,
-          "pluginVersion": "8.4.0",
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
           "targets": [
             {
               "datasource": {
@@ -5484,51 +5473,15 @@ data:
                 "uid": "Wq7NJYPGk"
               },
               "exemplar": true,
-              "expr": "sum by (type) (clamp_min(delta(prowjobs{state=~\"failure\", job_name=~\"${job_name}\"}[15m]),0))",
+              "expr": "sum (kube_pod_status_phase{namespace=\"kubevirt-prow-jobs\", phase=~\"Pending|Running\"} * on(pod) group_left(label_prow_k8s_io_context) kube_pod_labels{namespace=\"kubevirt-prow-jobs\", label_prow_k8s_io_context=~\"${job_name}\"}) by (cluster, phase)",
               "hide": false,
               "interval": "",
-              "legendFormat": "{{type}}",
-              "refId": "B"
+              "legendFormat": "{{cluster}} - {{phase}} - ${job_name}",
+              "refId": "A"
             }
           ],
-          "thresholds": [
-            {
-              "colorMode": "critical",
-              "fill": true,
-              "line": true,
-              "op": "gt",
-              "value": 30,
-              "visible": true
-            }
-          ],
-          "timeRegions": [],
-          "title": "new failed jobs / 15m",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "mode": "time",
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "short",
-              "logBase": 1,
-              "show": true
-            },
-            {
-              "format": "short",
-              "logBase": 1,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false
-          }
+          "title": "Pods Pending vs. Running",
+          "type": "timeseries"
         },
         {
           "fieldConfig": {
@@ -5543,7 +5496,8 @@ data:
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "#EAB839",
@@ -5602,9 +5556,235 @@ data:
           ],
           "title": "failed jobs %",
           "type": "gauge"
+        },
+        {
+          "alert": {
+            "alertRuleTags": {
+              "severity": "warning"
+            },
+            "conditions": [
+              {
+                "evaluator": {
+                  "params": [
+                    30
+                  ],
+                  "type": "gt"
+                },
+                "operator": {
+                  "type": "and"
+                },
+                "query": {
+                  "params": [
+                    "B",
+                    "5m",
+                    "now"
+                  ]
+                },
+                "reducer": {
+                  "params": [],
+                  "type": "avg"
+                },
+                "type": "query"
+              }
+            ],
+            "executionErrorState": "alerting",
+            "for": "5m",
+            "frequency": "1m",
+            "handler": 1,
+            "name": "new failed jobs / 15m alert",
+            "noDataState": "no_data",
+            "notifications": []
+          },
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "fill": 0,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 5,
+            "w": 22,
+            "x": 2,
+            "y": 16
+          },
+          "hiddenSeries": false,
+          "id": 9,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Failed jobs",
+              "url": "https://prow.ci.kubevirt.io/?state=failure"
+            }
+          ],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "8.4.0",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum by (type) (clamp_min(delta(prowjobs{state=~\"failure\", job_name=~\"${job_name}\"}[15m]),0))",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{type}}s - ${job_name}",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [
+            {
+              "colorMode": "critical",
+              "fill": true,
+              "line": true,
+              "op": "gt",
+              "value": 30,
+              "visible": true
+            }
+          ],
+          "timeRegions": [],
+          "title": "new failed jobs / 15m",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "logBase": 1,
+              "show": true
+            },
+            {
+              "format": "short",
+              "logBase": 1,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "fill": 0,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 22,
+            "x": 2,
+            "y": 21
+          },
+          "hiddenSeries": false,
+          "id": 14,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Failed jobs",
+              "url": "https://prow.ci.kubevirt.io/?state=failure"
+            }
+          ],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "8.4.0",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum(label_replace(irate(prowjobs{state=~\"failure\", job_name=~\"${job_name}\"}[15m]),\"job_category\", \"$1\", \"job_name\", \"([^-]+-[^-]+-[^-]+).*\")) by (job_category)",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{job_category}} - ${job_name}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeRegions": [],
+          "title": "new failed jobs by category / 15m",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "logBase": 1,
+              "show": true
+            },
+            {
+              "format": "short",
+              "logBase": 1,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false
+          }
         }
       ],
-      "refresh": "1m",
+      "refresh": "15m",
       "schemaVersion": 35,
       "style": "dark",
       "tags": [
@@ -5615,7 +5795,7 @@ data:
         "list": [
           {
             "current": {
-              "selected": true,
+              "selected": false,
               "text": ".*",
               "value": ".*"
             },
@@ -5650,7 +5830,7 @@ data:
       "timezone": "",
       "title": "Prow job load",
       "uid": "acSjBD17z",
-      "version": 32,
+      "version": 37,
       "weekStart": ""
     }
 ---
