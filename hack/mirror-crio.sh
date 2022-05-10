@@ -13,6 +13,11 @@ mirror_crio_repo_for_version () {
     then
         CRIO_SUBDIR=""
         REPOID=$BASE_REPOID
+    elif [[ $1 = *":"* ]]
+    then    
+	CRIO_SUBDIR=":cri-o:$1"
+	REPOID_VER=$(echo $1 | sed 's/:/_/g')
+	REPOID="${BASE_REPOID}_cri-o_$REPOID_VER"
     else
         CRIO_SUBDIR=":cri-o:$1"
         REPOID="${BASE_REPOID}_cri-o_$1"
