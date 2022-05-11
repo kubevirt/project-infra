@@ -28,6 +28,13 @@
     KUBECONFIG: "{{ kubeconfig_path }}"
   when: bootstrap_full_config
 
+- name: Delete priority classes on prow-workloads BM cluster
+  when: delete_priority_classes
+  shell: |
+    kubectl delete pc sriov vgpu
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+
 - name: Launch deployment
   shell: |
     # for now cant execute "kubectl apply --server-side" reliably on

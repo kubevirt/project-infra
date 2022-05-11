@@ -19,3 +19,4 @@ SRIOVNodes:
 
 remote_cluster_prow_jobs_context: prow-workloads
 ansible_python_interpreter: /usr/bin/python3
+delete_priority_classes: true
