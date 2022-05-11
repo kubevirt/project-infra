@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: sriov-place-holder
+  namespace: kubevirt-prow-jobs
   labels:
     name: sriov-place-holder
 spec:
