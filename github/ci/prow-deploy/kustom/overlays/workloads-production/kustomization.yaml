@@ -8,6 +8,7 @@ resources:
   - resources/multus-cni.yaml
   - resources/metrics-server.yaml
   - resources/priority-classes.yaml
+  - resources/place-holder.yaml
   - ../../components/docker-mirror-proxy/base
   - ../../components/greenhouse/base
 
