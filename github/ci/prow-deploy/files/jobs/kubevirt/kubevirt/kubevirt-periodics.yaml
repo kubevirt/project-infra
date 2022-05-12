@@ -641,6 +641,7 @@ periodics:
         path: /dev/vfio/
         type: Directory
       name: vfio
+    priorityClassName: sriov
 - annotations:
     testgrid-create-test-group: "false"
   cluster: ibm-prow-jobs
