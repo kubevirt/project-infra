@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Includes basic workspace setup, with gcloud and a bootstrap runner
-FROM fedora:34
+FROM fedora:36
 
 WORKDIR /workspace
 RUN mkdir -p /workspace
@@ -106,9 +106,8 @@ RUN USE_BAZEL_VERSION=4.1.0 bazel version && \
 # create mixin directories
 RUN mkdir -p /etc/setup.mixin.d/ && mkdir -p /etc/teardown.mixin.d/
 
-# Workaround error when running buildah
-# 'overlay' is not supported over overlayfs, a mount_program is required: backing file system is unsupported for this graph driver
-RUN sed -i -e 's,#mount_program,mount_program,' /etc/containers/storage.conf
+# Trust git repositories used for e2e jobs
+RUN git config --global --add safe.directory '*'
 
 # note the runner is also responsible for making docker in docker function if
 # env DOCKER_IN_DOCKER_ENABLED is set and similarly responsible for generating
