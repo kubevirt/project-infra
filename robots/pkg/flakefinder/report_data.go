@@ -211,16 +211,29 @@ func SortTestsByRelevance(data map[string]map[string]*Details, tests []string) (
 			}
 			flakinessToTestNames[details.Severity] = append(flakinessToTestNames[details.Severity], test)
 
-			// if we only count the number of occurrences a test failed then tests with lower number of failures but same number of
-			// appearances might appear before tests that have higher number of failures.
+			// Counting the occurrences a test failed will cause tests with lower number of failures but
+			// same number of appearances to appear before tests that have higher number of failures.
+			// Also using the ratio of #tests_failed / #tests_succeeded as a factor emphasizes tests
+			// with less failures but a high ratio far more than tests with higher number of tests.
 			// As we want to emphasize tests that have higher failure numbers over those that have less failures,
-			// we calculate the severity ratio as #tests_failed / #tests_succeeded, which gives us a basic ratio and
-			// then multiply that value by the number of failures. This yields:
-			severityRatio := 1 + int(float64(details.Failed*details.Failed)/float64(details.Succeeded+1))
+			// we tabularize the severity as a factor according to the relation of #tests_failed / #tests_succeeded
+			// We then multiply that value by the number of failures.
+			var severityRatio float32
+			switch {
+			case details.Failed > 3*details.Succeeded:
+				severityRatio = 1.75
+			case details.Failed > details.Succeeded:
+				severityRatio = 1.5
+			case details.Failed < details.Succeeded:
+				severityRatio = 0.75
+			default:
+				severityRatio = 1
+			}
+			severityRatio = severityRatio * float32(details.Failed)
 			if _, exists := testsToSeveritiesWithNumbers[test]; !exists {
-				testsToSeveritiesWithNumbers[test] = map[string]int{details.Severity: severityRatio}
+				testsToSeveritiesWithNumbers[test] = map[string]int{details.Severity: int(severityRatio)}
 			} else {
-				testsToSeveritiesWithNumbers[test][details.Severity] = testsToSeveritiesWithNumbers[test][details.Severity] + severityRatio
+				testsToSeveritiesWithNumbers[test][details.Severity] = testsToSeveritiesWithNumbers[test][details.Severity] + int(severityRatio)
 			}
 
 			foundTests[test] = struct{}{}
