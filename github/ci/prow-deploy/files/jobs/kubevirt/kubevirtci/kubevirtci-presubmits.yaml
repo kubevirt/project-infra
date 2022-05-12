@@ -83,7 +83,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-      priorityClassName: sriov  
+      priorityClassName: sriov
   - always_run: true
     cluster: prow-workloads
     decorate: true
