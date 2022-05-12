@@ -78,7 +78,7 @@ var _ = Describe("report.go", func() {
 			Expect(SortTestsByRelevance(data, tests)).To(BeEquivalentTo([]string{"t3", "t1", "t2"}))
 		})
 
-		type testExpectations struct {
+		type testData struct {
 			testName  string
 			failed    []int
 			succeeded []int
@@ -86,7 +86,7 @@ var _ = Describe("report.go", func() {
 			severity  string
 		}
 
-		DescribeTable("returns tests of same severity weighted by total number of tests", func(expectations []testExpectations, expectedTestNameOrder []string) {
+		DescribeTable("returns tests of same severity weighted by total number of tests", func(expectations []testData, expectedTestNameOrder []string) {
 			testData := map[string]map[string]*Details{}
 			for _, expectation := range expectations {
 				testData[expectation.testName] = map[string]*Details{}
@@ -98,7 +98,7 @@ var _ = Describe("report.go", func() {
 			Expect(SortTestsByRelevance(testData, tests)).To(BeEquivalentTo(expectedTestNameOrder))
 		},
 			Entry("zeros shouldn't be a problem",
-				[]testExpectations{
+				[]testData{
 					{testName: "t1", failed: []int{2}, succeeded: []int{0}, skipped: []int{2}, severity: HeavilyFlaky},
 					{testName: "t2", failed: []int{1}, succeeded: []int{0}, skipped: []int{2}, severity: HeavilyFlaky},
 					{testName: "t3", failed: []int{3}, succeeded: []int{0}, skipped: []int{2}, severity: HeavilyFlaky},
@@ -106,7 +106,7 @@ var _ = Describe("report.go", func() {
 				[]string{"t3", "t1", "t2"},
 			),
 			Entry("the more failures the higher",
-				[]testExpectations{
+				[]testData{
 					{testName: "t1", failed: []int{2}, succeeded: []int{1}, skipped: []int{2}, severity: HeavilyFlaky},
 					{testName: "t2", failed: []int{1}, succeeded: []int{1}, skipped: []int{2}, severity: HeavilyFlaky},
 					{testName: "t3", failed: []int{3}, succeeded: []int{1}, skipped: []int{2}, severity: HeavilyFlaky},
@@ -114,7 +114,7 @@ var _ = Describe("report.go", func() {
 				[]string{"t3", "t1", "t2"},
 			),
 			Entry("multiple values with zeros",
-				[]testExpectations{
+				[]testData{
 					{testName: "t1", failed: []int{2, 0}, succeeded: []int{1, 0}, skipped: []int{2, 2}, severity: HeavilyFlaky},
 					{testName: "t2", failed: []int{1, 0}, succeeded: []int{1, 0}, skipped: []int{2, 2}, severity: HeavilyFlaky},
 					{testName: "t3", failed: []int{3, 0}, succeeded: []int{1, 0}, skipped: []int{2, 2}, severity: HeavilyFlaky},
@@ -122,7 +122,7 @@ var _ = Describe("report.go", func() {
 				[]string{"t3", "t1", "t2"},
 			),
 			Entry("multiple values",
-				[]testExpectations{
+				[]testData{
 					{testName: "t1", failed: []int{4, 5}, succeeded: []int{1, 1}, skipped: []int{2, 2}, severity: HeavilyFlaky},
 					{testName: "t2", failed: []int{3, 4}, succeeded: []int{1, 1}, skipped: []int{2, 2}, severity: HeavilyFlaky},
 					{testName: "t3", failed: []int{6, 7}, succeeded: []int{1, 1}, skipped: []int{2, 2}, severity: HeavilyFlaky},
@@ -130,7 +130,7 @@ var _ = Describe("report.go", func() {
 				[]string{"t3", "t1", "t2"},
 			),
 			Entry("errors high, ratios small",
-				[]testExpectations{
+				[]testData{
 					{testName: "t1", failed: []int{6, 7}, succeeded: []int{5, 6}, skipped: []int{2, 2}, severity: HeavilyFlaky},
 					{testName: "t2", failed: []int{4, 5}, succeeded: []int{3, 4}, skipped: []int{2, 2}, severity: HeavilyFlaky},
 					{testName: "t3", failed: []int{11, 12}, succeeded: []int{10, 11}, skipped: []int{2, 2}, severity: HeavilyFlaky},
@@ -138,7 +138,7 @@ var _ = Describe("report.go", func() {
 				[]string{"t3", "t1", "t2"},
 			),
 			Entry("higher ratio, the higher",
-				[]testExpectations{
+				[]testData{
 					{testName: "t1", failed: []int{6, 7}, succeeded: []int{3, 4}, skipped: []int{2, 2}, severity: HeavilyFlaky},
 					{testName: "t2", failed: []int{4, 5}, succeeded: []int{2, 3}, skipped: []int{2, 2}, severity: HeavilyFlaky},
 					{testName: "t3", failed: []int{11, 12}, succeeded: []int{2, 1}, skipped: []int{2, 2}, severity: HeavilyFlaky},
@@ -146,7 +146,7 @@ var _ = Describe("report.go", func() {
 				[]string{"t3", "t1", "t2"},
 			),
 			Entry("mixed lengths",
-				[]testExpectations{
+				[]testData{
 					{testName: "t1", failed: []int{8, 10}, succeeded: []int{2, 1}, skipped: []int{2, 2}, severity: HeavilyFlaky},
 					{testName: "t2", failed: []int{3, 4, 5}, succeeded: []int{1, 2, 3}, skipped: []int{2, 2, 2}, severity: HeavilyFlaky},
 					{testName: "t3", failed: []int{22}, succeeded: []int{2}, skipped: []int{2}, severity: HeavilyFlaky},
@@ -156,7 +156,7 @@ var _ = Describe("report.go", func() {
 
 			// while the ratio here is higher for t2, we still want to emphazise the cases with higher failures more
 			Entry("real life case 1: 10/9/2 > 9/9/3 > 6/3/12",
-				[]testExpectations{
+				[]testData{
 					{testName: "t1", failed: []int{9}, succeeded: []int{9}, skipped: []int{3}, severity: HeavilyFlaky},
 					{testName: "t2", failed: []int{6}, succeeded: []int{3}, skipped: []int{12}, severity: HeavilyFlaky},
 					{testName: "t3", failed: []int{10}, succeeded: []int{9}, skipped: []int{2}, severity: HeavilyFlaky},
@@ -164,7 +164,7 @@ var _ = Describe("report.go", func() {
 				[]string{"t3", "t1", "t2"},
 			),
 			Entry("real life case 2: 6/3/12 > 5/0/2 > 4/1/2",
-				[]testExpectations{
+				[]testData{
 					{testName: "t1", failed: []int{5}, succeeded: []int{0}, skipped: []int{2}, severity: HeavilyFlaky},
 					{testName: "t2", failed: []int{4}, succeeded: []int{1}, skipped: []int{2}, severity: HeavilyFlaky},
 					{testName: "t3", failed: []int{6}, succeeded: []int{3}, skipped: []int{12}, severity: HeavilyFlaky},
@@ -172,7 +172,7 @@ var _ = Describe("report.go", func() {
 				[]string{"t3", "t1", "t2"},
 			),
 			Entry("real life case 1: 15/1/0 > 13/0/3 > 3/0/13 > ",
-				[]testExpectations{
+				[]testData{
 					{testName: "t1", failed: []int{13}, succeeded: []int{0}, skipped: []int{3}, severity: HeavilyFlaky},
 					{testName: "t2", failed: []int{3}, succeeded: []int{0}, skipped: []int{13}, severity: HeavilyFlaky},
 					{testName: "t3", failed: []int{15}, succeeded: []int{1}, skipped: []int{0}, severity: HeavilyFlaky},
@@ -181,7 +181,7 @@ var _ = Describe("report.go", func() {
 			),
 
 			Entry("less number of succeeded, more severe: 5/1/13 > 5/3/3 > 5/5/0",
-				[]testExpectations{
+				[]testData{
 					{testName: "t1", failed: []int{5}, succeeded: []int{3}, skipped: []int{3}, severity: HeavilyFlaky},
 					{testName: "t2", failed: []int{5}, succeeded: []int{5}, skipped: []int{13}, severity: HeavilyFlaky},
 					{testName: "t3", failed: []int{5}, succeeded: []int{1}, skipped: []int{0}, severity: HeavilyFlaky},
