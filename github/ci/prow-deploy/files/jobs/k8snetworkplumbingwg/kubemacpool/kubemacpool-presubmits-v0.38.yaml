@@ -1,0 +1,59 @@
+---
+presubmits:
+  k8snetworkplumbingwg/kubemacpool:
+    - name: pull-kubemacpool-unit-test-v0.38
+      branches:
+        - release-v0.38
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      cluster: ibm-prow-jobs
+      max_concurrency: 4
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
+            securityContext:
+              privileged: true
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.unit-test.sh"
+
+    - name: pull-kubemacpool-e2e-k8s-v0.38
+      branches:
+        - release-v0.38
+      always_run: true
+      optional: false
+      decorate: true
+      cluster: prow-workloads
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 4
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-k8s.sh"
