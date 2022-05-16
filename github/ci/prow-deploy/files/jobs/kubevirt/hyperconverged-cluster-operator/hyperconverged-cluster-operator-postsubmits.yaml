@@ -14,7 +14,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+          - image: quay.io/kubevirtci/bootstrap:v20220512-78048f1
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
