@@ -20,7 +20,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+          - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
             securityContext:
               privileged: true
             resources:
@@ -50,7 +50,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+          - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
             securityContext:
               privileged: true
             resources:
@@ -80,7 +80,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+          - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
             securityContext:
               privileged: true
             resources:
@@ -111,7 +111,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+          - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
             securityContext:
               privileged: true
             resources:
@@ -142,7 +142,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+          - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
             securityContext:
               privileged: true
             resources:
@@ -173,7 +173,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+          - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
             securityContext:
               privileged: true
             resources:
@@ -184,40 +184,6 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-bridge-marker-functests.sh"
-    - name: pull-e2e-cnao-nmstate-functests-release-0.76
-      branches:
-        - release-0.76
-      always_run: true
-      optional: false
-      decorate: true
-      skip_report: false
-      decoration_config:
-        timeout: 3h
-        grace_period: 25m
-      max_concurrency: 6
-      cluster: prow-workloads
-      labels:
-        preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
-        preset-shared-images: "true"
-      spec:
-        nodeSelector:
-          type: bare-metal-external
-        containers:
-          - image: quay.io/kubevirtci/golang:v20211129-3b6e9a6
-            securityContext:
-              privileged: true
-            resources:
-              requests:
-                memory: "29Gi"
-            env:
-              - name: GIMME_GO_VERSION
-                value: "1.16"
-            command:
-              - "/usr/local/bin/runner.sh"
-              - "/bin/sh"
-              - "-c"
-              - "automation/check-patch.e2e-nmstate-functests.sh"
     - name: pull-e2e-cnao-ovs-cni-functests-release-0.76
       branches:
         - release-0.76
@@ -238,7 +204,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+          - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
             securityContext:
               privileged: true
             resources:
@@ -269,7 +235,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+          - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
             securityContext:
               privileged: true
             resources:
