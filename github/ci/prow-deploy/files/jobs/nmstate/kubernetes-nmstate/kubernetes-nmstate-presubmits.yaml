@@ -20,7 +20,7 @@ presubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20220211-d7d6c59
+          - image: quay.io/kubevirtci/golang:v20220512-78048f1
             securityContext:
               privileged: true
             env:
@@ -52,7 +52,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20220211-d7d6c59
+          - image: quay.io/kubevirtci/golang:v20220512-78048f1
             securityContext:
               privileged: true
             resources:
@@ -88,7 +88,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20220211-d7d6c59
+          - image: quay.io/kubevirtci/golang:v20220512-78048f1
             securityContext:
               privileged: true
             resources:
@@ -121,7 +121,7 @@ presubmits:
         preset-shared-images: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+          - image: quay.io/kubevirtci/bootstrap:v20220512-78048f1
             securityContext:
               privileged: true
             command:
@@ -154,7 +154,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20220211-d7d6c59
+          - image: quay.io/kubevirtci/golang:v20220512-78048f1
             securityContext:
               privileged: true
             resources:
@@ -189,7 +189,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20220211-d7d6c59
+          - image: quay.io/kubevirtci/golang:v20220512-78048f1
             securityContext:
               privileged: true
             resources:

@@ -22,7 +22,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210419-444033d
+      - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20220425-b167bb8
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -48,7 +48,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+      - image: quay.io/kubevirtci/bootstrap:v20220512-78048f1
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
