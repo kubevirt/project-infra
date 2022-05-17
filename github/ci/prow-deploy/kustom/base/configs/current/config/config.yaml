@@ -33,6 +33,16 @@ deck:
       - podinfo.json
     - lens:
         name: buildlog
+        config:
+          highlight_regexes:
+          # default patterns, see https://github.com/kubernetes/test-infra/blob/e7ccf79861d3c53dfaa6c784c0c8537922c4c0cc/prow/spyglass/lenses/buildlog/lens.go#L95
+          - ^E\d{4} \d\d:\d\d:\d\d\.\d+
+          - "(Error|ERROR|error)s?:"
+          - (FAIL|Failure \[)\b
+          - "timed out"
+          - panic\b
+          # own patterns
+          - \[FAILED\]
       required_files:
         - build-log.txt
     - lens:
