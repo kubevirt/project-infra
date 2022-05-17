@@ -1112,7 +1112,7 @@ presubmits:
         env:
         - name: FEATURE_GATES
           value: NonRoot
-        - name: NONROOT
+        - name: KUBEVIRT_NONROOT
           value: "true"
         - name: TARGET
           value: kind-1.19-vgpu
