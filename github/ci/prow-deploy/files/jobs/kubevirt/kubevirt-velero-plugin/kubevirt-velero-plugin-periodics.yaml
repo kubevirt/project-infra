@@ -1,0 +1,37 @@
+periodics:
+- name: periodic-kvp-push-nightly-build-main
+  cron: "2 2 * * *"
+  decorate: true
+  annotations:
+    testgrid-dashboards: kubevirt-velero-plugin-periodics
+  decoration_config:
+    timeout: 4h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+    rehearsal.allowed: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: kubevirt-velero-plugin
+      base_ref: main
+      work_dir: true
+  cluster: prow-workloads
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+    - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+      command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/bash"
+        - "-c"
+        - "hack/run-ci.sh"
+      # docker-in-docker needs privileged mode
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "29Gi"
