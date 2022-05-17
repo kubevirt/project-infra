@@ -18,7 +18,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+        - image: quay.io/kubevirtci/bootstrap:v20220512-78048f1
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -36,6 +36,7 @@ presubmits:
       - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
+      testgrid-dashboards: kubevirt-velero-plugin-presubmits
     always_run: true
     skip_report: false
     optional: false
@@ -50,7 +51,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+        - image: quay.io/kubevirtci/bootstrap:v20220512-78048f1
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"

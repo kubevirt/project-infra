@@ -6,6 +6,7 @@ config_updater:
         default:
           - kubevirt-prow
     github/ci/prow-deploy/files/jobs/**/*.yaml:
+      gzip: true
       name: job-config
       clusters:
         default:
@@ -349,6 +350,12 @@ plugins:
     - owners-label
     - trigger
 
+  kubevirt/secrets:
+    plugins:
+    - approve
+    - lgtm
+    - trigger
+
   kubevirt/ssp-operator:
     plugins:
     - approve
@@ -484,6 +491,7 @@ triggers:
   - kubevirt/kubevirt-velero-plugin
   - kubevirt/qe-tools
   - kubevirt/cloud-provider-kubevirt
+  - kubevirt/secrets
 - repos:
   - virtblocks/virtblocks
 - repos:
@@ -534,6 +542,12 @@ approve:
   lgtm_acts_as_approve: false
   ignore_review_state: true
   commandHelpLink: https://go.k8s.io/bot-commands
+- repos:
+  - kubevirt/secrets
+  require_self_approval: false
+  lgtm_acts_as_approve: true
+  ignore_review_state: true
+  commandHelpLink: https://go.k8s.io/bot-commands
 
 lgtm:
 - repos:
@@ -574,6 +588,7 @@ lgtm:
   - kubevirt/kubevirt-velero-plugin
   - kubevirt/qe-tools
   - kubevirt/cloud-provider-kubevirt
+  - kubevirt/secrets
   review_acts_as_lgtm: true
 
 override:

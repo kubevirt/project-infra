@@ -22,7 +22,7 @@ do
   image_in_target="${image_in_source//\//-}" # replace / with -
 
   echo "Mirroring from $source_registry/$image_in_source to $target_registry/$image_in_target"
-  skopeo copy "docker://$source_registry/$image_in_source" "docker://$target_registry/$image_in_target" 
+  skopeo copy --multi-arch all "docker://$source_registry/$image_in_source" "docker://$target_registry/$image_in_target"
 done
 
 echo "DONE!"

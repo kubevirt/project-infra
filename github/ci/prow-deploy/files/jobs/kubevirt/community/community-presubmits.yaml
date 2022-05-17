@@ -7,7 +7,7 @@ presubmits:
     decorate: true
     spec:
       containers:
-        - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210419-444033d
+        - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20220425-b167bb8
           command: [ "/usr/local/bin/runner.sh", "/bin/bash", "-c" ]
           args:
             - pip install ruamel.yaml && ./hack/generate-devstats-repo-sql.py

@@ -651,7 +651,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+      - image: quay.io/kubevirtci/bootstrap:v20220512-78048f1
         env:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror

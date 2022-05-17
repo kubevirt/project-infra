@@ -32,6 +32,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	retry "github.com/avast/retry-go"
 	"github.com/bndr/gojenkins"
 	"github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
@@ -84,26 +85,18 @@ const (
         .center {
             text-align:center
         }
-        .right {
-            text-align: right;
-			width: 100%;
-        }
 
-
-        /* Popup container - can be anything you want */
         .popup {
             position: relative;
             display: inline-block;
-            cursor: pointer;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
         }
 
-        /* The actual popup */
         .popup .popuptext {
-            visibility: hidden;
+            display: none;
             width: 220px;
             background-color: #555;
             text-align: center;
@@ -115,18 +108,16 @@ const (
             margin-left: -110px;
         }
 
-        .nowrap {
-            white-space: nowrap;
-        }
-
-        /* Toggle this class - hide and show the popup */
-        .popup .show {
-            visibility: visible;
+        .popup:hover .popuptext {
+            display: block;
             -webkit-animation: fadeIn 1s;
             animation: fadeIn 1s;
         }
 
-        /* Add animation (fade in the popup) */
+        .nowrap {
+            white-space: nowrap;
+        }
+
         @-webkit-keyframes fadeIn {
             from {opacity: 0;}
             to {opacity: 1;}
@@ -168,13 +159,13 @@ const (
         </td>
         {{else}}
         <td class="{{ (index $.Data $test $header).Severity }} center">
-            <div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup" >
-                <span class="tests_failed" title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span class="tests_passed" title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span class="tests_skipped" title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>
+            <div id="r{{$row}}c{{$col}}" class="popup" >
+                <span class="tests_failed" title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span class="tests_passed" title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span class="tests_skipped" title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>{{ if (index $.Data $test $header).Jobs }}
                 <div class="popuptext" id="targetr{{$row}}c{{$col}}">
                     {{ range $Job := (index $.Data $test $header).Jobs }}
                     <div class="{{.Severity}} nowrap">{{ if ne .PR 0 }}<a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/{{.BuildNumber}}">{{.BuildNumber}}</a>{{ else }}<a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/{{.BuildNumber}}">{{.BuildNumber}}</a>{{ end }}</div>
                     {{ end }}
-                </div>
+                </div>{{ end }}
             </div>
             {{end}}
         </td>
@@ -183,13 +174,6 @@ const (
     {{ end }}
 </table>
 {{ end }}
-
-<script>
-    function popup(id) {
-        var popup = document.getElementById("target" + id);
-        popup.classList.toggle("show");
-    }
-</script>
 
 </body>
 </html>
@@ -371,35 +355,25 @@ func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Je
 		fLog.Fatalf("failed to fetch job: %v", err)
 	}
 
-	fLog.Printf("Fetching last build")
-	lastBuild, err := job.GetLastBuild(ctx)
-	if err != nil {
-		if statusCode := httpStatusOrDie(err, fLog); statusCode == http.StatusNotFound {
-			fLog.Printf("No last build found")
-			return
-		}
-		fLog.Fatalf("failed to fetch last build: %v", err)
-	}
-
-	completedBuilds := fetchCompletedBuildsForJob(startOfReport, lastBuild, job, ctx, fLog)
+	completedBuilds := fetchCompletedBuildsForJob(startOfReport, job.Raw.LastBuild.Number, job, ctx, fLog)
 	junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(completedBuilds, fLog)
 	reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job, fLog)
 
 	reportChan <- reportsPerJob
 }
 
-func fetchCompletedBuildsForJob(startOfReport time.Time, lastBuild *gojenkins.Build, job *gojenkins.Job, ctx context.Context, fLog *log.Entry) []*gojenkins.Build {
-	fLog.Printf("Fetching completed builds")
+func fetchCompletedBuildsForJob(startOfReport time.Time, lastBuildNumber int64, job *gojenkins.Job, ctx context.Context, fLog *log.Entry) []*gojenkins.Build {
+	fLog.Printf("Fetching completed builds, starting at %d", lastBuildNumber)
 	var completedBuilds []*gojenkins.Build
-	for i := lastBuild.GetBuildNumber(); i > 0; i-- {
-		fLog.Printf("Fetching build no %d", i)
-		build, err := job.GetBuild(ctx, i)
-		if err != nil {
-			fLog.Warnf("failed to fetch build data for build no %d: %v", i, err)
-			if statusCode := httpStatusOrDie(err, fLog); statusCode == http.StatusNotFound {
-				continue
+	for buildNumber := lastBuildNumber; buildNumber > 0; buildNumber-- {
+		fLog.Printf("Fetching build no %d", buildNumber)
+		build, statusCode, err := getBuildWithRetry(job, ctx, buildNumber, fLog)
+
+		if build == nil {
+			if statusCode != http.StatusNotFound {
+				fLog.Fatalf("failed to fetch build data for build no %d: %v", buildNumber, err)
 			}
-			fLog.Fatalf("failed to fetch build data for build no %d: %v", i, err)
+			continue
 		}
 
 		if build.GetResult() != "SUCCESS" &&
@@ -421,8 +395,32 @@ func fetchCompletedBuildsForJob(startOfReport time.Time, lastBuild *gojenkins.Bu
 	return completedBuilds
 }
 
-// httpStatusOrDie fetches stringly typed error code produced by jenkins client or logs a fatal error if conversion to
-// int is not possible
+func getBuildWithRetry(job *gojenkins.Job, ctx context.Context, buildNumber int64, fLog *log.Entry) (build *gojenkins.Build, statusCode int, err error) {
+	retry.Do(
+		func() error {
+			build, err = job.GetBuild(ctx, buildNumber)
+			if err != nil {
+				return err
+			}
+			return nil
+		},
+		retry.RetryIf(func(err error) bool {
+			fLog.Warningf("failed to fetch build data for build no %d: %v", buildNumber, err)
+			statusCode = httpStatusOrDie(err, fLog)
+			if statusCode == http.StatusNotFound {
+				return false
+			}
+			if statusCode == http.StatusGatewayTimeout {
+				return true
+			}
+			return false
+		}),
+	)
+	return build, statusCode, err
+}
+
+// httpStatusOrDie fetches [stringly typed](https://wiki.c2.com/?StringlyTyped) error code produced by jenkins client
+// or logs a fatal error if conversion to int is not possible
 func httpStatusOrDie(err error, fLog *log.Entry) int {
 	statusCode, err2 := strconv.Atoi(err.Error())
 	if err2 != nil {

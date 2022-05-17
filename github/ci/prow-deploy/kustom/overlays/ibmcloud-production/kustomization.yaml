@@ -356,3 +356,9 @@ secretGenerator:
       # fossaToken
       - token=secrets/kubevirtci-fossa-token
     type: Opaque
+  - name: prow-kubevirtbot-github-ssh-secret
+    namespace: kubevirt-prow-jobs
+    files:
+      # prowKubevirtbotSSHPrivateKey
+      - token=secrets/prow-kubevirtbot-github-ssh-secret
+    type: Opaque

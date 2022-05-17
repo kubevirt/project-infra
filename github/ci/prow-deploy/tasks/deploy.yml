@@ -10,6 +10,31 @@
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
 
+# Config needs to be there before the deployment is launched, the deployments depend on the configmaps being there
+- name: Bootstrap the full job config
+  shell: |
+    config-bootstrapper \
+      --dry-run=false \
+      --source-path=$CONFIG_ROOT \
+      --config-path=$PROW_CONFIG_PATH \
+      --plugin-config=$PLUGIN_CONFIG_PATH \
+      --job-config-path=$JOB_CONFIG_PATH
+  environment:
+    # NOTE: the `--source-path`/`CONFIG_ROOT` MUST NOT contain parts of the relative path that we are using in the plugins config!
+    CONFIG_ROOT: "{{ project_infra_root }}/"
+    JOB_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/files/jobs/"
+    PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
+    PLUGIN_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/plugins/plugins.yaml"
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  when: bootstrap_full_config
+
+- name: Delete priority classes on prow-workloads BM cluster
+  when: delete_priority_classes
+  shell: |
+    kubectl delete pc sriov sriov-place-holder vgpu
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+
 - name: Launch deployment
   shell: |
     # for now cant execute "kubectl apply --server-side" reliably on
@@ -24,22 +49,6 @@
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
-
-- name: Bootstrap the full job config
-  shell: |
-    config-bootstrapper \
-      --dry-run=false \
-      --source-path=$CONFIG_ROOT \
-      --config-path=$PROW_CONFIG_PATH \
-      --plugin-config=$PLUGIN_CONFIG_PATH \
-      --job-config-path=$JOB_CONFIG_PATH
-  environment:
-    CONFIG_ROOT: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs"
-    JOB_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/files/jobs/"
-    PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
-    PLUGIN_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/plugins/plugins.yaml"
-    KUBECONFIG: "{{ kubeconfig_path }}"
-  when: bootstrap_full_config
 
 - name: Reconcile webhooks for onboarded repositories
   shell: |

@@ -31,7 +31,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: "1.17"
-      image: quay.io/kubevirtci/golang:v20220211-d7d6c59
+      image: quay.io/kubevirtci/golang:v20220512-78048f1
       name: ""
       resources:
         requests:

@@ -8,6 +8,7 @@ resources:
   - resources/multus-cni.yaml
   - resources/metrics-server.yaml
   - resources/priority-classes.yaml
+  - resources/place-holder.yaml
   - ../../components/docker-mirror-proxy/base
   - ../../components/greenhouse/base
 
@@ -78,4 +79,10 @@ secretGenerator:
     files:
       # fossaToken
       - token=secrets/kubevirtci-fossa-token
+    type: Opaque
+  - name: prow-kubevirtbot-github-ssh-secret
+    namespace: kubevirt-prow-jobs
+    files:
+    # prowKubevirtbotSSHPrivateKey
+    - token=secrets/prow-kubevirtbot-github-ssh-secret
     type: Opaque

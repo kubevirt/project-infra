@@ -1,25 +1,24 @@
+---
 presubmits:
-  kubevirt/macvtap-cni:
-    - name: pull-macvtap-cni-unit-test
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+  k8snetworkplumbingwg/kubemacpool:
+    - name: pull-kubemacpool-unit-test-v0.38
+      branches:
+        - release-v0.38
       always_run: true
       optional: false
       decorate: true
       decoration_config:
         timeout: 3h
         grace_period: 5m
-      max_concurrency: 6
+      cluster: ibm-prow-jobs
+      max_concurrency: 4
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
-      cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220512-78048f1
+          - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
             securityContext:
               privileged: true
             command:
@@ -28,28 +27,26 @@ presubmits:
               - "-c"
               - "automation/check-patch.unit-test.sh"
 
-    - name: pull-macvtap-cni-e2e-k8s
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-kubemacpool-e2e-k8s-v0.38
+      branches:
+        - release-v0.38
       always_run: true
       optional: false
       decorate: true
+      cluster: prow-workloads
       decoration_config:
         timeout: 3h
         grace_period: 5m
-      max_concurrency: 6
+      max_concurrency: 4
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
-      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220512-78048f1
+          - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
             securityContext:
               privileged: true
             resources:
