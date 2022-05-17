@@ -61,6 +61,36 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-workflow-k8s.sh"
+    - name: pull-e2e-cnao-monitoring-release-0.76
+      branches:
+        - release-0.76
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 6
+      cluster: prow-workloads
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-monitoring-k8s.sh"
     - name: pull-cnao-unit-test-release-0.76
       branches:
         - release-0.76
