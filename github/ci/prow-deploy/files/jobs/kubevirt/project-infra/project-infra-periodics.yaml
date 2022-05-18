@@ -698,3 +698,54 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
+- annotations:
+    testgrid-create-test-group: "false"
+  cluster: ibm-prow-jobs
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    workdir: true
+  interval: 1h
+  labels:
+    preset-docker-mirror: "true"
+    preset-shared-images: "true"
+    preset-github-credentials: "true"
+  max_concurrency: 1
+  name: periodic-project-infra-check-prow-jobconfigs
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/golang:v20211129-3b6e9a6
+      env:
+      - name: GIMME_GO_VERSION
+        value: "1.16"
+      command:
+      - "/usr/local/bin/runner.sh"
+      - "/bin/sh"
+      - "-ce"
+      - |
+        ( cd robots/cmd/job-config-validator && go build ./... )
+
+        curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+        chmod +x ./yq && mv ./yq /usr/local/bin/yq
+
+        source ./hack/manage-secrets.sh
+        decrypt_secrets
+        extract_secret 'kubeconfig' ~/.kube/config
+
+        ./robots/cmd/job-config-validator/job-config-validator
+      resources:
+        requests:
+          memory: "1Gi"
+      volumeMounts:
+      - name: pgp-bot-key
+        mountPath: /etc/pgp
+        readOnly: true
+    volumes:
+    - name: pgp-bot-key
+      secret:
+        secretName: pgp-bot-key

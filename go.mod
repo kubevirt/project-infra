@@ -16,6 +16,7 @@ require (
 	github.com/joshdk/go-junit v0.0.0-20190428045703-ad7e11aa49ff
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.13.0
+	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/prometheus/client_golang v1.11.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.1.3
