@@ -117,7 +117,7 @@ presubmits:
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "true"
         - name: SONOBUOY_EXTRA_ARGS
-          value: --plugin-env kubevirt-conformance.E2E_FOCUS=GPU
+          value: "--plugin-env kubevirt-conformance.E2E_FOCUS=MediatedDevices --plugin-env kubevirt-conformance.E2E_SKIP=QUARANTINE"
         image: quay.io/kubevirtci/golang:v20220211-d7d6c59
         name: ""
         resources:
