@@ -12,7 +12,7 @@ data:
     groups:
       - name: GrafanaLogAlerts
         rules:
-        - alert: HighPercentageError
+        - alert: HighPercentageErrorGrafana
           expr: |
             sum(rate({app="grafana", namespace="monitoring"} |= "error" [5m])) by (job)
               /
@@ -23,7 +23,7 @@ data:
               severity: "warning"
               namespace: "monitoring"
           annotations:
-              description: "High percentage of errors in the logs"
+              description: "High percentage of errors in Grafana logs"
         - alert: HighFailedLoginsGrafana
           expr: | 
             rate({app="grafana"} |= "Invalid username or password" [5m]) 
