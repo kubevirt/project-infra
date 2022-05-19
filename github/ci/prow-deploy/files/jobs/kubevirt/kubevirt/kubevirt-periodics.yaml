@@ -609,8 +609,6 @@ periodics:
         value: "true"
       - name: TARGET
         value: kind-1.22-sriov
-      - name: GIMME_GO_VERSION
-        value: 1.13.8
       image: quay.io/kubevirtci/golang:v20220512-78048f1
       name: ""
       resources:
