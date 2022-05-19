@@ -158,6 +158,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      priorityClassName: vgpu
   - always_run: true
     cluster: prow-workloads
     decorate: true
