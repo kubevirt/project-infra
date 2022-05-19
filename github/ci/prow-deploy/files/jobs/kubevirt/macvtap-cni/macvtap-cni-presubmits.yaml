@@ -13,13 +13,13 @@ presubmits:
         grace_period: 5m
       max_concurrency: 6
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220823-3fed276
             securityContext:
               privileged: true
             command:
@@ -41,7 +41,7 @@ presubmits:
         grace_period: 5m
       max_concurrency: 6
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       cluster: prow-workloads
@@ -49,12 +49,15 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220823-3fed276
             securityContext:
               privileged: true
             resources:
               requests:
                 memory: "29Gi"
+            env:
+            - name: OCI_BIN
+              value: podman
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
