@@ -43,8 +43,6 @@ presubmits:
           make cluster-up
           ./cluster-up/cluster/kind/check-cluster-up.sh
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.13.8
         - name: KUBEVIRT_PROVIDER
           value: kind-1.22-sriov
         - name: KUBEVIRT_NUM_NODES
@@ -108,8 +106,6 @@ presubmits:
           make cluster-up
           ./cluster-up/cluster/kind/check-cluster-up.sh
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.13.8
         - name: KUBEVIRT_PROVIDER
           value: kind-1.23-vgpu
         - name: KUBEVIRT_NUM_NODES
