@@ -30,7 +30,7 @@ periodics:
           - name: BASE_REPOID
             value: devel_kubic_libcontainers_stable
           - name: CRIO_VERSIONS
-            value: "1.20,1.21,1.22,1.23"
+            value: "1.21,1.22,1.23,1.24"
         command: ["/bin/sh", "-ce"]
         args:
           - |
