@@ -289,12 +289,18 @@ repos:
         previously:
           - name: good first issue
             color: 128A0C
-      - name: help wanted
+      - name: help-wanted
         color: 128A0C
         target: issues
-      - name: distro/kuberenetes
+        previously:
+        - name: help wanted
+          color: 128A0C
+      - name: distro/kubernetes
         color: fcb3ad
         target: both
+        previously:
+        - name: distro/kuberenetes
+          color: fcb3ad
       - name: distro/openshift
         color: fcb3ad
         target: both
@@ -406,6 +412,32 @@ repos:
         target: prs
         addedBy: openshift-ci
         prowPlugin: label
+  kubevirt/project-infra:
+    labels:
+      - addedBy: anyone
+        color: 81F2B9
+        description: Issues and PRs concerning FlakeFinder, a tool to find flaky tests
+        name: area/flakefinder
+        prowPlugin: label
+        target: both
+      - addedBy: anyone
+        color: AB72F2
+        description: Issues and PRs concerning KubeVirt Prow, i.e. configuration, setup etc.
+        name: area/prow
+        prowPlugin: label
+        target: both
+      - addedBy: anyone
+        color: F2E75C
+        description: Issues and PRs concerning automation, i.e. KubeVirt job updates, KubeVirtCI bumps etc.
+        name: area/automation
+        prowPlugin: label
+        target: both
+      - addedBy: anyone
+        color: F2E75C
+        description: Issues and PRs concerning monitoring of Prow components
+        name: area/monitoring
+        prowPlugin: label
+        target: both
   nmstate/kubernetes-nmstate:
     labels:
       - name: kind/documentation
