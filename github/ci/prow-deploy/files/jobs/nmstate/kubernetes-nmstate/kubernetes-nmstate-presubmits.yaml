@@ -14,13 +14,13 @@ presubmits:
         grace_period: 5m
       max_concurrency: 6
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror: "false"
         preset-shared-images: "true"
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20220728-1410a63
+          - image: quay.io/kubevirtci/golang:v20220823-3fed276
             securityContext:
               privileged: true
             env:
@@ -44,7 +44,7 @@ presubmits:
         grace_period: 5m
       max_concurrency: 6
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       cluster: prow-workloads
@@ -52,7 +52,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20220728-1410a63
+          - image: quay.io/kubevirtci/golang:v20220823-3fed276
             securityContext:
               privileged: true
             resources:
@@ -80,7 +80,7 @@ presubmits:
         grace_period: 5m
       max_concurrency: 6
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       cluster: prow-workloads
@@ -88,7 +88,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20220728-1410a63
+          - image: quay.io/kubevirtci/golang:v20220823-3fed276
             securityContext:
               privileged: true
             resources:
@@ -116,12 +116,12 @@ presubmits:
         timeout: 1h
         grace_period: 5m
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror: "false"
         preset-shared-images: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220823-3fed276
             securityContext:
               privileged: true
             command:
@@ -146,7 +146,7 @@ presubmits:
         grace_period: 5m
       max_concurrency: 6
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       cluster: prow-workloads
@@ -154,7 +154,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20220728-1410a63
+          - image: quay.io/kubevirtci/golang:v20220823-3fed276
             securityContext:
               privileged: true
             resources:
@@ -181,7 +181,7 @@ presubmits:
         grace_period: 5m
       max_concurrency: 6
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       cluster: prow-workloads
@@ -189,7 +189,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20220728-1410a63
+          - image: quay.io/kubevirtci/golang:v20220823-3fed276
             securityContext:
               privileged: true
             resources:
