@@ -91,6 +91,12 @@
         dest: '{{ secrets_dir }}/kubeconfig-build-test-infra-trusted'
         remote_src: true
 
+    - name: Create kubeconfig-build-k8s-prow-builds
+      copy:
+        src: '{{ kubeconfig_path }}'
+        dest: '{{ secrets_dir }}/kubeconfig-build-k8s-prow-builds'
+        remote_src: true
+
     - name: copy production kustomize files
       synchronize:
         src: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/ibmcloud-production/{{ item }}'
