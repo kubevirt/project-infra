@@ -533,11 +533,13 @@ presubmits:
         env:
         - name: TARGET
           value: windows2016
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 8G
         image: quay.io/kubevirtci/bootstrap:v20220512-78048f1
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 32Gi
         securityContext:
           privileged: true
       nodeSelector:
