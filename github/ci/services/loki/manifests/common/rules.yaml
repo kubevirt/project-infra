@@ -45,4 +45,4 @@ data:
             severity: "critical"
             namespace: "monitoring"
           annotations:
-            description: "CI Search persistent volume is full"
+            description: "High rate of failed writes to CI Search persistent volumes"
