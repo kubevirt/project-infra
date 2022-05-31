@@ -719,7 +719,7 @@ periodics:
   name: periodic-project-infra-check-prow-jobconfigs
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20211129-3b6e9a6
+    - image: quay.io/kubevirtci/golang:v20220512-78048f1
       env:
       - name: GIMME_GO_VERSION
         value: "1.16"
