@@ -114,7 +114,7 @@ presubmits:
           value: "true"
         - name: SONOBUOY_EXTRA_ARGS
           value: "--plugin-env kubevirt-conformance.E2E_FOCUS=MediatedDevices --plugin-env kubevirt-conformance.E2E_SKIP=QUARANTINE"
-        image: quay.io/kubevirtci/golang:v20220211-d7d6c59
+        image: quay.io/kubevirtci/golang:v20220512-78048f1
         name: ""
         resources:
           requests:
