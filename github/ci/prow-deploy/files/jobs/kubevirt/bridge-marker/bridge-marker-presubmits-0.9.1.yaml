@@ -1,11 +1,9 @@
 ---
 presubmits:
   kubevirt/bridge-marker:
-    - name: pull-bridge-marker-test
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-bridge-marker-test-0.9.1
+      branches:
+        - release-0.9.1
       always_run: true
       optional: false
       decorate: true
