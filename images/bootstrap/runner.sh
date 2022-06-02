@@ -124,7 +124,8 @@ EOF
             sleep ${WAIT_N}
         else
             echo "Reached maximum attempts, not waiting any longer..."
-            break
+	    echo "Docker daemon failed to start successfully"
+            exit 1
         fi
     done
     printf '=%.0s' {1..80}; echo
