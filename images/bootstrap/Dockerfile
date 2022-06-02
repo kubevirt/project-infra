@@ -14,37 +14,6 @@
 # limitations under the License.
 
 # Includes basic workspace setup, with gcloud and a bootstrap runner
-FROM fedora:36 AS builder
-
-ENV PKG_CONFIG_PATH="/usr/lib/pkgconfig"
-ENV PODMAN_VERSION="v4.0.3"
-
-WORKDIR /app
-
-ENV GIMME_GO_VERSION=1.16.8
-
-# Cache latest stable golang version
-RUN curl -sL -o /bin/gimme https://raw.githubusercontent.com/travis-ci/gimme/master/gimme && \
-    chmod +x /bin/gimme && \
-    mkdir -p /etc/setup.mixin.d/ && \
-    echo 'eval $(gimme ${GIMME_GO_VERSION})' > /etc/setup.mixin.d/golang.sh
-RUN cat /etc/setup.mixin.d/golang.sh
-RUN . /etc/setup.mixin.d/golang.sh
-
-RUN dnf install -y \
-    git \
-    gpgme-devel \
-    libseccomp-devel \
-    make \
-    systemd-devel && \
-    git clone https://github.com/containers/podman && \
-    cd podman && \
-    git checkout ${PODMAN_VERSION} && \
-    . /etc/setup.mixin.d/golang.sh && \
-    dnf install -y gcc glibc-static && \
-    make install.tools && \
-    make binaries
-
 FROM fedora:36
 
 WORKDIR /workspace
@@ -111,8 +80,6 @@ RUN dnf -y update; dnf -y reinstall shadow-utils && \
     dnf -y install crun podman --exclude container-selinux && \
     dnf -y clean all && \
     ln -s /usr/bin/podman /usr/bin/docker
-
-COPY --from=builder /app/podman/bin/podman /usr/bin/podman
 
 VOLUME /var/lib/containers
 
