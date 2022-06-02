@@ -43,7 +43,7 @@ import (
 const (
 	defaultJenkinsBaseUrl        = "https://main-jenkins-csb-cnvqe.apps.ocp-c1.prod.psi.redhat.com/"
 	defaultJenkinsJobNamePattern = "^test-kubevirt-cnv-4.10-(compute|network|operator|storage)(-[a-z0-9]+)?$"
-	defaultArtifactFileNameRegex = "^((merged|partial)\\.)?junit\\.functest(\\.[0-9]+)?\\.xml$"
+	defaultArtifactFileNameRegex = "^(xunit_results|((merged|partial)\\.)?junit\\.functest(\\.[0-9]+)?)\\.xml$"
 	JenkinsReportTemplate        = `
 <html>
 <head>
