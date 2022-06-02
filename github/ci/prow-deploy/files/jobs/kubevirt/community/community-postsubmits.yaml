@@ -29,6 +29,7 @@ postsubmits:
                 TARGET_DIR=$REPO_DIR/scripts/kubevirt/
                 mkdir -p $TARGET_DIR
                 pip3 install ruamel.yaml
+                export GIT_ASKPASS=$PWD/../project-infra/hack/git-askpass.sh
                 ../project-infra/hack/git-pr.sh -c "python3 $(pwd)/hack/generate-devstats-repo-sql.py --repo-groups-sql $TARGET_DIR/repo_groups.sql" -p $REPO_DIR -o cncf -r devstats -b update-kubevirt-devstats-repo-sql
             resources:
               requests:
