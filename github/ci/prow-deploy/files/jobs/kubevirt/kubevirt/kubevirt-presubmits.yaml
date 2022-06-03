@@ -1884,6 +1884,33 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    max_concurrency: 11
+    name: pull-kubevirt-code-lint
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    skip_report: false
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          make lint
+        image: quay.io/kubevirtci/bootstrap:v20220512-78048f1
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
