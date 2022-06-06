@@ -457,7 +457,7 @@ presubmits:
         resources:
           requests:
             cpu: "12"
-            memory: 48Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
