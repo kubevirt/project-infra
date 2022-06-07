@@ -49,86 +49,86 @@ const (
 <head>
     <title>flakefinder report</title>
     <meta charset="UTF-8">
-    <style>
-        table, th, td {
-            border: 1px solid black;
-        }
-        .yellow {
-            background-color: #ffff80;
-        }
-        .almostgreen {
-            background-color: #dfff80;
-        }
-        .green {
-            background-color: #9fff80;
-        }
-        .red {
-            background-color: #ff8080;
-        }
-        .orange {
-            background-color: #ffbf80;
-        }
-        .unimportant {
-        }
-        .tests_passed {
-            color: #226c18;
-            font-weight: bold;
-        }
-        .tests_failed {
-            color: #8a1717;
-            font-weight: bold;
-        }
-        .tests_skipped {
-            color: #535453;
-            font-weight: bold;
-        }
-        .center {
-            text-align:center
-        }
+		<style>
+			table, th, td {
+				border: 1px solid black;
+			}
+			.yellow {
+				background-color: #ffff80;
+			}
+			.almostgreen {
+				background-color: #dfff80;
+			}
+			.green {
+				background-color: #9fff80;
+			}
+			.red {
+				background-color: #ff8080;
+			}
+			.orange {
+				background-color: #ffbf80;
+			}
+			.unimportant {
+			}
+			.tests_passed {
+				color: #226c18;
+				font-weight: bold;
+			}
+			.tests_failed {
+				color: #8a1717;
+				font-weight: bold;
+			}
+			.tests_skipped {
+				color: #535453;
+				font-weight: bold;
+			}
+			.center {
+				text-align:center
+			}
 
-        .popup {
-            position: relative;
-            display: inline-block;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
+			.popup {
+				position: relative;
+				display: inline-block;
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
 
-        .popup .popuptext {
-            display: none;
-            width: 220px;
-            background-color: #555;
-            text-align: center;
-            border-radius: 6px;
-            padding: 8px 8px;
-            position: absolute;
-            z-index: 1;
-            left: 50%;
-            margin-left: -110px;
-        }
+			.popup .popuptext {
+				display: none;
+				width: 220px;
+				background-color: #555;
+				text-align: center;
+				border-radius: 6px;
+				padding: 8px 8px;
+				position: absolute;
+				z-index: 1;
+				left: 50%;
+				margin-left: -110px;
+			}
 
-        .popup:hover .popuptext {
-            display: block;
-            -webkit-animation: fadeIn 1s;
-            animation: fadeIn 1s;
-        }
+			.popup:hover .popuptext {
+				display: block;
+				-webkit-animation: fadeIn 1s;
+				animation: fadeIn 1s;
+			}
 
-        .nowrap {
-            white-space: nowrap;
-        }
+			.nowrap {
+				white-space: nowrap;
+			}
 
-        @-webkit-keyframes fadeIn {
-            from {opacity: 0;}
-            to {opacity: 1;}
-        }
+			@-webkit-keyframes fadeIn {
+				from {opacity: 0;}
+				to {opacity: 1;}
+			}
 
-        @keyframes fadeIn {
-            from {opacity: 0;}
-            to {opacity:1 ;}
-        }
-
-	</style>
+			@keyframes fadeIn {
+				from {opacity: 0;}
+				to {opacity:1 ;}
+			}
+		</style>
+	</meta>
 </head>
 <body>
 <h1>flakefinder report</h1>
@@ -150,14 +150,14 @@ const (
     </tr>
     {{ range $row, $test := $.Tests }}
     <tr>
-        <td><div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a><div></td>
+        <td><div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a></div></td>
         <td>{{ $test }}</td>
         {{ range $col, $header := $.Headers }}
-        {{if not (index $.Data $test $header) }}
+	        {{if not (index $.Data $test $header) }}
         <td class="center">
             N/A
         </td>
-        {{else}}
+			{{else}}
         <td class="{{ (index $.Data $test $header).Severity }} center">
             <div id="r{{$row}}c{{$col}}" class="popup" >
                 <span class="tests_failed" title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span class="tests_passed" title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span class="tests_skipped" title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>{{ if (index $.Data $test $header).Jobs }}
@@ -167,8 +167,8 @@ const (
                     {{ end }}
                 </div>{{ end }}
             </div>
-            {{end}}
         </td>
+            {{end}}
         {{ end }}
     </tr>
     {{ end }}
@@ -301,7 +301,7 @@ func runJenkinsReport(cmd *cobra.Command, args []string) error {
 	endOfReport := time.Now()
 
 	junitReportsFromMatchingJobs := fetchJunitReportsFromMatchingJobs(startOfReport, endOfReport, jobNames, jenkins, ctx)
-	writeReportToFile(startOfReport, endOfReport, junitReportsFromMatchingJobs)
+	writeReportToFile(startOfReport, endOfReport, junitReportsFromMatchingJobs, globalOpts.outputFile)
 
 	return nil
 }
@@ -422,9 +422,9 @@ func getBuildWithRetry(job *gojenkins.Job, ctx context.Context, buildNumber int6
 // httpStatusOrDie fetches [stringly typed](https://wiki.c2.com/?StringlyTyped) error code produced by jenkins client
 // or logs a fatal error if conversion to int is not possible
 func httpStatusOrDie(err error, fLog *log.Entry) int {
-	statusCode, err2 := strconv.Atoi(err.Error())
-	if err2 != nil {
-		fLog.Fatalf("Failed to get status code from error %v: %v", err, err2)
+	statusCode, conversionError := strconv.Atoi(err.Error())
+	if conversionError != nil {
+		fLog.Fatalf("Failed to get status code from error %v: %v", err, conversionError)
 	}
 	return statusCode
 }
@@ -481,12 +481,11 @@ func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, 
 	return reportsPerJob
 }
 
-func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports []*flakefinder.JobResult) {
+func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports []*flakefinder.JobResult, outputFile string) {
 	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, endOfReport, "kubevirt", "kubevirt", startOfReport)
 
-	jLog.Printf("writing output to %s", globalOpts.outputFile)
-
-	reportOutputWriter, err := os.OpenFile(globalOpts.outputFile, os.O_CREATE|os.O_WRONLY, 0644)
+	jLog.Printf("writing output to %s", outputFile)
+	reportOutputWriter, err := os.OpenFile(outputFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil && err != os.ErrNotExist {
 		jLog.Fatalf("failed to write report: %v", err)
 	}
