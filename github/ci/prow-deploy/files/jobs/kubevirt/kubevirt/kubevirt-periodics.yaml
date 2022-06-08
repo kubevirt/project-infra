@@ -1503,3 +1503,56 @@ periodics:
         privileged: true
     nodeSelector:
       type: bare-metal-external
+
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 30 3 * * 6
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.23-single-node
+  reporter_config:
+    slack:
+      job_states_to_report: []
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: TARGET
+        value: "k8s-1.23"
+      - name: KUBEVIRT_E2E_FOCUS
+        value: ".*"
+      - name: KUBEVIRT_NUM_NODES
+        value: "1"
+      - name: KUBEVIRT_INFRA_REPLICAS
+        value: "1"
+      - name: KUBEVIRT_WITH_CNAO
+        value: "true"
+      - name: KUBEVIRT_STORAGE
+        value: "rook-ceph-default"
+      image: quay.io/kubevirtci/bootstrap:v20220512-78048f1
+      name: ""
+      resources:
+        requests:
+          memory: 15Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
