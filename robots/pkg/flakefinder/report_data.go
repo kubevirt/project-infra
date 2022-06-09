@@ -20,18 +20,18 @@ type Params struct {
 }
 
 type Details struct {
-	Succeeded int
-	Skipped   int
-	Failed    int
-	Severity  string
-	Jobs      []*Job
+	Succeeded int    `json:"succeeded"`
+	Skipped   int    `json:"skipped"`
+	Failed    int    `json:"failed"`
+	Severity  string `json:"severity"`
+	Jobs      []*Job `json:"jobs"`
 }
 
 type Job struct {
-	BuildNumber int
-	Severity    string
-	PR          int
-	Job         string
+	BuildNumber int    `json:"buildNumber"`
+	Severity    string `json:"severity"`
+	PR          int    `json:"pr"`
+	Job         string `json:"job"`
 }
 
 type JobFailures struct {

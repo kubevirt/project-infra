@@ -22,11 +22,13 @@ package cmd
 import (
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -230,6 +232,10 @@ type jenkinsOptions struct {
 type JenkinsReportParams struct {
 	flakefinder.Params
 	JenkinsBaseURL string
+}
+
+type JSONParams struct {
+	Data map[string]map[string]*flakefinder.Details `json:"data"`
 }
 
 func JenkinsCommand() *cobra.Command {
@@ -483,15 +489,39 @@ func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, 
 
 func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports []*flakefinder.JobResult, outputFile string) {
 	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, endOfReport, "kubevirt", "kubevirt", startOfReport)
+	writeReportsToOutputFiles(outputFile, parameters)
+}
 
+func writeReportsToOutputFiles(outputFile string, parameters flakefinder.Params) {
 	jLog.Printf("writing output to %s", outputFile)
+
+	reportTemplate := JenkinsReportTemplate
+	params := JenkinsReportParams{Params: parameters, JenkinsBaseURL: opts.endpoint}
+
+	writeReportToOutputFile(outputFile, reportTemplate, params)
+
+	jsonOutputFile := strings.TrimSuffix(outputFile, ".html") + ".json"
+	reportOutputWriter, err := os.OpenFile(jsonOutputFile, os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil && err != os.ErrNotExist {
+		jLog.Fatalf("failed to write report: %v", err)
+	}
+	defer reportOutputWriter.Close()
+
+	encoder := json.NewEncoder(reportOutputWriter)
+	err = encoder.Encode(parameters.Data)
+	if err != nil {
+		jLog.Fatalf("failed to write report: %v", err)
+	}
+}
+
+func writeReportToOutputFile(outputFile string, reportTemplate string, params interface{}) {
 	reportOutputWriter, err := os.OpenFile(outputFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil && err != os.ErrNotExist {
 		jLog.Fatalf("failed to write report: %v", err)
 	}
 	defer reportOutputWriter.Close()
 
-	err = flakefinder.WriteTemplateToOutput(JenkinsReportTemplate, JenkinsReportParams{Params: parameters, JenkinsBaseURL: opts.endpoint}, reportOutputWriter)
+	err = flakefinder.WriteTemplateToOutput(reportTemplate, params, reportOutputWriter)
 	if err != nil {
 		jLog.Fatalf("failed to write report: %v", err)
 	}

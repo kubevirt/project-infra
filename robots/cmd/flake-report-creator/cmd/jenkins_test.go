@@ -1,13 +1,17 @@
 package cmd
 
 import (
+	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"github.com/bndr/gojenkins"
 	"github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -271,6 +275,98 @@ func Test_writeReportToFile(t *testing.T) {
 				default:
 					t.Errorf("Report:\n%s\n\nfailed to validate report file: %v", string(file), err)
 					return
+				}
+			}
+		})
+	}
+}
+
+func Test_writeReportToOutputFile(t *testing.T) {
+	type args struct {
+		outputFile     string
+		reportTemplate string
+		params         flakefinder.Params
+		validator      func([]byte) error
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "Test report creation",
+			args: args{
+				outputFile: "test.html",
+				params: flakefinder.Params{
+					Data: map[string]map[string]*flakefinder.Details{
+						"test1": {
+							"blah1": &flakefinder.Details{
+								Succeeded: 1,
+								Skipped:   2,
+								Failed:    3,
+								Severity:  "SEVERE",
+								Jobs: []*flakefinder.Job{
+									{
+										BuildNumber: 1742,
+										Severity:    "SEVERE",
+										PR:          4217,
+										Job:         "asdhfkfsaj",
+									},
+									{
+										BuildNumber: 1742,
+										Severity:    "SEVERE",
+										PR:          4217,
+										Job:         "asdhfkfsaj",
+									},
+								},
+							},
+							"blah2": &flakefinder.Details{
+								Succeeded: 1,
+								Skipped:   2,
+								Failed:    3,
+								Severity:  "SEVERE",
+								Jobs: []*flakefinder.Job{
+									{
+										BuildNumber: 1742,
+										Severity:    "SEVERE",
+										PR:          4217,
+										Job:         "asdhfkfsaj",
+									},
+								},
+							},
+						},
+					},
+				},
+				validator: func(content []byte) error {
+					if json.Valid(content) {
+						return nil
+					}
+					return fmt.Errorf("json invalid:\n%s", string(content))
+				},
+			},
+		},
+	}
+	dir, err := ioutil.TempDir("", "Test_writeReportToOutputFile")
+	if err != nil {
+		t.Errorf("failed to create tempdir: %v", err)
+	}
+	defer os.RemoveAll(dir)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			outputFile := filepath.Join(dir, tt.args.outputFile)
+			writeReportsToOutputFiles(outputFile, tt.args.params)
+			_, err2 := os.Stat(outputFile)
+			if err2 != nil {
+				t.Errorf("failed to access outputFile %s: %v", outputFile, err2)
+			}
+			if tt.args.validator != nil {
+				bytes, err2 := os.ReadFile(strings.TrimSuffix(outputFile, ".html") + ".json")
+				t.Logf("output file %q:\n%s", outputFile, string(bytes))
+				if err2 != nil {
+					t.Errorf("failed to read output file %q: %v", outputFile, err2)
+				}
+				err2 = tt.args.validator(bytes)
+				if err2 != nil {
+					t.Errorf("failed to validate output file %q: %v", outputFile, err2)
 				}
 			}
 		})
