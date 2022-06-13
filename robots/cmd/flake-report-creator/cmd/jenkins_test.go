@@ -10,7 +10,6 @@ import (
 	"io"
 	"io/ioutil"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -96,11 +95,55 @@ func Test_fetchJunitFilesFromArtifacts(t *testing.T) {
 	}
 }
 
-func Test_writeReportToFile(t *testing.T) {
+type contentValidator interface {
+	isValid(content []byte) error
+	getTargetFileName(filename string) string
+}
+
+type jSONValidator struct{}
+
+func (j jSONValidator) isValid(content []byte) error {
+	if json.Valid(content) {
+		return nil
+	}
+	return fmt.Errorf("json invalid:\n%s", string(content))
+}
+
+func (j jSONValidator) getTargetFileName(filename string) string {
+	return strings.TrimSuffix(filename, ".html") + ".json"
+}
+
+type hTMLValidator struct{}
+
+func (j hTMLValidator) isValid(content []byte) error {
+	stringContent := string(content)
+	r := strings.NewReader(stringContent)
+	d := xml.NewDecoder(r)
+
+	d.Strict = true
+	d.Entity = xml.HTMLEntity
+	for {
+		_, err := d.Token()
+		switch err {
+		case io.EOF:
+			return nil
+		case nil:
+		default:
+			return fmt.Errorf("Report:\n%s\n\nfailed to validate report file: %v", stringContent, err)
+		}
+	}
+}
+
+func (j hTMLValidator) getTargetFileName(filename string) string {
+	return filename
+}
+
+func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 	type args struct {
 		startOfReport time.Time
 		endOfReport   time.Time
 		reports       []*flakefinder.JobResult
+		validators    []contentValidator
 	}
 	tests := []struct {
 		name string
@@ -152,6 +195,10 @@ func Test_writeReportToFile(t *testing.T) {
 						BuildNumber: 1,
 						PR:          42,
 					},
+				},
+				validators: []contentValidator{
+					hTMLValidator{},
+					jSONValidator{},
 				},
 			},
 		},
@@ -242,131 +289,35 @@ func Test_writeReportToFile(t *testing.T) {
 						PR:          42,
 					},
 				},
+				validators: []contentValidator{
+					hTMLValidator{},
+					jSONValidator{},
+				},
 			},
 		},
 	}
 
-	tempFile, err := ioutil.TempFile("", "reportFile")
+	tempDir, err := ioutil.TempDir("", "reportFile")
 	if err != nil {
 		t.Errorf("failed to create temp report file: %v", err)
 		return
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			writeReportToFile(tt.args.startOfReport, tt.args.endOfReport, tt.args.reports, tempFile.Name())
+			tempFile := filepath.Join(tempDir, "report.html")
+			writeReportToFile(tt.args.startOfReport, tt.args.endOfReport, tt.args.reports, tempFile)
 
-			// validate output is valid xml
-			file, err := ioutil.ReadFile(tempFile.Name())
-			if err != nil {
-				t.Errorf("failed to read temp report file: %v", err)
-				return
-			}
-			r := strings.NewReader(string(file))
-			d := xml.NewDecoder(r)
-
-			d.Strict = true
-			d.Entity = xml.HTMLEntity
-			for {
-				_, err := d.Token()
-				switch err {
-				case io.EOF:
-					return
-				case nil:
-				default:
-					t.Errorf("Report:\n%s\n\nfailed to validate report file: %v", string(file), err)
+			for _, currentValidator := range tt.args.validators {
+				targetFileName := currentValidator.getTargetFileName(tempFile)
+				content, err := ioutil.ReadFile(targetFileName)
+				if err != nil {
+					t.Errorf("failed to read temp report file: %v", err)
 					return
 				}
-			}
-		})
-	}
-}
 
-func Test_writeReportToOutputFile(t *testing.T) {
-	type args struct {
-		outputFile     string
-		reportTemplate string
-		params         flakefinder.Params
-		validator      func([]byte) error
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		{
-			name: "Test report creation",
-			args: args{
-				outputFile: "test.html",
-				params: flakefinder.Params{
-					Data: map[string]map[string]*flakefinder.Details{
-						"test1": {
-							"blah1": &flakefinder.Details{
-								Succeeded: 1,
-								Skipped:   2,
-								Failed:    3,
-								Severity:  "SEVERE",
-								Jobs: []*flakefinder.Job{
-									{
-										BuildNumber: 1742,
-										Severity:    "SEVERE",
-										PR:          4217,
-										Job:         "asdhfkfsaj",
-									},
-									{
-										BuildNumber: 1742,
-										Severity:    "SEVERE",
-										PR:          4217,
-										Job:         "asdhfkfsaj",
-									},
-								},
-							},
-							"blah2": &flakefinder.Details{
-								Succeeded: 1,
-								Skipped:   2,
-								Failed:    3,
-								Severity:  "SEVERE",
-								Jobs: []*flakefinder.Job{
-									{
-										BuildNumber: 1742,
-										Severity:    "SEVERE",
-										PR:          4217,
-										Job:         "asdhfkfsaj",
-									},
-								},
-							},
-						},
-					},
-				},
-				validator: func(content []byte) error {
-					if json.Valid(content) {
-						return nil
-					}
-					return fmt.Errorf("json invalid:\n%s", string(content))
-				},
-			},
-		},
-	}
-	dir, err := ioutil.TempDir("", "Test_writeReportToOutputFile")
-	if err != nil {
-		t.Errorf("failed to create tempdir: %v", err)
-	}
-	defer os.RemoveAll(dir)
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			outputFile := filepath.Join(dir, tt.args.outputFile)
-			writeReportsToOutputFiles(outputFile, tt.args.params)
-			_, err2 := os.Stat(outputFile)
-			if err2 != nil {
-				t.Errorf("failed to access outputFile %s: %v", outputFile, err2)
-			}
-			if tt.args.validator != nil {
-				bytes, err2 := os.ReadFile(strings.TrimSuffix(outputFile, ".html") + ".json")
-				t.Logf("output file %q:\n%s", outputFile, string(bytes))
-				if err2 != nil {
-					t.Errorf("failed to read output file %q: %v", outputFile, err2)
-				}
-				err2 = tt.args.validator(bytes)
-				if err2 != nil {
-					t.Errorf("failed to validate output file %q: %v", outputFile, err2)
+				err = currentValidator.isValid(content)
+				if err != nil {
+					t.Errorf("Report:\n%s\n\nfailed to validate report file: %v", targetFileName, err)
 				}
 			}
 		})

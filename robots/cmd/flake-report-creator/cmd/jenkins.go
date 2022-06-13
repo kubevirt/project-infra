@@ -489,22 +489,25 @@ func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, 
 
 func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports []*flakefinder.JobResult, outputFile string) {
 	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, endOfReport, "kubevirt", "kubevirt", startOfReport)
-	writeReportsToOutputFiles(outputFile, parameters)
-}
-
-func writeReportsToOutputFiles(outputFile string, parameters flakefinder.Params) {
 	jLog.Printf("writing output to %s", outputFile)
 
-	reportTemplate := JenkinsReportTemplate
-	params := JenkinsReportParams{Params: parameters, JenkinsBaseURL: opts.endpoint}
+	writeHTMLReportToOutputFile(outputFile, JenkinsReportTemplate, JenkinsReportParams{Params: parameters, JenkinsBaseURL: opts.endpoint})
 
-	writeReportToOutputFile(outputFile, reportTemplate, params)
+	writeJSONToOutputFile(strings.TrimSuffix(outputFile, ".html")+".json", parameters)
+}
 
-	jsonOutputFile := strings.TrimSuffix(outputFile, ".html") + ".json"
-	reportOutputWriter, err := os.OpenFile(jsonOutputFile, os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil && err != os.ErrNotExist {
+func writeHTMLReportToOutputFile(outputFile string, reportTemplate string, params interface{}) {
+	reportOutputWriter, err := createReportOutputWriter(outputFile)
+	defer reportOutputWriter.Close()
+
+	err = flakefinder.WriteTemplateToOutput(reportTemplate, params, reportOutputWriter)
+	if err != nil {
 		jLog.Fatalf("failed to write report: %v", err)
 	}
+}
+
+func writeJSONToOutputFile(jsonOutputFile string, parameters flakefinder.Params) {
+	reportOutputWriter, err := createReportOutputWriter(jsonOutputFile)
 	defer reportOutputWriter.Close()
 
 	encoder := json.NewEncoder(reportOutputWriter)
@@ -514,15 +517,10 @@ func writeReportsToOutputFiles(outputFile string, parameters flakefinder.Params)
 	}
 }
 
-func writeReportToOutputFile(outputFile string, reportTemplate string, params interface{}) {
+func createReportOutputWriter(outputFile string) (*os.File, error) {
 	reportOutputWriter, err := os.OpenFile(outputFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil && err != os.ErrNotExist {
 		jLog.Fatalf("failed to write report: %v", err)
 	}
-	defer reportOutputWriter.Close()
-
-	err = flakefinder.WriteTemplateToOutput(reportTemplate, params, reportOutputWriter)
-	if err != nil {
-		jLog.Fatalf("failed to write report: %v", err)
-	}
+	return reportOutputWriter, err
 }
