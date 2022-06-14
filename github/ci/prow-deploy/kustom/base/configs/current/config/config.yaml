@@ -43,7 +43,7 @@ deck:
           - panic\b
           # own patterns
           - \[FAILED\]
-          - "^(fatal|failed):"
+          - "fatal: "
       required_files:
         - build-log.txt
     - lens:
