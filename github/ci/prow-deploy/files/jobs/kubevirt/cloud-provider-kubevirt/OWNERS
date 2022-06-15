@@ -4,11 +4,13 @@
 approvers:
 - davidvossel
 - gonzolino
+- mfranczy
 - nirarg
 - rmohr
 options: {}
 reviewers:
 - davidvossel
 - gonzolino
+- mfranczy
 - nirarg
 - rmohr
