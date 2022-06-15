@@ -192,7 +192,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    run_if_changed: "pkg/virt-handler/cgroup/.*"
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -232,7 +233,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    run_if_changed: "pkg/virt-handler/cgroup/.*"
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
