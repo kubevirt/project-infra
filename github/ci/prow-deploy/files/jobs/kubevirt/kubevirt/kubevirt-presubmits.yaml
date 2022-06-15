@@ -1882,6 +1882,10 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
