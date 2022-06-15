@@ -497,30 +497,30 @@ func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports [
 }
 
 func writeHTMLReportToOutputFile(outputFile string, reportTemplate string, params interface{}) {
-	reportOutputWriter, err := createReportOutputWriter(outputFile)
+	reportOutputWriter := createReportOutputWriter(outputFile)
 	defer reportOutputWriter.Close()
 
-	err = flakefinder.WriteTemplateToOutput(reportTemplate, params, reportOutputWriter)
+	err := flakefinder.WriteTemplateToOutput(reportTemplate, params, reportOutputWriter)
 	if err != nil {
 		jLog.Fatalf("failed to write report: %v", err)
 	}
 }
 
 func writeJSONToOutputFile(jsonOutputFile string, parameters flakefinder.Params) {
-	reportOutputWriter, err := createReportOutputWriter(jsonOutputFile)
+	reportOutputWriter := createReportOutputWriter(jsonOutputFile)
 	defer reportOutputWriter.Close()
 
 	encoder := json.NewEncoder(reportOutputWriter)
-	err = encoder.Encode(parameters.Data)
+	err := encoder.Encode(parameters.Data)
 	if err != nil {
 		jLog.Fatalf("failed to write report: %v", err)
 	}
 }
 
-func createReportOutputWriter(outputFile string) (*os.File, error) {
+func createReportOutputWriter(outputFile string) *os.File {
 	reportOutputWriter, err := os.OpenFile(outputFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil && err != os.ErrNotExist {
 		jLog.Fatalf("failed to write report: %v", err)
 	}
-	return reportOutputWriter, err
+	return reportOutputWriter
 }
