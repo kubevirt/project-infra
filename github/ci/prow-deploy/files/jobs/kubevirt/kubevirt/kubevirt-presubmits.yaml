@@ -1912,6 +1912,8 @@ presubmits:
         resources:
           requests:
             memory: 4Gi
+        securityContext:
+          privileged: true
   - always_run: true
     annotations:
       fork-per-release: "true"
