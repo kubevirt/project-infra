@@ -1895,7 +1895,7 @@ presubmits:
       timeout: 1h0m0s
     max_concurrency: 11
     name: pull-kubevirt-code-lint
-    optional: true
+    optional: false
     skip_branches:
     - release-\d+\.\d+
     skip_report: false
