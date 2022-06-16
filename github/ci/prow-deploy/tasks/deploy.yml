@@ -31,7 +31,7 @@
 - name: Delete priority classes on prow-workloads BM cluster
   when: delete_priority_classes
   shell: |
-    kubectl delete pc sriov sriov-place-holder vgpu
+    kubectl delete pc --ignore-not-found=true sriov sriov-place-holder vgpu windows
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
 
