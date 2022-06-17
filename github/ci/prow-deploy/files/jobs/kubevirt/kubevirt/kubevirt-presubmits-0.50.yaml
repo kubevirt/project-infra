@@ -449,6 +449,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-windows2016-0.50
+    priorityClassName: windows
     spec:
       containers:
       - command:
