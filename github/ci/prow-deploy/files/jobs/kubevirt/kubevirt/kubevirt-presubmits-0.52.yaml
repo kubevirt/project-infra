@@ -448,7 +448,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-windows2016-0.52
-    priorityClassName: windows
     spec:
       containers:
       - command:
@@ -468,6 +467,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+      priorityClassName: windows
   - always_run: true
     annotations:
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni

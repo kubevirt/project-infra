@@ -521,7 +521,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-windows2016
-    priorityClassName: windows
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -543,6 +542,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+      priorityClassName: windows
   - always_run: false
     annotations:
       fork-per-release: "true"
