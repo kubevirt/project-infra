@@ -445,7 +445,7 @@ presubmits:
         - name: KUBEVIRT_STORAGE
           value: hpp
         - name: KUBEVIRT_MEMORY_SIZE
-          value: 10G
+          value: 11G
         - name: KUBEVIRT_NUM_NODES
           value: "4"
         - name: KUBEVIRT_DEPLOY_PROMETHEUS
