@@ -314,6 +314,9 @@ secretGenerator:
   - name: kubeconfig-build-test-infra-trusted
     files:
       - kubeconfig=secrets/kubeconfig-build-test-infra-trusted
+  - name: kubeconfig-build-k8s-prow-builds
+    files:
+      - kubeconfig=secrets/kubeconfig-build-k8s-prow-builds
   - name: unsplash-api-key
     literals:
       - honk.txt=
