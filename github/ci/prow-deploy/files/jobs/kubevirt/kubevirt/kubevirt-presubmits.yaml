@@ -2278,7 +2278,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.24-operator
+          value: k8s-1.24-sig-operator
         image: quay.io/kubevirtci/bootstrap:v20220512-78048f1
         name: ""
         resources:
