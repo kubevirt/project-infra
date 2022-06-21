@@ -251,7 +251,7 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-storage-cgroupsv2
     optional: true
-    run_if_changed: pkg/virt-handler/cgroup/.*
+    run_if_changed: pkg/virt-handler/cgroup/.*|pkg/virt-handler/hotplug-disk/.*|pkg/hotplug-disk/.*|cmd/virt-chroot/cgroup.go
     skip_branches:
     - release-\d+\.\d+
     spec:
