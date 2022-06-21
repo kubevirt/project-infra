@@ -142,7 +142,7 @@ Used to run ARM test jobs.
 
 ### Performance cluster
 
-Runs performance-related jobs.
+Runs [performance-related jobs](performance-cluster.md).
 
 [Prow]: https://github.com/kubernetes/test-infra/tree/master/prow#readme
 ["Life of a Prow Job"]: https://github.com/kubernetes/test-infra/blob/master/prow/life_of_a_prow_job.md
