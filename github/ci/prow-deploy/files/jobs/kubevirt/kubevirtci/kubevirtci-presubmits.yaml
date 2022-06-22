@@ -316,7 +316,7 @@ presubmits:
     cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 10m0s
+      timeout: 20m0s
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
