@@ -21,7 +21,7 @@ Because running performance tests is time consuming, we do not want to run them 
 
 | Day | |
 | ------------- |:-------------:| 
-| Mon | 100 VMs density perf test  @ 04:41 AM UTC <br /> scale VMs density perf test  @ 03:41 PM UTC |
+| Mon | [100 VMs density perf test](../github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml#L791)  @ 04:41 AM UTC <br /> [scale VMs density perf test](../github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml#L878)  @ 03:41 PM UTC |
 | Tue | 100 VMs density perf test  @ 04:41 AM UTC <br /> scale VMs density perf test  @ 03:41 PM UTC |
 | Wed | 100 VMs density perf test  @ 04:41 AM UTC <br /> scale VMs density perf test  @ 03:41 PM UTC |
 | Thu | 100 VMs density perf test  @ 04:41 AM UTC <br /> scale VMs density perf test  @ 03:41 PM UTC |
@@ -76,9 +76,9 @@ Regarding the hardware configuration, all nodes are homogeneous, with 2 Intel(R)
 
 ## Exposed services
 
-* deck: Prow UI, available at https://prow.ci.kubevirt.io
+* deck: "periodic-kubevirt-performance-cluster-100-density-test" and  "periodic-kubevirt-performance-cluster-scale-density-test" jobs in Prow UI, available at https://prow.ci.kubevirt.io
 
-* grafana: available at http://52.117.69.106:30000/
+* grafana: available at http://52.117.69.106:30000/d/V1Qq_IBM_za0/kubevirt-control-plane
 
 * ci-search: available at https://search.ci.kubevirt.io
 
