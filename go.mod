@@ -7,6 +7,7 @@ require (
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/bazelbuild/buildtools v0.0.0-20200922170545-10384511ce98
 	github.com/bndr/gojenkins v1.1.0
+	github.com/bndr/gotabulate v1.1.2 // indirect
 	github.com/go-git/go-git/v5 v5.3.0
 	github.com/go-test/deep v1.0.7
 	github.com/google/go-github v17.0.0+incompatible
@@ -14,6 +15,7 @@ require (
 	github.com/google/go-github/v32 v32.0.0
 	github.com/jetstack/cert-manager v1.1.0
 	github.com/joshdk/go-junit v0.0.0-20190428045703-ad7e11aa49ff
+	github.com/lnquy/cron v1.1.1 // indirect
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.13.0
 	github.com/opencontainers/runc v0.1.1 // indirect
