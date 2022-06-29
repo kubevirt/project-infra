@@ -1359,7 +1359,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.22-ipv6-sig-network
+    name: pull-kubevirt-e2e-k8s-1.24-ipv6-sig-network
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1371,7 +1371,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.22-ipv6-sig-network
+          value: k8s-1.24-ipv6-sig-network
         image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
         name: ""
         resources:
