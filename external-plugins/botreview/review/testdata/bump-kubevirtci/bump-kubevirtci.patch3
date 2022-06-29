@@ -1,0 +1,7 @@
+diff --git a/cluster-up/version.txt b/cluster-up/version.txt
+index 2f6efe9e0..46f945ddf 100644
+--- a/cluster-up/version.txt
++++ b/cluster-up/version.txt
+@@ -1 +1 @@
+-2206231410-42954ae
++2206280817-4ae862e

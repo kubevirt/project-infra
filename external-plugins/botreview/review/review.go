@@ -20,6 +20,7 @@
 package review
 
 import (
+	"fmt"
 	"github.com/sourcegraph/go-diff/diff"
 )
 
@@ -36,6 +37,23 @@ type BotReviewResult interface {
 func newPossibleReviewTypes() []KindOfChange {
 	return []KindOfChange{
 		&ProwJobImageUpdate{},
+		&BumpKubevirtCI{},
+	}
+}
+
+type Result struct {
+	notMatchingHunks []*diff.Hunk
+}
+
+func (r Result) String() string {
+	if len(r.notMatchingHunks) == 0 {
+		return prowJobImageUpdateApproveComment
+	} else {
+		comment := prowJobImageUpdateDisapproveComment
+		for _, hunk := range r.notMatchingHunks {
+			comment += fmt.Sprintf("\n```\n%s\n```", string(hunk.Body))
+		}
+		return comment
 	}
 }
 

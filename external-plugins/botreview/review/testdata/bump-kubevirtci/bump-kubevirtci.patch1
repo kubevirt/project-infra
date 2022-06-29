@@ -1,0 +1,12 @@
+diff --git a/cluster-up/cluster/kind-1.22-sriov/sriov-components/manifests/multus/patch-args.yaml b/cluster-up/cluster/kind-1.22-sriov/sriov-components/manifests/multus/patch-args.yaml
+index 6ee816998..ea9cd1092 100644
+--- a/cluster-up/cluster/kind-1.22-sriov/sriov-components/manifests/multus/patch-args.yaml
++++ b/cluster-up/cluster/kind-1.22-sriov/sriov-components/manifests/multus/patch-args.yaml
+@@ -1,6 +1,6 @@
+ - op: add
+   path: /spec/template/spec/containers/0/args/-
+-  value: "--multus-log-level=verbose"
++  value: "--multus-log-level=debug"
+ - op: add
+   path: /spec/template/spec/containers/0/args/-
+   value: "--multus-log-file=/var/log/multus.log"

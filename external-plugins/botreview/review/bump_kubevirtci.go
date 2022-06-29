@@ -27,54 +27,51 @@ import (
 )
 
 const (
-	prowJobImageUpdateApproveComment = `This looks like a simple prow job image bump. The bot approves.
+	BumpKubevirtCIApproveComment = `This looks like a simple prow job image bump. The bot approves.
 
 /lgtm
 /approve
 `
-	prowJobImageUpdateDisapproveComment = `This doesn't look like a simple prow job image bump.
+	BumpKubevirtCIDisapproveComment = `This doesn't look like a simple prow job image bump.
 
 These are the suspicious hunks I found:
 `
 )
 
-var prowJobImageUpdateHunkBodyMatcher *regexp.Regexp
+var bumpKubevirtCIHunkBodyMatcher *regexp.Regexp
 
 func init() {
-	prowJobImageUpdateHunkBodyMatcher = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+image: [^\s]+$[\n]^\+[\s]+image: [^\s]+)$`)
+	bumpKubevirtCIHunkBodyMatcher = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+image: [^\s]+$[\n]^\+[\s]+image: [^\s]+)$`)
 }
 
-type ProwJobImageUpdate struct {
+type BumpKubevirtCI struct {
 	relevantFileDiffs []*diff.FileDiff
 	notMatchingHunks  []*diff.Hunk
 }
 
-func (t *ProwJobImageUpdate) IsRelevant() bool {
+func (t *BumpKubevirtCI) IsRelevant() bool {
 	return len(t.relevantFileDiffs) > 0
 }
 
-func (t *ProwJobImageUpdate) AddIfRelevant(fileDiff *diff.FileDiff) {
+func (t *BumpKubevirtCI) AddIfRelevant(fileDiff *diff.FileDiff) {
 	fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
 
 	// disregard all files
-	//	* where the path is not beyond the jobconfig path
-	//	* where the name changed and
-	//  * who are not yaml
-	if strings.TrimPrefix(fileDiff.OrigName, "a/") != fileName ||
-		!strings.HasSuffix(fileName, ".yaml") ||
-		!strings.HasPrefix(fileName, "github/ci/prow-deploy/files/jobs") {
+	//	* where the full path is not cluster-up-sha.txt and
+	//	* where the path is not below cluster-up/
+	if fileName != "cluster-up-sha.txt" || !strings.HasPrefix(fileName, "cluster-up/") {
 		return
 	}
 
 	t.relevantFileDiffs = append(t.relevantFileDiffs, fileDiff)
 }
 
-func (t *ProwJobImageUpdate) Review() BotReviewResult {
+func (t *BumpKubevirtCI) Review() BotReviewResult {
 	result := &Result{}
 
 	for _, fileDiff := range t.relevantFileDiffs {
 		for _, hunk := range fileDiff.Hunks {
-			if !prowJobImageUpdateHunkBodyMatcher.Match(hunk.Body) {
+			if !bumpKubevirtCIHunkBodyMatcher.Match(hunk.Body) {
 				result.notMatchingHunks = append(result.notMatchingHunks, hunk)
 			}
 		}
@@ -83,6 +80,6 @@ func (t *ProwJobImageUpdate) Review() BotReviewResult {
 	return result
 }
 
-func (t *ProwJobImageUpdate) String() string {
+func (t *BumpKubevirtCI) String() string {
 	return fmt.Sprintf("relevantFileDiffs: %v", t.relevantFileDiffs)
 }
