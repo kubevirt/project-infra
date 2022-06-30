@@ -87,7 +87,7 @@ presubmits:
               memory: "1Gi"
   - name: build-bootstrap-image
     always_run: false
-    run_if_changed: "images/bootstrap/.*"
+    run_if_changed: "images/bootstrap/.*|images/golang/.*"
     decorate: true
     labels:
       preset-dind-enabled: "true"
@@ -101,32 +101,10 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-ce"
-            - "cd images && ./publish_image.sh -b bootstrap quay.io kubevirtci"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "1Gi"
-            limits:
-              memory: "1Gi"
-  - name: build-golang-image
-    always_run: false
-    run_if_changed: "images/golang/.*"
-    decorate: true
-    labels:
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
-    cluster: ibm-prow-jobs
-    spec:
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/bash"
-            - "-ce"
-            - "cd images && ./publish_image.sh -b golang quay.io kubevirtci"
+            - |
+              cd images
+              ./publish_image.sh -b bootstrap quay.io kubevirtci
+              ./publish_image.sh -b golang quay.io kubevirtci
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
