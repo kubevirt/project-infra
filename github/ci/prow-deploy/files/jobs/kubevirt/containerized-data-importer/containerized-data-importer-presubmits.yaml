@@ -326,7 +326,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export CDI_DV_GC=0 && automation/ceph.sh"
+            - "automation/ceph-gc.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
