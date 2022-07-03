@@ -305,8 +305,8 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 5h
