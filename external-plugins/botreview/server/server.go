@@ -2,16 +2,12 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/sirupsen/logrus"
-	"github.com/sourcegraph/go-diff/diff"
 	"k8s.io/test-infra/prow/config"
 	"k8s.io/test-infra/prow/github"
 	"k8s.io/test-infra/prow/pluginhelp"
 	"kubevirt.io/project-infra/external-plugins/botreview/review"
 	"net/http"
-	"os/exec"
-	"strings"
 )
 
 const pluginName = "botreview"
@@ -103,13 +99,6 @@ func (s *Server) handlePR(l *logrus.Entry, pr github.PullRequestEvent) error {
 }
 
 func (s *Server) handlePullRequest(l *logrus.Entry, action github.PullRequestEventAction, org string, repo string, num int, user string) error {
-	withMessage := func(message string, args ...interface{}) string {
-		return fmt.Sprintf("%s/%s#%d %s! <- %s: %s", org, repo, num, string(action), user, fmt.Sprintf(message, args))
-	}
-	infoF := func(message string, args ...interface{}) { l.Infof(withMessage(message, args)) }
-	fatalF := func(message string, args ...interface{}) { l.Fatalf(withMessage(message, args)) }
-	debugF := func(message string, args ...interface{}) { l.Debugf(withMessage(message, args)) }
-
 	switch action {
 	case github.PullRequestActionOpened:
 	case github.PullRequestActionEdited:
@@ -117,36 +106,21 @@ func (s *Server) handlePullRequest(l *logrus.Entry, action github.PullRequestEve
 	case github.PullRequestActionReopened:
 		break
 	default:
-		infoF("skipping review")
+		l.Info("skipping review")
 		return nil
 	}
 
-	infoF("preparing review")
-
-	diffCommand := exec.Command("git", "diff", "..main")
-	output, err := diffCommand.Output()
+	// TODO: make dryRun configurable
+	reviewer := review.NewReviewer(l, action, org, repo, num, user, true)
+	botReviewResults, err := reviewer.ReviewLocalCode()
 	if err != nil {
-		fatalF("could not fetch diff output: %v", err)
+		return err
 	}
 
-	multiFileDiffReader := diff.NewMultiFileDiffReader(strings.NewReader(string(output)))
-	files, err := multiFileDiffReader.ReadAllFiles()
+	// TODO: casting will NOT work here
+	err = reviewer.AttachReviewComments(botReviewResults, s.Ghc.(github.Client))
 	if err != nil {
-		fatalF("could not create diffs from output: %v", err)
+		return err
 	}
-
-	types := review.GuessReviewTypes(files)
-	debugF("review types: %v", types)
-	if len(types) > 1 {
-		infoF("doesn't look like a simple review, skipping")
-		return nil
-	}
-	for _, reviewType := range types {
-		result := reviewType.Review()
-		l.Infof("%+v", result)
-	}
-
-	// TODO:
-
 	return nil
 }
