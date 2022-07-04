@@ -27,21 +27,41 @@ import (
 )
 
 const (
-	BumpKubevirtCIApproveComment = `This looks like a simple prow job image bump. The bot approves.
+	bumpKubevirtCIApproveComment = `This looks like a simple kubevirtci bump. The bot approves.
 
 /lgtm
 /approve
 `
-	BumpKubevirtCIDisapproveComment = `This doesn't look like a simple prow job image bump.
+	bumpKubevirtCIDisapproveComment = `This doesn't look like a simple kubevirtci bump.
 
 These are the suspicious hunks I found:
 `
 )
 
-var bumpKubevirtCIHunkBodyMatcher *regexp.Regexp
+var bumpKubevirtCIHackConfigDefaultMatcher *regexp.Regexp
+var bumpKubevirtCIClusterUpShaMatcher *regexp.Regexp
+var bumpKubevirtCIClusterUpVersionMatcher *regexp.Regexp
 
 func init() {
-	bumpKubevirtCIHunkBodyMatcher = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+image: [^\s]+$[\n]^\+[\s]+image: [^\s]+)$`)
+	bumpKubevirtCIHackConfigDefaultMatcher = regexp.MustCompile(`(?m)^-[\s]*kubevirtci_git_hash=\"[^\s]+\"$[\n]^\+[\s]*kubevirtci_git_hash=\"[^\s]+\"$`)
+	bumpKubevirtCIClusterUpShaMatcher = regexp.MustCompile(`(?m)^-[\s]*[^\s]+$[\n]^\+[^\s]+$`)
+	bumpKubevirtCIClusterUpVersionMatcher = regexp.MustCompile(`(?m)^-[0-9]+-[a-z0-9]+$[\n]^\+[0-9]+-[a-z0-9]+$`)
+}
+
+type BumpKubevirtCIResult struct {
+	notMatchingHunks []*diff.Hunk
+}
+
+func (r BumpKubevirtCIResult) String() string {
+	if len(r.notMatchingHunks) == 0 {
+		return bumpKubevirtCIApproveComment
+	} else {
+		comment := bumpKubevirtCIDisapproveComment
+		for _, hunk := range r.notMatchingHunks {
+			comment += fmt.Sprintf("\n```\n%s\n```", string(hunk.Body))
+		}
+		return comment
+	}
 }
 
 type BumpKubevirtCI struct {
@@ -56,10 +76,13 @@ func (t *BumpKubevirtCI) IsRelevant() bool {
 func (t *BumpKubevirtCI) AddIfRelevant(fileDiff *diff.FileDiff) {
 	fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
 
-	// disregard all files
-	//	* where the full path is not cluster-up-sha.txt and
-	//	* where the path is not below cluster-up/
-	if fileName != "cluster-up-sha.txt" || !strings.HasPrefix(fileName, "cluster-up/") {
+	// store all hunks for unwanted files
+	if fileName != "cluster-up-sha.txt" &&
+		fileName != "hack/config-default.sh" &&
+		!strings.HasPrefix(fileName, "cluster-up/") {
+		for _, hunk := range fileDiff.Hunks {
+			t.notMatchingHunks = append(t.notMatchingHunks, hunk)
+		}
 		return
 	}
 
@@ -67,15 +90,35 @@ func (t *BumpKubevirtCI) AddIfRelevant(fileDiff *diff.FileDiff) {
 }
 
 func (t *BumpKubevirtCI) Review() BotReviewResult {
-	result := &Result{}
+	result := &BumpKubevirtCIResult{}
 
 	for _, fileDiff := range t.relevantFileDiffs {
-		for _, hunk := range fileDiff.Hunks {
-			if !bumpKubevirtCIHunkBodyMatcher.Match(hunk.Body) {
-				result.notMatchingHunks = append(result.notMatchingHunks, hunk)
+		fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
+		switch fileName {
+		case "cluster-up-sha.txt":
+			for _, hunk := range fileDiff.Hunks {
+				if !bumpKubevirtCIClusterUpShaMatcher.Match(hunk.Body) {
+					result.notMatchingHunks = append(result.notMatchingHunks, hunk)
+				}
 			}
+		case "hack/config-default.sh":
+			for _, hunk := range fileDiff.Hunks {
+				if !bumpKubevirtCIHackConfigDefaultMatcher.Match(hunk.Body) {
+					result.notMatchingHunks = append(result.notMatchingHunks, hunk)
+				}
+			}
+		case "cluster-up/version.txt":
+			for _, hunk := range fileDiff.Hunks {
+				if !bumpKubevirtCIClusterUpVersionMatcher.Match(hunk.Body) {
+					result.notMatchingHunks = append(result.notMatchingHunks, hunk)
+				}
+			}
+		default:
+			// no checks since we can't do anything reasonable here
 		}
 	}
+
+	result.notMatchingHunks = append(result.notMatchingHunks, t.notMatchingHunks...)
 
 	return result
 }

@@ -27,32 +27,36 @@ import (
 )
 
 const (
-	prowJobImageUpdateApproveComment = `This looks like a simple prow job image bump. The bot approves.
+	prowAutobumpApproveComment = `This looks like a simple prow autobump. The bot approves.
 
 /lgtm
 /approve
+
+**Note**: the bot holds for manual removal when the time is right for this to go in.
+
+/hold
 `
-	prowJobImageUpdateDisapproveComment = `This doesn't look like a simple prow job image bump.
+	prowAutobumpDisapproveComment = `This doesn't look like a simple prow autobump.
 
 These are the suspicious hunks I found:
 `
 )
 
-var prowJobImageUpdateHunkBodyMatcher *regexp.Regexp
+var prowAutobumpHunkBodyMatcher *regexp.Regexp
 
 func init() {
-	prowJobImageUpdateHunkBodyMatcher = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+image: [^\s]+$[\n]^\+[\s]+image: [^\s]+)$`)
+	prowAutobumpHunkBodyMatcher = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+image: [^\s]+$[\n]^\+[\s]+image: [^\s]+)$`)
 }
 
-type ProwJobImageUpdateResult struct {
+type ProwAutobumpResult struct {
 	notMatchingHunks []*diff.Hunk
 }
 
-func (r ProwJobImageUpdateResult) String() string {
+func (r ProwAutobumpResult) String() string {
 	if len(r.notMatchingHunks) == 0 {
-		return prowJobImageUpdateApproveComment
+		return prowAutobumpApproveComment
 	} else {
-		comment := prowJobImageUpdateDisapproveComment
+		comment := prowAutobumpDisapproveComment
 		for _, hunk := range r.notMatchingHunks {
 			comment += fmt.Sprintf("\n```\n%s\n```", string(hunk.Body))
 		}
@@ -60,37 +64,31 @@ func (r ProwJobImageUpdateResult) String() string {
 	}
 }
 
-type ProwJobImageUpdate struct {
+type ProwAutobump struct {
 	relevantFileDiffs []*diff.FileDiff
 	notMatchingHunks  []*diff.Hunk
 }
 
-func (t *ProwJobImageUpdate) IsRelevant() bool {
+func (t *ProwAutobump) IsRelevant() bool {
 	return len(t.relevantFileDiffs) > 0
 }
 
-func (t *ProwJobImageUpdate) AddIfRelevant(fileDiff *diff.FileDiff) {
+func (t *ProwAutobump) AddIfRelevant(fileDiff *diff.FileDiff) {
 	fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
 
-	// disregard all files
-	//	* where the path is not beyond the jobconfig path
-	//	* where the name changed and
-	//  * who are not yaml
-	if strings.TrimPrefix(fileDiff.OrigName, "a/") != fileName ||
-		!strings.HasSuffix(fileName, ".yaml") ||
-		!strings.HasPrefix(fileName, "github/ci/prow-deploy/files/jobs") {
+	if !strings.HasPrefix(fileName, "github/ci/prow-deploy/kustom") {
 		return
 	}
 
 	t.relevantFileDiffs = append(t.relevantFileDiffs, fileDiff)
 }
 
-func (t *ProwJobImageUpdate) Review() BotReviewResult {
-	result := &ProwJobImageUpdateResult{}
+func (t *ProwAutobump) Review() BotReviewResult {
+	result := &ProwAutobumpResult{}
 
 	for _, fileDiff := range t.relevantFileDiffs {
 		for _, hunk := range fileDiff.Hunks {
-			if !prowJobImageUpdateHunkBodyMatcher.Match(hunk.Body) {
+			if !prowAutobumpHunkBodyMatcher.Match(hunk.Body) {
 				result.notMatchingHunks = append(result.notMatchingHunks, hunk)
 			}
 		}
@@ -99,6 +97,6 @@ func (t *ProwJobImageUpdate) Review() BotReviewResult {
 	return result
 }
 
-func (t *ProwJobImageUpdate) String() string {
+func (t *ProwAutobump) String() string {
 	return fmt.Sprintf("relevantFileDiffs: %v", t.relevantFileDiffs)
 }

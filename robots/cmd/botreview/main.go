@@ -122,7 +122,10 @@ func main() {
 	reviewer := review.NewReviewer(log, github.PullRequestActionEdited, o.org, o.repo, o.pullRequestNumber, user.Login, o.dryRun)
 	botReviewResults, err := reviewer.ReviewLocalCode()
 	if err != nil {
-		log.Errorf("error while reviewing: %v", err)
+		log.Info("no review results, cancelling review comments")
+	}
+	if len(botReviewResults) == 0 {
+		return
 	}
 
 	err = reviewer.AttachReviewComments(botReviewResults, githubClient)

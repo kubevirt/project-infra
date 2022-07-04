@@ -22,16 +22,21 @@ package review
 import (
 	"github.com/sourcegraph/go-diff/diff"
 	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 )
 
-func TestProwJobImageUpdate_Review(t1 *testing.T) {
-	diffFilePathes := []string{
-		"testdata/simple_bump-prow-job-images_sh.patch0",
-		"testdata/simple_bump-prow-job-images_sh.patch1",
-		"testdata/mixed_bump_prow_job.patch0",
+func TestBumpKubevirtCI_Review(t1 *testing.T) {
+	diffFilePathes := []string{}
+	entries, err := os.ReadDir("testdata/kubevirtci-bump")
+	if err != nil {
+		t1.Errorf("failed to read files: %v", err)
 	}
+	for _, entry := range entries {
+		diffFilePathes = append(diffFilePathes, filepath.Join("testdata/kubevirtci-bump", entry.Name()))
+	}
+	diffFilePathes = append(diffFilePathes, "testdata/mixed_bump_prow_job.patch0")
 	diffFilePathesToDiffs := map[string]*diff.FileDiff{}
 	for _, diffFile := range diffFilePathes {
 		bump_images_diff_file, err := os.ReadFile(diffFile)
@@ -50,36 +55,43 @@ func TestProwJobImageUpdate_Review(t1 *testing.T) {
 	tests := []struct {
 		name   string
 		fields fields
-		want   *ProwJobImageUpdateResult
+		want   *BumpKubevirtCIResult
 	}{
 		{
-			name: "simple image bump",
+			name: "simple prow autobump",
 			fields: fields{
 				relevantFileDiffs: []*diff.FileDiff{
-					diffFilePathesToDiffs["testdata/simple_bump-prow-job-images_sh.patch0"],
-					diffFilePathesToDiffs["testdata/simple_bump-prow-job-images_sh.patch1"],
+					diffFilePathesToDiffs["testdata/kubevirtci-bump/cluster-up-sha.txt"],
+					diffFilePathesToDiffs["testdata/kubevirtci-bump/cluster-up_cluster_kind-1.22-sriov_provider.sh"],
+					diffFilePathesToDiffs["testdata/kubevirtci-bump/cluster-up_cluster_kind-1.22-sriov_sriov-node_node.sh"],
+					diffFilePathesToDiffs["testdata/kubevirtci-bump/cluster-up_cluster_kind_common.sh"],
+					diffFilePathesToDiffs["testdata/kubevirtci-bump/cluster-up_cluster_kind_configure-registry-proxy.sh"],
+					diffFilePathesToDiffs["testdata/kubevirtci-bump/cluster-up_hack_common.sh"],
+					diffFilePathesToDiffs["testdata/kubevirtci-bump/cluster-up_version.txt"],
+					diffFilePathesToDiffs["testdata/kubevirtci-bump/hack_config-default.sh"],
 				},
 			},
-			want: &ProwJobImageUpdateResult{},
+			want: &BumpKubevirtCIResult{},
 		},
 		{
 			name: "mixed image bump",
 			fields: fields{
 				relevantFileDiffs: []*diff.FileDiff{
+					diffFilePathesToDiffs["testdata/kubevirtci-bump/cluster-up-sha.txt"],
+					diffFilePathesToDiffs["testdata/kubevirtci-bump/cluster-up_cluster_kind-1.22-sriov_provider.sh"],
 					diffFilePathesToDiffs["testdata/mixed_bump_prow_job.patch0"],
 				},
 			},
-			want: &ProwJobImageUpdateResult{
-				notMatchingHunks: []*diff.Hunk{
-					diffFilePathesToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks[0],
-				},
+			want: &BumpKubevirtCIResult{
+				notMatchingHunks: diffFilePathesToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &ProwJobImageUpdate{
-				relevantFileDiffs: tt.fields.relevantFileDiffs,
+			t := &BumpKubevirtCI{}
+			for _, diff := range tt.fields.relevantFileDiffs {
+				t.AddIfRelevant(diff)
 			}
 			if got := t.Review(); !reflect.DeepEqual(got, tt.want) {
 				t1.Errorf("Review() = %v, want %v", got, tt.want)

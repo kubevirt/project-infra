@@ -42,22 +42,7 @@ func newPossibleReviewTypes() []KindOfChange {
 	return []KindOfChange{
 		&ProwJobImageUpdate{},
 		&BumpKubevirtCI{},
-	}
-}
-
-type Result struct {
-	notMatchingHunks []*diff.Hunk
-}
-
-func (r Result) String() string {
-	if len(r.notMatchingHunks) == 0 {
-		return prowJobImageUpdateApproveComment
-	} else {
-		comment := prowJobImageUpdateDisapproveComment
-		for _, hunk := range r.notMatchingHunks {
-			comment += fmt.Sprintf("\n```\n%s\n```", string(hunk.Body))
-		}
-		return comment
+		&ProwAutobump{},
 	}
 }
 
@@ -110,17 +95,17 @@ func NewReviewer(l *logrus.Entry, action github.PullRequestEventAction, org stri
 func (r *Reviewer) withFields() *logrus.Entry {
 	return r.l.WithField("dryRun", r.dryRun).WithField("org", r.org).WithField("repo", r.repo).WithField("pr", r.num).WithField("user", r.user)
 }
-func (r *Reviewer) infoF(message string, args ...interface{}) {
-	r.withFields().Infof(message, args)
-}
 func (r *Reviewer) info(message string) {
 	r.withFields().Info(message)
 }
+func (r *Reviewer) infoF(message string, args ...interface{}) {
+	r.withFields().Infof(message, args...)
+}
 func (r *Reviewer) fatalF(message string, args ...interface{}) {
-	r.withFields().Fatalf(message, args)
+	r.withFields().Fatalf(message, args...)
 }
 func (r *Reviewer) debugF(message string, args ...interface{}) {
-	r.withFields().Debugf(message, args)
+	r.withFields().Debugf(message, args...)
 }
 
 func (r *Reviewer) ReviewLocalCode() ([]BotReviewResult, error) {
