@@ -11,7 +11,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/golang:v20220602-ac34bf7
+        image: quay.io/kubevirtci/golang:v20220630-ded5dcd
         args:
         resources:
           requests:
