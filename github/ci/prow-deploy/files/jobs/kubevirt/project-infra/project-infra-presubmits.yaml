@@ -28,7 +28,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+      - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
         command:
           - "/bin/bash"
           - "-c"
@@ -47,7 +47,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+      - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -71,7 +71,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -96,7 +96,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -124,7 +124,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -151,7 +151,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -178,7 +178,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -205,7 +205,7 @@ presubmits:
     cluster: prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -232,7 +232,7 @@ presubmits:
     cluster: prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -261,7 +261,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -286,7 +286,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -361,7 +361,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -398,7 +398,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -435,7 +435,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -472,7 +472,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -509,7 +509,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -546,7 +546,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -584,7 +584,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -623,7 +623,7 @@ presubmits:
       base_ref: master
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20220602-ac34bf7
+      - image: quay.io/kubevirtci/golang:v20220630-ded5dcd
         command:
         - github/ci/testgrid/hack/check.sh
         securityContext:

@@ -19,7 +19,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
+      - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
         env:
           - name: OS
             value: CentOS_8_Stream
