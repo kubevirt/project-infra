@@ -656,7 +656,7 @@ periodics:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
           - name: ISTIO_VERSIONS
-            value: "1.10.0,1.13.0"
+            value: "1.10.0,1.13.0,1.14.0"
         command: ["/bin/sh", "-c"]
         args:
           - ./hack/mirror-istioctl.sh
