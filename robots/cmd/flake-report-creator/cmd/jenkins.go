@@ -87,6 +87,10 @@ const (
 			.center {
 				text-align:center
 			}
+			.right {
+				text-align: right;
+				width: 100%;
+			}
 
 			.popup {
 				position: relative;
@@ -110,7 +114,26 @@ const (
 				margin-left: -110px;
 			}
 
+            .popup .popuptextjoblist {
+                display: none;
+                width: 350px;
+                background-color: #FFFFFF;
+                text-align: center;
+                border-radius: 6px;
+                padding: 8px 8px;
+                position: absolute;
+                z-index: 1;
+                left: 100%;
+                margin-left: -350px;
+            }
+
 			.popup:hover .popuptext {
+				display: block;
+				-webkit-animation: fadeIn 1s;
+				animation: fadeIn 1s;
+			}
+
+			.popup:hover .popuptextjoblist {
 				display: block;
 				-webkit-animation: fadeIn 1s;
 				animation: fadeIn 1s;
@@ -142,6 +165,26 @@ const (
 {{ if not .Headers }}
 	<div>No failing tests! 🙂</div>
 {{ else }}
+<div id="failuresForJobs" class="popup right" >
+	<u>list of job runs</u>
+	<div class="popuptextjoblist right" id="targetfailuresForJobs">
+		<table width="100%">
+			{{ range $key, $jobFailures := $.FailuresForJobs }}<tr class="unimportant">
+				<td>
+					<a href="{{ $.JenkinsBaseURL }}/job/{{.Job}}"><span title="job">{{.Job}}</span></a>
+				</td>
+				<td>
+					<a href="{{ $.JenkinsBaseURL }}/job/{{.Job}}/{{.BuildNumber}}"><span title="job build number">{{.BuildNumber}}</span></a>
+				</td>
+				<td>
+					<div class="tests_failed"><span title="test failures">{{ .Failures }}</span></div>
+				</td>
+			</tr>{{ end }}
+		</table>
+	</div>
+</div>
+
+
 <table>
     <tr>
         <td></td>
@@ -165,7 +208,7 @@ const (
                 <span class="tests_failed" title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span class="tests_passed" title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span class="tests_skipped" title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>{{ if (index $.Data $test $header).Jobs }}
                 <div class="popuptext" id="targetr{{$row}}c{{$col}}">
                     {{ range $Job := (index $.Data $test $header).Jobs }}
-                    <div class="{{.Severity}} nowrap">{{ if ne .PR 0 }}<a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/{{.BuildNumber}}">{{.BuildNumber}}</a>{{ else }}<a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/{{.BuildNumber}}">{{.BuildNumber}}</a>{{ end }}</div>
+                    <div class="{{.Severity}} nowrap"><a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/{{.BuildNumber}}">{{.BuildNumber}}</a> (<span class="tests_failed" title="failed tests in job run">{{ (index $.FailuresForJobs (printf "%s-%d" $header .BuildNumber)).Failures }}</span>)</div>
                     {{ end }}
                 </div>{{ end }}
             </div>
