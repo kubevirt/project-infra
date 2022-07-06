@@ -27,19 +27,18 @@ import (
 	"net/http"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/spf13/cobra"
 
-	retry "github.com/avast/retry-go"
 	"github.com/bndr/gojenkins"
 	"github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	junitMerge "kubevirt.io/project-infra/robots/pkg/flakefinder/junit-merge"
+	flakejenkins "kubevirt.io/project-infra/robots/pkg/jenkins"
 )
 
 const (
@@ -404,82 +403,11 @@ func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Je
 		fLog.Fatalf("failed to fetch job: %v", err)
 	}
 
-	completedBuilds := fetchCompletedBuildsForJob(startOfReport, job.Raw.LastBuild.Number, job, ctx, fLog)
+	completedBuilds := flakejenkins.FetchCompletedBuildsForJob(startOfReport, job.Raw.LastBuild.Number, job, ctx, fLog)
 	junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(completedBuilds, fLog)
 	reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job, fLog)
 
 	reportChan <- reportsPerJob
-}
-
-func fetchCompletedBuildsForJob(startOfReport time.Time, lastBuildNumber int64, job *gojenkins.Job, ctx context.Context, fLog *log.Entry) []*gojenkins.Build {
-	fLog.Printf("Fetching completed builds, starting at %d", lastBuildNumber)
-	var completedBuilds []*gojenkins.Build
-	for buildNumber := lastBuildNumber; buildNumber > 0; buildNumber-- {
-		fLog.Printf("Fetching build no %d", buildNumber)
-		build, statusCode, err := getBuildWithRetry(job, ctx, buildNumber, fLog)
-
-		if build == nil {
-			if statusCode != http.StatusNotFound {
-				fLog.Fatalf("failed to fetch build data for build no %d: %v", buildNumber, err)
-			}
-			continue
-		}
-
-		if build.GetResult() != "SUCCESS" &&
-			build.GetResult() != "UNSTABLE" {
-			fLog.Printf("Skipping build with state %s", build.GetResult())
-			continue
-		}
-
-		buildTime := msecsToTime(build.Info().Timestamp)
-		fLog.Printf("Build %d ran at %s", build.Info().Number, buildTime.Format(time.RFC3339))
-		if buildTime.Before(startOfReport) {
-			fLog.Printf("Skipping remaining builds")
-			break
-		}
-
-		completedBuilds = append(completedBuilds, build)
-	}
-	fLog.Printf("Fetched %d completed builds", len(completedBuilds))
-	return completedBuilds
-}
-
-func getBuildWithRetry(job *gojenkins.Job, ctx context.Context, buildNumber int64, fLog *log.Entry) (build *gojenkins.Build, statusCode int, err error) {
-	retry.Do(
-		func() error {
-			build, err = job.GetBuild(ctx, buildNumber)
-			if err != nil {
-				return err
-			}
-			return nil
-		},
-		retry.RetryIf(func(err error) bool {
-			fLog.Warningf("failed to fetch build data for build no %d: %v", buildNumber, err)
-			statusCode = httpStatusOrDie(err, fLog)
-			if statusCode == http.StatusNotFound {
-				return false
-			}
-			if statusCode == http.StatusGatewayTimeout {
-				return true
-			}
-			return false
-		}),
-	)
-	return build, statusCode, err
-}
-
-// httpStatusOrDie fetches [stringly typed](https://wiki.c2.com/?StringlyTyped) error code produced by jenkins client
-// or logs a fatal error if conversion to int is not possible
-func httpStatusOrDie(err error, fLog *log.Entry) int {
-	statusCode, conversionError := strconv.Atoi(err.Error())
-	if conversionError != nil {
-		fLog.Fatalf("Failed to get status code from error %v: %v", err, conversionError)
-	}
-	return statusCode
-}
-
-func msecsToTime(msecs int64) time.Time {
-	return time.Unix(msecs/1000, msecs%1000)
 }
 
 func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build, fLog *log.Entry) []gojenkins.Artifact {
