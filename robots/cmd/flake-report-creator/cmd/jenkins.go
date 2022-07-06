@@ -554,7 +554,12 @@ func writeJSONToOutputFile(jsonOutputFile string, parameters flakefinder.Params)
 	defer reportOutputWriter.Close()
 
 	encoder := json.NewEncoder(reportOutputWriter)
-	err := encoder.Encode(parameters.Data)
+	err := encoder.Encode(
+		map[string]interface{}{
+			"data":            parameters.Data,
+			"failuresForJobs": parameters.FailuresForJobs,
+		},
+	)
 	if err != nil {
 		jLog.Fatalf("failed to write report: %v", err)
 	}

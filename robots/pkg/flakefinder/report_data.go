@@ -36,10 +36,10 @@ type Job struct {
 }
 
 type JobFailures struct {
-	BuildNumber int
-	PR          int
-	Job         string
-	Failures    int
+	BuildNumber int    `json:"buildNumber"`
+	PR          int    `json:"pr"`
+	Job         string `json:"job"`
+	Failures    int    `json:"failures"`
 }
 
 type Jobs []*Job
