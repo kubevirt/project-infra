@@ -59,7 +59,7 @@ early_exit_handler() {
 setup_ca
 
 # optionally enable ipv6
-export PODMAN_IN_CONTAINER_IPV6_ENABLED=${PODMAN_IN_CONTAINER_IPV6_ENABLED:-false}
+export PODMAN_IN_CONTAINER_IPV6_ENABLED=${PODMAN_IN_CONTAINER_IPV6_ENABLED:-true}
 if [[ "${PODMAN_IN_CONTAINER_IPV6_ENABLED}" == "true" ]]; then
     echo "Enabling IPV6."
     # enable ipv6
@@ -75,6 +75,7 @@ if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
     (
         export HTTP_PROXY=${CONTAINER_HTTP_PROXY}
         export HTTPS_PROXY=${CONTAINER_HTTPS_PROXY}
+	export KIND_EXPERIMENTAL_PROVIDER="podman"
 	mkdir -p ${XDG_RUNTIME_DIR}/podman
         podman system service \
                -t 0 \
@@ -86,8 +87,8 @@ if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
     WAIT_N=0
     MAX_WAIT=5
     while true; do
-        # podman ps -q should only work if the daemon is ready
-        podman ps -q > /dev/null 2>&1 && break
+        # wait for podman socket to be ready
+        curl --unix-socket "${XDG_RUNTIME_DIR}/podman/podman.sock" http://d/v3.0.0/libpod/info >/dev/null 2>&1 && break
         if [[ ${WAIT_N} -lt ${MAX_WAIT} ]]; then
             WAIT_N=$((WAIT_N+1))
             echo "Waiting for podman socket to be ready, sleeping for ${WAIT_N} seconds."
