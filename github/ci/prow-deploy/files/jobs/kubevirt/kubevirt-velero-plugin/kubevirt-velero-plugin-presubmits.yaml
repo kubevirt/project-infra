@@ -45,18 +45,25 @@ presubmits:
       timeout: 4h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - image: quay.io/bcarey/bootstrap:bootstrap-f36podman-4
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
             - "hack/run-ci.sh"
+          env:
+          - name: PODMAN_IN_CONTAINER_ENABLED
+            value: "true"
+          - name: CONTAINER_HTTP_PROXY
+            value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+          - name: CONTAINER_HTTPS_PROXY
+            value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true

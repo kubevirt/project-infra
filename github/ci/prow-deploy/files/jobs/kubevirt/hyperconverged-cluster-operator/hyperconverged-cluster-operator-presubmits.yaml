@@ -14,7 +14,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 6
     labels:
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     cluster: prow-workloads
@@ -22,12 +22,19 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20220425-b167bb8
+      - image: quay.io/bcarey/bootstrap:bootstrap-f36podman-4
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
         - "export TARGET=k8s-1.23 && automation/test.sh"
+        env:
+        - name: PODMAN_IN_CONTAINER_ENABLED
+          value: "true"
+        - name: CONTAINER_HTTP_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        - name: CONTAINER_HTTPS_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true

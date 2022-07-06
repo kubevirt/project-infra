@@ -387,7 +387,7 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
-    preset-dind-enabled: "true"
+    preset-pinc-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.22-sriov
@@ -423,7 +423,13 @@ periodics:
         value: "true"
       - name: TARGET
         value: kind-1.22-sriov
-      image: quay.io/kubevirtci/golang:v20220630-ded5dcd
+      - name: PODMAN_IN_CONTAINER_ENABLED
+        value: "true"
+      - name: CONTAINER_HTTP_PROXY
+        value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+      - name: CONTAINER_HTTPS_PROXY
+        value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+      image: quay.io/bcarey/bootstrap:golang-f36podman-4
       name: ""
       resources:
         requests:
@@ -438,6 +444,10 @@ periodics:
         name: cgroup
       - mountPath: /dev/vfio/
         name: vfio
+      - mountPath: /var/log/audit
+        name: audit
+      - mountPath: /var/lib/containers
+        name: podman-data
     nodeSelector:
       hardwareSupport: sriov-nic
     priorityClassName: sriov
@@ -454,6 +464,10 @@ periodics:
         path: /dev/vfio/
         type: Directory
       name: vfio
+    - name: audit
+      emptyDir: {}
+    - name: podman-data
+      emptyDir: {}
 - annotations:
     testgrid-create-test-group: "false"
   cluster: ibm-prow-jobs

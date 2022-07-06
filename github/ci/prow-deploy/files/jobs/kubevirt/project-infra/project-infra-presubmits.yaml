@@ -172,13 +172,12 @@ presubmits:
     run_if_changed: "images/prow-deploy/.*"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - image: quay.io/bcarey/bootstrap:golang-f36podman-3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -186,14 +185,13 @@ presubmits:
             - |
               cd images
               ./publish_image.sh -b prow-deploy quay.io kubevirtci
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
           resources:
             requests:
               memory: "8Gi"
             limits:
               memory: "8Gi"
+          securityContext:
+            privileged: true
   - name: build-autoowners-image
     always_run: false
     run_if_changed: "images/autoowners/.*"
@@ -354,14 +352,14 @@ presubmits:
     run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
     cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - image: quay.io/bcarey/bootstrap:bootstrap-f36podman-3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -378,6 +376,9 @@ presubmits:
 
               bazelisk test //github/ci/services/cert-manager/e2e:go_default_test --test_output=all --test_arg=-test.v
           # docker-in-docker needs privileged mode
+          env:
+            - name: PODMAN_IN_CONTAINER_ENABLED
+              value: "true"
           securityContext:
             privileged: true
             runAsUser: 0
@@ -386,6 +387,12 @@ presubmits:
               memory: "16Gi"
             limits:
               memory: "16Gi"
+          volumeMounts:
+          - name: podman-data
+            mountPath: /var/lib/containers
+      volumes:
+      - name: podman-data
+        emptyDir: {}
   - name: pull-project-infra-ci-search-deploy-test
     optional: false
     run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
@@ -576,7 +583,7 @@ presubmits:
     run_if_changed: "github/ci/services/kubot/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     cluster: prow-workloads
@@ -584,7 +591,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - image: quay.io/bcarey/bootstrap:golang-f36podman-3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"

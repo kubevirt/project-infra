@@ -88,7 +88,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -108,7 +108,13 @@ presubmits:
           value: k8s-1.23-sig-storage
         - name: KUBEVIRT_CGROUPV2
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - name: PODMAN_IN_CONTAINER_ENABLED
+          value: "true"
+        - name: CONTAINER_HTTP_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        - name: CONTAINER_HTTPS_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        image: quay.io/bcarey/bootstrap:golang-f36podman-3
         name: ""
         resources:
           requests:
@@ -358,7 +364,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -379,7 +385,13 @@ presubmits:
           value: NonRoot
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - name: PODMAN_IN_CONTAINER_ENABLED
+          value: "true"
+        - name: CONTAINER_HTTP_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        - name: CONTAINER_HTTPS_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        image: quay.io/bcarey/bootstrap:golang-f36podman-3
         name: ""
         resources:
           requests:
@@ -400,7 +412,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 1
@@ -417,7 +429,13 @@ presubmits:
         env:
         - name: TARGET
           value: windows2016
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - name: PODMAN_IN_CONTAINER_ENABLED
+          value: "true"
+        - name: CONTAINER_HTTP_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        - name: CONTAINER_HTTPS_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        image: quay.io/bcarey/bootstrap:bootstrap-f36podman-3
         name: ""
         resources:
           requests:
@@ -521,7 +539,7 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
       rehearsal.allowed: "true"
@@ -557,7 +575,13 @@ presubmits:
         env:
         - name: TARGET
           value: kind-1.22-sriov
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - name: PODMAN_IN_CONTAINER_ENABLED
+          value: "true"
+        - name: CONTAINER_HTTP_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        - name: CONTAINER_HTTPS_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        image: quay.io/bcarey/bootstrap:bootstrap-f36podman-4
         name: ""
         resources:
           requests:
@@ -572,6 +596,10 @@ presubmits:
           name: cgroup
         - mountPath: /dev/vfio/
           name: vfio
+        - mountPath: /var/log/audit
+          name: audit
+        - mountPath: /var/lib/containers
+          name: podman-data
       nodeSelector:
         hardwareSupport: sriov-nic
       priorityClassName: sriov
@@ -588,6 +616,10 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      - name: podman-data
+        emptyDir: {}
+      - name: audit
+        emptyDir: {}
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -599,7 +631,7 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
       vgpu: "true"
     max_concurrency: 1
@@ -617,7 +649,13 @@ presubmits:
         env:
         - name: TARGET
           value: kind-1.23-vgpu
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - name: PODMAN_IN_CONTAINER_ENABLED
+          value: "true"
+        - name: CONTAINER_HTTP_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        - name: CONTAINER_HTTPS_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        image: quay.io/bcarey/bootstrap:golang-f36podman-4
         name: ""
         resources:
           requests:
@@ -632,6 +670,10 @@ presubmits:
           name: cgroup
         - mountPath: /dev/vfio/
           name: vfio
+        - name: podman-data
+          mountPath: /var/lib/containers
+        - name: audit
+          mountPath: /var/log/audit
       nodeSelector:
         hardwareSupport: gpu
       priorityClassName: vgpu
@@ -648,6 +690,10 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      - name: podman-data
+        emptyDir: {}
+      - name: audit
+        emptyDir: {}
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -755,7 +801,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-generate
     skip_branches:
@@ -767,7 +813,14 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        image: quay.io/bcarey/bootstrap:bootstrap-f36podman-4
+        env:
+        - name: PODMAN_IN_CONTAINER_ENABLED
+          value: "true"
+        - name: CONTAINER_HTTP_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        - name: CONTAINER_HTTPS_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
         name: ""
         resources:
           requests:
@@ -877,7 +930,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-build
     skip_branches:
@@ -889,7 +942,10 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        env:
+        - name: PODMAN_IN_CONTAINER_ENABLED
+          value: "true"
+        image: quay.io/bcarey/bootstrap:bootstrap-f36podman-3
         name: ""
         resources:
           requests:
@@ -906,7 +962,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-build-arm64
     skip_branches:
@@ -921,7 +977,13 @@ presubmits:
         env:
         - name: BUILD_ARCH
           value: crossbuild-aarch64
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - name: PODMAN_IN_CONTAINER_ENABLED
+          value: "true"
+        - name: CONTAINER_HTTP_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        - name: CONTAINER_HTTPS_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        image: quay.io/bcarey/bootstrap:bootstrap-f36podman-3
         name: ""
         resources:
           requests:
@@ -1675,7 +1737,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-pinc-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1692,7 +1754,13 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - name: PODMAN_IN_CONTAINER_ENABLED
+          value: "true"
+        - name: CONTAINER_HTTP_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        - name: CONTAINER_HTTPS_PROXY
+          value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+        image: quay.io/bcarey/bootstrap:bootstrap-f36podman-3
         name: ""
         resources:
           requests:
