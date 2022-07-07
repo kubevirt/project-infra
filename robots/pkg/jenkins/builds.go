@@ -26,40 +26,92 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 )
+
+type BuildStop struct {
+	buildNumber int64
+	build       *gojenkins.Build
+	stop        bool
+}
 
 func FetchCompletedBuildsForJob(startOfReport time.Time, lastBuildNumber int64, job *gojenkins.Job, ctx context.Context, fLog *log.Entry) []*gojenkins.Build {
 	fLog.Printf("Fetching completed builds, starting at %d", lastBuildNumber)
 	var completedBuilds []*gojenkins.Build
-	for buildNumber := lastBuildNumber; buildNumber > 0; buildNumber-- {
-		fLog.Printf("Fetching build no %d", buildNumber)
-		build, statusCode, err := getBuildWithRetry(job, ctx, buildNumber, fLog)
+	paginationSize := 10
+	for buildNumber := lastBuildNumber; buildNumber > 0; buildNumber = buildNumber - int64(paginationSize) {
 
-		if build == nil {
-			if statusCode != http.StatusNotFound {
-				fLog.Fatalf("failed to fetch build data for build no %d: %v", buildNumber, err)
+		buildStopChan := make(chan BuildStop)
+
+		go getBuildsPaged(startOfReport, paginationSize, buildStopChan, buildNumber, job, ctx, fLog)
+
+		stop := false
+		for buildStop := range buildStopChan {
+			fLog.Debugf("Fetched buildStop %v", buildStop)
+			if buildStop.build != nil {
+				completedBuilds = append(completedBuilds, buildStop.build)
 			}
-			continue
+			if buildStop.stop {
+				stop = true
+			}
 		}
-
-		if build.GetResult() != "SUCCESS" &&
-			build.GetResult() != "UNSTABLE" {
-			fLog.Printf("Skipping build with state %s", build.GetResult())
-			continue
-		}
-
-		buildTime := msecsToTime(build.Info().Timestamp)
-		fLog.Printf("Build %d ran at %s", build.Info().Number, buildTime.Format(time.RFC3339))
-		if buildTime.Before(startOfReport) {
-			fLog.Printf("Skipping remaining builds")
+		if stop {
 			break
 		}
-
-		completedBuilds = append(completedBuilds, build)
 	}
 	fLog.Printf("Fetched %d completed builds", len(completedBuilds))
 	return completedBuilds
+}
+
+func getBuildsPaged(startOfReport time.Time, paginationSize int, buildStopChan chan BuildStop, buildNumber int64, job *gojenkins.Job, ctx context.Context, fLog *log.Entry) {
+	var wg sync.WaitGroup
+	wg.Add(paginationSize)
+
+	defer close(buildStopChan)
+	for i := 0; i < paginationSize; i++ {
+		pageBuildNumber := buildNumber - int64(i)
+		go getFilteredBuildOrStop(buildStopChan, startOfReport, pageBuildNumber, job, ctx, fLog, &wg)
+	}
+
+	wg.Wait()
+}
+
+func getFilteredBuildOrStop(buildStopChan chan BuildStop, startOfReport time.Time, buildNumber int64, job *gojenkins.Job, ctx context.Context, fLog *log.Entry, wg *sync.WaitGroup) {
+	defer wg.Done()
+	build, stop := getFilteredBuild(startOfReport, job, ctx, buildNumber, fLog)
+	buildStopChan <- BuildStop{
+		buildNumber: buildNumber,
+		build:       build,
+		stop:        stop,
+	}
+}
+
+func getFilteredBuild(startOfReport time.Time, job *gojenkins.Job, ctx context.Context, buildNumber int64, fLog *log.Entry) (build *gojenkins.Build, stop bool) {
+	fLog.Printf("Fetching build no %d", buildNumber)
+	build, statusCode, err := getBuildWithRetry(job, ctx, buildNumber, fLog)
+
+	if build == nil {
+		if statusCode != http.StatusNotFound {
+			fLog.Fatalf("failed to fetch build data for build no %d: %v", buildNumber, err)
+		}
+		return nil, false
+	}
+
+	if build.GetResult() != "SUCCESS" &&
+		build.GetResult() != "UNSTABLE" {
+		fLog.Printf("Skipping build no %d with state %s", buildNumber, build.GetResult())
+		return nil, false
+	}
+
+	buildTime := msecsToTime(build.Info().Timestamp)
+	fLog.Printf("Build %d ran at %s", build.Info().Number, buildTime.Format(time.RFC3339))
+	if buildTime.Before(startOfReport) {
+		fLog.Printf("Skipping build no %d as too early", buildNumber)
+		return nil, true
+	}
+
+	return build, false
 }
 
 func getBuildWithRetry(job *gojenkins.Job, ctx context.Context, buildNumber int64, fLog *log.Entry) (build *gojenkins.Build, statusCode int, err error) {
