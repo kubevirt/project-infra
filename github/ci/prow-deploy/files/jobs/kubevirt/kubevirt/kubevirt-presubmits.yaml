@@ -1,6 +1,6 @@
 presubmits:
   kubevirt/kubevirt:
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -38,7 +38,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -76,7 +76,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -114,7 +114,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -193,9 +193,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_if_changed: pkg/virt-handler/cgroup/.*
-    optional: false
-    skip_report: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -212,6 +209,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-compute-cgroupsv2
+    run_if_changed: pkg/virt-handler/cgroup/.*
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -236,9 +234,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_if_changed: pkg/virt-handler/cgroup/.*|pkg/virt-handler/hotplug-disk/.*|pkg/hotplug-disk/.*|cmd/virt-chroot/cgroup.go
-    optional: false
-    skip_report: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -255,6 +250,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-storage-cgroupsv2
+    run_if_changed: pkg/virt-handler/cgroup/.*|pkg/virt-handler/hotplug-disk/.*|pkg/hotplug-disk/.*|cmd/virt-chroot/cgroup.go
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1094,7 +1090,6 @@ presubmits:
     optional: true
     skip_branches:
     - release-\d+\.\d+
-    skip_reporting: true
     spec:
       containers:
       - command:
@@ -2136,7 +2131,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2175,7 +2170,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2214,7 +2209,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2253,7 +2248,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
