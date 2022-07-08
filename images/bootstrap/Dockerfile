@@ -53,6 +53,7 @@ RUN dnf install -y \
     skopeo \
     sudo \
     buildah \
+    podman \
     qemu-user-static \
     wget &&\
   dnf -y clean all
