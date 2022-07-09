@@ -6,9 +6,11 @@ filters:
     approvers:
     - aglitke
     - awels
+    - davidvossel
     - rgolangh
     reviewers:
     - aglitke
     - awels
+    - davidvossel
     - rgolangh
 options: {}
