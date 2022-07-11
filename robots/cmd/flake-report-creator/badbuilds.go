@@ -22,15 +22,14 @@ package main
 import (
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/bndr/gojenkins"
-	"github.com/bndr/gotabulate"
 	log "github.com/sirupsen/logrus"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
 	flakejenkins "kubevirt.io/project-infra/robots/pkg/jenkins"
 	"net/http"
-	"sync"
 	"time"
 )
 
@@ -56,6 +55,7 @@ func flagOptions() options {
 func main() {
 	opts := flagOptions()
 
+	log.StandardLogger().SetFormatter(&log.JSONFormatter{})
 	jLog := log.StandardLogger().WithField("robot", "badbuilds")
 
 	ctx := context.Background()
@@ -82,66 +82,13 @@ func main() {
 	}
 
 	startOfReport := time.Now().Add(-1 * opts.startFrom)
-	buildNumbersToFailures := getBuildNumbersToFailuresForJob(startOfReport, job, ctx, jLog)
+	buildNumbersToFailures := flakejenkins.GetBuildNumbersToFailuresForJob(startOfReport, job, ctx, jLog)
 
 	result := build.NewRating(opts.jobName, opts.endpoint, opts.startFrom, buildNumbersToFailures)
 
-	data := [][]interface{}{}
-	for _, buildNo := range result.BuildNumbers {
-		failures, deviating := result.GetBuildData(buildNo)
-		row := []interface{}{result.Name, buildNo, failures, deviating}
-		data = append(data, row)
-	}
-
-	t := gotabulate.Create(data)
-	t.SetHeaders([]string{"job_name", "build_number", "failures", "is bad build"})
-	t.SetEmptyString("-")
-	t.SetAlign("left")
-	fmt.Println(t.Render("simple"))
-}
-
-func getBuildNumbersToFailuresForJob(startOfReport time.Time, job *gojenkins.Job, ctx context.Context, jLog *log.Entry) map[int64]int64 {
-	completedBuilds := flakejenkins.FetchCompletedBuildsForJob(startOfReport, job.Raw.LastBuild.Number, job, ctx, jLog)
-
-	buildNumbersToFailuresChan := make(chan []int64)
-
-	go fetchFailuresForBuilds(ctx, completedBuilds, buildNumbersToFailuresChan, jLog)
-
-	buildNumbersToFailures := map[int64]int64{}
-	for buildNumberToFailure := range buildNumbersToFailuresChan {
-		jLog.Debugf("adding %v results", buildNumberToFailure)
-		buildNumbersToFailures[buildNumberToFailure[0]] = buildNumberToFailure[1]
-	}
-	jLog.Debugf("total result: %v", buildNumbersToFailures)
-	return buildNumbersToFailures
-}
-
-func fetchFailuresForBuilds(ctx context.Context, completedBuilds []*gojenkins.Build, buildNumbersToFailuresChan chan []int64, jLog *log.Entry) {
-
-	var wg sync.WaitGroup
-	wg.Add(len(completedBuilds))
-
-	defer close(buildNumbersToFailuresChan)
-	for _, completedBuild := range completedBuilds {
-		go fetchFailureForBuild(ctx, completedBuild, jLog, &wg, buildNumbersToFailuresChan)
-	}
-
-	jLog.Debugf("waiting for %d results", len(completedBuilds))
-	wg.Wait()
-	jLog.Debugf("got %d results", len(completedBuilds))
-}
-
-func fetchFailureForBuild(ctx context.Context, completedBuild *gojenkins.Build, jLog *log.Entry, wg *sync.WaitGroup, buildNumbersToFailuresChan chan []int64) {
-	defer wg.Done()
-
-	buildNumber := completedBuild.GetBuildNumber()
-	jLog.Debugf("fetching failures for build %d", buildNumber)
-	testResult, err := completedBuild.GetResultSet(ctx)
+	bytes, err := json.MarshalIndent(result, "", "\t")
 	if err != nil {
-		jLog.Fatalf("failed to get resultset for %v: %v", completedBuild, err)
+		jLog.Fatalf("failed to get job %s: %v", opts.jobName, err)
 	}
-	failures := testResult.FailCount
-	jLog.Debugf("build %d has %d failures", buildNumber, failures)
-
-	buildNumbersToFailuresChan <- []int64{buildNumber, failures}
+	fmt.Println(string(bytes))
 }

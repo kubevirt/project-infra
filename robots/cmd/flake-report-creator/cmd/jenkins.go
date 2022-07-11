@@ -24,6 +24,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
 	"net/http"
 	"os"
 	"regexp"
@@ -355,7 +356,11 @@ func runJenkinsReport(cmd *cobra.Command, args []string) error {
 }
 
 func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time.Time, innerJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) []*flakefinder.JobResult {
+	filteredJobs := filterMatchingJobs(innerJobs)
+	return fetchJobReports(startOfReport, endOfReport, filteredJobs, jenkins, ctx)
+}
 
+func filterMatchingJobs(innerJobs []gojenkins.InnerJob) []gojenkins.InnerJob {
 	filteredJobs := []gojenkins.InnerJob{}
 	for _, jobNameRegex := range jobNameRegexes {
 		jLog.Printf("Filtering for jobs matching %s", jobNameRegex)
@@ -367,7 +372,10 @@ func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time
 		}
 	}
 	jLog.Printf("%d jobs left after filtering", len(filteredJobs))
+	return filteredJobs
+}
 
+func fetchJobReports(startOfReport time.Time, endOfReport time.Time, filteredJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) []*flakefinder.JobResult {
 	reportChan := make(chan []*flakefinder.JobResult)
 
 	go runReportDataFetches(filteredJobs, jenkins, ctx, startOfReport, endOfReport, reportChan)
@@ -376,7 +384,6 @@ func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time
 	for reportsPerJob := range reportChan {
 		reports = append(reports, reportsPerJob...)
 	}
-
 	return reports
 }
 
@@ -403,8 +410,23 @@ func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Je
 		fLog.Fatalf("failed to fetch job: %v", err)
 	}
 
-	completedBuilds := flakejenkins.FetchCompletedBuildsForJob(startOfReport, job.Raw.LastBuild.Number, job, ctx, fLog)
-	junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(completedBuilds, fLog)
+	startOfReportForRatings := time.Now().Add(-1 * 14 * 24 * time.Hour) // start with 2 weeks
+	buildNumbersToFailures := flakejenkins.GetBuildNumbersToFailuresForJob(startOfReportForRatings, job, ctx, jLog)
+	ratingForBuilds := build.NewRating(filteredJob.Name, opts.endpoint, opts.startFrom, buildNumbersToFailures)
+
+	completedBuilds := flakejenkins.FetchCompletedBuildsForJob(startOfReport, job.Raw.LastBuild.Number, job, ctx, fLog, 4)
+
+	filteredBuilds := []*gojenkins.Build{}
+	for _, completedBuild := range completedBuilds {
+		ratingForBuild := ratingForBuilds.GetBuildData(completedBuild.GetBuildNumber())
+		if ratingForBuild.Sigma <= 3 {
+			filteredBuilds = append(filteredBuilds, completedBuild)
+		} else {
+			fLog.Warnf("Skipping build %d due to %f sigma rating, %d failures", completedBuild.GetBuildNumber(), ratingForBuild.Sigma, ratingForBuild.Failures)
+		}
+	}
+
+	junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(filteredBuilds, fLog)
 	reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job, fLog)
 
 	reportChan <- reportsPerJob

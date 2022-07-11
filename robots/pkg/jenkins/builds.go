@@ -36,10 +36,56 @@ type BuildStop struct {
 	stop        bool
 }
 
-func FetchCompletedBuildsForJob(startOfReport time.Time, lastBuildNumber int64, job *gojenkins.Job, ctx context.Context, fLog *log.Entry) []*gojenkins.Build {
+func GetBuildNumbersToFailuresForJob(startOfReport time.Time, job *gojenkins.Job, ctx context.Context, jLog *log.Entry) map[int64]int64 {
+	bLog := jLog.WithField("job", job.GetName())
+	completedBuilds := FetchCompletedBuildsForJob(startOfReport, job.Raw.LastBuild.Number, job, ctx, bLog, 4)
+
+	buildNumbersToFailuresChan := make(chan []int64)
+
+	go fetchFailuresForBuilds(ctx, completedBuilds, buildNumbersToFailuresChan, bLog)
+
+	buildNumbersToFailures := map[int64]int64{}
+	for buildNumberToFailure := range buildNumbersToFailuresChan {
+		bLog.Debugf("adding %v results", buildNumberToFailure)
+		buildNumbersToFailures[buildNumberToFailure[0]] = buildNumberToFailure[1]
+	}
+	bLog.Debugf("total result: %v", buildNumbersToFailures)
+	return buildNumbersToFailures
+}
+
+func fetchFailuresForBuilds(ctx context.Context, completedBuilds []*gojenkins.Build, buildNumbersToFailuresChan chan []int64, jLog *log.Entry) {
+
+	var wg sync.WaitGroup
+	wg.Add(len(completedBuilds))
+
+	defer close(buildNumbersToFailuresChan)
+	for _, completedBuild := range completedBuilds {
+		go fetchFailureForBuild(ctx, completedBuild, jLog, &wg, buildNumbersToFailuresChan)
+	}
+
+	jLog.Debugf("waiting for %d results", len(completedBuilds))
+	wg.Wait()
+	jLog.Debugf("got %d results", len(completedBuilds))
+}
+
+func fetchFailureForBuild(ctx context.Context, completedBuild *gojenkins.Build, jLog *log.Entry, wg *sync.WaitGroup, buildNumbersToFailuresChan chan []int64) {
+	defer wg.Done()
+
+	buildNumber := completedBuild.GetBuildNumber()
+	jLog.Debugf("fetching failures for build %d", buildNumber)
+	testResult, err := completedBuild.GetResultSet(ctx)
+	if err != nil {
+		jLog.Fatalf("failed to get resultset for %v: %v", completedBuild, err)
+	}
+	failures := testResult.FailCount
+	jLog.Debugf("build %d has %d failures", buildNumber, failures)
+
+	buildNumbersToFailuresChan <- []int64{buildNumber, failures}
+}
+
+func FetchCompletedBuildsForJob(startOfReport time.Time, lastBuildNumber int64, job *gojenkins.Job, ctx context.Context, fLog *log.Entry, paginationSize int) []*gojenkins.Build {
 	fLog.Printf("Fetching completed builds, starting at %d", lastBuildNumber)
 	var completedBuilds []*gojenkins.Build
-	paginationSize := 10
 	for buildNumber := lastBuildNumber; buildNumber > 0; buildNumber = buildNumber - int64(paginationSize) {
 
 		buildStopChan := make(chan BuildStop)
@@ -71,7 +117,7 @@ func getBuildsPaged(startOfReport time.Time, paginationSize int, buildStopChan c
 	defer close(buildStopChan)
 	for i := 0; i < paginationSize; i++ {
 		pageBuildNumber := buildNumber - int64(i)
-		go getFilteredBuildOrStop(buildStopChan, startOfReport, pageBuildNumber, job, ctx, fLog, &wg)
+		go getFilteredBuildOrStop(buildStopChan, startOfReport, pageBuildNumber, job, ctx, fLog.WithField("build", pageBuildNumber), &wg)
 	}
 
 	wg.Wait()
