@@ -223,7 +223,7 @@ presubmits:
               memory: "4Gi"
   - name: build-pr-creator-image
     always_run: false
-    run_if_changed: "images/pr-creator/.*"
+    run_if_changed: "images/pr-creator/.*|hack/git-.*|robots/cmd/labels-checker/.*"
     decorate: true
     labels:
       preset-dind-enabled: "true"

@@ -238,7 +238,7 @@ postsubmits:
                 memory: "4Gi"
     - name: publish-pr-creator-image
       always_run: false
-      run_if_changed: "images/pr-creator/.*"
+      run_if_changed: "images/pr-creator/.*|hack/git-.*|robots/cmd/labels-checker/.*"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
