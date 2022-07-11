@@ -933,7 +933,6 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-verify-go-mod
-    optional: true
     run_if_changed: ^vendor/.*|^staging/.*|go\.mod$|go\.sum$
     skip_branches:
     - release-\d+\.\d+
