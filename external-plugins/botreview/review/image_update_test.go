@@ -87,3 +87,76 @@ func TestProwJobImageUpdate_Review(t1 *testing.T) {
 		})
 	}
 }
+
+func TestProwJobImageUpdate_AddIfRelevant(t1 *testing.T) {
+	type fields struct {
+		relevantFileDiffs []*diff.FileDiff
+		notMatchingHunks  []*diff.Hunk
+	}
+	type args struct {
+		fileDiff *diff.FileDiff
+	}
+	tests := []struct {
+		name                      string
+		fields                    fields
+		args                      args
+		expectedRelevantFileDiffs []*diff.FileDiff
+	}{
+		{
+			name: "release branch config is ignored",
+			fields: fields{
+				relevantFileDiffs: nil,
+				notMatchingHunks:  nil,
+			},
+			args: args{
+				fileDiff: &diff.FileDiff{
+					OrigName: "a/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits-0.54.yaml",
+					OrigTime: nil,
+					NewName:  "b/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits-0.54.yaml",
+					NewTime:  nil,
+					Extended: nil,
+					Hunks:    nil,
+				},
+			},
+		},
+		{
+			name: "non-release branch config is added",
+			fields: fields{
+				relevantFileDiffs: nil,
+				notMatchingHunks:  nil,
+			},
+			args: args{
+				fileDiff: &diff.FileDiff{
+					OrigName: "a/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml",
+					OrigTime: nil,
+					NewName:  "b/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml",
+					NewTime:  nil,
+					Extended: nil,
+					Hunks:    nil,
+				},
+			},
+			expectedRelevantFileDiffs: []*diff.FileDiff{
+				{
+					OrigName: "a/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml",
+					OrigTime: nil,
+					NewName:  "b/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml",
+					NewTime:  nil,
+					Extended: nil,
+					Hunks:    nil,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t1.Run(tt.name, func(t1 *testing.T) {
+			t := &ProwJobImageUpdate{
+				relevantFileDiffs: tt.fields.relevantFileDiffs,
+				notMatchingHunks:  tt.fields.notMatchingHunks,
+			}
+			t.AddIfRelevant(tt.args.fileDiff)
+			if !reflect.DeepEqual(tt.expectedRelevantFileDiffs, t.relevantFileDiffs) {
+				t1.Errorf("expectedRelevantFileDiffs not equal: %v\n, was\n%v", tt.expectedRelevantFileDiffs, t.relevantFileDiffs)
+			}
+		})
+	}
+}

@@ -71,13 +71,14 @@ func (n BasicResult) String() string {
 }
 
 type Reviewer struct {
-	l      *logrus.Entry
-	org    string
-	repo   string
-	num    int
-	user   string
-	action github.PullRequestEventAction
-	dryRun bool
+	l       *logrus.Entry
+	org     string
+	repo    string
+	num     int
+	user    string
+	action  github.PullRequestEventAction
+	dryRun  bool
+	BaseSHA string
 }
 
 func NewReviewer(l *logrus.Entry, action github.PullRequestEventAction, org string, repo string, num int, user string, dryRun bool) *Reviewer {
@@ -113,6 +114,9 @@ func (r *Reviewer) ReviewLocalCode() ([]BotReviewResult, error) {
 	r.info("preparing review")
 
 	diffCommand := exec.Command("git", "diff", "..main")
+	if r.BaseSHA != "" {
+		diffCommand = exec.Command("git", "diff", fmt.Sprintf("%s..%s", r.BaseSHA, "HEAD"))
+	}
 	output, err := diffCommand.Output()
 	if err != nil {
 		r.fatalF("could not fetch diff output: %v", err)

@@ -38,10 +38,14 @@ These are the suspicious hunks I found:
 `
 )
 
-var prowJobImageUpdateHunkBodyMatcher *regexp.Regexp
+var (
+	prowJobImageUpdateHunkBodyMatcher   *regexp.Regexp
+	prowJobReleaseBranchFileNameMatcher *regexp.Regexp
+)
 
 func init() {
 	prowJobImageUpdateHunkBodyMatcher = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+image: [^\s]+$[\n]^\+[\s]+image: [^\s]+)$`)
+	prowJobReleaseBranchFileNameMatcher = regexp.MustCompile(`.*\/[\w-]+-[0-9-\.]+\.yaml`)
 }
 
 type ProwJobImageUpdateResult struct {
@@ -78,7 +82,8 @@ func (t *ProwJobImageUpdate) AddIfRelevant(fileDiff *diff.FileDiff) {
 	//  * who are not yaml
 	if strings.TrimPrefix(fileDiff.OrigName, "a/") != fileName ||
 		!strings.HasSuffix(fileName, ".yaml") ||
-		!strings.HasPrefix(fileName, "github/ci/prow-deploy/files/jobs") {
+		!strings.HasPrefix(fileName, "github/ci/prow-deploy/files/jobs") ||
+		prowJobReleaseBranchFileNameMatcher.MatchString(fileName) {
 		return
 	}
 

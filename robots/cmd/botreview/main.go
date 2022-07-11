@@ -120,6 +120,7 @@ func main() {
 
 	// Perform review
 	reviewer := review.NewReviewer(log, github.PullRequestActionEdited, o.org, o.repo, o.pullRequestNumber, user.Login, o.dryRun)
+	reviewer.BaseSHA = pullRequest.Base.SHA
 	botReviewResults, err := reviewer.ReviewLocalCode()
 	if err != nil {
 		log.Info("no review results, cancelling review comments")
