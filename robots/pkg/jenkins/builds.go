@@ -180,6 +180,8 @@ func getBuildWithRetry(job *gojenkins.Job, ctx context.Context, buildNumber int6
 			}
 			return false
 		}),
+		retry.Delay(5*time.Second),
+		retry.MaxJitter(3*time.Second),
 	)
 	return build, statusCode, err
 }

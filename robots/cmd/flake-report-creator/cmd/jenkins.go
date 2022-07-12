@@ -55,16 +55,16 @@ const (
 			table, th, td {
 				border: 1px solid black;
 			}
-			.yellow {
+			.yellow, .threesigma {
 				background-color: #ffff80;
 			}
-			.almostgreen {
+			.almostgreen, .twosigma {
 				background-color: #dfff80;
 			}
-			.green {
+			.green, .onesigma {
 				background-color: #9fff80;
 			}
-			.red {
+			.red, .foursigma {
 				background-color: #ff8080;
 			}
 			.orange {
@@ -165,6 +165,40 @@ const (
 {{ if not .Headers }}
 	<div>No failing tests! 🙂</div>
 {{ else }}
+<div id="jobRatings" class="popup right" >
+	<u>list of job ratings</u>
+	<div class="popuptextjoblist right" id="targetRatingsForJobs">
+		<table width="100%">
+			{{ range $key, $jobRating := $.JobNamesToRatings }}<tr class="unimportant">
+				<td>
+					<a href="{{ $.JenkinsBaseURL }}/job/{{$key}}"><span title="job">{{$key}}</span></a>
+				</td>
+				<td>
+					<div><span title="number of completed builds">{{ .TotalCompletedBuilds }}</span></div>
+				</td>
+				<td>
+					<div><span title="mean">{{ .Mean }}</span></div>
+				</td>
+				<td>
+					<div><span title="standard deviation">{{ .StandardDeviation }}</span></div>
+				</td>
+			</tr>
+			{{ range $buildNo := .BuildNumbers }}<tr class="unimportant">{{ with $buildData := (index (index $.JobNamesToRatings $key).BuildNumbersToData $buildNo) }}
+				<td>
+				</td>
+				<td>
+					<a href="{{ $.JenkinsBaseURL }}/job/{{$key}}/{{$buildNo}}"><span title="job build number">{{$buildNo}}</span></a>
+				</td>
+				<td>
+					<div class="tests_failed"><span title="test failures">{{ $buildData.Failures }}</span></div>
+				</td>
+				<td>
+					<div class="{{ if le $buildData.Sigma 1.0 }}onesigma{{ else if le $buildData.Sigma 2.0 }}twosigma{{ else if le $buildData.Sigma 3.0 }}threesigma{{ else }}foursigma{{ end }}"><span title="&sigma; rating">{{ $buildData.Sigma }}</span></div>
+				</td>
+			{{ end }}</tr>{{ end }}{{ end }}
+		</table>
+	</div>
+</div>
 <div id="failuresForJobs" class="popup right" >
 	<u>list of job runs</u>
 	<div class="popuptextjoblist right" id="targetfailuresForJobs">
@@ -178,6 +212,9 @@ const (
 				</td>
 				<td>
 					<div class="tests_failed"><span title="test failures">{{ .Failures }}</span></div>
+				</td>
+				<td>
+					<div><span title="&sigma; rating">{{ (index (index $.JobNamesToRatings .Job).BuildNumbersToData .BuildNumber).Sigma }}</span></div>
 				</td>
 			</tr>{{ end }}
 		</table>
@@ -258,6 +295,7 @@ func init() {
 	jenkinsCommand.PersistentFlags().StringArrayVar(&opts.jobNamePatterns, "jobNamePattern", []string{defaultJenkinsJobNamePattern}, "jenkins job name go regex pattern to filter jobs for the report. May appear multiple times.")
 	jenkinsCommand.PersistentFlags().StringVar(&opts.artifactFileNameRegex, "artifactFileNamePattern", defaultArtifactFileNameRegex, "artifact file name go regex pattern to fetch junit artifact files")
 	jenkinsCommand.PersistentFlags().DurationVar(&opts.startFrom, "startFrom", 14*24*time.Hour, "The duration when the report data should be fetched")
+	jenkinsCommand.PersistentFlags().DurationVar(&opts.startFromForRatings, "startFromForRatings", 14*24*time.Hour, "The duration when the rating data should be fetched")
 	jenkinsCommand.PersistentFlags().IntVar(&opts.maxConnsPerHost, "maxConnsPerHost", 5, "The maximum number of connections to the endpoint (to avoid getting rate limited)")
 	jenkinsCommand.PersistentFlags().BoolVar(&opts.insecureSkipVerify, "insecureSkipVerify", false, "Whether the tls verification should be skipped (this is insecure!)")
 }
@@ -270,11 +308,13 @@ type jenkinsOptions struct {
 	maxConnsPerHost       int
 	artifactFileNameRegex string
 	insecureSkipVerify    bool
+	startFromForRatings   time.Duration
 }
 
 type JenkinsReportParams struct {
 	flakefinder.Params
-	JenkinsBaseURL string
+	JenkinsBaseURL    string
+	JobNamesToRatings map[string]build.Rating
 }
 
 type JSONParams struct {
@@ -347,17 +387,17 @@ func runJenkinsReport(cmd *cobra.Command, args []string) error {
 	jLog.Printf("Fetched %d jobs", len(jobNames))
 
 	startOfReport := time.Now().Add(-1 * opts.startFrom)
-	endOfReport := time.Now()
+	startOfReportForRatings := time.Now().Add(-1 * opts.startFromForRatings)
 
-	junitReportsFromMatchingJobs := fetchJunitReportsFromMatchingJobs(startOfReport, endOfReport, jobNames, jenkins, ctx)
-	writeReportToFile(startOfReport, endOfReport, junitReportsFromMatchingJobs, globalOpts.outputFile)
+	junitReportsFromMatchingJobs, ratings := fetchJunitReportsFromMatchingJobs(startOfReport, startOfReportForRatings, jobNames, jenkins, ctx)
+	writeReportToFile(startOfReport, time.Now(), junitReportsFromMatchingJobs, globalOpts.outputFile, ratings)
 
 	return nil
 }
 
-func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, endOfReport time.Time, innerJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) []*flakefinder.JobResult {
+func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, startOfReportsForRatings time.Time, innerJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) ([]*flakefinder.JobResult, []build.Rating) {
 	filteredJobs := filterMatchingJobs(innerJobs)
-	return fetchJobReports(startOfReport, endOfReport, filteredJobs, jenkins, ctx)
+	return fetchJobReports(startOfReport, startOfReportsForRatings, filteredJobs, jenkins, ctx)
 }
 
 func filterMatchingJobs(innerJobs []gojenkins.InnerJob) []gojenkins.InnerJob {
@@ -375,31 +415,38 @@ func filterMatchingJobs(innerJobs []gojenkins.InnerJob) []gojenkins.InnerJob {
 	return filteredJobs
 }
 
-func fetchJobReports(startOfReport time.Time, endOfReport time.Time, filteredJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) []*flakefinder.JobResult {
-	reportChan := make(chan []*flakefinder.JobResult)
+func fetchJobReports(startOfReport time.Time, startOfReportForRatings time.Time, filteredJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) ([]*flakefinder.JobResult, []build.Rating) {
+	resultChan := make(chan result)
 
-	go runReportDataFetches(filteredJobs, jenkins, ctx, startOfReport, endOfReport, reportChan)
+	go runReportDataFetches(filteredJobs, jenkins, ctx, startOfReport, startOfReportForRatings, resultChan)
 
+	buildRatings := []build.Rating{}
 	reports := []*flakefinder.JobResult{}
-	for reportsPerJob := range reportChan {
-		reports = append(reports, reportsPerJob...)
+	for result := range resultChan {
+		reports = append(reports, result.jobResults...)
+		buildRatings = append(buildRatings, result.buildRating)
 	}
-	return reports
+	return reports, buildRatings
 }
 
-func runReportDataFetches(filteredJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context, startOfReport time.Time, endOfReport time.Time, reportChan chan []*flakefinder.JobResult) {
+func runReportDataFetches(filteredJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context, startOfReport time.Time, startOfReportForRatings time.Time, resultChan chan result) {
 	var wg sync.WaitGroup
 	wg.Add(len(filteredJobs))
 
-	defer close(reportChan)
+	defer close(resultChan)
 	for _, filteredJob := range filteredJobs {
-		go fetchReportDataForJob(filteredJob, jenkins, ctx, startOfReport, endOfReport, &wg, reportChan)
+		go fetchReportDataForJob(filteredJob, jenkins, ctx, startOfReport, startOfReportForRatings, &wg, resultChan)
 	}
 
 	wg.Wait()
 }
 
-func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context, startOfReport time.Time, endOfReport time.Time, wg *sync.WaitGroup, reportChan chan []*flakefinder.JobResult) {
+type result struct {
+	jobResults  []*flakefinder.JobResult
+	buildRating build.Rating
+}
+
+func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context, startOfReport time.Time, startOfReportForRatings time.Time, wg *sync.WaitGroup, resultChan chan result) {
 	defer wg.Done()
 
 	fLog := jLog.WithField("job", filteredJob.Name)
@@ -410,7 +457,6 @@ func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Je
 		fLog.Fatalf("failed to fetch job: %v", err)
 	}
 
-	startOfReportForRatings := time.Now().Add(-1 * 14 * 24 * time.Hour) // start with 2 weeks
 	buildNumbersToFailures := flakejenkins.GetBuildNumbersToFailuresForJob(startOfReportForRatings, job, ctx, jLog)
 	ratingForBuilds := build.NewRating(filteredJob.Name, opts.endpoint, opts.startFrom, buildNumbersToFailures)
 
@@ -429,7 +475,10 @@ func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Je
 	junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(filteredBuilds, fLog)
 	reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job, fLog)
 
-	reportChan <- reportsPerJob
+	resultChan <- result{
+		jobResults:  reportsPerJob,
+		buildRating: ratingForBuilds,
+	}
 }
 
 func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build, fLog *log.Entry) []gojenkins.Artifact {
@@ -480,11 +529,16 @@ func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, 
 	return reportsPerJob
 }
 
-func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports []*flakefinder.JobResult, outputFile string) {
+func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports []*flakefinder.JobResult, outputFile string, ratings []build.Rating) {
 	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, endOfReport, "kubevirt", "kubevirt", startOfReport)
 	jLog.Printf("writing output to %s", outputFile)
 
-	writeHTMLReportToOutputFile(outputFile, JenkinsReportTemplate, JenkinsReportParams{Params: parameters, JenkinsBaseURL: opts.endpoint})
+	jobNamesToRatings := map[string]build.Rating{}
+	for _, rating := range ratings {
+		jobNamesToRatings[rating.Name] = rating
+	}
+
+	writeHTMLReportToOutputFile(outputFile, JenkinsReportTemplate, JenkinsReportParams{Params: parameters, JenkinsBaseURL: opts.endpoint, JobNamesToRatings: jobNamesToRatings})
 
 	writeJSONToOutputFile(strings.TrimSuffix(outputFile, ".html")+".json", parameters)
 }
