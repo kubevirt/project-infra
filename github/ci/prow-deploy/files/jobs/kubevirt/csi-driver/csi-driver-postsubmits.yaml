@@ -2,7 +2,7 @@ postsubmits:
   kubevirt/csi-driver:
     - name: publish-csi-driver
       branches:
-        - master
+        - main
       decorate: true
       max_concurrency: 1
       extra_refs:

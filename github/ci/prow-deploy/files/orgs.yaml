@@ -292,6 +292,7 @@ orgs:
       csi-driver:
         description: KubeVirt CSI driver
         has_projects: true
+        default_branch: main
       demo:
         allow_rebase_merge: false
         description: Easy to use KubeVirt demo based on minikube.
