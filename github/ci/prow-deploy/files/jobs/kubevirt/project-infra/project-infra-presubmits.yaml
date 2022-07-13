@@ -329,9 +329,9 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "6Gi"
             limits:
-              memory: "29Gi"
+              memory: "6Gi"
           volumeMounts:
           - name: molecule-docker
             mountPath: /tmp/prow-deploy-molecule
