@@ -36,31 +36,47 @@ type BuildStop struct {
 	stop        bool
 }
 
+type buildTestResult struct {
+	jobName     string
+	buildNumber int64
+	testResult  *gojenkins.TestResult
+}
+
 func GetBuildNumbersToFailuresForJob(startOfReport time.Time, job *gojenkins.Job, ctx context.Context, jLog *log.Entry) map[int64]int64 {
-	bLog := jLog.WithField("job", job.GetName())
-	completedBuilds := FetchCompletedBuildsForJob(startOfReport, job.Raw.LastBuild.Number, job, ctx, bLog, 4)
-
-	buildNumbersToFailuresChan := make(chan []int64)
-
-	go fetchFailuresForBuilds(ctx, completedBuilds, buildNumbersToFailuresChan, bLog)
+	testResultsForJob := GetBuildNumbersToTestResultsForJob(startOfReport, job, ctx, jLog)
 
 	buildNumbersToFailures := map[int64]int64{}
-	for buildNumberToFailure := range buildNumbersToFailuresChan {
-		bLog.Debugf("adding %v results", buildNumberToFailure)
-		buildNumbersToFailures[buildNumberToFailure[0]] = buildNumberToFailure[1]
+	for buildNo, buildNumberToFailure := range testResultsForJob {
+		buildNumbersToFailures[buildNo] = buildNumberToFailure.FailCount
 	}
-	bLog.Debugf("total result: %v", buildNumbersToFailures)
 	return buildNumbersToFailures
 }
 
-func fetchFailuresForBuilds(ctx context.Context, completedBuilds []*gojenkins.Build, buildNumbersToFailuresChan chan []int64, jLog *log.Entry) {
+func GetBuildNumbersToTestResultsForJob(startOfReport time.Time, job *gojenkins.Job, ctx context.Context, jLog *log.Entry) map[int64]*gojenkins.TestResult {
+	bLog := jLog.WithField("job", job.GetName())
+	completedBuilds := FetchCompletedBuildsForJob(startOfReport, job.Raw.LastBuild.Number, job, ctx, bLog, 4)
+
+	buildNumbersToTestResultsChan := make(chan buildTestResult)
+
+	go fetchTestResultsForBuilds(ctx, completedBuilds, buildNumbersToTestResultsChan, bLog)
+
+	buildNumbersToTestResults := map[int64]*gojenkins.TestResult{}
+	for buildNumberToTestResult := range buildNumbersToTestResultsChan {
+		bLog.Debugf("adding %v results", buildNumberToTestResult)
+		buildNumbersToTestResults[buildNumberToTestResult.buildNumber] = buildNumberToTestResult.testResult
+	}
+	bLog.Debugf("total result: %v", buildNumbersToTestResults)
+	return buildNumbersToTestResults
+}
+
+func fetchTestResultsForBuilds(ctx context.Context, completedBuilds []*gojenkins.Build, buildNumbersToFailuresChan chan buildTestResult, jLog *log.Entry) {
 
 	var wg sync.WaitGroup
 	wg.Add(len(completedBuilds))
 
 	defer close(buildNumbersToFailuresChan)
 	for _, completedBuild := range completedBuilds {
-		go fetchFailureForBuild(ctx, completedBuild, jLog, &wg, buildNumbersToFailuresChan)
+		go fetchTestResultForBuild(ctx, completedBuild, jLog, &wg, buildNumbersToFailuresChan)
 	}
 
 	jLog.Debugf("waiting for %d results", len(completedBuilds))
@@ -68,19 +84,18 @@ func fetchFailuresForBuilds(ctx context.Context, completedBuilds []*gojenkins.Bu
 	jLog.Debugf("got %d results", len(completedBuilds))
 }
 
-func fetchFailureForBuild(ctx context.Context, completedBuild *gojenkins.Build, jLog *log.Entry, wg *sync.WaitGroup, buildNumbersToFailuresChan chan []int64) {
+func fetchTestResultForBuild(ctx context.Context, completedBuild *gojenkins.Build, jLog *log.Entry, wg *sync.WaitGroup, buildNumbersToFailuresChan chan buildTestResult) {
 	defer wg.Done()
 
 	buildNumber := completedBuild.GetBuildNumber()
-	jLog.Debugf("fetching failures for build %d", buildNumber)
+	jLog.Debugf("fetching testresult for build %d", buildNumber)
 	testResult, err := completedBuild.GetResultSet(ctx)
 	if err != nil {
 		jLog.Fatalf("failed to get resultset for %v: %v", completedBuild, err)
 	}
-	failures := testResult.FailCount
-	jLog.Debugf("build %d has %d failures", buildNumber, failures)
+	jLog.Debugf("build %d has %d failures", buildNumber, testResult.FailCount)
 
-	buildNumbersToFailuresChan <- []int64{buildNumber, failures}
+	buildNumbersToFailuresChan <- buildTestResult{completedBuild.Job.GetName(), buildNumber, testResult}
 }
 
 func FetchCompletedBuildsForJob(startOfReport time.Time, lastBuildNumber int64, job *gojenkins.Job, ctx context.Context, fLog *log.Entry, paginationSize int) []*gojenkins.Build {
