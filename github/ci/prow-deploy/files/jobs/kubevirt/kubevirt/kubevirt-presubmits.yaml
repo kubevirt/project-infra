@@ -448,7 +448,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.23-sig-storage-dv-gc
+    name: pull-kubevirt-e2e-k8s-1.24-sig-storage-dv-gc
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -462,7 +462,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.23-sig-storage
+          value: k8s-1.24-sig-storage
         - name: CDI_DV_GC
           value: "0"
         image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
