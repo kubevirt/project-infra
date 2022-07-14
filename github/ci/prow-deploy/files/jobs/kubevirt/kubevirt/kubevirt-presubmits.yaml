@@ -257,6 +257,7 @@ presubmits:
         command: ["/bin/sh", "-ce"]
         args:
         - |
+          export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
           git-pr.sh -c "make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -T main
         securityContext:
           privileged: true
