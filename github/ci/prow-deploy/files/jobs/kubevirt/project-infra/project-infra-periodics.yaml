@@ -651,7 +651,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+      - image: quay.io/kubevirtci/bootstrap:v20220714-139f21b
         env:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
@@ -719,7 +719,7 @@ periodics:
   name: periodic-project-infra-check-prow-jobconfigs
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20220630-ded5dcd
+    - image: quay.io/kubevirtci/golang:v20220714-139f21b
       env:
       - name: GIMME_GO_VERSION
         value: "1.16"
