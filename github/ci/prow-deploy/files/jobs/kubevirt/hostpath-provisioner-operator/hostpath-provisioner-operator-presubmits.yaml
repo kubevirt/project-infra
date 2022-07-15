@@ -16,7 +16,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20220714-139f21b
+        - image: quay.io/kubevirtci/golang:v20220630-ded5dcd
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
