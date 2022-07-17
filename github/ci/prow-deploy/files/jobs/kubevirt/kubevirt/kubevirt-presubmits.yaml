@@ -2,158 +2,6 @@ presubmits:
   kubevirt/kubevirt:
   - always_run: false
     annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.21-sig-network
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.21-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.21-sig-storage
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.21-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 7h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.21-sig-compute
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.21-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 7h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.21-operator
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.21-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
     decorate: true
@@ -241,7 +89,7 @@ presubmits:
     decorate: true
     decoration_config:
       grace_period: 5m0s
-      timeout: 1h
+      timeout: 1h0m0s
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror: "true"
@@ -253,17 +101,20 @@ presubmits:
     - release-\d+\.\d+
     spec:
       containers:
-      - image: quay.io/kubevirtci/pr-creator:v20210920-0ef32ec
-        command: ["/bin/sh", "-ce"]
-        args:
+      - args:
         - |
           export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
           git-pr.sh -c "make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -T main
-        securityContext:
-          privileged: true
+        command:
+        - /bin/sh
+        - -ce
+        image: quay.io/kubevirtci/pr-creator:v20210920-0ef32ec
+        name: ""
         resources:
           requests:
-            memory: "8Gi"
+            memory: 8Gi
+        securityContext:
+          privileged: true
       nodeSelector:
         type: bare-metal-external
   - always_run: false
