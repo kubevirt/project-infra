@@ -260,7 +260,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -380,7 +380,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -390,7 +390,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.24-ipv6
-    optional: true
+    optional: false
     spec:
       containers:
       - command:
