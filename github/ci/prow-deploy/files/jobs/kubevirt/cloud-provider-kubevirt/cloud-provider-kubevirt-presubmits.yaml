@@ -38,6 +38,44 @@ presubmits:
           resources:
             requests:
               memory: "10Gi"
+  - name: pull-cloud-provider-kubevirt-lint
+    branches:
+      - main
+    annotations:
+      fork-per-release: "true"
+      testgrid-create-test-group: "false"
+    always_run: true
+    optional: false
+    skip_report: false
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 10m
+      grace_period: 5m
+    max_concurrency: 11
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20220630-ded5dcd
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make lint"
+          env:
+            - name: GIMME_GO_VERSION
+              value: "1.17"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "10Gi"
   - name: pull-kubevirt-cloud-provider-kubevirt-e2e
     always_run: true
     optional: true
