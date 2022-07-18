@@ -78,7 +78,7 @@ presubmits:
               memory: "10Gi"
   - name: pull-kubevirt-cloud-provider-kubevirt-e2e
     always_run: true
-    optional: true
+    optional: false
     decorate: true
     cluster: prow-workloads
     decoration_config:
