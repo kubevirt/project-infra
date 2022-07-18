@@ -47,24 +47,37 @@ presubmits:
       max_concurrency: 6
       cluster: prow-workloads
       labels:
-        preset-dind-enabled: "true"
+        preset-pinc-enabled: "true"
         preset-docker-mirror: "true"
         preset-shared-images: "true"
       spec:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+          - image: quay.io/bcarey/bootstrap:bootstrap-f36podman-4
             securityContext:
               privileged: true
             resources:
               requests:
                 memory: "29Gi"
+            env:
+            - name: PODMAN_IN_CONTAINER_ENABLED
+              value: "true"
+            - name: CONTAINER_HTTP_PROXY
+              value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
+            - name: CONTAINER_HTTPS_PROXY
+              value: http://docker-mirror-proxy.kubevirt-prow.svc:3128
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-workflow-k8s.sh"
+            volumeMounts:
+            - name: podman-data
+              mountPath: /var/lib/containers
+        volumes:
+        - name: podman-data
+          emptyDir: {}
     - name: pull-e2e-cluster-network-addons-operator-monitoring-k8s
       skip_branches:
         - release-\d+\.\d+
