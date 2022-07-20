@@ -6,6 +6,8 @@ approvers:
 - gonzolino
 - mfranczy
 - nirarg
+- qinqon
+- rhrazdil
 - rmohr
 options: {}
 reviewers:
@@ -13,4 +15,6 @@ reviewers:
 - gonzolino
 - mfranczy
 - nirarg
+- qinqon
+- rhrazdil
 - rmohr
