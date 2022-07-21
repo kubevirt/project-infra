@@ -65,6 +65,8 @@ presubmits:
         command: ["/bin/sh", "-ce"]
         args:
         - |
+          HEAD=$(git ls-remote --heads https://github.com/kubevirt/kubevirt.git | grep refs/heads/main | cut -f1)
+          git reset --hard $HEAD
           export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
           git-pr.sh -c "make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -T main
         securityContext:
