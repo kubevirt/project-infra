@@ -27,6 +27,8 @@ presubmits:
         resources:
           requests:
             memory: 16Gi
+          limits:
+            memory: 16Gi
         securityContext:
           privileged: true
         env:
