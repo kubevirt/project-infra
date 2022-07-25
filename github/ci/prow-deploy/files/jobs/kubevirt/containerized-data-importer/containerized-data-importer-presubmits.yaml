@@ -2,8 +2,6 @@ presubmits:
   kubevirt/containerized-data-importer:
   - name: pull-cdi-unit-test
     cluster: prow-workloads
-    skip_branches:
-      - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -32,8 +30,6 @@ presubmits:
               memory: "8Gi"
   - name: pull-cdi-generate-verify
     cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -63,8 +59,6 @@ presubmits:
               memory: "4Gi"
   - name: pull-cdi-apidocs
     cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -94,8 +88,6 @@ presubmits:
               memory: "4Gi"
   - name: pull-cdi-linter
     cluster: ibm-prow-jobs
-    skip_branches:
-      - release-\d+\.\d+
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -299,9 +291,7 @@ presubmits:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-ceph-gc
     skip_branches:
-      - release-v1.28
-      - release-v1.34
-      - release-v1.38
+      - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
