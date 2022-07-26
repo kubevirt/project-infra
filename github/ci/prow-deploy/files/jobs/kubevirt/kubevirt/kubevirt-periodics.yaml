@@ -210,6 +210,7 @@ periodics:
         gsutil cp ./_out/manifests/release/kubevirt-operator.yaml ./_out/manifests/release/kubevirt-cr.yaml _out/manifests/release/conformance.yaml gs://$bucket_dir/
         gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/
         gsutil cp ./_out/tests/tests.test gs://$bucket_dir/testing/
+        gsutil cp ./_out/cmd/dump/dump gs://$bucket_dir/testing/dump
         gsutil cp ./_out/commit gs://$bucket_dir/commit
         gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
         unset DOCKER_TAG # we want to publish to main
