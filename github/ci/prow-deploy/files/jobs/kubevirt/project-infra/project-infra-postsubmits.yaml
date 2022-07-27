@@ -83,12 +83,15 @@ postsubmits:
                 memory: "1Gi"
               limits:
                 memory: "1Gi"
-    - name: publish-bootstrap-image
+    - name: publish-multiarch-bootstrap-image
       always_run: false
       run_if_changed: "images/golang/.*|images/bootstrap/.*"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
+      decoration_config:
+        grace_period: 5m0s
+        timeout: 4h0m0s
       max_concurrency: 1
       labels:
         preset-dind-enabled: "true"
@@ -104,16 +107,16 @@ postsubmits:
               - |
                 cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
-                ./publish_image.sh bootstrap quay.io kubevirtci
-                ./publish_image.sh golang quay.io kubevirtci
+                ./publish_multiarch_image.sh bootstrap quay.io kubevirtci
+                ./publish_multiarch_image.sh -l golang quay.io kubevirtci
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
               requests:
-                memory: "1Gi"
+                memory: "8Gi"
               limits:
-                memory: "1Gi"
+                memory: "8Gi"
     - name: publish-kubekins-e2e-image
       always_run: false
       run_if_changed: "images/kubekins-e2e/.*"
