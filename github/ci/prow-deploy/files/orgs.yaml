@@ -834,12 +834,12 @@ orgs:
           web-ui-components: write
           web-ui-operator: write
       community-team:
-        description: ""
+        description: "Maintainers of KubeVirt community and websites"
         maintainers:
           - fabiand
         members:
           - cwilkers
-          - mazzystr
+          - aburdenthehand
         privacy: closed
         repos:
           cloud-image-builder: admin
@@ -847,5 +847,5 @@ orgs:
           kubevirt.github.io: write
           user-guide: write
           demo: write
-          katacoda-scenarios: write
+          katacoda-scenarios: admin
           kubevirt-tutorial: write
