@@ -1011,6 +1011,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-fossa
     optional: true
+    skip_report: true
     skip_branches:
     - release-\d+\.\d+
     spec:
