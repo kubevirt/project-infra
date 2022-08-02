@@ -1421,7 +1421,7 @@ periodics:
   decorate: true
   decoration_config:
     grace_period: 5m0s
-    timeout: 4h0m0s
+    timeout: 5h0m0s
   extra_refs:
   - base_ref: main
     org: kubevirt
