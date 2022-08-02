@@ -1916,6 +1916,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-monitoring
+        - name: KUBEVIRT_NUM_NODES
+          value: "2"
         image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
         name: ""
         resources:
