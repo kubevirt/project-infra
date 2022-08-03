@@ -1,7 +1,7 @@
 presubmits:
   kubevirt/csi-driver:
     - name: pull-csi-driver-unit-test
-      cluster: prow-workloads
+      cluster: ibm-prow-jobs
       skip_branches:
         - release-\d+\.\d+
       annotations:
