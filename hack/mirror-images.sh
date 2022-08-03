@@ -20,7 +20,14 @@ do
   # we cannot use full path of original image which contain user+image name.
   # example: docker.io/user/image:v1 -> quay.io/kubevirtci/user-image:v1
   image_in_target="${image_in_source//\//-}" # replace / with -
-
+  if [[ $image_in_target =~ istio- ]]; then
+    # Istio is deployed with Istio operator, which can only be configured to use different registry repository
+    # but will always use container image names: pilot, proxyv2, etc.
+    # Therefore the images should not have the "istio-" prefix
+    # example: istio-pilot:v1 -> pilot:v1
+    # this way the istio operator will use quay.io/kubevirtci/pilot:v1 instead of docker.io/istio/pilot:v1
+    image_in_target="${image_in_target//istio-/}"
+  fi
   echo "Mirroring from $source_registry/$image_in_source to $target_registry/$image_in_target"
   skopeo copy --multi-arch all "docker://$source_registry/$image_in_source" "docker://$target_registry/$image_in_target"
 done
