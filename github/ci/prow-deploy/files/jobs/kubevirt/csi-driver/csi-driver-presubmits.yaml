@@ -1,5 +1,41 @@
 presubmits:
   kubevirt/csi-driver:
+    - name: pull-csi-driver-unit-test
+      cluster: ibm-prow-jobs
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+        testgrid-create-test-group: "false"
+      always_run: true
+      optional: false
+      skip_report: false
+      decorate: true
+      decoration_config:
+      timeout: 1h
+      grace_period: 5m
+      max_concurrency: 11
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/golang:v20220630-ded5dcd
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "make test"
+            env:
+              - name: GIMME_GO_VERSION
+                value: "1.18"
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "4Gi"
     - name: pull-csi-driver-e2e-k8s-1.20
       skip_branches:
         - release-\d+\.\d+
