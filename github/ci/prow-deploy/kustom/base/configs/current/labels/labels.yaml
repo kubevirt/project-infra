@@ -325,6 +325,9 @@ repos:
       - name: area/monitoring
         color: bfd4f2
         target: both
+      - name: area/instancetype
+        color: bfd4f2
+        target: both
       - name: topic/api
         color: c5def5
         target: both
