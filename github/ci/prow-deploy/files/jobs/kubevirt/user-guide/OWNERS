@@ -6,7 +6,6 @@ filters:
     approvers:
     - alonakaplan
     - cwilkers
-    - danielbelenky
     - davidvossel
     - dhiller
     - fabiand
@@ -20,7 +19,6 @@ filters:
     reviewers:
     - alonakaplan
     - cwilkers
-    - danielbelenky
     - davidvossel
     - dhiller
     - fabiand
