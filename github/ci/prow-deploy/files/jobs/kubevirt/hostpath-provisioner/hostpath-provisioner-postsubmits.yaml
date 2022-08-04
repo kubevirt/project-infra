@@ -29,9 +29,12 @@ postsubmits:
         - "-c"
         - |
           cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          make clean &&
+          GOARCH=arm64 make manifest &&
+          GOARCH=amd64 make manifest &&
           # Only push images on tags
           [ -z "$(git tag --points-at HEAD | head -1)" ] ||
-          TAG="$(git tag --points-at HEAD | head -1)" make push
+          TAG="$(git tag --points-at HEAD | head -1)" make manifest-push
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
@@ -67,7 +70,10 @@ postsubmits:
         - "-c"
         - |
           cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
-          make push
+          make clean &&
+          GOARCH=arm64 make manifest &&
+          GOARCH=amd64 make manifest &&
+          make manifest-push
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
