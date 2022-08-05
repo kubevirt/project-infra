@@ -19,7 +19,7 @@ presubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
             securityContext:
               privileged: true
             command:
@@ -49,7 +49,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
             securityContext:
               privileged: true
             resources:

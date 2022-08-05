@@ -22,7 +22,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20220630-ded5dcd
+      - image: quay.io/kubevirtci/golang:v20220728-1410a63
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -66,7 +66,7 @@ postsubmits:
       preset-gcs-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+      - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
@@ -106,7 +106,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20220630-ded5dcd
+      - image: quay.io/kubevirtci/golang:v20220728-1410a63
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -142,7 +142,7 @@ postsubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
           env:
             - name: COVERALLS_TOKEN_FILE
               value: /root/.docker/secrets/coveralls/token
@@ -183,7 +183,7 @@ postsubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
           env:
             - name: FOSSA_TOKEN_FILE
               value: /root/.docker/secrets/fossa/token

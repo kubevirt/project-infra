@@ -23,7 +23,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20220630-ded5dcd
+        - image: quay.io/kubevirtci/golang:v20220728-1410a63
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -61,7 +61,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20220630-ded5dcd
+        - image: quay.io/kubevirtci/golang:v20220728-1410a63
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -97,7 +97,7 @@ presubmits:
         - /bin/sh
         - -c
         - make functest
-        image: quay.io/kubevirtci/golang:v20220630-ded5dcd
+        image: quay.io/kubevirtci/golang:v20220728-1410a63
         name: ""
         resources:
           requests:
