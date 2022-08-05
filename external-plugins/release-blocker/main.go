@@ -98,7 +98,7 @@ func main() {
 
 	server := &Server{
 		tokenGenerator: secretAgent.GetTokenGenerator(o.webhookSecretFile),
-		botName:        botUserData.Name,
+		botName:        botUserData.Login,
 
 		ghc:          githubClient,
 		log:          log,
