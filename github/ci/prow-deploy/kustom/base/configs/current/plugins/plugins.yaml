@@ -427,13 +427,11 @@ external_plugins:
     events:
       - pull_request
   - name: cherrypicker
-  - name: release-blocker
   kubevirt:
   - name: needs-rebase
     events:
       - pull_request
   - name: cherrypicker
-  - name: release-blocker
   k8snetworkplumbingwg/ovs-cni:
   - name: needs-rebase
     events:
