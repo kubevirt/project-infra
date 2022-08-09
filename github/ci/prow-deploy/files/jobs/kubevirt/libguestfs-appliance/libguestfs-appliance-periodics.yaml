@@ -2,8 +2,8 @@ periodics:
 - name: periodic-libguestfs-appliance-push-weekly-build-main
   branches:
     - main
-  # Run once a week at midnight on Sunday morning
-  cron: "0 0 * * 0"
+  # Run once a week at 2AM on Saturday morning
+  cron: "0 2 * * 6"
   annotations:
     testgrid-dashboards: kubevirt-libguestfs-appliance-periodics
     testgrid-alert-email: afrosi@redhat.com, victortoso@redhat.com
