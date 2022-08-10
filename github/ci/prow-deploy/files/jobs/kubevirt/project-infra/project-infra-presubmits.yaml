@@ -116,6 +116,33 @@ presubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
+  - name: build-bootstrap-legacy-images
+    always_run: false
+    run_if_changed: "images/bootstrap-legacy/.*|images/golang-legacy/.*"
+    decorate: true
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    cluster: ibm-prow-jobs
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - |
+              cd images
+              ./publish_image.sh -b bootstrap-legacy quay.io kubevirtci
+              ./publish_image.sh -b golang-legacy quay.io kubevirtci
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
   - name: build-kubekins-e2e-image
     always_run: false
     run_if_changed: "images/kubekins-e2e/.*"

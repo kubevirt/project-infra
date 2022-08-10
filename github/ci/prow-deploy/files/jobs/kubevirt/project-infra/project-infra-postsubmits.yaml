@@ -117,6 +117,37 @@ postsubmits:
                 memory: "8Gi"
               limits:
                 memory: "8Gi"
+    - name: publish-bootstrap-legacy-images
+      always_run: false
+      run_if_changed: "images/golang-legacy/.*|images/bootstrap-legacy/.*"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-dind-enabled: "true"
+        preset-kubevirtci-quay-credential: "true"
+      cluster: ibm-prow-jobs
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20220630-ded5dcd
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cd images
+                ./publish_image.sh bootstrap-legacy quay.io kubevirtci
+                ./publish_image.sh golang-legacy quay.io kubevirtci
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "1Gi"
+              limits:
+                memory: "1Gi"
     - name: publish-kubekins-e2e-image
       always_run: false
       run_if_changed: "images/kubekins-e2e/.*"
