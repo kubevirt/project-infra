@@ -183,7 +183,7 @@ works correctly. At the moment only smoke tests are available.
 You can enter the test instance and access the deployed cluster with:
 
     $ molecule login
-    # export KUBECONFIG=/workspace/repos/project-infra-master/github/ci/prow-deploy/kustom/overlays/kubevirtci-testing/secrets/kubeconfig
+    # export KUBECONFIG=/workspace/repos/project-infra-main/github/ci/prow-deploy/kustom/overlays/kubevirtci-testing/secrets/kubeconfig
 
 then you can execute kubectl commands as usual:
 
