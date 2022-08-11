@@ -136,6 +136,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.23-sig-compute-nonroot
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -178,6 +179,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.23-sig-network-nonroot
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -220,6 +222,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.23-sig-storage-nonroot
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -364,6 +367,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.23-operator-nonroot
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -406,6 +410,7 @@ presubmits:
     name: pull-kubevirt-e2e-windows2016
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -446,6 +451,7 @@ presubmits:
     optional: true
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       affinity:
         podAntiAffinity:
@@ -529,6 +535,7 @@ presubmits:
     name: pull-kubevirt-e2e-kind-1.22-sriov
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       affinity:
         podAntiAffinity:
@@ -605,6 +612,7 @@ presubmits:
     name: pull-kubevirt-e2e-kind-1.23-vgpu
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -664,6 +672,7 @@ presubmits:
     name: pull-kubevirt-e2e-kind-1.23-vgpu-nonroot
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1203,6 +1212,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.22-sig-network
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1241,6 +1251,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.24-ipv6-sig-network
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1279,6 +1290,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.22-sig-storage
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1317,6 +1329,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.22-sig-compute
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1355,6 +1368,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.22-sig-compute-migrations
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1397,6 +1411,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.23-sig-compute-migrations
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1439,6 +1454,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.23-sig-compute-migrations-nonroot
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1485,6 +1501,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.22-operator
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1681,6 +1698,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.23-sig-network
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1751,6 +1769,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.23-sig-storage
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1789,6 +1808,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.23-sig-compute
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1827,6 +1847,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.23-operator
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -1993,6 +2014,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.24-sig-network
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -2031,6 +2053,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.24-sig-storage
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -2069,6 +2092,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.24-sig-compute
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
@@ -2107,6 +2131,7 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.24-operator
     skip_branches:
     - release-\d+\.\d+
+    skip_if_only_changed: "^docs/|\\.md$"
     spec:
       containers:
       - command:
