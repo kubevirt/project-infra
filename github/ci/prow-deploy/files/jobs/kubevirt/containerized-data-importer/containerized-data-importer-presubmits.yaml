@@ -391,3 +391,44 @@ presubmits:
           resources:
             requests:
               memory: "29Gi"
+  - name: pull-containerized-data-importer-fossa
+    skip_branches:
+      - release-\d+\.\d+
+    always_run: false
+    optional: true
+    annotations:
+      fork-per-release: "true"
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make fossa
+        env:
+        - name: FOSSA_TOKEN_FILE
+          value: /root/.docker/secrets/fossa/token
+        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /root/.docker/secrets/fossa
+          name: kubevirtci-fossa
+          readOnly: true
+      volumes:
+      - name: kubevirtci-fossa
+        secret:
+          secretName: kubevirtci-fossa-token
