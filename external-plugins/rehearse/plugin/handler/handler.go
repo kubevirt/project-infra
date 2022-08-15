@@ -317,7 +317,7 @@ func (h *GitHubEventsHandler) generatePresubmits(
 		}
 		log.Infof("Detected modified or new presubmit: %s.", headPresubmit.Name)
 
-		job := pjutil.NewPresubmit(*pr, pr.Base.SHA, headPresubmit, eventGUID)
+		job := pjutil.NewPresubmit(*pr, pr.Base.SHA, headPresubmit, eventGUID, map[string]string{})
 
 		if rehearsalRestricted(job) {
 			h.logger.Infof("Skipping rehersal job for: %s because it is restricted", job.Name)
