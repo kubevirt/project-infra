@@ -91,7 +91,7 @@ presubmits:
     decorate: true
     decoration_config:
       grace_period: 5m0s
-      timeout: 4h0m0s
+      timeout: 5h0m0s
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
