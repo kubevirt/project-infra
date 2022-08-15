@@ -421,7 +421,7 @@ presets:
   - name: docker-graph
     mountPath: /docker-graph
 - labels:
-    preset-pinc-enabled: "true"
+    preset-podman-in-container-enabled: "true"
   env:
   - name: PODMAN_IN_CONTAINER_ENABLED
     value: "true"
