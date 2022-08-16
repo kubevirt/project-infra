@@ -1,6 +1,7 @@
 package flakefinder
 
 import (
+	"fmt"
 	"sort"
 	"time"
 
@@ -16,7 +17,7 @@ type Params struct {
 	PrNumbers       []int
 	Org             string
 	Repo            string
-	FailuresForJobs map[int]*JobFailures
+	FailuresForJobs map[string]*JobFailures
 }
 
 type Details struct {
@@ -35,10 +36,10 @@ type Job struct {
 }
 
 type JobFailures struct {
-	BuildNumber int
-	PR          int
-	Job         string
-	Failures    int
+	BuildNumber int    `json:"buildNumber"`
+	PR          int    `json:"pr"`
+	Job         string `json:"job"`
+	Failures    int    `json:"failures"`
 }
 
 type Jobs []*Job
@@ -54,8 +55,12 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 	data := map[string]map[string]*Details{}
 	headers := []string{}
 	tests := []string{}
-	failuresForJobs := map[int]*JobFailures{}
+	failuresForJobs := map[string]*JobFailures{}
 	headerMap := map[string]struct{}{}
+
+	createFailuresForJobsKey := func(result *JobResult) string {
+		return fmt.Sprintf("%s-%d", result.Job, result.BuildNumber)
+	}
 
 	for _, result := range results {
 
@@ -64,16 +69,17 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 			for _, test := range suite.Tests {
 				if test.Status == junit.StatusFailed || test.Status == junit.StatusError {
 
-					_, exists := failuresForJobs[result.BuildNumber]
+					failuresForJobsKey := createFailuresForJobsKey(result)
+					_, exists := failuresForJobs[failuresForJobsKey]
 					if !exists {
-						failuresForJobs[result.BuildNumber] = &JobFailures{
+						failuresForJobs[failuresForJobsKey] = &JobFailures{
 							BuildNumber: result.BuildNumber,
 							PR:          result.PR,
 							Job:         result.Job,
 							Failures:    0,
 						}
 					}
-					failuresForJobs[result.BuildNumber].Failures = failuresForJobs[result.BuildNumber].Failures + 1
+					failuresForJobs[failuresForJobsKey].Failures = failuresForJobs[failuresForJobsKey].Failures + 1
 
 					testEntry := data[test.Name]
 					if testEntry == nil {
@@ -98,7 +104,7 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 
 	// second enrich failed tests with additional information
 	for _, result := range results {
-		if _, exists := failuresForJobs[result.BuildNumber]; !exists {
+		if _, exists := failuresForJobs[createFailuresForJobsKey(result)]; !exists {
 			// if not in the map now, then skip it
 			continue
 		}
@@ -125,7 +131,7 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 	// third, calculate the severity
 	// second enrich failed tests with additional information
 	for _, result := range results {
-		if _, exists := failuresForJobs[result.BuildNumber]; !exists {
+		if _, exists := failuresForJobs[createFailuresForJobsKey(result)]; !exists {
 			// if not in the map now, then skip it
 			continue
 		}

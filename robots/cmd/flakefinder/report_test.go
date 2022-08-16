@@ -174,14 +174,14 @@ var _ = Describe("report.go", func() {
 					{BuildNumber: 1742, Severity: "red", PR: 1427, Job: "testblah"},
 				}}},
 			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, EndOfReport: "2019-08-23", Org: "kubevirt", Repo: "kubevirt",
-				FailuresForJobs: map[int]*flakefinder.JobFailures{
-					1742: {
+				FailuresForJobs: map[string]*flakefinder.JobFailures{
+					"1742": {
 						BuildNumber: 1742,
 						PR:          17,
 						Job:         "k8s-1.18-whatever",
 						Failures:    66,
 					},
-					4217: {
+					"4217": {
 						BuildNumber: 4217,
 						PR:          42,
 						Job:         "k8s-1.19-whocares",
