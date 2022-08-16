@@ -73,23 +73,25 @@ RUN wget -q https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.ta
     gcloud info | tee /workspace/gcloud-info.txt
 
 #
-# BEGIN: DOCKER IN DOCKER SETUP
+# BEGIN: PODMAN IN CONTAINER SETUP
 #
-# Install packages
 
-RUN dnf install -y \
-        kmod \
-        procps-ng \
-        moby-engine && \
-    dnf -y clean all
+RUN dnf -y update; dnf -y reinstall shadow-utils && \
+    dnf -y install crun podman --exclude container-selinux && \
+    dnf -y clean all && \
+    ln -s /usr/bin/podman /usr/bin/docker
 
-# Create directory for docker storage location
-# NOTE this should be mounted and persisted as a volume ideally (!)
-# We will make a fallback one now just in case
-RUN mkdir /docker-graph
+VOLUME /var/lib/containers
+
+COPY containers.conf /etc/containers/containers.conf
+COPY 87-podman.conflist /etc/cni/net.d/
+
+RUN chmod 644 /etc/containers/containers.conf
+
+ENV _CONTAINERS_USERNS_CONFIGURED=""
 
 #
-# END: DOCKER IN DOCKER SETUP
+# END: PODMAN IN CONTAINER SETUP
 #
 
 # Cache the most commonly used bazel versions in the container
@@ -110,8 +112,9 @@ RUN mkdir -p /etc/setup.mixin.d/ && mkdir -p /etc/teardown.mixin.d/
 # Trust git repositories used for e2e jobs
 RUN git config --global --add safe.directory '*'
 
-# note the runner is also responsible for making docker in docker function if
-# env DOCKER_IN_DOCKER_ENABLED is set and similarly responsible for generating
+# note the runner is also responsible for making podman in container function if
+# env PODMAN_IN_CONTAINER_ENABLED is set and similarly responsible for generating
+
 # .bazelrc files if bazel remote caching is enabled
 COPY ["entrypoint.sh", "runner.sh", "create_bazel_cache_rcs.sh", \
         "/usr/local/bin/"]

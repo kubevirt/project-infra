@@ -41,39 +41,27 @@ setup_ca(){
     fi
 }
 
-# runs custom docker data root cleanup binary and debugs remaining resources
-cleanup_dind() {
-    if [[ "${DOCKER_IN_DOCKER_ENABLED:-false}" == "true" ]]; then
-        if [[ "${DOCKER_DEBUG:-false}" == "true" ]]; then
-            echo "Copying docker log to ARTIFACTS"
-            cp /var/log/dockerd.log $ARTIFACTS
-        fi
-        echo "Cleaning up after docker"
-        docker ps -aq | xargs -r docker rm -f || true
-        kill "$(</var/run/docker.pid)" || true
-        wait "$(</var/run/docker.pid)" || true
+# runs custom podman data root cleanup binary and debugs remaining resources
+cleanup_pinc() {
+    if [[ "${PODMAN_IN_CONTAINER_ENABLED:-false}" == "true" ]]; then
+        echo "Cleaning up after podman"
+        podman ps -aq | xargs -r podman rm -f || true
+        kill "$(</var/run/podman.pid)" || true
+        wait "$(</var/run/podman.pid)" || true
     fi
 }
 
 early_exit_handler() {
-    cleanup_dind
+    cleanup_pinc
 }
 
 # setup certificates before anything gets started
 setup_ca
 
-# optionally enable ipv6 docker
-export DOCKER_IN_DOCKER_IPV6_ENABLED=${DOCKER_IN_DOCKER_IPV6_ENABLED:-false}
-if [[ "${DOCKER_IN_DOCKER_IPV6_ENABLED}" == "true" ]]; then
-    echo "Enabling IPV6 for Docker."
-    # configure the daemon with ipv6
-    mkdir -p /etc/docker/
-    cat <<EOF >/etc/docker/daemon.json
-{
-  "ipv6": true,
-  "fixed-cidr-v6": "fc00:db8:1::/64"
-}
-EOF
+# optionally enable ipv6
+export PODMAN_IN_CONTAINER_IPV6_ENABLED=${PODMAN_IN_CONTAINER_IPV6_ENABLED:-true}
+if [[ "${PODMAN_IN_CONTAINER_IPV6_ENABLED}" == "true" ]]; then
+    echo "Enabling IPV6."
     # enable ipv6
     sysctl net.ipv6.conf.all.disable_ipv6=0
     sysctl net.ipv6.conf.all.forwarding=1
@@ -81,46 +69,32 @@ EOF
     modprobe -v ip6table_nat
 fi
 
-# Check if the job has opted-in to docker-in-docker availability.
-export DOCKER_IN_DOCKER_ENABLED=${DOCKER_IN_DOCKER_ENABLED:-false}
-if [[ "${DOCKER_IN_DOCKER_ENABLED}" == "true" ]]; then
-    echo "Docker in Docker enabled, initializing..."
-
-    export DOCKER_DEBUG=${DOCKER_DEBUG:-false}
-    if [[ "${DOCKER_DEBUG}" == "true" ]]; then
-        mkdir -p /etc/docker/
-        # TODO: do not rely on this file not existing!
-        cat <<EOF >/etc/docker/daemon.json
-{
-  "debug": true,
-  "log-level": "debug"
-}
-EOF
-    fi
-
-    printf '=%.0s' {1..80}; echo
-    # If we have opted in to docker in docker, start the docker daemon,
+export PODMAN_IN_CONTAINER_ENABLED=${PODMAN_IN_CONTAINER_ENABLED:-false}
+if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
+    echo "Podman in Container enabled, initializing in podman compatible mode..."
     (
-        if [ -f "/etc/default/docker" ]; then
-            source /etc/default/docker
-        fi
-        /usr/bin/dockerd \
-            -p /var/run/docker.pid \
-            --data-root=/docker-graph \
-            --init-path /usr/libexec/docker/docker-init \
-            --userland-proxy-path /usr/libexec/docker/docker-proxy \
-            ${DOCKER_OPTS} \
-                >/var/log/dockerd.log 2>&1 &
+        export HTTP_PROXY=${CONTAINER_HTTP_PROXY}
+        export HTTPS_PROXY=${CONTAINER_HTTPS_PROXY}
+	export KIND_EXPERIMENTAL_PROVIDER="podman"
+	mkdir -p ${XDG_RUNTIME_DIR}/podman
+        podman system service \
+               -t 0 \
+               unix:///${XDG_RUNTIME_DIR}/podman/podman.sock \
+               >/var/log/podman.log 2>&1 &
+        echo "${!}" > /var/run/podman.pid
+	ln -s ${XDG_RUNTIME_DIR}/podman/podman.sock /var/run/docker.sock
+	# Set podman short-name-mode to permissive
+	sed -i 's/short-name-mode="enforcing"/short-name-mode="permissive"/g' /etc/containers/registries.conf
     )
-    # the service can be started but the docker socket not ready, wait for ready
+    # the service can be started but the socket not ready, wait for ready
     WAIT_N=0
     MAX_WAIT=5
     while true; do
-        # docker ps -q should only work if the daemon is ready
-        docker ps -q > /dev/null 2>&1 && break
+        # wait for podman socket to be ready
+        curl --unix-socket "${XDG_RUNTIME_DIR}/podman/podman.sock" http://d/v3.0.0/libpod/info >/dev/null 2>&1 && break
         if [[ ${WAIT_N} -lt ${MAX_WAIT} ]]; then
             WAIT_N=$((WAIT_N+1))
-            echo "Waiting for docker to be ready, sleeping for ${WAIT_N} seconds."
+            echo "Waiting for podman socket to be ready, sleeping for ${WAIT_N} seconds."
             sleep ${WAIT_N}
         else
             echo "Reached maximum attempts, not waiting any longer..."
@@ -129,7 +103,7 @@ EOF
         fi
     done
     printf '=%.0s' {1..80}; echo
-    echo "Done setting up docker in docker."
+    echo "Done setting up podman in container."
 fi
 
 trap early_exit_handler INT TERM
@@ -162,12 +136,12 @@ set +o xtrace
 for file in $(find /etc/teardown.mixin.d/ -maxdepth 1 -name '*.sh' -print -quit); do source $file; done
 
 # cleanup after job
-if [[ "${DOCKER_IN_DOCKER_ENABLED}" == "true" ]]; then
-    echo "Cleaning up after docker in docker."
+if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
+    echo "Cleaning up after podman in container."
     printf '=%.0s' {1..80}; echo
-    cleanup_dind
+    cleanup_pinc
     printf '=%.0s' {1..80}; echo
-    echo "Done cleaning up after docker in docker."
+    echo "Done cleaning up after podman in container."
 fi
 
 # preserve exit value from job / bootstrap
