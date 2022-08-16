@@ -142,9 +142,11 @@ func main() {
 	prowClient, err := v1.NewForConfig(config)
 	mustSucceed(err, "Could not instantiate a Prow client from the given kubeconfig.")
 
-	secretsAgent := startSecretsAgent(opts.github.TokenPath, opts.hmacSecretFile)
+	if err := secret.Add(opts.github.TokenPath, opts.hmacSecretFile); err != nil {
+		logrus.WithError(err).Fatalf("Failed to start secrets agent.")
+	}
 
-	githubClient, err := opts.github.GitHubClient(secretsAgent, opts.dryRun)
+	githubClient, err := opts.github.GitHubClient(opts.dryRun)
 	mustSucceed(err, "Could not instantiate github client.")
 
 	gitClientFactory, err := git.NewClientFactory(clientFactoryCacheDirOpt(opts.cacheDir))
@@ -162,7 +164,7 @@ func main() {
 		opts.alwaysRun,
 		gitClientFactory)
 
-	eventsServer := server.NewGitHubEventsServer(secretsAgent.GetTokenGenerator(opts.hmacSecretFile), eventsHandler)
+	eventsServer := server.NewGitHubEventsServer(secret.GetTokenGenerator(opts.hmacSecretFile), eventsHandler)
 
 	serverMux := http.NewServeMux()
 	serverMux.Handle(opts.endpoint, eventsServer)
@@ -192,14 +194,6 @@ func mustSucceed(err error, message string) {
 	if err != nil {
 		logrus.WithError(err).Fatal(message)
 	}
-}
-
-func startSecretsAgent(ghTokenPath, hmacTokenPath string) *secret.Agent {
-	sa := &secret.Agent{}
-	if err := sa.Start([]string{ghTokenPath, hmacTokenPath}); err != nil {
-		logrus.WithError(err).Fatalf("Failed to start secrets agent.")
-	}
-	return sa
 }
 
 func setupLogger() *logrus.Logger {
