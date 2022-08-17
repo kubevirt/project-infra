@@ -1,15 +1,33 @@
 presubmits:
   kubevirt/kubevirt.github.io:
-    - name: kubevirt-io-presubmit-link-checker
-      decorate: true
-      always_run: true
-      skip_report: false
-      cluster: ibm-prow-jobs
-      spec:
-        containers:
-          - image: docker.io/library/ruby
-            env:
-              - name: NOKOGIRI_USE_SYSTEM_LIBRARIES
-                value: "true"
-            command: ["/bin/sh", "-c"]
-            args: ["/usr/local/bin/bundle install && bundle exec rake"]
+  - name: kubevirt-io-presubmit-link-checker
+    decorate: true
+    always_run: true
+    skip_report: false
+    cluster: ibm-prow-jobs
+    spec:
+      containers:
+      - image: docker.io/library/ruby
+        env:
+        - name: NOKOGIRI_USE_SYSTEM_LIBRARIES
+          value: "true"
+        command: [ "/bin/sh", "-c" ]
+        args: [ "/usr/local/bin/bundle install && bundle exec rake" ]
+  - name: pull-kubevirt.github.io-build
+    branches:
+    - ^main$
+    labels:
+      preset-github-credentials: "true"
+    decorate: true
+    always_run: true
+    cluster: ibm-prow-jobs
+    spec:
+      securityContext:
+        runAsUser: 0
+      containers:
+      - image: quay.io/kubevirtci/ruby:v20210628-647402e
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
+        - |
+          set -ex
+          bundle install && make build
