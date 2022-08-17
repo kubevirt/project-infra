@@ -15,7 +15,7 @@ presubmits:
       max_concurrency: 6
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-docker-mirror: "false"
+        preset-docker-mirror-proxy: "false"
         preset-shared-images: "true"
       cluster: ibm-prow-jobs
       spec:
@@ -117,7 +117,7 @@ presubmits:
         grace_period: 5m
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-docker-mirror: "false"
+        preset-docker-mirror-proxy: "false"
         preset-shared-images: "true"
       spec:
         containers:
