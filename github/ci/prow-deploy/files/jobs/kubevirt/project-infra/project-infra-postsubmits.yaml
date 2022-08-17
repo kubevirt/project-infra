@@ -179,9 +179,9 @@ postsubmits:
                 memory: "1Gi"
               limits:
                 memory: "1Gi"
-    - name: publish-kubevirt-userguide-image
+    - name: publish-kubevirt-user-guide-image
       always_run: false
-      run_if_changed: "images/kubevirt-userguide/.*"
+      run_if_changed: "images/kubevirt-user-guide/.*"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -201,7 +201,7 @@ postsubmits:
               - |
                 cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
-                ./publish_image.sh kubevirt-userguide quay.io kubevirtci
+                ./publish_image.sh kubevirt-user-guide quay.io kubevirtci
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true

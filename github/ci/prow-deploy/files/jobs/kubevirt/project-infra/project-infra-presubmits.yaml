@@ -170,9 +170,9 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
-  - name: build-kubevirt-userguide-image
+  - name: build-kubevirt-user-guide-image
     always_run: false
-    run_if_changed: "images/kubevirt-userguide/.*"
+    run_if_changed: "images/kubevirt-user-guide/.*"
     decorate: true
     labels:
       preset-dind-enabled: "true"
@@ -188,7 +188,7 @@ presubmits:
             - "-c"
             - |
               cd images
-              ./publish_image.sh -b kubevirt-userguide quay.io kubevirtci
+              ./publish_image.sh -b kubevirt-user-guide quay.io kubevirtci
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
