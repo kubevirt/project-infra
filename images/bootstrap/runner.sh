@@ -72,26 +72,31 @@ fi
 export PODMAN_IN_CONTAINER_ENABLED=${PODMAN_IN_CONTAINER_ENABLED:-false}
 if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
     echo "Podman in Container enabled, initializing in podman compatible mode..."
+    PODMAN_SOCKET_PATH=/run/podman
+    PODMAN_SOCKET=${PODMAN_SOCKET_PATH}/podman.sock
     (
         export HTTP_PROXY=${CONTAINER_HTTP_PROXY}
         export HTTPS_PROXY=${CONTAINER_HTTPS_PROXY}
-	export KIND_EXPERIMENTAL_PROVIDER="podman"
-	mkdir -p ${XDG_RUNTIME_DIR}/podman
+        export KIND_EXPERIMENTAL_PROVIDER="podman"
+
+        mkdir -p ${PODMAN_SOCKET_PATH}
+      
         podman system service \
-               -t 0 \
-               unix:///${XDG_RUNTIME_DIR}/podman/podman.sock \
-               >/var/log/podman.log 2>&1 &
+                -t 0 \
+                unix://${PODMAN_SOCKET} \
+                >/var/log/podman.log 2>&1 &
         echo "${!}" > /var/run/podman.pid
-	ln -s ${XDG_RUNTIME_DIR}/podman/podman.sock /var/run/docker.sock
-	# Set podman short-name-mode to permissive
-	sed -i 's/short-name-mode="enforcing"/short-name-mode="permissive"/g' /etc/containers/registries.conf
+
+        ln -s ${PODMAN_SOCKET} /var/run/docker.sock
+        # Set podman short-name-mode to permissive
+        sed -i 's/short-name-mode="enforcing"/short-name-mode="permissive"/g' /etc/containers/registries.conf
     )
     # the service can be started but the socket not ready, wait for ready
     WAIT_N=0
     MAX_WAIT=5
     while true; do
         # wait for podman socket to be ready
-        curl --unix-socket "${XDG_RUNTIME_DIR}/podman/podman.sock" http://d/v3.0.0/libpod/info >/dev/null 2>&1 && break
+        curl --unix-socket "${PODMAN_SOCKET}" http://d/v3.0.0/libpod/info >/dev/null 2>&1 && break
         if [[ ${WAIT_N} -lt ${MAX_WAIT} ]]; then
             WAIT_N=$((WAIT_N+1))
             echo "Waiting for podman socket to be ready, sleeping for ${WAIT_N} seconds."
