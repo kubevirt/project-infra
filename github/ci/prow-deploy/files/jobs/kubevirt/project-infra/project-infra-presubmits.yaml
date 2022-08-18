@@ -85,18 +85,15 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
-  - name: build-multiarch-bootstrap-image
+  - name: build-bootstrap-image
     always_run: false
     run_if_changed: "images/bootstrap/.*|images/golang/.*"
     decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 5h0m0s
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: prow-workloads
+    cluster: ibm-prow-jobs
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
@@ -106,16 +103,16 @@ presubmits:
             - "-ce"
             - |
               cd images
-              ./publish_multiarch_image.sh -b bootstrap quay.io kubevirtci
-              ./publish_multiarch_image.sh -b -l golang quay.io kubevirtci
+              ./publish_image.sh -b bootstrap quay.io kubevirtci
+              ./publish_image.sh -b golang quay.io kubevirtci
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
             requests:
-              memory: "8Gi"
+              memory: "1Gi"
             limits:
-              memory: "8Gi"
+              memory: "1Gi"
   - name: build-bootstrap-legacy-images
     always_run: false
     run_if_changed: "images/bootstrap-legacy/.*|images/golang-legacy/.*"
