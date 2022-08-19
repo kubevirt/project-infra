@@ -205,7 +205,7 @@ postsubmits:
               - |
                 cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
-                cp -r ../../kubevirt.github.io/_config .
+                cp -r ../../kubevirt.github.io/_config kubevirt-kubevirt.github.io
                 ./publish_image.sh kubevirt-kubevirt.github.io quay.io kubevirtci
             # docker-in-docker needs privileged mode
             securityContext:

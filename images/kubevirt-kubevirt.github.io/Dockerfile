@@ -4,7 +4,7 @@ FROM registry.fedoraproject.org/fedora:36
 # COPY app configs
 WORKDIR /src
 ENV LC_ALL=en_US.UTF-8
-COPY _config/src/ ./
+COPY ./_config/src/ ./
 
 # UPDATE BASE and land app frameworks and dependencies
 RUN dnf update -y && \
