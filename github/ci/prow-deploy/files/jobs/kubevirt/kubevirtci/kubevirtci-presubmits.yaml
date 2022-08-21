@@ -188,7 +188,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    max_concurrency: 1
+    max_concurrency: 2
     name: check-provision-k8s-1.22
     spec:
       containers:
@@ -240,7 +240,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    max_concurrency: 1
+    max_concurrency: 2
     name: check-provision-k8s-1.23
     spec:
       containers:
@@ -308,7 +308,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    max_concurrency: 1
+    max_concurrency: 2
     name: check-provision-k8s-1.24
     spec:
       containers:
@@ -334,7 +334,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    max_concurrency: 1
+    max_concurrency: 2
     name: check-provision-k8s-1.24-ipv6
     optional: false
     spec:
