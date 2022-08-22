@@ -104,8 +104,8 @@ postsubmits:
               - |
                 cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
-                ./publish_image.sh bootstrap quay.io kubevirtci
-                ./publish_image.sh golang quay.io kubevirtci
+                ./publish_multiarch_image.sh -a bootstrap quay.io kubevirtci
+                ./publish_multiarch_image.sh -a -l golang quay.io kubevirtci
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
