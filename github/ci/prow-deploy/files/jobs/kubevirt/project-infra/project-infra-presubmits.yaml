@@ -192,7 +192,7 @@ presubmits:
             - "-ce"
             - |
               cd images
-              cp -r ../../kubevirt.github.io/_config .
+              cp -r ../../kubevirt.github.io/_config kubevirt-kubevirt.github.io
               ./publish_image.sh -b kubevirt-kubevirt.github.io quay.io kubevirtci
           # docker-in-docker needs privileged mode
           securityContext:
