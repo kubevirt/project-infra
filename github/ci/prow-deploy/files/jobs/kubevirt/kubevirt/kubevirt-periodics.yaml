@@ -374,6 +374,68 @@ periodics:
     nodeSelector:
       type: bare-metal-external
 - annotations:
+    testgrid-dashboards: kubevirt-periodics
+  cluster: prow-workloads
+  cron: 0 22, 10 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 30m0s
+    timeout: 4h0m0s
+  labels:
+    preset-dind-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    vgpu: "true"
+  max_concurrency: 1
+  name: periodic-kubevirt-e2e-kind-1.23-vgpu
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -ce
+      - |
+        automation/test.sh
+      env:
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: kind-1.23-vgpu
+      image: quay.io/kubevirtci/golang:v20220728-1410a63
+      name: ""
+      resources:
+        requests:
+          memory: 18Gi
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: /lib/modules
+        name: modules
+        readOnly: true
+      - mountPath: /sys/fs/cgroup
+        name: cgroup
+      - mountPath: /dev/vfio/
+        name: vfio
+    nodeSelector:
+      hardwareSupport: gpu
+    priorityClassName: vgpu
+    volumes:
+    - hostPath:
+        path: /lib/modules
+        type: Directory
+      name: modules
+    - hostPath:
+        path: /sys/fs/cgroup
+        type: Directory
+      name: cgroup
+    - hostPath:
+        path: /dev/vfio
+        type: Directory
+      name: vfio
+- annotations:
     k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
