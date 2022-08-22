@@ -28,7 +28,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+      - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
         command:
           - "/bin/bash"
           - "-c"
@@ -47,7 +47,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+      - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -65,13 +65,13 @@ presubmits:
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -93,13 +93,13 @@ presubmits:
       grace_period: 5m0s
       timeout: 5h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
     cluster: prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -121,12 +121,12 @@ presubmits:
     run_if_changed: "images/bootstrap-legacy/.*|images/golang-legacy/.*"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -148,13 +148,13 @@ presubmits:
     run_if_changed: "images/kubekins-e2e/.*"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -207,13 +207,13 @@ presubmits:
     run_if_changed: "images/kubevirt-user-guide/.*"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -234,13 +234,13 @@ presubmits:
     run_if_changed: "images/prow-deploy/.*"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -261,13 +261,13 @@ presubmits:
     run_if_changed: "images/autoowners/.*"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
     cluster: prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -288,13 +288,13 @@ presubmits:
     run_if_changed: "images/pr-creator/.*"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
     cluster: prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -317,13 +317,13 @@ presubmits:
     run_if_changed: "images/bootstrap/.*"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -342,13 +342,13 @@ presubmits:
     run_if_changed: "images/kubot/.*"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -416,14 +416,14 @@ presubmits:
     run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -453,14 +453,14 @@ presubmits:
     run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -490,14 +490,14 @@ presubmits:
     run_if_changed: "github/ci/services/loki/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -527,14 +527,14 @@ presubmits:
     run_if_changed: "github/ci/services/sippy/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -564,14 +564,14 @@ presubmits:
     run_if_changed: "github/ci/services/prometheus-stack/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -601,14 +601,14 @@ presubmits:
     run_if_changed: "github/ci/services/kuberhealthy/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -638,7 +638,7 @@ presubmits:
     run_if_changed: "github/ci/services/kubot/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     cluster: prow-workloads
@@ -646,7 +646,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -685,7 +685,7 @@ presubmits:
       base_ref: master
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20220728-1410a63
+      - image: quay.io/kubevirtci/golang:v20220816-91d8af2
         command:
         - github/ci/testgrid/hack/check.sh
         securityContext:

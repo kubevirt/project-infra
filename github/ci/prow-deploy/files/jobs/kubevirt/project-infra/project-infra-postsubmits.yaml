@@ -13,7 +13,7 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -39,7 +39,7 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -60,13 +60,13 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -94,12 +94,12 @@ postsubmits:
         timeout: 5h0m0s
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -125,12 +125,12 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -156,13 +156,13 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -187,7 +187,7 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: ibm-prow-jobs
@@ -197,7 +197,7 @@ postsubmits:
         base_ref: main
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -254,12 +254,12 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -284,12 +284,12 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -314,12 +314,12 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -346,12 +346,12 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -376,12 +376,12 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -714,7 +714,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -759,7 +759,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -804,7 +804,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -849,7 +849,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -893,7 +893,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -951,7 +951,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -997,7 +997,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -1067,7 +1067,7 @@ postsubmits:
         preset-bazel-cache: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -1092,7 +1092,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
       spec:
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
           command: ["/bin/sh"]
           args:
           - -c
