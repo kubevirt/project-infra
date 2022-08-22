@@ -4,8 +4,11 @@ archs=(amd64 arm64)
 main() {
     local build_only local_base_image
     local_base_image=false
-    while getopts "blh" opt; do
+    while getopts "ablh" opt; do
         case "$opt" in
+	    a)
+		archs=(amd64)
+		;;
             b)
                 build_only=true
                 ;;
@@ -56,6 +59,7 @@ help() {
     Build and publish multiarch infra images.
 
     OPTIONS
+        -a  Build only amd64 image
         -h  Show this help message and exit.
         -b  Only build the image and exit. Do not publish the built image.
         -l  Use local base image
