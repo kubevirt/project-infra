@@ -52,11 +52,22 @@ func flagOptions() options {
 	return o
 }
 
+func (o *options) validate() error {
+	if o.jobName == "" {
+		return fmt.Errorf("job-name is missing")
+	}
+	return nil
+}
+
 func main() {
 	opts := flagOptions()
 
 	log.StandardLogger().SetFormatter(&log.JSONFormatter{})
 	jLog := log.StandardLogger().WithField("robot", "badbuilds")
+
+	if err := opts.validate(); err != nil {
+		jLog.Fatalf("validating command line options failed: %v", err)
+	}
 
 	ctx := context.Background()
 
