@@ -177,10 +177,10 @@ const (
 					<div><span title="number of completed builds">{{ .TotalCompletedBuilds }}</span></div>
 				</td>
 				<td>
-					<div><span title="mean">{{ .Mean }}</span></div>
+					<div><span title="mean">{{ printf "%.2f" .Mean }}</span></div>
 				</td>
 				<td>
-					<div><span title="standard deviation">{{ .StandardDeviation }}</span></div>
+					<div><span title="standard deviation">{{ printf "%.2f" .StandardDeviation }}</span></div>
 				</td>
 			</tr>
 			{{ range $buildNo := .BuildNumbers }}<tr class="unimportant">{{ with $buildData := (index (index $.JobNamesToRatings $key).BuildNumbersToData $buildNo) }}
