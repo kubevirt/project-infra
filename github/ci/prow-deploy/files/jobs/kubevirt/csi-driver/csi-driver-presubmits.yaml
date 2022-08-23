@@ -72,15 +72,16 @@ presubmits:
             resources:
               requests:
                 memory: "4Gi"
-    - name: pull-csi-driver-e2e-k8s-1.20
+    - name: pull-csi-driver-e2e-k8s-1.23
+      cluster: prow-workloads
       skip_branches:
         - release-\d+\.\d+
       annotations:
         fork-per-release: "true"
         testgrid-dashboards: kubevirt-presubmits
       always_run: true
-      optional: true
-      skip_report: true
+      optional: false
+      skip_report: false
       decorate: true
       decoration_config:
         timeout: 7h
@@ -90,7 +91,6 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
-      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
@@ -100,7 +100,7 @@ presubmits:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
               - "-c"
-              - "export TARGET=k8s-1.20 && make test-functional"
+              - "make cluster-up && make cluster-sync && make e2e-test"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
