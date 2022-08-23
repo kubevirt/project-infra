@@ -24,10 +24,10 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
-	"flag"
 	"fmt"
 	"github.com/bndr/gojenkins"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 	"io"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	flakejenkins "kubevirt.io/project-infra/robots/pkg/jenkins"
@@ -42,6 +42,7 @@ import (
 
 const (
 	defaultJenkinsBaseUrl = "https://main-jenkins-csb-cnvqe.apps.ocp-c1.prod.psi.redhat.com/"
+	defaultFilterFileUrl  = "https://gitlab.cee.redhat.com/contra/cnv-qe-automation/-/raw/master/tests/tier1/kubevirt/dont_run_tests.json"
 	reportTemplate        = `
 <html>
 <head>
@@ -114,23 +115,45 @@ const (
 `
 )
 
+var (
+	rootCmd *cobra.Command
+	opts    options
+)
+
+func init() {
+	rootCmd = &cobra.Command{
+		Use:   "test-report",
+		Short: "test-report creates a report about which tests have been run on what lane",
+		RunE:  runReport,
+	}
+	opts = options{}
+	flagOptions()
+}
+
+func main() {
+	if err := rootCmd.Execute(); err != nil {
+		log.Fatal(err)
+	}
+	os.Exit(0)
+}
+
 type options struct {
-	endpoint       string
-	startFrom      time.Duration
-	jobNamePattern string
-	outputFile     string
-	overwrite      bool
+	endpoint            string
+	startFrom           time.Duration
+	jobNamePattern      string
+	outputFile          string
+	overwrite           bool
+	quarantinedFileUrls []string
 }
 
 func flagOptions() options {
-	o := options{}
-	flag.StringVar(&o.endpoint, "endpoint", defaultJenkinsBaseUrl, "jenkins base url")
-	flag.DurationVar(&o.startFrom, "start-from", 14*24*time.Hour, "time period for report")
-	flag.StringVar(&o.jobNamePattern, "job-name-pattern", "^test-(ssp-cnv-4\\.[0-9]+|kubevirt-cnv-4\\.[0-9]+-(compute|network|operator)-[a-z]+)$", "jenkins job name go regex pattern to filter jobs for the report")
-	flag.StringVar(&o.outputFile, "outputFile", "", "Path to output file, if not given, a temporary file will be used")
-	flag.BoolVar(&o.overwrite, "overwrite", true, "overwrite output file")
-	flag.Parse()
-	return o
+	rootCmd.PersistentFlags().StringVar(&opts.endpoint, "endpoint", defaultJenkinsBaseUrl, "jenkins base url")
+	rootCmd.PersistentFlags().DurationVar(&opts.startFrom, "start-from", 14*24*time.Hour, "time period for report")
+	rootCmd.PersistentFlags().StringVar(&opts.jobNamePattern, "job-name-pattern", "^test-(ssp-cnv-4\\.[0-9]+|kubevirt-cnv-4\\.[0-9]+-(compute|network|operator)-[a-z]+)$", "jenkins job name go regex pattern to filter jobs for the report")
+	rootCmd.PersistentFlags().StringVar(&opts.outputFile, "outputFile", "", "Path to output file, if not given, a temporary file will be used")
+	rootCmd.PersistentFlags().BoolVar(&opts.overwrite, "overwrite", true, "overwrite output file")
+	rootCmd.PersistentFlags().StringArrayVar(&opts.quarantinedFileUrls, "filter-file-urls", []string{defaultFilterFileUrl}, "file urls to use as filters for test cases, use quarantined_tests.json and/or dont_run_tests.json")
+	return opts
 }
 
 func (o *options) Validate() error {
@@ -161,15 +184,18 @@ const (
 	test_execution_run     = iota
 )
 
-func main() {
-	opts := flagOptions()
+type FilterTestRecord struct {
+	Id     string `json:"id"`
+	Reason string `json:"reason"`
+}
 
+func runReport(cmd *cobra.Command, args []string) error {
 	log.StandardLogger().SetFormatter(&log.JSONFormatter{})
 	jLog := log.StandardLogger().WithField("robot", "test-report")
 
 	err := opts.Validate()
 	if err != nil {
-		jLog.Fatalf("failed to contact jenkins %s: %v", opts.endpoint, err)
+		return fmt.Errorf("failed to validate command line arguments: %v", err)
 	}
 
 	ctx := context.Background()
@@ -192,11 +218,12 @@ func main() {
 
 	jobNames, err := jenkins.GetAllJobNames(ctx)
 	if err != nil {
-		jLog.Fatalf("failed to get jobs: %v", err)
+		return fmt.Errorf("failed to get jobs: %v", err)
 	}
 	jobs := filterMatchingJobs(ctx, jenkins, jLog, opts, jobNames)
 	if len(jobs) == 0 {
-		jLog.Fatalf("no jobs left, nothing to do")
+		jLog.Warn("no jobs left, nothing to do")
+		return nil
 	}
 
 	startOfReport := time.Now().Add(-1 * opts.startFrom)
@@ -222,24 +249,51 @@ func main() {
 
 	bytes, err := json.MarshalIndent(testNamesToJobNamesToExecutionStatus, "", "\t")
 	if err != nil {
-		jLog.Fatalf("failed to marshall result: %v", err)
+		return fmt.Errorf("failed to marshall result: %v", err)
 	}
 
 	jsonFileName := strings.TrimSuffix(opts.outputFile, ".html") + ".json"
 	jLog.Printf("Writing json to %q", jsonFileName)
 	jsonOutputWriter, err := os.OpenFile(jsonFileName, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil && err != os.ErrNotExist {
-		jLog.Fatalf("failed to write report: %v", err)
+		return fmt.Errorf("failed to write report: %v", err)
 	}
 	defer jsonOutputWriter.Close()
 
 	jsonOutputWriter.Write(bytes)
+
+	filterRegexes := []string{}
+	for _, quarantinedFileUrl := range opts.quarantinedFileUrls {
+		jLog.Infof("fetching filter file '%s'", quarantinedFileUrl)
+		response, err := http.Get(quarantinedFileUrl)
+		if err != nil {
+			return fmt.Errorf("failed to fetch %s: %v", quarantinedFileUrl, err)
+		}
+		if response.StatusCode >= http.StatusOK && response.StatusCode < http.StatusBadRequest {
+			records := []*FilterTestRecord{}
+			err := json.NewDecoder(response.Body).Decode(&records)
+			if err != nil {
+				return fmt.Errorf("failed to decode %s: %v", quarantinedFileUrl, err)
+			}
+			for _, record := range records {
+				filterRegexes = append(filterRegexes, record.Id)
+			}
+		} else {
+			return fmt.Errorf("when fetching %s received status code: %d", quarantinedFileUrl, response.StatusCode)
+		}
+	}
+	completeFilterRegex := regexp.MustCompile(strings.Join(filterRegexes, "|"))
+	jLog.Infof("filter expression is '%s'", completeFilterRegex)
 
 	testNames := []string{}
 	skippedTests := map[string]interface{}{}
 	lookedAtJobsMap := map[string]interface{}{}
 
 	for testName, jobNamesToSkipped := range testNamesToJobNamesToExecutionStatus {
+		if completeFilterRegex.MatchString(testName) {
+			jLog.Warnf("filtering %s", testName)
+			continue
+		}
 		testNames = append(testNames, testName)
 		testSkipped := true
 		for jobName, executionStatus := range jobNamesToSkipped {
@@ -265,12 +319,12 @@ func main() {
 
 	htmlReportOutputWriter, err := os.OpenFile(opts.outputFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		jLog.Fatalf("failed to write report: %v", err)
+		return fmt.Errorf("failed to write report: %v", err)
 	}
 	defer htmlReportOutputWriter.Close()
 	jLog.Printf("Writing html to %q", opts.outputFile)
 	writeHTMLReportToOutput(htmlReportOutputWriter, testNames, skippedTests, lookedAtJobs, testNamesToJobNamesToExecutionStatus, err, jLog)
-
+	return nil
 }
 
 func writeHTMLReportToOutput(htmlReportOutputWriter io.Writer, testNames []string, skippedTests map[string]interface{}, lookedAtJobs []string, testNamesToJobNamesToSkipped map[string]map[string]int, err error, jLog *log.Entry) {
