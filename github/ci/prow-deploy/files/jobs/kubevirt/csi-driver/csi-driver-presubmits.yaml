@@ -78,7 +78,7 @@ presubmits:
         - release-\d+\.\d+
       annotations:
         fork-per-release: "true"
-        testgrid-dashboards: kubevirt-presubmits
+        testgrid-dashboards: kubevirt-csi-driver-presubmits
       always_run: true
       optional: false
       skip_report: false
