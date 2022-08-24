@@ -29,3 +29,33 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: true
+    optional: true
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-cluster-api-provider-kubevirt-conformance-e2e
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make conformance
+        image: quay.io/kubevirtci/golang:v20220630-ded5dcd
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
