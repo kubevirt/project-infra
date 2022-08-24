@@ -11,6 +11,7 @@ func Test_writeHTMLReportToOutput(t *testing.T) {
 	type args struct {
 		htmlReportOutputWriter       io.Writer
 		testNames                    []string
+		filteredTestNames            []string
 		skippedTests                 map[string]interface{}
 		lookedAtJobs                 []string
 		testNamesToJobNamesToSkipped map[string]map[string]int
@@ -26,6 +27,7 @@ func Test_writeHTMLReportToOutput(t *testing.T) {
 			args: args{
 				htmlReportOutputWriter: os.Stdout,
 				testNames:              []string{"a", "b", "c"},
+				filteredTestNames:      []string{"la", "le", "lu"},
 				skippedTests: map[string]interface{}{
 					"a": struct{}{}},
 				lookedAtJobs: []string{"job1", "job2", "job3"},
@@ -52,7 +54,7 @@ func Test_writeHTMLReportToOutput(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			writeHTMLReportToOutput(tt.args.htmlReportOutputWriter, tt.args.testNames, tt.args.skippedTests, tt.args.lookedAtJobs, tt.args.testNamesToJobNamesToSkipped, tt.args.err, tt.args.jLog)
+			writeHTMLReportToOutput(newData(tt.args.testNames, tt.args.skippedTests, tt.args.lookedAtJobs, tt.args.testNamesToJobNamesToSkipped, tt.args.filteredTestNames), tt.args.htmlReportOutputWriter)
 		})
 	}
 }

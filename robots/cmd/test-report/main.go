@@ -81,11 +81,53 @@ const (
 				color: #535453;
 				font-weight: bold;
 			}
+			.right {
+				text-align: right;
+				width: 100%;
+			}
+
+			.popup .popuptextFilteredTestNames {
+				display: none;
+				width: 1024px;
+				background-color: #FFFFFF;
+				text-align: center;
+				border-radius: 6px;
+				padding: 8px 8px;
+				position: absolute;
+				z-index: 1;
+				left: 100%;
+				margin-left: -1024px;
+			}
+
+			.popup:hover .popuptextFilteredTestNames {
+				display: block;
+				-webkit-animation: fadeIn 1s;
+				animation: fadeIn 1s;
+			}
+
 		</style>
 	</meta>
 </head>
 <body>
 <h1>test execution report</h1>
+
+<div id="filteredTests" class="popup right" >
+	<u>list of filtered tests</u>
+	<div class="popuptextFilteredTestNames right" id="targetfilteredTests">
+		<table width="100%">
+			<tr class="unimportant">
+				<td>
+					Filtered test names:
+				</td>
+			</tr>{{ range $filteredTestName := $.FilteredTestNames }}
+			<tr class="unimportant">
+				<td>
+					{{ $filteredTestName | html }}
+				</td>
+			</tr>{{ end }}
+		</table>
+	</div>
+</div>
 
 <table>
     <tr>
@@ -118,6 +160,7 @@ const (
 var (
 	rootCmd *cobra.Command
 	opts    options
+	logger  *log.Entry
 )
 
 func init() {
@@ -128,6 +171,8 @@ func init() {
 	}
 	opts = options{}
 	flagOptions()
+	log.StandardLogger().SetFormatter(&log.JSONFormatter{})
+	logger = log.StandardLogger().WithField("robot", "test-report")
 }
 
 func main() {
@@ -138,12 +183,12 @@ func main() {
 }
 
 type options struct {
-	endpoint            string
-	startFrom           time.Duration
-	jobNamePattern      string
-	outputFile          string
-	overwrite           bool
-	quarantinedFileUrls []string
+	endpoint       string
+	startFrom      time.Duration
+	jobNamePattern string
+	outputFile     string
+	overwrite      bool
+	filterFileUrls []string
 }
 
 func flagOptions() options {
@@ -152,7 +197,7 @@ func flagOptions() options {
 	rootCmd.PersistentFlags().StringVar(&opts.jobNamePattern, "job-name-pattern", "^test-(ssp-cnv-4\\.[0-9]+|kubevirt-cnv-4\\.[0-9]+-(compute|network|operator)-[a-z]+)$", "jenkins job name go regex pattern to filter jobs for the report")
 	rootCmd.PersistentFlags().StringVar(&opts.outputFile, "outputFile", "", "Path to output file, if not given, a temporary file will be used")
 	rootCmd.PersistentFlags().BoolVar(&opts.overwrite, "overwrite", true, "overwrite output file")
-	rootCmd.PersistentFlags().StringArrayVar(&opts.quarantinedFileUrls, "filter-file-urls", []string{defaultFilterFileUrl}, "file urls to use as filters for test cases, use quarantined_tests.json and/or dont_run_tests.json")
+	rootCmd.PersistentFlags().StringArrayVar(&opts.filterFileUrls, "filter-file-urls", []string{defaultFilterFileUrl}, "file urls to use as filters for test cases, use quarantined_tests.json and/or dont_run_tests.json")
 	return opts
 }
 
@@ -190,8 +235,6 @@ type FilterTestRecord struct {
 }
 
 func runReport(cmd *cobra.Command, args []string) error {
-	log.StandardLogger().SetFormatter(&log.JSONFormatter{})
-	jLog := log.StandardLogger().WithField("robot", "test-report")
 
 	err := opts.Validate()
 	if err != nil {
@@ -209,89 +252,49 @@ func runReport(cmd *cobra.Command, args []string) error {
 		},
 	}
 
-	jLog.Printf("Creating client for %s", opts.endpoint)
+	logger.Printf("Creating client for %s", opts.endpoint)
 	jenkins := gojenkins.CreateJenkins(client, opts.endpoint)
 	_, err = jenkins.Init(ctx)
 	if err != nil {
-		jLog.Fatalf("failed to contact jenkins %s: %v", opts.endpoint, err)
+		logger.Fatalf("failed to contact jenkins %s: %v", opts.endpoint, err)
 	}
 
 	jobNames, err := jenkins.GetAllJobNames(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to get jobs: %v", err)
+		logger.Fatalf("failed to get jobs: %v", err)
 	}
-	jobs := filterMatchingJobs(ctx, jenkins, jLog, opts, jobNames)
+	jobs, err := filterMatchingJobs(ctx, jenkins, jobNames)
+	if err != nil {
+		logger.Fatalf("failed to filter matching jobs: %v", err)
+	}
 	if len(jobs) == 0 {
-		jLog.Warn("no jobs left, nothing to do")
+		logger.Warn("no jobs left, nothing to do")
 		return nil
 	}
 
 	startOfReport := time.Now().Add(-1 * opts.startFrom)
 
-	resultsChan := make(chan map[string]map[string]bool)
-	go getTestNamesToJobNamesToSkippedForAllJobs(resultsChan, jobs, startOfReport, ctx, jLog)
+	testNamesToJobNamesToExecutionStatus := getTestNamesToJobNamesToExecutionStatus(jobs, startOfReport, ctx)
 
-	testNamesToJobNamesToExecutionStatus := map[string]map[string]int{}
-	for result := range resultsChan {
-		for testName, jobNamesToSkipped := range result {
-			if _, exists := testNamesToJobNamesToExecutionStatus[testName]; !exists {
-				testNamesToJobNamesToExecutionStatus[testName] = map[string]int{}
-			}
-			for jobName, skipped := range jobNamesToSkipped {
-				if skipped {
-					testNamesToJobNamesToExecutionStatus[testName][jobName] = test_execution_skipped
-				} else {
-					testNamesToJobNamesToExecutionStatus[testName][jobName] = test_execution_run
-				}
-			}
-		}
-	}
-
-	bytes, err := json.MarshalIndent(testNamesToJobNamesToExecutionStatus, "", "\t")
+	err = writeJsonBaseDataFile(testNamesToJobNamesToExecutionStatus)
 	if err != nil {
-		return fmt.Errorf("failed to marshall result: %v", err)
+		logger.Fatalf("failed to write json data file: %v", err)
 	}
 
-	jsonFileName := strings.TrimSuffix(opts.outputFile, ".html") + ".json"
-	jLog.Printf("Writing json to %q", jsonFileName)
-	jsonOutputWriter, err := os.OpenFile(jsonFileName, os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil && err != os.ErrNotExist {
-		return fmt.Errorf("failed to write report: %v", err)
+	completeFilterRegex, err := createTestFilterRegexpFromFilterFiles()
+	if err != nil {
+		logger.Fatalf("failed to create test filter regexp: %v", err)
 	}
-	defer jsonOutputWriter.Close()
-
-	jsonOutputWriter.Write(bytes)
-
-	filterRegexes := []string{}
-	for _, quarantinedFileUrl := range opts.quarantinedFileUrls {
-		jLog.Infof("fetching filter file '%s'", quarantinedFileUrl)
-		response, err := http.Get(quarantinedFileUrl)
-		if err != nil {
-			return fmt.Errorf("failed to fetch %s: %v", quarantinedFileUrl, err)
-		}
-		if response.StatusCode >= http.StatusOK && response.StatusCode < http.StatusBadRequest {
-			records := []*FilterTestRecord{}
-			err := json.NewDecoder(response.Body).Decode(&records)
-			if err != nil {
-				return fmt.Errorf("failed to decode %s: %v", quarantinedFileUrl, err)
-			}
-			for _, record := range records {
-				filterRegexes = append(filterRegexes, record.Id)
-			}
-		} else {
-			return fmt.Errorf("when fetching %s received status code: %d", quarantinedFileUrl, response.StatusCode)
-		}
-	}
-	completeFilterRegex := regexp.MustCompile(strings.Join(filterRegexes, "|"))
-	jLog.Infof("filter expression is '%s'", completeFilterRegex)
 
 	testNames := []string{}
 	skippedTests := map[string]interface{}{}
+	filteredTestNames := []string{}
 	lookedAtJobsMap := map[string]interface{}{}
 
 	for testName, jobNamesToSkipped := range testNamesToJobNamesToExecutionStatus {
 		if completeFilterRegex.MatchString(testName) {
-			jLog.Warnf("filtering %s", testName)
+			filteredTestNames = append(filteredTestNames, testName)
+			logger.Warnf("filtering %s", testName)
 			continue
 		}
 		testNames = append(testNames, testName)
@@ -315,22 +318,111 @@ func runReport(cmd *cobra.Command, args []string) error {
 	}
 
 	sort.Strings(testNames)
+	sort.Strings(filteredTestNames)
 	sort.Strings(lookedAtJobs)
+	data := newData(testNames, skippedTests, lookedAtJobs, testNamesToJobNamesToExecutionStatus, filteredTestNames)
 
-	htmlReportOutputWriter, err := os.OpenFile(opts.outputFile, os.O_CREATE|os.O_WRONLY, 0644)
+	err = writeHTMLReportToOutputFile(err, data)
 	if err != nil {
-		return fmt.Errorf("failed to write report: %v", err)
+		logger.Fatalf("failed to write report: %v", err)
 	}
-	defer htmlReportOutputWriter.Close()
-	jLog.Printf("Writing html to %q", opts.outputFile)
-	writeHTMLReportToOutput(htmlReportOutputWriter, testNames, skippedTests, lookedAtJobs, testNamesToJobNamesToExecutionStatus, err, jLog)
 	return nil
 }
 
-func writeHTMLReportToOutput(htmlReportOutputWriter io.Writer, testNames []string, skippedTests map[string]interface{}, lookedAtJobs []string, testNamesToJobNamesToSkipped map[string]map[string]int, err error, jLog *log.Entry) {
+func writeHTMLReportToOutputFile(err error, data Data) error {
+	htmlReportOutputWriter, err := os.OpenFile(opts.outputFile, os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write report %q: %v", opts.outputFile, err)
+	}
+	logger.Printf("Writing html to %q", opts.outputFile)
+	defer htmlReportOutputWriter.Close()
+	err = writeHTMLReportToOutput(data, htmlReportOutputWriter)
+	if err != nil {
+		return fmt.Errorf("failed to write report: %v", err)
+	}
+	return nil
+}
 
-	data := Data{
+func writeJsonBaseDataFile(testNamesToJobNamesToExecutionStatus map[string]map[string]int) error {
+	bytes, err := json.MarshalIndent(testNamesToJobNamesToExecutionStatus, "", "\t")
+	if err != nil {
+		return fmt.Errorf("failed to marshall result: %v", err)
+	}
+
+	jsonFileName := strings.TrimSuffix(opts.outputFile, ".html") + ".json"
+	logger.Printf("Writing json to %q", jsonFileName)
+	jsonOutputWriter, err := os.OpenFile(jsonFileName, os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil && err != os.ErrNotExist {
+		return fmt.Errorf("failed to write report: %v", err)
+	}
+	defer jsonOutputWriter.Close()
+
+	_, err = jsonOutputWriter.Write(bytes)
+	return err
+}
+
+func getTestNamesToJobNamesToExecutionStatus(jobs []*gojenkins.Job, startOfReport time.Time, ctx context.Context) map[string]map[string]int {
+	resultsChan := make(chan map[string]map[string]bool)
+	go getTestNamesToJobNamesToSkippedForAllJobs(resultsChan, jobs, startOfReport, ctx, logger)
+
+	testNamesToJobNamesToExecutionStatus := map[string]map[string]int{}
+	for result := range resultsChan {
+		for testName, jobNamesToSkipped := range result {
+			if _, exists := testNamesToJobNamesToExecutionStatus[testName]; !exists {
+				testNamesToJobNamesToExecutionStatus[testName] = map[string]int{}
+			}
+			for jobName, skipped := range jobNamesToSkipped {
+				if skipped {
+					testNamesToJobNamesToExecutionStatus[testName][jobName] = test_execution_skipped
+				} else {
+					testNamesToJobNamesToExecutionStatus[testName][jobName] = test_execution_run
+				}
+			}
+		}
+	}
+	return testNamesToJobNamesToExecutionStatus
+}
+
+func createTestFilterRegexpFromFilterFiles() (*regexp.Regexp, error) {
+	var filterRegexes []string
+	for _, filterFileUrl := range opts.filterFileUrls {
+		logger.Infof("fetching filter file %q", filterFileUrl)
+		response, err := http.Get(filterFileUrl)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch %q: %v", filterFileUrl, err)
+		}
+		if response.StatusCode >= http.StatusOK && response.StatusCode < http.StatusBadRequest {
+			var records []*FilterTestRecord
+			err := json.NewDecoder(response.Body).Decode(&records)
+			if err != nil {
+				return nil, fmt.Errorf("failed to decode %q: %v", filterFileUrl, err)
+			}
+			for _, record := range records {
+				filterRegexes = append(filterRegexes, record.Id)
+			}
+		} else {
+			return nil, fmt.Errorf("when fetching %q received status code: %d", filterFileUrl, response.StatusCode)
+		}
+	}
+	completeFilterRegex := regexp.MustCompile(strings.Join(filterRegexes, "|"))
+	logger.Infof("filter expression is '%s'", completeFilterRegex)
+	return completeFilterRegex, nil
+}
+
+type Data struct {
+	JenkinsBaseURL               string                    `json:"jenkinsBaseURL"`
+	TestNames                    []string                  `json:"testNames"`
+	FilteredTestNames            []string                  `json:"filteredTestNames"`
+	SkippedTests                 map[string]interface{}    `json:"skippedTests"`
+	LookedAtJobs                 []string                  `json:"lookedAtJobs"`
+	TestNamesToJobNamesToSkipped map[string]map[string]int `json:"testNamesToJobNamesToSkipped"`
+	TestExecutionMapping         map[string]int
+}
+
+func newData(testNames []string, skippedTests map[string]interface{}, lookedAtJobs []string, testNamesToJobNamesToSkipped map[string]map[string]int, filteredTestNames []string) Data {
+	return Data{
 		TestNames:                    testNames,
+		FilteredTestNames:            filteredTestNames,
 		SkippedTests:                 skippedTests,
 		LookedAtJobs:                 lookedAtJobs,
 		TestNamesToJobNamesToSkipped: testNamesToJobNamesToSkipped,
@@ -341,19 +433,14 @@ func writeHTMLReportToOutput(htmlReportOutputWriter io.Writer, testNames []strin
 			"test_execution_run":     test_execution_run,
 		},
 	}
-	err = flakefinder.WriteTemplateToOutput(reportTemplate, data, htmlReportOutputWriter)
-	if err != nil {
-		jLog.Fatalf("failed to write report: %v", err)
-	}
 }
 
-type Data struct {
-	JenkinsBaseURL               string                    `json:"jenkinsBaseURL"`
-	TestNames                    []string                  `json:"testNames"`
-	SkippedTests                 map[string]interface{}    `json:"skippedTests"`
-	LookedAtJobs                 []string                  `json:"lookedAtJobs"`
-	TestNamesToJobNamesToSkipped map[string]map[string]int `json:"testNamesToJobNamesToSkipped"`
-	TestExecutionMapping         map[string]int
+func writeHTMLReportToOutput(data Data, htmlReportOutputWriter io.Writer) error {
+	err := flakefinder.WriteTemplateToOutput(reportTemplate, data, htmlReportOutputWriter)
+	if err != nil {
+		return fmt.Errorf("failed to write report: %v", err)
+	}
+	return nil
 }
 
 func getTestNamesToJobNamesToSkippedForAllJobs(resultsChan chan map[string]map[string]bool, jobs []*gojenkins.Job, startOfReport time.Time, ctx context.Context, jLog *log.Entry) {
@@ -388,20 +475,20 @@ func getTestNamesToJobNamesToSkippedForJob(startOfReport time.Time, ctx context.
 	resultsChan <- testNamesToJobNamesToSkippedForJobName
 }
 
-func filterMatchingJobs(ctx context.Context, jenkins *gojenkins.Jenkins, jLog *log.Entry, opts options, innerJobs []gojenkins.InnerJob) []*gojenkins.Job {
+func filterMatchingJobs(ctx context.Context, jenkins *gojenkins.Jenkins, innerJobs []gojenkins.InnerJob) ([]*gojenkins.Job, error) {
 	filteredJobs := []*gojenkins.Job{}
 	jobNameRegex := regexp.MustCompile(opts.jobNamePattern)
-	jLog.Printf("Filtering for jobs matching %s", jobNameRegex)
+	logger.Printf("Filtering for jobs matching %s", jobNameRegex)
 	for _, innerJob := range innerJobs {
 		if !jobNameRegex.MatchString(innerJob.Name) {
 			continue
 		}
 		job, err := jenkins.GetJob(ctx, innerJob.Name)
 		if err != nil {
-			jLog.Fatalf("failed to get job %s: %v", innerJob.Name, err)
+			return nil, fmt.Errorf("failed to get job %s: %v", innerJob.Name, err)
 		}
 		filteredJobs = append(filteredJobs, job)
 	}
-	jLog.Printf("%d jobs left after filtering", len(filteredJobs))
-	return filteredJobs
+	logger.Printf("%d jobs left after filtering", len(filteredJobs))
+	return filteredJobs, nil
 }
