@@ -118,7 +118,7 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.19-sysprep
+  name: periodic-kubevirt-e2e-k8s-1.22-sysprep
   spec:
     containers:
     - command:
