@@ -95,12 +95,12 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/golang:v20220728-1410a63
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
               - "-c"
-              - "make cluster-up && make cluster-sync && make e2e-test"
+              - "./hack/ci/e2e-latest.sh"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
