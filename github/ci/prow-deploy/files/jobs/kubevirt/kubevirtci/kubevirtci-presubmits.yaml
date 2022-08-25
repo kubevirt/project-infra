@@ -68,6 +68,7 @@ presubmits:
           name: vfio
       nodeSelector:
         hardwareSupport: sriov-nic
+      priorityClassName: sriov
       volumes:
       - hostPath:
           path: /lib/modules
@@ -81,7 +82,6 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-      priorityClassName: sriov
   - always_run: true
     cluster: prow-workloads
     decorate: true
@@ -96,6 +96,18 @@ presubmits:
     max_concurrency: 1
     name: check-up-kind-1.23-vgpu
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: vgpu
+                  operator: In
+                  values:
+                  - "true"
+              topologyKey: ""
+            weight: 100
       containers:
       - command:
         - /usr/local/bin/runner.sh
@@ -113,7 +125,8 @@ presubmits:
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "true"
         - name: SONOBUOY_EXTRA_ARGS
-          value: "--plugin-env kubevirt-conformance.E2E_FOCUS=MediatedDevices --plugin-env kubevirt-conformance.E2E_SKIP=QUARANTINE"
+          value: --plugin-env kubevirt-conformance.E2E_FOCUS=MediatedDevices --plugin-env
+            kubevirt-conformance.E2E_SKIP=QUARANTINE
         image: quay.io/kubevirtci/golang:v20220728-1410a63
         name: ""
         resources:
@@ -131,17 +144,7 @@ presubmits:
           name: vfio
       nodeSelector:
         hardwareSupport: gpu
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: vgpu
-                  operator: In
-                  values:
-                  - "true"
+      priorityClassName: vgpu
       volumes:
       - hostPath:
           path: /lib/modules
@@ -155,7 +158,6 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-      priorityClassName: vgpu
   - always_run: false
     cluster: prow-workloads
     decorate: true
@@ -311,7 +313,6 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.24-ipv6
-    optional: false
     spec:
       containers:
       - command:
@@ -324,6 +325,33 @@ presubmits:
         resources:
           requests:
             memory: 14Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 1
+    name: check-provision-k8s-1.25
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cd cluster-provision/k8s/1.25 && ../provision.sh
+        image: quay.io/kubevirtci/golang:v20210316-d295087
+        name: ""
+        resources:
+          requests:
+            memory: 8Gi
         securityContext:
           privileged: true
       nodeSelector:
