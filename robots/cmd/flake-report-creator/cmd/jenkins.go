@@ -462,15 +462,7 @@ func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Je
 
 	completedBuilds := flakejenkins.FetchCompletedBuildsForJob(startOfReport, job.Raw.LastBuild.Number, job, ctx, fLog, 4)
 
-	filteredBuilds := []*gojenkins.Build{}
-	for _, completedBuild := range completedBuilds {
-		ratingForBuild := ratingForBuilds.GetBuildData(completedBuild.GetBuildNumber())
-		if ratingForBuild.Sigma <= 3 {
-			filteredBuilds = append(filteredBuilds, completedBuild)
-		} else {
-			fLog.Warnf("Skipping build %d due to %f sigma rating, %d failures", completedBuild.GetBuildNumber(), ratingForBuild.Sigma, ratingForBuild.Failures)
-		}
-	}
+	filteredBuilds := filterBuildsByRating(completedBuilds, ratingForBuilds, fLog)
 
 	junitFilesFromArtifacts := fetchJunitFilesFromArtifacts(filteredBuilds, fLog)
 	reportsPerJob := convertJunitFileDataToReport(junitFilesFromArtifacts, ctx, job, fLog)
@@ -479,6 +471,19 @@ func fetchReportDataForJob(filteredJob gojenkins.InnerJob, jenkins *gojenkins.Je
 		jobResults:  reportsPerJob,
 		buildRating: ratingForBuilds,
 	}
+}
+
+func filterBuildsByRating(completedBuilds []*gojenkins.Build, ratingForBuilds build.Rating, fLog *log.Entry) []*gojenkins.Build {
+	filteredBuilds := []*gojenkins.Build{}
+	for _, completedBuild := range completedBuilds {
+		number := completedBuild.GetBuildNumber()
+		if ratingForBuilds.ShouldFilterBuild(number) {
+			fLog.Warnf("Skipping build %d due to %f sigma rating, %d failures", number, ratingForBuilds.GetBuildData(number).Sigma, ratingForBuilds.GetBuildData(number).Failures)
+		} else {
+			filteredBuilds = append(filteredBuilds, completedBuild)
+		}
+	}
+	return filteredBuilds
 }
 
 func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build, fLog *log.Entry) []gojenkins.Artifact {

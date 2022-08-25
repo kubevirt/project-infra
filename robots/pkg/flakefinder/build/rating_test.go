@@ -387,3 +387,98 @@ func Test_buildDeviationMap(t *testing.T) {
 		})
 	}
 }
+
+func TestRating_ShouldFilterBuild(t *testing.T) {
+	type fields struct {
+		Name                 string
+		Source               string
+		StartFrom            time.Duration
+		BuildNumbers         []int64
+		BuildNumbersToData   map[int64]BuildData
+		TotalCompletedBuilds int64
+		TotalFailures        int64
+		Mean                 float64
+		Variance             float64
+		StandardDeviation    float64
+	}
+	type args struct {
+		buildNumber int64
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   bool
+	}{
+		{
+			name: "should filter build",
+			fields: fields{
+				Mean: 42,
+				BuildNumbersToData: map[int64]BuildData{
+					int64(37): {
+						Number:   37,
+						Failures: 77,
+						Sigma:    4,
+					},
+				},
+			},
+			args: args{
+				buildNumber: 37,
+			},
+			want: true,
+		},
+		{
+			name: "should not filter build even though sigma would indicate, but no of tests is lower than mean",
+			fields: fields{
+				Mean: 42,
+				BuildNumbersToData: map[int64]BuildData{
+					int64(37): {
+						Number:   37,
+						Failures: 1,
+						Sigma:    4,
+					},
+				},
+			},
+			args: args{
+				buildNumber: 37,
+			},
+			want: false,
+		},
+		{
+			name: "should not filter build since sigma doesn't indicate",
+			fields: fields{
+				Mean: 42,
+				BuildNumbersToData: map[int64]BuildData{
+					int64(37): {
+						Number:   37,
+						Failures: 69,
+						Sigma:    3,
+					},
+				},
+			},
+			args: args{
+				buildNumber: 37,
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := Rating{
+				Name:                 tt.fields.Name,
+				Source:               tt.fields.Source,
+				StartFrom:            tt.fields.StartFrom,
+				BuildNumbers:         tt.fields.BuildNumbers,
+				BuildNumbersToData:   tt.fields.BuildNumbersToData,
+				TotalCompletedBuilds: tt.fields.TotalCompletedBuilds,
+				TotalFailures:        tt.fields.TotalFailures,
+				Mean:                 tt.fields.Mean,
+				Variance:             tt.fields.Variance,
+				StandardDeviation:    tt.fields.StandardDeviation,
+			}
+			if got := r.ShouldFilterBuild(tt.args.buildNumber); got != tt.want {
+				t.Errorf("ShouldFilterBuild() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

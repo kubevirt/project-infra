@@ -53,6 +53,11 @@ func (r Rating) GetBuildData(buildNumber int64) BuildData {
 	return r.BuildNumbersToData[buildNumber]
 }
 
+func (r Rating) ShouldFilterBuild(buildNumber int64) bool {
+	buildData := r.GetBuildData(buildNumber)
+	return buildData.Sigma > 3 && float64(buildData.Failures) > r.Mean
+}
+
 func (r Rating) String() string {
 	bytes, err := json.Marshal(r)
 	if err != nil {
