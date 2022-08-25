@@ -106,7 +106,7 @@ presubmits:
                   operator: In
                   values:
                   - "true"
-              topologyKey: ""
+              topologyKey: "kubernetes.io/hostname"
             weight: 100
       containers:
       - command:

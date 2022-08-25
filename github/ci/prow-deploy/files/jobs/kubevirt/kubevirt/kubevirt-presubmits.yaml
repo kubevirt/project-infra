@@ -617,6 +617,7 @@ presubmits:
                   operator: In
                   values:
                   - "true"
+              topologyKey: "kubernetes.io/hostname"
       containers:
       - command:
         - /usr/local/bin/runner.sh
@@ -687,6 +688,7 @@ presubmits:
                   operator: In
                   values:
                   - "true"
+              topologyKey: "kubernetes.io/hostname"
       containers:
       - command:
         - /usr/local/bin/runner.sh
