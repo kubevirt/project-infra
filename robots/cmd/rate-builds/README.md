@@ -1,5 +1,5 @@
-badbuilds
-=========
+rate-builds
+===========
 
 Tool to fetch three sigma ratings over a set of builds for a jenkins job.
 
@@ -7,7 +7,7 @@ How to run
 ----------
 
 ```shell
-go run ./robots/cmd/badbuilds/... --help
+go run ./robots/cmd/rate-builds/... --help
 Usage of /tmp/go-build1320403461/b001/exe/badbuilds:
   -endpoint string
         jenkins base url (default "https://main-jenkins-csb-cnvqe.apps.ocp-c1.prod.psi.redhat.com/")
@@ -20,5 +20,5 @@ Usage of /tmp/go-build1320403461/b001/exe/badbuilds:
 Simple example:
 
 ```shell
-go run ./robots/cmd/badbuilds/... --job-name=test-kubevirt-cnv-4.11-storage-ocs
+go run ./robots/cmd/rate-builds/... --job-name=test-kubevirt-cnv-4.11-storage-ocs
 ```
