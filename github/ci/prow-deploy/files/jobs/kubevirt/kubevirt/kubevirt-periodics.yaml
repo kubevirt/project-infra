@@ -391,6 +391,9 @@ periodics:
   - base_ref: main
     org: kubevirt
     repo: kubevirt
+  reporter_config:
+    slack:
+      job_states_to_report: []
   spec:
     affinity:
       podAntiAffinity:
