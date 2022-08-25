@@ -392,6 +392,17 @@ periodics:
     org: kubevirt
     repo: kubevirt
   spec:
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: vgpu
+                operator: In
+                values:
+                - "true"
     containers:
     - command:
       - /usr/local/bin/runner.sh
