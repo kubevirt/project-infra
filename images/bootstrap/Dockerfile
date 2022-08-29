@@ -84,7 +84,7 @@ RUN dnf -y update; dnf -y reinstall shadow-utils && \
 VOLUME /var/lib/containers
 
 COPY containers.conf /etc/containers/containers.conf
-COPY 87-podman.conflist /etc/cni/net.d/
+COPY podman.json /etc/containers/networks/podman.json
 
 RUN chmod 644 /etc/containers/containers.conf
 
