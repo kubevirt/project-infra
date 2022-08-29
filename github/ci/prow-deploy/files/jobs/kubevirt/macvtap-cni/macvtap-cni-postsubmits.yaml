@@ -9,13 +9,16 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220823-3fed276
+            env:
+            - name: OCI_BIN
+              value: podman
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -31,14 +34,17 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          - image: quay.io/kubevirtci/bootstrap:v20220823-3fed276
+            env:
+            - name: OCI_BIN
+              value: podman
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
