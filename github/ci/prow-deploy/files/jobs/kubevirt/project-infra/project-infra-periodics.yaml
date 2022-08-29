@@ -219,6 +219,11 @@ periodics:
   decoration_config:
     grace_period: 5m0s
     timeout: 5h0m0s
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    work_dir: true
   max_concurrency: 1
   labels:
     preset-dind-enabled: "true"
