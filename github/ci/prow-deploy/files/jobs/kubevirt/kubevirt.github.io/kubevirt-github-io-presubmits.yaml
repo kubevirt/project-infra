@@ -7,12 +7,12 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-      - image: docker.io/library/ruby
+      - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20220825-9d7149f
         env:
         - name: NOKOGIRI_USE_SYSTEM_LIBRARIES
           value: "true"
         command: [ "/bin/sh", "-c" ]
-        args: [ "/usr/local/bin/bundle install && bundle exec rake" ]
+        args: [ "bundle exec rake" ]
   - name: pull-kubevirt.github.io-build
     branches:
     - ^main$
@@ -25,9 +25,9 @@ presubmits:
       securityContext:
         runAsUser: 0
       containers:
-      - image: quay.io/kubevirtci/ruby:v20210628-647402e
-        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+      - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20220825-9d7149f
+        command: [ "/usr/bin/bash", "-c" ]
         args:
         - |
           set -ex
-          bundle install && make build
+          make build

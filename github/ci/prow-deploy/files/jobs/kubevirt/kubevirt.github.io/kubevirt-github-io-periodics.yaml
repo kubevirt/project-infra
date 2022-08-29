@@ -12,9 +12,9 @@ periodics:
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: docker.io/library/ruby
+        - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20220825-9d7149f
           env:
             - name: NOKOGIRI_USE_SYSTEM_LIBRARIES
               value: "true"
           command: ["/bin/sh", "-c"]
-          args: ["/usr/local/bin/bundle install && bundle exec rake -- -u"]
+          args: ["bundle exec rake -- -u"]
