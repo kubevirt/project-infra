@@ -101,7 +101,7 @@ presubmits:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
               - "-c"
-              - "NMSTATE_PIN=future automation/check-patch.e2e-k8s.sh"
+              - "git pull --rebase https://github.com/qinqon/kubernetes-nmstate use-nmstatectl-rust && NMSTATE_PIN=future automation/check-patch.e2e-k8s.sh"
 
     - name: pull-kubernetes-nmstate-docs
       cluster: ibm-prow-jobs
