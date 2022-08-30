@@ -1640,7 +1640,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 8Gi
         securityContext:
           privileged: true
         volumeMounts:
