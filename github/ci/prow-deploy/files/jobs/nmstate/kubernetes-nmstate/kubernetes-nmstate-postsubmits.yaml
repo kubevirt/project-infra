@@ -14,7 +14,7 @@ postsubmits:
         repo: project-infra
         base_ref: main
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
       branches:
@@ -22,7 +22,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20220728-1410a63
+          - image: quay.io/kubevirtci/golang:v20220823-3fed276
             env:
             - name: GIT_ASKPASS
               value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
@@ -58,7 +58,7 @@ postsubmits:
         repo: project-infra
         base_ref: main
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
       branches:
@@ -66,7 +66,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20220728-1410a63
+          - image: quay.io/kubevirtci/golang:v20220823-3fed276
             env:
             - name: GIT_ASKPASS
               value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
