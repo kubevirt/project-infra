@@ -2023,10 +2023,9 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.24-sig-network
+        - |
+          curl -L https://github.com/kubevirt/kubevirt/pull/8304.diff | git apply
+          automation/conformance.sh
         image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
         name: ""
         resources:
