@@ -1459,7 +1459,7 @@ periodics:
     preset-dind-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.23-sig-compute-migrations
+  name: periodic-kubevirt-e2e-k8s-1.24-sig-compute-migrations
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1476,7 +1476,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.23-sig-compute-migrations
+        value: k8s-1.24-sig-compute-migrations
       - name: KUBEVIRT_NUM_NODES
         value: "3"
       - name: KUBEVIRT_STORAGE
