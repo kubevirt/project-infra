@@ -79,8 +79,8 @@ presubmits:
       annotations:
         fork-per-release: "true"
         testgrid-create-test-group: "false"
-      always_run: false
-      optional: true
+      always_run: true
+      optional: false
       skip_report: false
       decorate: true
       decoration_config:
