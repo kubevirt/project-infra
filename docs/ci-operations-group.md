@@ -10,104 +10,60 @@ The current group consists only of a couple of people who mostly are not only ha
 
 <table>
   <tr>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td>
-   </td>
-   <td colspan="5" ><b>Responsibilities / Area of interest</b>
-   </td>
+   <td></td>
+   <td></td>
+   <td></td>
+   <td colspan="5" ><b>Responsibilities / Area of interest</b></td>
   </tr>
   <tr>
-   <td><b>Human</b>
-   </td>
-   <td><b>Availability</b>
-   </td>
-   <td><b>TZ</b>
-   </td>
-   <td><b>BM</b>
-   </td>
-   <td><b>Operations</b>
-   </td>
-   <td><b>Prow</b>
-   </td>
-   <td><b>kubevirtci</b>
-   </td>
-   <td><b>SIG Support</b>
-   </td>
+   <td><b>Human</b></td>
+   <td><b>Availability</b></td>
+   <td><b>TZ</b></td>
+   <td><b>BM</b></td>
+   <td><b>Operations</b></td>
+   <td><b>Prow</b></td>
+   <td><b>kubevirtci</b></td>
+   <td><b>SIG Support</b></td>
   </tr>
   <tr>
-   <td><a href="https://github.com/brianmcarey">Brian Carey</a>
-   </td>
-   <td>Mon-Fri
-   </td>
-   <td>GMT+1
-   </td>
-   <td>Pri
-   </td>
-   <td>Pri
-   </td>
-   <td>Pri
-   </td>
-   <td>Backup
-   </td>
-   <td>Backup
-   </td>
+   <td><a href="https://github.com/brianmcarey">Brian Carey</a></td>
+   <td>Mon-Fri</td>
+   <td>GMT+1</td>
+   <td>Pri</td>
+   <td>Pri</td>
+   <td>Pri</td>
+   <td>Backup</td>
+   <td>Backup</td>
   </tr>
   <tr>
-   <td><a href="https://github.com/dhiller">Daniel Hiller</a>
-   </td>
-   <td>Mon-Fri
-   </td>
-   <td>GMT+2
-   </td>
-   <td>Backup
-   </td>
-   <td>Sec
-   </td>
-   <td>Pri
-   </td>
-   <td>Backup
-   </td>
-   <td>Pri
-   </td>
+   <td><a href="https://github.com/dhiller">Daniel Hiller</a></td>
+   <td>Mon-Fri</td>
+   <td>GMT+2</td>
+   <td>Backup</td>
+   <td>Sec</td>
+   <td>Pri</td>
+   <td>Backup</td>
+   <td>Pri</td>
   </tr>
   <tr>
-   <td><a href="https://github.com/enp0s3">Igor Bezukh</a>
-   </td>
-   <td>Sun-Thu
-   </td>
-   <td>GMT+3
-   </td>
-   <td>
-   </td>
-   <td>Backup
-   </td>
-   <td>Sec
-   </td>
-   <td>Backup
-   </td>
-   <td>Sec
-   </td>
+   <td><a href="https://github.com/enp0s3">Igor Bezukh</a></td>
+   <td>Sun-Thu</td>
+   <td>GMT+3</td>
+   <td></td>
+   <td>Backup</td>
+   <td>Sec</td>
+   <td>Backup</td>
+   <td>Sec</td>
   </tr>
   <tr>
-   <td><a href="https://github.com/xpivarc">Luboslav Pivarc</a>
-   </td>
-   <td>Mon-Fri
-   </td>
-   <td>GMT+2
-   </td>
-   <td>
-   </td>
-   <td>Backup
-   </td>
-   <td>Sec
-   </td>
-   <td>Backup
-   </td>
-   <td>Sec
-   </td>
+   <td><a href="https://github.com/xpivarc">Luboslav Pivarc</a></td>
+   <td>Mon-Fri</td>
+   <td>GMT+2</td>
+   <td></td>
+   <td>Backup</td>
+   <td>Sec</td>
+   <td>Backup</td>
+   <td>Sec</td>
   </tr>
 </table>
 
@@ -157,13 +113,13 @@ The group is NOT responsible for
 **I want to** label work items with the work classification label  
 **in order to** prioritize items only the group can handle
 
-| Label | Work Area | What group of people can handle a task of this type |
-| --- | --- | --- |
-| bare-metal  | Any issue that affects a node  | only KubeVirt CI operations  |
-| operations | Any issue that affects the KubeVirt CI clusters | only KubeVirt CI operations |
-| prow | Any issue that is related to prow configuration | depends on the scope, if related to prow jobs, anyone can do this |
-| kubevirtci | Any issue that is supporting a feature or a bug regarding to kubevirt/kubevirtci | anyone that requires the issue to be addressed |
-| sig-support | Any issue that is supporting a project inside kubevirt | anyone, especially someone from the sig that is affected |
+| Label       | Work Area                                                                        | What group of people can handle a task of this type               |
+|-------------|----------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| bare-metal  | Any issue that affects a node                                                    | only KubeVirt CI operations                                       |
+| operations  | Any issue that affects the KubeVirt CI clusters                                  | only KubeVirt CI operations                                       |
+| prow        | Any issue that is related to prow configuration                                  | depends on the scope, if related to prow jobs, anyone can do this |
+| kubevirtci  | Any issue that is supporting a feature or a bug regarding to kubevirt/kubevirtci | anyone that requires the issue to be addressed                    |
+| sig-support | Any issue that is supporting a project inside kubevirt                           | anyone, especially someone from the sig that is affected          |
 
 
 
