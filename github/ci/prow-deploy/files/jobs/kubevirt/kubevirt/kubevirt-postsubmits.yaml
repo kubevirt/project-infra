@@ -181,6 +181,9 @@ postsubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
+    reporter_config:
+      slack:
+        job_states_to_report: []
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
