@@ -72,7 +72,7 @@ func NewRating(name string, source string, startFrom time.Duration, buildNumbers
 	mean := float64(totalFailures) / float64(totalCompletedBuilds)
 
 	sumOfSquareDeviations := calculateSumOfSquareDeviations(buildNumbersToFailures, mean)
-	variance := float64(sumOfSquareDeviations) / float64(totalCompletedBuilds)
+	variance := sumOfSquareDeviations / float64(totalCompletedBuilds)
 	standardDeviation := math.Sqrt(variance)
 
 	buildNumbersToData := buildDeviationMap(buildNumbersToFailures, mean, standardDeviation)

@@ -14,7 +14,7 @@ go_library(
 )
 
 go_binary(
-    name = "badbuilds",
+    name = "rate-builds",
     embed = [":go_default_library"],
     visibility = ["//visibility:public"],
 )
