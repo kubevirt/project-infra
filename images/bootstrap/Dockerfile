@@ -104,6 +104,7 @@ RUN  curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/downloa
 # and remove resulting cache directories to save a few hundred MB
 RUN USE_BAZEL_VERSION=4.1.0 bazel version && \
     USE_BAZEL_VERSION=4.2.1 bazel version && \
+    USE_BAZEL_VERSION=5.3.0 bazel version && \
     rm -rf /root/.cache/bazel
 
 # create mixin directories
