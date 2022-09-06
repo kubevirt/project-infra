@@ -124,6 +124,12 @@ if [[ -n "${GOOGLE_APPLICATION_CREDENTIALS:-}" ]]; then
   gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}" || true
 fi
 
+# Set up Container Registry Auth file
+mkdir -p "${HOME}/containers" && echo "{}" > "${HOME}/containers/auth.json"
+export REGISTRY_AUTH_FILE="${HOME}/containers/auth.json"
+# Bazel push expects credentials to be available at ${HOME}/.docker/config.json
+mkdir "${HOME}/.docker" && ln -s "${REGISTRY_AUTH_FILE}" "${HOME}/.docker/config.json"
+
 # Use a reproducible build date based on the most recent git commit timestamp.
 SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct || true)
 export SOURCE_DATE_EPOCH
