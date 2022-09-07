@@ -12,7 +12,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -32,7 +32,7 @@ presubmits:
           value: k8s-1.23-sig-compute
         - name: KUBEVIRT_CGROUPV2
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -88,7 +88,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -108,7 +108,7 @@ presubmits:
           value: k8s-1.23-sig-storage
         - name: KUBEVIRT_CGROUPV2
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -129,7 +129,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -150,7 +150,7 @@ presubmits:
           value: NonRoot
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -171,7 +171,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -192,7 +192,7 @@ presubmits:
           value: NonRoot
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -213,7 +213,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -234,7 +234,7 @@ presubmits:
           value: NonRoot
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -255,7 +255,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -274,7 +274,7 @@ presubmits:
           value: k8s-1.24-sig-storage
         - name: CDI_DV_GC
           value: "0"
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -295,7 +295,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 2
@@ -334,7 +334,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --prometheus-port 30007
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -356,7 +356,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -377,7 +377,7 @@ presubmits:
           value: NonRoot
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -398,7 +398,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 1
@@ -415,7 +415,7 @@ presubmits:
         env:
         - name: TARGET
           value: windows2016
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -476,7 +476,7 @@ presubmits:
           value: NonRoot
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap-legacy:v20220810-a8f2e6c
         name: ""
         resources:
           requests:
@@ -556,7 +556,7 @@ presubmits:
         env:
         - name: TARGET
           value: kind-1.22-sriov
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap-legacy:v20220810-a8f2e6c
         name: ""
         resources:
           requests:
@@ -598,7 +598,7 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       vgpu: "true"
     max_concurrency: 1
@@ -628,7 +628,7 @@ presubmits:
         env:
         - name: TARGET
           value: kind-1.23-vgpu
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -643,6 +643,8 @@ presubmits:
           name: cgroup
         - mountPath: /dev/vfio/
           name: vfio
+        - mountPath: /var/log/audit
+          name: audit
       nodeSelector:
         hardwareSupport: gpu
       priorityClassName: vgpu
@@ -659,6 +661,10 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      - hostPath:
+          path: /var/log/audit
+          type: Directory
+        name: audit
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -669,7 +675,7 @@ presubmits:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       vgpu: "true"
     max_concurrency: 1
@@ -703,7 +709,7 @@ presubmits:
           value: "true"
         - name: TARGET
           value: kind-1.23-vgpu
-        image: quay.io/kubevirtci/golang:v20220728-1410a63
+        image: quay.io/kubevirtci/golang:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -718,6 +724,8 @@ presubmits:
           name: cgroup
         - mountPath: /dev/vfio/
           name: vfio
+        - mountPath: /var/log/audit
+          name: audit
       nodeSelector:
         hardwareSupport: gpu
       priorityClassName: vgpu
@@ -734,6 +742,10 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      - hostPath:
+          path: /var/log/audit
+          type: Directory
+        name: audit
   - always_run: true
     annotations:
       fork-per-release: "true"
@@ -744,7 +756,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -759,7 +771,7 @@ presubmits:
         - /bin/sh
         - -c
         - TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -778,7 +790,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-generate
     skip_branches:
@@ -790,7 +802,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -807,7 +819,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-verify-rpms
     optional: true
@@ -821,7 +833,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make verify-rpm-deps
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -838,7 +850,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-verify-go-mod
     skip_branches:
@@ -850,7 +862,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make deps-sync && hack/verify-generate.sh
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -868,7 +880,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-gosec
     optional: true
@@ -882,7 +894,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make gosec
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -899,7 +911,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-build
     skip_branches:
@@ -911,7 +923,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -928,7 +940,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-build-arm64
     skip_branches:
@@ -943,7 +955,7 @@ presubmits:
         env:
         - name: BUILD_ARCH
           value: crossbuild-aarch64
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -973,7 +985,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -990,7 +1002,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-goveralls
     optional: true
@@ -1007,7 +1019,7 @@ presubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1030,7 +1042,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-fossa
     optional: true
@@ -1047,7 +1059,7 @@ presubmits:
         env:
         - name: FOSSA_TOKEN_FILE
           value: /root/.docker/secrets/fossa/token
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1072,7 +1084,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-apidocs
     skip_branches:
@@ -1084,7 +1096,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1101,7 +1113,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-client-python
     skip_branches:
@@ -1113,7 +1125,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1130,7 +1142,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-manifests
     skip_branches:
@@ -1143,7 +1155,7 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX="docker.io/kubevirt"
           && make olm-verify
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1160,7 +1172,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-prom-rules-verify
     skip_branches:
@@ -1172,7 +1184,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make prom-rules-verify
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1201,7 +1213,7 @@ presubmits:
         - /bin/sh
         - -c
         - hack/check-unassigned-tests.sh
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1220,7 +1232,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1237,7 +1249,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1258,7 +1270,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1275,7 +1287,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-ipv6-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1296,7 +1308,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1313,7 +1325,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1334,7 +1346,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1351,7 +1363,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1372,7 +1384,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1393,7 +1405,7 @@ presubmits:
           value: "3"
         - name: KUBEVIRT_STORAGE
           value: rook-ceph-default
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1414,7 +1426,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1435,7 +1447,7 @@ presubmits:
           value: "3"
         - name: KUBEVIRT_STORAGE
           value: rook-ceph-default
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1456,7 +1468,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1481,7 +1493,7 @@ presubmits:
           value: NonRoot
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1502,7 +1514,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1519,7 +1531,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1540,7 +1552,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-sig-compute-realtime
@@ -1557,7 +1569,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-compute-realtime
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1582,7 +1594,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
@@ -1636,7 +1648,7 @@ presubmits:
           value: crossbuild-aarch64
         - name: KUBEVIRT_E2E_FOCUS
           value: arm64
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1665,7 +1677,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: build-kubevirt-builder
     optional: true
@@ -1679,7 +1691,7 @@ presubmits:
         - -ce
         - |
           make builder-build
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1698,7 +1710,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1715,7 +1727,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1734,7 +1746,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     name: pull-kubevirt-code-lint
@@ -1749,7 +1761,7 @@ presubmits:
         - -c
         - |
           make lint
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1768,7 +1780,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1785,7 +1797,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1806,7 +1818,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1823,7 +1835,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1844,7 +1856,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1861,7 +1873,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1882,7 +1894,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1905,7 +1917,7 @@ presubmits:
           value: SwapTest
         - name: KUBEVIRT_SWAP_ON
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1924,7 +1936,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-e2e-k8s-1.22-sig-monitoring
     run_if_changed: ^pkg/monitoring/.*|tests/monitoring/.*$
@@ -1942,7 +1954,7 @@ presubmits:
           value: k8s-1.22-sig-monitoring
         - name: KUBEVIRT_NUM_NODES
           value: "2"
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -1961,7 +1973,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -1989,7 +2001,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_STORAGE
           value: rook-ceph-default
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -2010,7 +2022,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -2027,7 +2039,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -2048,7 +2060,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -2065,7 +2077,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -2086,7 +2098,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -2103,7 +2115,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -2124,7 +2136,7 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -2141,7 +2153,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
