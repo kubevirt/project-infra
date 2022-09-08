@@ -43,6 +43,7 @@ RUN dnf install -y \
     libvirt-devel \
     make \
     mercurial \
+    openssh-server\
     patch \
     protobuf-compiler \
     python3-devel \
@@ -119,5 +120,7 @@ RUN git config --global --add safe.directory '*'
 # .bazelrc files if bazel remote caching is enabled
 COPY ["entrypoint.sh", "runner.sh", "create_bazel_cache_rcs.sh", \
         "/usr/local/bin/"]
+
+RUN ssh-keygen -A
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

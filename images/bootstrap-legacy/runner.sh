@@ -152,6 +152,9 @@ export SOURCE_DATE_EPOCH
 # run setup mixins
 for file in $(find /etc/setup.mixin.d/ -maxdepth 1 -name '*.sh' -print -quit); do source $file; done
 
+# start sshd
+/usr/sbin/sshd
+
 # actually start bootstrap and the job
 set -o xtrace
 "$@"
