@@ -29,9 +29,9 @@ The current group consists only of a couple of people who mostly are not only ha
    <td><a href="https://github.com/brianmcarey">Brian Carey</a></td>
    <td>Mon-Fri</td>
    <td>GMT+1</td>
-   <td>Pri</td>
-   <td>Pri</td>
-   <td>Pri</td>
+   <td>Primary</td>
+   <td>Primary</td>
+   <td>Primary</td>
    <td>Backup</td>
    <td>Backup</td>
   </tr>
@@ -40,10 +40,10 @@ The current group consists only of a couple of people who mostly are not only ha
    <td>Mon-Fri</td>
    <td>GMT+2</td>
    <td>Backup</td>
-   <td>Sec</td>
-   <td>Pri</td>
+   <td>Secondary</td>
+   <td>Primary</td>
    <td>Backup</td>
-   <td>Pri</td>
+   <td>Primary</td>
   </tr>
   <tr>
    <td><a href="https://github.com/enp0s3">Igor Bezukh</a></td>
@@ -51,9 +51,9 @@ The current group consists only of a couple of people who mostly are not only ha
    <td>GMT+3</td>
    <td></td>
    <td>Backup</td>
-   <td>Sec</td>
+   <td>Secondary</td>
    <td>Backup</td>
-   <td>Sec</td>
+   <td>Secondary</td>
   </tr>
   <tr>
    <td><a href="https://github.com/xpivarc">Luboslav Pivarc</a></td>
@@ -61,9 +61,9 @@ The current group consists only of a couple of people who mostly are not only ha
    <td>GMT+2</td>
    <td></td>
    <td>Backup</td>
-   <td>Sec</td>
+   <td>Secondary</td>
    <td>Backup</td>
-   <td>Sec</td>
+   <td>Secondary</td>
   </tr>
 </table>
 
