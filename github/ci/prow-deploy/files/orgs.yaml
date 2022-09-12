@@ -602,6 +602,9 @@ orgs:
           - nirarg
           - davidvossel
           - rmohr
+          - mfranczy
+          - rhrazdil
+          - qinqon
         repos:
           cloud-provider-kubevirt: admin
       maintainers:
