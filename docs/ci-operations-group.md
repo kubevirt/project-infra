@@ -3,7 +3,7 @@
 
 ## Goal of this document
 
-The current group consists only of a couple of people who mostly are not only handling CI but need to take other tasks as well. This document is intended to make clear what the primary responsibilities are in order to avoid overloading the members of this group with tasks.
+The CI Operations Group consists of a small number of people who maintain the KubeVirt CI alongside their other tasks. This document is intended to clarify who is involved in this group, and clearly define what tasks this group is and is not responsible for.
 
 
 ## Primary members
@@ -73,7 +73,6 @@ The current group consists only of a couple of people who mostly are not only ha
 ### Contact channels
 
 * [#kubevirt-dev (Kubernetes Slack)](https://kubernetes.slack.com/archives/C0163DT0R8X)
-* [~~#kubevirt-ci (CoreOS Slack)~~](https://coreos.slack.com/archives/C01EX3K1FGE) - Note: ⚠️ DEPRECATED as it's RH internal
 
 ### Jira Boards
 
