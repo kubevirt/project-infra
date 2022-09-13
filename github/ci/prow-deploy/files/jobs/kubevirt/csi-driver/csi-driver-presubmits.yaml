@@ -143,6 +143,41 @@ presubmits:
             resources:
               requests:
                 memory: "29Gi"
+    - name: pull-csi-driver-split-e2e-k8s-1.23
+      cluster: prow-workloads
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+        testgrid-dashboards: kubevirt-csi-driver-presubmits
+      always_run: true
+      optional: false
+      skip_report: false
+      decorate: true
+      decoration_config:
+        timeout: 7h
+        grace_period: 5m
+      max_concurrency: 11
+      labels:
+        preset-dind-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/golang:v20220728-1410a63
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "./hack/ci/e2e-latest-split.sh"
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
     - name: pull-csi-driver-goveralls
       cluster: ibm-prow-jobs
       skip_branches:
