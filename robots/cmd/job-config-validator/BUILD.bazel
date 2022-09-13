@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "kubevirt.io/project-infra/robots/cmd/job-config-validator",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@com_github_opencontainers_runc//Godeps/_workspace/src/github.com/Sirupsen/logrus:go_default_library",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:go_default_library",
+        "@io_k8s_client_go//kubernetes:go_default_library",
+        "@io_k8s_client_go//rest:go_default_library",
+        "@io_k8s_client_go//tools/clientcmd:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "job-config-validator",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)

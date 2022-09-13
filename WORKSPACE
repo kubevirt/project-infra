@@ -134,6 +134,20 @@ go_repository(
     version = "v3.0.0+incompatible",
 )
 
+go_repository(
+    name = "com_github_bndr_gotabulate",
+    importpath = "github.com/bndr/gotabulate",
+    sum = "h1:yC9izuZEphojb9r+KYL4W9IJKO/ceIO8HDwxMA24U4c=",
+    version = "v1.1.2",
+)
+
+go_repository(
+    name = "com_github_lnquy_cron",
+    importpath = "github.com/lnquy/cron",
+    sum = "h1:iaDX1ublgQ9LBhA8l9BVU+FrTE1PPSPAuvAdhgdnXgA=",
+    version = "v1.1.1",
+)
+
 gazelle_dependencies()
 
 register_toolchains("//:py_toolchain")

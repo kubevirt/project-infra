@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -144,6 +145,7 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 		endOfReport   time.Time
 		reports       []*flakefinder.JobResult
 		validators    []contentValidator
+		ratings       []build.Rating
 	}
 	tests := []struct {
 		name string
@@ -305,7 +307,7 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tempFile := filepath.Join(tempDir, "report.html")
-			writeReportToFile(tt.args.startOfReport, tt.args.endOfReport, tt.args.reports, tempFile)
+			writeReportToFile(tt.args.startOfReport, tt.args.endOfReport, tt.args.reports, tempFile, tt.args.ratings)
 
 			for _, currentValidator := range tt.args.validators {
 				targetFileName := currentValidator.getTargetFileName(tempFile)
