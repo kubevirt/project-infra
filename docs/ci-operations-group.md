@@ -1,5 +1,8 @@
 # KubeVirt CI Operations Group
 
+## How to get involved
+
+If you want to get involved with or contribute to KubeVirt CI operations, then please attend our KubeVirt CI Taskforce Sync meeting (see below) or ping us on [#kubevirt-dev] Slack channel.
 
 ## Goal of this document
 
@@ -72,7 +75,7 @@ The CI Operations Group consists of a small number of people who maintain the Ku
 
 ### Contact channels
 
-* [#kubevirt-dev (Kubernetes Slack)](https://kubernetes.slack.com/archives/C0163DT0R8X)
+* [#kubevirt-dev] (Kubernetes Slack)
 
 ### Jira Boards
 
@@ -128,12 +131,15 @@ The group is NOT responsible for
 ### KubeVirt CI Taskforce Sync
 
 The group and a bigger audience interested in KubeVirt CI performs a sync every week on Monday 10AM CEST: 
-* [Google Meet](https://meet.google.com/pcy-dnin-ojj)
-* [Meeting Notes](https://docs.google.com/document/d/17eKwt7zaPsEcFrP6hVEz2Bvj_DVg3zJLIUMO0XM7kp4/edit?usp=drive_web)
+* [KubeVirt CI Taskforce Sync meeting] (Google Meet)
+* [KubeVirt CI Taskforce Sync Meeting Notes](https://docs.google.com/document/d/17eKwt7zaPsEcFrP6hVEz2Bvj_DVg3zJLIUMO0XM7kp4/edit?usp=drive_web)
 
 
 ### Backlog grooming
 
 The group performs backlog grooming sessions every two weeks on Monday 11:30 AM - 11:55 AM CEST:
-* [Google Meet](https://meet.google.com/orz-vyeh-kob)
-* [Meeting Notes](https://docs.google.com/document/d/16N4O73aHzsSLsbaAfqabP6a1-kZave2DlJqoPDofL1c/edit?usp=meetingnotes&showmeetingnotespromo=true)
+* [Backlog grooming meeting](https://meet.google.com/orz-vyeh-kob) (Google Meet)
+* [Backlog grooming Meeting Notes](https://docs.google.com/document/d/16N4O73aHzsSLsbaAfqabP6a1-kZave2DlJqoPDofL1c/edit?usp=meetingnotes&showmeetingnotespromo=true)
+
+[KubeVirt CI Taskforce Sync meeting]: https://meet.google.com/pcy-dnin-ojj
+[#kubevirt-dev]: https://kubernetes.slack.com/archives/C0163DT0R8X
