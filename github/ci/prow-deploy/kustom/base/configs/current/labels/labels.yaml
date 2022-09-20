@@ -117,6 +117,18 @@ default:
       target: both
       prowPlugin: label
       addedBy: anyone
+    - color: 9192ff
+      description: Categorizes as a Hacktoberfest contribution
+      name: hacktoberfest
+      target: both
+      prowPlugin: label
+      addedBy: anyone
+    - color: e11d21
+      description: Categorizes issues or PRs as an invalid contribution
+      name: spam
+      target: both
+      prowPlugin: label
+      addedBy: anyone
     - name: size/L
       color: ee9900
       target: both
