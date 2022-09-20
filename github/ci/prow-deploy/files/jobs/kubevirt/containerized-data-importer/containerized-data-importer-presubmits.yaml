@@ -12,11 +12,11 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -40,12 +40,12 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -69,12 +69,12 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -98,12 +98,12 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -130,14 +130,14 @@ presubmits:
     max_concurrency: 6
     cluster: prow-workloads
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -164,14 +164,14 @@ presubmits:
     max_concurrency: 6
     cluster: prow-workloads
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -198,14 +198,14 @@ presubmits:
     max_concurrency: 6
     cluster: prow-workloads
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -234,14 +234,14 @@ presubmits:
     max_concurrency: 6
     cluster: prow-workloads
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -270,14 +270,14 @@ presubmits:
     max_concurrency: 6
     cluster: prow-workloads
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -304,14 +304,14 @@ presubmits:
     max_concurrency: 6
     cluster: prow-workloads
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -338,14 +338,14 @@ presubmits:
     max_concurrency: 6
     cluster: prow-workloads
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -372,14 +372,14 @@ presubmits:
     max_concurrency: 6
     cluster: prow-workloads
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -405,7 +405,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
@@ -417,7 +417,7 @@ presubmits:
         env:
         - name: FOSSA_TOKEN_FILE
           value: /root/.docker/secrets/fossa/token
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
           requests:
