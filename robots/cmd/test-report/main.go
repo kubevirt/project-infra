@@ -22,6 +22,7 @@ package main
 import (
 	"context"
 	"crypto/tls"
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -43,122 +44,10 @@ import (
 const (
 	defaultJenkinsBaseUrl = "https://main-jenkins-csb-cnvqe.apps.ocp-c1.prod.psi.redhat.com/"
 	defaultFilterFileUrl  = "https://gitlab.cee.redhat.com/contra/cnv-qe-automation/-/raw/master/tests/tier1/kubevirt/dont_run_tests.json"
-	reportTemplate        = `
-<html>
-<head>
-    <title>flakefinder report</title>
-    <meta charset="UTF-8">
-		<style>
-			table, th, td {
-				border: 1px solid black;
-			}
-			.yellow {
-				background-color: #ffff80;
-			}
-			.almostgreen {
-				background-color: #dfff80;
-			}
-			.green {
-				background-color: #9fff80;
-			}
-			.red {
-				background-color: #ff8080;
-			}
-			.orange {
-				background-color: #ffbf80;
-			}
-			.gray {
-				background-color: #898989;
-			}
-			.unimportant {
-			}
-			.tests_passed {
-				color: #226c18;
-				font-weight: bold;
-			}
-			.tests_failed {
-				color: #8a1717;
-				font-weight: bold;
-			}
-			.tests_skipped {
-				color: #535453;
-				font-weight: bold;
-			}
-			.right {
-				text-align: right;
-				width: 100%;
-			}
-
-			.popup .popuptextFilteredTestNames {
-				display: none;
-				width: 1024px;
-				background-color: #FFFFFF;
-				text-align: center;
-				border-radius: 6px;
-				padding: 8px 8px;
-				position: absolute;
-				z-index: 1;
-				left: 100%;
-				margin-left: -1024px;
-			}
-
-			.popup:hover .popuptextFilteredTestNames {
-				display: block;
-				-webkit-animation: fadeIn 1s;
-				animation: fadeIn 1s;
-			}
-
-		</style>
-	</meta>
-</head>
-<body>
-<h1>test execution report</h1>
-
-<div id="filteredTests" class="popup right" >
-	<u>list of filtered tests</u>
-	<div class="popuptextFilteredTestNames right" id="targetfilteredTests">
-		<table width="100%">
-			<tr class="unimportant">
-				<td>
-					Filtered test names:
-				</td>
-			</tr>{{ range $filteredTestName := $.FilteredTestNames }}
-			<tr class="unimportant">
-				<td>
-					{{ $filteredTestName | html }}
-				</td>
-			</tr>{{ end }}
-		</table>
-	</div>
-</div>
-
-<table>
-    <tr>
-        <td></td>
-        <td></td>
-        {{ range $job := $.LookedAtJobs }}
-        <td><a href="{{ $.JenkinsBaseURL }}/job/{{ $job }}/">{{ $job }}</a></td>
-        {{ end }}
-    </tr>
-    {{ range $row, $test := $.TestNames }}
-    <tr>
-        <td><div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a></div></td>
-        <td class="{{ if (index $.SkippedTests $test) }}red{{ end }}">{{ $test }}</td>
-        {{ range $col, $job := $.LookedAtJobs }}
-        <td class="center">{{ with $skipped := (index $.TestNamesToJobNamesToSkipped $test $job) }}
-            <div id="r{{$row}}c{{$col}}" class="{{ if eq $skipped (index $.TestExecutionMapping "test_execution_skipped") }}yellow{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}green{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_unsupported") }}gray{{ else }}{{ end }}" >
-                <input title="{{ $test }} {{ $job }}" type="checkbox" readonly {{ if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}checked{{ end }}/>
-			</div>
-		{{ else }}n/a{{ end }}</td>
-        {{ end }}
-    </tr>
-    {{ end }}
-</table>
-
-</body>
-</html>
-`
 )
+
+//go:embed test-report.gohtml
+var reportTemplate string
 
 var (
 	rootCmd *cobra.Command
@@ -278,7 +167,7 @@ func runReport(cmd *cobra.Command, args []string) error {
 
 	startOfReport := time.Now().Add(-1 * opts.startFrom)
 
-	testNamesToJobNamesToExecutionStatus := getTestNamesToJobNamesToExecutionStatus(jobs, startOfReport, ctx)
+	testNamesToJobNamesToExecutionStatus := getTestNamesToJobNamesToTestExecutions(jobs, startOfReport, ctx)
 
 	err = writeJsonBaseDataFile(testNamesToJobNamesToExecutionStatus)
 	if err != nil {
@@ -310,16 +199,41 @@ func createReportData(testNameFilterRegexp *regexp.Regexp, jobNamePatternsToTest
 			logger.Warnf("filtering %s", testName)
 			continue
 		}
-		testNames = append(testNames, testName)
 		testSkipped := true
+		filteredOnAllLanes := true
 		for jobName, executionStatus := range jobNamesToSkipped {
 			if _, exists := lookedAtJobsMap[jobName]; !exists {
 				lookedAtJobsMap[jobName] = struct{}{}
 			}
-			if executionStatus == test_execution_run {
+			switch executionStatus {
+			case test_execution_run:
 				testSkipped = false
+				filteredOnAllLanes = false
 				break
+			case test_execution_skipped:
+				jobNameMatcherFound := false
+				for jobNameMatcher, testNameMatcher := range jobNamePatternsToTestNameFilterRegexps {
+					if jobNameMatcher.MatchString(jobName) {
+						if testNameMatcher.MatchString(testName) {
+							testNamesToJobNamesToExecutionStatus[testName][jobName] = test_execution_unsupported
+						} else {
+							filteredOnAllLanes = false
+						}
+						jobNameMatcherFound = true
+						break
+					}
+				}
+				if !jobNameMatcherFound {
+					filteredOnAllLanes = false
+				}
+			case test_execution_no_data:
+				filteredOnAllLanes = false
 			}
+		}
+		if !filteredOnAllLanes {
+			testNames = append(testNames, testName)
+		} else {
+			filteredTestNames = append(filteredTestNames, testName)
 		}
 		if testSkipped {
 			skippedTests[testName] = struct{}{}
@@ -369,23 +283,14 @@ func writeJsonBaseDataFile(testNamesToJobNamesToExecutionStatus map[string]map[s
 	return err
 }
 
-func getTestNamesToJobNamesToExecutionStatus(jobs []*gojenkins.Job, startOfReport time.Time, ctx context.Context) map[string]map[string]int {
-	resultsChan := make(chan map[string]map[string]bool)
-	go getTestNamesToJobNamesToSkippedForAllJobs(resultsChan, jobs, startOfReport, ctx, logger)
+func getTestNamesToJobNamesToTestExecutions(jobs []*gojenkins.Job, startOfReport time.Time, ctx context.Context) map[string]map[string]int {
+	resultsChan := make(chan map[string]map[string]int)
+	go getTestNamesToJobNamesToTestExecutionForAllJobs(resultsChan, jobs, startOfReport, ctx, logger)
 
 	testNamesToJobNamesToExecutionStatus := map[string]map[string]int{}
 	for result := range resultsChan {
-		for testName, jobNamesToSkipped := range result {
-			if _, exists := testNamesToJobNamesToExecutionStatus[testName]; !exists {
-				testNamesToJobNamesToExecutionStatus[testName] = map[string]int{}
-			}
-			for jobName, skipped := range jobNamesToSkipped {
-				if skipped {
-					testNamesToJobNamesToExecutionStatus[testName][jobName] = test_execution_skipped
-				} else {
-					testNamesToJobNamesToExecutionStatus[testName][jobName] = test_execution_run
-				}
-			}
+		for testName, jobNamesToExecutionStatus := range result {
+			testNamesToJobNamesToExecutionStatus[testName] = jobNamesToExecutionStatus
 		}
 	}
 	return testNamesToJobNamesToExecutionStatus
@@ -433,6 +338,18 @@ type Data struct {
 	TestExecutionMapping         map[string]int
 }
 
+func (d Data) String() string {
+	return fmt.Sprintf(`{
+	JenkinsBaseURL: %s,
+	TestNames: %v,
+	FilteredTestNames: %v,
+	SkippedTests: %v,
+	LookedAtJobs: %v,
+	TestNamesToJobNamesToSkipped: %v,
+	TestExecutionMapping: %v,
+}`, d.JenkinsBaseURL, d.TestNames, d.FilteredTestNames, d.SkippedTests, d.LookedAtJobs, d.TestNamesToJobNamesToSkipped, d.TestExecutionMapping)
+}
+
 func newData(testNames []string, filteredTestNames []string, skippedTests map[string]interface{}, lookedAtJobs []string, testNamesToJobNamesToSkipped map[string]map[string]int) Data {
 	return Data{
 		TestNames:                    testNames,
@@ -458,7 +375,7 @@ func writeHTMLReportToOutput(data Data, htmlReportOutputWriter io.Writer) error 
 	return nil
 }
 
-func getTestNamesToJobNamesToSkippedForAllJobs(resultsChan chan map[string]map[string]bool, jobs []*gojenkins.Job, startOfReport time.Time, ctx context.Context, jLog *log.Entry) {
+func getTestNamesToJobNamesToTestExecutionForAllJobs(resultsChan chan map[string]map[string]int, jobs []*gojenkins.Job, startOfReport time.Time, ctx context.Context, jLog *log.Entry) {
 
 	var wg sync.WaitGroup
 	wg.Add(len(jobs))
@@ -466,24 +383,28 @@ func getTestNamesToJobNamesToSkippedForAllJobs(resultsChan chan map[string]map[s
 	defer close(resultsChan)
 	for _, job := range jobs {
 		fLog := jLog.WithField("job", job.GetName())
-		go getTestNamesToJobNamesToSkippedForJob(startOfReport, ctx, fLog, job, resultsChan, &wg)
+		go getTestNamesToJobNamesToTestExecutionForJob(startOfReport, ctx, fLog, job, resultsChan, &wg)
 	}
 
 	wg.Wait()
 	jLog.Printf("done get all jobs")
 }
 
-func getTestNamesToJobNamesToSkippedForJob(startOfReport time.Time, ctx context.Context, jLog *log.Entry, job *gojenkins.Job, resultsChan chan map[string]map[string]bool, wg *sync.WaitGroup) {
+func getTestNamesToJobNamesToTestExecutionForJob(startOfReport time.Time, ctx context.Context, jLog *log.Entry, job *gojenkins.Job, resultsChan chan map[string]map[string]int, wg *sync.WaitGroup) {
 	defer wg.Done()
 	testResultsForJob := flakejenkins.GetBuildNumbersToTestResultsForJob(startOfReport, job, ctx, jLog)
-	testNamesToJobNamesToSkippedForJobName := map[string]map[string]bool{}
+	testNamesToJobNamesToSkippedForJobName := map[string]map[string]int{}
 	for _, testResultForJob := range testResultsForJob {
 		for _, suite := range testResultForJob.Suites {
 			for _, suiteCase := range suite.Cases {
 				if _, exists := testNamesToJobNamesToSkippedForJobName[suiteCase.Name]; !exists {
-					testNamesToJobNamesToSkippedForJobName[suiteCase.Name] = map[string]bool{}
+					testNamesToJobNamesToSkippedForJobName[suiteCase.Name] = map[string]int{}
 				}
-				testNamesToJobNamesToSkippedForJobName[suiteCase.Name][job.GetName()] = suiteCase.Skipped
+				if suiteCase.Skipped {
+					testNamesToJobNamesToSkippedForJobName[suiteCase.Name][job.GetName()] = test_execution_skipped
+				} else {
+					testNamesToJobNamesToSkippedForJobName[suiteCase.Name][job.GetName()] = test_execution_run
+				}
 			}
 		}
 	}

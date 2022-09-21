@@ -1,3 +1,22 @@
+/*
+ * This file is part of the KubeVirt project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Copyright 2022 Red Hat, Inc.
+ *
+ */
+
 package main
 
 import (
@@ -56,7 +75,10 @@ func Test_writeHTMLReportToOutput(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			writeHTMLReportToOutput(newData(tt.args.testNames, tt.args.filteredTestNames, tt.args.skippedTests, tt.args.lookedAtJobs, tt.args.testNamesToJobNamesToSkipped), tt.args.htmlReportOutputWriter)
+			err := writeHTMLReportToOutput(newData(tt.args.testNames, tt.args.filteredTestNames, tt.args.skippedTests, tt.args.lookedAtJobs, tt.args.testNamesToJobNamesToSkipped), tt.args.htmlReportOutputWriter)
+			if err != nil {
+				t.Errorf("writeHTMLReportToOutput: %v", err)
+			}
 		})
 	}
 }
@@ -185,8 +207,8 @@ func Test_createReportData(t *testing.T) {
 			want: newData(
 				[]string{"testName"}, // testNames
 				[]string{},           // filteredTestNames
-				map[string]interface{}{"testName": struct{}{}}, // skippedTests
-				[]string{}, // lookedAtJobs
+				map[string]interface{}{"testName": struct{}{}},             // skippedTests
+				[]string{"test-version-1.2-lane", "test-version-2.3-lane"}, // lookedAtJobs
 				map[string]map[string]int{
 					"testName": {
 						"test-version-1.2-lane": test_execution_unsupported,
@@ -221,7 +243,7 @@ func Test_createReportData(t *testing.T) {
 				[]string{"testName"},     // testNames
 				[]string{},               // filteredTestNames
 				map[string]interface{}{}, // skippedTests
-				[]string{},               // lookedAtJobs
+				[]string{"test-version-1.2-lane", "test-version-2.3-lane"}, // lookedAtJobs
 				map[string]map[string]int{
 					"testName": {
 						"test-version-1.2-lane": test_execution_unsupported,
@@ -255,8 +277,8 @@ func Test_createReportData(t *testing.T) {
 			want: newData(
 				[]string{},           // testNames
 				[]string{"testName"}, // filteredTestNames
-				map[string]interface{}{"testName": struct{}{}}, // skippedTests
-				[]string{}, // lookedAtJobs
+				map[string]interface{}{"testName": struct{}{}},             // skippedTests
+				[]string{"test-version-1.2-lane", "test-version-2.3-lane"}, // lookedAtJobs
 				map[string]map[string]int{
 					"testName": {
 						"test-version-1.2-lane": test_execution_unsupported,
@@ -293,7 +315,7 @@ func Test_createReportData(t *testing.T) {
 				[]string{"testName"},     // testNames
 				[]string{},               // filteredTestNames
 				map[string]interface{}{}, // skippedTests
-				[]string{},               // lookedAtJobs
+				[]string{"test-version-1.2-lane", "test-version-2.3-lane", "test-version-3.4-lane"}, // lookedAtJobs
 				map[string]map[string]int{
 					"testName": {
 						"test-version-1.2-lane": test_execution_unsupported,
