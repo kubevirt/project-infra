@@ -46,3 +46,15 @@ data:
             namespace: "monitoring"
           annotations:
             description: "High rate of failed writes to CI Search persistent volumes"
+      - name: ThanosLogAlerts
+        rules:
+          alert: ThanosCompactHalted
+          expr: |
+            rate({app="thanos-compact, namespace="monitoring"} |= "critical error detected; halting" [5m])
+            > 0
+          for: 10m
+          labels:
+            severity: "critical"
+            namespace: "monitoring"
+          annotations:
+            description: "Thanos compaction has halted. Please investigate."
