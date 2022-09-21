@@ -67,6 +67,9 @@ const (
 			.orange {
 				background-color: #ffbf80;
 			}
+			.gray {
+				background-color: #898989;
+			}
 			.unimportant {
 			}
 			.tests_passed {
@@ -143,7 +146,7 @@ const (
         <td class="{{ if (index $.SkippedTests $test) }}red{{ end }}">{{ $test }}</td>
         {{ range $col, $job := $.LookedAtJobs }}
         <td class="center">{{ with $skipped := (index $.TestNamesToJobNamesToSkipped $test $job) }}
-            <div id="r{{$row}}c{{$col}}" class="{{ if eq $skipped (index $.TestExecutionMapping "test_execution_skipped") }}yellow{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}green{{ else }}{{ end }}" >
+            <div id="r{{$row}}c{{$col}}" class="{{ if eq $skipped (index $.TestExecutionMapping "test_execution_skipped") }}yellow{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}green{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_unsupported") }}gray{{ else }}{{ end }}" >
                 <input title="{{ $test }} {{ $job }}" type="checkbox" readonly {{ if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}checked{{ end }}/>
 			</div>
 		{{ else }}n/a{{ end }}</td>
@@ -227,6 +230,7 @@ const (
 	test_execution_no_data = iota
 	test_execution_skipped
 	test_execution_run
+	test_execution_unsupported
 )
 
 type FilterTestRecord struct {
@@ -285,7 +289,7 @@ func runReport(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		logger.Fatalf("failed to create test filter regexp: %v", err)
 	}
-	data := createReportData(completeFilterRegex, testNamesToJobNamesToExecutionStatus)
+	data := createReportData(completeFilterRegex, nil, testNamesToJobNamesToExecutionStatus)
 
 	err = writeHTMLReportToOutputFile(err, data)
 	if err != nil {
@@ -294,7 +298,7 @@ func runReport(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func createReportData(testNameFilterRegexp *regexp.Regexp, testNamesToJobNamesToExecutionStatus map[string]map[string]int) Data {
+func createReportData(testNameFilterRegexp *regexp.Regexp, jobNamePatternsToTestNameFilterRegexps map[*regexp.Regexp]*regexp.Regexp, testNamesToJobNamesToExecutionStatus map[string]map[string]int) Data {
 	testNames := []string{}
 	skippedTests := map[string]interface{}{}
 	filteredTestNames := []string{}
@@ -414,11 +418,17 @@ func createTestFilterRegexpFromFilterFiles() (*regexp.Regexp, error) {
 }
 
 type Data struct {
-	JenkinsBaseURL               string                    `json:"jenkinsBaseURL"`
-	TestNames                    []string                  `json:"testNames"`
-	FilteredTestNames            []string                  `json:"filteredTestNames"`
-	SkippedTests                 map[string]interface{}    `json:"skippedTests"`
-	LookedAtJobs                 []string                  `json:"lookedAtJobs"`
+	JenkinsBaseURL string `json:"jenkinsBaseURL"`
+	// TestNames contains the names of all tests that have not been filtered on all lanes
+	TestNames []string `json:"testNames"`
+	// FilteredTestNames contains the names of all tests that have been filtered on all lanes
+	FilteredTestNames []string `json:"filteredTestNames"`
+	// SkippedTests contains the test names for all tests that have been skipped on all lanes, aka not having been run on any lane
+	SkippedTests map[string]interface{} `json:"skippedTests"`
+	// LookedAtJobs contains the names of all test lanes that have been looked at
+	LookedAtJobs []string `json:"lookedAtJobs"`
+
+	// TestNamesToJobNamesToSkipped contains a map of test names per test pointing to the jobs where that test has been seen, which points to the state that was seen on that lane (see test_execution_no_data, test_execution_skipped, test_execution_run, test_execution_unsupported)
 	TestNamesToJobNamesToSkipped map[string]map[string]int `json:"testNamesToJobNamesToSkipped"`
 	TestExecutionMapping         map[string]int
 }
@@ -432,9 +442,10 @@ func newData(testNames []string, filteredTestNames []string, skippedTests map[st
 		TestNamesToJobNamesToSkipped: testNamesToJobNamesToSkipped,
 		JenkinsBaseURL:               defaultJenkinsBaseUrl,
 		TestExecutionMapping: map[string]int{
-			"test_execution_no_data": test_execution_no_data,
-			"test_execution_skipped": test_execution_skipped,
-			"test_execution_run":     test_execution_run,
+			"test_execution_no_data":     test_execution_no_data,
+			"test_execution_skipped":     test_execution_skipped,
+			"test_execution_run":         test_execution_run,
+			"test_execution_unsupported": test_execution_unsupported,
 		},
 	}
 }

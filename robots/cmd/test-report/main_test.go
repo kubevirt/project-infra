@@ -63,8 +63,9 @@ func Test_writeHTMLReportToOutput(t *testing.T) {
 
 func Test_createReportData(t *testing.T) {
 	type args struct {
-		testNameFilterRegexp                 *regexp.Regexp
-		testNamesToJobNamesToExecutionStatus map[string]map[string]int
+		testNameFilterDefaultRegexp            *regexp.Regexp
+		testNamesToJobNamesToExecutionStatus   map[string]map[string]int
+		jobNamePatternsToTestNameFilterRegexps map[*regexp.Regexp]*regexp.Regexp
 	}
 	tests := []struct {
 		name string
@@ -74,7 +75,7 @@ func Test_createReportData(t *testing.T) {
 		{
 			name: "test has no data",
 			args: args{
-				testNameFilterRegexp: regexp.MustCompile("blah"),
+				testNameFilterDefaultRegexp: regexp.MustCompile("blah"),
 				testNamesToJobNamesToExecutionStatus: map[string]map[string]int{
 					"testName": {
 						"jobName": test_execution_no_data,
@@ -96,7 +97,7 @@ func Test_createReportData(t *testing.T) {
 		{
 			name: "test is run",
 			args: args{
-				testNameFilterRegexp: regexp.MustCompile("blah"),
+				testNameFilterDefaultRegexp: regexp.MustCompile("blah"),
 				testNamesToJobNamesToExecutionStatus: map[string]map[string]int{
 					"testName": {
 						"jobName": test_execution_run,
@@ -118,7 +119,7 @@ func Test_createReportData(t *testing.T) {
 		{
 			name: "test is skipped",
 			args: args{
-				testNameFilterRegexp: regexp.MustCompile("blah"),
+				testNameFilterDefaultRegexp: regexp.MustCompile("blah"),
 				testNamesToJobNamesToExecutionStatus: map[string]map[string]int{
 					"testName": {
 						"jobName": test_execution_skipped,
@@ -138,9 +139,9 @@ func Test_createReportData(t *testing.T) {
 			),
 		},
 		{
-			name: "test is filtered",
+			name: "test is filtered by default regexp",
 			args: args{
-				testNameFilterRegexp: regexp.MustCompile("testName"),
+				testNameFilterDefaultRegexp: regexp.MustCompile("testName"),
 				testNamesToJobNamesToExecutionStatus: map[string]map[string]int{
 					"testName": {
 						"jobName": test_execution_skipped,
@@ -159,11 +160,154 @@ func Test_createReportData(t *testing.T) {
 				}, // testNamesToJobNamesToExecutionStatus
 			),
 		},
+		{
+			name: "test is inside dont_run.json for one test lane and skipped in the other",
+			args: args{
+				testNameFilterDefaultRegexp: regexp.MustCompile("testNameDefault"),
+				testNamesToJobNamesToExecutionStatus: map[string]map[string]int{
+					"testName": {
+						"test-version-1.2-lane": test_execution_skipped,
+						"test-version-2.3-lane": test_execution_skipped,
+					},
+				},
+				jobNamePatternsToTestNameFilterRegexps: map[*regexp.Regexp]*regexp.Regexp{
+					regexp.MustCompile("version-1\\.2"): regexp.MustCompile("testName"),
+					regexp.MustCompile("version-2\\.3"): regexp.MustCompile("testName42"),
+				},
+			},
+			/*
+				Outcome should be:
+				* it DOES appear in the testcases
+				* it doesn't appear in the filtered testcases
+				* it DOES appear in the skipped testcases
+				* rewrite of map to include the dont_run aka test_execution_unsupported
+			*/
+			want: newData(
+				[]string{"testName"}, // testNames
+				[]string{},           // filteredTestNames
+				map[string]interface{}{"testName": struct{}{}}, // skippedTests
+				[]string{}, // lookedAtJobs
+				map[string]map[string]int{
+					"testName": {
+						"test-version-1.2-lane": test_execution_unsupported,
+						"test-version-2.3-lane": test_execution_skipped,
+					},
+				}, // testNamesToJobNamesToExecutionStatus
+			),
+		},
+		{
+			name: "test is inside dont_run.json for one test lane and run in the other",
+			args: args{
+				testNameFilterDefaultRegexp: regexp.MustCompile("testNameDefault"),
+				testNamesToJobNamesToExecutionStatus: map[string]map[string]int{
+					"testName": {
+						"test-version-1.2-lane": test_execution_skipped,
+						"test-version-2.3-lane": test_execution_run,
+					},
+				},
+				jobNamePatternsToTestNameFilterRegexps: map[*regexp.Regexp]*regexp.Regexp{
+					regexp.MustCompile("version-1\\.2"): regexp.MustCompile("testName"),
+					regexp.MustCompile("version-2\\.3"): regexp.MustCompile("testName42"),
+				},
+			},
+			/*
+				Outcome should be:
+				* it DOES appear in the testcases
+				* it doesn't appear in the filtered testcases
+				* it doesn't appear in the skipped testcases
+				* rewrite of map to include the dont_run aka test_execution_unsupported
+			*/
+			want: newData(
+				[]string{"testName"},     // testNames
+				[]string{},               // filteredTestNames
+				map[string]interface{}{}, // skippedTests
+				[]string{},               // lookedAtJobs
+				map[string]map[string]int{
+					"testName": {
+						"test-version-1.2-lane": test_execution_unsupported,
+						"test-version-2.3-lane": test_execution_run,
+					},
+				}, // testNamesToJobNamesToExecutionStatus
+			),
+		},
+		{
+			name: "test is inside dont_run.json for all test lanes",
+			args: args{
+				testNameFilterDefaultRegexp: regexp.MustCompile("testNameDefault"),
+				testNamesToJobNamesToExecutionStatus: map[string]map[string]int{
+					"testName": {
+						"test-version-1.2-lane": test_execution_skipped,
+						"test-version-2.3-lane": test_execution_skipped,
+					},
+				},
+				jobNamePatternsToTestNameFilterRegexps: map[*regexp.Regexp]*regexp.Regexp{
+					regexp.MustCompile("version-1\\.2"): regexp.MustCompile("testName"),
+					regexp.MustCompile("version-2\\.3"): regexp.MustCompile("testName"),
+				},
+			},
+			/*
+				Outcome should be:
+				* it doesn't appear in the testcases
+				* it does appear in the filtered testcases
+				* it doesn't appear in the skipped testcases
+				* rewrite of map to include the dont_run aka test_execution_unsupported for all
+			*/
+			want: newData(
+				[]string{},           // testNames
+				[]string{"testName"}, // filteredTestNames
+				map[string]interface{}{"testName": struct{}{}}, // skippedTests
+				[]string{}, // lookedAtJobs
+				map[string]map[string]int{
+					"testName": {
+						"test-version-1.2-lane": test_execution_unsupported,
+						"test-version-2.3-lane": test_execution_unsupported,
+					},
+				}, // testNamesToJobNamesToExecutionStatus
+			),
+		},
+		{
+			name: "test is inside dont_run.json for one test lane, run on another and skipped on a third",
+			args: args{
+				testNameFilterDefaultRegexp: regexp.MustCompile("testNameDefault"),
+				testNamesToJobNamesToExecutionStatus: map[string]map[string]int{
+					"testName": {
+						"test-version-1.2-lane": test_execution_skipped,
+						"test-version-2.3-lane": test_execution_skipped,
+						"test-version-3.4-lane": test_execution_run,
+					},
+				},
+				jobNamePatternsToTestNameFilterRegexps: map[*regexp.Regexp]*regexp.Regexp{
+					regexp.MustCompile("version-1\\.2"): regexp.MustCompile("testName"),
+					regexp.MustCompile("version-2\\.3"): regexp.MustCompile("testName42"),
+					regexp.MustCompile("version-3\\.4"): regexp.MustCompile("testName42"),
+				},
+			},
+			/*
+				Outcome should be:
+				* it appears in the testcases
+				* it doesn't appear in the filtered testcases
+				* it doesn't appear in the skipped testcases
+				* rewrite of map to include the dont_run aka test_execution_unsupported
+			*/
+			want: newData(
+				[]string{"testName"},     // testNames
+				[]string{},               // filteredTestNames
+				map[string]interface{}{}, // skippedTests
+				[]string{},               // lookedAtJobs
+				map[string]map[string]int{
+					"testName": {
+						"test-version-1.2-lane": test_execution_unsupported,
+						"test-version-2.3-lane": test_execution_skipped,
+						"test-version-3.4-lane": test_execution_run,
+					},
+				}, // testNamesToJobNamesToExecutionStatus
+			),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := createReportData(tt.args.testNameFilterRegexp, tt.args.testNamesToJobNamesToExecutionStatus); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("createReportData() = %v, want %v", got, tt.want)
+			if got := createReportData(tt.args.testNameFilterDefaultRegexp, tt.args.jobNamePatternsToTestNameFilterRegexps, tt.args.testNamesToJobNamesToExecutionStatus); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("createReportData() = %+v, want %+v", got, tt.want)
 			}
 		})
 	}
