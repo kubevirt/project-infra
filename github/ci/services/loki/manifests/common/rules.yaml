@@ -48,7 +48,7 @@ data:
             description: "High rate of failed writes to CI Search persistent volumes"
       - name: ThanosLogAlerts
         rules:
-          alert: ThanosCompactHalted
+        - alert: ThanosCompactHalted
           expr: |
             rate({app="thanos-compact, namespace="monitoring"} |= "critical error detected; halting" [5m])
             > 0
