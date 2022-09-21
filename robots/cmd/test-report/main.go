@@ -225,8 +225,8 @@ func (o *options) Validate() error {
 
 const (
 	test_execution_no_data = iota
-	test_execution_skipped = iota
-	test_execution_run     = iota
+	test_execution_skipped
+	test_execution_run
 )
 
 type FilterTestRecord struct {
@@ -285,14 +285,23 @@ func runReport(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		logger.Fatalf("failed to create test filter regexp: %v", err)
 	}
+	data := createReportData(completeFilterRegex, testNamesToJobNamesToExecutionStatus)
 
+	err = writeHTMLReportToOutputFile(err, data)
+	if err != nil {
+		logger.Fatalf("failed to write report: %v", err)
+	}
+	return nil
+}
+
+func createReportData(testNameFilterRegexp *regexp.Regexp, testNamesToJobNamesToExecutionStatus map[string]map[string]int) Data {
 	testNames := []string{}
 	skippedTests := map[string]interface{}{}
 	filteredTestNames := []string{}
 	lookedAtJobsMap := map[string]interface{}{}
 
 	for testName, jobNamesToSkipped := range testNamesToJobNamesToExecutionStatus {
-		if completeFilterRegex.MatchString(testName) {
+		if testNameFilterRegexp.MatchString(testName) {
 			filteredTestNames = append(filteredTestNames, testName)
 			logger.Warnf("filtering %s", testName)
 			continue
@@ -320,13 +329,8 @@ func runReport(cmd *cobra.Command, args []string) error {
 	sort.Strings(testNames)
 	sort.Strings(filteredTestNames)
 	sort.Strings(lookedAtJobs)
-	data := newData(testNames, skippedTests, lookedAtJobs, testNamesToJobNamesToExecutionStatus, filteredTestNames)
-
-	err = writeHTMLReportToOutputFile(err, data)
-	if err != nil {
-		logger.Fatalf("failed to write report: %v", err)
-	}
-	return nil
+	data := newData(testNames, filteredTestNames, skippedTests, lookedAtJobs, testNamesToJobNamesToExecutionStatus)
+	return data
 }
 
 func writeHTMLReportToOutputFile(err error, data Data) error {
@@ -419,7 +423,7 @@ type Data struct {
 	TestExecutionMapping         map[string]int
 }
 
-func newData(testNames []string, skippedTests map[string]interface{}, lookedAtJobs []string, testNamesToJobNamesToSkipped map[string]map[string]int, filteredTestNames []string) Data {
+func newData(testNames []string, filteredTestNames []string, skippedTests map[string]interface{}, lookedAtJobs []string, testNamesToJobNamesToSkipped map[string]map[string]int) Data {
 	return Data{
 		TestNames:                    testNames,
 		FilteredTestNames:            filteredTestNames,
