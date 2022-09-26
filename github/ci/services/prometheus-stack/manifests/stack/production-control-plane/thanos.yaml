@@ -388,9 +388,9 @@ spec:
         - --debug.accept-malformed-index
         - --delete-delay=48h
         - --deduplication.replica-label=replica
-        - --retention.resolution-raw=21d
-        - --retention.resolution-5m=45d
-        - --retention.resolution-1h=180d
+        - --retention.resolution-raw=7d
+        - --retention.resolution-5m=30d
+        - --retention.resolution-1h=90d
         env:
         - name: OBJSTORE_CONFIG
           valueFrom:
