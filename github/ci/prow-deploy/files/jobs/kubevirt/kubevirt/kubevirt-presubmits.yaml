@@ -934,6 +934,36 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-arm64-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 2h0m0s
+    labels:
+      preset-bazel-unnested: "false"
+    name: pull-kubevirt-unit-test-arm64
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    skip_report: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make test
+        image: quay.io/kubevirtci/bootstrap:v20221015-62e6679
+        name: ""
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
     cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
