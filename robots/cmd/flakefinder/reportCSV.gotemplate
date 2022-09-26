@@ -1,0 +1,3 @@
+"Test Name","Test Lane","Severity","Failed","Succeeded","Skipped","Jobs (JSON)"{{- /* gotype: kubevirt.io/project-infra/robots/pkg/flakefinder.Params */ -}}
+{{ range $testName, $results := $.Data }}{{ range $jobName, $result := $results }}"{{ $testName }}","{{ $jobName }}","{{ $result.Severity }}",{{ $result.Failed }},{{ $result.Succeeded }},{{ $result.Skipped }},{{ range $job := $result.Jobs }}"{BuildNumber: {{ $job.BuildNumber }},Severity: ""{{ $job.Severity }}"",PR: {{ $job.PR }},BatchPRs: {{ $job.BatchPRs }},Job: ""{{ $job.Job }}"",},"{{ end }}
+{{ end }}{{ end }}

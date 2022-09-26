@@ -32,12 +32,14 @@ type Job struct {
 	BuildNumber int    `json:"buildNumber"`
 	Severity    string `json:"severity"`
 	PR          int    `json:"pr"`
+	BatchPRs    []int  `json:"batchPRs"`
 	Job         string `json:"job"`
 }
 
 type JobFailures struct {
 	BuildNumber int    `json:"buildNumber"`
 	PR          int    `json:"pr"`
+	BatchPRs    []int  `json:"batchPRs"`
 	Job         string `json:"job"`
 	Failures    int    `json:"failures"`
 }
@@ -75,6 +77,7 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 						failuresForJobs[failuresForJobsKey] = &JobFailures{
 							BuildNumber: result.BuildNumber,
 							PR:          result.PR,
+							BatchPRs:    result.BatchPRs,
 							Job:         result.Job,
 							Failures:    0,
 						}
@@ -120,9 +123,9 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 					data[test.Name][result.Job].Skipped = data[test.Name][result.Job].Skipped + 1
 				} else if test.Status == junit.StatusPassed {
 					data[test.Name][result.Job].Succeeded = data[test.Name][result.Job].Succeeded + 1
-					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &Job{Severity: "green", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR})
+					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &Job{Severity: "green", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR, BatchPRs: result.BatchPRs})
 				} else {
-					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &Job{Severity: "red", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR})
+					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &Job{Severity: "red", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR, BatchPRs: result.BatchPRs})
 				}
 			}
 		}

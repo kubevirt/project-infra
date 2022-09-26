@@ -197,6 +197,36 @@ var _ = Describe("report.go", func() {
 			Expect(buffer.String()).To(ContainSubstring("k8s-1.19-whocares"))
 		})
 
+		It("shows batch job PRs", func() {
+			parameters := flakefinder.Params{Data: map[string]map[string]*flakefinder.Details{
+				"t1": {"a": &flakefinder.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder.Job{
+					{BuildNumber: 1742, Severity: "red", BatchPRs: []int{1427, 1737}, Job: "testblah"},
+				}}},
+			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, EndOfReport: "2019-08-23", Org: "kubevirt", Repo: "kubevirt",
+				FailuresForJobs: map[string]*flakefinder.JobFailures{
+					"1742": {
+						BuildNumber: 1742,
+						BatchPRs:    []int{1427, 1737},
+						Job:         "k8s-1.18-whatever",
+						Failures:    66,
+					},
+					"4217": {
+						BuildNumber: 4217,
+						PR:          42,
+						Job:         "k8s-1.19-whocares",
+						Failures:    66,
+					},
+				},
+			}
+
+			prepareBuffer(parameters)
+
+			Expect(buffer.String()).To(ContainSubstring("1427"))
+			Expect(buffer.String()).To(ContainSubstring("1737"))
+			Expect(buffer.String()).To(ContainSubstring("k8s-1.18-whatever"))
+			Expect(buffer.String()).To(ContainSubstring("k8s-1.19-whocares"))
+		})
+
 	})
 
 	When("rendering report csv", func() {

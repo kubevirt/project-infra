@@ -7,6 +7,10 @@ go_library(
         "main.go",
         "report.go",
     ],
+    embedsrcs = [
+        "report.gohtml",
+        "reportCSV.gotemplate",
+    ],
     importpath = "kubevirt.io/project-infra/robots/cmd/flakefinder",
     visibility = ["//visibility:public"],
     deps = [

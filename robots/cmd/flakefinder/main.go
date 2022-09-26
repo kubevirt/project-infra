@@ -53,6 +53,7 @@ func flagOptions() options {
 	flag.BoolVar(&o.today, "today", false, "Whether to create a report for the current day only (i.e. using data starting from report day 00:00Z till now)")
 	flag.BoolVar(&o.skipBeforeStartOfReport, "skip_results_before_start_of_report", true, "Whether to skip test results occurring before start of report")
 	flag.StringVar(&o.periodicJobDirRegex, "periodic_job_dir_regex", "", "Regular expression to use for fetching data from periodic jobs, or empty string if not wanted")
+	flag.StringVar(&o.batchJobDirRegex, "batch_job_dir_regex", "pull-kubevirt-e2e-.*", "Regular expression to use for filtering the fetching of batch job data")
 	flag.Parse()
 	return o
 }
@@ -71,6 +72,7 @@ type options struct {
 	today                   bool
 	skipBeforeStartOfReport bool
 	periodicJobDirRegex     string
+	batchJobDirRegex        string
 }
 
 const MaxNumberOfReportsToLinkTo = 50
@@ -116,6 +118,7 @@ func main() {
 
 	reportBaseDataOptions := flakefinder.NewReportBaseDataOptions(o.prBaseBranch, o.today, o.merged, o.org, o.repo, o.skipBeforeStartOfReport)
 	reportBaseDataOptions.SetPeriodicJobDirRegex(o.periodicJobDirRegex)
+	reportBaseDataOptions.SetBatchJobDirRegex(o.batchJobDirRegex)
 
 	reportBaseData := flakefinder.GetReportBaseData(ctx, ghClient, storageClient, reportBaseDataOptions)
 
