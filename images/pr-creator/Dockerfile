@@ -1,13 +1,15 @@
-FROM quay.io/kubevirtci/bootstrap:v20220917-fe33ce8
+FROM quay.io/kubevirtci/golang:v20220917-fe33ce8
+
+ENV GIMME_GO_VERSION=1.18
 
 RUN set -x && \
     git clone https://github.com/kubernetes/test-infra.git && \
     cd ./test-infra && \
-    git checkout f2693aba912dd40c974304caca999d45ee8dce33 && \
-    bazel build //robots/pr-creator:pr-creator && \
-    cp ./bazel-out/k8-fastbuild/bin/robots/pr-creator/pr-creator_/pr-creator /usr/local/bin && \
+    git checkout e4d87dae72dbf1754625cbf112afc535307c1db4 && \
+    /usr/local/bin/runner.sh /bin/sh -ce 'go build -o ./robots/pr-creator/pr-creator ./robots/pr-creator/main.go' && \
+    mv ./robots/pr-creator/pr-creator /usr/local/bin/ && \
     chmod +x /usr/local/bin/pr-creator && \
-    bazel clean --expunge && \
+    /usr/local/bin/runner.sh /bin/sh -ce 'go clean -cache -modcache' && \
     cd .. && rm -rf ./test-infra
 
 RUN set -x && \
