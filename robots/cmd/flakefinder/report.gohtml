@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>{{ $.Org }}/{{ $.Repo }} - flakefinder report</title>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <!--suppress CssUnusedSymbol -->
     <style>
         table, th, td {
@@ -160,8 +160,9 @@
                         </td>
                         <td>
                             {{ if ne .PR 0 }}<a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{.PR}}"><span
-                                        title="pr number">#{{.PR}}</span></a>{{ else if .BatchPRs }}{{ range $batchPR := .BatchPRs }}<a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{ $batchPR }}"><span
-                                        title="pr number">#{{ $batchPR }}</span>, {{ end }}{{ else }}-{{ end }}
+                                        title="pr number">#{{.PR}}</span></a>{{ else if .BatchPRs }}{{ range $batchPR := .BatchPRs }}
+                                <a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{ $batchPR }}"><span
+                                            title="pr number">#{{ $batchPR }}</span></a> {{ end }}{{ else }}-{{ end }}
                         </td>
                         <td>
                             <div class="tests_failed"><span title="test failures">{{ .Failures }}</span></div>
@@ -182,8 +183,7 @@
         {{ range $row, $test := $.Tests }}
             <tr>
                 <td>
-                    <div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a>
-                        <div>
+                    <div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a></div>
                 </td>
                 <td>{{ $test }}</td>
                 {{ range $col, $header := $.Headers }}
@@ -192,28 +192,30 @@
                             N/A
                         </td>
                     {{else}}
-                        <td class="{{ (index $.Data $test $header).Severity }} center">
-                        <div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup">
+                        <td class="{{ (index $.Data $test $header).Severity }} center"
+                            title="{{ $test }}&#10;{{ $header }}">
+                            <div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup">
                             <span class="tests_failed"
                                   title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span
-                                    class="tests_passed"
-                                    title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span
-                                    class="tests_skipped"
-                                    title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>
-                            <div class="popuptext" id="targetr{{$row}}c{{$col}}">
-                                {{ range $Job := (index $.Data $test $header).Jobs }}
-                                    <div class="{{.Severity}} nowrap">{{ if ne .PR 0 }}
-                                            <a href="https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/pr-logs/pull/{{ $.Org }}_{{ $.Repo }}/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> (
-                                            <a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{.PR}}">#{{.PR}}</a>){{ else if .BatchPRs }}
-                                            <a href="https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/pr-logs/pull/batch/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> ( {{ range $batchPR := .BatchPRs }}
-                                                <a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{$batchPR}}">#{{$batchPR}}</a>{{ end }}){{ else }}
-                                            <a href="https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/logs/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a>{{ end }}
-                                    </div>
-                                {{ end }}
+                                        class="tests_passed"
+                                        title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span
+                                        class="tests_skipped"
+                                        title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>
+                                <div class="popuptext" id="targetr{{$row}}c{{$col}}">
+                                    {{ range $Job := (index $.Data $test $header).Jobs }}
+                                        <div class="{{.Severity}} nowrap">{{ if ne .PR 0 }}
+                                                <a href="https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/pr-logs/pull/{{ $.Org }}_{{ $.Repo }}/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> (
+                                                <a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{.PR}}">#{{.PR}}</a>){{ else if .BatchPRs }}
+                                                <a href="https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/pr-logs/pull/batch/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> ( {{ range $batchPR := .BatchPRs }}
+                                                    <a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{$batchPR}}">#{{$batchPR}}</a>
+                                                    <br/>{{ end }}){{ else }}
+                                                <a href="https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/logs/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a>{{ end }}
+                                        </div>
+                                    {{ end }}
+                                </div>
                             </div>
-                        </div>
+                        </td>
                     {{end}}
-                    </td>
                 {{ end }}
             </tr>
         {{ end }}

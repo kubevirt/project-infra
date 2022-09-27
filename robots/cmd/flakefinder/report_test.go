@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"kubevirt.io/project-infra/robots/pkg/validation"
 	"log"
 	"os"
 	"time"
@@ -82,7 +83,7 @@ var _ = Describe("report.go", func() {
 
 		It("has one filled test cell", func() {
 			prepareWithDefaultParams()
-			Expect(buffer.String()).To(ContainSubstring("<td class=\"red center\">"))
+			Expect(buffer.String()).To(ContainSubstring("<td class=\"red center\""))
 			Expect(buffer.String()).To(MatchRegexp("(?s)4.*1.*2"))
 		})
 
@@ -227,6 +228,33 @@ var _ = Describe("report.go", func() {
 			Expect(buffer.String()).To(ContainSubstring("k8s-1.19-whocares"))
 		})
 
+		It("creates valid html", func() {
+			parameters := flakefinder.Params{Data: map[string]map[string]*flakefinder.Details{
+				"t1": {"a": &flakefinder.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder.Job{
+					{BuildNumber: 1742, Severity: "red", BatchPRs: []int{1427, 1737}, Job: "testblah"},
+				}}},
+			}, Headers: []string{"a", "b", "c"}, Tests: []string{"t1", "t2", "t3"}, EndOfReport: "2019-08-23", Org: "kubevirt", Repo: "kubevirt",
+				FailuresForJobs: map[string]*flakefinder.JobFailures{
+					"1742": {
+						BuildNumber: 1742,
+						BatchPRs:    []int{1427, 1737},
+						Job:         "k8s-1.18-whatever",
+						Failures:    66,
+					},
+					"4217": {
+						BuildNumber: 4217,
+						PR:          42,
+						Job:         "k8s-1.19-whocares",
+						Failures:    66,
+					},
+				},
+			}
+
+			prepareBuffer(parameters)
+
+			Expect(validation.HTMLValidator{}.IsValid(buffer.Bytes())).To(BeNil())
+		})
+
 	})
 
 	When("rendering report csv", func() {
@@ -269,6 +297,11 @@ var _ = Describe("report.go", func() {
 		It("contains data", func() {
 			prepareBuffer()
 			Expect(buffer.String()).To(ContainSubstring("\"t1\",\"a\",\"red\",4,1,2"))
+		})
+
+		It("is valid CSV", func() {
+			prepareBuffer()
+			Expect(validation.CSVValidator{}.IsValid(buffer.Bytes())).To(BeNil())
 		})
 
 	})
