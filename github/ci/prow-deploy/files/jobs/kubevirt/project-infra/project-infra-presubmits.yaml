@@ -79,6 +79,28 @@ presubmits:
             memory: "8Gi"
           limits:
             memory: "8Gi"
+  - name: pull-project-infra-test-github-ci-services
+    run_if_changed: "github/ci/services/.*|WORKSPACE|go_third_party.bzl"
+    optional: false
+    decorate: true
+    cluster: ibm-prow-jobs
+    labels:
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - "bazel build //github/ci/services/..."
+        resources:
+          requests:
+            memory: "2Gi"
+          limits:
+            memory: "2Gi"
+        securityContext:
+          runAsUser: 0
   - name: build-kubevirt-infra-bootstrap-image
     always_run: false
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
