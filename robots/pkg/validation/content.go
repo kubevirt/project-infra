@@ -36,11 +36,10 @@ type ContentValidator interface {
 type JSONValidator struct{}
 
 func (j JSONValidator) IsValid(content []byte) error {
-	err := json.Unmarshal(content, nil)
-	if err == nil {
+	if json.Valid(content) {
 		return nil
 	}
-	return fmt.Errorf("json invalid: \n %v \n %s", err, string(content))
+	return fmt.Errorf("json invalid:\n%s", string(content))
 }
 
 func (j JSONValidator) GetTargetFileName(filename string) string {
