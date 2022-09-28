@@ -7,7 +7,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     name: pull-cluster-api-provider-kubevirt-e2e
@@ -20,7 +20,7 @@ presubmits:
         - /bin/sh
         - -c
         - make functest
-        image: quay.io/kubevirtci/golang:v20220728-1410a63
+        image: quay.io/kubevirtci/golang:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -37,7 +37,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     name: pull-cluster-api-provider-kubevirt-conformance-e2e
@@ -50,7 +50,7 @@ presubmits:
         - /bin/sh
         - -c
         - make conformance
-        image: quay.io/kubevirtci/golang:v20220630-ded5dcd
+        image: quay.io/kubevirtci/golang:v20220906-4f60dd3
         name: ""
         resources:
           requests:
