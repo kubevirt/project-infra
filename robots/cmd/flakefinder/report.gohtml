@@ -202,16 +202,32 @@
                                         class="tests_skipped"
                                         title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>
                                 <div class="popuptext" id="targetr{{$row}}c{{$col}}">
-                                    {{ range $Job := (index $.Data $test $header).Jobs }}
-                                        <div class="{{.Severity}} nowrap">{{ if ne .PR 0 }}
-                                                <a href="https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/pr-logs/pull/{{ $.Org }}_{{ $.Repo }}/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> (
-                                                <a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{.PR}}">#{{.PR}}</a>){{ else if .BatchPRs }}
-                                                <a href="https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/pr-logs/pull/batch/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a> ( {{ range $batchPR := .BatchPRs }}
-                                                    <a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{$batchPR}}">#{{$batchPR}}</a>
-                                                    <br/>{{ end }}){{ else }}
-                                                <a href="https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/logs/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a>{{ end }}
-                                        </div>
-                                    {{ end }}
+                                    <table>
+                                        {{ range $Job := (index $.Data $test $header).Jobs }}
+                                            <tr>
+                                                <td class="{{.Severity}} nowrap" width="100%">
+                                                    {{ if ne .PR 0 }}
+                                                        <a href="https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/pr-logs/pull/{{ $.Org }}_{{ $.Repo }}/{{.PR}}/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a>
+                                                    {{ else if .BatchPRs }}
+                                                        <a href="https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/pr-logs/pull/batch/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a>
+                                                    {{ else }}
+                                                        <a href="https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/logs/{{.Job}}/{{.BuildNumber}}">{{.BuildNumber}}</a>
+                                                    {{ end }}
+                                                </td>
+                                                <td class="{{.Severity}}">
+                                                    {{ if ne .PR 0 }}
+                                                        <a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{.PR}}">#{{.PR}}</a>
+                                                    {{ else if .BatchPRs }}
+                                                        {{ range $batchPR := .BatchPRs }}
+                                                            <a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{$batchPR}}">#{{$batchPR}}</a>
+                                                        {{ end }}
+                                                    {{ else }}
+                                                        -
+                                                    {{ end }}
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+                                    </table>
                                 </div>
                             </div>
                         </td>
