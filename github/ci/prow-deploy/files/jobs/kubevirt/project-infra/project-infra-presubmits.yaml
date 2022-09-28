@@ -38,6 +38,25 @@ presubmits:
             memory: "8Gi"
           limits:
             memory: "8Gi"
+  - name: pull-project-infra-test-releng
+    run_if_changed: "releng/.*|WORKSPACE|go_third_party.bzl"
+    optional: false
+    decorate: true
+    cluster: ibm-prow-jobs
+    labels:
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
+        command:
+          - "/bin/bash"
+          - "-c"
+          - "bazel test //releng/..."
+        resources:
+          requests:
+            memory: "4Gi"
+          limits:
+            memory: "4Gi"
   - name: pull-project-infra-test-external-plugins
     run_if_changed: external-plugins/.*
     cluster: ibm-prow-jobs
