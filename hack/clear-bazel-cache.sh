@@ -23,7 +23,7 @@ set -euxo pipefail
 
 function usage() {
     cat <<EOF
-usage: $0 <cluster-context>
+usage: $0
 
     Clears the bazel cache by rescaling the service and deleting the data
 
@@ -34,8 +34,11 @@ EOF
 function rescale_greenhouse_deployment() {
     kubectl scale deployment -n kubevirt-prow greenhouse --replicas=0
     kubectl rollout status -w deployment -n kubevirt-prow greenhouse
+    wait_for_running_pods_number 0
+
     kubectl scale deployment -n kubevirt-prow greenhouse --replicas=1
     kubectl rollout status -w deployment -n kubevirt-prow greenhouse
+    wait_for_running_pods_number 1
 }
 
 function remove_greenhouse_data() {
@@ -43,19 +46,15 @@ function remove_greenhouse_data() {
     kubectl exec "$greenhouse_pod_name" -n kubevirt-prow -- rm -rf /data/*
 }
 
+function wait_for_running_pods_number() {
+    local running_pods_number="$1"
+    while [[ $(kubectl get pods --no-headers -n kubevirt-prow -l app=greenhouse --field-selector=status.phase=Running | wc -l) -ne "$running_pods_number" ]]; do
+        echo "number of running pods is $(kubectl get pods --no-headers -n kubevirt-prow -l app=greenhouse --field-selector=status.phase=Running | wc -l), desired $running_pods_number"
+        sleep 3
+    done
+}
+
 function main() {
-    if [[ $# -ne 1 ]]; then
-        usage
-        exit 1
-    else
-        cluster_context="$1"
-    fi
-
-    if ! kubectl config use-context "$cluster_context"; then
-        echo "Failed to set cluster context $cluster_context"
-        exit 1
-    fi
-
     if [[ ! -f "$(pwd)/github/ci/prow-deploy/kustom/components/greenhouse/base/resources/service.yaml" ]]; then
         echo "service file for greenhouse not found in $(pwd)!"
         exit 1
@@ -63,9 +62,6 @@ function main() {
 
     kubectl delete svc -n kubevirt-prow bazel-cache
     rescale_greenhouse_deployment
-    while [[ $(kubectl get pods --no-headers -n kubevirt-prow -l app=greenhouse --field-selector=status.phase=Running | wc -l) -lt 1 ]]; do
-        sleep 3
-    done
     remove_greenhouse_data
     rescale_greenhouse_deployment
     kubectl apply -f github/ci/prow-deploy/kustom/components/greenhouse/base/resources/service.yaml
