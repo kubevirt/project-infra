@@ -47,6 +47,11 @@ const (
 	skipped
 )
 
+const (
+	namespace = "flakefinder"
+	subsystem = "report"
+)
+
 var dateRangeAllowedValues = map[string]struct{}{
 	dateRange24h:  {},
 	dateRange168h: {},
@@ -99,47 +104,58 @@ func main() {
 			"severity":   row[severity],
 		}
 
-		timesTestFailed, err := strconv.Atoi(row[failed])
-		if err != nil {
-			log.Fatalf("cannot convert %s to int", row[failed])
-		}
-		testFailedGauge := prometheus.NewGauge(prometheus.GaugeOpts{
-			"flakefinder",
-			"report",
-			"e2e_test_failed",
-			"number of failed tests on presubmit jobs for all merged PRs observed over the report period",
-			labels,
-		})
-		testFailedGauge.Set(float64(timesTestFailed))
-		pusher.Collector(testFailedGauge)
-
-		timesTestSucceeded, err := strconv.Atoi(row[succeeded])
-		if err != nil {
-			log.Fatalf("cannot convert %s to int", row[succeeded])
-		}
-		testSucceededGauge := prometheus.NewGauge(prometheus.GaugeOpts{
-			"flakefinder",
-			"report",
-			"e2e_test_succeeded",
-			"number of succeeded tests on presubmit job for merged PRs observed over the report period",
-			labels,
-		})
-		testSucceededGauge.Set(float64(timesTestSucceeded))
-		pusher.Collector(testSucceededGauge)
-
-		timesTestSkipped, err := strconv.Atoi(row[skipped])
-		if err != nil {
-			log.Fatalf("cannot convert %s to int", row[skipped])
-		}
-		testSkippedGauge := prometheus.NewGauge(prometheus.GaugeOpts{
-			"flakefinder",
-			"report",
-			"e2e_test_skipped",
-			"number of skipped tests on presubmit job for merged PRs observed over the report period",
-			labels,
-		})
-		testSkippedGauge.Set(float64(timesTestSkipped))
-		pusher.Collector(testSkippedGauge)
+		pusher.Collector(
+			newTestFailedGauge(labels, convertToIntOrDie(row[failed]))).Collector(
+			newTestSucceededGauge(labels, convertToIntOrDie(row[succeeded]))).Collector(
+			newTestSkippedGauge(labels, convertToIntOrDie(row[skipped])))
 	}
-	pusher.Push()
+
+	err = pusher.Push()
+	if err != nil {
+		log.Fatalf("push to %s failed: %v", pushgatewayURL, err)
+	}
+}
+
+func newTestSucceededGauge(labels prometheus.Labels, timesTestSucceeded int) prometheus.Gauge {
+	testSucceededGauge := prometheus.NewGauge(prometheus.GaugeOpts{
+		namespace,
+		subsystem,
+		"e2e_test_succeeded",
+		"number of succeeded tests on presubmit job for merged PRs observed over the report period",
+		labels,
+	})
+	testSucceededGauge.Set(float64(timesTestSucceeded))
+	return testSucceededGauge
+}
+
+func newTestFailedGauge(labels prometheus.Labels, timesTestFailed int) prometheus.Gauge {
+	testFailedGauge := prometheus.NewGauge(prometheus.GaugeOpts{
+		namespace,
+		subsystem,
+		"e2e_test_failed",
+		"number of failed tests on presubmit jobs for all merged PRs observed over the report period",
+		labels,
+	})
+	testFailedGauge.Set(float64(timesTestFailed))
+	return testFailedGauge
+}
+
+func newTestSkippedGauge(labels prometheus.Labels, timesTestSkipped int) prometheus.Gauge {
+	testSkippedGauge := prometheus.NewGauge(prometheus.GaugeOpts{
+		namespace,
+		subsystem,
+		"e2e_test_skipped",
+		"number of skipped tests on presubmit job for merged PRs observed over the report period",
+		labels,
+	})
+	testSkippedGauge.Set(float64(timesTestSkipped))
+	return testSkippedGauge
+}
+
+func convertToIntOrDie(failed string) int {
+	timesTestFailed, err := strconv.Atoi(failed)
+	if err != nil {
+		log.Fatalf("cannot convert %s to int", failed)
+	}
+	return timesTestFailed
 }
