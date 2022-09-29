@@ -483,14 +483,14 @@ periodics:
     preset-github-credentials: "true"
   decorate: true
   decoration_config:
-    timeout: 1h
+    timeout: 2h
     grace_period: 5m
   extra_refs:
   - org: kubevirt
     repo: project-infra
     base_ref: main
     workdir: true
-  interval: 1h
+  interval: 2h
   max_concurrency: 1
   cluster: ibm-prow-jobs
   spec:
