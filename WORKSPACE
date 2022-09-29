@@ -52,7 +52,7 @@ load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_depe
 go_rules_dependencies()
 
 go_register_toolchains(
-    go_version = "1.18.6",
+    go_version = "1.19.1",
 )
 
 load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
