@@ -14,6 +14,9 @@ clean:
 $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator): deps-update
 	$(MAKE) --directory=$@
 
+bazel-build-all:
+	$(bazelbin) build //limiter:go_default_library //releng/... //robots/... //github/ci/services/...
+
 deps-update:
 	export GO111MODULE=on
 	go get ./...
