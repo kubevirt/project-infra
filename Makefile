@@ -26,7 +26,7 @@ deps-update:
 	$(bazelbin) run //:gazelle
 
 gazelle:
-	bazel run //:gazelle -- robots/
+	bazel run //:gazelle
 
 gazelle-update-repos:
 	bazel run //:gazelle -- update-repos -from_file=go.mod

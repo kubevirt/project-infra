@@ -42,4 +42,4 @@ replace (
 	k8s.io/client-go => k8s.io/client-go v0.21.1
 )
 
-go 1.17
+go 1.18
