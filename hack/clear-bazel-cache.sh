@@ -56,6 +56,7 @@ function wait_for_running_pods_number() {
 
 function main() {
     if [[ ! -f "$(pwd)/github/ci/prow-deploy/kustom/components/greenhouse/base/resources/service.yaml" ]]; then
+        usage
         echo "service file for greenhouse not found in $(pwd)!"
         exit 1
     fi
