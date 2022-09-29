@@ -473,6 +473,10 @@ orgs:
         default_branch: main
         description: Operator which deploys kubevirt-tekton-tasks in cluster
         has_projects: true
+      test-benchmarks:
+        default_branch: main
+        description: setup to create reproducible benchmarks tests with containers and KubeVirt VMs
+        has_projects: true
       test-infra-containers:
         description: All containers which are useful for testing (tgtd, cinder, ceph, gluster, ...)
         has_projects: true
@@ -816,6 +820,11 @@ orgs:
         privacy: closed
         repos:
           tekton-tasks-operator: write
+      test-benchmarks-maintainers:
+        maintainers:
+          - alicefr
+        repos:
+          test-benchmarks: admin
       web-ui-maintainers:
         description: ""
         maintainers:
