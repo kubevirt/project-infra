@@ -74,6 +74,29 @@ periodics:
 - annotations:
     testgrid-create-test-group: "false"
   cluster: ibm-prow-jobs
+  cron: 25 1 * * *
+  decorate: true
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    work_dir: true
+  name: periodic-push-kubevirt-flakefinder-report-values
+  spec:
+    containers:
+    - args:
+      - |
+        go run robots/cmd/push-flakefinder-results/main.go --pushgateway-url=http://pushgateway
+      command: [ "/usr/local/bin/runner.sh", "/bin/bash", "-ce" ]
+      env:
+      - name: GIMME_GO_VERSION
+        value: "1.16"
+      image: quay.io/kubevirtci/golang:v20220917-fe33ce8
+      name: ""
+      resources: {}
+- annotations:
+    testgrid-create-test-group: "false"
+  cluster: ibm-prow-jobs
   decorate: true
   decoration_config:
     grace_period: 5m0s
