@@ -9,15 +9,15 @@ import (
 )
 
 type Params struct {
-	StartOfReport   string
-	EndOfReport     string
-	Headers         []string
-	Tests           []string
-	Data            map[string]map[string]*Details
-	PrNumbers       []int
-	Org             string
-	Repo            string
-	FailuresForJobs map[string]*JobFailures
+	StartOfReport   string                         `json:"startOfReport"`
+	EndOfReport     string                         `json:"endOfReport"`
+	Headers         []string                       `json:"headers"`
+	Tests           []string                       `json:"tests"`
+	Data            map[string]map[string]*Details `json:"data"`
+	PrNumbers       []int                          `json:"prNumbers"`
+	Org             string                         `json:"org"`
+	Repo            string                         `json:"repo"`
+	FailuresForJobs map[string]*JobFailures        `json:"failuresForJobs"`
 }
 
 type Details struct {
