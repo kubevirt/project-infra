@@ -86,7 +86,7 @@ periodics:
     containers:
     - args:
       - |
-        go run robots/cmd/push-flakefinder-results/main.go --pushgateway-url=http://pushgateway
+        go run robots/cmd/push-flakefinder-results/main.go --pushgateway-url=http://pushgateway.kubevirt-prow
       command: [ "/usr/local/bin/runner.sh", "/bin/bash", "-ce" ]
       env:
       - name: GIMME_GO_VERSION
