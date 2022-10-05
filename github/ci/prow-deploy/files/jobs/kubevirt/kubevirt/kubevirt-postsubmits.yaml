@@ -15,14 +15,14 @@ postsubmits:
       timeout: 3h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20220728-1410a63
+      - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -61,12 +61,12 @@ postsubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+      - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
@@ -99,14 +99,14 @@ postsubmits:
       timeout: 3h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20220728-1410a63
+      - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -137,12 +137,12 @@ postsubmits:
       timeout: 1h
       grace_period: 10m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           env:
             - name: COVERALLS_TOKEN_FILE
               value: /root/.docker/secrets/coveralls/token
@@ -179,7 +179,7 @@ postsubmits:
       timeout: 1h
       grace_period: 10m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     reporter_config:
@@ -187,7 +187,7 @@ postsubmits:
         job_states_to_report: []
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           env:
             - name: FOSSA_TOKEN_FILE
               value: /root/.docker/secrets/fossa/token
