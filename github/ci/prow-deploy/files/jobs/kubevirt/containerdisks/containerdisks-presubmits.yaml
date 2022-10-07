@@ -10,7 +10,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     name: pull-containerdisks-build
@@ -24,7 +24,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.17"
-        image: quay.io/kubevirtci/golang:v20220728-1410a63
+        image: quay.io/kubevirtci/golang:v20220906-4f60dd3
         name: ""
         resources:
           requests:
@@ -41,7 +41,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     name: pull-containerdisks-pipeline
@@ -55,7 +55,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.17"
-        image: quay.io/kubevirtci/golang:v20220728-1410a63
+        image: quay.io/kubevirtci/golang:v20220906-4f60dd3
         name: ""
         resources:
           requests:
