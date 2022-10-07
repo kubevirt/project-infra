@@ -2,12 +2,14 @@ package flakefinder
 
 import (
 	"fmt"
+	"github.com/joshdk/go-junit"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
+	"time"
 )
 
-var _ = Describe("report.go", func() {
+var _ = Describe("report_data.go", func() {
 
 	When("sorting test data", func() {
 		tests := []string{"t1", "t2", "t3"}
@@ -351,4 +353,185 @@ var _ = Describe("report.go", func() {
 		Entry("results being ModeratelyFlaky", &Details{Failed: 1, Succeeded: 5, Skipped: 2, Jobs: []*Job{}}, ModeratelyFlaky),
 		Entry("results being MildlyFlaky", &Details{Failed: 1, Succeeded: 10, Skipped: 2, Jobs: []*Job{}}, MildlyFlaky),
 	)
+
+	When("massaging test data", func() {
+
+		const org = "org"
+		const repo = "repo"
+		const pr = 17
+		const buildNumber = 1742
+
+		var minusDay time.Duration
+
+		BeforeEach(func() {
+			duration, err := time.ParseDuration("24h")
+			if err != nil {
+				panic(err)
+			}
+			minusDay = -1 * duration
+		})
+
+		It("creates a result for PRs", func() {
+			startOfReport := time.Now().Add(minusDay)
+			endOfReport := time.Now()
+			Expect(CreateFlakeReportData(
+				[]*JobResult{
+					{
+						Job: "job",
+						JUnit: []junit.Suite{
+							{
+								Name:       "suite",
+								Package:    "",
+								Properties: nil,
+								Tests: []junit.Test{
+									{
+										Name:       "test1",
+										Classname:  "",
+										Duration:   0,
+										Status:     junit.StatusPassed,
+										Error:      nil,
+										Properties: nil,
+									},
+									{
+										Name:       "test2",
+										Classname:  "",
+										Duration:   0,
+										Status:     junit.StatusSkipped,
+										Error:      nil,
+										Properties: nil,
+									},
+									{
+										Name:       "test3",
+										Classname:  "",
+										Duration:   0,
+										Status:     junit.StatusFailed,
+										Error:      nil,
+										Properties: nil,
+									},
+								},
+								SystemOut: "",
+								SystemErr: "",
+								Totals:    junit.Totals{},
+							},
+						},
+						BuildNumber: buildNumber,
+						PR:          pr,
+						BatchPRs:    nil,
+					},
+				},
+				[]int{pr},
+				endOfReport,
+				org,
+				repo,
+				startOfReport,
+			)).To(BeEquivalentTo(
+				Params{
+					StartOfReport: startOfReport.Format(time.RFC3339),
+					EndOfReport:   endOfReport.Format(time.RFC3339),
+					Headers:       []string{"job"},
+					Tests:         []string{"test3"},
+					Data: map[string]map[string]*Details{
+						"test3": {
+							"job": {
+								Succeeded: 0,
+								Skipped:   0,
+								Failed:    1,
+								Severity:  "red",
+								Jobs: []*Job{
+									{BuildNumber: buildNumber, Severity: "red", PR: pr, BatchPRs: nil, Job: "job"},
+								},
+							},
+						},
+					},
+					PrNumbers: []int{pr},
+					Org:       org,
+					Repo:      repo,
+					FailuresForJobs: map[string]*JobFailures{
+						fmt.Sprintf("job-%d", buildNumber): {BuildNumber: buildNumber, PR: pr, BatchPRs: nil, Job: "job", Failures: 1},
+					},
+				}))
+		})
+
+		It("creates a result for batch PRs", func() {
+			startOfReport := time.Now().Add(minusDay)
+			endOfReport := time.Now()
+			Expect(CreateFlakeReportData(
+				[]*JobResult{
+					{
+						Job: "job",
+						JUnit: []junit.Suite{
+							{
+								Name:       "suite",
+								Package:    "",
+								Properties: nil,
+								Tests: []junit.Test{
+									{
+										Name:       "test1",
+										Classname:  "",
+										Duration:   0,
+										Status:     junit.StatusPassed,
+										Error:      nil,
+										Properties: nil,
+									},
+									{
+										Name:       "test2",
+										Classname:  "",
+										Duration:   0,
+										Status:     junit.StatusSkipped,
+										Error:      nil,
+										Properties: nil,
+									},
+									{
+										Name:       "test3",
+										Classname:  "",
+										Duration:   0,
+										Status:     junit.StatusFailed,
+										Error:      nil,
+										Properties: nil,
+									},
+								},
+								SystemOut: "",
+								SystemErr: "",
+								Totals:    junit.Totals{},
+							},
+						},
+						BuildNumber: buildNumber,
+						PR:          0,
+						BatchPRs:    []int{pr},
+					},
+				},
+				[]int{pr},
+				endOfReport,
+				org,
+				repo,
+				startOfReport,
+			)).To(BeEquivalentTo(
+				Params{
+					StartOfReport: startOfReport.Format(time.RFC3339),
+					EndOfReport:   endOfReport.Format(time.RFC3339),
+					Headers:       []string{"job"},
+					Tests:         []string{"test3"},
+					Data: map[string]map[string]*Details{
+						"test3": {
+							"job": {
+								Succeeded: 0,
+								Skipped:   0,
+								Failed:    1,
+								Severity:  "red",
+								Jobs: []*Job{
+									{BuildNumber: buildNumber, Severity: "red", PR: 0, BatchPRs: []int{pr}, Job: "job"},
+								},
+							},
+						},
+					},
+					PrNumbers: []int{pr},
+					Org:       org,
+					Repo:      repo,
+					FailuresForJobs: map[string]*JobFailures{
+						fmt.Sprintf("job-%d", buildNumber): {BuildNumber: buildNumber, PR: 0, BatchPRs: []int{pr}, Job: "job", Failures: 1},
+					},
+				}))
+		})
+	})
+
 })

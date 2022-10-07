@@ -139,33 +139,41 @@ type JobResult struct {
 	JUnit       []junit.Suite
 	BuildNumber int
 	PR          int
+	BatchPRs    []int
 }
 
 type ReportBaseDataOptions struct {
-	prBaseBranch			string
+	prBaseBranch            string
 	today                   bool
 	merged                  time.Duration
 	org                     string
 	repo                    string
 	skipBeforeStartOfReport bool
-	periodicJobDirRegex		*regexp.Regexp
+	periodicJobDirRegex     *regexp.Regexp
+	batchJobDirRegex        *regexp.Regexp
 }
 
 func NewReportBaseDataOptions(
-	prBaseBranch			string,
-today                   bool,
-merged                  time.Duration,
-org                     string,
-repo                    string,
-skipBeforeStartOfReport bool,
+	prBaseBranch string,
+	today bool,
+	merged time.Duration,
+	org string,
+	repo string,
+	skipBeforeStartOfReport bool,
 ) ReportBaseDataOptions {
-	return ReportBaseDataOptions{prBaseBranch, today, merged, org, repo, skipBeforeStartOfReport, nil}
+	return ReportBaseDataOptions{prBaseBranch, today, merged, org, repo, skipBeforeStartOfReport, nil, nil}
 }
 
 // SetPeriodicJobDirRegex sets the regex to use for finding periodic job directories if the string is non empty. If the regex does not compile it will panic.
 func (r *ReportBaseDataOptions) SetPeriodicJobDirRegex(regex string) {
 	if regex != "" {
 		r.periodicJobDirRegex = regexp.MustCompile(regex)
+	}
+}
+
+func (r *ReportBaseDataOptions) SetBatchJobDirRegex(regex string) {
+	if regex != "" {
+		r.batchJobDirRegex = regexp.MustCompile(regex)
 	}
 }
 
@@ -226,11 +234,17 @@ func GetReportBaseData(ctx context.Context, c *github.Client, client *storage.Cl
 		reports = append(reports, r...)
 	}
 
+	batchJobResults, err := FindUnitTestFilesForBatchJobs(ctx, client, BucketName, o.batchJobDirRegex, prs, startOfReport, endOfReport)
+	if err != nil {
+		log.Printf("failed to load JUnit file for batch jobs: %v", err)
+	}
+	reports = append(reports, batchJobResults...)
+
 	if o.periodicJobDirRegex != nil {
 		jobDir := "logs"
 		periodicJobDirs, err := ListGcsObjects(ctx, client, BucketName, jobDir+"/", "/")
 		if err != nil {
-			log.Printf("failed to load periodicJobDirs for %v: %v",  fmt.Sprintf("%s*", o.periodicJobDirRegex), fmt.Errorf("error listing gcs objects: %v", err))
+			log.Printf("failed to load periodicJobDirs for %v: %v", fmt.Sprintf("%s*", o.periodicJobDirRegex), fmt.Errorf("error listing gcs objects: %v", err))
 		}
 
 		for _, periodicJobDir := range periodicJobDirs {
@@ -247,4 +261,3 @@ func GetReportBaseData(ctx context.Context, c *github.Client, client *storage.Cl
 
 	return ReportBaseData{startOfReport, endOfReport, prNumbers, reports}
 }
-

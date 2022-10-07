@@ -35,6 +35,8 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/joshdk/go-junit"
 	"github.com/sirupsen/logrus"
+
+	prowv1 "k8s.io/test-infra/prow/apis/prowjobs/v1"
 )
 
 const (
@@ -214,6 +216,125 @@ func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client
 				return nil, err
 			}
 			reports = append(reports, &JobResult{Job: lastJobDirectoryPathElement, JUnit: report, BuildNumber: buildNumber})
+		}
+	}
+
+	return reports, nil
+}
+
+func FindUnitTestFilesForBatchJobs(ctx context.Context, client *storage.Client, bucket string, batchJobRegex *regexp.Regexp, prs []*github.PullRequest, startOfReport time.Time, endOfReport time.Time) ([]*JobResult, error) {
+
+	prNumbers := map[int]struct{}{}
+	for _, pr := range prs {
+		prNumbers[pr.GetNumber()] = struct{}{}
+	}
+
+	jobDirectorySegments := []string{
+		"pr-logs",
+		"pull",
+		"batch",
+	}
+	dirOfBatchJobs := path.Join(jobDirectorySegments...)
+
+	jobDirs, err := ListGcsObjects(ctx, client, bucket, dirOfBatchJobs+"/", "/")
+	if err != nil {
+		return nil, fmt.Errorf("error listing gcs objects: %v", err)
+	}
+
+	batchJobDirs := []string{}
+	for _, jobDir := range jobDirs {
+		if batchJobRegex != nil && !batchJobRegex.MatchString(jobDir) {
+			continue
+		}
+		batchJobDirs = append(batchJobDirs, path.Join(dirOfBatchJobs, jobDir))
+	}
+
+	reports := []*JobResult{}
+	for _, batchJobDir := range batchJobDirs {
+
+		buildDirs, err := ListGcsObjects(ctx, client, bucket, batchJobDir+"/", "/")
+		if err != nil {
+			return nil, fmt.Errorf("error listing gcs objects: %v", err)
+		}
+
+		builds := sortBuilds(buildDirs)
+
+		profilePath := ""
+		buildNumber := 0
+		for _, build := range builds {
+			buildDirPath := path.Join(batchJobDir, strconv.Itoa(build))
+			dirOfFinishedJSON := path.Join(buildDirPath, finishedJSON)
+
+			// Fetch file attributes to check whether this test result should be included into the report
+			attrsOfFinishedJsonFile, err := ReadGcsObjectAttrs(ctx, client, bucket, dirOfFinishedJSON)
+			if err == storage.ErrObjectNotExist {
+				// build still running?
+				continue
+			} else if err != nil {
+				return nil, err
+			}
+			isBeforeStartOfReport := attrsOfFinishedJsonFile.Created.Before(startOfReport)
+			if isBeforeStartOfReport {
+				logrus.Infof("Skipping test results before %v for %s in bucket '%s'\n", startOfReport, buildDirPath, bucket)
+				break
+			}
+			isAfterEndOfReport := attrsOfFinishedJsonFile.Created.After(endOfReport)
+			if isAfterEndOfReport {
+				logrus.Infof("Skipping test results after %v for %s in bucket '%s'\n", endOfReport, buildDirPath, bucket)
+				continue
+			}
+
+			_, err = readGcsObject(ctx, client, bucket, dirOfFinishedJSON)
+			if err == storage.ErrObjectNotExist {
+				// build still running?
+				continue
+			} else if err != nil {
+				return nil, fmt.Errorf("Cannot read finished.json (%s) in bucket '%s'", dirOfFinishedJSON, bucket)
+			} else {
+				buildNumber = build
+
+				// we look for any PR number appearing inside the batch job definition
+				prowJobFile := path.Join(buildDirPath, prowv1.ProwJobFile)
+				prowJobData, err := readGcsObject(ctx, client, bucket, prowJobFile)
+				if err == storage.ErrObjectNotExist {
+					continue
+				}
+
+				var pj prowv1.ProwJob
+				if err := json.Unmarshal(prowJobData, &pj); err != nil {
+					return nil, fmt.Errorf("Cannot read prowJobFile %q: %v", prowJobFile, err)
+				}
+				batchPRs := []int{}
+				anyNumberFound := false
+				for _, pull := range pj.Spec.Refs.Pulls {
+					batchPRs = append(batchPRs, pull.Number)
+					if _, exists := prNumbers[pull.Number]; exists {
+						anyNumberFound = true
+					}
+				}
+				if !anyNumberFound {
+					continue
+				}
+
+				artifactsDirPath := path.Join(buildDirPath, "artifacts")
+				profilePath = path.Join(artifactsDirPath, "junit.functest.xml")
+				data, err := readGcsObject(ctx, client, bucket, profilePath)
+				if err == storage.ErrObjectNotExist {
+					continue
+				} else if err != nil {
+					return nil, fmt.Errorf("Cannot read %q: %v", profilePath, err)
+				}
+
+				jobName := path.Base(batchJobDir)
+				if err != nil {
+					return nil, err
+				}
+				report, err := junit.Ingest(data)
+				if err != nil {
+					return nil, err
+				}
+				reports = append(reports, &JobResult{Job: jobName, JUnit: report, BuildNumber: buildNumber, BatchPRs: batchPRs})
+			}
 		}
 	}
 

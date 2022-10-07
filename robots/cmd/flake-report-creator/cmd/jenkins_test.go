@@ -1,19 +1,15 @@
 package cmd
 
 import (
-	"encoding/json"
-	"encoding/xml"
-	"fmt"
 	"github.com/bndr/gojenkins"
 	"github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
-	"io"
 	"io/ioutil"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
+	"kubevirt.io/project-infra/robots/pkg/validation"
 	"path/filepath"
 	"reflect"
-	"strings"
 	"testing"
 	"time"
 )
@@ -96,55 +92,12 @@ func Test_fetchJunitFilesFromArtifacts(t *testing.T) {
 	}
 }
 
-type contentValidator interface {
-	isValid(content []byte) error
-	getTargetFileName(filename string) string
-}
-
-type jSONValidator struct{}
-
-func (j jSONValidator) isValid(content []byte) error {
-	if json.Valid(content) {
-		return nil
-	}
-	return fmt.Errorf("json invalid:\n%s", string(content))
-}
-
-func (j jSONValidator) getTargetFileName(filename string) string {
-	return strings.TrimSuffix(filename, ".html") + ".json"
-}
-
-type hTMLValidator struct{}
-
-func (j hTMLValidator) isValid(content []byte) error {
-	stringContent := string(content)
-	r := strings.NewReader(stringContent)
-	d := xml.NewDecoder(r)
-
-	d.Strict = true
-	d.Entity = xml.HTMLEntity
-	for {
-		_, err := d.Token()
-		switch err {
-		case io.EOF:
-			return nil
-		case nil:
-		default:
-			return fmt.Errorf("Report:\n%s\n\nfailed to validate report file: %v", stringContent, err)
-		}
-	}
-}
-
-func (j hTMLValidator) getTargetFileName(filename string) string {
-	return filename
-}
-
 func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 	type args struct {
 		startOfReport time.Time
 		endOfReport   time.Time
 		reports       []*flakefinder.JobResult
-		validators    []contentValidator
+		validators    []validation.ContentValidator
 		ratings       []build.Rating
 	}
 	tests := []struct {
@@ -198,9 +151,9 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 						PR:          42,
 					},
 				},
-				validators: []contentValidator{
-					hTMLValidator{},
-					jSONValidator{},
+				validators: []validation.ContentValidator{
+					validation.HTMLValidator{},
+					validation.JSONValidator{},
 				},
 			},
 		},
@@ -291,9 +244,9 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 						PR:          42,
 					},
 				},
-				validators: []contentValidator{
-					hTMLValidator{},
-					jSONValidator{},
+				validators: []validation.ContentValidator{
+					validation.HTMLValidator{},
+					validation.JSONValidator{},
 				},
 			},
 		},
@@ -310,14 +263,14 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 			writeReportToFile(tt.args.startOfReport, tt.args.endOfReport, tt.args.reports, tempFile, tt.args.ratings)
 
 			for _, currentValidator := range tt.args.validators {
-				targetFileName := currentValidator.getTargetFileName(tempFile)
+				targetFileName := currentValidator.GetTargetFileName(tempFile)
 				content, err := ioutil.ReadFile(targetFileName)
 				if err != nil {
 					t.Errorf("failed to read temp report file: %v", err)
 					return
 				}
 
-				err = currentValidator.isValid(content)
+				err = currentValidator.IsValid(content)
 				if err != nil {
 					t.Errorf("Report:\n%s\n\nfailed to validate report file: %v", targetFileName, err)
 				}

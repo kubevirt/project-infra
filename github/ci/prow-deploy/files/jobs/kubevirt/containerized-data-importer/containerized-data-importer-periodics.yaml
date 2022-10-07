@@ -10,7 +10,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20220929-25d205de
+    - image: quay.io/kubevirtci/flakefinder:v20221007-a2417698
       command:
       - "/app/robots/cmd/flakefinder/app.binary"
       args:
@@ -32,7 +32,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20220929-25d205de
+    - image: quay.io/kubevirtci/flakefinder:v20221007-a2417698
       command:
       - "/app/robots/cmd/flakefinder/app.binary"
       args:
@@ -54,7 +54,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20220929-25d205de
+    - image: quay.io/kubevirtci/flakefinder:v20221007-a2417698
       command:
       - "/app/robots/cmd/flakefinder/app.binary"
       args:
