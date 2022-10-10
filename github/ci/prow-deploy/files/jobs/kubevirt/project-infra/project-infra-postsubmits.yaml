@@ -1089,7 +1089,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
       spec:
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command: ["/bin/sh"]
           args:
           - -c
@@ -1103,3 +1103,5 @@ postsubmits:
               memory: "200Mi"
             limits:
               memory: "200Mi"
+          securityContext:
+            privileged: true
