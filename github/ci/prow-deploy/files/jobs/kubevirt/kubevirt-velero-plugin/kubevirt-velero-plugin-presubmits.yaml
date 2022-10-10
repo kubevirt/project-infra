@@ -14,11 +14,11 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -45,13 +45,13 @@ presubmits:
       timeout: 4h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
