@@ -371,6 +371,13 @@ plugins:
     - owners-label
     - trigger
 
+  kubevirt/test-benchmarks:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - trigger
+
   kubevirt/user-guide:
     plugins:
     - approve
