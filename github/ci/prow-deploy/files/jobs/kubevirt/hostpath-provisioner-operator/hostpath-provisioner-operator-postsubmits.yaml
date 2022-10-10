@@ -14,12 +14,12 @@ postsubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20220728-1410a63
+      - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -55,12 +55,12 @@ postsubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20220728-1410a63
+      - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -94,13 +94,13 @@ postsubmits:
       timeout: 3h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "false"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20220728-1410a63
+      - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
