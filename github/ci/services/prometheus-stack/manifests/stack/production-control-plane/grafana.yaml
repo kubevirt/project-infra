@@ -5653,6 +5653,554 @@ data:
       "version": 32,
       "weekStart": ""
     }
+  flaky-tests-kubevirt.json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": "-- Grafana --",
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            },
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 31,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 20
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 0,
+            "y": 0
+          },
+          "id": 14,
+          "options": {
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "max"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": false
+          },
+          "pluginVersion": "8.4.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum (avg_over_time(flakefinder_report_e2e_test_failed{date_range=\"024h\", severity=~\"(red|orange|yellow)\", test_lane=~\"pull-.*\"}[1m]))",
+              "interval": "",
+              "legendFormat": "presubmits",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum (avg_over_time(flakefinder_report_e2e_test_failed{date_range=\"024h\", severity=~\"(red|orange|yellow)\", test_lane=~\"periodic-.*\"}[1m]))",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "periodics",
+              "refId": "B"
+            }
+          ],
+          "title": "max flakes overall",
+          "type": "gauge"
+        },
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 5,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "stepAfter",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 1,
+                "pointSize": 3,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 20,
+            "x": 4,
+            "y": 0
+          },
+          "id": 9,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Last",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum by (severity) (flakefinder_report_e2e_test_failed{date_range=\"024h\", severity=~\"(red|orange|yellow)\", test_lane=~\"pull-.*storage.*\"})",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "storage {{severity}}",
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum by (severity) (flakefinder_report_e2e_test_failed{date_range=\"024h\", severity=~\"(red|orange|yellow)\", test_lane=~\"pull-.*(compute|operator).*\"})",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "compute {{severity}}",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum by (severity) (flakefinder_report_e2e_test_failed{date_range=\"024h\", severity=~\"(red|orange|yellow)\", test_lane=~\"pull-.*network.*\"})",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "network {{severity}}",
+              "refId": "C"
+            }
+          ],
+          "title": "sig presubmits",
+          "type": "timeseries"
+        },
+        {
+          "gridPos": {
+            "h": 18,
+            "w": 4,
+            "x": 0,
+            "y": 5
+          },
+          "id": 12,
+          "options": {
+            "content": "# Links\n\n* [FlakeFinder entry page](https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/index.html)\n* [testgrid entry page](https://testgrid.k8s.io/kubevirt)\n\n# Severity mapping\n\nThe severity of a flake describes the ratio of failed vs. succeeded tests.\nTo better visualize the severity we colorize the fields of the FlakeFinder\nreport according to the severity level of the flake.\n\n| Ratio   | Color        |                                       |\n| ------- | ------------ | ------------------------------------- |\n| > 50%   | red          | <span style=\"color: #ff8080\">■</span> |\n| > 20%   | orange       | <span style=\"color: #ffbf80\">■</span> |\n| > 10%   | yellow       | <span style=\"color: #ffff80\">■</span> |\n| > 0%    | almost green | <span style=\"color: #dfff80\">■</span> |\n| = 0%    | green        | <span style=\"color: #9fff80\">■</span> |\n",
+            "mode": "markdown"
+          },
+          "pluginVersion": "8.4.0",
+          "title": "Links",
+          "type": "text"
+        },
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 4,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 3,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 20,
+            "x": 4,
+            "y": 8
+          },
+          "id": 3,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Last",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum by (test_lane, severity) (flakefinder_report_e2e_test_failed{date_range=\"024h\", severity=~\"(red|orange|yellow)\", test_lane=~\"pull-.*\"})",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{test_lane}} {{severity}}",
+              "refId": "B"
+            }
+          ],
+          "title": "presubmit lanes",
+          "type": "timeseries"
+        },
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 4,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 3,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 20,
+            "x": 4,
+            "y": 18
+          },
+          "id": 2,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right"
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum by (severity) (flakefinder_report_e2e_test_failed{date_range=\"024h\", severity=~\"(red|orange|yellow)\", test_lane=~\"periodic-.*storage.*\"})",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "storage {{severity}}",
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum by (severity) (flakefinder_report_e2e_test_failed{date_range=\"024h\", severity=~\"(red|orange|yellow)\", test_lane=~\"periodic-.*(compute|operator).*\"})",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "compute {{severity}}",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum by (severity) (flakefinder_report_e2e_test_failed{date_range=\"024h\", severity=~\"(red|orange|yellow)\", test_lane=~\"periodic-.*network.*\"})",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "network {{severity}}",
+              "refId": "C"
+            }
+          ],
+          "title": "sig periodics",
+          "type": "timeseries"
+        },
+        {
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 4,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 3,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 20,
+            "x": 4,
+            "y": 26
+          },
+          "id": 10,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Last",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
+              },
+              "exemplar": true,
+              "expr": "sum by (test_lane, severity) (flakefinder_report_e2e_test_failed{date_range=\"024h\", severity=~\"(red|orange|yellow)\", test_lane=~\"periodic-.*\"})",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "{{test_lane}} {{severity}}",
+              "refId": "B"
+            }
+          ],
+          "title": "periodic lanes",
+          "type": "timeseries"
+        }
+      ],
+      "refresh": false,
+      "schemaVersion": 35,
+      "style": "dark",
+      "tags": [],
+      "templating": {
+        "list": []
+      },
+      "time": {
+        "from": "now-2d",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "",
+      "title": "Flaky Tests: kubevirt/kubevirt",
+      "uid": "PrGgG1VVz",
+      "version": 19,
+      "weekStart": ""
+    }
 ---
 # Source: grafana/templates/tests/test-configmap.yaml
 apiVersion: v1
