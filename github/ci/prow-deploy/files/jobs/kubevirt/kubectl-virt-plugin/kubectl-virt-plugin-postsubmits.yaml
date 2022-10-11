@@ -10,7 +10,7 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
         preset-kubevirtci-quay-credential: "true"
@@ -19,7 +19,7 @@ postsubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
