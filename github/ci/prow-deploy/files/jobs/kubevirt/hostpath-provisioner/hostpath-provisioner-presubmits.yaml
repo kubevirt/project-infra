@@ -13,7 +13,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 6
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror: "true"
       preset-shared-images: "true"
     cluster: prow-workloads
@@ -21,7 +21,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20220728-1410a63
+        - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -46,7 +46,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 6
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror: "true"
       preset-shared-images: "true"
     cluster: prow-workloads
@@ -54,7 +54,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20220728-1410a63
+        - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -79,12 +79,12 @@ presubmits:
       grace_period: 5m
     max_concurrency: 6
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror: "true"
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20220728-1410a63
+        - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -109,7 +109,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 6
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror: "true"
       preset-shared-images: "true"
     cluster: prow-workloads
@@ -117,7 +117,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20220728-1410a63
+        - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -143,11 +143,11 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20220728-1410a63
+        - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
