@@ -1,0 +1,26 @@
+presubmits:
+  kubevirt/test-benchmarks:
+  - name: pull-test-benchmarks
+    branches:
+      - main
+    always_run: true
+    optional: true
+    skip_report: true
+    decorate: true
+    decoration_config:
+      timeout: 3h
+    max_concurrency: 1
+    labels:
+      preset-docker-mirror: "true"
+    cluster: ibm-prow-jobs
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20221008-4d142be
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/bash"
+        - "-c"
+        - "make test"
+        resources:
+          requests:
+            memory: "1Gi"
