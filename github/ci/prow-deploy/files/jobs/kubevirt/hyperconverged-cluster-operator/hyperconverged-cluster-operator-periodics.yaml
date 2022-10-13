@@ -9,7 +9,7 @@ periodics:
     grace_period: 5m
   max_concurrency: 1
   labels:
-    preset-dind-enabled: "true"
+    preset-podman-in-container-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-gcs-credentials: "true"
     preset-shared-images: "true"
@@ -25,7 +25,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+    - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
