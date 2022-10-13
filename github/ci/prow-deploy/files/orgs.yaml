@@ -277,7 +277,7 @@ orgs:
         allow_rebase_merge: false
         description: Community content
         has_projects: false
-        has_wiki: false
+        has_wiki: true
       containerized-data-importer:
         description: Data Import Service for kubernetes, designed with kubevirt in mind.
         has_projects: true
