@@ -54,7 +54,8 @@ RUN dnf install -y \
     sudo \
     buildah \
     qemu-user-static \
-    wget &&\
+    wget \
+    python3-jinja2 &&\
   dnf -y clean all
 
 # Install gcloud
