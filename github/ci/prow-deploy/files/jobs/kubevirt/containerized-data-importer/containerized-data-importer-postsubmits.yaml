@@ -14,12 +14,12 @@ postsubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-podman-in-container-enabled: "true"
+      preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+      - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -52,12 +52,12 @@ postsubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-podman-in-container-enabled: "true"
+      preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+      - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -88,13 +88,13 @@ postsubmits:
       timeout: 3h
       grace_period: 5m
     labels:
-      preset-podman-in-container-enabled: "true"
+      preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "false"
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+      - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -129,13 +129,13 @@ postsubmits:
       timeout: 3h
       grace_period: 5m
     labels:
-      preset-podman-in-container-enabled: "true"
+      preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "false"
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+      - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -170,14 +170,14 @@ postsubmits:
       timeout: 3h
       grace_period: 5m
     labels:
-      preset-podman-in-container-enabled: "true"
+      preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+      - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
