@@ -65,8 +65,6 @@ if [[ "${PODMAN_IN_CONTAINER_IPV6_ENABLED}" == "true" ]]; then
     # enable ipv6
     sysctl net.ipv6.conf.all.disable_ipv6=0
     sysctl net.ipv6.conf.all.forwarding=1
-    # enable ipv6 iptables
-    modprobe -v ip6table_nat
 fi
 
 export PODMAN_IN_CONTAINER_ENABLED=${PODMAN_IN_CONTAINER_ENABLED:-false}
@@ -93,7 +91,7 @@ if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
     )
     # the service can be started but the socket not ready, wait for ready
     WAIT_N=0
-    MAX_WAIT=5
+    MAX_WAIT=10
     while true; do
         # wait for podman socket to be ready
         curl --unix-socket "${PODMAN_SOCKET}" http://d/v3.0.0/libpod/info >/dev/null 2>&1 && break
@@ -103,7 +101,7 @@ if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
             sleep ${WAIT_N}
         else
             echo "Reached maximum attempts, not waiting any longer..."
-	    echo "Docker daemon failed to start successfully"
+	    echo "Podman daemon failed to start successfully"
             exit 1
         fi
     done
