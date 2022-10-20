@@ -8,7 +8,4 @@ approvers:
 - rmohr
 options: {}
 reviewers:
-- davidvossel
-- nirarg
-- nunnatsa
-- rmohr
+- qinqon
