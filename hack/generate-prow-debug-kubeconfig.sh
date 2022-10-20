@@ -4,6 +4,7 @@
 # we create a new token for the service account from which we generate a new KUBECONFIG
 # we use cluster and context definitions from the currently used KUBECONFIG
 
+set -x
 set -euo pipefail
 
 function usage {
@@ -23,27 +24,29 @@ if [ ! "$#" -eq 1 ]; then
 fi
 
 token_name="prow-debug-$1"
+token_namespace="kubevirt-prow-jobs"
 
 clusters=( ibm-prow-jobs prow-workloads )
 
 for cluster in "${clusters[@]}"; do
     kubectl config use-context "$cluster"
 
-    kubectl delete --ignore-not-found=true secret "$token_name"
+    kubectl delete --ignore-not-found=true -n "$token_namespace" secret "$token_name"
 
     kubectl create -f - <<EOF
 apiVersion: v1
 kind: Secret
 metadata:
   name: $token_name
+  namespace: $token_namespace
   annotations:
     kubernetes.io/service-account.name: prow-debug
 type: kubernetes.io/service-account-token
 EOF
 done
 
-token_ibm_prow_jobs=$(kubectl config use-context ibm-prow-jobs 2>&1 > /dev/null && kubectl get secret "$token_name" -o yaml | yq -r '.data.token' | base64 -d)
-token_prow_workloads=$(kubectl config use-context prow-workloads 2>&1 > /dev/null && kubectl get secret "$token_name" -o yaml | yq -r '.data.token' | base64 -d)
+token_ibm_prow_jobs=$(kubectl config use-context ibm-prow-jobs 2>&1 > /dev/null && kubectl get secret "$token_name" -n "$token_namespace" -o yaml | yq -r '.data.token' | base64 -d)
+token_prow_workloads=$(kubectl config use-context prow-workloads 2>&1 > /dev/null && kubectl get secret "$token_name" -n "$token_namespace" -o yaml | yq -r '.data.token' | base64 -d)
 
 kubeconfig_clusters=$(yq -y '.clusters' "$KUBECONFIG")
 
@@ -54,12 +57,12 @@ $kubeconfig_clusters
 contexts:
 - context:
     cluster: ibm-cluster
-    namespace: kubevirt-prow-jobs
+    namespace: $token_namespace
     user: prow-debug-ibm-cluster
   name: ibm-prow-jobs
 - context:
     cluster: prow-workloads-cluster
-    namespace: kubevirt-prow-jobs
+    namespace: $token_namespace
     user: prow-debug-prow-workloads-cluster
   name: prow-workloads
 current-context: ibm-prow-jobs
