@@ -176,9 +176,13 @@ func getFilteredBuild(startOfReport time.Time, job *gojenkins.Job, ctx context.C
 }
 
 func getBuildWithRetry(job *gojenkins.Job, ctx context.Context, buildNumber int64, fLog *log.Entry) (build *gojenkins.Build, statusCode int, err error) {
+	return getBuildFromGetterWithRetry(&DefaultBuildDataGetter{job: job, context: ctx}, buildNumber, fLog)
+}
+
+func getBuildFromGetterWithRetry(buildDataGetter BuildDataGetter, buildNumber int64, fLog *log.Entry) (build *gojenkins.Build, statusCode int, err error) {
 	retry.Do(
 		func() error {
-			build, err = job.GetBuild(ctx, buildNumber)
+			build, err = buildDataGetter.GetBuild(buildNumber)
 			if err != nil {
 				return err
 			}
@@ -195,10 +199,26 @@ func getBuildWithRetry(job *gojenkins.Job, ctx context.Context, buildNumber int6
 			}
 			return false
 		}),
-		retry.Delay(5*time.Second),
-		retry.MaxJitter(3*time.Second),
+		retry.Delay(retryDelay),
+		retry.MaxJitter(maxJitter),
 	)
 	return build, statusCode, err
+}
+
+var retryDelay = 5 * time.Second
+var maxJitter = 3 * time.Second
+
+type BuildDataGetter interface {
+	GetBuild(buildNumber int64) (*gojenkins.Build, error)
+}
+
+type DefaultBuildDataGetter struct {
+	job     *gojenkins.Job
+	context context.Context
+}
+
+func (d *DefaultBuildDataGetter) GetBuild(buildNumber int64) (*gojenkins.Build, error) {
+	return d.job.GetBuild(d.context, buildNumber)
 }
 
 // httpStatusOrDie fetches [stringly typed](https://wiki.c2.com/?StringlyTyped) error code produced by jenkins client
