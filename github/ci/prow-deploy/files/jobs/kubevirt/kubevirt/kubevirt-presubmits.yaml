@@ -470,7 +470,9 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/bash
         - -ce
-        - automation/test.sh
+        - |
+          curl -L https://github.com/kubevirt/kubevirt/pull/8646.diff | git apply
+          automation/test.sh
         env:
         - name: TARGET
           value: kind-1.22-sriov
@@ -494,7 +496,7 @@ presubmits:
         - mountPath: /dev/vfio/
           name: vfio
       nodeSelector:
-        hardwareSupport: sriov-nic
+        kubernetes.io/hostname: bare-metal-sriov-1
       priorityClassName: sriov
       volumes:
       - hostPath:
