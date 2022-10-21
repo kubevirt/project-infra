@@ -74,8 +74,11 @@ func (d *DurationBasedMockBuildDataGetter) GetCallCounter() uint32 {
 var _ = Describe("builds.go", func() {
 
 	BeforeEach(func() {
-		retryDelay = 100 * time.Millisecond
+		retryDelay = 150 * time.Millisecond
 		maxJitter = 10 * time.Millisecond
+		circuitBreakerBuildDataGetter = &CircuitBreaker{
+			retryAfter: retryDelay,
+		}
 	})
 
 	When("retrying", func() {
@@ -106,21 +109,38 @@ var _ = Describe("builds.go", func() {
 			Expect(err).To(BeNil())
 		})
 
-		PIt("should only call the service twice after 504 happened", func() {
-			expectedBuild := &gojenkins.Build{}
-			buildDataGetter := &DurationBasedMockBuildDataGetter{start: time.Now(), durationIndex: []time.Duration{200 * time.Millisecond, 400 * time.Millisecond}, build: []*gojenkins.Build{nil, expectedBuild}, err: []error{fmt.Errorf("504"), nil}}
+		It("should only call the service once after 504 happened, then once per each thread after service is available again", func() {
+			buildDataGetter := &DurationBasedMockBuildDataGetter{start: time.Now(), durationIndex: []time.Duration{100 * time.Millisecond, 1000 * time.Millisecond}, build: []*gojenkins.Build{nil, {}}, err: []error{fmt.Errorf("504"), nil}}
 			var wg sync.WaitGroup
-			wg.Add(2)
-			go func() {
-				defer wg.Done()
-				_, _, _ = getBuildFromGetterWithRetry(buildDataGetter, int64(42), entry)
-			}()
-			go func() {
-				defer wg.Done()
-				_, _, _ = getBuildFromGetterWithRetry(buildDataGetter, int64(42), entry)
-			}()
+			numberOfThreads := 5
+			wg.Add(numberOfThreads)
+			for i := 0; i < numberOfThreads; i++ {
+				go func() {
+					defer wg.Done()
+					_, _, _ = getBuildFromGetterWithRetry(buildDataGetter, int64(42), entry)
+				}()
+			}
 			wg.Wait()
-			Eventually(buildDataGetter.GetCallCounter()).Should(BeEquivalentTo(uint32(2)))
+			Expect(buildDataGetter.GetCallCounter()).To(BeNumerically("<=", uint32(numberOfThreads+1)))
+		})
+
+		It("each of the getters should not be called more than twice", func() {
+			numberOfThreads := 5
+			var wg sync.WaitGroup
+			wg.Add(numberOfThreads)
+			var buildDataGetters []*DurationBasedMockBuildDataGetter
+			for i := 0; i < numberOfThreads; i++ {
+				buildDataGetter := &DurationBasedMockBuildDataGetter{start: time.Now(), durationIndex: []time.Duration{100 * time.Millisecond, 1000 * time.Millisecond}, build: []*gojenkins.Build{nil, {}}, err: []error{fmt.Errorf("504"), nil}}
+				go func() {
+					defer wg.Done()
+					_, _, _ = getBuildFromGetterWithRetry(buildDataGetter, int64(42), entry)
+				}()
+				buildDataGetters = append(buildDataGetters, buildDataGetter)
+			}
+			wg.Wait()
+			for _, b := range buildDataGetters {
+				Expect(b.GetCallCounter()).To(BeNumerically("<=", 2))
+			}
 		})
 
 	})

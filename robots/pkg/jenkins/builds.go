@@ -179,15 +179,61 @@ func getBuildWithRetry(job *gojenkins.Job, ctx context.Context, buildNumber int6
 	return getBuildFromGetterWithRetry(&DefaultBuildDataGetter{job: job, context: ctx}, buildNumber, fLog)
 }
 
+// CircuitBreaker is a simple implementation of the [circuit breaker pattern].
+//
+// [circuit breaker pattern]: https://martinfowler.com/bliki/CircuitBreaker.html
+type CircuitBreaker struct {
+	mutex      sync.Mutex
+	lastErr    error
+	open       bool
+	occurred   time.Time
+	retryAfter time.Duration
+}
+
+// WrapRetryableFunc wraps the target retryable function into a new function that transforms the result of the original
+// call into the state for the circuit breaker, which is then updated accordingly.
+//
+// If the circuit breaker is closed, the wrapped function will be called. If the wrapped function returns an error,
+// the time of the occurrence and the error will be recorded, and the circuit breaker will be opened.
+// If the circuit breaker is open, the wrapped function will only be called if the retryAfter period has been reached,
+// otherwise the last occurred error will be returned directly. If the wrapped function is called and does not return
+// an error, the circuit breaker will be closed.
+func (g *CircuitBreaker) WrapRetryableFunc(retryableFunc func() error) func() error {
+	return func() error {
+		if g.open {
+			if !g.occurred.Add(g.retryAfter).Before(time.Now()) {
+				return g.lastErr
+			}
+		}
+		err := retryableFunc()
+		g.mutex.Lock()
+		defer g.mutex.Unlock()
+		if err != nil {
+			g.open = true
+			g.occurred = time.Now()
+		} else {
+			g.open = false
+		}
+		g.lastErr = err
+		return err
+	}
+}
+
+var retryDelay = 3 * time.Minute
+var maxJitter = 30 * time.Second
+
+var circuitBreakerBuildDataGetter = &CircuitBreaker{
+	retryAfter: retryDelay,
+}
+
 func getBuildFromGetterWithRetry(buildDataGetter BuildDataGetter, buildNumber int64, fLog *log.Entry) (build *gojenkins.Build, statusCode int, err error) {
 	retry.Do(
-		func() error {
-			build, err = buildDataGetter.GetBuild(buildNumber)
-			if err != nil {
+		circuitBreakerBuildDataGetter.WrapRetryableFunc(
+			func() error {
+				build, err = buildDataGetter.GetBuild(buildNumber)
 				return err
-			}
-			return nil
-		},
+			},
+		),
 		retry.RetryIf(func(err error) bool {
 			fLog.Warningf("failed to fetch build data for build no %d: %v", buildNumber, err)
 			statusCode = httpStatusOrDie(err, fLog)
@@ -204,9 +250,6 @@ func getBuildFromGetterWithRetry(buildDataGetter BuildDataGetter, buildNumber in
 	)
 	return build, statusCode, err
 }
-
-var retryDelay = 5 * time.Second
-var maxJitter = 3 * time.Second
 
 type BuildDataGetter interface {
 	GetBuild(buildNumber int64) (*gojenkins.Build, error)
