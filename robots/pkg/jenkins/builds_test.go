@@ -25,6 +25,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
+	"kubevirt.io/project-infra/robots/pkg/circuitbreaker"
 	"net/http"
 	"sync"
 	"sync/atomic"
@@ -43,7 +44,7 @@ type SimpleMockBuildDataGetter struct {
 	err         []error
 }
 
-func (d *SimpleMockBuildDataGetter) GetBuild(buildNumber int64) (build *gojenkins.Build, err error) {
+func (d *SimpleMockBuildDataGetter) GetBuild(int64) (build *gojenkins.Build, err error) {
 	build, err = d.build[d.callCounter], d.err[d.callCounter]
 	d.callCounter++
 	return build, err
@@ -57,7 +58,7 @@ type DurationBasedMockBuildDataGetter struct {
 	err           []error
 }
 
-func (d *DurationBasedMockBuildDataGetter) GetBuild(buildNumber int64) (build *gojenkins.Build, err error) {
+func (d *DurationBasedMockBuildDataGetter) GetBuild(int64) (build *gojenkins.Build, err error) {
 	atomic.AddUint32(&d.callCounter, 1)
 	for index, durationInterval := range d.durationIndex {
 		if time.Now().Before(d.start.Add(durationInterval)) {
@@ -76,9 +77,7 @@ var _ = Describe("builds.go", func() {
 	BeforeEach(func() {
 		retryDelay = 150 * time.Millisecond
 		maxJitter = 10 * time.Millisecond
-		circuitBreakerBuildDataGetter = &CircuitBreaker{
-			retryAfter: retryDelay,
-		}
+		circuitBreakerBuildDataGetter = circuitbreaker.NewCircuitBreaker(retryDelay)
 	})
 
 	When("retrying", func() {
