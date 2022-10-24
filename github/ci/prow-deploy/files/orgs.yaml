@@ -270,6 +270,9 @@ orgs:
         description: This is a demonstration of how KubeVirt could be displayed in Cockpit
         has_projects: false
         has_wiki: false
+      common-instancetypes:
+        description: Instancetypes and preferences for running VMs on KubeVirt
+        has_projects: true
       common-templates:
         description: Templates for running VMs on KubeVirt
         has_projects: true
@@ -861,3 +864,11 @@ orgs:
           demo: write
           katacoda-scenarios: admin
           kubevirt-tutorial: write
+      common-instancetypes-maintainers:
+        description: "Maintainers of common-instancetypes"
+        privacy: closed
+        maintainers:
+          - lyarwood
+          - ksimon1
+        repos:
+          common-instancetypes: admin
