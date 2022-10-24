@@ -394,8 +394,8 @@ presubmits:
   - name: pull-containerized-data-importer-fossa
     skip_branches:
       - release-\d+\.\d+
-    always_run: false
-    optional: true
+    always_run: true
+    optional: false
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
