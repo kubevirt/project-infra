@@ -2376,7 +2376,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.25-operator
+    name: pull-kubevirt-e2e-k8s-1.25-sig-operator
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -2389,7 +2389,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.25-operator
+          value: k8s-1.25-sig-operator
         image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
