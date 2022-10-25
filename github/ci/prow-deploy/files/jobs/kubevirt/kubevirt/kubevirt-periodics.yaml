@@ -1862,7 +1862,7 @@ periodics:
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.25-operator
+  name: periodic-kubevirt-e2e-k8s-1.25-sig-operator
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1879,7 +1879,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.25-operator
+        value: k8s-1.25-sig-operator
       image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
       name: ""
       resources:
