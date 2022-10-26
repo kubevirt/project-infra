@@ -590,7 +590,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -606,6 +606,7 @@ presubmits:
       vgpu: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.23-vgpu
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
