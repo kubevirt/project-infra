@@ -183,7 +183,15 @@ func getBuildWithRetry(job *gojenkins.Job, ctx context.Context, buildNumber int6
 var retryDelay = 3 * time.Minute
 var maxJitter = 30 * time.Second
 
-var circuitBreakerBuildDataGetter = circuitbreaker.NewCircuitBreaker(retryDelay)
+var openOnStatusGateWayTimeout = func(err error) bool {
+	statusCode, conversionError := strconv.Atoi(err.Error())
+	if conversionError != nil {
+		return false
+	}
+	return statusCode == http.StatusGatewayTimeout
+}
+
+var circuitBreakerBuildDataGetter = circuitbreaker.NewCircuitBreaker(retryDelay, openOnStatusGateWayTimeout)
 
 func getBuildFromGetterWithRetry(buildDataGetter BuildDataGetter, buildNumber int64, fLog *log.Entry) (build *gojenkins.Build, statusCode int, err error) {
 	retry.Do(

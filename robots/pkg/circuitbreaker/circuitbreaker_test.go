@@ -24,6 +24,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"kubevirt.io/project-infra/robots/pkg/circuitbreaker"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -36,14 +37,24 @@ func TestCircuitBreaker(t *testing.T) {
 
 var _ = Describe("circuitbreaker.go", func() {
 
+	alwaysOpenCircuit := func(err error) bool {
+		return true
+	}
+
 	When("creating", func() {
 
 		It("should panic on non positive retryAfter", func() {
-			Expect(func() { circuitbreaker.NewCircuitBreaker(0) }).To(Panic())
+			Expect(func() {
+				circuitbreaker.NewCircuitBreaker(0, alwaysOpenCircuit)
+			}).To(Panic())
+		})
+
+		It("should panic on missing func", func() {
+			Expect(func() { circuitbreaker.NewCircuitBreaker(time.Millisecond, nil) }).To(Panic())
 		})
 
 		It("should return a breaker if the retry interval is positive", func() {
-			Expect(circuitbreaker.NewCircuitBreaker(time.Millisecond)).To(Not(BeNil()))
+			Expect(circuitbreaker.NewCircuitBreaker(time.Millisecond, alwaysOpenCircuit)).To(Not(BeNil()))
 		})
 
 	})
@@ -52,9 +63,12 @@ var _ = Describe("circuitbreaker.go", func() {
 
 		var circuitBreaker *circuitbreaker.CircuitBreaker
 		retryAfter := 10 * time.Millisecond
+		everythingOpensExceptTheAnswer := func(err error) bool {
+			return !strings.Contains(err.Error(), "42")
+		}
 
 		BeforeEach(func() {
-			circuitBreaker = circuitbreaker.NewCircuitBreaker(retryAfter)
+			circuitBreaker = circuitbreaker.NewCircuitBreaker(retryAfter, everythingOpensExceptTheAnswer)
 		})
 
 		It("should call the target", func() {
@@ -70,6 +84,14 @@ var _ = Describe("circuitbreaker.go", func() {
 			retryableFunc()
 			retryableFunc()
 			Expect(mockRetryableFunc.calls).To(BeEquivalentTo(1))
+		})
+
+		It("should call the target a second time if the error should not open the circuit", func() {
+			mockRetryableFunc := &MockRetryableFunc{errors: []error{fmt.Errorf("42"), nil}}
+			retryableFunc := circuitBreaker.WrapRetryableFunc(mockRetryableFunc.target())
+			retryableFunc()
+			retryableFunc()
+			Expect(mockRetryableFunc.calls).To(BeEquivalentTo(2))
 		})
 
 		It("should call the target a second time after retry period has passed", func() {
@@ -89,7 +111,7 @@ var _ = Describe("circuitbreaker.go", func() {
 		retryAfter := 10 * time.Millisecond
 
 		BeforeEach(func() {
-			circuitBreaker = circuitbreaker.NewCircuitBreaker(retryAfter)
+			circuitBreaker = circuitbreaker.NewCircuitBreaker(retryAfter, alwaysOpenCircuit)
 		})
 
 		It("should not call the second target if the call to first target failed", func() {
@@ -123,7 +145,7 @@ var _ = Describe("circuitbreaker.go", func() {
 		retryAfter := 10 * time.Millisecond
 
 		BeforeEach(func() {
-			circuitBreaker = circuitbreaker.NewCircuitBreaker(retryAfter)
+			circuitBreaker = circuitbreaker.NewCircuitBreaker(retryAfter, alwaysOpenCircuit)
 		})
 
 		It("should call only one target func in case of error", func() {

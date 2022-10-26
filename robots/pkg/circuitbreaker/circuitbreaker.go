@@ -34,13 +34,17 @@ type CircuitBreaker struct {
 	open       bool
 	occurred   time.Time
 	retryAfter time.Duration
+	shouldOpen func(err error) bool
 }
 
-func NewCircuitBreaker(retryAfter time.Duration) *CircuitBreaker {
+func NewCircuitBreaker(retryAfter time.Duration, shouldOpen func(err error) bool) *CircuitBreaker {
 	if retryAfter <= 0 {
 		panic(fmt.Errorf("retryAfter <= 0: %v", retryAfter))
 	}
-	return &CircuitBreaker{retryAfter: retryAfter}
+	if shouldOpen == nil {
+		panic(fmt.Errorf("shouldOpen is nil"))
+	}
+	return &CircuitBreaker{retryAfter: retryAfter, shouldOpen: shouldOpen}
 }
 
 // WrapRetryableFunc wraps the target retry.RetryableFunc into a new function that transforms the result of the original
@@ -71,7 +75,7 @@ func (g *CircuitBreaker) isOpenAndNotFeasibleForRetry() (bool, error) {
 func (g *CircuitBreaker) updateState(err error) {
 	g.mutex.Lock()
 	defer g.mutex.Unlock()
-	if err != nil {
+	if err != nil && g.shouldOpen(err) {
 		g.open = true
 		g.occurred = time.Now()
 	} else {

@@ -77,7 +77,25 @@ var _ = Describe("builds.go", func() {
 	BeforeEach(func() {
 		retryDelay = 150 * time.Millisecond
 		maxJitter = 10 * time.Millisecond
-		circuitBreakerBuildDataGetter = circuitbreaker.NewCircuitBreaker(retryDelay)
+		if retryDelay <= 0 {
+			panic(fmt.Errorf("retryAfter <= 0: %v", retryDelay))
+		}
+		circuitBreakerBuildDataGetter = circuitbreaker.NewCircuitBreaker(retryDelay, openOnStatusGateWayTimeout)
+	})
+
+	When("checking circuitbreaker function", func() {
+
+		It("should open on status gateway timeout", func() {
+			Expect(openOnStatusGateWayTimeout(fmt.Errorf("%d", http.StatusGatewayTimeout))).To(BeTrue())
+		})
+
+		It("should not open on status not found", func() {
+			Expect(openOnStatusGateWayTimeout(fmt.Errorf("%d", http.StatusNotFound))).To(BeFalse())
+		})
+
+		It("should not open on non status errors", func() {
+			Expect(openOnStatusGateWayTimeout(fmt.Errorf("whatever else may happen"))).To(BeFalse())
+		})
 	})
 
 	When("retrying", func() {
@@ -93,7 +111,7 @@ var _ = Describe("builds.go", func() {
 		})
 
 		It("should return nil if 404", func() {
-			err2 := fmt.Errorf("404")
+			err2 := fmt.Errorf("%d", http.StatusNotFound)
 			build, statusCode, err := getBuildFromGetterWithRetry(&SimpleMockBuildDataGetter{build: []*gojenkins.Build{nil}, err: []error{err2}}, int64(42), entry)
 			Expect(build).To(BeNil())
 			Expect(statusCode).To(BeEquivalentTo(http.StatusNotFound))
@@ -102,14 +120,14 @@ var _ = Describe("builds.go", func() {
 
 		It("should return build after one retry with gateway timeout", func() {
 			expectedBuild := &gojenkins.Build{}
-			build, statusCode, err := getBuildFromGetterWithRetry(&SimpleMockBuildDataGetter{build: []*gojenkins.Build{nil, expectedBuild}, err: []error{fmt.Errorf("504"), nil}}, int64(42), entry)
+			build, statusCode, err := getBuildFromGetterWithRetry(&SimpleMockBuildDataGetter{build: []*gojenkins.Build{nil, expectedBuild}, err: []error{fmt.Errorf("%d", http.StatusGatewayTimeout), nil}}, int64(42), entry)
 			Expect(build).To(BeIdenticalTo(expectedBuild))
 			Expect(statusCode).To(BeEquivalentTo(http.StatusGatewayTimeout))
 			Expect(err).To(BeNil())
 		})
 
 		It("should only call the service once after 504 happened, then once per each thread after service is available again", func() {
-			buildDataGetter := &DurationBasedMockBuildDataGetter{start: time.Now(), durationIndex: []time.Duration{100 * time.Millisecond, 1000 * time.Millisecond}, build: []*gojenkins.Build{nil, {}}, err: []error{fmt.Errorf("504"), nil}}
+			buildDataGetter := &DurationBasedMockBuildDataGetter{start: time.Now(), durationIndex: []time.Duration{100 * time.Millisecond, 1000 * time.Millisecond}, build: []*gojenkins.Build{nil, {}}, err: []error{fmt.Errorf("%d", http.StatusGatewayTimeout), nil}}
 			var wg sync.WaitGroup
 			numberOfThreads := 5
 			wg.Add(numberOfThreads)
@@ -129,7 +147,7 @@ var _ = Describe("builds.go", func() {
 			wg.Add(numberOfThreads)
 			var buildDataGetters []*DurationBasedMockBuildDataGetter
 			for i := 0; i < numberOfThreads; i++ {
-				buildDataGetter := &DurationBasedMockBuildDataGetter{start: time.Now(), durationIndex: []time.Duration{100 * time.Millisecond, 1000 * time.Millisecond}, build: []*gojenkins.Build{nil, {}}, err: []error{fmt.Errorf("504"), nil}}
+				buildDataGetter := &DurationBasedMockBuildDataGetter{start: time.Now(), durationIndex: []time.Duration{100 * time.Millisecond, 1000 * time.Millisecond}, build: []*gojenkins.Build{nil, {}}, err: []error{fmt.Errorf("%d", http.StatusGatewayTimeout), nil}}
 				go func() {
 					defer wg.Done()
 					_, _, _ = getBuildFromGetterWithRetry(buildDataGetter, int64(42), entry)
@@ -140,6 +158,21 @@ var _ = Describe("builds.go", func() {
 			for _, b := range buildDataGetters {
 				Expect(b.GetCallCounter()).To(BeNumerically("<=", 2))
 			}
+		})
+
+		It("should call the service even in case of 503 twice per thread, since the circuit only opens on 504", func() {
+			buildDataGetter := &DurationBasedMockBuildDataGetter{start: time.Now(), durationIndex: []time.Duration{100 * time.Millisecond, 1000 * time.Millisecond}, build: []*gojenkins.Build{nil, {}}, err: []error{fmt.Errorf("%d", http.StatusServiceUnavailable), nil}}
+			var wg sync.WaitGroup
+			numberOfThreads := 5
+			wg.Add(numberOfThreads)
+			for i := 0; i < numberOfThreads; i++ {
+				go func() {
+					defer wg.Done()
+					_, _, _ = getBuildFromGetterWithRetry(buildDataGetter, int64(42), entry)
+				}()
+			}
+			wg.Wait()
+			Expect(buildDataGetter.GetCallCounter()).To(BeNumerically("<=", uint32(numberOfThreads*2)))
 		})
 
 	})
