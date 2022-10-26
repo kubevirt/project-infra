@@ -29,12 +29,12 @@ import (
 //
 // [circuit breaker pattern]: https://martinfowler.com/bliki/CircuitBreaker.html
 type CircuitBreaker struct {
-	mutex      sync.Mutex
-	lastErr    error
-	open       bool
-	occurred   time.Time
-	retryAfter time.Duration
-	shouldOpen func(err error) bool
+	mutex        sync.RWMutex
+	lastErr      error
+	open         bool
+	blockedUntil time.Time
+	retryAfter   time.Duration
+	shouldOpen   func(err error) bool
 }
 
 func NewCircuitBreaker(retryAfter time.Duration, shouldOpen func(err error) bool) *CircuitBreaker {
@@ -67,9 +67,9 @@ func (g *CircuitBreaker) WrapRetryableFunc(retryableFunc func() error) func() er
 }
 
 func (g *CircuitBreaker) isOpenAndNotFeasibleForRetry() (bool, error) {
-	g.mutex.Lock()
-	defer g.mutex.Unlock()
-	return g.open && !g.occurred.Add(g.retryAfter).Before(time.Now()), g.lastErr
+	g.mutex.RLock()
+	defer g.mutex.RUnlock()
+	return g.open && !g.blockedUntil.Before(time.Now()), g.lastErr
 }
 
 func (g *CircuitBreaker) updateState(err error) {
@@ -77,7 +77,7 @@ func (g *CircuitBreaker) updateState(err error) {
 	defer g.mutex.Unlock()
 	if err != nil && g.shouldOpen(err) {
 		g.open = true
-		g.occurred = time.Now()
+		g.blockedUntil = time.Now().Add(g.retryAfter)
 	} else {
 		g.open = false
 	}
