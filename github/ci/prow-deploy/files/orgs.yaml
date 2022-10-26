@@ -584,6 +584,7 @@ orgs:
           - tomob
           - aglitke
           - brybacki
+          - shellyka13
         repos:
           kubevirt-velero-plugin: admin
       containerized-data-importer-api-maintainers:
