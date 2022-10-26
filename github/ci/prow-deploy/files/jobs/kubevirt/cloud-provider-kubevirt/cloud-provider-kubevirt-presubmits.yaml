@@ -16,14 +16,14 @@ presubmits:
       grace_period: 5m
     max_concurrency: 11
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20220728-1410a63
+        - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -54,14 +54,14 @@ presubmits:
       grace_period: 5m
     max_concurrency: 11
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20220728-1410a63
+        - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -85,7 +85,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 3h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     skip_branches:
@@ -97,7 +97,7 @@ presubmits:
         - /bin/sh
         - -c
         - make functest
-        image: quay.io/kubevirtci/golang:v20220728-1410a63
+        image: quay.io/kubevirtci/golang:v20220906-4f60dd3
         name: ""
         resources:
           requests:
