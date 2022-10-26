@@ -138,10 +138,10 @@ var _ = Describe("builds.go", func() {
 				}()
 			}
 			wg.Wait()
-			Expect(buildDataGetter.GetCallCounter()).To(BeNumerically("<=", uint32(numberOfThreads+1)))
+			Expect(buildDataGetter.GetCallCounter()).To(BeEquivalentTo(uint32(numberOfThreads + 1)))
 		})
 
-		It("each of the getters should not be called more than twice", func() {
+		It("should not call any of the getters more than twice", func() {
 			numberOfThreads := 5
 			var wg sync.WaitGroup
 			wg.Add(numberOfThreads)
@@ -160,7 +160,7 @@ var _ = Describe("builds.go", func() {
 			}
 		})
 
-		It("should call the service even in case of 503 twice per thread, since the circuit only opens on 504", func() {
+		It("should call the service only once per thread in case of 503, since the circuit only opens on 504, and 503 is not valid for retry", func() {
 			buildDataGetter := &DurationBasedMockBuildDataGetter{start: time.Now(), durationIndex: []time.Duration{100 * time.Millisecond, 1000 * time.Millisecond}, build: []*gojenkins.Build{nil, {}}, err: []error{fmt.Errorf("%d", http.StatusServiceUnavailable), nil}}
 			var wg sync.WaitGroup
 			numberOfThreads := 5
@@ -172,7 +172,7 @@ var _ = Describe("builds.go", func() {
 				}()
 			}
 			wg.Wait()
-			Expect(buildDataGetter.GetCallCounter()).To(BeNumerically("<=", uint32(numberOfThreads*2)))
+			Expect(buildDataGetter.GetCallCounter()).To(BeEquivalentTo(uint32(numberOfThreads)))
 		})
 
 	})
