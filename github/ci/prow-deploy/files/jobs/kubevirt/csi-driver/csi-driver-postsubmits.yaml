@@ -10,7 +10,7 @@ postsubmits:
           repo: project-infra
           base_ref: main
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
@@ -23,7 +23,7 @@ postsubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20220728-1410a63
+          - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
             env:
               - name: REPO
                 value: quay.io/kubevirt
