@@ -77,11 +77,11 @@ func (g *CircuitBreaker) isRetryBlocked() bool {
 }
 
 func (g *CircuitBreaker) updateState(err error) {
+	g.mutex.Lock()
+	defer g.mutex.Unlock()
 	if g.isRetryBlocked() {
 		return
 	}
-	g.mutex.Lock()
-	defer g.mutex.Unlock()
 	if err != nil && g.shouldOpen(err) {
 		g.open = true
 		g.blockedUntil = time.Now().Add(g.retryAfter)
