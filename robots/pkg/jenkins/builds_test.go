@@ -77,9 +77,6 @@ var _ = Describe("builds.go", func() {
 	BeforeEach(func() {
 		retryDelay = 150 * time.Millisecond
 		maxJitter = 10 * time.Millisecond
-		if retryDelay <= 0 {
-			panic(fmt.Errorf("retryAfter <= 0: %v", retryDelay))
-		}
 		circuitBreakerBuildDataGetter = circuitbreaker.NewCircuitBreaker(retryDelay, openOnStatusGateWayTimeout)
 	})
 
