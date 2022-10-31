@@ -69,10 +69,17 @@ func (g *CircuitBreaker) WrapRetryableFunc(retryableFunc func() error) func() er
 func (g *CircuitBreaker) isOpenAndNotFeasibleForRetry() (bool, error) {
 	g.mutex.RLock()
 	defer g.mutex.RUnlock()
-	return g.open && !g.blockedUntil.Before(time.Now()), g.lastErr
+	return g.open && g.isRetryBlocked(), g.lastErr
+}
+
+func (g *CircuitBreaker) isRetryBlocked() bool {
+	return !g.blockedUntil.IsZero() && !time.Now().After(g.blockedUntil)
 }
 
 func (g *CircuitBreaker) updateState(err error) {
+	if g.isRetryBlocked() {
+		return
+	}
 	g.mutex.Lock()
 	defer g.mutex.Unlock()
 	if err != nil && g.shouldOpen(err) {
