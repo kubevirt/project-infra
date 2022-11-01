@@ -624,18 +624,30 @@ func (r *releaseData) verifyPromoteRC() error {
 	return nil
 }
 
-func (r *releaseData) verifyBranch() error {
+func (r *releaseData) doesBranchExist(branch string) (bool, error) {
 
 	branches, err := r.getBranches()
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	for _, b := range branches {
 		if b.Name != nil && *b.Name == r.newBranch {
-			log.Printf("Release branch [%s] already exists", r.newBranch)
-			return nil
+			return true, nil
 		}
+	}
+
+	return false, nil
+}
+
+func (r *releaseData) verifyBranch() error {
+
+	exists, err := r.doesBranchExist(r.newBranch)
+	if err != nil {
+		return err
+	} else if exists {
+		log.Printf("Release branch [%s] already exists", r.newBranch)
+		return nil
 	}
 
 	// branches are expected to be formatted as "release-x.y"
@@ -970,7 +982,10 @@ func (r *releaseData) verifyTag() error {
 		return err
 	}
 
-	expectedBranch := fmt.Sprintf("release-%d.%d", tagSemver.Major(), tagSemver.Minor())
+	expectedBranch := r.tagBranch
+	if expectedBranch == "" {
+		expectedBranch = fmt.Sprintf("release-%d.%d", tagSemver.Major(), tagSemver.Minor())
+	}
 
 	releases, err := r.getReleases()
 	for _, release := range releases {
@@ -1002,10 +1017,21 @@ func (r *releaseData) verifyTag() error {
 		}
 	} else {
 		// if this is not a promotion, ensure the release is either an RC or a patch release.
-		re := regexp.MustCompile(`^v\d*\.\d*.\d*-rc.\d*$`)
-		match := re.FindString(r.tag)
+		re := []*regexp.Regexp{
+			regexp.MustCompile(`^v\d*\.\d*.\d*-rc.\d*$`),
+			regexp.MustCompile(`^v\d*\.\d*.\d*-alpha.\d*$`),
+		}
+
+		match := ""
+		for _, matcher := range re {
+			match = matcher.FindString(r.tag)
+			if match != "" {
+				break
+			}
+		}
+
 		if match == "" && tagSemver.Patch() == 0 && !r.force {
-			return fmt.Errorf("The tag [%s] must be promoted from a release candidate since it is the first release of a patch series.", r.tag)
+			return fmt.Errorf("The tag [%s] must be release candidate or alpha since it is not being promoted from another tag.", r.tag)
 		}
 
 	}
@@ -1048,19 +1074,21 @@ func (r *releaseData) verifyTag() error {
 		return err
 	}
 
-	var releaseBranch *github.Branch
-	for _, branch := range branches {
-		if branch.Name != nil && *branch.Name == expectedBranch {
-			releaseBranch = branch
-			break
+	if r.tagBranch == "" {
+		var releaseBranch *github.Branch
+		for _, branch := range branches {
+			if branch.Name != nil && *branch.Name == expectedBranch {
+				releaseBranch = branch
+				break
+			}
 		}
-	}
 
-	if releaseBranch == nil {
-		return fmt.Errorf("release branch [%s] not found for new release [%s]", expectedBranch, r.tag)
-	}
+		if releaseBranch == nil {
+			return fmt.Errorf("release branch [%s] not found for new release [%s]", expectedBranch, r.tag)
+		}
 
-	r.tagBranch = expectedBranch
+		r.tagBranch = expectedBranch
+	}
 	return nil
 }
 
@@ -1088,6 +1116,7 @@ func (r *releaseData) printData() {
 	log.Printf("\trepoUrl: %s", r.repoUrl)
 	log.Printf("\tnewTag: %s", r.tag)
 	log.Printf("\tnewBranch: %s", r.newBranch)
+	log.Printf("\texistingBranch: %s", r.tagBranch)
 	log.Printf("\torg: %s", r.org)
 	log.Printf("\trepo: %s", r.repo)
 	log.Printf("\tforce: %t", r.force)
@@ -1096,6 +1125,7 @@ func (r *releaseData) printData() {
 
 func main() {
 	newBranch := flag.String("new-branch", "", "New branch to cut from main.")
+	existingBranch := flag.String("existing-branch", "", "Cut the tag from an existing branch.")
 	releaseTag := flag.String("new-release", "", "New release tag. Must be a valid semver. The branch is automatically detected from the major and minor release")
 	org := flag.String("org", "", "The project org")
 	repo := flag.String("repo", "", "The project repo")
@@ -1161,6 +1191,7 @@ func main() {
 		org:              *org,
 		newBranch:        *newBranch,
 		tag:              *releaseTag,
+		tagBranch:        *existingBranch,
 		promoteRC:        *promoteRC,
 		skipReleaseNotes: *skipReleaseNotes,
 
@@ -1206,9 +1237,16 @@ func main() {
 			log.Fatal("ERROR Branch is blocked")
 		}
 
-		err = r.cutNewBranch(*skipProw)
+		exists, err := r.doesBranchExist(r.newBranch)
 		if err != nil {
-			log.Fatalf("ERROR Creating Branch: %s ", err)
+			log.Fatalf("ERROR Invalid branch: %s ", err)
+		}
+
+		if !exists {
+			err = r.cutNewBranch(*skipProw)
+			if err != nil {
+				log.Fatalf("ERROR Creating Branch: %s ", err)
+			}
 		}
 	}
 
