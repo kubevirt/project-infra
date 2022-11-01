@@ -489,7 +489,6 @@ presubmits:
       sriov-pod: "true"
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-1.22-sriov
-    optional: false
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2202,7 +2201,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2241,7 +2240,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2280,7 +2279,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
