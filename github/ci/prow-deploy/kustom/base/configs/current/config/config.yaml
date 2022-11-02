@@ -112,6 +112,7 @@ tide:
     kubevirt/node-maintenance-operator: merge
     kubevirt/ansible-kubevirt-modules: squash
     kubevirt/hyperconverged-cluster-operator: squash
+    kubevirt/common-instancetypes: squash
     kubevirt/common-templates: squash
     kubevirt/kvm-info-nfd-plugin: squash
     kubevirt/cpu-nfd-plugin: squash
@@ -173,6 +174,7 @@ tide:
     - kubevirt/node-maintenance-operator
     - kubevirt/ansible-kubevirt-modules
     - kubevirt/hyperconverged-cluster-operator
+    - kubevirt/common-instancetypes
     - kubevirt/common-templates
     - kubevirt/kvm-info-nfd-plugin
     - kubevirt/cpu-nfd-plugin
@@ -348,6 +350,10 @@ branch-protection:
             release-0.39:
               protect: true
         macvtap-cni:
+          branches:
+            main:
+              protect: true
+        common-instancetypes:
           branches:
             main:
               protect: true

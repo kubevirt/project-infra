@@ -129,6 +129,14 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/common-instancetypes:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+
   kubevirt/common-templates:
     plugins:
     - approve
@@ -478,6 +486,7 @@ triggers:
   - kubevirt/hostpath-provisioner
   - kubevirt/hostpath-provisioner-operator
   - kubevirt/katacoda-scenarios
+  - kubevirt/common-instancetypes
   - kubevirt/common-templates
   - kubevirt/kvm-info-nfd-plugin
   - kubevirt/cpu-nfd-plugin
@@ -531,6 +540,7 @@ approve:
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
   - kubevirt/hyperconverged-cluster-operator
+  - kubevirt/common-instancetypes
   - kubevirt/common-templates
   - kubevirt/kvm-info-nfd-plugin
   - kubevirt/cpu-nfd-plugin
@@ -581,6 +591,7 @@ lgtm:
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
   - kubevirt/hyperconverged-cluster-operator
+  - kubevirt/common-instancetypes
   - kubevirt/common-templates
   - kubevirt/kvm-info-nfd-plugin
   - kubevirt/cpu-nfd-plugin
