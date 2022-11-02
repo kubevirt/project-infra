@@ -200,27 +200,15 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 }
 
 func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github.PullRequest, eventGUID string) {
-	repo, org, err := gitv2.OrgRepo(pr.Head.Repo.FullName)
+	repoName := "kubevirt/project-infra"
+	repo, org, err := gitv2.OrgRepo(repoName)
 	if err != nil {
-		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Head.Repo.FullName)
+		log.WithError(err).Errorf("Could not parse repo name: %s", repoName)
 		return
 	}
 	log.Infoln("Generating git client")
 	git, err := h.gitClientFactory.ClientFor(repo, org)
 	if err != nil {
-		return
-	}
-
-	log.Infoln("Fetching target branch", pr.Base.Ref)
-	err = git.FetchRef(pr.Base.Ref)
-	if err != nil {
-		log.WithError(err).Error("Could not fetch pull request's target branch.")
-		return
-	}
-	log.Infoln("Fetching PR head ref", pr.Head.SHA)
-	err = git.FetchRef(pr.Head.SHA)
-	if err != nil {
-		log.WithError(err).Error("Could not fetch pull request's head ref.")
 		return
 	}
 	log.Infoln("Rebasing the PR on the target branch")
@@ -232,7 +220,7 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		return
 	}
 	log.Infoln("Getting diff")
-	changedFiles, err := git.Diff("HEAD", pr.Base.Ref)
+	changedFiles, err := git.Diff("origin/main", "HEAD")
 	if err != nil {
 		log.WithError(err).Error("Could not calculate diff for PR.")
 		return
@@ -244,16 +232,16 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		return
 	}
 	log.Infoln("Changed job configs:", changedJobConfigs)
-	headConfigs, err := h.loadConfigsAtRef(changedJobConfigs, git, pr.Head.SHA)
+	headConfigs, err := h.loadConfigsAtRef(changedJobConfigs, git, "HEAD")
 	if err != nil {
 		log.WithError(err).Errorf(
-			"Could not load job configs from head ref: %s", pr.Head.SHA)
+			"Could not load job configs from head ref: %s", "HEAD")
 	}
 
-	baseConfigs, err := h.loadConfigsAtRef(changedJobConfigs, git, pr.Base.SHA)
+	baseConfigs, err := h.loadConfigsAtRef(changedJobConfigs, git, "origin/main")
 	if err != nil {
 		log.WithError(err).Errorf(
-			"Could not load job configs from base ref: %s", pr.Base.SHA)
+			"Could not load job configs from base ref: %s", "origin/main")
 	}
 	log.Infoln("Base configs:", baseConfigs)
 
