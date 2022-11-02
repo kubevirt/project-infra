@@ -82,7 +82,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-  - always_run: true
+  - always_run: false
     annotations:
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
     cluster: prow-workloads
@@ -96,7 +96,7 @@ presubmits:
       rehearsal.allowed: "true"
       sriov-pod: "true"
     max_concurrency: 1
-    name: check-up-kind-1.22-sriov
+    name: check-up-kind-1.25-sriov
     spec:
       affinity:
         podAntiAffinity:
@@ -126,7 +126,7 @@ presubmits:
               ./cluster-up/cluster/kind/check-cluster-up.sh
           env:
             - name: KUBEVIRT_PROVIDER
-              value: kind-1.22-sriov
+              value: kind-1.25-sriov
             - name: KUBEVIRT_NUM_NODES
               value: "3"
             - name: RUN_KUBEVIRT_CONFORMANCE
