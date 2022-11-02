@@ -200,10 +200,9 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 }
 
 func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github.PullRequest, eventGUID string) {
-	repoName := "kubevirt/project-infra"
-	repo, org, err := gitv2.OrgRepo(repoName)
+	repo, org, err := gitv2.OrgRepo(pr.Base.Repo.FullName)
 	if err != nil {
-		log.WithError(err).Errorf("Could not parse repo name: %s", repoName)
+		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Base.Repo.FullName)
 		return
 	}
 	log.Infoln("Generating git client")
@@ -220,7 +219,7 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		return
 	}
 	log.Infoln("Getting diff")
-	changedFiles, err := git.Diff("origin/main", "HEAD")
+	changedFiles, err := git.Diff(pr.Base.SHA, "HEAD")
 	if err != nil {
 		log.WithError(err).Error("Could not calculate diff for PR.")
 		return
@@ -238,10 +237,10 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 			"Could not load job configs from head ref: %s", "HEAD")
 	}
 
-	baseConfigs, err := h.loadConfigsAtRef(changedJobConfigs, git, "origin/main")
+	baseConfigs, err := h.loadConfigsAtRef(changedJobConfigs, git, pr.Base.SHA)
 	if err != nil {
 		log.WithError(err).Errorf(
-			"Could not load job configs from base ref: %s", "origin/main")
+			"Could not load job configs from base ref: %s", pr.Base.SHA)
 	}
 	log.Infoln("Base configs:", baseConfigs)
 
