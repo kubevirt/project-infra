@@ -30,7 +30,7 @@ var SigNames = []string{
 	"sig-network",
 	"sig-storage",
 	"sig-compute",
-	"operator",
+	"sig-operator",
 }
 
 var cronRegex *regexp.Regexp
