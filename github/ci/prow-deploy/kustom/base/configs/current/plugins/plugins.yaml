@@ -499,6 +499,7 @@ triggers:
   - kubevirt/qe-tools
   - kubevirt/cloud-provider-kubevirt
   - kubevirt/secrets
+  - kubevirt/test-benchmarks
 - repos:
   - virtblocks/virtblocks
 - repos:
@@ -545,6 +546,7 @@ approve:
   - kubevirt/kubevirt-velero-plugin
   - kubevirt/qe-tools
   - kubevirt/cloud-provider-kubevirt
+  - kubevirt/test-benchmarks
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -596,6 +598,7 @@ lgtm:
   - kubevirt/qe-tools
   - kubevirt/cloud-provider-kubevirt
   - kubevirt/secrets
+  - kubevirt/test-benchmarks
   review_acts_as_lgtm: true
 
 override:

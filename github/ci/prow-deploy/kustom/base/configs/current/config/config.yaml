@@ -127,6 +127,7 @@ tide:
     kubevirt/qe-tools: merge
     kubevirt/cloud-provider-kubevirt: merge
     kubevirt/secrets: merge
+    kubevirt/test-benchmarks: merge
 
   queries:
   - repos:
@@ -148,6 +149,7 @@ tide:
     - kubevirt/qe-tools
     - kubevirt/cloud-provider-kubevirt
     - kubevirt/secrets
+    - kubevirt/test-benchmarks
     labels:
     - lgtm
     - approved
