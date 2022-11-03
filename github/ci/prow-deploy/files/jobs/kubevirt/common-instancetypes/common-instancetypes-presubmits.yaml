@@ -1,0 +1,24 @@
+presubmits:
+  kubevirt/common-instancetypes:
+  - name: pull-common-instancetypes
+    branches:
+      - main
+    always_run: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 3h
+    max_concurrency: 5
+    labels:
+      preset-docker-mirror: "true"
+    cluster: ibm-prow-jobs
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/common-instancetypes-builder:v20221104-ae4ae31
+        command:
+        - "/bin/bash"
+        - "-c"
+        - "make"
+        resources:
+          requests:
+            memory: "1Gi"

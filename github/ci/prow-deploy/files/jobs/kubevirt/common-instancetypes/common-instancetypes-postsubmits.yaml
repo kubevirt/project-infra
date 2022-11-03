@@ -1,0 +1,37 @@
+postsubmits:
+  kubevirt/common-instancetypes:
+    - name: publish-common-instancetypes-builder
+      branches:
+        - main
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror: "true"
+        preset-gcs-credentials: "true"
+        preset-github-credentials: "true"
+        preset-kubevirtci-quay-credential: "true"
+      annotations:
+        testgrid-create-test-group: "false"
+        rehearsal.allowed: "false"
+      cluster: prow-workloads
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/golang:v20220906-4f60dd3
+            env:
+              - name: COMMON_INSTANCETYPES_CRI
+                value: podman
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - >
+                cat $QUAY_PASSWORD | podman login quay.io --username $(cat $QUAY_USER) --password-stdin=true &&
+                make push_image
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "8Gi"
