@@ -298,8 +298,8 @@ presubmits:
         - release-\d+\.\d+
       annotations:
         fork-per-release: "true"
-      always_run: false
-      optional: true
+      always_run: true
+      optional: false
       decorate: true
       skip_report: false
       decoration_config:
