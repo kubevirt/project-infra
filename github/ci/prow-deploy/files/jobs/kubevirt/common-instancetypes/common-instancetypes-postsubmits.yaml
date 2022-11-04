@@ -1,6 +1,8 @@
 postsubmits:
   kubevirt/common-instancetypes:
     - name: publish-common-instancetypes-builder
+      always_run: false
+      run_if_changed: "image/.*"
       branches:
         - main
       decorate: true
@@ -13,7 +15,6 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       annotations:
         testgrid-create-test-group: "false"
-        rehearsal.allowed: "false"
       cluster: prow-workloads
       spec:
         nodeSelector:
