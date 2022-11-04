@@ -24,6 +24,7 @@ import (
 	"github.com/avast/retry-go"
 	"github.com/bndr/gojenkins"
 	log "github.com/sirupsen/logrus"
+	"kubevirt.io/project-infra/robots/pkg/circuitbreaker"
 	"net/http"
 	"strconv"
 	"sync"
@@ -176,14 +177,30 @@ func getFilteredBuild(startOfReport time.Time, job *gojenkins.Job, ctx context.C
 }
 
 func getBuildWithRetry(job *gojenkins.Job, ctx context.Context, buildNumber int64, fLog *log.Entry) (build *gojenkins.Build, statusCode int, err error) {
+	return getBuildFromGetterWithRetry(&DefaultBuildDataGetter{job: job, context: ctx}, buildNumber, fLog)
+}
+
+var retryDelay = 3 * time.Minute
+var maxJitter = 30 * time.Second
+
+var openOnStatusGateWayTimeout = func(err error) bool {
+	statusCode, conversionError := strconv.Atoi(err.Error())
+	if conversionError != nil {
+		return false
+	}
+	return statusCode == http.StatusGatewayTimeout
+}
+
+var circuitBreakerBuildDataGetter = circuitbreaker.NewCircuitBreaker(retryDelay, openOnStatusGateWayTimeout)
+
+func getBuildFromGetterWithRetry(buildDataGetter BuildDataGetter, buildNumber int64, fLog *log.Entry) (build *gojenkins.Build, statusCode int, err error) {
 	retry.Do(
-		func() error {
-			build, err = job.GetBuild(ctx, buildNumber)
-			if err != nil {
+		circuitBreakerBuildDataGetter.WrapRetryableFunc(
+			func() error {
+				build, err = buildDataGetter.GetBuild(buildNumber)
 				return err
-			}
-			return nil
-		},
+			},
+		),
 		retry.RetryIf(func(err error) bool {
 			fLog.Warningf("failed to fetch build data for build no %d: %v", buildNumber, err)
 			statusCode = httpStatusOrDie(err, fLog)
@@ -195,10 +212,27 @@ func getBuildWithRetry(job *gojenkins.Job, ctx context.Context, buildNumber int6
 			}
 			return false
 		}),
-		retry.Delay(5*time.Second),
-		retry.MaxJitter(3*time.Second),
+		retry.Delay(retryDelay),
+		retry.MaxJitter(maxJitter),
+		// We are using FixedDelay here since we only want to wait for the specified amount of
+		// time per each retry with a random jitter value, since the default retry.BackOffDelay would
+		// multiply the wait time on each retry
+		retry.DelayType(retry.CombineDelay(retry.FixedDelay, retry.RandomDelay)),
 	)
 	return build, statusCode, err
+}
+
+type BuildDataGetter interface {
+	GetBuild(buildNumber int64) (*gojenkins.Build, error)
+}
+
+type DefaultBuildDataGetter struct {
+	job     *gojenkins.Job
+	context context.Context
+}
+
+func (d *DefaultBuildDataGetter) GetBuild(buildNumber int64) (*gojenkins.Build, error) {
+	return d.job.GetBuild(d.context, buildNumber)
 }
 
 // httpStatusOrDie fetches [stringly typed](https://wiki.c2.com/?StringlyTyped) error code produced by jenkins client
