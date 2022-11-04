@@ -130,7 +130,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.21-operator
+    name: pull-kubevirt-e2e-k8s-1.21-sig-operator
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -323,7 +323,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-operator
+    name: pull-kubevirt-e2e-k8s-1.20-sig-operator
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -532,7 +532,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.20-operator-nonroot
+    name: pull-kubevirt-e2e-k8s-1.20-sig-operator-nonroot
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -689,7 +689,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.19-operator
+    name: pull-kubevirt-e2e-k8s-1.19-sig-operator
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1577,7 +1577,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.22-operator
+    name: pull-kubevirt-e2e-k8s-1.22-sig-operator
     optional: true
     spec:
       containers:
