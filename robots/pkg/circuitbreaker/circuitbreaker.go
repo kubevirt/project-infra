@@ -21,6 +21,7 @@ package circuitbreaker
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"sync"
 	"time"
 )
@@ -47,6 +48,19 @@ func NewCircuitBreaker(retryAfter time.Duration, shouldOpen func(err error) bool
 	return &CircuitBreaker{retryAfter: retryAfter, shouldOpen: shouldOpen}
 }
 
+var log *logrus.Entry
+
+func init() {
+	logger := logrus.New()
+	logger.SetFormatter(&logrus.JSONFormatter{})
+	logger.SetLevel(logrus.DebugLevel)
+	log = logger.WithField("component", "circuitbreaker")
+}
+
+func Log() *logrus.Logger {
+	return log.Logger
+}
+
 // WrapRetryableFunc wraps the target retry.RetryableFunc into a new function that transforms the result of the original
 // call into the state for the circuit breaker, which is then updated accordingly.
 //
@@ -58,9 +72,12 @@ func NewCircuitBreaker(retryAfter time.Duration, shouldOpen func(err error) bool
 func (g *CircuitBreaker) WrapRetryableFunc(retryableFunc func() error) func() error {
 	return func() error {
 		if shouldStayOpen, lastErr := g.isOpenAndNotFeasibleForRetry(); shouldStayOpen {
+			log.WithField("lastErr", lastErr).Debugf("should stay open, returning last error")
 			return lastErr
 		}
+		log.Debugf("calling retryableFunc")
 		err := retryableFunc()
+		log.Debugf("updating state")
 		g.updateState(err)
 		return err
 	}
@@ -72,21 +89,25 @@ func (g *CircuitBreaker) isOpenAndNotFeasibleForRetry() (bool, error) {
 	return g.open && g.isRetryBlocked(), g.lastErr
 }
 
-func (g *CircuitBreaker) isRetryBlocked() bool {
-	return !g.blockedUntil.IsZero() && !time.Now().After(g.blockedUntil)
-}
-
 func (g *CircuitBreaker) updateState(err error) {
 	g.mutex.Lock()
 	defer g.mutex.Unlock()
 	if g.isRetryBlocked() {
+		log.WithField("g.blockedUntil", g.blockedUntil).WithField("g.lastErr", g.lastErr).Info("retry is blocked")
 		return
 	}
 	if err != nil && g.shouldOpen(err) {
 		g.open = true
 		g.blockedUntil = time.Now().Add(g.retryAfter)
+		log.Info("circuit breaker is open")
 	} else {
 		g.open = false
+		log.Info("circuit breaker is closed")
 	}
 	g.lastErr = err
+	log.WithField("g.open", g.open).WithField("g.blockedUntil", g.blockedUntil).WithField("g.lastErr", g.lastErr).Debugf("state updated")
+}
+
+func (g *CircuitBreaker) isRetryBlocked() bool {
+	return !g.blockedUntil.IsZero() && !time.Now().After(g.blockedUntil)
 }

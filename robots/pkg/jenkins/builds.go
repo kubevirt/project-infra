@@ -214,6 +214,10 @@ func getBuildFromGetterWithRetry(buildDataGetter BuildDataGetter, buildNumber in
 		}),
 		retry.Delay(retryDelay),
 		retry.MaxJitter(maxJitter),
+		// We are using FixedDelay here since we only want to wait for the specified amount of
+		// time per each retry with a random jitter value, since the default retry.BackOffDelay would
+		// multiply the wait time on each retry
+		retry.DelayType(retry.CombineDelay(retry.FixedDelay, retry.RandomDelay)),
 	)
 	return build, statusCode, err
 }

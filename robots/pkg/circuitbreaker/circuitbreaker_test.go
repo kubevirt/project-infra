@@ -23,6 +23,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"io/ioutil"
 	"kubevirt.io/project-infra/robots/pkg/circuitbreaker"
 	"strings"
 	"sync"
@@ -36,6 +37,10 @@ func TestCircuitBreaker(t *testing.T) {
 }
 
 var _ = Describe("circuitbreaker.go", func() {
+
+	BeforeEach(func() {
+		circuitbreaker.Log().SetOutput(ioutil.Discard)
+	})
 
 	alwaysOpenCircuit := func(err error) bool {
 		return true
@@ -141,6 +146,8 @@ var _ = Describe("circuitbreaker.go", func() {
 
 	When("calling with go routines", func() {
 
+		const numberOfThreads = 4
+
 		var circuitBreaker *circuitbreaker.CircuitBreaker
 		retryAfter := 10 * time.Millisecond
 
@@ -148,18 +155,22 @@ var _ = Describe("circuitbreaker.go", func() {
 			circuitBreaker = circuitbreaker.NewCircuitBreaker(retryAfter, alwaysOpenCircuit)
 		})
 
-		It("should call only one target func in case of error", func() {
-			numberOfThreads := 4
+		It("should call only one target func in case of error if target func is called before others", func() {
 			var wg sync.WaitGroup
-			wg.Add(numberOfThreads)
+			wg.Add(numberOfThreads - 1)
 			var targetFuncs []*MockRetryableFunc
 			for i := 0; i < numberOfThreads; i++ {
 				targetFunc := &MockRetryableFunc{errors: []error{fmt.Errorf("test")}}
+				retryableFunc := circuitBreaker.WrapRetryableFunc(targetFunc.target())
+				if i > 0 {
+					go func(retryableFunc func() error, index int) {
+						defer wg.Done()
+						_ = retryableFunc()
+					}(retryableFunc, i)
+				} else {
+					_ = retryableFunc()
+				}
 				targetFuncs = append(targetFuncs, targetFunc)
-				go func(targetFunc *MockRetryableFunc) {
-					defer wg.Done()
-					_ = circuitBreaker.WrapRetryableFunc(targetFunc.target())()
-				}(targetFunc)
 			}
 			wg.Wait()
 			totalCalls := 0
@@ -169,8 +180,28 @@ var _ = Describe("circuitbreaker.go", func() {
 			Expect(totalCalls).To(BeEquivalentTo(1))
 		})
 
+		It("may call more than one target func in case of error if target funcs are called asynchronously", func() {
+			var wg sync.WaitGroup
+			wg.Add(numberOfThreads)
+			var targetFuncs []*MockRetryableFunc
+			for i := 0; i < numberOfThreads; i++ {
+				targetFunc := &MockRetryableFunc{errors: []error{fmt.Errorf("test")}}
+				retryableFunc := circuitBreaker.WrapRetryableFunc(targetFunc.target())
+				go func(retryableFunc func() error, index int) {
+					defer wg.Done()
+					_ = retryableFunc()
+				}(retryableFunc, i)
+				targetFuncs = append(targetFuncs, targetFunc)
+			}
+			wg.Wait()
+			totalCalls := 0
+			for i := 0; i < numberOfThreads; i++ {
+				totalCalls += targetFuncs[i].calls
+			}
+			Expect(totalCalls).To(BeNumerically(">=", 1))
+		})
+
 		It("should call all four target funcs in case of no error", func() {
-			numberOfThreads := 4
 			var wg sync.WaitGroup
 			wg.Add(numberOfThreads)
 			var targetFuncs []*MockRetryableFunc
@@ -191,7 +222,6 @@ var _ = Describe("circuitbreaker.go", func() {
 		})
 
 		It("should call all four target funcs in case of the first caller errors and the others wait long enough", func() {
-			numberOfThreads := 4
 			var wg sync.WaitGroup
 			wg.Add(numberOfThreads)
 
