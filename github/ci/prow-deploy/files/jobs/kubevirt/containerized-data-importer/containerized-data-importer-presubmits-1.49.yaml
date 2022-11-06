@@ -1,0 +1,203 @@
+presubmits:
+  kubevirt/containerized-data-importer:
+  - name: pull-cdi-unit-test
+    branches:
+      - release-v1.38
+      - release-v1.43
+      - release-v1.49
+    cluster: prow-workloads
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test-unit"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+  - name: pull-cdi-generate-verify
+    branches:
+      - release-v1.38
+      - release-v1.43
+      - release-v1.49
+    cluster: ibm-prow-jobs
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a633
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make generate-verify"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-cdi-apidocs
+    branches:
+      - release-v1.38
+      - release-v1.43
+      - release-v1.49
+    cluster: ibm-prow-jobs
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make apidocs"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-cdi-linter
+    branches:
+      - release-v1.38
+      - release-v1.43
+      - release-v1.49
+    cluster: ibm-prow-jobs
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test-lint"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-containerized-data-importer-e2e-hpp-previous
+    branches:
+      - release-v1.43
+      - release-v1.49
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 5h
+      grace_period: 5m
+    max_concurrency: 6
+    cluster: prow-workloads
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "automation/previous-hpp.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "29Gi"
+  - name: pull-containerized-data-importer-e2e-ceph
+    branches:
+      - release-v1.43
+      - release-v1.49
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 5h
+      grace_period: 5m
+    max_concurrency: 6
+    cluster: prow-workloads
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "automation/ceph.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "29Gi"
