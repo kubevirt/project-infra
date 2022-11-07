@@ -7,7 +7,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     always_run: true
-    skip_report: false
     optional: true
     decorate: true
     decoration_config:
@@ -37,7 +36,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     always_run: true
-    skip_report: false
     optional: true
     decorate: true
     decoration_config:
@@ -68,7 +66,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     always_run: true
-    skip_report: false
     optional: true
     decorate: true
     decoration_config:
@@ -99,7 +96,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     always_run: true
-    skip_report: false
     optional: true
     decorate: true
     decoration_config:
