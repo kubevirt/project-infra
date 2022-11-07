@@ -1,9 +1,8 @@
 presubmits:
   kubevirt/containerized-data-importer:
-  - name: pull-cdi-unit-test-1.49
+  - name: pull-cdi-unit-test-1.43
     branches:
-      - release-v1.38
-      - release-v1.49
+      - release-v1.43
     cluster: prow-workloads
     annotations:
       fork-per-release: "true"
@@ -31,10 +30,9 @@ presubmits:
           resources:
             requests:
               memory: "8Gi"
-  - name: pull-cdi-generate-verify-1.49
+  - name: pull-cdi-generate-verify-1.43
     branches:
-      - release-v1.38
-      - release-v1.49
+      - release-v1.43
     cluster: ibm-prow-jobs
     annotations:
       fork-per-release: "true"
@@ -63,10 +61,9 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-cdi-apidocs-1.49
+  - name: pull-cdi-apidocs-1.43
     branches:
-      - release-v1.38
-      - release-v1.49
+      - release-v1.43
     cluster: ibm-prow-jobs
     annotations:
       fork-per-release: "true"
@@ -95,10 +92,9 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-cdi-linter-1.49
+  - name: pull-cdi-linter-1.43
     branches:
-      - release-v1.38
-      - release-v1.49
+      - release-v1.43
     cluster: ibm-prow-jobs
     annotations:
       fork-per-release: "true"
@@ -127,9 +123,9 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-containerized-data-importer-e2e-hpp-previous-1.49
+  - name: pull-containerized-data-importer-e2e-hpp-previous-1.43
     branches:
-      - release-v1.49
+      - release-v1.43
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
@@ -161,9 +157,9 @@ presubmits:
           resources:
             requests:
               memory: "29Gi"
-  - name: pull-containerized-data-importer-e2e-ceph-1.49
+  - name: pull-containerized-data-importer-e2e-ceph-1.43
     branches:
-      - release-v1.49
+      - release-v1.43
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
