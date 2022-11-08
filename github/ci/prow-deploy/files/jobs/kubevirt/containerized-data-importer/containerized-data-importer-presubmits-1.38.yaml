@@ -3,8 +3,6 @@ presubmits:
   - name: pull-containerized-data-importer-e2e-k8s-1.19-hpp
     branches:
       - release-v1.38
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: false
     decorate: true
@@ -36,8 +34,6 @@ presubmits:
   - name: pull-containerized-data-importer-e2e-k8s-1.19-ceph
     branches:
       - release-v1.38
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: false
     decorate: true
@@ -70,8 +66,6 @@ presubmits:
     branches:
       - release-v1.38
     cluster: prow-workloads
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: true
     decorate: true
@@ -99,8 +93,6 @@ presubmits:
     branches:
       - release-v1.38
     cluster: ibm-prow-jobs
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: true
     decorate: true
@@ -129,8 +121,6 @@ presubmits:
     branches:
       - release-v1.38
     cluster: ibm-prow-jobs
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: true
     decorate: true
@@ -159,8 +149,6 @@ presubmits:
     branches:
       - release-v1.38
     cluster: ibm-prow-jobs
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: true
     decorate: true

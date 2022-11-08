@@ -4,8 +4,6 @@ presubmits:
     branches:
       - release-v1.43
     cluster: prow-workloads
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: true
     decorate: true
@@ -33,8 +31,6 @@ presubmits:
     branches:
       - release-v1.43
     cluster: ibm-prow-jobs
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: true
     decorate: true
@@ -63,8 +59,6 @@ presubmits:
     branches:
       - release-v1.43
     cluster: ibm-prow-jobs
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: true
     decorate: true
@@ -93,8 +87,6 @@ presubmits:
     branches:
       - release-v1.43
     cluster: ibm-prow-jobs
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: true
     decorate: true
@@ -122,9 +114,6 @@ presubmits:
   - name: pull-containerized-data-importer-e2e-hpp-previous-1.43
     branches:
       - release-v1.43
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
     decorate: true
@@ -156,9 +145,6 @@ presubmits:
   - name: pull-containerized-data-importer-e2e-ceph-1.43
     branches:
       - release-v1.43
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
     decorate: true
