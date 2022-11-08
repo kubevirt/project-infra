@@ -66,8 +66,6 @@ presubmits:
           resources:
             requests:
               memory: "29Gi"
-presubmits:
-  kubevirt/containerized-data-importer:
   - name: pull-cdi-unit-test-1.38
     branches:
       - release-v1.38
