@@ -136,7 +136,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.24-sig-compute-nonroot
+    name: pull-kubevirt-e2e-k8s-1.24-sig-compute-root
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -150,9 +150,7 @@ presubmits:
         - name: TARGET
           value: k8s-1.24-sig-compute
         - name: FEATURE_GATES
-          value: NonRoot
-        - name: KUBEVIRT_NONROOT
-          value: "true"
+          value: Root
         image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
@@ -178,7 +176,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.24-sig-network-nonroot
+    name: pull-kubevirt-e2e-k8s-1.24-sig-network-root
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -192,9 +190,7 @@ presubmits:
         - name: TARGET
           value: k8s-1.24-sig-network
         - name: FEATURE_GATES
-          value: NonRoot
-        - name: KUBEVIRT_NONROOT
-          value: "true"
+          value: Root
         image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
@@ -220,7 +216,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.24-sig-storage-nonroot
+    name: pull-kubevirt-e2e-k8s-1.24-sig-storage-root
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -234,9 +230,7 @@ presubmits:
         - name: TARGET
           value: k8s-1.24-sig-storage
         - name: FEATURE_GATES
-          value: NonRoot
-        - name: KUBEVIRT_NONROOT
-          value: "true"
+          value: Root
         image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
@@ -323,7 +317,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.24-operator-nonroot
+    name: pull-kubevirt-e2e-k8s-1.24-operator-root
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -337,9 +331,7 @@ presubmits:
         - name: TARGET
           value: k8s-1.24-sig-operator
         - name: FEATURE_GATES
-          value: NonRoot
-        - name: KUBEVIRT_NONROOT
-          value: "true"
+          value: Root
         image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
         name: ""
         resources:
@@ -404,7 +396,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       sriov-pod: "true"
     max_concurrency: 10
-    name: pull-kubevirt-e2e-kind-1.22-sriov-nonroot
+    name: pull-kubevirt-e2e-kind-1.22-sriov-root
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -436,9 +428,7 @@ presubmits:
         - name: TARGET
           value: kind-1.22-sriov
         - name: FEATURE_GATES
-          value: NonRoot
-        - name: KUBEVIRT_NONROOT
-          value: "true"
+          value: Root
         image: quay.io/kubevirtci/bootstrap-legacy:v20220810-a8f2e6c
         name: ""
         resources:
@@ -565,7 +555,6 @@ presubmits:
       vgpu: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.23-vgpu
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -642,7 +631,8 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       vgpu: "true"
     max_concurrency: 1
-    name: pull-kubevirt-e2e-kind-1.23-vgpu-nonroot
+    name: pull-kubevirt-e2e-kind-1.23-vgpu-root
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -667,9 +657,7 @@ presubmits:
           automation/test.sh
         env:
         - name: FEATURE_GATES
-          value: NonRoot
-        - name: KUBEVIRT_NONROOT
-          value: "true"
+          value: Root
         - name: TARGET
           value: kind-1.23-vgpu
         image: quay.io/kubevirtci/golang:v20220906-4f60dd3
