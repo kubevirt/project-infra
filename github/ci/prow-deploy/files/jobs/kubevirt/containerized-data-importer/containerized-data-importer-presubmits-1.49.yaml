@@ -1,6 +1,7 @@
 presubmits:
   kubevirt/containerized-data-importer:
   - name: pull-cdi-unit-test-1.49
+    context: pull-cdi-unit-test
     branches:
       - release-v1.38
       - release-v1.49
@@ -29,6 +30,7 @@ presubmits:
             requests:
               memory: "8Gi"
   - name: pull-cdi-generate-verify-1.49
+    context: pull-cdi-generate-verify
     branches:
       - release-v1.38
       - release-v1.49
@@ -58,6 +60,7 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-cdi-apidocs-1.49
+    context: pull-cdi-apidocs
     branches:
       - release-v1.38
       - release-v1.49
@@ -87,6 +90,7 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-cdi-linter-1.49
+    context: pull-cdi-linter
     branches:
       - release-v1.38
       - release-v1.49
@@ -116,6 +120,7 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-containerized-data-importer-e2e-hpp-previous-1.49
+    context: pull-containerized-data-importer-e2e-hpp-previous
     branches:
       - release-v1.49
     always_run: true
@@ -147,6 +152,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-ceph-1.49
+    context: pull-containerized-data-importer-e2e-ceph
     branches:
       - release-v1.49
     always_run: true

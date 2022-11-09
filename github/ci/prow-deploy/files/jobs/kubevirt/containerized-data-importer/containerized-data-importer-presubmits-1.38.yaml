@@ -63,6 +63,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-cdi-unit-test-1.38
+    context: pull-cdi-unit-test
     branches:
       - release-v1.38
     cluster: prow-workloads
@@ -90,6 +91,7 @@ presubmits:
             requests:
               memory: "8Gi"
   - name: pull-cdi-generate-verify-1.38
+    context: pull-cdi-generate-verify
     branches:
       - release-v1.38
     cluster: ibm-prow-jobs
@@ -118,6 +120,7 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-cdi-apidocs-1.38
+    context: pull-cdi-apidocs
     branches:
       - release-v1.38
     cluster: ibm-prow-jobs
@@ -146,6 +149,7 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-cdi-linter-1.38
+    context: pull-cdi-linter
     branches:
       - release-v1.38
     cluster: ibm-prow-jobs
