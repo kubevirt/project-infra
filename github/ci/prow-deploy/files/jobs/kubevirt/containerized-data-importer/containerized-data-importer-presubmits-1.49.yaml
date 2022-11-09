@@ -3,7 +3,6 @@ presubmits:
   - name: pull-cdi-unit-test-1.49
     context: pull-cdi-unit-test
     branches:
-      - release-v1.38
       - release-v1.49
     cluster: prow-workloads
     always_run: true
@@ -32,7 +31,6 @@ presubmits:
   - name: pull-cdi-generate-verify-1.49
     context: pull-cdi-generate-verify
     branches:
-      - release-v1.38
       - release-v1.49
     cluster: ibm-prow-jobs
     always_run: true
@@ -62,7 +60,6 @@ presubmits:
   - name: pull-cdi-apidocs-1.49
     context: pull-cdi-apidocs
     branches:
-      - release-v1.38
       - release-v1.49
     cluster: ibm-prow-jobs
     always_run: true
@@ -92,7 +89,6 @@ presubmits:
   - name: pull-cdi-linter-1.49
     context: pull-cdi-linter
     branches:
-      - release-v1.38
       - release-v1.49
     cluster: ibm-prow-jobs
     always_run: true
