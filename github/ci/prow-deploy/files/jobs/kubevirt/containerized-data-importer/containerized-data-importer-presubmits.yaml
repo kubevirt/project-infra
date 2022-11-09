@@ -1,11 +1,14 @@
 presubmits:
   kubevirt/containerized-data-importer:
   - name: pull-cdi-unit-test
+    skip_branches:
+      - release-v1.38
+      - release-v1.43
+      - release-v1.49
     cluster: prow-workloads
     annotations:
       fork-per-release: "true"
     always_run: true
-    skip_report: false
     optional: true
     decorate: true
     decoration_config:
@@ -29,11 +32,14 @@ presubmits:
             requests:
               memory: "8Gi"
   - name: pull-cdi-generate-verify
+    skip_branches:
+      - release-v1.38
+      - release-v1.43
+      - release-v1.49
     cluster: ibm-prow-jobs
     annotations:
       fork-per-release: "true"
     always_run: true
-    skip_report: false
     optional: true
     decorate: true
     decoration_config:
@@ -58,11 +64,14 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-cdi-apidocs
+    skip_branches:
+      - release-v1.38
+      - release-v1.43
+      - release-v1.49
     cluster: ibm-prow-jobs
     annotations:
       fork-per-release: "true"
     always_run: true
-    skip_report: false
     optional: true
     decorate: true
     decoration_config:
@@ -87,11 +96,14 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-cdi-linter
+    skip_branches:
+      - release-v1.38
+      - release-v1.43
+      - release-v1.49
     cluster: ibm-prow-jobs
     annotations:
       fork-per-release: "true"
     always_run: true
-    skip_report: false
     optional: true
     decorate: true
     decoration_config:
@@ -222,6 +234,8 @@ presubmits:
       - release-v1.28
       - release-v1.34
       - release-v1.38
+      - release-v1.43
+      - release-v1.49
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
@@ -258,6 +272,8 @@ presubmits:
       - release-v1.28
       - release-v1.34
       - release-v1.38
+      - release-v1.43
+      - release-v1.49
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits

@@ -3,8 +3,6 @@ presubmits:
   - name: pull-containerized-data-importer-e2e-k8s-1.19-hpp
     branches:
       - release-v1.34
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: false
     decorate: true
@@ -36,8 +34,6 @@ presubmits:
   - name: pull-containerized-data-importer-e2e-k8s-1.19-ceph
     branches:
       - release-v1.34
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: false
     decorate: true
