@@ -64,4 +64,4 @@ postsubmits:
             name: devices
           resources:
             requests:
-              memory: "8Gi"
+              memory: "29Gi"
