@@ -32,7 +32,7 @@ presubmits:
           value: k8s-1.23-sig-compute
         - name: KUBEVIRT_CGROUPV2
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -111,7 +111,7 @@ presubmits:
           value: k8s-1.23-sig-storage
         - name: KUBEVIRT_CGROUPV2
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -151,7 +151,7 @@ presubmits:
           value: k8s-1.24-sig-compute
         - name: FEATURE_GATES
           value: Root
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -191,7 +191,7 @@ presubmits:
           value: k8s-1.24-sig-network
         - name: FEATURE_GATES
           value: Root
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -231,7 +231,7 @@ presubmits:
           value: k8s-1.24-sig-storage
         - name: FEATURE_GATES
           value: Root
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -291,7 +291,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --prometheus-port 30007
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -332,7 +332,7 @@ presubmits:
           value: k8s-1.24-sig-operator
         - name: FEATURE_GATES
           value: Root
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -370,7 +370,7 @@ presubmits:
         env:
         - name: TARGET
           value: windows2016
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -580,7 +580,7 @@ presubmits:
         env:
         - name: TARGET
           value: kind-1.23-vgpu
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -660,7 +660,7 @@ presubmits:
           value: Root
         - name: TARGET
           value: kind-1.23-vgpu
-        image: quay.io/kubevirtci/golang:v20220906-4f60dd3
+        image: quay.io/kubevirtci/golang:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -722,7 +722,7 @@ presubmits:
         - /bin/sh
         - -c
         - TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -753,7 +753,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -784,7 +784,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make verify-rpm-deps
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -813,7 +813,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make deps-sync && hack/verify-generate.sh
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -845,7 +845,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make gosec
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -874,7 +874,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -906,7 +906,7 @@ presubmits:
         env:
         - name: BUILD_ARCH
           value: crossbuild-aarch64
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -936,7 +936,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -970,7 +970,7 @@ presubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1008,7 +1008,7 @@ presubmits:
         env:
         - name: FOSSA_TOKEN_FILE
           value: /root/.docker/secrets/fossa/token
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1045,7 +1045,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1074,7 +1074,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1104,7 +1104,7 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX="docker.io/kubevirt"
           && make olm-verify
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1133,7 +1133,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make prom-rules-verify
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1162,7 +1162,7 @@ presubmits:
         - /bin/sh
         - -c
         - hack/check-unassigned-tests.sh
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1198,7 +1198,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1236,7 +1236,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-ipv6-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1274,7 +1274,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1312,7 +1312,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1354,7 +1354,7 @@ presubmits:
           value: "3"
         - name: KUBEVIRT_STORAGE
           value: rook-ceph-default
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1396,7 +1396,7 @@ presubmits:
           value: "3"
         - name: KUBEVIRT_STORAGE
           value: rook-ceph-default
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1442,7 +1442,7 @@ presubmits:
           value: NonRoot
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1480,7 +1480,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1518,7 +1518,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.22-sig-compute-realtime
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1597,7 +1597,7 @@ presubmits:
           value: crossbuild-aarch64
         - name: KUBEVIRT_E2E_FOCUS
           value: arm64
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1640,7 +1640,7 @@ presubmits:
         - -ce
         - |
           make builder-build
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1676,7 +1676,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1710,7 +1710,7 @@ presubmits:
         - -c
         - |
           make lint
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1746,7 +1746,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1784,7 +1784,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1822,7 +1822,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.23-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1866,7 +1866,7 @@ presubmits:
           value: SwapTest
         - name: KUBEVIRT_SWAP_ON
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1903,7 +1903,7 @@ presubmits:
           value: k8s-1.22-sig-monitoring
         - name: KUBEVIRT_NUM_NODES
           value: "2"
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1950,7 +1950,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_STORAGE
           value: rook-ceph-default
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -1988,7 +1988,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -2026,7 +2026,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -2064,7 +2064,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -2102,7 +2102,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -2141,7 +2141,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-psa-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -2180,7 +2180,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-psa-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -2219,7 +2219,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.25-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -2258,7 +2258,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.25-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -2297,7 +2297,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.25-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -2336,7 +2336,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.25-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
@@ -2407,7 +2407,7 @@ presubmits:
           value: /usr/local/bin/kubectl
         - name: IMAGE_PULL_POLICY
           value: Always
-        image: quay.io/kubevirtci/bootstrap:v20220906-4f60dd3
+        image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         name: ""
         resources:
           requests:
