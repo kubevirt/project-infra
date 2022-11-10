@@ -178,7 +178,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/autoowners:v20210615-aa22a23
+    - image: quay.io/kubevirtci/autoowners:v20220817-6d185c5
       command:
       - "autoowners"
       args:
@@ -688,7 +688,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20220816-91d8af2
+      - image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
         env:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
@@ -756,7 +756,7 @@ periodics:
   name: periodic-project-infra-check-prow-jobconfigs
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20220728-1410a63
+    - image: quay.io/kubevirtci/golang:v20221105-0d76701
       env:
       - name: GIMME_GO_VERSION
         value: "1.16"
