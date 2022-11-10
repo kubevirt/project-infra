@@ -2,6 +2,7 @@
 presubmits:
   k8snetworkplumbingwg/ovs-cni:
     - name: pull-e2e-ovs-cni-0.19
+      context: pull-e2e-ovs-cni
       branches:
         - release-0.19
       always_run: true

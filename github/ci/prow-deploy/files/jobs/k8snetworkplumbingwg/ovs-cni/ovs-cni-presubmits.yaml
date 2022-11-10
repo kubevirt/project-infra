@@ -2,6 +2,7 @@
 presubmits:
   k8snetworkplumbingwg/ovs-cni:
     - name: pull-e2e-ovs-cni
+      context: pull-e2e-ovs-cni # NOTE: Don't change this name while forking stable branches
       skip_branches:
         - release-\d+\.\d+
       annotations:
