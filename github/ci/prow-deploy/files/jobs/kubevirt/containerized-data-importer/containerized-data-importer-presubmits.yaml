@@ -375,7 +375,7 @@ presubmits:
               memory: "29Gi"
   - name: pull-containerized-data-importer-fossa
     skip_branches:
-      - release-\d+\.\d+
+      - release-v\d+\.\d+
     always_run: true
     optional: false
     annotations:
