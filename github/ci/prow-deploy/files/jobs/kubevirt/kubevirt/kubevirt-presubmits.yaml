@@ -284,7 +284,7 @@ presubmits:
         - name: KUBEVIRT_STORAGE
           value: hpp
         - name: KUBEVIRT_MEMORY_SIZE
-          value: 11G
+          value: 12G
         - name: KUBEVIRT_NUM_NODES
           value: "4"
         - name: KUBEVIRT_DEPLOY_PROMETHEUS
@@ -296,7 +296,7 @@ presubmits:
         resources:
           requests:
             cpu: "12"
-            memory: 52Gi
+            memory: 56Gi
         securityContext:
           privileged: true
       nodeSelector:
