@@ -1,10 +1,10 @@
 ---
 presubmits:
   k8snetworkplumbingwg/ovs-cni:
-    - name: pull-e2e-ovs-cni-0.19
+    - name: pull-e2e-ovs-cni-0.29
       context: pull-e2e-ovs-cni
       branches:
-        - release-0.19
+        - release-0.29
       always_run: true
       optional: false
       decorate: true
@@ -13,7 +13,7 @@ presubmits:
         grace_period: 5m
       max_concurrency: 6
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
       cluster: prow-workloads
@@ -21,7 +21,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
+          - image: quay.io/kubevirtci/bootstrap:v20220823-3fed276
             securityContext:
               privileged: true
             resources:
