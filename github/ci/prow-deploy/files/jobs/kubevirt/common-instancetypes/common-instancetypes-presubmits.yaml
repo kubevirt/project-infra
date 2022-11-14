@@ -14,7 +14,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-      - image: quay.io/kubevirtci/common-instancetypes-builder:v20221104-ae4ae31
+      - image: quay.io/kubevirtci/common-instancetypes-builder:v20221104-3adec0b
         command:
         - "/bin/bash"
         - "-c"
