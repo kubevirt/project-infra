@@ -624,6 +624,7 @@ periodics:
     preset-kubevirtci-quay-credential: "true"
     preset-podman-in-container-enabled: "true"
     preset-shared-images: "true"
+    preset-pgp-bot-key: "true"
   name: periodic-kubevirt-cluster-sync-test-ARM64
   reporter_config:
     slack:
@@ -679,16 +680,8 @@ periodics:
           memory: 29Gi
       securityContext:
         privileged: true
-      volumeMounts:
-      - mountPath: /etc/pgp
-        name: pgp-bot-key
-        readOnly: true
     nodeSelector:
       type: bare-metal-external
-    volumes:
-    - name: pgp-bot-key
-      secret:
-        secretName: pgp-bot-key
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
@@ -710,6 +703,7 @@ periodics:
     preset-bazel-unnested: "true"
     preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
+    preset-pgp-bot-key: "true"
   max_concurrency: 1
   name: periodic-kubevirt-performance-cluster-100-density-test
   reporter_config:
@@ -768,14 +762,6 @@ periodics:
           memory: 4Gi
       securityContext:
         privileged: true
-      volumeMounts:
-      - mountPath: /etc/pgp
-        name: pgp-bot-key
-        readOnly: true
-    volumes:
-    - name: pgp-bot-key
-      secret:
-        secretName: pgp-bot-key
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
@@ -797,6 +783,7 @@ periodics:
     preset-bazel-unnested: "true"
     preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
+    preset-pgp-bot-key: "true"
   max_concurrency: 1
   name: periodic-kubevirt-performance-cluster-scale-density-test
   reporter_config:
@@ -866,14 +853,6 @@ periodics:
           memory: 4Gi
       securityContext:
         privileged: true
-      volumeMounts:
-      - mountPath: /etc/pgp
-        name: pgp-bot-key
-        readOnly: true
-    volumes:
-    - name: pgp-bot-key
-      secret:
-        secretName: pgp-bot-key
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"

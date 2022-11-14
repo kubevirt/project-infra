@@ -1795,6 +1795,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
       preset-shared-images: "true"
+      preset-pgp-bot-key: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-arm64-0.47
     optional: true
@@ -1854,15 +1855,9 @@ presubmits:
         volumeMounts:
         - mountPath: /etc/github
           name: token
-        - mountPath: /etc/pgp
-          name: pgp-bot-key
-          readOnly: true
       nodeSelector:
         type: bare-metal-external
       volumes:
       - name: token
         secret:
           secretName: oauth-token
-      - name: pgp-bot-key
-        secret:
-          secretName: pgp-bot-key

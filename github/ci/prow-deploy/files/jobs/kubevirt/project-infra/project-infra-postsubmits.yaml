@@ -407,6 +407,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -427,14 +428,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-prow-workloads-cluster-deployment
       always_run: false
       run_if_changed: "github/ci/prow-deploy/kustom/overlays/workloads-production/.*|github/ci/prow-deploy/kustom/componenets/.*"
@@ -447,6 +440,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -467,14 +461,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-prow-workloads-bootstrap-nodes
       always_run: false
       annotations:
@@ -487,6 +473,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -507,14 +494,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-prow-workloads-services-deployment
       always_run: false
       annotations:
@@ -527,6 +506,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -543,14 +523,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-prow-performance-workloads-bootstrap-nodes
       always_run: false
       annotations:
@@ -563,6 +535,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -579,14 +552,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-prow-performance-workload-cluster-deployment
       always_run: false
       annotations:
@@ -599,6 +564,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -615,14 +581,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-prow-arm-workloads-bootstrap-nodes
       always_run: false
       annotations:
@@ -635,6 +593,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -651,14 +610,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-prow-arm-workloads-cluster-deployment
       always_run: false
       annotations:
@@ -671,6 +622,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       skip_report: false
       cluster: ibm-prow-jobs
       spec:
@@ -687,14 +639,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-cert-manager-deployment
       always_run: false
       annotations:
@@ -706,6 +650,7 @@ postsubmits:
       labels:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
@@ -732,14 +677,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-ci-search-deployment
       always_run: false
       annotations:
@@ -751,6 +688,7 @@ postsubmits:
       labels:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
@@ -777,14 +715,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-loki-deployment
       always_run: false
       annotations:
@@ -796,6 +726,7 @@ postsubmits:
       labels:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
@@ -822,14 +753,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-sippy-deployment
       always_run: false
       annotations:
@@ -841,6 +764,7 @@ postsubmits:
       labels:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
@@ -866,14 +790,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-prometheus-stack-deployment
       always_run: false
       annotations:
@@ -885,6 +801,7 @@ postsubmits:
       labels:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
@@ -924,14 +841,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-kuberhealthy-deployment
       always_run: false
       annotations:
@@ -943,6 +852,7 @@ postsubmits:
       labels:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
@@ -969,14 +879,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-kubot-deployment
       always_run: false
       annotations:
@@ -989,6 +891,7 @@ postsubmits:
         preset-bazel-cache: "true"
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
+        preset-pgp-bot-key: "true"
       cluster: ibm-prow-jobs
       spec:
         securityContext:
@@ -1017,14 +920,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-          volumeMounts:
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
-        volumes:
-        - name: pgp-bot-key
-          secret:
-            secretName: pgp-bot-key
     - name: post-project-infra-update-testgrid-config
       run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$|^github/ci/testgrid/gen-config\.yaml$|^github/ci/testgrid/default\.yaml$'
       branches:

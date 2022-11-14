@@ -752,6 +752,7 @@ periodics:
     preset-docker-mirror: "true"
     preset-shared-images: "true"
     preset-github-credentials: "true"
+    preset-pgp-bot-key: "true"
   max_concurrency: 1
   name: periodic-project-infra-check-prow-jobconfigs
   spec:
@@ -778,11 +779,3 @@ periodics:
       resources:
         requests:
           memory: "1Gi"
-      volumeMounts:
-      - name: pgp-bot-key
-        mountPath: /etc/pgp
-        readOnly: true
-    volumes:
-    - name: pgp-bot-key
-      secret:
-        secretName: pgp-bot-key

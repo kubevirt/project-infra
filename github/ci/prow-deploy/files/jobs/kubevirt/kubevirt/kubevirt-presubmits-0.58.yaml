@@ -1492,6 +1492,7 @@ presubmits:
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
       preset-shared-images: "true"
+      preset-pgp-bot-key: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-arm64-0.58
     optional: true
@@ -1546,16 +1547,8 @@ presubmits:
             memory: 8Gi
         securityContext:
           privileged: true
-        volumeMounts:
-        - mountPath: /etc/pgp
-          name: pgp-bot-key
-          readOnly: true
       nodeSelector:
         type: bare-metal-external
-      volumes:
-      - name: pgp-bot-key
-        secret:
-          secretName: pgp-bot-key
   - always_run: false
     branches:
     - release-0.58
