@@ -9,7 +9,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 3h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     name: pull-kubernetes-sigs-cluster-api-provider-kubevirt-e2e
@@ -22,7 +22,7 @@ presubmits:
         - /bin/sh
         - -c
         - make functest
-        image: quay.io/kubevirtci/golang-legacy:v20220810-a8f2e6c
+        image: quay.io/kubevirtci/golang:v20221105-0d76701
         name: ""
         resources:
           requests:
