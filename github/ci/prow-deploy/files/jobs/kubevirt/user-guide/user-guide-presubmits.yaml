@@ -7,7 +7,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-      - image: quay.io/kubevirtci/kubevirt-userguide:v20210120-7cfa0f5
-        command: [ "/bin/bash", "-c" ]
+      - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20220825-9d7149f
+        command: [ "/usr/bin/bash", "-c" ]
         args:
         - "rake -- -u"
