@@ -1548,6 +1548,7 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
       preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
+      preset-pgp-bot-key: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-arm64
     optional: true
@@ -1604,16 +1605,8 @@ presubmits:
             memory: 8Gi
         securityContext:
           privileged: true
-        volumeMounts:
-        - mountPath: /etc/pgp
-          name: pgp-bot-key
-          readOnly: true
       nodeSelector:
         type: bare-metal-external
-      volumes:
-      - name: pgp-bot-key
-        secret:
-          secretName: pgp-bot-key
   - always_run: false
     annotations:
       fork-per-release: "true"
@@ -2356,6 +2349,7 @@ presubmits:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
+      preset-pgp-bot-key: "true"
     max_concurrency: 1
     name: pull-kubevirt-perf-cluster-sync
     skip_branches:
@@ -2414,11 +2408,3 @@ presubmits:
             memory: 4Gi
         securityContext:
           privileged: true
-        volumeMounts:
-        - mountPath: /etc/pgp
-          name: pgp-bot-key
-          readOnly: true
-      volumes:
-      - name: pgp-bot-key
-        secret:
-          secretName: pgp-bot-key

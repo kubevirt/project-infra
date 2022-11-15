@@ -386,6 +386,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
+      preset-pgp-bot-key: "true"
     cluster: prow-workloads
     spec:
       nodeSelector:
@@ -413,17 +414,11 @@ presubmits:
           volumeMounts:
           - name: molecule-docker
             mountPath: /tmp/prow-deploy-molecule
-          - name: pgp-bot-key
-            mountPath: /etc/pgp
-            readOnly: true
           - name: unprivileged-token
             mountPath: /etc/github
       volumes:
       - name: molecule-docker
         emptyDir: {}
-      - name: pgp-bot-key
-        secret:
-          secretName: pgp-bot-key
       - name: unprivileged-token
         secret:
           secretName: unprivileged-oauth-token

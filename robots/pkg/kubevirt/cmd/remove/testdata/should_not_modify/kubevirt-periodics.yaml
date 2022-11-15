@@ -1116,6 +1116,7 @@ periodics:
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-shared-images: "true"
+    preset-pgp-bot-key: "true"
   name: periodic-kubevirt-cluster-sync-test-ARM
   reporter_config:
     slack:
@@ -1170,18 +1171,12 @@ periodics:
       volumeMounts:
       - mountPath: /etc/github
         name: token
-      - mountPath: /etc/pgp
-        name: pgp-bot-key
-        readOnly: true
     nodeSelector:
       type: bare-metal-external
     volumes:
     - name: token
       secret:
         secretName: oauth-token
-    - name: pgp-bot-key
-      secret:
-        secretName: pgp-bot-key
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"

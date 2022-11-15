@@ -609,6 +609,16 @@ presets:
   - name: gcs
     mountPath: /etc/gcs
     readOnly: true
+- labels:
+    preset-pgp-bot-key: "true"
+  volumeMounts:
+  - mountPath: /etc/pgp
+    name: pgp-bot-key
+    readOnly: true
+  volumes:
+  - name: pgp-bot-key
+    secret:
+      secretName: pgp-bot-key
 
 # default preset with no labels, settings common to all jobs
 - env:
