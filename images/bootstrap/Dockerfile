@@ -84,6 +84,9 @@ RUN dnf -y update; dnf -y reinstall shadow-utils && \
 
 VOLUME /var/lib/containers
 
+COPY storage.conf /etc/containers/storage.conf
+RUN mkdir -p /var/lib/shared-images
+
 COPY containers.conf /etc/containers/containers.conf
 COPY podman.json /etc/containers/networks/podman.json
 
