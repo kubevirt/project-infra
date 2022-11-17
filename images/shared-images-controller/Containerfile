@@ -1,0 +1,31 @@
+FROM quay.io/kubevirtci/bootstrap:v20221105-0d76701 as builder
+
+WORKDIR /workspace
+
+RUN dnf install -y gpgme-devel device-mapper-devel btrfs-progs-devel golang
+
+ENV GOPROXY=https://proxy.golang.org
+
+COPY go.mod go.mod
+
+COPY go.sum go.sum
+
+RUN go mod download
+
+COPY ./ ./
+
+RUN go build .
+
+FROM quay.io/kubevirtci/bootstrap:v20221105-0d76701
+
+WORKDIR /
+
+RUN mkdir -p /var/lib/shared-images
+
+COPY ./storage.conf /etc/containers/storage.conf
+
+ENV PODMAN_IN_CONTAINER_ENABLED=true
+
+COPY --from=builder /workspace/shared-images-controller .
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
