@@ -255,6 +255,132 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.24-sig-performance-realtime-root
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          # Create k8s cluster
+          make cluster-up
+
+          # Push and deploy kubevirt
+          make cluster-sync
+
+          FUNC_TEST_ARGS="--no-color --seed=42" make realtime-perftest
+        env:
+        - name: FEATURE_GATES
+          value: Root
+        - name: KUBEVIRT_PROVIDER
+          value: k8s-1.24
+        - name: KUBEVIRT_STORAGE
+          value: rook-ceph-default
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 9G
+        - name: KUBEVIRT_NUM_NODES
+          value: "2"
+        - name: KUBEVIRT_E2E_REALTIME_PERF_TEST
+          value: "true"
+        - name: KUBEVIRT_E2E_CYCLIC_DURATION_IN_SECONDS
+          value: "60"
+        - name: KUBEVIRT_E2E_REALTIME_LATENCY_THRESHOLD_IN_MICROSECONDS
+          value: "40"
+        - name: KUBEVIRT_HUGEPAGES_2M
+          value: "512"
+        - name: KUBEVIRT_REALTIME_SCHEDULER
+          value: "true"
+        image: quay.io/kubevirtci/bootstrap:v20221116-f8c83d3
+        name: ""
+        resources:
+          requests:
+            cpu: "10"
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.24-sig-performance-realtime
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          # Create k8s cluster
+          make cluster-up
+
+          # Push and deploy kubevirt
+          make cluster-sync
+
+          FUNC_TEST_ARGS="--no-color --seed=42" make realtime-perftest
+        env:
+        - name: KUBEVIRT_PROVIDER
+          value: k8s-1.24
+        - name: KUBEVIRT_STORAGE
+          value: rook-ceph-default
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 9G
+        - name: KUBEVIRT_NUM_NODES
+          value: "2"
+        - name: KUBEVIRT_E2E_REALTIME_PERF_TEST
+          value: "true"
+        - name: KUBEVIRT_E2E_CYCLIC_DURATION_IN_SECONDS
+          value: "60"
+        - name: KUBEVIRT_E2E_REALTIME_LATENCY_THRESHOLD_IN_MICROSECONDS
+          value: "40"
+        - name: KUBEVIRT_HUGEPAGES_2M
+          value: "512"
+        - name: KUBEVIRT_REALTIME_SCHEDULER
+          value: "true"
+        image: quay.io/kubevirtci/bootstrap:v20221116-f8c83d3
+        name: ""
+        resources:
+          requests:
+            cpu: "10"
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-shared-images: "true"
     max_concurrency: 2
     name: pull-kubevirt-e2e-k8s-1.22-sig-performance
     optional: true
