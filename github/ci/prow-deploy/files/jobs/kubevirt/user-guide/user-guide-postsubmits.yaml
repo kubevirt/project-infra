@@ -17,13 +17,13 @@ postsubmits:
       securityContext:
         runAsUser: 0
       containers:
-      - image: docker.io/library/python:3.7
+      - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20220825-9d7149f
         env:
         - name: GIT_AUTHOR_NAME
           value: kubevirt-bot
         - name: GIT_AUTHOR_EMAIL
           value: kubevirtbot@redhat.com
-        command: [ "/bin/sh", "-c" ]
+        command: [ "/usr/bin/bash", "-c" ]
         args:
         - |
           set -e
