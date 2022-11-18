@@ -542,7 +542,7 @@ periodics:
         command: ["/bin/sh"]
         args:
           - "-c"
-          - hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra -T main -B "Bump Prow /cc @kubevirt/prow-job-taskforce"
+          - hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra -T main -B "Bump Prow \n /cc @kubevirt/prow-job-taskforce"
         resources:
           requests:
             memory: "200Mi"
@@ -730,7 +730,7 @@ periodics:
       args:
       - |
         if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=prow-job-image-bump --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
-          hack/git-pr.sh -c "hack/bump-prow-job-images.sh" -b prow-job-image-bump -r project-infra -T main -B "Bump Prow Job images /cc @kubevirt/prow-job-taskforce"
+          hack/git-pr.sh -c "hack/bump-prow-job-images.sh" -b prow-job-image-bump -r project-infra -T main -B "Bump Prow Job images \n /cc @kubevirt/prow-job-taskforce"
         fi
       resources:
         requests:
