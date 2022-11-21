@@ -45,7 +45,7 @@ These are the suspicious hunks I found:
 var prowAutobumpHunkBodyMatcher *regexp.Regexp
 
 func init() {
-	prowAutobumpHunkBodyMatcher = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+image: [^\s]+$[\n]^\+[\s]+image: [^\s]+)$`)
+	prowAutobumpHunkBodyMatcher = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+(image|clonerefs|initupload|entrypoint|sidecar): [^\s]+$[\n]^\+[\s]+(image|clonerefs|initupload|entrypoint|sidecar): [^\s]+)$`)
 }
 
 type ProwAutobumpResult struct {
