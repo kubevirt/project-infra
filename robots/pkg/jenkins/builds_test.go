@@ -123,21 +123,6 @@ var _ = Describe("builds.go", func() {
 			Expect(err).To(BeNil())
 		})
 
-		It("should only call the service once after 504 happened, then once per each thread after service is available again", func() {
-			buildDataGetter := &DurationBasedMockBuildDataGetter{start: time.Now(), durationIndex: []time.Duration{100 * time.Millisecond, 1000 * time.Millisecond}, build: []*gojenkins.Build{nil, {}}, err: []error{fmt.Errorf("%d", http.StatusGatewayTimeout), nil}}
-			var wg sync.WaitGroup
-			numberOfThreads := 5
-			wg.Add(numberOfThreads)
-			for i := 0; i < numberOfThreads; i++ {
-				go func() {
-					defer wg.Done()
-					_, _, _ = getBuildFromGetterWithRetry(buildDataGetter, int64(42), entry)
-				}()
-			}
-			wg.Wait()
-			Expect(buildDataGetter.GetCallCounter()).To(BeEquivalentTo(uint32(numberOfThreads + 1)))
-		})
-
 		It("should not call any of the getters more than twice", func() {
 			numberOfThreads := 5
 			var wg sync.WaitGroup
