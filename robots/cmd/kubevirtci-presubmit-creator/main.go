@@ -192,8 +192,8 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 			Name:           fmt.Sprintf("check-provision-k8s-%s.%s", semver.Major, semver.Minor),
 			MaxConcurrency: 1,
 			Labels: map[string]string{
-				"preset-dind-enabled":        "true",
-				"preset-docker-mirror-proxy": "true",
+				"preset-docker-mirror-proxy":         "true",
+				"preset-podman-in-container-enabled": "true",
 			},
 			Cluster: "prow-workloads",
 			Spec: &v1.PodSpec{
@@ -202,7 +202,7 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 				},
 				Containers: []v1.Container{
 					{
-						Image: "quay.io/kubevirtci/golang:v20210316-d295087",
+						Image: "quay.io/kubevirtci/golang:v20221116-f8c83d3",
 						Command: []string{
 							"/usr/local/bin/runner.sh",
 							"/bin/sh",
