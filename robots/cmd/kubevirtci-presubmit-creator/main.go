@@ -44,11 +44,15 @@ type options struct {
 	TokenPath                        string
 	endpoint                         string
 	jobConfigPathKubevirtciPresubmit string
+	k8sReleaseSemver                 string
 }
 
 func (o *options) Validate() error {
 	if _, err := os.Stat(o.jobConfigPathKubevirtciPresubmit); os.IsNotExist(err) {
 		return fmt.Errorf("jobConfigPathKubevirtciPresubmit is required: %v", err)
+	}
+	if o.k8sReleaseSemver != "" && !querier.SemVerMinorRegex.MatchString(o.k8sReleaseSemver) {
+		return fmt.Errorf("k8s-release-semver does not match SemVerMinorRegex: %s", o.k8sReleaseSemver)
 	}
 	return nil
 }
@@ -60,6 +64,7 @@ func gatherOptions() options {
 	fs.StringVar(&o.TokenPath, "github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
 	fs.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
 	fs.StringVar(&o.jobConfigPathKubevirtciPresubmit, "job-config-path-kubevirtci-presubmit", "", "The directory of the k8s providers")
+	fs.StringVar(&o.k8sReleaseSemver, "k8s-release-semver", "", "The semver of the k8s release to create a presubmit for")
 	err := fs.Parse(os.Args[1:])
 	if err != nil {
 		fmt.Println(fmt.Errorf("failed to parse args: %v", err))
@@ -103,22 +108,32 @@ func main() {
 		}
 	}
 
+	var latestReleaseSemver *querier.SemVer
+
+	if o.k8sReleaseSemver == "" {
+		releases, _, err := client.Repositories.ListReleases(ctx, "kubernetes", "kubernetes", nil)
+		if err != nil {
+			log.Panicln(err)
+		}
+		releases = querier.ValidReleases(releases)
+		if len(releases) == 0 {
+			log.Info("No release found, nothing to do.")
+			os.Exit(0)
+		}
+		latestReleaseSemver = querier.ParseRelease(releases[0])
+	} else {
+		majorMinor := querier.SemVerMinorRegex.FindStringSubmatch(o.k8sReleaseSemver)
+		latestReleaseSemver = &querier.SemVer{
+			Major: majorMinor[1],
+			Minor: majorMinor[2],
+			Patch: "0",
+		}
+	}
+
 	jobConfig, err := config.ReadJobConfig(o.jobConfigPathKubevirtciPresubmit)
 	if err != nil {
 		log.Panicln(err)
 	}
-
-	releases, _, err := client.Repositories.ListReleases(ctx, "kubernetes", "kubernetes", nil)
-	if err != nil {
-		log.Panicln(err)
-	}
-	releases = querier.ValidReleases(releases)
-	if len(releases) == 0 {
-		log.Info("No release found, nothing to do.")
-		os.Exit(0)
-	}
-
-	latestReleaseSemver := querier.ParseRelease(releases[0])
 
 	newJobConfig, exists := AddNewPresubmitIfNotExists(jobConfig, latestReleaseSemver)
 	if exists && !o.dryRun {
@@ -177,8 +192,8 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 			Name:           fmt.Sprintf("check-provision-k8s-%s.%s", semver.Major, semver.Minor),
 			MaxConcurrency: 1,
 			Labels: map[string]string{
-				"preset-dind-enabled":  "true",
-				"preset-docker-mirror-proxy": "true",
+				"preset-docker-mirror-proxy":         "true",
+				"preset-podman-in-container-enabled": "true",
 			},
 			Cluster: "prow-workloads",
 			Spec: &v1.PodSpec{
@@ -187,7 +202,7 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 				},
 				Containers: []v1.Container{
 					{
-						Image: "quay.io/kubevirtci/golang:v20210316-d295087",
+						Image: "quay.io/kubevirtci/golang:v20221116-f8c83d3",
 						Command: []string{
 							"/usr/local/bin/runner.sh",
 							"/bin/sh",
