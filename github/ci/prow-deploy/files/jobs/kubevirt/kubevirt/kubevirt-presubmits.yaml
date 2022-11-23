@@ -1665,9 +1665,9 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
+      preset-pgp-bot-key: "true"
       preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
-      preset-pgp-bot-key: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-arm64
     optional: true
@@ -2318,7 +2318,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.25-sig-network
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2357,7 +2356,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.25-sig-storage
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2396,7 +2394,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.25-sig-compute
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2435,7 +2432,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.25-sig-operator
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
