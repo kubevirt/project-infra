@@ -326,3 +326,36 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-multus-dynamic-networks-controller-functests.sh"
+    - name: pull-e2e-cnao-kube-secondary-dns-functests
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+      always_run: false
+      optional: true
+      decorate: true
+      skip_report: false
+      decoration_config:
+        timeout: 3h
+        grace_period: 25m
+      max_concurrency: 6
+      cluster: prow-workloads
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-shared-images: "true"
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20221105-0d76701
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "29Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-kube-secondary-dns-functests.sh"
