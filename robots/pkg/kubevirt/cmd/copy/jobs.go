@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -41,6 +42,7 @@ const (
 type copyJobOptions struct {
 	jobConfigPathKubevirtPresubmits string
 	jobConfigPathKubevirtPeriodics  string
+	k8sReleaseSemver                string
 }
 
 func (o copyJobOptions) Validate() error {
@@ -82,6 +84,7 @@ func CopyJobsCommand() *cobra.Command {
 func init() {
 	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The path to the kubevirt presubmit job definitions")
 	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
+	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.k8sReleaseSemver, "k8s-release-semver", "", "The semver of the k8s release to create the jobs for, or (as default) empty string to create for latest release")
 }
 
 func run(cmd *cobra.Command, args []string) error {
@@ -90,21 +93,46 @@ func run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	if copyJobsOpts.k8sReleaseSemver != "" && !querier.SemVerMinorRegex.MatchString(copyJobsOpts.k8sReleaseSemver) {
+		return fmt.Errorf("k8s-release-semver does not match SemVerMinorRegex: %s", copyJobsOpts.k8sReleaseSemver)
+	}
+
 	ctx := context.Background()
 	client, err := github2.NewGitHubClient(ctx)
 	if err != nil {
 		return err
 	}
 
-	releases, _, err := client.Repositories.ListReleases(ctx, "kubernetes", "kubernetes", nil)
-	if err != nil {
-		return err
-	}
-	releases = querier.ValidReleases(releases)
-	targetRelease, sourceRelease, err := getSourceAndTargetRelease(releases)
-	if err != nil {
-		log.Log().WithError(err).Info("Cannot determine source and target Release.")
-		return nil
+	var targetRelease, sourceRelease *querier.SemVer
+	if copyJobsOpts.k8sReleaseSemver != "" {
+		majorMinor := querier.SemVerMinorRegex.FindStringSubmatch(copyJobsOpts.k8sReleaseSemver)
+		targetReleaseMinor := majorMinor[2]
+		targetRelease = &querier.SemVer{
+			Major: majorMinor[1],
+			Minor: targetReleaseMinor,
+			Patch: "0",
+		}
+		minor, err := strconv.Atoi(targetReleaseMinor)
+		if err != nil {
+			return err
+		}
+		sourceReleaseMinor := fmt.Sprintf("%d", minor-1)
+		sourceRelease = &querier.SemVer{
+			Major: majorMinor[1],
+			Minor: sourceReleaseMinor,
+			Patch: "0",
+		}
+	} else {
+		releases, _, err := client.Repositories.ListReleases(ctx, "kubernetes", "kubernetes", nil)
+		if err != nil {
+			return err
+		}
+		releases = querier.ValidReleases(releases)
+		targetRelease, sourceRelease, err = getSourceAndTargetRelease(releases)
+		if err != nil {
+			log.Log().WithError(err).Info("Cannot determine source and target Release.")
+			return nil
+		}
 	}
 
 	jobConfigs := map[string]func(*config.JobConfig, *querier.SemVer, *querier.SemVer) bool{
