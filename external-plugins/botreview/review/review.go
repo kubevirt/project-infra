@@ -144,13 +144,20 @@ func (r *Reviewer) ReviewLocalCode() ([]BotReviewResult, error) {
 	return results, nil
 }
 
+var botReviewCommentPattern = `@%s's review-bot says:
+
+%v
+
+**Note: botreview (kubevirt/project-infra#2448) is a Work In Progress!**
+`
+
 func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, githubClient github.Client) error {
 	botUser, err := githubClient.BotUser()
 	if err != nil {
 		return fmt.Errorf("error while fetching user data: %v", err)
 	}
 	for _, reviewResult := range botReviewResults {
-		botReviewComment := fmt.Sprintf("@%s's review-bot says:\n\n%v", botUser.Login, reviewResult)
+		botReviewComment := fmt.Sprintf(botReviewCommentPattern, botUser.Login, reviewResult)
 		if !r.dryRun {
 			err = githubClient.CreateComment(r.org, r.repo, r.num, botReviewComment)
 			if err != nil {
