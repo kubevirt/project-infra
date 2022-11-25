@@ -256,7 +256,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
     max_concurrency: 2
-    name: pull-kubevirt-e2e-k8s-1.22-sig-performance
+    name: pull-kubevirt-e2e-k8s-1.25-sig-performance
     optional: true
     run_if_changed: ^pkg/virt-api/.*|^pkg/virt-handler/.*|^pkg/virt-controller/.*|^pkg/virt-launcher/.*
     skip_branches:
@@ -280,7 +280,7 @@ presubmits:
           FUNC_TEST_ARGS="--no-color --seed=42" make perftest
         env:
         - name: KUBEVIRT_PROVIDER
-          value: k8s-1.22
+          value: k8s-1.25
         - name: KUBEVIRT_STORAGE
           value: hpp
         - name: KUBEVIRT_MEMORY_SIZE
@@ -1999,7 +1999,7 @@ presubmits:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
-    name: pull-kubevirt-e2e-k8s-1.22-sig-monitoring
+    name: pull-kubevirt-e2e-k8s-1.23-sig-monitoring
     run_if_changed: ^pkg/monitoring/.*|tests/monitoring/.*$
     skip_branches:
     - release-\d+\.\d+
@@ -2012,7 +2012,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.22-sig-monitoring
+          value: k8s-1.23-sig-monitoring
         - name: KUBEVIRT_NUM_NODES
           value: "2"
         image: quay.io/kubevirtci/bootstrap:v20221116-f8c83d3
