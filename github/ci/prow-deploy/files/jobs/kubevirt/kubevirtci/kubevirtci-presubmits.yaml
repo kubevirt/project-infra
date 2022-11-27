@@ -537,6 +537,32 @@ presubmits:
     labels:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
+    max_concurrency: 2
+    name: check-provision-k8s-1.24-ipv6
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cd cluster-provision/k8s/1.24-ipv6 && ../provision.sh
+        image: quay.io/kubevirtci/golang:v20221116-f8c83d3
+        name: ""
+        resources:
+          requests:
+            memory: 14Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.25
     spec:
