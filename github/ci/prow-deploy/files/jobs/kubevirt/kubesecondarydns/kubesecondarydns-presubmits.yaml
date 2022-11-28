@@ -35,6 +35,5 @@ presubmits:
               - |
                 make cluster-up
                 make cluster-sync
-                make create-nodeport
                 make functest
 
