@@ -105,6 +105,7 @@ tide:
     k8snetworkplumbingwg/ovs-cni: squash
     kubevirt/macvtap-cni: merge
     kubevirt/cluster-network-addons-operator: squash
+    kubevirt/kubesecondarydns: merge
     kubevirt/bridge-marker: squash
     nmstate/kubernetes-nmstate: squash
     k8snetworkplumbingwg/kubemacpool: squash
@@ -170,6 +171,7 @@ tide:
     - k8snetworkplumbingwg/ovs-cni
     - kubevirt/macvtap-cni
     - kubevirt/cluster-network-addons-operator
+    - kubevirt/kubesecondarydns
     - kubevirt/bridge-marker
     - nmstate/kubernetes-nmstate
     - k8snetworkplumbingwg/kubemacpool

@@ -129,6 +129,14 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/kubesecondarydns:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+
   kubevirt/common-instancetypes:
     plugins:
     - approve
@@ -497,6 +505,7 @@ triggers:
   - kubevirt/must-gather
   - kubevirt/demo
   - kubevirt/cluster-network-addons-operator
+  - kubevirt/kubesecondarydns
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
   - kubevirt/hyperconverged-cluster-operator
@@ -535,6 +544,7 @@ approve:
   - kubevirt/katacoda-scenarios
   - kubevirt/demo
   - kubevirt/cluster-network-addons-operator
+  - kubevirt/kubesecondarydns
   - nmstate/kubernetes-nmstate
   - k8snetworkplumbingwg/kubemacpool
   - kubevirt/kubectl-virt-plugin
@@ -587,6 +597,7 @@ lgtm:
   - kubevirt/katacoda-scenarios
   - kubevirt/demo
   - kubevirt/cluster-network-addons-operator
+  - kubevirt/kubesecondarydns
   - nmstate/kubernetes-nmstate
   - k8snetworkplumbingwg/kubemacpool
   - kubevirt/kubectl-virt-plugin
