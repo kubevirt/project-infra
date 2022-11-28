@@ -357,6 +357,10 @@ orgs:
         description: Builds libguestfs appliances and container images to be consumed by other kubevirt projects
         has_projects: true
         homepage: https://kubevirt.io
+      kubesecondarydns:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        default_branch: main
       kubevirt:
         allow_rebase_merge: false
         allow_squash_merge: false
@@ -572,6 +576,13 @@ orgs:
         privacy: secret
         repos:
           kubectl-virt-plugin: admin
+      kubesecondarydns:
+        description: ""
+        maintainers:
+        - AlonaKaplan
+        privacy: secret
+        repos:
+          kubesecondarydns: admin
       kubevirt_maintainers:
         description: kubevirt/kubevirt only maintainers
         maintainers:
