@@ -767,6 +767,40 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
+  cluster: prow-arm64-workloads-2
+  cron: 40 4 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 2h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-unnested: "false"
+  max_concurrency: 10
+  name: periodic-kubevirt-unit-test-Arm64
+  reporter_config:
+    slack:
+      job_states_to_report: []
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - make test
+      image: quay.io/kubevirtci/bootstrap:v20221015-62e6679
+      name: ""
+      resources:
+        requests:
+          memory: 8Gi
+      securityContext:
+        privileged: true
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
   cluster: ibm-prow-jobs
   cron: 40 4 * * *
   decorate: true
