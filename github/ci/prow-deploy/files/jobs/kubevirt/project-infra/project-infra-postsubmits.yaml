@@ -932,7 +932,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-        - image: gcr.io/k8s-prow/configurator:v20210526-1d9416cb76
+        - image: gcr.io/k8s-prow/configurator:v20221117-3815e13b72
           command:
           - /app/testgrid/cmd/configurator/app.binary
           args:
