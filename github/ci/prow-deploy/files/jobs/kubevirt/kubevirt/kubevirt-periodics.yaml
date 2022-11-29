@@ -685,8 +685,8 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
-  cron: 40 4,12,20 * * *
+  cluster: prow-arm64-workloads-2
+  cron: 40 4 1,5,9,13,17,19 * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -695,19 +695,11 @@ periodics:
   - base_ref: main
     org: kubevirt
     repo: kubevirt
-  - base_ref: main
-    org: kubevirt
-    repo: project-infra
   labels:
-    preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-github-credentials: "true"
-    preset-kubevirtci-quay-credential: "true"
-    preset-pgp-bot-key: "true"
+    preset-bazel-unnested: "false"
     preset-podman-in-container-enabled: "true"
-    preset-shared-images: "true"
-  name: periodic-kubevirt-cluster-sync-test-ARM64
+  max_concurrency: 5
+  name: periodic-kubevirt-kind-e2e-test-ARM64
   reporter_config:
     slack:
       job_states_to_report: []
@@ -716,54 +708,24 @@ periodics:
     - command:
       - /usr/local/bin/runner.sh
       - /bin/sh
-      - -c
-      - |
-        # install yq
-        curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
-        chmod +x ./yq && mv ./yq /usr/local/bin/yq
-
-        # get kubectl
-        curl -L "https://dl.k8s.io/release/v1.19.7/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
-        chmod +x /usr/local/bin/kubectl
-
-        # get kubeconfig
-        source ../project-infra/hack/manage-secrets.sh
-        decrypt_secrets
-        extract_secret 'kubeconfigARM' /kubeconfig
-
-        # login quay.io
-        cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-
-        # run the test
-        automation/test.sh
+      - -ce
+      - automation/test.sh
       env:
       - name: TARGET
-        value: external
+        value: kind-1.23
       - name: KUBEVIRT_PROVIDER
-        value: external
-      - name: DOCKER_PREFIX
-        value: quay.io/kubevirtci
-      - name: DOCKER_TAG
-        value: aarch64_test
-      - name: KUBECONFIG
-        value: /kubeconfig
-      - name: kubectl
-        value: /usr/local/bin/kubectl
-      - name: IMAGE_PULL_POLICY
-        value: Always
-      - name: BUILD_ARCH
-        value: crossbuild-aarch64
+        value: kind-1.23
+      - name: KUBEVIRT_NUM_NODES
+        value: "1"
       - name: KUBEVIRT_E2E_FOCUS
         value: arm64
-      image: quay.io/kubevirtci/bootstrap:v20221116-f8c83d3
+      image: quay.io/kubevirtci/bootstrap:v20221015-62e6679
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 16Gi
       securityContext:
         privileged: true
-    nodeSelector:
-      type: bare-metal-external
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
