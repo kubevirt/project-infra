@@ -29,7 +29,9 @@ import (
 	"github.com/bndr/gojenkins"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 	"io"
+	"io/ioutil"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	flakejenkins "kubevirt.io/project-infra/robots/pkg/jenkins"
 	"net/http"
@@ -43,7 +45,6 @@ import (
 
 const (
 	defaultJenkinsBaseUrl = "https://main-jenkins-csb-cnvqe.apps.ocp-c1.prod.psi.redhat.com/"
-	defaultFilterFileUrl  = "https://gitlab.cee.redhat.com/contra/cnv-qe-automation/-/raw/master/tests/tier1/kubevirt/dont_run_tests.json"
 )
 
 //go:embed test-report.gohtml
@@ -75,23 +76,25 @@ func main() {
 }
 
 type options struct {
-	endpoint       string
-	startFrom      time.Duration
-	jobNamePattern string
-	outputFile     string
-	overwrite      bool
-	filterFileUrls []string
+	endpoint   string
+	startFrom  time.Duration
+	configFile string
+	outputFile string
+	overwrite  bool
 }
 
 func flagOptions() options {
 	rootCmd.PersistentFlags().StringVar(&opts.endpoint, "endpoint", defaultJenkinsBaseUrl, "jenkins base url")
 	rootCmd.PersistentFlags().DurationVar(&opts.startFrom, "start-from", 14*24*time.Hour, "time period for report")
-	rootCmd.PersistentFlags().StringVar(&opts.jobNamePattern, "job-name-pattern", "^test-(ssp-cnv-4\\.[0-9]+|kubevirt-cnv-4\\.[0-9]+-(compute|network|operator)-[a-z]+)$", "jenkins job name go regex pattern to filter jobs for the report")
+	rootCmd.PersistentFlags().StringVar(&opts.configFile, "config-file", "", "yaml file that contains job names associated with dont_run_tests.json and the job name pattern, if set overrides default-config.yaml")
 	rootCmd.PersistentFlags().StringVar(&opts.outputFile, "outputFile", "", "Path to output file, if not given, a temporary file will be used")
 	rootCmd.PersistentFlags().BoolVar(&opts.overwrite, "overwrite", true, "overwrite output file")
-	rootCmd.PersistentFlags().StringArrayVar(&opts.filterFileUrls, "filter-file-urls", []string{defaultFilterFileUrl}, "file urls to use as filters for test cases, use quarantined_tests.json and/or dont_run_tests.json")
 	return opts
 }
+
+const defaultMaxConnsPerHost = 3
+
+var maxConnsPerHost = defaultMaxConnsPerHost
 
 func (o *options) Validate() error {
 	if o.outputFile == "" {
@@ -112,6 +115,32 @@ func (o *options) Validate() error {
 			return fmt.Errorf("failed to write report, file %s exists", o.outputFile)
 		}
 	}
+	var data *Config
+	if o.configFile != "" {
+		_, err := os.Stat(o.configFile)
+		if err != nil && errors.Is(err, os.ErrNotExist) {
+			return err
+		}
+		file, err := ioutil.ReadFile(o.configFile)
+		if err != nil {
+			return err
+		}
+		err = yaml.Unmarshal(file, &data)
+		if err != nil {
+			return err
+		}
+	} else {
+		logger.Printf("No config file provided, using default config:/n%s", string(defaultConfigFileContent))
+		err := yaml.Unmarshal(defaultConfigFileContent, &data)
+		if err != nil {
+			return err
+		}
+	}
+	jobNamePatternsToDontRunFileURLs = data.JobNamePatternsToDontRunFileURLs
+	jobNamePattern = regexp.MustCompile(data.JobNamePattern)
+	if data.MaxConnsPerHost > 0 {
+		maxConnsPerHost = data.MaxConnsPerHost
+	}
 	return nil
 }
 
@@ -127,18 +156,39 @@ type FilterTestRecord struct {
 	Reason string `json:"reason"`
 }
 
+type Config struct {
+	JobNamePattern                   string                            `yaml:"jobNamePattern"`
+	JobNamePatternsToDontRunFileURLs []*JobNamePatternToDontRunFileURL `yaml:"jobNamePatternsToDontRunFileURLs"`
+	MaxConnsPerHost                  int                               `yaml:"maxConnsPerHost"`
+}
+
+type JobNamePatternToDontRunFileURL struct {
+	JobNamePattern string `yaml:"jobNamePattern"`
+	DontRunFileURL string `yaml:"dontRunFileURL"`
+}
+
+var jobNamePatternsToDontRunFileURLs []*JobNamePatternToDontRunFileURL
+var jobNamePattern *regexp.Regexp
+
+//go:embed "default-config.yaml"
+var defaultConfigFileContent []byte
+
 func runReport(cmd *cobra.Command, args []string) error {
 
 	err := opts.Validate()
 	if err != nil {
 		return fmt.Errorf("failed to validate command line arguments: %v", err)
 	}
+	jobNamePatternsToTestNameFilterRegexps, err := createJobNamePatternsToTestNameFilterRegexps()
+	if err != nil {
+		logger.Fatalf("failed to create test filter regexp: %v", err)
+	}
 
 	ctx := context.Background()
 
 	client := &http.Client{
 		Transport: &http.Transport{
-			MaxConnsPerHost: 5,
+			MaxConnsPerHost: maxConnsPerHost,
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
 			},
@@ -174,11 +224,7 @@ func runReport(cmd *cobra.Command, args []string) error {
 		logger.Fatalf("failed to write json data file: %v", err)
 	}
 
-	completeFilterRegex, err := createTestFilterRegexpFromFilterFiles()
-	if err != nil {
-		logger.Fatalf("failed to create test filter regexp: %v", err)
-	}
-	data := createReportData(completeFilterRegex, nil, testNamesToJobNamesToExecutionStatus)
+	data := createReportData(jobNamePatternsToTestNameFilterRegexps, testNamesToJobNamesToExecutionStatus)
 
 	err = writeHTMLReportToOutputFile(err, data)
 	if err != nil {
@@ -187,18 +233,13 @@ func runReport(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func createReportData(testNameFilterRegexp *regexp.Regexp, jobNamePatternsToTestNameFilterRegexps map[*regexp.Regexp]*regexp.Regexp, testNamesToJobNamesToExecutionStatus map[string]map[string]int) Data {
+func createReportData(jobNamePatternsToTestNameFilterRegexps map[*regexp.Regexp]*regexp.Regexp, testNamesToJobNamesToExecutionStatus map[string]map[string]int) Data {
 	testNames := []string{}
 	skippedTests := map[string]interface{}{}
 	filteredTestNames := []string{}
 	lookedAtJobsMap := map[string]interface{}{}
 
 	for testName, jobNamesToSkipped := range testNamesToJobNamesToExecutionStatus {
-		if testNameFilterRegexp.MatchString(testName) {
-			filteredTestNames = append(filteredTestNames, testName)
-			logger.Warnf("filtering %s", testName)
-			continue
-		}
 		testSkipped := true
 		filteredOnAllLanes := true
 		for jobName, executionStatus := range jobNamesToSkipped {
@@ -296,30 +337,33 @@ func getTestNamesToJobNamesToTestExecutions(jobs []*gojenkins.Job, startOfReport
 	return testNamesToJobNamesToExecutionStatus
 }
 
-func createTestFilterRegexpFromFilterFiles() (*regexp.Regexp, error) {
-	var filterRegexes []string
-	for _, filterFileUrl := range opts.filterFileUrls {
-		logger.Infof("fetching filter file %q", filterFileUrl)
-		response, err := http.Get(filterFileUrl)
+func createJobNamePatternsToTestNameFilterRegexps() (map[*regexp.Regexp]*regexp.Regexp, error) {
+	jobNamePatternsToTestNameFilterRegexpsResult := map[*regexp.Regexp]*regexp.Regexp{}
+	for _, jobNamePatternToDontRunFileURL := range jobNamePatternsToDontRunFileURLs {
+		jobNamePattern := regexp.MustCompile(jobNamePatternToDontRunFileURL.JobNamePattern)
+		logger.Infof("fetching filter file %q", jobNamePatternToDontRunFileURL.DontRunFileURL)
+		response, err := http.Get(jobNamePatternToDontRunFileURL.DontRunFileURL)
 		if err != nil {
-			return nil, fmt.Errorf("failed to fetch %q: %v", filterFileUrl, err)
+			return nil, fmt.Errorf("failed to fetch %q: %v", jobNamePatternToDontRunFileURL.DontRunFileURL, err)
 		}
 		if response.StatusCode >= http.StatusOK && response.StatusCode < http.StatusBadRequest {
 			var records []*FilterTestRecord
 			err := json.NewDecoder(response.Body).Decode(&records)
 			if err != nil {
-				return nil, fmt.Errorf("failed to decode %q: %v", filterFileUrl, err)
+				return nil, fmt.Errorf("failed to decode %q: %v", jobNamePatternToDontRunFileURL.DontRunFileURL, err)
 			}
+			var testNameFilterRegexps []string
 			for _, record := range records {
-				filterRegexes = append(filterRegexes, record.Id)
+				testNameFilterRegexps = append(testNameFilterRegexps, regexp.QuoteMeta(record.Id))
 			}
+			completeFilterRegex := regexp.MustCompile(strings.Join(testNameFilterRegexps, "|"))
+			logger.Infof("for jobNamePattern %q filter expression is %q", jobNamePattern, completeFilterRegex)
+			jobNamePatternsToTestNameFilterRegexpsResult[jobNamePattern] = completeFilterRegex
 		} else {
-			return nil, fmt.Errorf("when fetching %q received status code: %d", filterFileUrl, response.StatusCode)
+			return nil, fmt.Errorf("when fetching %q received status code: %d", jobNamePatternToDontRunFileURL.DontRunFileURL, response.StatusCode)
 		}
 	}
-	completeFilterRegex := regexp.MustCompile(strings.Join(filterRegexes, "|"))
-	logger.Infof("filter expression is '%s'", completeFilterRegex)
-	return completeFilterRegex, nil
+	return jobNamePatternsToTestNameFilterRegexpsResult, nil
 }
 
 type Data struct {
@@ -413,10 +457,9 @@ func getTestNamesToJobNamesToTestExecutionForJob(startOfReport time.Time, ctx co
 
 func filterMatchingJobs(ctx context.Context, jenkins *gojenkins.Jenkins, innerJobs []gojenkins.InnerJob) ([]*gojenkins.Job, error) {
 	filteredJobs := []*gojenkins.Job{}
-	jobNameRegex := regexp.MustCompile(opts.jobNamePattern)
-	logger.Printf("Filtering for jobs matching %s", jobNameRegex)
+	logger.Printf("Filtering for jobs matching %s", jobNamePattern)
 	for _, innerJob := range innerJobs {
-		if !jobNameRegex.MatchString(innerJob.Name) {
+		if !jobNamePattern.MatchString(innerJob.Name) {
 			continue
 		}
 		job, err := jenkins.GetJob(ctx, innerJob.Name)

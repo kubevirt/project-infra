@@ -161,28 +161,6 @@ func Test_createReportData(t *testing.T) {
 			),
 		},
 		{
-			name: "test is filtered by default regexp",
-			args: args{
-				testNameFilterDefaultRegexp: regexp.MustCompile("testName"),
-				testNamesToJobNamesToExecutionStatus: map[string]map[string]int{
-					"testName": {
-						"jobName": test_execution_skipped,
-					},
-				},
-			},
-			want: newData(
-				[]string{},               // testNames
-				[]string{"testName"},     // filteredTestNames
-				map[string]interface{}{}, // skippedTests
-				[]string{},               // lookedAtJobs
-				map[string]map[string]int{
-					"testName": {
-						"jobName": test_execution_skipped,
-					},
-				}, // testNamesToJobNamesToExecutionStatus
-			),
-		},
-		{
 			name: "test is inside dont_run.json for one test lane and skipped in the other",
 			args: args{
 				testNameFilterDefaultRegexp: regexp.MustCompile("testNameDefault"),
@@ -328,7 +306,7 @@ func Test_createReportData(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := createReportData(tt.args.testNameFilterDefaultRegexp, tt.args.jobNamePatternsToTestNameFilterRegexps, tt.args.testNamesToJobNamesToExecutionStatus); !reflect.DeepEqual(got, tt.want) {
+			if got := createReportData(tt.args.jobNamePatternsToTestNameFilterRegexps, tt.args.testNamesToJobNamesToExecutionStatus); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("createReportData() = %+v, want %+v", got, tt.want)
 			}
 		})
