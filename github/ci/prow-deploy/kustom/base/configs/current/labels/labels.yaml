@@ -117,6 +117,12 @@ default:
       target: both
       prowPlugin: label
       addedBy: anyone
+    - name: kind/deprecation
+      description: Indicates the PR/issue deprecates a feature that will be removed in a subsequent release.
+      color: fdeb7e
+      target: both
+      prowPlugin: label
+      addedBy: anyone
     - color: 9192ff
       description: Categorizes as a Hacktoberfest contribution
       name: hacktoberfest
