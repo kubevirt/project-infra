@@ -1,4 +1,4 @@
-jobNamePattern: ^test-(ssp-cnv-4.1[1-9]|kubevirt-cnv-4.1[1-9]-(compute|network-ovn|operator|storage|quarantined)-ocs|test-kubevirt-cnv-4.1[1-9]-storage-hppcsiblock)$
+jobNamePattern: ^test-kubevirt-cnv-4.1[1-9]-(storage|quarantined)-(ocs|hppcsiblock)$
 jobNamePatternsToDontRunFileURLs:
   - jobNamePattern: .*cnv-4\.13.*
     dontRunFileURL: https://gitlab.cee.redhat.com/contra/cnv-qe-automation/-/raw/master/tests/tier1/kubevirt/dont_run_tests.json
@@ -9,4 +9,4 @@ jobNamePatternsToDontRunFileURLs:
   - jobNamePattern: .*cnv-4\.10.*
     dontRunFileURL: https://gitlab.cee.redhat.com/contra/cnv-qe-automation/-/raw/cnv-4.10/tests/tier1/kubevirt/dont_run_tests.json
 maxConnsPerHost: 3
-testNamePattern: .*
+testNamePattern: \[sig-storage\]

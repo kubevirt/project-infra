@@ -81,6 +81,7 @@ type options struct {
 	configFile string
 	outputFile string
 	overwrite  bool
+	dryRun     bool
 }
 
 func flagOptions() options {
@@ -89,12 +90,14 @@ func flagOptions() options {
 	rootCmd.PersistentFlags().StringVar(&opts.configFile, "config-file", "", "yaml file that contains job names associated with dont_run_tests.json and the job name pattern, if set overrides default-config.yaml")
 	rootCmd.PersistentFlags().StringVar(&opts.outputFile, "outputFile", "", "Path to output file, if not given, a temporary file will be used")
 	rootCmd.PersistentFlags().BoolVar(&opts.overwrite, "overwrite", true, "overwrite output file")
+	rootCmd.PersistentFlags().BoolVar(&opts.dryRun, "dry-run", false, "only check which jobs would be considered, do not create an actual report")
 	return opts
 }
 
 const defaultMaxConnsPerHost = 3
 
 var maxConnsPerHost = defaultMaxConnsPerHost
+var testNamePattern *regexp.Regexp
 
 func (o *options) Validate() error {
 	if o.outputFile == "" {
@@ -138,6 +141,7 @@ func (o *options) Validate() error {
 	}
 	jobNamePatternsToDontRunFileURLs = data.JobNamePatternsToDontRunFileURLs
 	jobNamePattern = regexp.MustCompile(data.JobNamePattern)
+	testNamePattern = regexp.MustCompile(data.TestNamePattern)
 	if data.MaxConnsPerHost > 0 {
 		maxConnsPerHost = data.MaxConnsPerHost
 	}
@@ -158,6 +162,7 @@ type FilterTestRecord struct {
 
 type Config struct {
 	JobNamePattern                   string                            `yaml:"jobNamePattern"`
+	TestNamePattern                  string                            `yaml:"testNamePattern"`
 	JobNamePatternsToDontRunFileURLs []*JobNamePatternToDontRunFileURL `yaml:"jobNamePatternsToDontRunFileURLs"`
 	MaxConnsPerHost                  int                               `yaml:"maxConnsPerHost"`
 }
@@ -209,6 +214,15 @@ func runReport(cmd *cobra.Command, args []string) error {
 	jobs, err := filterMatchingJobs(ctx, jenkins, jobNames)
 	if err != nil {
 		logger.Fatalf("failed to filter matching jobs: %v", err)
+	}
+	var filteredJobNames []string
+	for _, job := range jobs {
+		filteredJobNames = append(filteredJobNames, job.GetName())
+	}
+	logger.Infof("jobs that are being considered: %s", strings.Join(filteredJobNames, ", "))
+	if opts.dryRun {
+		logger.Warn("dry-run mode, exiting")
+		return nil
 	}
 	if len(jobs) == 0 {
 		logger.Warn("no jobs left, nothing to do")
@@ -331,6 +345,9 @@ func getTestNamesToJobNamesToTestExecutions(jobs []*gojenkins.Job, startOfReport
 	testNamesToJobNamesToExecutionStatus := map[string]map[string]int{}
 	for result := range resultsChan {
 		for testName, jobNamesToExecutionStatus := range result {
+			if !testNamePattern.MatchString(testName) {
+				continue
+			}
 			testNamesToJobNamesToExecutionStatus[testName] = jobNamesToExecutionStatus
 		}
 	}
