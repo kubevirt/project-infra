@@ -240,7 +240,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -255,9 +255,9 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
-    max_concurrency: 2
+    max_concurrency: 4
     name: pull-kubevirt-e2e-k8s-1.25-sig-performance
-    run_if_changed: ^pkg/virt-api/.*|^pkg/virt-handler/.*|^pkg/virt-controller/.*|^pkg/virt-launcher/.*
+    run_if_changed: ^cmd/.*|^rpm/.*|^tests/performance/.*|^hack/perftests.sh|^tools/perfscale-audit/.*|^bazel/.*|^third_party/.*|^staging/src/.*|^api/.*|^pkg/virt-.*|^pkg/controlller/.*
     skip_branches:
     - release-\d+\.\d+
     spec:
