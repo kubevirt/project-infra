@@ -54,6 +54,7 @@ RUN dnf install -y \
     sudo \
     buildah \
     qemu-user-static \
+    bind-utils \
     wget \
     python3-jinja2 &&\
   dnf -y clean all

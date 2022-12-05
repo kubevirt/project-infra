@@ -54,6 +54,7 @@ RUN dnf install -y \
     sudo \
     buildah \
     qemu-user-static \
+    bind-utils \
     wget &&\
   dnf -y clean all
 
