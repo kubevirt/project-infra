@@ -129,9 +129,9 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "1Gi"
+              memory: "4Gi"
             limits:
-              memory: "1Gi"
+              memory: "4Gi"
   - name: build-bootstrap-legacy-images
     always_run: false
     run_if_changed: "images/bootstrap-legacy/.*|images/golang-legacy/.*"
@@ -156,9 +156,9 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "1Gi"
+              memory: "4Gi"
             limits:
-              memory: "1Gi"
+              memory: "4Gi"
   - name: build-kubekins-e2e-image
     always_run: false
     run_if_changed: "images/kubekins-e2e/.*"
