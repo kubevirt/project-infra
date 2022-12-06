@@ -39,15 +39,6 @@ func getLatestTag() (tag string, err error) {
 	return strings.TrimSpace(tag), nil
 }
 
-func checkImagePresent(imageNames []string, name string) bool {
-	for _, imageName := range imageNames {
-		if name == imageName {
-			return true
-		}
-	}
-	return false
-}
-
 func pullRequiredImages(ctx context.Context, tag string) error {
 	var versions []string
 
@@ -72,7 +63,7 @@ func pullRequiredImages(ctx context.Context, tag string) error {
 
 	log.Infoln("Last three minor releases", versions)
 
-	var imageNames []string
+	imageNames := map[string]struct{}{}
 	kubevirtci_repo := "quay.io/kubevirtci/"
 
 	imageList, err := images.List(ctx, nil)
@@ -82,22 +73,21 @@ func pullRequiredImages(ctx context.Context, tag string) error {
 	}
 	for _, i := range imageList {
 		for _, imageName := range i.RepoTags {
-			imageNames = append(imageNames, imageName)
+			imageNames[imageName] = struct{}{}
 		}
 	}
 
 	for _, version := range versions {
 		log.Infoln("Kubevirt Provider version: ", version)
 		name := fmt.Sprintf("%sk8s-%s:%s", kubevirtci_repo, version, tag)
-		if checkImagePresent(imageNames, name) {
+		if _, exists := imageNames[name]; exists {
 			log.Infoln("Image already present:", name)
-		} else {
-			log.Infoln("Pulling image: ", name)
-			_, err := images.Pull(ctx, name, nil)
-			if err != nil {
-				log.WithError(err).Errorf("Failed to pull image:", name)
-				return err
-			}
+			continue
+		}
+		log.Infoln("Pulling image: ", name)
+		_, err := images.Pull(ctx, name, nil)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -114,18 +104,18 @@ func cleanOldImages(ctx context.Context, tag string) error {
 		for _, repoTag := range i.RepoTags {
 			if strings.Contains(repoTag, tag) {
 				log.Infof("%s is a required image", repoTag)
-			} else {
-				log.Infoln("Deleting image:", repoTag)
-				deleteImages = append(deleteImages, repoTag)
+				continue
 			}
+			log.Infoln("Deleting image:", repoTag)
+			deleteImages = append(deleteImages, repoTag)
+
 		}
 	}
 	log.Infoln("images to delete:", deleteImages)
 	if len(deleteImages) > 0 {
-		_, remove_err := images.Remove(ctx, deleteImages, nil)
-		if remove_err != nil {
-			log.WithError(err).Errorf("Failed to delete old images")
-			return err
+		_, err := images.Remove(ctx, deleteImages, nil)
+		if err != nil {
+			return err[0]
 		}
 	}
 	return nil
@@ -143,8 +133,7 @@ func main() {
 	}
 	connText, err := bindings.NewConnection(context.Background(), socket)
 	if err != nil {
-		log.WithError(err).Errorf("Could not connect to podman socket %d", socket)
-		os.Exit(1)
+		log.WithError(err).Fatalf("Could not connect to podman socket %d", socket)
 	}
 	for {
 		tag, err := getLatestTag()
