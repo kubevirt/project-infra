@@ -169,12 +169,6 @@ func runReport(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to validate command line arguments: %v", err)
 	}
-	jobNamePatternsToTestNameFilterRegexps, err := test_report.CreateJobNamePatternsToTestNameFilterRegexps(config)
-	if err != nil {
-		logger.Fatalf("failed to create test filter regexp: %v", err)
-	}
-
-	ctx := context.Background()
 
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -184,6 +178,13 @@ func runReport(cmd *cobra.Command, args []string) error {
 			},
 		},
 	}
+
+	jobNamePatternsToTestNameFilterRegexps, err := test_report.CreateJobNamePatternsToTestNameFilterRegexps(config, client)
+	if err != nil {
+		logger.Fatalf("failed to create test filter regexp: %v", err)
+	}
+
+	ctx := context.Background()
 
 	logger.Printf("Creating client for %s", opts.endpoint)
 	jenkins := gojenkins.CreateJenkins(client, opts.endpoint)

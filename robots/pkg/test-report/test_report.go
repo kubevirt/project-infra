@@ -262,23 +262,23 @@ func getTestNamesToJobNamesToTestExecutionForJob(startOfReport time.Time, ctx co
 	resultsChan <- testNamesToJobNamesToSkippedForJobName
 }
 
-func CreateJobNamePatternsToTestNameFilterRegexps(config *Config) (map[*regexp.Regexp]*regexp.Regexp, error) {
+func CreateJobNamePatternsToTestNameFilterRegexps(config *Config, client *http.Client) (map[*regexp.Regexp]*regexp.Regexp, error) {
+
 	jobNamePatternsToTestNameFilterRegexpsResult := map[*regexp.Regexp]*regexp.Regexp{}
 	for _, jobNamePatternToDontRunFileURL := range config.JobNamePatternsToDontRunFileURLs {
 		jobNamePattern := regexp.MustCompile(jobNamePatternToDontRunFileURL.JobNamePattern)
 		logger.Infof("fetching filter file %q", jobNamePatternToDontRunFileURL.DontRunFileURL)
-		response, err := http.Get(jobNamePatternToDontRunFileURL.DontRunFileURL)
+		response, err := client.Get(jobNamePatternToDontRunFileURL.DontRunFileURL)
 		if err != nil {
 			return nil, fmt.Errorf("failed to fetch %q: %v", jobNamePatternToDontRunFileURL.DontRunFileURL, err)
 		}
 		if response.StatusCode >= http.StatusOK && response.StatusCode < http.StatusBadRequest {
-			var records []*FilterTestRecord
-			err := json.NewDecoder(response.Body).Decode(&records)
+			filterTestRecords, err := decodeDontRunFileEntries(err, response, jobNamePatternToDontRunFileURL)
 			if err != nil {
-				return nil, fmt.Errorf("failed to decode %q: %v", jobNamePatternToDontRunFileURL.DontRunFileURL, err)
+				return nil, err
 			}
 			var testNameFilterRegexps []string
-			for _, record := range records {
+			for _, record := range filterTestRecords {
 				testNameFilterRegexps = append(testNameFilterRegexps, regexp.QuoteMeta(record.Id))
 			}
 			completeFilterRegex := regexp.MustCompile(strings.Join(testNameFilterRegexps, "|"))
@@ -289,6 +289,16 @@ func CreateJobNamePatternsToTestNameFilterRegexps(config *Config) (map[*regexp.R
 		}
 	}
 	return jobNamePatternsToTestNameFilterRegexpsResult, nil
+}
+
+func decodeDontRunFileEntries(err error, response *http.Response, jobNamePatternToDontRunFileURL *JobNamePatternToDontRunFileURL) ([]*FilterTestRecord, error) {
+	defer response.Body.Close()
+	var records []*FilterTestRecord
+	err = json.NewDecoder(response.Body).Decode(&records)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode %q: %v", jobNamePatternToDontRunFileURL.DontRunFileURL, err)
+	}
+	return records, nil
 }
 
 func FilterMatchingJobs(ctx context.Context, jenkins *gojenkins.Jenkins, innerJobs []gojenkins.InnerJob, config *Config) ([]*gojenkins.Job, error) {
