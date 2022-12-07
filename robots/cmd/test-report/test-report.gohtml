@@ -129,8 +129,8 @@
             <td class="{{ if (index $.SkippedTests $test) }}red{{ end }}">{{ $test }}</td>
             {{ range $col, $job := $.LookedAtJobs }}
                 <td class="center">{{ with $skipped := (index $.TestNamesToJobNamesToSkipped $test $job) }}
-                        <div id="r{{$row}}c{{$col}}" title="test {{ if eq $skipped (index $.TestExecutionMapping "test_execution_skipped") }}skipped{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}run{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_unsupported") }}unsupported{{ else }}{{ end }}" class="{{ if eq $skipped (index $.TestExecutionMapping "test_execution_skipped") }}yellow{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}green{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_unsupported") }}gray{{ else }}{{ end }}" >
-                            <input title="{{ $test }} &#013; {{ $job }}" type="checkbox" readonly {{ if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}checked{{ end }}/>
+                        <div id="r{{$row}}c{{$col}}" title="test {{ if eq $skipped (index $.TestExecutionMapping "TestExecution_Skipped") }}skipped{{ else if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }}run{{ else if eq $skipped (index $.TestExecutionMapping "TestExecution_Unsupported") }}unsupported{{ else }}{{ end }}" class="{{ if eq $skipped (index $.TestExecutionMapping "TestExecution_Skipped") }}yellow{{ else if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }}green{{ else if eq $skipped (index $.TestExecutionMapping "TestExecution_Unsupported") }}gray{{ else }}{{ end }}" >
+                            <input title="{{ $test }} &#013; {{ $job }}" type="checkbox" readonly {{ if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }}checked{{ end }}/>
                         </div>
                     {{ else }}n/a{{ end }}</td>
             {{ end }}

@@ -22,7 +22,7 @@ Flags:
 
 ## Provided default configurations
 
-There are four default configurations, where `default` considers the lanes for all sigs, while `compute`, `network` and `storage` only consider those tests and lanes that are relevant to each respective sig. For details on the configuration of each use case, see the [configs folder](./configs/).
+There are four default configurations, where `default` considers the lanes for all sigs, while `compute`, `network` and `storage` only consider those tests and lanes that are relevant to each respective sig. For details on the configuration of each use case, see the config files in this folder.
 
 If you want to provide your own configuration, you can override the default configs using `--config-file` flag.
 
