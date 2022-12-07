@@ -935,7 +935,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-arm64-workloads
+    cluster: prow-arm64-workloads-2
     decorate: true
     decoration_config:
       grace_period: 5m0s
