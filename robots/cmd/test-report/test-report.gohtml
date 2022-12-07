@@ -62,11 +62,40 @@
             animation: fadeIn 1s;
         }
 
+        .popup .popuptextReportConfig {
+            display: none;
+            width: 1024px;
+            background-color: #FFFFFF;
+            text-align: left;
+            border-radius: 6px;
+            padding: 8px 8px;
+            position: absolute;
+            z-index: 1;
+            left: 100%;
+            margin-left: -1024px;
+        }
+
+        .popup:hover .popuptextReportConfig {
+            display: block;
+            -webkit-animation: fadeIn 1s;
+            animation: fadeIn 1s;
+        }
+
     </style>
     </meta>
 </head>
 <body>
+{{- /* gotype: kubevirt.io/project-infra/robots/main.Data */ -}}
 <h1>test execution report</h1>
+<div>
+    {{ $.ReportConfigName }} report configuration<br/>
+    data from {{ $.StartOfReport }} till {{ $.EndOfReport }}
+</div>
+
+<div id="reportConfig" class="popup right" >
+    <u>report configuration</u>
+    <pre class="popuptextReportConfig right" id="targetReportConfig">{{ $.ReportConfig }}</pre>
+</div>
 
 <div id="filteredTests" class="popup right" >
     <u>list of filtered tests</u>
@@ -100,8 +129,8 @@
             <td class="{{ if (index $.SkippedTests $test) }}red{{ end }}">{{ $test }}</td>
             {{ range $col, $job := $.LookedAtJobs }}
                 <td class="center">{{ with $skipped := (index $.TestNamesToJobNamesToSkipped $test $job) }}
-                        <div id="r{{$row}}c{{$col}}" class="{{ if eq $skipped (index $.TestExecutionMapping "test_execution_skipped") }}yellow{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}green{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_unsupported") }}gray{{ else }}{{ end }}" >
-                            <input title="{{ $test }} {{ $job }}" type="checkbox" readonly {{ if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}checked{{ end }}/>
+                        <div id="r{{$row}}c{{$col}}" title="test {{ if eq $skipped (index $.TestExecutionMapping "test_execution_skipped") }}skipped{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}run{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_unsupported") }}unsupported{{ else }}{{ end }}" class="{{ if eq $skipped (index $.TestExecutionMapping "test_execution_skipped") }}yellow{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}green{{ else if eq $skipped (index $.TestExecutionMapping "test_execution_unsupported") }}gray{{ else }}{{ end }}" >
+                            <input title="{{ $test }} &#013; {{ $job }}" type="checkbox" readonly {{ if eq $skipped (index $.TestExecutionMapping "test_execution_run") }}checked{{ end }}/>
                         </div>
                     {{ else }}n/a{{ end }}</td>
             {{ end }}

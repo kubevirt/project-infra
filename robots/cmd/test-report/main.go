@@ -62,9 +62,9 @@ func init() {
 		Short: "test-report creates a report about which tests have been run on what lane",
 		RunE:  runReport,
 	}
-	opts = options{}
-	flagOptions()
-	log.StandardLogger().SetFormatter(&log.JSONFormatter{})
+	opts = flagOptions()
+	log.SetLevel(log.Level(opts.logLevel))
+	log.SetFormatter(&log.JSONFormatter{})
 	logger = log.StandardLogger().WithField("robot", "test-report")
 }
 
@@ -79,25 +79,25 @@ type options struct {
 	endpoint   string
 	startFrom  time.Duration
 	configFile string
+	config     string
 	outputFile string
 	overwrite  bool
 	dryRun     bool
+	logLevel   uint32
 }
 
 func flagOptions() options {
+	opts = options{}
 	rootCmd.PersistentFlags().StringVar(&opts.endpoint, "endpoint", defaultJenkinsBaseUrl, "jenkins base url")
 	rootCmd.PersistentFlags().DurationVar(&opts.startFrom, "start-from", 14*24*time.Hour, "time period for report")
 	rootCmd.PersistentFlags().StringVar(&opts.configFile, "config-file", "", "yaml file that contains job names associated with dont_run_tests.json and the job name pattern, if set overrides default-config.yaml")
+	rootCmd.PersistentFlags().StringVar(&opts.config, "config", "default", "one of {'default', 'compute', 'storage', 'network'}, chooses one of the default configurations, if set overrides default-config.yaml")
 	rootCmd.PersistentFlags().StringVar(&opts.outputFile, "outputFile", "", "Path to output file, if not given, a temporary file will be used")
 	rootCmd.PersistentFlags().BoolVar(&opts.overwrite, "overwrite", true, "overwrite output file")
 	rootCmd.PersistentFlags().BoolVar(&opts.dryRun, "dry-run", false, "only check which jobs would be considered, do not create an actual report")
+	rootCmd.PersistentFlags().Uint32Var(&opts.logLevel, "log-level", 4, "level for logging")
 	return opts
 }
-
-const defaultMaxConnsPerHost = 3
-
-var maxConnsPerHost = defaultMaxConnsPerHost
-var testNamePattern *regexp.Regexp
 
 func (o *options) Validate() error {
 	if o.outputFile == "" {
@@ -118,7 +118,6 @@ func (o *options) Validate() error {
 			return fmt.Errorf("failed to write report, file %s exists", o.outputFile)
 		}
 	}
-	var data *Config
 	if o.configFile != "" {
 		_, err := os.Stat(o.configFile)
 		if err != nil && errors.Is(err, os.ErrNotExist) {
@@ -128,22 +127,23 @@ func (o *options) Validate() error {
 		if err != nil {
 			return err
 		}
-		err = yaml.Unmarshal(file, &data)
+		err = yaml.Unmarshal(file, &config)
 		if err != nil {
 			return err
 		}
+		logger.Printf("Using config file %q", o.configFile)
+		configName = "custom"
 	} else {
-		logger.Printf("No config file provided, using default config:/n%s", string(defaultConfigFileContent))
-		err := yaml.Unmarshal(defaultConfigFileContent, &data)
+		configBytes, exists := configs[o.config]
+		if !exists {
+			return fmt.Errorf("config %s not found", o.config)
+		}
+		logger.Printf("No config file provided, using %s config:/n%s", o.config, string(configBytes))
+		configName = o.config
+		err := yaml.Unmarshal(configBytes, &config)
 		if err != nil {
 			return err
 		}
-	}
-	jobNamePatternsToDontRunFileURLs = data.JobNamePatternsToDontRunFileURLs
-	jobNamePattern = regexp.MustCompile(data.JobNamePattern)
-	testNamePattern = regexp.MustCompile(data.TestNamePattern)
-	if data.MaxConnsPerHost > 0 {
-		maxConnsPerHost = data.MaxConnsPerHost
 	}
 	return nil
 }
@@ -160,23 +160,53 @@ type FilterTestRecord struct {
 	Reason string `json:"reason"`
 }
 
+// Config is the configuration for the report
 type Config struct {
-	JobNamePattern                   string                            `yaml:"jobNamePattern"`
-	TestNamePattern                  string                            `yaml:"testNamePattern"`
+
+	// JobNamePattern is a regexp.Regexp that describes which jobs are considered for the report
+	JobNamePattern string `yaml:"jobNamePattern"`
+
+	// TestNamePattern is a regexp.Regexp that describes what tests are considered for the report
+	TestNamePattern string `yaml:"testNamePattern"`
+
+	// JobNamePatternsToDontRunFileURLs is an array where each entry describes which tests are filtered regarding the
+	// `dont_run_tests.json` if the pattern matches the job name
 	JobNamePatternsToDontRunFileURLs []*JobNamePatternToDontRunFileURL `yaml:"jobNamePatternsToDontRunFileURLs"`
-	MaxConnsPerHost                  int                               `yaml:"maxConnsPerHost"`
+
+	// MaxConnsPerHost sets a boundary to the maximum number of parallel connections to the Jenkins
+	MaxConnsPerHost int `yaml:"maxConnsPerHost"`
 }
 
 type JobNamePatternToDontRunFileURL struct {
+
+	// JobNamePattern describes what jobs match to a `dont_run_tests.json` file in order to filter out those tests
 	JobNamePattern string `yaml:"jobNamePattern"`
+
+	// DontRunFileURL is the URL to a `dont_run_tests.json` file
 	DontRunFileURL string `yaml:"dontRunFileURL"`
 }
 
-var jobNamePatternsToDontRunFileURLs []*JobNamePatternToDontRunFileURL
-var jobNamePattern *regexp.Regexp
-
-//go:embed "default-config.yaml"
+//go:embed "configs/default-config.yaml"
 var defaultConfigFileContent []byte
+
+//go:embed "configs/compute-config.yaml"
+var computeConfigFileContent []byte
+
+//go:embed "configs/network-config.yaml"
+var networkConfigFileContent []byte
+
+//go:embed "configs/storage-config.yaml"
+var storageConfigFileContent []byte
+
+var configs = map[string][]byte{
+	"default": defaultConfigFileContent,
+	"compute": computeConfigFileContent,
+	"network": networkConfigFileContent,
+	"storage": storageConfigFileContent,
+}
+
+var config *Config
+var configName string
 
 func runReport(cmd *cobra.Command, args []string) error {
 
@@ -193,7 +223,7 @@ func runReport(cmd *cobra.Command, args []string) error {
 
 	client := &http.Client{
 		Transport: &http.Transport{
-			MaxConnsPerHost: maxConnsPerHost,
+			MaxConnsPerHost: config.MaxConnsPerHost,
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
 			},
@@ -230,6 +260,7 @@ func runReport(cmd *cobra.Command, args []string) error {
 	}
 
 	startOfReport := time.Now().Add(-1 * opts.startFrom)
+	endOfReport := time.Now()
 
 	testNamesToJobNamesToExecutionStatus := getTestNamesToJobNamesToTestExecutions(jobs, startOfReport, ctx)
 
@@ -239,6 +270,10 @@ func runReport(cmd *cobra.Command, args []string) error {
 	}
 
 	data := createReportData(jobNamePatternsToTestNameFilterRegexps, testNamesToJobNamesToExecutionStatus)
+	data.setDataRange(startOfReport, endOfReport)
+	reportConfig, err := yaml.Marshal(config)
+	data.setReportConfig(string(reportConfig))
+	data.setReportConfigName(configName)
 
 	err = writeHTMLReportToOutputFile(err, data)
 	if err != nil {
@@ -342,13 +377,21 @@ func getTestNamesToJobNamesToTestExecutions(jobs []*gojenkins.Job, startOfReport
 	resultsChan := make(chan map[string]map[string]int)
 	go getTestNamesToJobNamesToTestExecutionForAllJobs(resultsChan, jobs, startOfReport, ctx, logger)
 
+	testNamePattern := regexp.MustCompile(config.TestNamePattern)
 	testNamesToJobNamesToExecutionStatus := map[string]map[string]int{}
+
 	for result := range resultsChan {
 		for testName, jobNamesToExecutionStatus := range result {
 			if !testNamePattern.MatchString(testName) {
 				continue
 			}
-			testNamesToJobNamesToExecutionStatus[testName] = jobNamesToExecutionStatus
+			if _, exists := testNamesToJobNamesToExecutionStatus[testName]; exists {
+				for jobName, executionStatus := range jobNamesToExecutionStatus {
+					testNamesToJobNamesToExecutionStatus[testName][jobName] = executionStatus
+				}
+			} else {
+				testNamesToJobNamesToExecutionStatus[testName] = jobNamesToExecutionStatus
+			}
 		}
 	}
 	return testNamesToJobNamesToExecutionStatus
@@ -356,7 +399,7 @@ func getTestNamesToJobNamesToTestExecutions(jobs []*gojenkins.Job, startOfReport
 
 func createJobNamePatternsToTestNameFilterRegexps() (map[*regexp.Regexp]*regexp.Regexp, error) {
 	jobNamePatternsToTestNameFilterRegexpsResult := map[*regexp.Regexp]*regexp.Regexp{}
-	for _, jobNamePatternToDontRunFileURL := range jobNamePatternsToDontRunFileURLs {
+	for _, jobNamePatternToDontRunFileURL := range config.JobNamePatternsToDontRunFileURLs {
 		jobNamePattern := regexp.MustCompile(jobNamePatternToDontRunFileURL.JobNamePattern)
 		logger.Infof("fetching filter file %q", jobNamePatternToDontRunFileURL.DontRunFileURL)
 		response, err := http.Get(jobNamePatternToDontRunFileURL.DontRunFileURL)
@@ -397,6 +440,10 @@ type Data struct {
 	// TestNamesToJobNamesToSkipped contains a map of test names per test pointing to the jobs where that test has been seen, which points to the state that was seen on that lane (see test_execution_no_data, test_execution_skipped, test_execution_run, test_execution_unsupported)
 	TestNamesToJobNamesToSkipped map[string]map[string]int `json:"testNamesToJobNamesToSkipped"`
 	TestExecutionMapping         map[string]int
+	StartOfReport                string
+	EndOfReport                  string
+	ReportConfig                 string
+	ReportConfigName             string
 }
 
 func (d Data) String() string {
@@ -409,6 +456,18 @@ func (d Data) String() string {
 	TestNamesToJobNamesToSkipped: %v,
 	TestExecutionMapping: %v,
 }`, d.JenkinsBaseURL, d.TestNames, d.FilteredTestNames, d.SkippedTests, d.LookedAtJobs, d.TestNamesToJobNamesToSkipped, d.TestExecutionMapping)
+}
+
+func (d *Data) setDataRange(startOfReport, endOfReport time.Time) {
+	d.StartOfReport, d.EndOfReport = startOfReport.Format(time.RFC1123), endOfReport.Format(time.RFC1123)
+}
+
+func (d *Data) setReportConfig(reportConfig string) {
+	d.ReportConfig = reportConfig
+}
+
+func (d *Data) setReportConfigName(name string) {
+	d.ReportConfigName = name
 }
 
 func newData(testNames []string, filteredTestNames []string, skippedTests map[string]interface{}, lookedAtJobs []string, testNamesToJobNamesToSkipped map[string]map[string]int) Data {
@@ -474,6 +533,7 @@ func getTestNamesToJobNamesToTestExecutionForJob(startOfReport time.Time, ctx co
 
 func filterMatchingJobs(ctx context.Context, jenkins *gojenkins.Jenkins, innerJobs []gojenkins.InnerJob) ([]*gojenkins.Job, error) {
 	filteredJobs := []*gojenkins.Job{}
+	jobNamePattern := regexp.MustCompile(config.JobNamePattern)
 	logger.Printf("Filtering for jobs matching %s", jobNamePattern)
 	for _, innerJob := range innerJobs {
 		if !jobNamePattern.MatchString(innerJob.Name) {
