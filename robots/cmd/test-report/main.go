@@ -153,11 +153,15 @@ var networkConfigFileContent []byte
 //go:embed "storage-config.yaml"
 var storageConfigFileContent []byte
 
+//go:embed "ssp-config.yaml"
+var sspConfigFileContent []byte
+
 var configs = map[string][]byte{
 	"default": defaultConfigFileContent,
 	"compute": computeConfigFileContent,
 	"network": networkConfigFileContent,
 	"storage": storageConfigFileContent,
+	"ssp":     sspConfigFileContent,
 }
 
 var config *test_report.Config

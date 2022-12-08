@@ -9,6 +9,7 @@ go_library(
         "default-config.yaml",
         "network-config.yaml",
         "storage-config.yaml",
+        "ssp-config.yaml",
     ],
     importpath = "kubevirt.io/project-infra/robots/cmd/test-report",
     visibility = ["//visibility:private"],
