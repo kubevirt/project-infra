@@ -145,6 +145,36 @@ postsubmits:
                 memory: "1Gi"
               limits:
                 memory: "1Gi"
+    - name: publish-shared-images-controller-image
+      always_run: false
+      run_if_changed: "images/shared-images-controller/.*"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-kubevirtci-quay-credential: "true"
+      cluster: ibm-prow-jobs
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20221112-5269eb6
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cd images
+                ./publish_image.sh shared-images-controller quay.io kubevirtci
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "1Gi"
+              limits:
+                memory: "1Gi"
     - name: publish-kubekins-e2e-image
       always_run: false
       run_if_changed: "images/kubekins-e2e/.*"
