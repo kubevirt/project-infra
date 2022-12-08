@@ -100,15 +100,9 @@ func (o *options) Validate() error {
 		}
 		o.outputFile = outputFile.Name()
 	} else {
-		stat, err := os.Stat(o.outputFile)
-		if err != nil && errors.Is(err, os.ErrNotExist) {
-			return nil
-		}
-		if stat.IsDir() {
-			return fmt.Errorf("failed to write report, file %s is a directory", o.outputFile)
-		}
-		if err == nil && !o.overwrite {
-			return fmt.Errorf("failed to write report, file %s exists", o.outputFile)
+		err := o.validateOverwrite()
+		if err != nil {
+			return fmt.Errorf("failed to write report: %v", err)
 		}
 	}
 	if o.configFile != "" {
@@ -137,6 +131,20 @@ func (o *options) Validate() error {
 		if err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func (o *options) validateOverwrite() error {
+	stat, err := os.Stat(o.outputFile)
+	if err != nil && errors.Is(err, os.ErrNotExist) {
+		return nil
+	}
+	if stat.IsDir() {
+		return fmt.Errorf("failed to write report, file %s is a directory", o.outputFile)
+	}
+	if err == nil && !o.overwrite {
+		return fmt.Errorf("failed to write report, file %s exists", o.outputFile)
 	}
 	return nil
 }
