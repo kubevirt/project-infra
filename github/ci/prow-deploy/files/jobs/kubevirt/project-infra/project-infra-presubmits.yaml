@@ -784,7 +784,7 @@ presubmits:
       containers:
       - name: label-sync
         image: gcr.io/k8s-prow/label_sync:v20221117-3815e13b72
-        command: [ "/app/label_sync/app.binary" ]
+        command: [ "/ko-app/label_sync" ]
         args:
         - --config=github/ci/prow-deploy/files/labels.yaml
         - --confirm=false
@@ -807,7 +807,7 @@ presubmits:
       containers:
       - name: label-sync
         image: gcr.io/k8s-prow/label_sync:v20221117-3815e13b72
-        command: [ "/app/label_sync/app.binary" ]
+        command: [ "/ko-app/label_sync" ]
         args:
         - --config=github/ci/prow-deploy/files/labels.yaml
         - --confirm=false
