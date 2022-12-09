@@ -964,7 +964,7 @@ postsubmits:
         containers:
         - image: gcr.io/k8s-prow/configurator:v20221117-3815e13b72
           command:
-          - /app/testgrid/cmd/configurator/app.binary
+          - /ko-app/configurator
           args:
           - --prow-config=github/ci/prow-deploy/files/config.yaml
           - --prow-job-config=github/ci/prow-deploy/files/jobs
