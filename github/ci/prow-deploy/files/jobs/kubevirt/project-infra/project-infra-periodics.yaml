@@ -9,7 +9,7 @@ periodics:
     containers:
     - image: gcr.io/k8s-prow/commenter:v20221117-3815e13b72
       command:
-      - /app/robots/commenter/app.binary
+      - /ko-app/commenter
       args:
       - |-
         --query=is:pr
@@ -54,7 +54,7 @@ periodics:
     containers:
     - image: gcr.io/k8s-prow/commenter:v20221117-3815e13b72
       command:
-      - /app/robots/commenter/app.binary
+      - /ko-app/commenter
       args:
       - |-
         --query=org:kubevirt
@@ -83,7 +83,7 @@ periodics:
     containers:
     - image: gcr.io/k8s-prow/commenter:v20221117-3815e13b72
       command:
-      - /app/robots/commenter/app.binary
+      - /ko-app/commenter
       args:
       - |-
         --query=org:kubevirt
@@ -111,7 +111,7 @@ periodics:
     containers:
     - image: gcr.io/k8s-prow/commenter:v20221117-3815e13b72
       command:
-      - /app/robots/commenter/app.binary
+      - /ko-app/commenter
       args:
       - |-
         --query=org:kubevirt
@@ -143,7 +143,7 @@ periodics:
     containers:
     - image: gcr.io/k8s-prow/commenter:v20221117-3815e13b72
       command:
-      - /app/robots/commenter/app.binary
+      - /ko-app/commenter
       args:
       - |-
         --query=org:kubevirt
