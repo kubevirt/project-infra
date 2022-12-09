@@ -53,6 +53,12 @@ bump_base_manifests_local_images(){
     find ${PROJECT_INFRA_ROOT}/github/ci/prow-deploy/kustom/base/manifests/local -type f -name '*.yaml' | xargs sed -i "s!image: gcr.io/k8s-prow/\(.*\):.*!image: gcr.io/k8s-prow/\\1:${latest_prow_tag}!"
 }
 
+bump_job_images(){
+    local latest_prow_tag=$1
+
+    find ${PROJECT_INFRA_ROOT}/github/ci/prow-deploy/files/jobs -type f -name '*.yaml' | xargs sed -i "s!image: gcr.io/k8s-prow/\(.*\):.*!image: gcr.io/k8s-prow/\\1:${latest_prow_tag}!"
+}
+
 main(){
     copy_files
 
@@ -67,6 +73,7 @@ main(){
     bump_utility_images "${latest_prow_tag}"
     bump_exporter "${latest_prow_tag}"
     bump_base_manifests_local_images "${latest_prow_tag}"
+    bump_job_images "${latest_prow_tag}"
 }
 
 main "${@}"
