@@ -390,7 +390,7 @@ spec:
         - --deduplication.replica-label=replica
         - --retention.resolution-raw=7d
         - --retention.resolution-5m=30d
-        - --retention.resolution-1h=90d
+        - --retention.resolution-1h=365d
         env:
         - name: OBJSTORE_CONFIG
           valueFrom:
