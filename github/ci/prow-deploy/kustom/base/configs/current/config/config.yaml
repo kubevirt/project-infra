@@ -457,6 +457,17 @@ presets:
   - name: podman-data
     mountPath: /var/lib/containers
 - labels:
+    preset-podman-shared-images: "true"
+  volumes:
+  - name: podman-shared-images
+    hostPath:
+      path: /var/lib/shared-images
+      type: Directory
+  volumeMounts:
+  - name: podman-shared-images
+    mountPath: /var/lib/shared-images
+    readOnly: true
+- labels:
     preset-docker-mirror: "true"
   volumes:
   - name: docker-config
