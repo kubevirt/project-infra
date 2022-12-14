@@ -9,6 +9,7 @@ resources:
   - resources/metrics-server.yaml
   - resources/priority-classes.yaml
   - resources/place-holder.yaml
+  - resources/shared-images-controller.yaml
   - ../../components/docker-mirror-proxy/base
   - ../../components/greenhouse/base
 
