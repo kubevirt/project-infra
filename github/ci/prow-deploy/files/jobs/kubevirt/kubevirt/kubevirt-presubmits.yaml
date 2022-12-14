@@ -1225,7 +1225,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.25-sig-compute-migrations
+    name: pull-kubevirt-e2e-k8s-1.25-sig-compute-migrations-root
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1238,6 +1238,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.25-sig-compute-migrations
+        - name: FEATURE_GATES
+          value: Root
         - name: KUBEVIRT_NUM_NODES
           value: "3"
         - name: KUBEVIRT_STORAGE
@@ -1268,7 +1270,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.25-sig-compute-migrations-nonroot
+    name: pull-kubevirt-e2e-k8s-1.25-sig-compute-migrations
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1285,10 +1287,6 @@ presubmits:
           value: "3"
         - name: KUBEVIRT_STORAGE
           value: rook-ceph-default
-        - name: FEATURE_GATES
-          value: NonRoot
-        - name: KUBEVIRT_NONROOT
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221116-f8c83d3
         name: ""
         resources:
