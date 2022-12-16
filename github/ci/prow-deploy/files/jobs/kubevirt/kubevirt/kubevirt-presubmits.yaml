@@ -1844,7 +1844,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.24-psa-sig-network
+    name: pull-kubevirt-e2e-k8s-1.25-psa-sig-network
     optional: true
     skip_branches:
       - release-\d+\.\d+
@@ -1856,8 +1856,10 @@ presubmits:
             - -c
             - automation/test.sh
           env:
+            - name: KUBEVIRT_PSA
+              value: "true"
             - name: TARGET
-              value: k8s-1.24-psa-sig-network
+              value: k8s-1.25-sig-network
           image: quay.io/kubevirtci/bootstrap:v20221116-f8c83d3
           name: ""
           resources:
@@ -2001,7 +2003,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.24-psa-sig-compute
+    name: pull-kubevirt-e2e-k8s-1.25-psa-sig-compute
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -2013,8 +2015,10 @@ presubmits:
         - -c
         - automation/test.sh
         env:
+        - name: KUBEVIRT_PSA
+          value: "true"
         - name: TARGET
-          value: k8s-1.24-psa-sig-compute
+          value: k8s-1.25-sig-compute
         image: quay.io/kubevirtci/bootstrap:v20221116-f8c83d3
         name: ""
         resources:
@@ -2041,7 +2045,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.24-psa-sig-storage
+    name: pull-kubevirt-e2e-k8s-1.25-psa-sig-storage
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -2053,8 +2057,10 @@ presubmits:
         - -c
         - automation/test.sh
         env:
+        - name: KUBEVIRT_PSA
+          value: "true"
         - name: TARGET
-          value: k8s-1.24-psa-sig-storage
+          value: k8s-1.25-sig-storage
         image: quay.io/kubevirtci/bootstrap:v20221116-f8c83d3
         name: ""
         resources:
