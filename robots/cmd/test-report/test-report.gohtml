@@ -1,0 +1,142 @@
+<html>
+<head>
+    <title>test execution report</title>
+    <meta charset="UTF-8">
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+        .yellow {
+            background-color: #ffff80;
+        }
+        .almostgreen {
+            background-color: #dfff80;
+        }
+        .green {
+            background-color: #9fff80;
+        }
+        .red {
+            background-color: #ff8080;
+        }
+        .orange {
+            background-color: #ffbf80;
+        }
+        .gray {
+            background-color: #898989;
+        }
+        .unimportant {
+        }
+        .tests_passed {
+            color: #226c18;
+            font-weight: bold;
+        }
+        .tests_failed {
+            color: #8a1717;
+            font-weight: bold;
+        }
+        .tests_skipped {
+            color: #535453;
+            font-weight: bold;
+        }
+        .right {
+            text-align: right;
+            width: 100%;
+        }
+
+        .popup .popuptextFilteredTestNames {
+            display: none;
+            width: 1024px;
+            background-color: #FFFFFF;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 8px;
+            position: absolute;
+            z-index: 1;
+            left: 100%;
+            margin-left: -1024px;
+        }
+
+        .popup:hover .popuptextFilteredTestNames {
+            display: block;
+            -webkit-animation: fadeIn 1s;
+            animation: fadeIn 1s;
+        }
+
+        .popup .popuptextReportConfig {
+            display: none;
+            width: 1024px;
+            background-color: #FFFFFF;
+            text-align: left;
+            border-radius: 6px;
+            padding: 8px 8px;
+            position: absolute;
+            z-index: 1;
+            left: 100%;
+            margin-left: -1024px;
+        }
+
+        .popup:hover .popuptextReportConfig {
+            display: block;
+            -webkit-animation: fadeIn 1s;
+            animation: fadeIn 1s;
+        }
+
+    </style>
+    </meta>
+</head>
+<body>
+{{- /* gotype: kubevirt.io/project-infra/robots/main.Data */ -}}
+<h1>test execution report</h1>
+<div>
+    {{ $.ReportConfigName }} report configuration<br/>
+    data from {{ $.StartOfReport }} till {{ $.EndOfReport }}
+</div>
+
+<div id="reportConfig" class="popup right" >
+    <u>report configuration</u>
+    <pre class="popuptextReportConfig right" id="targetReportConfig">{{ $.ReportConfig }}</pre>
+</div>
+
+<div id="filteredTests" class="popup right" >
+    <u>list of filtered tests</u>
+    <div class="popuptextFilteredTestNames right" id="targetfilteredTests">
+        <table width="100%">
+            <tr class="unimportant">
+                <td>
+                    Filtered test names:
+                </td>
+            </tr>{{ range $filteredTestName := $.FilteredTestNames }}
+        <tr class="unimportant">
+            <td>
+                {{ $filteredTestName | html }}
+            </td>
+        </tr>{{ end }}
+        </table>
+    </div>
+</div>
+
+<table>
+    <tr>
+        <td></td>
+        <td></td>
+        {{ range $job := $.LookedAtJobs }}
+            <td><a href="{{ $.JenkinsBaseURL }}/job/{{ $job }}/">{{ $job }}</a></td>
+        {{ end }}
+    </tr>
+    {{ range $row, $test := $.TestNames }}
+        <tr>
+            <td><div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a></div></td>
+            <td class="{{ if (index $.SkippedTests $test) }}red{{ end }}">{{ $test }}</td>
+            {{ range $col, $job := $.LookedAtJobs }}
+                <td class="center">{{ with $skipped := (index $.TestNamesToJobNamesToSkipped $test $job) }}
+                        <div id="r{{$row}}c{{$col}}" title="test {{ if eq $skipped (index $.TestExecutionMapping "TestExecution_Skipped") }}skipped{{ else if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }}run{{ else if eq $skipped (index $.TestExecutionMapping "TestExecution_Unsupported") }}unsupported{{ else }}{{ end }}" class="{{ if eq $skipped (index $.TestExecutionMapping "TestExecution_Skipped") }}yellow{{ else if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }}green{{ else if eq $skipped (index $.TestExecutionMapping "TestExecution_Unsupported") }}gray{{ else }}{{ end }}" >
+                            <input title="{{ $test }} &#013; {{ $job }}" type="checkbox" readonly {{ if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }}checked{{ end }}/>
+                        </div>
+                    {{ else }}n/a{{ end }}</td>
+            {{ end }}
+        </tr>
+    {{ end }}
+</table>
+
+</body>
+</html>

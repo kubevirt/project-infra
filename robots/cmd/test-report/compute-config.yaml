@@ -1,0 +1,12 @@
+jobNamePattern: ^test-kubevirt-cnv-4.1[1-9]-(compute|operator|quarantined)-ocs$
+jobNamePatternsToDontRunFileURLs:
+  - jobNamePattern: .*cnv-4\.13.*
+    dontRunFileURL: https://gitlab.cee.redhat.com/contra/cnv-qe-automation/-/raw/master/tests/tier1/kubevirt/dont_run_tests.json
+  - jobNamePattern: .*cnv-4\.12.*
+    dontRunFileURL: https://gitlab.cee.redhat.com/contra/cnv-qe-automation/-/raw/cnv-4.12/tests/tier1/kubevirt/dont_run_tests.json
+  - jobNamePattern: .*cnv-4\.11.*
+    dontRunFileURL: https://gitlab.cee.redhat.com/contra/cnv-qe-automation/-/raw/cnv-4.11/tests/tier1/kubevirt/dont_run_tests.json
+  - jobNamePattern: .*cnv-4\.10.*
+    dontRunFileURL: https://gitlab.cee.redhat.com/contra/cnv-qe-automation/-/raw/cnv-4.10/tests/tier1/kubevirt/dont_run_tests.json
+maxConnsPerHost: 3
+testNamePattern: \[sig-compute\]
