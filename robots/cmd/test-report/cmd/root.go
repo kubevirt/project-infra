@@ -24,6 +24,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"kubevirt.io/project-infra/robots/cmd/test-report/cmd/dequarantine"
 	"kubevirt.io/project-infra/robots/cmd/test-report/cmd/execution"
 )
 
@@ -45,7 +46,7 @@ func init() {
 	logger := log.StandardLogger().WithField("robot", "test-report")
 
 	rootCmd.AddCommand(execution.ExecutionCmd(logger))
-	rootCmd.AddCommand(dequarantineCmd)
+	rootCmd.AddCommand(dequarantine.DequarantineCmd(logger))
 }
 
 func Execute() error {

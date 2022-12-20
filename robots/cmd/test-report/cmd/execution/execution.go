@@ -34,6 +34,7 @@ import (
 	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
 	"net/http"
 	"os"
+	"regexp"
 	"sigs.k8s.io/yaml"
 	"strings"
 	"time"
@@ -43,7 +44,7 @@ import (
 
 var executionCmd = &cobra.Command{
 	Use:   "execution",
-	Short: "test-report creates a report about which tests have been run on what lane",
+	Short: "test-report execution creates a report about which tests have been run on what lane",
 	Long: `test-report execution creates a report about which tests have been run (or not run) on what lane.
 
 Especially it considers the 'dont_run_tests.json' files per branch of the lanes that are considered.`,
@@ -197,11 +198,13 @@ func runExecutionReport() error {
 		logger.Fatalf("failed to contact jenkins %s: %v", executionReportFlagOpts.endpoint, err)
 	}
 
+	jobNamePattern := regexp.MustCompile(config.JobNamePattern)
+
 	jobNames, err := jenkins.GetAllJobNames(ctx)
 	if err != nil {
 		logger.Fatalf("failed to get jobs: %v", err)
 	}
-	jobs, err := test_report.FilterMatchingJobs(ctx, jenkins, jobNames, config)
+	jobs, err := test_report.FilterMatchingJobsByJobNamePattern(ctx, jenkins, jobNames, jobNamePattern)
 	if err != nil {
 		logger.Fatalf("failed to filter matching jobs: %v", err)
 	}
@@ -222,7 +225,7 @@ func runExecutionReport() error {
 	startOfReport := time.Now().Add(-1 * executionReportFlagOpts.startFrom)
 	endOfReport := time.Now()
 
-	testNamesToJobNamesToExecutionStatus := test_report.GetTestNamesToJobNamesToTestExecutions(jobs, startOfReport, ctx, config)
+	testNamesToJobNamesToExecutionStatus := test_report.GetTestNamesToJobNamesToTestExecutions(jobs, startOfReport, ctx, regexp.MustCompile(config.TestNamePattern))
 
 	err = writeJsonBaseDataFile(testNamesToJobNamesToExecutionStatus)
 	if err != nil {
