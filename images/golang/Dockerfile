@@ -1,7 +1,7 @@
 ARG ARCH
 FROM bootstrap-$ARCH
 
-ENV GIMME_GO_VERSION=1.17.8
+ENV GIMME_GO_VERSION=1.19.2
 
 # Cache latest stable golang version
 RUN curl -sL -o /bin/gimme https://raw.githubusercontent.com/travis-ci/gimme/master/gimme && chmod +x /bin/gimme
