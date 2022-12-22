@@ -141,6 +141,7 @@ periodics:
     repo: kubevirt
   labels:
     preset-docker-mirror-proxy: "true"
+    preset-gcs-credentials: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
