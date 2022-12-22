@@ -28,37 +28,40 @@ fi
 
 function usage() {
     cat <<EOF
-usage: $0 <docker-image> [<directory>]
+usage: $0 [<container-image> [<directory>]]
 
-    Updates all docker files inside directory (defaults to 'images/') to use the latest image version
+    Updates all container files inside directory (defaults to 'images/') to use the latest image version
 
     Requires skopeo
 EOF
 }
 
-if [ $# -lt 1 ]; then
-    usage
-    exit 1
-fi
-
+IMAGE_NAME="quay.io/kubevirtci/bootstrap"
 if [ $# -gt 1 ]; then
     if [ ! -d "$2" ]; then
+        usage
         echo "$2 is not a directory!"
         exit 1
     fi
-    docker_file_dir="$2"
+    image_dir="$2"
 else
-    docker_file_dir="$(readlink --canonicalize "$(cd "$(cd "$(dirname "$0")" && pwd)"'/../images' && pwd)")"
+    if [ $# -gt 0 ]; then
+        if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+            usage
+            exit 0
+        fi
+        IMAGE_NAME="$1"
+    fi
+    image_dir="$(readlink --canonicalize "$(cd "$(cd "$(dirname "$0")" && pwd)"'/../images' && pwd)")"
 fi
 
-IMAGE_NAME="$1"
-latest_image_tag=$(skopeo list-tags "docker://$IMAGE_NAME" | jq -r '.Tags[] | select( match("v[0-9]+-[a-z0-9]+") )' | tail -1)
+latest_image_tag=$(skopeo list-tags "docker://$IMAGE_NAME" | jq -r '.Tags[] | select( match("^v[0-9]+-[a-z0-9]{7,8}$") )' | tail -1)
 if [ -z "$latest_image_tag" ]; then
     echo "Couldn't find latest_image_tag"
     exit 1
 fi
 IMAGE_NAME_WITH_TAG="$IMAGE_NAME:$latest_image_tag"
 
-replace_regex='s#^FROM '"$IMAGE_NAME"'(@sha256\:|:v?[a-z0-9]+-).*$#FROM '"$IMAGE_NAME_WITH_TAG"'#g'
+replace_regex='s#'"$IMAGE_NAME"'(@sha256\:[a-z0-9]+|:v[0-9]+-[a-z0-9]{7,8})#'"$IMAGE_NAME_WITH_TAG"'#g'
 
-find "$docker_file_dir" -name 'Dockerfile' -exec sed -i -E "$replace_regex" {} +
+find "$image_dir" -regextype egrep -regex '.*(Docker|Container)file$' -exec sed -i -E "$replace_regex" {} +
