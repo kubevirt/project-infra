@@ -1169,7 +1169,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    optional: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1187,6 +1186,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.26-ipv6-sig-network
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1841,33 +1841,33 @@ presubmits:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
+      preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.25-psa-sig-network
     optional: true
     skip_branches:
-      - release-\d+\.\d+
+    - release-\d+\.\d+
     spec:
       containers:
-        - command:
-            - /usr/local/bin/runner.sh
-            - /bin/sh
-            - -c
-            - automation/test.sh
-          env:
-            - name: KUBEVIRT_PSA
-              value: "true"
-            - name: TARGET
-              value: k8s-1.25-sig-network
-          image: quay.io/kubevirtci/bootstrap:v20221116-f8c83d3
-          name: ""
-          resources:
-            requests:
-              memory: 29Gi
-          securityContext:
-            privileged: true
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: KUBEVIRT_PSA
+          value: "true"
+        - name: TARGET
+          value: k8s-1.25-sig-network
+        image: quay.io/kubevirtci/bootstrap:v20221116-f8c83d3
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
       nodeSelector:
         type: bare-metal-external
   - always_run: true
@@ -2000,9 +2000,9 @@ presubmits:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
+      preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.25-psa-sig-compute
     optional: true
@@ -2042,9 +2042,9 @@ presubmits:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
+      preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.25-psa-sig-storage
     optional: true
@@ -2189,7 +2189,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    optional: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2207,6 +2206,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.25-fips-sig-compute
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2339,7 +2339,7 @@ presubmits:
             memory: 4Gi
         securityContext:
           privileged: true
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2379,7 +2379,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2419,7 +2419,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2459,7 +2459,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
