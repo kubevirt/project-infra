@@ -22,7 +22,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20221205-e30b34a
+          - image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
             securityContext:
               privileged: true
             resources:

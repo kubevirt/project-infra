@@ -206,7 +206,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-      - image: quay.io/kubevirtci/indexpagecreator:v20210428-c869d6302-dirty
+      - image: quay.io/kubevirtci/indexpagecreator:v20230102-5ed6f7d7
         command:
           - "/app/robots/cmd/indexpagecreator/app.binary"
         args:
@@ -231,7 +231,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20221119-67aebd9
+      - image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
@@ -688,7 +688,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20221116-f8c83d3
+      - image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         env:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
@@ -757,7 +757,7 @@ periodics:
   name: periodic-project-infra-check-prow-jobconfigs
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20221116-f8c83d3
+    - image: quay.io/kubevirtci/golang:v20221222-8f66e7e
       env:
       - name: GIMME_GO_VERSION
         value: "1.16"
