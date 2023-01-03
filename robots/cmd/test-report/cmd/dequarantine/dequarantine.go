@@ -150,7 +150,39 @@ func runDequarantineReport() error {
 		logger.Fatalf("failed to filter matching jobs: %v", err)
 	}
 
+	startOfReport := time.Now().Add(-1 * dequarantineReportOptions.startFrom)
+
 	// #1: create the base data that collects the test cases
+	quarantinedTestsRunDataValues, testNamePattern := createTestCaseCollectionBaseData(quarantinedTestEntriesFromFile)
+
+	// #2: fetch all test cases that match any entry, and put them into a map using test name and array of test cases
+	quarantinedTestNamesToTestRunData := filterMatchingTestRunData(jobs, startOfReport, ctx, jenkins, testNamePattern)
+
+	// #3: sort every set of test case below it's matching test id
+	insertTestRunDataIntoTestCases(quarantinedTestNamesToTestRunData, quarantinedTestsRunDataValues)
+
+	err = writeReportData(err, quarantinedTestsRunDataValues)
+	if err != nil {
+		return err
+	}
+	logger.Infof("Report data written to %q", dequarantineReportOptions.outputFile)
+	return nil
+}
+
+func insertTestRunDataIntoTestCases(testNamesToTestCases map[string]*quarantinedTestRunsData, quarantinedTestsRunDataValues []*quarantinedTestsRunData) {
+	for _, testCases := range testNamesToTestCases {
+		testCases.sortTestResults()
+		for _, quarantinedTestsRunDataValue := range quarantinedTestsRunDataValues {
+			if quarantinedTestsRunDataValue.addIfMatchesTestName(testCases) {
+				break
+			}
+		}
+	}
+}
+
+// createTestCaseCollectionBaseData returns the regexp.Regexp that is used to filter the test data by test name that
+// matches the quarantined file expressions and the base records that are used to collect the test runs for those tests
+func createTestCaseCollectionBaseData(quarantinedTestEntriesFromFile []*test_report.FilterTestRecord) ([]*quarantinedTestsRunData, *regexp.Regexp) {
 	var quarantinedTestPatternStrings []string
 	var quarantinedTestsRunDataValues []*quarantinedTestsRunData
 	for _, quarantinedTestEntry := range quarantinedTestEntriesFromFile {
@@ -161,10 +193,12 @@ func runDequarantineReport() error {
 		quarantinedTestPatternStrings = append(quarantinedTestPatternStrings, regexp.QuoteMeta(quarantinedTestEntry.Id))
 	}
 	testNamePattern := regexp.MustCompile(strings.Join(quarantinedTestPatternStrings, "|"))
+	return quarantinedTestsRunDataValues, testNamePattern
+}
 
-	startOfReport := time.Now().Add(-1 * dequarantineReportOptions.startFrom)
-
-	// #2: fetch all test cases that match any entry, and put them into a map using test name and array of test cases
+// filterMatchingTestRunData fetches all test cases that match any entry from the quarantined file, and returns a map
+// using test name and array of test cases
+func filterMatchingTestRunData(jobs []*gojenkins.Job, startOfReport time.Time, ctx context.Context, jenkins *gojenkins.Jenkins, testNamePattern *regexp.Regexp) map[string]*quarantinedTestRunsData {
 	testNamesToTestCases := map[string]*quarantinedTestRunsData{}
 	for _, job := range jobs {
 		buildNumbersToTestResultsForJob := robots_jenkins.GetBuildNumbersToTestResultsForJob(startOfReport, job, ctx, logger)
@@ -194,18 +228,11 @@ func runDequarantineReport() error {
 			}
 		}
 	}
+	return testNamesToTestCases
+}
 
-	// #3: sort every set of test case below it's matching test id
-	for _, testCases := range testNamesToTestCases {
-		testCases.sortTestResults()
-		for _, quarantinedTestsRunDataValue := range quarantinedTestsRunDataValues {
-			if quarantinedTestsRunDataValue.addIfMatchesTestName(testCases) {
-				break
-			}
-		}
-	}
-
-	// #4: write report data
+// writeReportData writes the condensed report data into a file
+func writeReportData(err error, quarantinedTestsRunDataValues []*quarantinedTestsRunData) error {
 	var outputFile *os.File
 	if dequarantineReportOptions.outputFile == "" {
 		outputFile, err = os.CreateTemp("", "quarantined-tests-run-*.json")
@@ -223,7 +250,6 @@ func runDequarantineReport() error {
 	if err != nil {
 		return fmt.Errorf("failed to write report: %v", err)
 	}
-	logger.Infof("Report data written to %q", dequarantineReportOptions.outputFile)
 	return nil
 }
 
