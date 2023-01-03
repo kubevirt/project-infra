@@ -1,104 +1,24 @@
 package cmd
 
 import (
-	"github.com/bndr/gojenkins"
 	"github.com/joshdk/go-junit"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
 	"kubevirt.io/project-infra/robots/pkg/validation"
+	"os"
 	"path/filepath"
-	"reflect"
 	"testing"
 	"time"
 )
 
-func Test_fetchJunitFilesFromArtifacts(t *testing.T) {
-	type args struct {
-		completedBuilds []*gojenkins.Build
-		fLog            *log.Entry
-	}
-	tests := []struct {
-		name string
-		args args
-		want []string
-	}{
-		{
-			name: "fetches all relevant artifacts",
-			args: args{
-				completedBuilds: []*gojenkins.Build{
-					{
-						Raw: &gojenkins.BuildResponse{
-							Artifacts: []struct {
-								DisplayPath  string `json:"displayPath"`
-								FileName     string `json:"fileName"`
-								RelativePath string `json:"relativePath"`
-							}{
-								{
-									FileName: "footest.xml",
-								},
-								{
-									FileName: "junit.functest.xml",
-								},
-								{
-									FileName: "partial.junit.functest.1.xml",
-								},
-								{
-									FileName: "partial.junit.functest.2.xml",
-								},
-								{
-									FileName: "partial.junit.functest.3.xml",
-								},
-								{
-									FileName: "bartest.xml",
-								},
-								{
-									FileName: "merged.junit.functest.xml",
-								},
-								{
-									FileName: "foobar.junit.functest.xml",
-								},
-							},
-						},
-						Job:     nil,
-						Jenkins: nil,
-						Base:    "",
-						Depth:   0,
-					},
-				},
-				fLog: log.StandardLogger().WithField("test", "test"),
-			},
-			want: []string{
-				"junit.functest.xml",
-				"partial.junit.functest.1.xml",
-				"partial.junit.functest.2.xml",
-				"partial.junit.functest.3.xml",
-				"merged.junit.functest.xml",
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := fetchJunitFilesFromArtifacts(tt.args.completedBuilds, tt.args.fLog)
-			actualFileNames := []string{}
-			for _, artifact := range got {
-				actualFileNames = append(actualFileNames, artifact.FileName)
-			}
-			if !reflect.DeepEqual(tt.want, actualFileNames) {
-				t.Errorf("fetchJunitFilesFromArtifacts() = %v, want %v", actualFileNames, tt.want)
-			}
-		})
-	}
-}
-
-func Test_writeReportToFileProducesValidOutput(t *testing.T) {
+func Test_writeProwReportToFileProducesValidOutput(t *testing.T) {
 	type args struct {
 		startOfReport time.Time
 		endOfReport   time.Time
-		ratings       []build.Rating
 		reports       []*flakefinder.JobResult
 		validators    []validation.ContentValidator
+		ratings       []build.Rating
 	}
 	tests := []struct {
 		name string
@@ -109,31 +29,6 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 			args: args{
 				startOfReport: time.Now(),
 				endOfReport:   time.Now(),
-				ratings: []build.Rating{
-					{
-						Name:         "test-build-1",
-						Source:       "https://source/test-build-1",
-						StartFrom:    24 * time.Hour,
-						BuildNumbers: []int64{int64(17), int64(42)},
-						BuildNumbersToData: map[int64]build.BuildData{
-							int64(17): {
-								Number:   int64(17),
-								Failures: int64(99),
-								Sigma:    float64(4.0),
-							},
-							int64(42): {
-								Number:   int64(42),
-								Failures: int64(13),
-								Sigma:    float64(2.0),
-							},
-						},
-						TotalCompletedBuilds: 2,
-						TotalFailures:        131,
-						Mean:                 17,
-						Variance:             23,
-						StandardDeviation:    1.23,
-					},
-				},
 				reports: []*flakefinder.JobResult{
 					{
 						Job: "job1",
@@ -178,7 +73,6 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 				},
 				validators: []validation.ContentValidator{
 					validation.HTMLValidator{},
-					validation.JSONValidator{},
 				},
 			},
 		},
@@ -187,31 +81,6 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 			args: args{
 				startOfReport: time.Now(),
 				endOfReport:   time.Now(),
-				ratings: []build.Rating{
-					{
-						Name:         "test-build-1",
-						Source:       "https://source/test-build-1",
-						StartFrom:    24 * time.Hour,
-						BuildNumbers: []int64{int64(17), int64(42)},
-						BuildNumbersToData: map[int64]build.BuildData{
-							int64(17): {
-								Number:   int64(17),
-								Failures: int64(99),
-								Sigma:    float64(4.0),
-							},
-							int64(42): {
-								Number:   int64(42),
-								Failures: int64(13),
-								Sigma:    float64(2.0),
-							},
-						},
-						TotalCompletedBuilds: 2,
-						TotalFailures:        131,
-						Mean:                 17,
-						Variance:             23,
-						StandardDeviation:    1.23,
-					},
-				},
 				reports: []*flakefinder.JobResult{
 					{
 						Job: "job1",
@@ -296,7 +165,6 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 				},
 				validators: []validation.ContentValidator{
 					validation.HTMLValidator{},
-					validation.JSONValidator{},
 				},
 			},
 		},
@@ -309,11 +177,16 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tempFile := filepath.Join(tempDir, "report.html")
-			writeReportToFile(tt.args.startOfReport, tt.args.endOfReport, tt.args.reports, tempFile, tt.args.ratings)
+			baseReportFile := filepath.Join(tempDir, "report.html")
+			tempFile, err := os.OpenFile(baseReportFile, os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				t.Errorf("failed to create temp report file: %v", err)
+				return
+			}
+			err = writeProwReportToFile(tt.args.startOfReport, tt.args.reports, tempFile)
 
 			for _, currentValidator := range tt.args.validators {
-				targetFileName := currentValidator.GetTargetFileName(tempFile)
+				targetFileName := currentValidator.GetTargetFileName(baseReportFile)
 				content, err := ioutil.ReadFile(targetFileName)
 				if err != nil {
 					t.Errorf("failed to read temp report file: %v", err)
@@ -329,7 +202,7 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 	}
 }
 
-func Test_writeReportToFileCreatesTags(t *testing.T) {
+func Test_writeProwReportToFileCreatesTags(t *testing.T) {
 	type args struct {
 		startOfReport time.Time
 		endOfReport   time.Time
@@ -396,10 +269,15 @@ func Test_writeReportToFileCreatesTags(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tempFile := filepath.Join(tempDir, "report.html")
-			writeReportToFile(tt.args.startOfReport, tt.args.endOfReport, tt.args.reports, tempFile, tt.args.ratings)
+			baseReportFile := filepath.Join(tempDir, "report.html")
+			tempFile, err := os.OpenFile(baseReportFile, os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				t.Errorf("failed to create temp report file: %v", err)
+				return
+			}
+			writeProwReportToFile(tt.args.startOfReport, tt.args.reports, tempFile)
 
-			content, err := ioutil.ReadFile(tempFile)
+			content, err := ioutil.ReadFile(baseReportFile)
 			if err != nil {
 				t.Errorf("failed to read temp report file: %v", err)
 				return
