@@ -1,20 +1,18 @@
-FROM quay.io/kubevirtci/bootstrap:v20210906-994b913
+FROM quay.io/kubevirtci/golang:v20221222-8f66e7e as builder
 
 RUN git clone https://github.com/kubernetes/test-infra.git && \
   cd test-infra && \
-  git checkout 689941423e01abb85b7ca6b9e317e3d035c60098 && \
-  bazelisk build //prow/cmd/config-bootstrapper && \
-  cp bazel-bin/prow/cmd/config-bootstrapper/config-bootstrapper_/config-bootstrapper /usr/local/bin && \
+  git checkout 3815e13b727dd09738bf9bd7e8a06ab616cb0d62 && \
+  /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/config-bootstrapper ./prow/cmd/config-bootstrapper/...' && \
   config-bootstrapper --help && \
-  bazelisk build //prow/cmd/phony && \
-  cp bazel-bin/prow/cmd/phony/phony_/phony /usr/local/bin && \
+  /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/phony ./prow/cmd/phony' && \
   phony --help && \
-  bazelisk build //prow/cmd/hmac && \
-  cp bazel-bin/prow/cmd/hmac/hmac_/hmac /usr/local/bin && \
-  hmac --help && \
-  bazelisk clean --expunge && \
-  cd .. && rm -rf test-infra && \
-  rm -rf ~/.cache.bazel
+  /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/hmac ./prow/cmd/hmac' && \
+  hmac --help
+
+FROM quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
+
+COPY --from=builder /usr/local/bin/config-bootstrapper /usr/local/bin/phony /usr/local/bin/hmac /usr/local/bin/
 
 RUN curl -Lo ./kustomize.tar.gz https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.8.7/kustomize_v3.8.7_linux_amd64.tar.gz && \
   tar -xvf kustomize.tar.gz && \

@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/bootstrap:v20210924-4c47964
+FROM quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
 
 RUN dnf install -y \
     cloud-utils \
