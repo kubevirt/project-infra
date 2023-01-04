@@ -528,3 +528,30 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: false
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 1
+    name: check-provision-k8s-1.26-centos9
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cd cluster-provision/k8s/1.26-centos9 && ../provision.sh
+        image: quay.io/kubevirtci/golang:v20221222-8f66e7e
+        name: ""
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
