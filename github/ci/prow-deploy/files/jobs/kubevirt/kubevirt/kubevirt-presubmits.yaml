@@ -71,7 +71,7 @@ presubmits:
         command:
         - /bin/sh
         - -ce
-        image: quay.io/kubevirtci/pr-creator:v20220927-5a02fb7
+        image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
         name: ""
         resources:
           requests:
