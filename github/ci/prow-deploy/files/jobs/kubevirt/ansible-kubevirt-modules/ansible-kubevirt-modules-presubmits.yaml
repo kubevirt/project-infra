@@ -14,7 +14,7 @@ presubmits:
       grace_period: 5m
     max_concurrency: 6
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:

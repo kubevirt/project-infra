@@ -409,7 +409,7 @@ presubmits:
     run_if_changed: "github/ci/prow-deploy/.*"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-pgp-bot-key: "true"
