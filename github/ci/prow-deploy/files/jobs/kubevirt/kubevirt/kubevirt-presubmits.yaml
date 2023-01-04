@@ -52,7 +52,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror: "true"
       preset-gcs-credentials: "true"
       preset-github-credentials: "true"

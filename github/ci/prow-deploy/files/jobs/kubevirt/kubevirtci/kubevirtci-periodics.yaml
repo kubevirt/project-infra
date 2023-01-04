@@ -55,7 +55,7 @@ periodics:
     repo: kubevirt
     base_ref: main
   labels:
-    preset-dind-enabled: "true"
+    preset-podman-in-container-enabled: "true"
     preset-docker-mirror: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
