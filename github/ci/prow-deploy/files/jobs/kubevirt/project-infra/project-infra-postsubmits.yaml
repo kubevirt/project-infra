@@ -91,12 +91,12 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
+      cluster: prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap-legacy:v20220810-a8f2e6c
+          - image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -104,16 +104,16 @@ postsubmits:
               - |
                 cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
-                ./publish_multiarch_image.sh -a bootstrap quay.io kubevirtci
-                ./publish_multiarch_image.sh -a -l golang quay.io kubevirtci
+                ./publish_multiarch_image.sh  bootstrap quay.io kubevirtci
+                ./publish_multiarch_image.sh -l golang quay.io kubevirtci
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
               requests:
-                memory: "1Gi"
+                memory: "29Gi"
               limits:
-                memory: "1Gi"
+                memory: "29Gi"
     - name: publish-bootstrap-legacy-images
       always_run: false
       run_if_changed: "images/golang-legacy/.*|images/bootstrap-legacy/.*"

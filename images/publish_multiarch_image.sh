@@ -84,33 +84,32 @@ build_image() {
     local image_name="${3:?}"
     local base_image="${4:?}"
     # add qemu-user-static
-    docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
     # build multi-arch images
     for arch in ${archs[*]};do
         if [[ $local_base_image == false ]]; then
-	    docker pull --platform="linux/${arch}" ${base_image}
+	    podman pull --platform="linux/${arch}" ${base_image}
         fi
-        docker build --platform="linux/${arch}" --build-arg ARCH=${arch} --build-arg IMAGE_ARG=${build_target} . -t "${image_name}-${arch}" -t "${build_target}-${arch}"
+        podman build --platform="linux/${arch}" --build-arg ARCH=${arch} --build-arg IMAGE_ARG=${build_target} . -t "${image_name}-${arch}" -t "${build_target}-${arch}"
     done
 }
 
 publish_image() {
     local full_image_name="${1:?}"
     for arch in ${archs[*]};do
-        docker push "${full_image_name}-${arch}"
+        podman push "${full_image_name}-${arch}"
     done
 }
 
 publish_manifest() {
-    export DOCKER_CLI_EXPERIMENTAL="enabled"
     local amend
     local full_image_name="${1:?}"
     amend=""
     for arch in ${archs[*]};do
         amend+=" --amend ${full_image_name}-${arch}"
     done
-    docker manifest create ${full_image_name} ${amend}
-    docker manifest push --purge ${full_image_name}
+    podman manifest create ${full_image_name} ${amend}
+    podman manifest push ${full_image_name} "docker://${full_image_name}"
 }
 
 get_full_image_name() {
