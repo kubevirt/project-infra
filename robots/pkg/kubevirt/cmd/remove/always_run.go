@@ -36,6 +36,7 @@ import (
 
 type removeAlwaysRunOptions struct {
 	jobConfigPathKubevirtPresubmits string
+	force                           bool
 }
 
 func (o removeAlwaysRunOptions) Validate() error {
@@ -82,6 +83,7 @@ func RemoveAlwaysRunCommand() *cobra.Command {
 
 func init() {
 	removeAlwaysRunCommand.PersistentFlags().StringVar(&removeAlwaysRunOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The directory of the kubevirt presubmit job definitions")
+	removeAlwaysRunCommand.PersistentFlags().BoolVar(&removeAlwaysRunOpts.force, "force", false, "skip check of always_run, disable right away")
 }
 
 func runAlwaysRunCommand(cmd *cobra.Command, args []string) error {
@@ -113,10 +115,12 @@ func runAlwaysRunCommand(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	result, message := ensureSigJobsDoAlwaysRun(jobConfig, latestMinorReleases[0])
-	if result != ALL_JOBS_DO_ALWAYS_RUN {
-		log.Log().Infof("Not all presubmits for k8s %s do run always, nothing to do.\n%s", latestMinorReleases[0], message)
-		return nil
+	if !removeAlwaysRunOpts.force {
+		result, message := ensureSigJobsDoAlwaysRun(jobConfig, latestMinorReleases[0])
+		if result != ALL_JOBS_DO_ALWAYS_RUN {
+			log.Log().Infof("Not all presubmits for k8s %s do run always, nothing to do.\n%s", latestMinorReleases[0], message)
+			return nil
+		}
 	}
 
 	targetReleaseSemver := latestMinorReleases[3]
