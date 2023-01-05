@@ -2,7 +2,9 @@ package flakefinder
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/joshdk/go-junit"
@@ -18,6 +20,7 @@ type Params struct {
 	Org             string                         `json:"org"`
 	Repo            string                         `json:"repo"`
 	FailuresForJobs map[string]*JobFailures        `json:"failuresForJobs"`
+	TestAttributes  map[string]TestAttributes      `json:"testAttributes"`
 }
 
 type Details struct {
@@ -163,10 +166,15 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 	}
 
 	testsSortedByRelevance := SortTestsByRelevance(data, tests)
+	testAttributes := map[string]TestAttributes{}
+	for _, testName := range testsSortedByRelevance {
+		testAttributes[testName] = NewTestAttributes(testName)
+	}
 	parameters := Params{
 		Data:            data,
 		Headers:         headers,
 		Tests:           testsSortedByRelevance,
+		TestAttributes:  testAttributes,
 		PrNumbers:       prNumbers,
 		EndOfReport:     endOfReport.Format(time.RFC3339),
 		Org:             org,
@@ -175,6 +183,72 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 		FailuresForJobs: failuresForJobs,
 	}
 	return parameters
+}
+
+type TestAttributes []TestAttribute
+
+func (t TestAttributes) Sort() {
+	sort.Slice(t, func(i, j int) bool {
+		return t[i].AttributeType < t[j].AttributeType
+	})
+}
+
+type TestAttributeType int
+
+const (
+	TestAttributeTypeReleaseBlocker TestAttributeType = iota
+	TestAttributeTypeQuarantine
+	TestAttributeTypeSerial
+	TestAttributeTypeSIG
+	TestAttributeTypeTestID
+	TestAttributeTypeOther
+)
+
+type TestAttribute struct {
+	Name          string
+	Value         string
+	AttributeType TestAttributeType
+}
+
+var testNameTagRegex = regexp.MustCompile("\\[[^]\\[]+\\]")
+
+func NewTestAttributes(testName string) TestAttributes {
+	tags := testNameTagRegex.FindAllString(testName, -1)
+	var testAttributes TestAttributes
+	for _, tag := range tags {
+		trimmedTag := strings.Trim(tag, "[]")
+		var name, value string
+		if strings.Contains(trimmedTag, ":") {
+			splitted := strings.Split(trimmedTag, ":")
+			name, value = splitted[0], splitted[1]
+		} else {
+			name, value = trimmedTag, ""
+		}
+		var testAttributeType TestAttributeType
+		if strings.Index(name, "sig-") == 0 {
+			testAttributeType = TestAttributeTypeSIG
+		} else {
+			switch name {
+			case "test_id":
+				testAttributeType = TestAttributeTypeTestID
+			case "Serial":
+				testAttributeType = TestAttributeTypeSerial
+			case "QUARANTINE":
+				testAttributeType = TestAttributeTypeQuarantine
+			case "release-blocker":
+				testAttributeType = TestAttributeTypeReleaseBlocker
+			default:
+				testAttributeType = TestAttributeTypeOther
+			}
+		}
+		testAttributes = append(testAttributes, TestAttribute{
+			Name:          name,
+			Value:         value,
+			AttributeType: testAttributeType,
+		})
+	}
+	testAttributes.Sort()
+	return testAttributes
 }
 
 // SetSeverity sets the field Severity on the passed details according to the ratio of failed vs succeeded tests,
