@@ -7,7 +7,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20221117-3815e13b72
+    - image: gcr.io/k8s-prow/commenter:v20230104-cc182b7760
       command:
       - /ko-app/commenter
       args:
@@ -52,7 +52,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20221117-3815e13b72
+    - image: gcr.io/k8s-prow/commenter:v20230104-cc182b7760
       command:
       - /ko-app/commenter
       args:
@@ -81,7 +81,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20221117-3815e13b72
+    - image: gcr.io/k8s-prow/commenter:v20230104-cc182b7760
       command:
       - /ko-app/commenter
       args:
@@ -109,7 +109,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20221117-3815e13b72
+    - image: gcr.io/k8s-prow/commenter:v20230104-cc182b7760
       command:
       - /ko-app/commenter
       args:
@@ -141,7 +141,7 @@ periodics:
   cluster: ibm-prow-jobs
   spec:
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20221117-3815e13b72
+    - image: gcr.io/k8s-prow/commenter:v20230104-cc182b7760
       command:
       - /ko-app/commenter
       args:
@@ -458,7 +458,7 @@ periodics:
   spec:
     containers:
     - name: peribolos
-      image: gcr.io/k8s-prow/peribolos:v20221117-3815e13b72
+      image: gcr.io/k8s-prow/peribolos:v20230104-cc182b7760
       command:
       - /ko-app/peribolos
       args:
