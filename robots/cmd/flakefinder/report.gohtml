@@ -127,6 +127,43 @@
             animation: fadeIn 1s;
         }
 
+        .testAttributeType0 {
+            background-color: red;
+        }
+
+        .testAttributeType1 {
+            background-color: indianred;
+        }
+
+        .testAttributeType2 {
+            background-color: darkorange;
+        }
+
+        .testAttributeType3 {
+            background-color: lightseagreen;
+        }
+
+        .testAttributeType4 {
+            background-color: forestgreen;
+        }
+
+        .testAttributeType5 {
+            background-color: dimgray;
+        }
+
+        span.testAttribute {
+            font-weight: bold;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 0px;
+        }
+
+        div.testAttribute {
+            margin: 2px 0px;
+        }
+
         /* Add animation (fade in the popup) */
         @-webkit-keyframes fadeIn {
             from {
@@ -206,13 +243,20 @@
                 <td>
                     <div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a></div>
                 </td>
-                <td>{{ $test }}</td>
-                {{ range $col, $header := $.Headers }}
-                    {{if not (index $.Data $test $header) }}
+                <td>{{- if (index $.TestAttributes $test) }}
+                        <div class="testAttribute">
+                            {{- range $testAttribute := (index $.TestAttributes $test) }}
+                                <span class="testAttribute testAttributeType{{ $testAttribute.AttributeType }}">{{ $testAttribute.Name }}{{ if $testAttribute.Value }}:{{ $testAttribute.Value }}{{ end }}</span>
+                            {{- end }}
+                        </div>{{- end }}
+                    {{ if (index $.BareTestNames $test) }}{{- index $.BareTestNames $test -}}{{ else }}{{- $test -}}{{ end }}
+                </td>
+                {{- range $col, $header := $.Headers -}}
+                    {{- if not (index $.Data $test $header) }}
                         <td class="center">
                             N/A
                         </td>
-                    {{else}}
+                    {{- else }}
                         <td class="{{ (index $.Data $test $header).Severity }} center"
                             title="{{ $test }}&#10;{{ $header }}">
                             <div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup">

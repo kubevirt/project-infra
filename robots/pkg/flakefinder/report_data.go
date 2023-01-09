@@ -11,16 +11,18 @@ import (
 )
 
 type Params struct {
-	StartOfReport   string                         `json:"startOfReport"`
-	EndOfReport     string                         `json:"endOfReport"`
-	Headers         []string                       `json:"headers"`
-	Tests           []string                       `json:"tests"`
-	Data            map[string]map[string]*Details `json:"data"`
-	PrNumbers       []int                          `json:"prNumbers"`
-	Org             string                         `json:"org"`
-	Repo            string                         `json:"repo"`
-	FailuresForJobs map[string]*JobFailures        `json:"failuresForJobs"`
-	TestAttributes  map[string]TestAttributes      `json:"testAttributes"`
+	StartOfReport      string                         `json:"startOfReport"`
+	EndOfReport        string                         `json:"endOfReport"`
+	Headers            []string                       `json:"headers"`
+	Tests              []string                       `json:"tests"`
+	Data               map[string]map[string]*Details `json:"data"`
+	PrNumbers          []int                          `json:"prNumbers"`
+	Org                string                         `json:"org"`
+	Repo               string                         `json:"repo"`
+	FailuresForJobs    map[string]*JobFailures        `json:"failuresForJobs"`
+	TestAttributes     map[string]TestAttributes      `json:"testAttributes"`
+	TestAttributeTypes map[TestAttributeType]string   `json:"testAttributeTypes"`
+	BareTestNames      map[string]string              `json:"bareTestNames"`
 }
 
 type Details struct {
@@ -167,14 +169,17 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 
 	testsSortedByRelevance := SortTestsByRelevance(data, tests)
 	testAttributes := map[string]TestAttributes{}
+	bareTestNames := map[string]string{}
 	for _, testName := range testsSortedByRelevance {
 		testAttributes[testName] = NewTestAttributes(testName)
+		bareTestNames[testName] = GetBareTestName(testName)
 	}
 	parameters := Params{
 		Data:            data,
 		Headers:         headers,
 		Tests:           testsSortedByRelevance,
 		TestAttributes:  testAttributes,
+		BareTestNames:   bareTestNames,
 		PrNumbers:       prNumbers,
 		EndOfReport:     endOfReport.Format(time.RFC3339),
 		Org:             org,
@@ -211,6 +216,11 @@ type TestAttribute struct {
 }
 
 var testNameTagRegex = regexp.MustCompile("\\[[^]\\[]+\\]")
+
+// GetBareTestName returns the test name with all meta data removed
+func GetBareTestName(testName string) string {
+	return testNameTagRegex.ReplaceAllString(testName, "")
+}
 
 func NewTestAttributes(testName string) TestAttributes {
 	tags := testNameTagRegex.FindAllString(testName, -1)

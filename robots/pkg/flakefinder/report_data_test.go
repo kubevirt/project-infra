@@ -452,6 +452,7 @@ var _ = Describe("report_data.go", func() {
 					FailuresForJobs: map[string]*JobFailures{
 						fmt.Sprintf("job-%d", buildNumber): {BuildNumber: buildNumber, PR: pr, BatchPRs: nil, Job: "job", Failures: 1},
 					},
+					BareTestNames: map[string]string{"test3": "test3"},
 				}))
 		})
 
@@ -536,6 +537,7 @@ var _ = Describe("report_data.go", func() {
 					FailuresForJobs: map[string]*JobFailures{
 						fmt.Sprintf("job-%d", buildNumber): {BuildNumber: buildNumber, PR: 0, BatchPRs: []int{pr}, Job: "job", Failures: 1},
 					},
+					BareTestNames: map[string]string{"test3": "test3"},
 				}))
 		})
 
@@ -623,6 +625,9 @@ var _ = Describe("report_data.go", func() {
 					FailuresForJobs: map[string]*JobFailures{
 						fmt.Sprintf("job-%d", buildNumber): {BuildNumber: buildNumber, PR: pr, BatchPRs: nil, Job: "job", Failures: 1},
 					},
+					BareTestNames: map[string]string{
+						"[Serial]test3[sig-compute]": "test3",
+					},
 				}))
 		})
 
@@ -685,6 +690,13 @@ var _ = Describe("report_data.go", func() {
 			},
 			{Name: "level", Value: "component", AttributeType: 5},
 		}),
+	)
+
+	DescribeTable("Getting bare test names", func(testName string, expected string) {
+		Expect(GetBareTestName(testName)).To(BeEquivalentTo(expected))
+	},
+		Entry("empty", "", ""),
+		Entry("complex test name", "[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]should update kubevirt [release-blocker][test_id:3145]from previous release to target tested release by patching KubeVirt CR", "Operator should update kubevirt from previous release to target tested release by patching KubeVirt CR"),
 	)
 
 })
