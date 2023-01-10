@@ -14,7 +14,6 @@ postsubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "true"
     spec:
