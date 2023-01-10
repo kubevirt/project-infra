@@ -3,7 +3,7 @@ postsubmits:
   - name: push-release-hostpath-provisioner-operator-images
     branches:
     - release-v\d+\.\d+
-    cluster: ibm-prow-jobs
+    cluster: prow-workloads
     always_run: true
     optional: false
     skip_report: true
@@ -43,7 +43,7 @@ postsubmits:
   - name: push-latest-hostpath-provisioner-operator-images
     branches:
     - main
-    cluster: ibm-prow-jobs
+    cluster: prow-workloads
     always_run: true
     optional: false
     skip_report: true
@@ -54,7 +54,6 @@ postsubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "true"
     spec:
