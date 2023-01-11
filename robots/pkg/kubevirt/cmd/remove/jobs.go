@@ -37,6 +37,7 @@ import (
 type removeJobsOptions struct {
 	jobConfigPathKubevirtPresubmits string
 	jobConfigPathKubevirtPeriodics  string
+	force                           bool
 }
 
 func (o removeJobsOptions) Validate() error {
@@ -88,6 +89,7 @@ func RemoveJobsCommand() *cobra.Command {
 func init() {
 	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The directory of the kubevirt presubmit job definitions")
 	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
+	removeJobsCommand.PersistentFlags().BoolVar(&removeJobsOpts.force, "force", false, "Whether the job definitions should be removed regardless of the state")
 }
 
 func run(cmd *cobra.Command, args []string) error {
@@ -117,22 +119,24 @@ func removeOldJobsIfNewOnesExist(releases []*github.RepositoryRelease) error {
 	}
 
 	latestMinorReleases := release.GetLatestMinorReleases(release.AsSemVers(releases))
-	if len(latestMinorReleases) < fourReleasesRequiredAtMinimum {
-		log.Log().Info("Not enough minor releases found, nothing to do.")
-		return nil
-	}
+	if !removeJobsOpts.force {
+		if len(latestMinorReleases) < fourReleasesRequiredAtMinimum {
+			log.Log().Info("Not enough minor releases found, nothing to do.")
+			return nil
+		}
 
-	result, message := ensureSigJobsAreRequired(jobConfigKubevirtPresubmits, latestMinorReleases[0])
-	if result != ALL_JOBS_ARE_REQUIRED {
-		log.Log().Infof("Not all presubmits for k8s %s are required, nothing to do.\n%s", latestMinorReleases[0], message)
-		return nil
-	}
+		result, message := ensureSigJobsAreRequired(jobConfigKubevirtPresubmits, latestMinorReleases[0])
+		if result != ALL_JOBS_ARE_REQUIRED {
+			log.Log().Infof("Not all presubmits for k8s %s are required, nothing to do.\n%s", latestMinorReleases[0], message)
+			return nil
+		}
 
-	threeLatestRequiredMinorReleases := latestMinorReleases[0:3]
-	jobsExist, message := ensureSigPresubmitJobsExistForReleases(jobConfigKubevirtPresubmits, threeLatestRequiredMinorReleases)
-	if !jobsExist {
-		log.Log().Infof("Not all required jobs for k8s versions %s exist, nothing to do.\n%s", threeLatestRequiredMinorReleases, message)
-		return nil
+		threeLatestRequiredMinorReleases := latestMinorReleases[0:3]
+		jobsExist, message := ensureSigPresubmitJobsExistForReleases(jobConfigKubevirtPresubmits, threeLatestRequiredMinorReleases)
+		if !jobsExist {
+			log.Log().Infof("Not all required jobs for k8s versions %s exist, nothing to do.\n%s", threeLatestRequiredMinorReleases, message)
+			return nil
+		}
 	}
 
 	jobConfigKubevirtPeriodics, err := config.ReadJobConfig(removeJobsOpts.jobConfigPathKubevirtPeriodics)
