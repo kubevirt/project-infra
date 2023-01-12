@@ -135,6 +135,7 @@ tide:
   - repos:
     - kubevirt/libguestfs-appliance
     - kubevirt/project-infra
+    - kubevirt/kubesecondarydns
     - kubevirt/cluster-api-provider-kubevirt
     - kubevirt/machine-remediation-operator
     - kubevirt/kubevirtci
@@ -171,7 +172,6 @@ tide:
     - k8snetworkplumbingwg/ovs-cni
     - kubevirt/macvtap-cni
     - kubevirt/cluster-network-addons-operator
-    - kubevirt/kubesecondarydns
     - kubevirt/bridge-marker
     - nmstate/kubernetes-nmstate
     - k8snetworkplumbingwg/kubemacpool
