@@ -127,10 +127,12 @@ func WriteReportIndexPage(reportDirGcsObjects []string, reportIndexObjectWriter 
 //
 // Assumptions: input data sorted in alphanumeric desc order, i.e.
 // [
-// 	"flakefinder-2019-08-24-672h.html",
-//	"flakefinder-2019-08-24-168h.html",
-//	"flakefinder-2019-08-24-024h.html",
-//  ...
+//
+//		"flakefinder-2019-08-24-672h.html",
+//		"flakefinder-2019-08-24-168h.html",
+//		"flakefinder-2019-08-24-024h.html",
+//	 ...
+//
 // ]
 //
 // Note: legacy format "flakefinder-2019-08-24.html" is allowed, missing duration leads to taking this for weekly (168h)
