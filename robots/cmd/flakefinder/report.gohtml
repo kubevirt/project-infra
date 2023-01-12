@@ -152,12 +152,19 @@
         }
 
         span.testAttribute {
-            font-weight: bold;
             color: white;
             padding: 3px 6px;
             border-radius: 8px;
             text-align: center;
-            margin: 0px;
+            margin-right: 1px;
+        }
+
+        span.testAttributeName {
+            font-style: italic;
+        }
+
+        span.testAttributeValue {
+            font-weight: bold;
         }
 
         div.testAttribute {
@@ -245,11 +252,14 @@
                 </td>
                 <td>{{- if (index $.TestAttributes $test) }}
                         <div class="testAttribute">
-                            {{- range $testAttribute := (index $.TestAttributes $test) }}
-                                <span class="testAttribute testAttributeType{{ $testAttribute.AttributeType }}">{{ $testAttribute.Name }}{{ if $testAttribute.Value }}:{{ $testAttribute.Value }}{{ end }}</span>
-                            {{- end }}
+                            {{- range $testAttribute := (index $.TestAttributes $test) -}}
+                                <span class="testAttribute testAttributeType{{ $testAttribute.AttributeType }}"><span class="testAttribute testAttributeName">{{ $testAttribute.Name }}</span>
+                                    {{- if $testAttribute.Value }}:<span class="testAttribute testAttributeValue">{{ $testAttribute.Value }}</span>{{ end -}}
+                                </span>
+                            {{- end -}}
                         </div>{{- end }}
                     {{ if (index $.BareTestNames $test) }}{{- index $.BareTestNames $test -}}{{ else }}{{- $test -}}{{ end }}
+                    <div hidden id="testName{{$row}}">{{- $test -}}</div><button title="Copy full test name to clipboard" class="clipboard" onclick="handleCopyTextFromArea('testName{{- $row -}}')">📋</button>
                 </td>
                 {{- range $col, $header := $.Headers -}}
                     {{- if not (index $.Data $test $header) }}
@@ -307,6 +317,12 @@
     function popup(id) {
         var popup = document.getElementById("target" + id);
         popup.classList.toggle("show");
+    }
+
+    function handleCopyTextFromArea(id) {
+        let hiddenDiv = document.getElementById(id);
+        let text = hiddenDiv.innerText || hiddenDiv.textContent;
+        navigator.clipboard.writeText(text)
     }
 </script>
 <div>
