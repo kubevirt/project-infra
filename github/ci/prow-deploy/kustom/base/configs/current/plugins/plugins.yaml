@@ -134,7 +134,6 @@ plugins:
     - approve
     - lgtm
     - owners-label
-    - release-note
     - trigger
 
   kubevirt/common-instancetypes:
