@@ -152,11 +152,12 @@
         }
 
         span.testAttribute {
+            display: inline-block;
             color: white;
             padding: 3px 6px;
             border-radius: 8px;
             text-align: center;
-            margin-right: 1px;
+            margin: 1px 1px 0px 0px;
         }
 
         span.testAttributeName {
@@ -259,7 +260,7 @@
                             {{- end -}}
                         </div>{{- end }}
                     {{ if (index $.BareTestNames $test) }}{{- index $.BareTestNames $test -}}{{ else }}{{- $test -}}{{ end }}
-                    <div hidden id="testName{{$row}}">{{- $test -}}</div><button title="Copy full test name to clipboard" class="clipboard" onclick="handleCopyTextFromArea('testName{{- $row -}}')">📋</button>
+                    <div hidden="" id="testName{{$row}}">{{- $test -}}</div><button title="Copy full test name to clipboard" class="clipboard" onclick="handleCopyTextFromArea('testName{{- $row -}}')">📋</button>
                 </td>
                 {{- range $col, $header := $.Headers -}}
                     {{- if not (index $.Data $test $header) }}

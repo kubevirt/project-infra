@@ -40,7 +40,7 @@ var _ = Describe("report.go", func() {
 	const (
 		testName1 = "[release-blocker][Serial][test_id:4217]t1"
 		testName2 = "[QUARANTINE][test_id:1742]t2"
-		testName3 = "[sig-compute][some-unimportant-label]t3"
+		testName3 = "[sig-compute][some-unimportant-label][some-label][some-label][some-label][some-label][some-label][some-label][some-label][some-label][some-label][some-label]t3"
 		jobNameA  = "a"
 		jobNameB  = "b"
 		jobNameC  = "c"
