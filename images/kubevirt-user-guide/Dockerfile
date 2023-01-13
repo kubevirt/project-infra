@@ -1,5 +1,5 @@
 # BASE
-FROM registry.fedoraproject.org/fedora:36
+FROM registry.fedoraproject.org/fedora:37
 
 ENV LC_ALL=en_US.UTF-8
 
