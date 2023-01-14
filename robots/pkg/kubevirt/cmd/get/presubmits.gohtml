@@ -25,20 +25,37 @@
         table, tr, td {
             border: 1px solid black;
         }
+
         .gating {
             background-color: orangered;
         }
+
         .alwaysRun {
             background-color: yellowgreen;
         }
+
         .conditional {
             font-family: monospace;
             font-size: x-small;
+            white-space: pre-wrap;
+        }
+
+        .notes {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            z-index: 1;
         }
     </style>
 </head>
 <body>
 <h1>KubeVirt presubmit jobs</h1>
+<div class="notes">
+    <ul>
+        <li><span class="gating">Job gating merge</span></li>
+        <li><span class="alwaysRun">Job running on every PR</span></li>
+    </ul>
+</div>
 <label for="filter">Filter</label>
 <input type="text" id="filter" onkeyup="filterByName()" placeholder="Filter rows by job name...">
 <table id="presubmits">
@@ -51,7 +68,11 @@
     </tr>
     {{ range $row, $presubmit := . }}
         <tr>
-            <td title="Job Name"{{- if eq $presubmit.AlwaysRun true }}{{ if ne $presubmit.Optional true }} title="job is gating" class="gating"{{ else }} class="alwaysRun"{{ end }}{{ end -}}>{{ $presubmit.Name }}</td>
+            <td title="Job Name"{{- if eq $presubmit.AlwaysRun true }}{{ if ne $presubmit.Optional true }} title="job is gating" class="gating"{{ else }} class="alwaysRun"{{ end }}{{ end -}}>{{ $presubmit.Name }}
+                <br/>
+                <a href="https://prow.ci.kubevirt.io/?job={{ $presubmit.Name }}"><img
+                            src="https://prow.ci.kubevirt.io/badge.svg?jobs={{ $presubmit.Name }}"/></a>
+            </td>
             <td title="AlwaysRun">{{ if $presubmit.AlwaysRun }}☑{{ else }}☐{{ end }}</td>
             <td title="Optional">{{ if $presubmit.Optional }}☑{{ else }}☐{{ end }}</td>
             <td title="RunIfChanged" class="conditional">{{ $presubmit.RunIfChanged }}</td>

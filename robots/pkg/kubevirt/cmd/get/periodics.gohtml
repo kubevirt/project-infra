@@ -40,7 +40,10 @@
     </tr>
     {{ range $row, $periodic := $.Periodics }}
         <tr>
-            <td title="Job Name">{{ $periodic.Name }}</td>
+            <td title="Job Name">{{ $periodic.Name }}<br/>
+                <a href="https://prow.ci.kubevirt.io/?job={{ $periodic.Name }}"><img
+                            src="https://prow.ci.kubevirt.io/badge.svg?jobs={{ $periodic.Name }}"/></a>
+            </td>
             <td title="Cron">{{ $periodic.Cron }}</td>
             <td title="Interval">{{ $periodic.Interval }}</td>
             <td title="Description">{{ index $.CronDescriptions $periodic.Name }}</td>
