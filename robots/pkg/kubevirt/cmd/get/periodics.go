@@ -35,10 +35,20 @@ import (
 	"strings"
 )
 
+const getPeriodicsShortDescription = "kubevirt get periodics describes periodic job definitions in project-infra for kubevirt/kubevirt repo"
+
 var getPeriodicsCommand = &cobra.Command{
 	Use:   "periodics",
 	Short: "kubevirt get periodics describes periodic job definitions in project-infra for kubevirt/kubevirt repo",
-	RunE:  GetPeriodics,
+	Long: getPeriodicsShortDescription + `
+
+It reads the job configurations for kubevirt/kubevirt e2e periodic jobs, extracts information and creates a table in 
+html format, so that we can quickly see which job is running how often and when. Also the table is sorted in running 
+order, where jobs that run more often are ranked higher in the list. 
+
+The table can be filtered by job name.
+`,
+	RunE: GetPeriodics,
 }
 
 func GetPeriodicsCommand() *cobra.Command {

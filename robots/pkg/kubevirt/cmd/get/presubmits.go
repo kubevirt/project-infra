@@ -35,10 +35,21 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/prowjobconfigs"
 )
 
+const (
+	shortUsage = "kubevirt get presubmits describes presubmit job definitions in project-infra for kubevirt/kubevirt repo"
+)
+
 var getPresubmitsCommand = &cobra.Command{
 	Use:   "presubmits",
-	Short: "kubevirt get presubmits describes presubmit job definitions in project-infra for kubevirt/kubevirt repo",
-	RunE:  GetPresubmits,
+	Short: shortUsage,
+	Long: shortUsage + `
+
+It reads the job configurations for kubevirt/kubevirt e2e presubmit jobs, extracts information and creates a table in html
+format, so that we can quickly see which job is gating the merge and which job is running on every kubevirt/kubevirt PR.
+
+The table is sorted in order gating -> always_run -> conditional_runs -> others and can be filtered by job name.
+`,
+	RunE: GetPresubmits,
 }
 
 func GetPresubmitsCommand() *cobra.Command {
