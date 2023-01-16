@@ -20,7 +20,7 @@ postsubmits:
       decorate: true
       spec:
         containers:
-          - image: quay.io/kubevirt/builder:2203011706-a6a84d038
+          - image: quay.io/kubevirt/builder:2212180911-8818abcfa
             command: [ "/bin/sh" , "-c" ]
             args:
               - |

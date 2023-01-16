@@ -596,7 +596,7 @@ periodics:
       - -c
       - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
         -p ../kubevirt -T main -R
-      image: quay.io/kubevirt/builder:2203011706-a6a84d038
+      image: quay.io/kubevirt/builder:2212180911-8818abcfa
       name: ""
       resources:
         requests:
