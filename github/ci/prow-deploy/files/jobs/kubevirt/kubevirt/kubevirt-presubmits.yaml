@@ -17,7 +17,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.23-sig-compute-cgroupsv2
+    name: pull-kubevirt-e2e-k8s-1.26-sig-compute-cgroupsv2
     run_if_changed: pkg/virt-handler/cgroup/.*
     skip_branches:
     - release-\d+\.\d+
@@ -30,7 +30,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.23-sig-compute
+          value: k8s-1.26-sig-compute
         - name: KUBEVIRT_CGROUPV2
           value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
@@ -181,7 +181,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.23-sig-storage-cgroupsv2
+    name: pull-kubevirt-e2e-k8s-1.26-sig-storage-cgroupsv2
     run_if_changed: pkg/virt-handler/cgroup/.*|pkg/virt-handler/hotplug-disk/.*|pkg/hotplug-disk/.*|cmd/virt-chroot/cgroup.go
     skip_branches:
     - release-\d+\.\d+
@@ -194,7 +194,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.23-sig-storage
+          value: k8s-1.26-sig-storage
         - name: KUBEVIRT_CGROUPV2
           value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
@@ -1686,7 +1686,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.23-swap-enabled
+    name: pull-kubevirt-e2e-k8s-1.26-swap-enabled
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1700,7 +1700,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.23
+          value: k8s-1.26
         - name: KUBEVIRT_E2E_FOCUS
           value: SwapTest
         - name: KUBEVIRT_SWAP_ON
@@ -1727,7 +1727,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
-    name: pull-kubevirt-e2e-k8s-1.23-sig-monitoring
+    name: pull-kubevirt-e2e-k8s-1.26-sig-monitoring
     run_if_changed: ^pkg/monitoring/.*|tests/monitoring/.*$
     skip_branches:
     - release-\d+\.\d+
@@ -1740,7 +1740,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.23-sig-monitoring
+          value: k8s-1.26-sig-monitoring
         - name: KUBEVIRT_NUM_NODES
           value: "2"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
@@ -1767,7 +1767,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.23-single-node
+    name: pull-kubevirt-e2e-k8s-1.26-single-node
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1780,7 +1780,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.23
+          value: k8s-1.26
         - name: KUBEVIRT_E2E_FOCUS
           value: .*
         - name: KUBEVIRT_NUM_NODES
