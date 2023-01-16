@@ -500,7 +500,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirt/builder:2212180911-8818abcfa
+      - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
         command: ["/bin/sh"]
         args:
           - "-c"
