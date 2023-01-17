@@ -1,0 +1,7 @@
+[
+  {
+    "id": "Storage Starting a VirtualMachineInstance with error disk  should pause VMI on IO error",
+    "reason": "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17044, https://issues.redhat.com/browse/CNV-19692",
+    "tests": null
+  }
+]

@@ -1,0 +1,1017 @@
+[
+  {
+    "id": "Storage Starting a VirtualMachineInstance with error disk  should pause VMI on IO error",
+    "reason": "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17044, https://issues.redhat.com/browse/CNV-19692",
+    "tests": null
+  },
+  {
+    "id": "Storage Starting a VirtualMachineInstance with lun disk should run the VMI",
+    "reason": "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17044, https://issues.redhat.com/browse/CNV-19692",
+    "tests": [
+      {
+        "testName": "[sig-storage] Storage Starting a VirtualMachineInstance with lun disk should run the VMI",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "test_id:1535",
+    "reason": "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17143",
+    "tests": [
+      {
+        "testName": "[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose UDP service on a VMI Expose ClusterIP UDP service [label:masquerade_binding_connectivity]Should expose a ClusterIP service on a VMI and connect to it [test_id:1535] over default IPv4 IP family",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "test_id:1536",
+    "reason": "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17143",
+    "tests": [
+      {
+        "testName": "[sig-network] [rfe_id:253][crit:medium][vendor:cnv-qe@redhat.com][level:component]Expose Expose UDP service on a VMI Expose NodePort UDP service [label:masquerade_binding_connectivity]Should expose a NodePort service on a VMI and connect to it [test_id:1536] over default IPv4 IP family",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "should reach the vmi",
+    "reason": "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17143",
+    "tests": [
+      {
+        "testName": "[sig-network] Port-forward VMI With masquerade binding performing port-forward from a local port to a VMI with no declared ports should reach the vmi IPv6",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "SKIPPED"
+          }
+        ]
+      },
+      {
+        "testName": "[sig-network] Port-forward VMI With masquerade binding performing port-forward from a local port to a VMI with no declared ports should reach the vmi IPv4",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      },
+      {
+        "testName": "[sig-network] Port-forward VMI With masquerade binding performing port-forward from a local port to a VMI's declared port should reach the vmi IPv4",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      },
+      {
+        "testName": "[sig-network] Port-forward VMI With masquerade binding performing port-forward from a local port to a VMI's declared port should reach the vmi IPv6",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "SKIPPED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "with a dedicated migration network Should migrate over that network",
+    "reason": "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17143",
+    "tests": [
+      {
+        "testName": "[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration [Serial]with a dedicated migration network Should migrate over that network",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "FAILED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "should fail if flavor and VMI define CPU",
+    "reason": "Flaky \u0026 unsupported https://issues.redhat.com/browse/CNV-19773",
+    "tests": null
+  },
+  {
+    "id": "vTPM",
+    "reason": "Downstream build needs to be adjusted",
+    "tests": [
+      {
+        "testName": "[sig-compute]vTPM [rfe_id:5168][crit:high][vendor:cnv-qe@redhat.com][level:component] with TPM VMI option enabled [test_id:8607] should expose a functional emulated TPM which persists across migrations",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "FAILED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "test_id:1862",
+    "reason": "flaky downstream, hitting VM console timeout probably due to OCP API server latency/exhaustion",
+    "tests": [
+      {
+        "testName": "[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration Starting a VirtualMachineInstance  [storage-req]with an Alpine non-shared block volume PVC [test_id:1862][posneg:negative]should reject migrations for a non-migratable vmi",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "should apply flavor to CPU",
+    "reason": "flaky downstream and currently unsupported - Tracked in https://issues.redhat.com/browse/CNV-19162",
+    "tests": null
+  },
+  {
+    "id": "VM Live Migration topology hints needs to be set when invtsc feature exists",
+    "reason": "Created tickets for both adding PSI flag - Tracked in https://issues.redhat.com/browse/CNV-20418",
+    "tests": [
+      {
+        "testName": "[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration topology hints needs to be set when invtsc feature exists",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "FAILED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "VM Live Migration topology hints needs to be set when HyperV reenlightenment is enabled",
+    "reason": "Created tickets for both adding PSI flag - Tracked in https://issues.redhat.com/browse/CNV-20418",
+    "tests": [
+      {
+        "testName": "[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration topology hints needs to be set when HyperV reenlightenment is enabled",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "FAILED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "VMIlifecycle Creating a VirtualMachineInstance with node feature discovery the vmi with HyperV feature matching a nfd label on a node should be scheduled",
+    "reason": "Created tickets for both adding PSI flag - Tracked in https://issues.redhat.com/browse/CNV-20418",
+    "tests": null
+  },
+  {
+    "id": "[test_id:2921]given a vmi (guestosinfo)",
+    "reason": "Failed! Quarantine while resolving the issue",
+    "tests": [
+      {
+        "testName": "[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access [rfe_id:2919][crit:high][vendor:cnv-qe@redhat.com][level:component] With regular OpenShift user should succeed with admin rights for the project should verify permissions on resources are correct for subresources [test_id:2921]given a vmi (guestosinfo)",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "[test_id:2917]given a vmi preset",
+    "reason": "Failed! Quarantine while resolving the issue",
+    "tests": [
+      {
+        "testName": "[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access [rfe_id:2919][crit:high][vendor:cnv-qe@redhat.com][level:component] With regular OpenShift user should fail without admin rights for the project should verify permissions on resources are correct for view, edit, and admin [test_id:2917]given a vmi preset",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "[test_id:1853]VM with containerDisk + CloudInit + ServiceAccount + ConfigMap + Secret + DownwardAPI + External Kernel Boot + USB Disk",
+    "reason": "Failed! Quarantine while resolving the issue",
+    "tests": [
+      {
+        "testName": "[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration with sata disks [test_id:1853]VM with containerDisk + CloudInit + ServiceAccount + ConfigMap + Secret + DownwardAPI + External Kernel Boot + USB Disk",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "SKIPPED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "With regular OpenShift user should fail without admin rights for the project should verify permissions on resources are correct for view, edit, and admin [test_id:2921]given a vmi",
+    "reason": "Failed! Quarantine while resolving the issue",
+    "tests": [
+      {
+        "testName": "[rfe_id:500][crit:high][arm64][vendor:cnv-qe@redhat.com][level:component][sig-compute]User Access [rfe_id:2919][crit:high][vendor:cnv-qe@redhat.com][level:component] With regular OpenShift user should fail without admin rights for the project should verify permissions on resources are correct for view, edit, and admin [test_id:2921]given a vmi",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "[test_id:4114]should set an updated time after a migration",
+    "reason": "Failed! Quarantine while resolving the issue",
+    "tests": [
+      {
+        "testName": "[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration Starting a VirtualMachineInstance  with setting guest time [test_id:4114]should set an updated time after a migration",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "should automatically cancel unschedulable migration after a timeout period",
+    "reason": "Failed! Quarantine while resolving the issue",
+    "tests": [
+      {
+        "testName": "[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration Starting a VirtualMachineInstance  with an pending target pod should automatically cancel unschedulable migration after a timeout period",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "should automatically cancel pending target pod after a catch all timeout period",
+    "reason": "Failed! Quarantine while resolving the issue",
+    "tests": [
+      {
+        "testName": "[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration Starting a VirtualMachineInstance  with an pending target pod should automatically cancel pending target pod after a catch all timeout period",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "should copy a local file back and forth using the local scp method",
+    "reason": "Failed continuously",
+    "tests": [
+      {
+        "testName": "[sig-compute][virtctl]SCP should copy a local file back and forth using the local scp method",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "should copy a local directory back and forth using the local scp method",
+    "reason": "Failed continuously",
+    "tests": [
+      {
+        "testName": "[sig-compute][virtctl]SCP should copy a local directory back and forth using the local scp method",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "the vmi with HyperV feature matching a nfd label on a node should be scheduled",
+    "reason": "Failed continuously",
+    "tests": [
+      {
+        "testName": "[Serial][sig-compute] Hyper-V enlightenments VMI with HyperV re-enlightenment enabled the vmi with HyperV feature matching a nfd label on a node should be scheduled",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "[test_id:2910]Should have kubevirt SCCs created",
+    "reason": "Failed continuously",
+    "tests": [
+      {
+        "testName": "[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]infrastructure management [rfe_id:2897][crit:medium][vendor:cnv-qe@redhat.com][level:component]With OpenShift cluster [test_id:2910]Should have kubevirt SCCs created",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "FIXED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "FAILED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "[test_id:6982]should migrate a VMI only one time",
+    "reason": "Not supported in compact clusters - Tracked in https://issues.redhat.com/browse/CNV-19515",
+    "tests": [
+      {
+        "testName": "[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration with a live-migrate eviction strategy set [ref_id:2293] with a VMI running with an eviction strategy set [Serial] with node tainted during node drain [test_id:6982]should migrate a VMI only one time",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "[test_id:2221] should migrate a VMI under load to another node",
+    "reason": "Not supported in compact clusters - Tracked in https://issues.redhat.com/browse/CNV-18836",
+    "tests": [
+      {
+        "testName": "[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration with a live-migrate eviction strategy set [ref_id:2293] with a VMI running with an eviction strategy set [Serial] with node tainted during node drain [test_id:2221] should migrate a VMI under load to another node",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "[test_id:2222] should migrate a VMI when custom taint key is configured",
+    "reason": "Not supported in compact clusters - Tracked in https://issues.redhat.com/browse/CNV-19513",
+    "tests": [
+      {
+        "testName": "[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration with a live-migrate eviction strategy set [ref_id:2293] with a VMI running with an eviction strategy set [Serial] with node tainted during node drain [test_id:2222] should migrate a VMI when custom taint key is configured",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "[test_id:2224] should handle mixture of VMs with different eviction strategies.",
+    "reason": "Not supported in compact clusters - Tracked in https://issues.redhat.com/browse/CNV-19514",
+    "tests": [
+      {
+        "testName": "[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration with a live-migrate eviction strategy set [ref_id:2293] with a VMI running with an eviction strategy set [Serial] with node tainted during node drain [test_id:2224] should handle mixture of VMs with different eviction strategies.",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "[sig-compute]Subresource Api [crit:medium][vendor:cnv-qe@redhat.com][level:component] Rbac Authorization For Expand-Spec Command should be allowed to access expand-vm-spec endpoint with authenticated user",
+    "reason": "Discrepancy between upstream and downstream utility container image, see https://issues.redhat.com/browse/CNV-20219",
+    "tests": [
+      {
+        "testName": "[sig-compute]Subresource Api [crit:medium][vendor:cnv-qe@redhat.com][level:component] Rbac Authorization For Expand-Spec Command should be allowed to access expand-vm-spec endpoint with authenticated user",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "[sig-compute] VM Live Migration Starting a VirtualMachineInstance [Serial] with migration policies migration policy should not affect cluster-wide policy if not defined",
+    "reason": "Postcopy fails due to seccomp default - Tracked in https://issues.redhat.com/browse/CNV-22921",
+    "tests": null
+  }
+]

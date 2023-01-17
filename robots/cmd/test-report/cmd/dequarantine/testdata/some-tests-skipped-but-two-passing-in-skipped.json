@@ -1,0 +1,128 @@
+[
+  {
+    "id": "should reach the vmi",
+    "reason": "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17143",
+    "tests": [
+      {
+        "testName": "[sig-network] Port-forward VMI With masquerade binding performing port-forward from a local port to a VMI with no declared ports should reach the vmi IPv6",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "SKIPPED"
+          }
+        ]
+      },
+      {
+        "testName": "[sig-network] Port-forward VMI With masquerade binding performing port-forward from a local port to a VMI with no declared ports should reach the vmi IPv4",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      },
+      {
+        "testName": "[sig-network] Port-forward VMI With masquerade binding performing port-forward from a local port to a VMI's declared port should reach the vmi IPv4",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "PASSED"
+          }
+        ]
+      },
+      {
+        "testName": "[sig-network] Port-forward VMI With masquerade binding performing port-forward from a local port to a VMI's declared port should reach the vmi IPv6",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 39,
+            "dateTime": "2023-01-17T15:56:46.445+01:00",
+            "result": "PASSED"
+          },
+          {
+            "buildNo": 37,
+            "dateTime": "2023-01-13T10:48:45.913+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 36,
+            "dateTime": "2023-01-11T13:21:35.575+01:00",
+            "result": "SKIPPED"
+          },
+          {
+            "buildNo": 35,
+            "dateTime": "2023-01-09T12:29:28.01+01:00",
+            "result": "SKIPPED"
+          }
+        ]
+      }
+    ]
+  }
+]

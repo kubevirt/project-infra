@@ -143,6 +143,10 @@ type FilterTestRecord struct {
 	Reason string `json:"reason"`
 }
 
+func (r *FilterTestRecord) String() string {
+	return fmt.Sprintf("{id: %q, reason: %q}", r.Id, r.Reason)
+}
+
 func CreateReportData(jobNamePatternsToTestNameFilterRegexps map[*regexp.Regexp]*regexp.Regexp, testNamesToJobNamesToExecutionStatus map[string]map[string]int) Data {
 	testNames := []string{}
 	skippedTests := map[string]interface{}{}
