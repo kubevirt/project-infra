@@ -7,6 +7,10 @@ go_library(
         "prow.go",
         "root.go",
     ],
+    embedsrcs = [
+        "jenkins-report-template.gohtml",
+        "prow-report-template.gohtml",
+    ],
     importpath = "kubevirt.io/project-infra/robots/cmd/flake-report-creator/cmd",
     visibility = ["//visibility:public"],
     deps = [
@@ -24,7 +28,11 @@ go_library(
 
 go_test(
     name = "go_default_test",
-    srcs = ["jenkins_test.go"],
+    srcs = [
+        "cmd_suite_test.go",
+        "jenkins_test.go",
+        "prow_test.go",
+    ],
     embed = [":go_default_library"],
     deps = [
         "//robots/pkg/flakefinder:go_default_library",
