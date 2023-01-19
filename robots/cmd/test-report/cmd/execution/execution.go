@@ -42,12 +42,26 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const shortUsage = "test-report execution creates a report in html format to show which tests have been run on what lane"
+
 var executionCmd = &cobra.Command{
 	Use:   "execution",
-	Short: "test-report execution creates a report about which tests have been run on what lane",
-	Long: `test-report execution creates a report about which tests have been run (or not run) on what lane.
+	Short: shortUsage,
+	Long: shortUsage + `
 
-Especially it considers the 'dont_run_tests.json' files per branch of the lanes that are considered.`,
+It constructs a matrix of test lanes by test names and shows for each test:
+* on which lane(s) the test actually was run
+* on which lane(s) the test is not supported (taking the information from the 'dont_run_tests.json' configured for the lane
+  (see the configurations available)
+
+Tests that are not run on any lane are especially marked in order to emphasize that fact.
+
+Accompanying the html file a json data file is emitted for further consumption.
+
+Note: generating a default report can take a while and will emit a report of enormous size, therefore you can strip down
+the output by selecting a configuration that reports over a subset of the data using --config. You also can create your
+own configuration file to adjust the report output to your requirements.
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return runExecutionReport()
 	},

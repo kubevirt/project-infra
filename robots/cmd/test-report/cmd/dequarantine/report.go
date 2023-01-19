@@ -34,9 +34,16 @@ import (
 	"time"
 )
 
+const shortDequarantineReportUsage = "test-report dequarantine report generates a report of the test status for each entry in the quarantined_tests.json"
+
 var dequarantineReportCmd = &cobra.Command{
 	Use:   "report",
-	Short: "generates a report of the test status for each entry in the quarantined_tests.json",
+	Short: shortDequarantineReportUsage,
+	Long: shortDequarantineReportUsage + `
+
+The output format is an extended version of the format from 'quarantined_tests.json', added to each record is a
+dictionary of test results per test that matches 'Id', ordered by execution time descending.
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return runDequarantineReport()
 	},
@@ -138,25 +145,25 @@ func runDequarantineReport() error {
 
 	quarantinedTestsRunDataValues := generateDequarantineBaseData(jenkins, ctx, jobs, startOfReport, quarantinedTestEntriesFromFile)
 
-	err = writeReportData(err, quarantinedTestsRunDataValues)
+	outputFile, err := writeReportData(quarantinedTestsRunDataValues)
 	if err != nil {
 		return err
 	}
-	logger.Infof("Report data written to %q", dequarantineReportOptions.outputFile)
+	logger.Infof("Report data written to '%s'", outputFile.Name())
 	return nil
 }
 
 // writeReportData writes the condensed report data into a file
-func writeReportData(err error, quarantinedTestsRunDataValues []*quarantinedTestsRunData) error {
+func writeReportData(quarantinedTestsRunDataValues []*quarantinedTestsRunData) (*os.File, error) {
 	outputFile, err := createOutputFile(dequarantineReportOptions.outputFile)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = json.NewEncoder(outputFile).Encode(quarantinedTestsRunDataValues)
 	if err != nil {
-		return fmt.Errorf("failed to write report: %v", err)
+		return nil, fmt.Errorf("failed to write report: %v", err)
 	}
-	return nil
+	return outputFile, nil
 }
 
 func createOutputFile(outputFileToCreate string) (outputFile *os.File, err error) {

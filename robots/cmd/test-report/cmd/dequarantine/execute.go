@@ -35,9 +35,29 @@ import (
 	"time"
 )
 
+const shortDequarantineExecuteUsage = "test-report dequarantine execute creates a new file matching the format of quarantined_tests.json from the source file where entries for stable tests are omitted"
+
 var dequarantineExecuteCmd = &cobra.Command{
 	Use:   "execute",
-	Short: "applies the changes to dequarantine tests to the target quarantined_tests.json",
+	Short: shortDequarantineExecuteUsage,
+	Long: shortDequarantineExecuteUsage + `
+
+to do that the Jenkins server is asked for build results from the matching lanes within the matching time frame,
+then results are filtered by those tests whose names match the entries in the quarantined_tests.json.
+
+The remaining build results are inspected for failures. If one of the following conditions applies
+
+* any failure is seen
+* not at lest a certain amount of passed tests (see --minimum-passed-runs-per-test)
+
+then that test is seen as unstable and the entry will be transferred into the new file.
+
+The execution filtering logs all activity to make clear why a test is not considered as stable. All output regarding 
+a test not being considered as stable is done on warning level.
+
+Output on error level is emitted if the record under inspection can not be matched to any test from the test results
+that have been acquired.
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return runDequarantineExecution()
 	},
@@ -158,10 +178,10 @@ func runDequarantineExecution() error {
 	}
 	err = os.WriteFile(outputFile.Name(), buffer.Bytes(), 0777)
 	if err != nil {
-		return fmt.Errorf("could not write output file %s: %v", outputFile.Name(), err)
+		return fmt.Errorf("could not write output file '%s': %v", outputFile.Name(), err)
 	}
 
-	logger.Infof("Output file written to %q", outputFile.Name())
+	logger.Infof("Output file written to '%s'", outputFile.Name())
 	return nil
 }
 
