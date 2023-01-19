@@ -1,9 +1,19 @@
 #!/usr/bin/bash
 
-tmp_dir="$(mktemp -d)"
-podman run -v $tmp_dir:/tmp:Z \
-        --network host \
-        quay.io/kubevirtci/test-report:v20221208-e2f942b1 \
-        --overwrite --outputFile=/tmp/report.html "$@"
+function run_test_report() {
+    podman run -v "$tmp_dir:/tmp:Z" \
+            --network host \
+            quay.io/kubevirtci/test-report:v20230130-af3bc0a4 \
+            "$@"
+}
 
-echo "test-report written to file $tmp_dir/report.html"
+tmp_dir="$(mktemp -d)"
+if [[ $* =~ ^dequarantine.report ]]; then
+    run_test_report --output-file=/tmp/test-report.json "$@"
+elif [[ $* =~ ^dequarantine.execute ]]; then
+    run_test_report --output-file=/tmp/quarantined_tests.json "$@"
+else
+    run_test_report --overwrite --outputFile=/tmp/test-report.html "$@"
+fi
+
+echo "test-report output written to $tmp_dir: $(ls $tmp_dir)"
