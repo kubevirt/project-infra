@@ -1,0 +1,31 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: google-storage-buckets
+spec:
+  type: ExternalName
+  externalName: storage.googleapis.com
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/rewrite-target: /kubevirt-prow/reports/flakefinder/$2
+  name: flakefinder-rewrite
+  namespace: default
+spec:
+  ingressClassName: public-iks-k8s-nginx
+  tls:
+  - hosts:
+    - flakefinder.ci.kubevirt.io
+    secretName: flakefinder-tls
+  rules:
+  - host: flakefinder.ci.kubevirt.io
+    http:
+      paths:
+      - path: /(/|$)(.*)
+        backend:
+          serviceName: google-storage-buckets
+          servicePort: 443
