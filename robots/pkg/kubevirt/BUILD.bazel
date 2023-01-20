@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["root.go"],
+    importpath = "kubevirt.io/project-infra/robots/pkg/kubevirt",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//robots/pkg/kubevirt/cmd/check:go_default_library",
+        "//robots/pkg/kubevirt/cmd/copy:go_default_library",
+        "//robots/pkg/kubevirt/cmd/flags:go_default_library",
+        "//robots/pkg/kubevirt/cmd/get:go_default_library",
+        "//robots/pkg/kubevirt/cmd/remove:go_default_library",
+        "//robots/pkg/kubevirt/cmd/require:go_default_library",
+        "@com_github_spf13_cobra//:go_default_library",
+    ],
+)

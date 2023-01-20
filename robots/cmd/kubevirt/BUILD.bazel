@@ -6,7 +6,7 @@ go_library(
     importpath = "kubevirt.io/project-infra/robots/cmd/kubevirt",
     visibility = ["//visibility:private"],
     deps = [
-        "//robots/pkg/kubevirt/cmd:go_default_library",
+        "//robots/pkg/kubevirt:go_default_library",
         "//robots/pkg/kubevirt/log:go_default_library",
     ],
 )
