@@ -491,7 +491,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cd cluster-provision/k8s/1.26 && ../provision.sh
+        - cd cluster-provision/k8s/1.26 && KUBEVIRT_PSA='true' ../provision.sh
         image: quay.io/kubevirtci/golang:v20221222-8f66e7e
         name: ""
         resources:
@@ -518,7 +518,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cd cluster-provision/k8s/1.26-centos9 && ../provision.sh
+        - cd cluster-provision/k8s/1.26-centos9 && KUBEVIRT_PSA='true' ../provision.sh
         image: quay.io/kubevirtci/golang:v20221222-8f66e7e
         name: ""
         resources:
