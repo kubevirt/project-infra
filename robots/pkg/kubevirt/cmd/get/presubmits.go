@@ -63,7 +63,7 @@ type getPresubmitsJobruntimesOptions struct {
 
 func (o getPresubmitsJobruntimesOptions) Validate() error {
 	if _, err := os.Stat(o.jobConfigPathKubevirtPresubmits); os.IsNotExist(err) {
-		return fmt.Errorf("jobConfigPathKubevirtPeriodics is required: %v", err)
+		return fmt.Errorf("jobConfigPathKubevirtPresubmits is required: %v", err)
 	}
 	return nil
 }
