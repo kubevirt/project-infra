@@ -168,12 +168,11 @@ presubmits:
     cluster: prow-workloads
     decorate: true
     decoration_config:
-      timeout: 3h0m0s
+      grace_period: 30m0s
+      timeout: 4h0m0s
     labels:
-      preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-installer-pull-token: "true"
-      rehearsal.allowed: "true"
+      preset-podman-in-container-enabled: "true"
       vgpu: "true"
     max_concurrency: 1
     name: check-up-kind-1.23-vgpu
@@ -210,11 +209,11 @@ presubmits:
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=MediatedDevices --plugin-env
             kubevirt-conformance.E2E_SKIP=QUARANTINE
-        image: quay.io/kubevirtci/golang-legacy:v20220810-a8f2e6c
+        image: quay.io/kubevirtci/golang:v20221222-8f66e7e
         name: ""
         resources:
           requests:
-            memory: 15Gi
+            memory: 18Gi
         securityContext:
           privileged: true
         volumeMounts:
@@ -225,6 +224,8 @@ presubmits:
           name: cgroup
         - mountPath: /dev/vfio/
           name: vfio
+        - mountPath: /var/log/audit
+          name: audit
       nodeSelector:
         hardwareSupport: gpu
       priorityClassName: vgpu
@@ -241,6 +242,10 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      - hostPath:
+          path: /var/log/audit
+          type: Directory
+        name: audit
   - always_run: false
     cluster: prow-workloads
     decorate: true
