@@ -20,6 +20,7 @@ orgs:
     has_repository_projects: true
     location: ""
     members:
+      - jcanocan
       - 0xFelix
       - aburdenthehand
       - acardace
