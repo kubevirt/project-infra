@@ -647,6 +647,12 @@ periodics:
           memory: 16Gi
       securityContext:
         privileged: true
+      volumeMounts:
+      - mountPath: /var/log/audit
+        name: audit
+    volumes:
+    - emptyDir: {}
+      name: audit
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
