@@ -636,6 +636,7 @@ presubmits:
     labels:
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
+      preset-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 1
