@@ -130,6 +130,7 @@ tide:
     kubevirt/cloud-provider-kubevirt: merge
     kubevirt/secrets: merge
     kubevirt/test-benchmarks: merge
+    kubevirt/vm-console-proxy: merge
 
   queries:
   - repos:
@@ -188,6 +189,7 @@ tide:
     - kubevirt/ssp-operator
     - kubevirt/must-gather
     - kubevirt/csi-driver
+    - kubevirt/vm-console-proxy
     labels:
     - lgtm
     - approved

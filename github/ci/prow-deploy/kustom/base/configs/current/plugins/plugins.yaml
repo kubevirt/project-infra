@@ -400,6 +400,14 @@ plugins:
     - owners-label
     - trigger
 
+  kubevirt/vm-console-proxy:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+
   kubevirt/vm-import-operator:
     plugins:
     - approve
@@ -517,6 +525,7 @@ triggers:
   - kubevirt/cloud-provider-kubevirt
   - kubevirt/secrets
   - kubevirt/test-benchmarks
+  - kubevirt/vm-console-proxy
 - repos:
   - virtblocks/virtblocks
 - repos:
@@ -566,6 +575,7 @@ approve:
   - kubevirt/qe-tools
   - kubevirt/cloud-provider-kubevirt
   - kubevirt/test-benchmarks
+  - kubevirt/vm-console-proxy
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -620,6 +630,7 @@ lgtm:
   - kubevirt/cloud-provider-kubevirt
   - kubevirt/secrets
   - kubevirt/test-benchmarks
+  - kubevirt/vm-console-proxy
   review_acts_as_lgtm: true
 
 override:

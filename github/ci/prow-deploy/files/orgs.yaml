@@ -508,6 +508,12 @@ orgs:
         description: VM monitoring application based on WSGI, libvirt, flask and gevent, inspired by cAdvisor.
         has_projects: false
         has_wiki: false
+      vm-console-proxy:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        default_branch: main
+        description: Proxy for VM console connection.
+        has_projects: false
       vm-import-operator:
         allow_rebase_merge: false
         allow_squash_merge: false
@@ -752,6 +758,7 @@ orgs:
           must-gather: write
           node-maintenance-operator: write
           ssp-operator: write
+          vm-console-proxy: write
       ovirt-bot:
         description: ""
         maintainers:
@@ -841,6 +848,14 @@ orgs:
           - alicefr
         repos:
           test-benchmarks: admin
+      vm-console-proxy-maintainers:
+        description: "Maintainers of vm-console-proxy repository"
+        privacy: closed
+        maintainers:
+          - akrejcir
+          - dominikholler
+        repos:
+          vm-console-proxy: admin
       web-ui-maintainers:
         description: ""
         maintainers:
