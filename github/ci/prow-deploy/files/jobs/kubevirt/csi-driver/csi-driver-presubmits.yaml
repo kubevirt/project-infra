@@ -108,7 +108,7 @@ presubmits:
             resources:
               requests:
                 memory: "4Gi"
-    - name: pull-csi-driver-e2e-k8s-1.23
+    - name: pull-csi-driver-e2e-k8s
       cluster: prow-workloads
       skip_branches:
         - release-\d+\.\d+
@@ -143,7 +143,7 @@ presubmits:
             resources:
               requests:
                 memory: "29Gi"
-    - name: pull-csi-driver-split-e2e-k8s-1.23
+    - name: pull-csi-driver-split-e2e-k8s
       cluster: prow-workloads
       skip_branches:
         - release-\d+\.\d+
@@ -178,7 +178,7 @@ presubmits:
             resources:
               requests:
                 memory: "29Gi"
-    - name: pull-csi-driver-split-k8s-suite-k8s-1.23
+    - name: pull-csi-driver-split-k8s-suite-k8s
       cluster: prow-workloads
       skip_branches:
         - release-\d+\.\d+
