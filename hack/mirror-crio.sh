@@ -28,6 +28,8 @@ mirror_crio_repo_for_version () {
     if [[ $1 = 1.24 ]]
     then
         OS="CentOS_8"
+    else
+        OS="CentOS_8_Stream"
     fi
     curl -L -o $REPOID.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable$CRIO_SUBDIR/$OS/devel:kubic:libcontainers:stable$CRIO_SUBDIR.repo
     reposync -c $REPOID.repo -p ./$LOCAL_MIRROR_DIR -n --repoid=$REPOID --download-metadata
