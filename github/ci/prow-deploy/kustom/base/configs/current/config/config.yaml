@@ -89,7 +89,7 @@ tide:
     kubevirt/libguestfs-appliance: merge
     kubevirt/containerized-data-importer: squash
     kubevirt/cluster-api-provider-kubevirt: merge
-    kubevirt/containerdisks: squash
+    kubevirt/containerdisks: merge
     kubevirt/kubevirt: merge
     kubevirt/machine-remediation-operator: squash
     kubevirt/project-infra: squash
