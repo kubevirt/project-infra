@@ -32,13 +32,11 @@ postsubmits:
               value: kubevirtbot@redhat.com
             - name: GIMME_GO_VERSION
               value: "1.16"
-            - name: IMAGE_BUILDER
-              value: "podman"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
-              - "cat $QUAY_PASSWORD | podman login --username $(cat $QUAY_USER) --password-stdin=true quay.io && ./automation/publish.sh"
+              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && ./automation/publish.sh"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
@@ -78,13 +76,11 @@ postsubmits:
               value: kubevirtbot@redhat.com
             - name: GIMME_GO_VERSION
               value: "1.16"
-            - name: IMAGE_BUILDER
-              value: "podman"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
-              - "cat $QUAY_PASSWORD | podman login --username $(cat $QUAY_USER) --password-stdin=true quay.io && GITHUB_TOKEN=$(cat /etc/github/oauth) ./automation/release.sh"
+              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && GITHUB_TOKEN=$(cat /etc/github/oauth) ./automation/release.sh"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
