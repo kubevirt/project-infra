@@ -114,7 +114,7 @@ tide:
     kubevirt/ansible-kubevirt-modules: squash
     kubevirt/hyperconverged-cluster-operator: squash
     kubevirt/common-instancetypes: merge
-    kubevirt/common-templates: squash
+    kubevirt/common-templates: merge
     kubevirt/kvm-info-nfd-plugin: squash
     kubevirt/cpu-nfd-plugin: squash
     kubevirt/node-labeller: squash
