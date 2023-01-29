@@ -1081,7 +1081,9 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.25-ipv6-sig-network
+          value: k8s-1.25-sig-network
+        - name: KUBEVIRT_SINGLE_STACK
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
         name: ""
         resources:
@@ -1121,7 +1123,9 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.26-ipv6-sig-network
+          value: k8s-1.26-sig-network
+        - name: KUBEVIRT_SINGLE_STACK
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
         name: ""
         resources:
