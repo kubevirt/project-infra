@@ -167,7 +167,9 @@ func runDequarantineExecution() error {
 	}
 
 	var buffer bytes.Buffer
-	err = json.NewEncoder(&buffer).Encode(&remainingQuarantinedTestRecords)
+	jsonEncoder := json.NewEncoder(&buffer)
+	jsonEncoder.SetIndent("", "  ")
+	err = jsonEncoder.Encode(&remainingQuarantinedTestRecords)
 	if err != nil {
 		return fmt.Errorf("could not encode output file %s: %v", dequarantineExecOptions.outputFile, err)
 	}
