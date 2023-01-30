@@ -137,14 +137,15 @@ func main() {
 }
 
 // BuildReportOutputPath creates the path to which the report will get written, considering also if we are in
-// preview mode, so that existing production reports will not be overwritten. I.e considering
-// options{
-//		reportOutputChildPath: "kubevirt/kubevirt"
-//		isPreview:			   true
-// }
+// preview mode, so that existing production reports will not be overwritten. I.e. considering
+//
+//	options{
+//			reportOutputChildPath: "kubevirt/kubevirt"
+//			isPreview:			   true
+//	}
+//
 // will lead to
 // "reports/flakefinder/preview/kubevirt/kubevirt"
-//
 func BuildReportOutputPath(o options) string {
 	outputPath := flakefinder.ReportsPath
 	if o.isPreview {

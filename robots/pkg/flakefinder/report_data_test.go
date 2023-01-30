@@ -430,6 +430,9 @@ var _ = Describe("report_data.go", func() {
 					EndOfReport:   endOfReport.Format(time.RFC3339),
 					Headers:       []string{"job"},
 					Tests:         []string{"test3"},
+					TestAttributes: map[string]TestAttributes{
+						"test3": nil,
+					},
 					Data: map[string]map[string]*Details{
 						"test3": {
 							"job": {
@@ -449,6 +452,7 @@ var _ = Describe("report_data.go", func() {
 					FailuresForJobs: map[string]*JobFailures{
 						fmt.Sprintf("job-%d", buildNumber): {BuildNumber: buildNumber, PR: pr, BatchPRs: nil, Job: "job", Failures: 1},
 					},
+					BareTestNames: map[string]string{"test3": "test3"},
 				}))
 		})
 
@@ -511,6 +515,9 @@ var _ = Describe("report_data.go", func() {
 					EndOfReport:   endOfReport.Format(time.RFC3339),
 					Headers:       []string{"job"},
 					Tests:         []string{"test3"},
+					TestAttributes: map[string]TestAttributes{
+						"test3": nil,
+					},
 					Data: map[string]map[string]*Details{
 						"test3": {
 							"job": {
@@ -530,8 +537,166 @@ var _ = Describe("report_data.go", func() {
 					FailuresForJobs: map[string]*JobFailures{
 						fmt.Sprintf("job-%d", buildNumber): {BuildNumber: buildNumber, PR: 0, BatchPRs: []int{pr}, Job: "job", Failures: 1},
 					},
+					BareTestNames: map[string]string{"test3": "test3"},
 				}))
 		})
+
+		It("adds test attributes for failing tests", func() {
+			startOfReport := time.Now().Add(minusDay)
+			endOfReport := time.Now()
+			Expect(CreateFlakeReportData(
+				[]*JobResult{
+					{
+						Job: "job",
+						JUnit: []junit.Suite{
+							{
+								Name:       "suite",
+								Package:    "",
+								Properties: nil,
+								Tests: []junit.Test{
+									{
+										Name:       "test1",
+										Classname:  "",
+										Duration:   0,
+										Status:     junit.StatusPassed,
+										Error:      nil,
+										Properties: nil,
+									},
+									{
+										Name:       "test2",
+										Classname:  "",
+										Duration:   0,
+										Status:     junit.StatusSkipped,
+										Error:      nil,
+										Properties: nil,
+									},
+									{
+										Name:       "[Serial]test3[sig-compute]",
+										Classname:  "",
+										Duration:   0,
+										Status:     junit.StatusFailed,
+										Error:      nil,
+										Properties: nil,
+									},
+								},
+								SystemOut: "",
+								SystemErr: "",
+								Totals:    junit.Totals{},
+							},
+						},
+						BuildNumber: buildNumber,
+						PR:          pr,
+						BatchPRs:    nil,
+					},
+				},
+				[]int{pr},
+				endOfReport,
+				org,
+				repo,
+				startOfReport,
+			)).To(BeEquivalentTo(
+				Params{
+					StartOfReport: startOfReport.Format(time.RFC3339),
+					EndOfReport:   endOfReport.Format(time.RFC3339),
+					Headers:       []string{"job"},
+					Tests:         []string{"[Serial]test3[sig-compute]"},
+					TestAttributes: map[string]TestAttributes{
+						"[Serial]test3[sig-compute]": {
+							{Name: "Serial", Value: "", AttributeType: 2},
+							{Name: "sig-compute", Value: "", AttributeType: 3},
+						},
+					},
+					Data: map[string]map[string]*Details{
+						"[Serial]test3[sig-compute]": {
+							"job": {
+								Succeeded: 0,
+								Skipped:   0,
+								Failed:    1,
+								Severity:  "red",
+								Jobs: []*Job{
+									{BuildNumber: buildNumber, Severity: "red", PR: pr, BatchPRs: nil, Job: "job"},
+								},
+							},
+						},
+					},
+					PrNumbers: []int{pr},
+					Org:       org,
+					Repo:      repo,
+					FailuresForJobs: map[string]*JobFailures{
+						fmt.Sprintf("job-%d", buildNumber): {BuildNumber: buildNumber, PR: pr, BatchPRs: nil, Job: "job", Failures: 1},
+					},
+					BareTestNames: map[string]string{
+						"[Serial]test3[sig-compute]": "test3",
+					},
+				}))
+		})
+
 	})
+
+	DescribeTable("Extracting TestAttributes", func(testName string, expected TestAttributes) {
+		Expect(NewTestAttributes(testName)).To(BeEquivalentTo(expected))
+	},
+		Entry("empty", "", nil),
+		Entry("serial", "[Serial]", TestAttributes{
+			{
+				Name:          "Serial",
+				Value:         "",
+				AttributeType: TestAttributeTypeSerial,
+			},
+		}),
+		Entry("sig", "[sig-storage]", TestAttributes{
+			{
+				Name:          "sig-storage",
+				Value:         "",
+				AttributeType: TestAttributeTypeSIG,
+			},
+		}),
+		Entry("test id", "[test_id:1742]", TestAttributes{
+			{
+				Name:          "test_id",
+				Value:         "1742",
+				AttributeType: TestAttributeTypeTestID,
+			},
+		}),
+		Entry("quarantine", "[QUARANTINE]", TestAttributes{
+			{
+				Name:          "QUARANTINE",
+				Value:         "",
+				AttributeType: TestAttributeTypeQuarantine,
+			},
+		}),
+		Entry("release-blocker", "[release-blocker]", TestAttributes{
+			{
+				Name:          "release-blocker",
+				Value:         "",
+				AttributeType: TestAttributeTypeReleaseBlocker,
+			},
+		}),
+		Entry("complex test name", "[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]should update kubevirt [release-blocker][test_id:3145]from previous release to target tested release by patching KubeVirt CR", TestAttributes{
+			{
+				Name:          "release-blocker",
+				Value:         "",
+				AttributeType: 0,
+			},
+			{Name: "Serial", Value: "", AttributeType: 2},
+			{Name: "sig-operator", Value: "", AttributeType: 3},
+			{Name: "test_id", Value: "3145", AttributeType: 4},
+			{Name: "rfe_id", Value: "2291", AttributeType: 5},
+			{Name: "crit", Value: "high", AttributeType: 5},
+			{
+				Name:          "vendor",
+				Value:         "cnv-qe@redhat.com",
+				AttributeType: 5,
+			},
+			{Name: "level", Value: "component", AttributeType: 5},
+		}),
+	)
+
+	DescribeTable("Getting bare test names", func(testName string, expected string) {
+		Expect(GetBareTestName(testName)).To(BeEquivalentTo(expected))
+	},
+		Entry("empty", "", ""),
+		Entry("complex test name", "[Serial][sig-operator]Operator [rfe_id:2291][crit:high][vendor:cnv-qe@redhat.com][level:component]should update kubevirt [release-blocker][test_id:3145]from previous release to target tested release by patching KubeVirt CR", "Operator should update kubevirt from previous release to target tested release by patching KubeVirt CR"),
+	)
 
 })

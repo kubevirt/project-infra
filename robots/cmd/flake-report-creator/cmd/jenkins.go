@@ -22,6 +22,7 @@ package cmd
 import (
 	"context"
 	"crypto/tls"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
@@ -46,222 +47,11 @@ const (
 	defaultJenkinsBaseUrl        = "https://main-jenkins-csb-cnvqe.apps.ocp-c1.prod.psi.redhat.com/"
 	defaultJenkinsJobNamePattern = "^test-kubevirt-cnv-4.10-(compute|network|operator|storage)(-[a-z0-9]+)?$"
 	defaultArtifactFileNameRegex = "^(xunit_results|((merged|partial)\\.)?junit\\.functest(\\.[0-9]+)?)\\.xml$"
-	JenkinsReportTemplate        = `
-<html>
-<head>
-    <title>flakefinder report</title>
-    <meta charset="UTF-8">
-		<style>
-			table, th, td {
-				border: 1px solid black;
-			}
-			.yellow, .threesigma {
-				background-color: #ffff80;
-			}
-			.almostgreen, .twosigma {
-				background-color: #dfff80;
-			}
-			.green, .onesigma {
-				background-color: #9fff80;
-			}
-			.red, .foursigma {
-				background-color: #ff8080;
-			}
-			.orange {
-				background-color: #ffbf80;
-			}
-			.unimportant {
-			}
-			.tests_passed {
-				color: #226c18;
-				font-weight: bold;
-			}
-			.tests_failed {
-				color: #8a1717;
-				font-weight: bold;
-			}
-			.tests_skipped {
-				color: #535453;
-				font-weight: bold;
-			}
-			.center {
-				text-align:center
-			}
-			.right {
-				text-align: right;
-				width: 100%;
-			}
-
-			.popup {
-				position: relative;
-				display: inline-block;
-				-webkit-user-select: none;
-				-moz-user-select: none;
-				-ms-user-select: none;
-				user-select: none;
-			}
-
-			.popup .popuptext {
-				display: none;
-				width: 220px;
-				background-color: #555;
-				text-align: center;
-				border-radius: 6px;
-				padding: 8px 8px;
-				position: absolute;
-				z-index: 1;
-				left: 50%;
-				margin-left: -110px;
-			}
-
-            .popup .popuptextjoblist {
-                display: none;
-                width: 350px;
-                background-color: #FFFFFF;
-                text-align: center;
-                border-radius: 6px;
-                padding: 8px 8px;
-                position: absolute;
-                z-index: 1;
-                left: 100%;
-                margin-left: -350px;
-            }
-
-			.popup:hover .popuptext {
-				display: block;
-				-webkit-animation: fadeIn 1s;
-				animation: fadeIn 1s;
-			}
-
-			.popup:hover .popuptextjoblist {
-				display: block;
-				-webkit-animation: fadeIn 1s;
-				animation: fadeIn 1s;
-			}
-
-			.nowrap {
-				white-space: nowrap;
-			}
-
-			@-webkit-keyframes fadeIn {
-				from {opacity: 0;}
-				to {opacity: 1;}
-			}
-
-			@keyframes fadeIn {
-				from {opacity: 0;}
-				to {opacity:1 ;}
-			}
-		</style>
-	</meta>
-</head>
-<body>
-<h1>flakefinder report</h1>
-
-<div>
-	Data range from {{ $.StartOfReport }} till {{ $.EndOfReport }}<br/>
-</div>
-
-{{ if not .Headers }}
-	<div>No failing tests! 🙂</div>
-{{ else }}
-<div id="jobRatings" class="popup right" >
-	<u>list of job ratings</u>
-	<div class="popuptextjoblist right" id="targetRatingsForJobs">
-		<table width="100%">
-			{{ range $key, $jobRating := $.JobNamesToRatings }}<tr class="unimportant">
-				<td>
-					<a href="{{ $.JenkinsBaseURL }}/job/{{$key}}"><span title="job">{{$key}}</span></a>
-				</td>
-				<td>
-					<div><span title="number of completed builds">{{ .TotalCompletedBuilds }}</span></div>
-				</td>
-				<td>
-					<div><span title="mean">{{ printf "%.2f" .Mean }}</span></div>
-				</td>
-				<td>
-					<div><span title="standard deviation">{{ printf "%.2f" .StandardDeviation }}</span></div>
-				</td>
-			</tr>
-			{{ range $buildNo := .BuildNumbers }}<tr class="unimportant">{{ with $buildData := (index (index $.JobNamesToRatings $key).BuildNumbersToData $buildNo) }}
-				<td>
-				</td>
-				<td>
-					<a href="{{ $.JenkinsBaseURL }}/job/{{$key}}/{{$buildNo}}"><span title="job build number">{{$buildNo}}</span></a>
-				</td>
-				<td>
-					<div class="tests_failed"><span title="test failures">{{ $buildData.Failures }}</span></div>
-				</td>
-				<td>
-					<div class="{{ if le $buildData.Sigma 1.0 }}onesigma{{ else if le $buildData.Sigma 2.0 }}twosigma{{ else if le $buildData.Sigma 3.0 }}threesigma{{ else }}foursigma{{ end }}"><span title="&sigma; rating">{{ $buildData.Sigma }}</span></div>
-				</td>
-			{{ end }}</tr>{{ end }}{{ end }}
-		</table>
-	</div>
-</div>
-<div id="failuresForJobs" class="popup right" >
-	<u>list of job runs</u>
-	<div class="popuptextjoblist right" id="targetfailuresForJobs">
-		<table width="100%">
-			{{ range $key, $jobFailures := $.FailuresForJobs }}<tr class="unimportant">
-				<td>
-					<a href="{{ $.JenkinsBaseURL }}/job/{{.Job}}"><span title="job">{{.Job}}</span></a>
-				</td>
-				<td>
-					<a href="{{ $.JenkinsBaseURL }}/job/{{.Job}}/{{.BuildNumber}}"><span title="job build number">{{.BuildNumber}}</span></a>
-				</td>
-				<td>
-					<div class="tests_failed"><span title="test failures">{{ .Failures }}</span></div>
-				</td>
-				<td>
-					<div><span title="&sigma; rating">{{ (index (index $.JobNamesToRatings .Job).BuildNumbersToData .BuildNumber).Sigma }}</span></div>
-				</td>
-			</tr>{{ end }}
-		</table>
-	</div>
-</div>
-
-
-<table>
-    <tr>
-        <td></td>
-        <td></td>
-        {{ range $header := $.Headers }}
-        <td><a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/">{{ $header }}</a></td>
-        {{ end }}
-    </tr>
-    {{ range $row, $test := $.Tests }}
-    <tr>
-        <td><div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a></div></td>
-        <td>{{ $test }}</td>
-        {{ range $col, $header := $.Headers }}
-	        {{if not (index $.Data $test $header) }}
-        <td class="center">
-            N/A
-        </td>
-			{{else}}
-        <td class="{{ (index $.Data $test $header).Severity }} center">
-            <div id="r{{$row}}c{{$col}}" class="popup" >
-                <span class="tests_failed" title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span class="tests_passed" title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span class="tests_skipped" title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>{{ if (index $.Data $test $header).Jobs }}
-                <div class="popuptext" id="targetr{{$row}}c{{$col}}">
-                    {{ range $Job := (index $.Data $test $header).Jobs }}
-                    <div class="{{.Severity}} nowrap"><a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/{{.BuildNumber}}">{{.BuildNumber}}</a> (<span class="tests_failed" title="failed tests in job run">{{ (index $.FailuresForJobs (printf "%s-%d" $header .BuildNumber)).Failures }}</span>)</div>
-                    {{ end }}
-                </div>{{ end }}
-            </div>
-        </td>
-            {{end}}
-        {{ end }}
-    </tr>
-    {{ end }}
-</table>
-{{ end }}
-
-</body>
-</html>
-`
-	jenkinsShortUsage = "flake-report-creator jenkins creates reports from junit xml artifact files generated during jenkins builds"
+	jenkinsShortUsage            = "flake-report-creator jenkins creates reports from junit xml artifact files generated during jenkins builds"
 )
+
+//go:embed jenkins-report-template.gohtml
+var jenkinsReportTemplate string
 
 var (
 	fileNameRegex  = regexp.MustCompile(defaultArtifactFileNameRegex)
@@ -543,7 +333,7 @@ func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports [
 		jobNamesToRatings[rating.Name] = rating
 	}
 
-	writeHTMLReportToOutputFile(outputFile, JenkinsReportTemplate, JenkinsReportParams{Params: parameters, JenkinsBaseURL: opts.endpoint, JobNamesToRatings: jobNamesToRatings})
+	writeHTMLReportToOutputFile(outputFile, jenkinsReportTemplate, JenkinsReportParams{Params: parameters, JenkinsBaseURL: opts.endpoint, JobNamesToRatings: jobNamesToRatings})
 
 	writeJSONToOutputFile(strings.TrimSuffix(outputFile, ".html")+".json", parameters)
 }

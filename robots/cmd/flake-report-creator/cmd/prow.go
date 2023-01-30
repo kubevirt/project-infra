@@ -21,6 +21,7 @@ package cmd
 
 import (
 	"context"
+	_ "embed"
 	"fmt"
 	"os"
 	"path"
@@ -46,95 +47,11 @@ const (
 	useSubDirs  = "useSubDirs"
 	subDirRegex = "subDirRegex"
 	jobDataPath = "jobDataPath"
-
-	ProwReportTemplate = `
-<html>
-<head>
-    <title>flakefinder report</title>
-    <meta charset="UTF-8">
-    <style>
-        table, th, td {
-            border: 1px solid black;
-        }
-        .yellow {
-            background-color: #ffff80;
-        }
-        .almostgreen {
-            background-color: #dfff80;
-        }
-        .green {
-            background-color: #9fff80;
-        }
-        .red {
-            background-color: #ff8080;
-        }
-        .orange {
-            background-color: #ffbf80;
-        }
-        .unimportant {
-        }
-        .tests_passed {
-            color: #226c18;
-            font-weight: bold;
-        }
-        .tests_failed {
-            color: #8a1717;
-            font-weight: bold;
-        }
-        .tests_skipped {
-            color: #535453;
-            font-weight: bold;
-        }
-        .center {
-            text-align:center
-        }
-        .right {
-            text-align: right;
-			width: 100%;
-        }
-	</style>
-</head>
-<body>
-<h1>flakefinder report</h1>
-
-<div>
-	Data since {{ $.StartOfReport }}<br/>
-	Bucket: {{ $.BucketName }}<br/>
-	Pathes: {{ range $path := $.JobDataPathes }}<code>{{ $path }},</code>{{ end }}
-</div>
-<table>
-    <tr>
-        <td></td>
-        <td></td>
-        {{ range $header := $.Headers }}
-        <td>{{ $header }}</td>
-        {{ end }}
-    </tr>
-    {{ range $row, $test := $.Tests }}
-    <tr>
-        <td><div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a><div></td>
-        <td>{{ $test }}</td>
-        {{ range $col, $header := $.Headers }}
-        {{if not (index $.Data $test $header) }}
-        <td class="center">
-            N/A
-        </td>
-        {{else}}
-        <td class="{{ (index $.Data $test $header).Severity }} center">
-            <div id="r{{$row}}c{{$col}}">
-                <span class="tests_failed" title="failed tests">{{ (index $.Data $test $header).Failed }}</span>/<span class="tests_passed" title="passed tests">{{ (index $.Data $test $header).Succeeded }}</span>/<span class="tests_skipped" title="skipped tests">{{ (index $.Data $test $header).Skipped }}</span>
-            </div>
-            {{end}}
-        </td>
-        {{ end }}
-    </tr>
-    {{ end }}
-</table>
-</body>
-</html>
-`
-	shortUsage = "flake-report-creator prow creates an ad-hoc report of any GCS directories that contain kubevirt testing junit files"
+	shortUsage  = "flake-report-creator prow creates an ad-hoc report of any GCS directories that contain kubevirt testing junit files"
 )
+
+//go:embed prow-report-template.gohtml
+var ProwReportTemplate string
 
 func init() {
 	prowOpts = prowOptions{}
@@ -388,13 +305,17 @@ func runProwReport(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, maxTime, prowOpts.org, prowOpts.repo, startOfReport)
-
-	log.Printf("writing output file to %s", globalOpts.outputFile)
-
-	err = flakefinder.WriteTemplateToOutput(ProwReportTemplate, SimpleReportParams{parameters, prowOpts.bucketName, prowOpts.jobDataPathes}, reportOutputWriter)
+	err = writeProwReportToFile(startOfReport, reports, reportOutputWriter)
 	if err != nil {
 		log.Fatal(fmt.Errorf("failed to write report: %v", err))
 	}
 	return nil
+}
+
+func writeProwReportToFile(startOfReport time.Time, reports []*flakefinder.JobResult, reportOutputWriter *os.File) error {
+	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, maxTime, prowOpts.org, prowOpts.repo, startOfReport)
+
+	log.Printf("writing output file to %s", globalOpts.outputFile)
+
+	return flakefinder.WriteTemplateToOutput(ProwReportTemplate, SimpleReportParams{parameters, prowOpts.bucketName, prowOpts.jobDataPathes}, reportOutputWriter)
 }
