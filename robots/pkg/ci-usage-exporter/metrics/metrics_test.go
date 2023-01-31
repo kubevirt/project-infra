@@ -31,8 +31,7 @@ const (
 
 var (
 	subject   *metrics.Handler
-	srv       http.Server
-	err       error
+	srv       *http.Server
 	quantity1 = *resource.NewQuantity(quantityValue1, resource.BinarySI)
 	quantity2 = *resource.NewQuantity(quantityValue2, resource.BinarySI)
 	quantity3 = *resource.NewQuantity(quantityValue3, resource.BinarySI)
@@ -53,7 +52,7 @@ var _ = Describe("resources", func() {
 	BeforeEach(func() {
 		sm := http.NewServeMux()
 		sm.Handle(metricsPath, promhttp.Handler())
-		srv = http.Server{
+		srv = &http.Server{
 			Handler: sm,
 			Addr:    fmt.Sprintf("%s:%s", host, port),
 		}
