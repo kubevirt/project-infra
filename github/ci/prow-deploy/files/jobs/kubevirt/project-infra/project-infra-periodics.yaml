@@ -758,7 +758,7 @@ periodics:
     - image: quay.io/kubevirtci/golang:v20221222-8f66e7e
       env:
       - name: GIMME_GO_VERSION
-        value: "1.16"
+        value: "1.19"
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/sh"
