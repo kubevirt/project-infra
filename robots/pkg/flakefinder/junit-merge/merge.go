@@ -32,9 +32,12 @@ func Merge(suitesOfSuites [][]junit.Suite) (mergedSuites []junit.Suite, hasConfl
 	for _, suiteOfSuites := range suitesOfSuites {
 		for _, suite := range suiteOfSuites {
 			for _, test := range suite.Tests {
-				if previous, exists := testsByName[test.Name]; exists {
-					if previous.Status != "skipped" && test.Status != "skipped" {
+				if previous, previousTestRunDoesExist := testsByName[test.Name]; previousTestRunDoesExist && previous.Status != junit.StatusSkipped {
+					if test.Status != junit.StatusSkipped {
 						conflicts = append(conflicts, fmt.Sprintf("conflict: test executed more than once: %+v , %+v", previous, test))
+					}
+					if previous.Status == junit.StatusFailed || test.Status == junit.StatusPassed || test.Status == junit.StatusSkipped {
+						continue
 					}
 				}
 				testsByName[test.Name] = test
@@ -43,10 +46,10 @@ func Merge(suitesOfSuites [][]junit.Suite) (mergedSuites []junit.Suite, hasConfl
 	}
 	allTests := []junit.Test{}
 	testStatus := map[junit.Status]int{
-		junit.StatusPassed: 0,
+		junit.StatusPassed:  0,
 		junit.StatusSkipped: 0,
-		junit.StatusFailed: 0,
-		junit.StatusError: 0,
+		junit.StatusFailed:  0,
+		junit.StatusError:   0,
 	}
 	var totalExecutionTime time.Duration
 	for _, test := range testsByName {
@@ -55,19 +58,19 @@ func Merge(suitesOfSuites [][]junit.Suite) (mergedSuites []junit.Suite, hasConfl
 		totalExecutionTime += test.Duration
 	}
 	return []junit.Suite{
-		junit.Suite{
+		{
 			Name:       "Tests Suite (merged)",
 			Package:    "",
 			Properties: nil,
 			Tests:      allTests,
 			SystemOut:  "",
 			SystemErr:  strings.Join(conflicts, "/n"),
-			Totals:     junit.Totals{
-				Tests: testStatus[junit.StatusPassed] + testStatus[junit.StatusSkipped] + testStatus[junit.StatusFailed] + testStatus[junit.StatusError],
-				Passed: testStatus[junit.StatusPassed],
-				Skipped: testStatus[junit.StatusSkipped],
-				Failed: testStatus[junit.StatusFailed],
-				Error: testStatus[junit.StatusError],
+			Totals: junit.Totals{
+				Tests:    testStatus[junit.StatusPassed] + testStatus[junit.StatusSkipped] + testStatus[junit.StatusFailed] + testStatus[junit.StatusError],
+				Passed:   testStatus[junit.StatusPassed],
+				Skipped:  testStatus[junit.StatusSkipped],
+				Failed:   testStatus[junit.StatusFailed],
+				Error:    testStatus[junit.StatusError],
 				Duration: totalExecutionTime,
 			},
 		},

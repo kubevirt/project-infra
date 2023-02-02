@@ -13,7 +13,7 @@ func Test_merge(t *testing.T) {
 		suites [][]junit.Suite
 	}
 	tests := []struct {
-		name              string
+		name               string
 		args               args
 		wantTestsWithState []junit.Test
 		wantConflicts      bool
@@ -49,7 +49,223 @@ func Test_merge(t *testing.T) {
 					Properties: nil,
 				},
 			},
-			wantConflicts:      true,
+			wantConflicts: true,
+		},
+		{
+			name: "skipped test should NOT override successful",
+			args: args{
+				suites: [][]junit.Suite{
+					{
+						{
+							Name: "testsuite where test was successful",
+							Tests: []junit.Test{
+								{
+									Name:   "successful test",
+									Status: junit.StatusPassed,
+								},
+							},
+						},
+					},
+					{
+						{
+							Name: "testsuite where test was skipped",
+							Tests: []junit.Test{
+								{
+									Name:   "successful test",
+									Status: junit.StatusSkipped,
+								},
+							},
+						},
+					},
+				},
+			},
+			wantTestsWithState: []junit.Test{
+				{
+					Name:   "successful test",
+					Status: junit.StatusPassed,
+				},
+			},
+			wantConflicts: false,
+		},
+		{
+			name: "skipped test should NOT override failed",
+			args: args{
+				suites: [][]junit.Suite{
+					{
+						{
+							Name: "testsuite where test failed",
+							Tests: []junit.Test{
+								{
+									Name:   "failed test",
+									Status: junit.StatusFailed,
+								},
+							},
+						},
+					},
+					{
+						{
+							Name: "testsuite where test was skipped",
+							Tests: []junit.Test{
+								{
+									Name:   "failed test",
+									Status: junit.StatusSkipped,
+								},
+							},
+						},
+					},
+				},
+			},
+			wantTestsWithState: []junit.Test{
+				{
+					Name:   "failed test",
+					Status: junit.StatusFailed,
+				},
+			},
+			wantConflicts: false,
+		},
+		{
+			name: "skipped test should NOT override errored",
+			args: args{
+				suites: [][]junit.Suite{
+					{
+						{
+							Name: "testsuite where test errored",
+							Tests: []junit.Test{
+								{
+									Name:   "errored test",
+									Status: junit.StatusError,
+								},
+							},
+						},
+					},
+					{
+						{
+							Name: "testsuite where test was skipped",
+							Tests: []junit.Test{
+								{
+									Name:   "errored test",
+									Status: junit.StatusSkipped,
+								},
+							},
+						},
+					},
+				},
+			},
+			wantTestsWithState: []junit.Test{
+				{
+					Name:   "errored test",
+					Status: junit.StatusError,
+				},
+			},
+			wantConflicts: false,
+		},
+		{
+			name: "failed test SHOULD override passed",
+			args: args{
+				suites: [][]junit.Suite{
+					{
+						{
+							Name: "testsuite where test passed",
+							Tests: []junit.Test{
+								{
+									Name:   "failed test",
+									Status: junit.StatusPassed,
+								},
+							},
+						},
+					},
+					{
+						{
+							Name: "testsuite where test failed",
+							Tests: []junit.Test{
+								{
+									Name:   "failed test",
+									Status: junit.StatusFailed,
+								},
+							},
+						},
+					},
+				},
+			},
+			wantTestsWithState: []junit.Test{
+				{
+					Name:   "failed test",
+					Status: junit.StatusFailed,
+				},
+			},
+			wantConflicts: true,
+		},
+		{
+			name: "errored test SHOULD override passed",
+			args: args{
+				suites: [][]junit.Suite{
+					{
+						{
+							Name: "testsuite where test passed",
+							Tests: []junit.Test{
+								{
+									Name:   "errored test",
+									Status: junit.StatusPassed,
+								},
+							},
+						},
+					},
+					{
+						{
+							Name: "testsuite where test failed",
+							Tests: []junit.Test{
+								{
+									Name:   "errored test",
+									Status: junit.StatusError,
+								},
+							},
+						},
+					},
+				},
+			},
+			wantTestsWithState: []junit.Test{
+				{
+					Name:   "errored test",
+					Status: junit.StatusError,
+				},
+			},
+			wantConflicts: true,
+		},
+		{
+			name: "passed test should NOT override failed",
+			args: args{
+				suites: [][]junit.Suite{
+					{
+						{
+							Name: "testsuite where test failed",
+							Tests: []junit.Test{
+								{
+									Name:   "failed test",
+									Status: junit.StatusFailed,
+								},
+							},
+						},
+					},
+					{
+						{
+							Name: "testsuite where test passed",
+							Tests: []junit.Test{
+								{
+									Name:   "failed test",
+									Status: junit.StatusPassed,
+								},
+							},
+						},
+					},
+				},
+			},
+			wantTestsWithState: []junit.Test{
+				{
+					Name:   "failed test",
+					Status: junit.StatusFailed,
+				},
+			},
+			wantConflicts: true,
 		},
 	}
 	for _, tt := range tests {
