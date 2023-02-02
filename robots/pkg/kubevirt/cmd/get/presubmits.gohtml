@@ -40,6 +40,11 @@
             white-space: pre-wrap;
         }
 
+        .env {
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
         .notes {
             position: absolute;
             top: 0px;
@@ -61,6 +66,7 @@
 <table id="presubmits">
     <tr>
         <th>Name</th>
+        <th>Env</th>
         <th>AlwaysRun</th>
         <th>Optional</th>
         <th>RunIfChanged</th>
@@ -73,6 +79,7 @@
                 <a href="https://prow.ci.kubevirt.io/?job={{ $presubmit.Name }}"><img
                             src="https://prow.ci.kubevirt.io/badge.svg?jobs={{ $presubmit.Name }}"/></a>
             </td>
+            <td title="Env" class="env">{{ range $container := $presubmit.Spec.Containers }}{{ range $env := $container.Env }}<div>{{ $env.Name}}: {{$env.Value}}</div>{{ end }}{{ end }}</td>
             <td title="AlwaysRun">{{ if $presubmit.AlwaysRun }}☑{{ else }}☐{{ end }}</td>
             <td title="Optional">{{ if $presubmit.Optional }}☑{{ else }}☐{{ end }}</td>
             <td title="RunIfChanged" class="conditional">{{ $presubmit.RunIfChanged }}</td>
