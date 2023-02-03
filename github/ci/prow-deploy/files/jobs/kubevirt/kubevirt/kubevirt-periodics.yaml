@@ -2233,3 +2233,39 @@ periodics:
         privileged: true
     nodeSelector:
       type: bare-metal-external
+- name: periodic-kubevirt-image-bump
+  cron: "5 7 * * 6"
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-gcs-credentials: "true"
+    preset-github-credentials: "true"
+    preset-bazel-unnested: "true"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+    workdir: true
+  - base_ref: main
+    org: kubevirt
+    repo: project-infra
+  cluster: ibm-prow-jobs
+  spec:
+    securityContext:
+      runAsUser: 0
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20220927-5a02fb7
+      command: ["/bin/sh"]
+      args:
+      - "-ce"
+      - |
+        make bump-images
+        git-pr.sh -c "cd ../project-infra && bazelisk run //robots/cmd/uploader:uploader -- -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ${PWD} -s 'Automated run of make bump-images and //robots/cmd/uploader:uploader' -b bump-images -r kubevirt -L release-note-none -T main
+      resources:
+        requests:
+          memory: "200Mi"
