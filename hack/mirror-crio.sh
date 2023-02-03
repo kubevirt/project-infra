@@ -22,6 +22,15 @@ mirror_crio_repo_for_version () {
         CRIO_SUBDIR=":cri-o:$1"
         REPOID="${BASE_REPOID}_cri-o_$1"
     fi
+    # cri-o builds > v1.24.1 are broken for Centos_8_Stream
+    # cri-o > v1.24.2 is required to avoid https://github.com/cri-o/cri-o/issues/5889
+    # Use CentOS_8 build for cri-o v1.24
+    if [[ $1 = 1.24 ]]
+    then
+        OS="CentOS_8"
+    else
+        OS="CentOS_8_Stream"
+    fi
     curl -L -o $REPOID.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable$CRIO_SUBDIR/$OS/devel:kubic:libcontainers:stable$CRIO_SUBDIR.repo
     reposync -c $REPOID.repo -p ./$LOCAL_MIRROR_DIR -n --repoid=$REPOID --download-metadata
 }
