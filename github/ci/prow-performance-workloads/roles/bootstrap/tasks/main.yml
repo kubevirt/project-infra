@@ -1,6 +1,0 @@
----
-- include: workers.yml
-  when: inventory_hostname in groups['kube-node']
-
-- include: control-plane.yml
-  when: inventory_hostname in groups['kube-master']
