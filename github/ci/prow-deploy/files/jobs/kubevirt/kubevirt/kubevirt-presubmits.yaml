@@ -2628,6 +2628,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-network
+        - name: KUBEVIRT_PSA
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         name: ""
         resources:
@@ -2668,6 +2670,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-storage
+        - name: KUBEVIRT_PSA
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         name: ""
         resources:
@@ -2708,6 +2712,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-compute
+        - name: KUBEVIRT_PSA
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         name: ""
         resources:
@@ -2748,6 +2754,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-operator
+        - name: KUBEVIRT_PSA
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         name: ""
         resources:
