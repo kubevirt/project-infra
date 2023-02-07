@@ -25,6 +25,17 @@
         table, tr, td {
             border: 1px solid black;
         }
+
+        .env {
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        .cron {
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
     </style>
 </head>
 <body>
@@ -34,6 +45,7 @@
 <table id="presubmits">
     <tr>
         <th>Job Name</th>
+        <th>Env</th>
         <th>Cron</th>
         <th>Interval</th>
         <th>Description</th>
@@ -44,7 +56,8 @@
                 <a href="https://prow.ci.kubevirt.io/?job={{ $periodic.Name }}"><img
                             src="https://prow.ci.kubevirt.io/badge.svg?jobs={{ $periodic.Name }}"/></a>
             </td>
-            <td title="Cron">{{ $periodic.Cron }}</td>
+            <td title="Env" class="env">{{ range $container := $periodic.Spec.Containers }}{{ range $env := $container.Env }}<div>{{ $env.Name}}: {{$env.Value}}</div>{{ end }}{{ end }}</td>
+            <td title="Cron" class="cron">{{ $periodic.Cron }}</td>
             <td title="Interval">{{ $periodic.Interval }}</td>
             <td title="Description">{{ index $.CronDescriptions $periodic.Name }}</td>
         </tr>
