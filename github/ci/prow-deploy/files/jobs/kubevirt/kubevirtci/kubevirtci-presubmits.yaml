@@ -313,3 +313,31 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: true
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 0h5m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 3
+    name: check-provision-manager
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          (cd cluster-provision/gocli && make test && make container)
+          docker run --rm -v $(pwd):/workdir:Z quay.io/kubevirtci/gocli provision-manager --debug
+        image: quay.io/kubevirtci/golang:v20221222-8f66e7e
+        name: ""
+        resources:
+          requests:
+            memory: 1Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
