@@ -271,7 +271,7 @@ func CreateJobNamePatternsToTestNameFilterRegexps(config *Config, client *http.C
 	for _, jobNamePatternToDontRunFileURL := range config.JobNamePatternsToDontRunFileURLs {
 		jobNamePattern := regexp.MustCompile(jobNamePatternToDontRunFileURL.JobNamePattern)
 		dontRunFileURL := jobNamePatternToDontRunFileURL.DontRunFileURL
-		completeFilterRegex, err := createCompleteFilterRegexFromDontRunFileEntries(dontRunFileURL, client)
+		completeFilterRegex, err := createFilterRegexFromDontRunFileEntries(dontRunFileURL, client)
 		if err != nil {
 			return nil, err
 		}
@@ -281,7 +281,7 @@ func CreateJobNamePatternsToTestNameFilterRegexps(config *Config, client *http.C
 	return jobNamePatternsToTestNameFilterRegexpsResult, nil
 }
 
-func createCompleteFilterRegexFromDontRunFileEntries(dontRunFileURL string, client *http.Client) (*regexp.Regexp, error) {
+func createFilterRegexFromDontRunFileEntries(dontRunFileURL string, client *http.Client) (*regexp.Regexp, error) {
 	filterTestRecords, err := FetchDontRunEntriesFromFile(dontRunFileURL, client)
 	if err != nil {
 		return nil, err

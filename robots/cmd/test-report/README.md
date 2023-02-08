@@ -78,7 +78,7 @@ then results are filtered by those tests whose names match the entries in the `q
 The remaining build results are inspected for failures. If one of the following conditions applies
 
 * any failure is seen
-* not at lest a certain amount of passed tests (see `--minimum-passed-runs-per-test`)
+* not reaching a minimum amount of passed tests (see `--minimum-passed-runs-per-test`)
 
 then that test is seen as unstable and the entry will be transferred into the new file.
 

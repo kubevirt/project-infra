@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Copyright 2022 Red Hat, Inc.
+ * Copyright 2023 Red Hat, Inc.
  *
  */
 
@@ -48,7 +48,7 @@ then results are filtered by those tests whose names match the entries in the qu
 The remaining build results are inspected for failures. If one of the following conditions applies
 
 * any failure is seen
-* not at lest a certain amount of passed tests (see --minimum-passed-runs-per-test)
+* not reaching a minimum amount of passed tests (see --minimum-passed-runs-per-test)
 
 then that test is seen as unstable and the entry will be transferred into the new file.
 
