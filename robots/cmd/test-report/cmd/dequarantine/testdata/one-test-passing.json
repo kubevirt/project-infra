@@ -1,0 +1,18 @@
+[
+  {
+    "id": "Storage Starting a VirtualMachineInstance with lun disk should run the VMI",
+    "reason": "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17044, https://issues.redhat.com/browse/CNV-19692",
+    "tests": [
+      {
+        "testName": "[sig-storage] Storage Starting a VirtualMachineInstance with lun disk should run the VMI",
+        "testResults": [
+          {
+            "buildNo": 40,
+            "dateTime": "2023-01-18T12:48:39.684+01:00",
+            "result": "PASSED"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -17,7 +17,7 @@
  *
  */
 
-package main
+package execution
 
 import (
 	"github.com/sirupsen/logrus"

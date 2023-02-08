@@ -143,6 +143,10 @@ type FilterTestRecord struct {
 	Reason string `json:"reason"`
 }
 
+func (r *FilterTestRecord) String() string {
+	return fmt.Sprintf("{id: %q, reason: %q}", r.Id, r.Reason)
+}
+
 func CreateReportData(jobNamePatternsToTestNameFilterRegexps map[*regexp.Regexp]*regexp.Regexp, testNamesToJobNamesToExecutionStatus map[string]map[string]int) Data {
 	testNames := []string{}
 	skippedTests := map[string]interface{}{}
@@ -202,11 +206,10 @@ func CreateReportData(jobNamePatternsToTestNameFilterRegexps map[*regexp.Regexp]
 	return data
 }
 
-func GetTestNamesToJobNamesToTestExecutions(jobs []*gojenkins.Job, startOfReport time.Time, ctx context.Context, config *Config) map[string]map[string]int {
+func GetTestNamesToJobNamesToTestExecutions(jobs []*gojenkins.Job, startOfReport time.Time, ctx context.Context, testNamePattern *regexp.Regexp) map[string]map[string]int {
 	resultsChan := make(chan map[string]map[string]int)
 	go getTestNamesToJobNamesToTestExecutionForAllJobs(resultsChan, jobs, startOfReport, ctx, logger)
 
-	testNamePattern := regexp.MustCompile(config.TestNamePattern)
 	testNamesToJobNamesToExecutionStatus := map[string]map[string]int{}
 
 	for result := range resultsChan {
@@ -267,43 +270,50 @@ func CreateJobNamePatternsToTestNameFilterRegexps(config *Config, client *http.C
 	jobNamePatternsToTestNameFilterRegexpsResult := map[*regexp.Regexp]*regexp.Regexp{}
 	for _, jobNamePatternToDontRunFileURL := range config.JobNamePatternsToDontRunFileURLs {
 		jobNamePattern := regexp.MustCompile(jobNamePatternToDontRunFileURL.JobNamePattern)
-		logger.Infof("fetching filter file %q", jobNamePatternToDontRunFileURL.DontRunFileURL)
-		response, err := client.Get(jobNamePatternToDontRunFileURL.DontRunFileURL)
+		dontRunFileURL := jobNamePatternToDontRunFileURL.DontRunFileURL
+		completeFilterRegex, err := createFilterRegexFromDontRunFileEntries(dontRunFileURL, client)
 		if err != nil {
-			return nil, fmt.Errorf("failed to fetch %q: %v", jobNamePatternToDontRunFileURL.DontRunFileURL, err)
+			return nil, err
 		}
-		if response.StatusCode >= http.StatusOK && response.StatusCode < http.StatusBadRequest {
-			filterTestRecords, err := decodeDontRunFileEntries(err, response, jobNamePatternToDontRunFileURL)
-			if err != nil {
-				return nil, err
-			}
-			var testNameFilterRegexps []string
-			for _, record := range filterTestRecords {
-				testNameFilterRegexps = append(testNameFilterRegexps, regexp.QuoteMeta(record.Id))
-			}
-			completeFilterRegex := regexp.MustCompile(strings.Join(testNameFilterRegexps, "|"))
-			logger.Infof("for jobNamePattern %q filter expression is %q", jobNamePattern, completeFilterRegex)
-			jobNamePatternsToTestNameFilterRegexpsResult[jobNamePattern] = completeFilterRegex
-		} else {
-			return nil, fmt.Errorf("when fetching %q received status code: %d", jobNamePatternToDontRunFileURL.DontRunFileURL, response.StatusCode)
-		}
+		logger.Infof("for jobNamePattern %q filter expression is %q", nil, completeFilterRegex)
+		jobNamePatternsToTestNameFilterRegexpsResult[jobNamePattern] = completeFilterRegex
 	}
 	return jobNamePatternsToTestNameFilterRegexpsResult, nil
 }
 
-func decodeDontRunFileEntries(err error, response *http.Response, jobNamePatternToDontRunFileURL *JobNamePatternToDontRunFileURL) ([]*FilterTestRecord, error) {
+func createFilterRegexFromDontRunFileEntries(dontRunFileURL string, client *http.Client) (*regexp.Regexp, error) {
+	filterTestRecords, err := FetchDontRunEntriesFromFile(dontRunFileURL, client)
+	if err != nil {
+		return nil, err
+	}
+	var testNameFilterRegexps []string
+	for _, record := range filterTestRecords {
+		testNameFilterRegexps = append(testNameFilterRegexps, regexp.QuoteMeta(record.Id))
+	}
+	return regexp.MustCompile(strings.Join(testNameFilterRegexps, "|")), nil
+}
+
+func FetchDontRunEntriesFromFile(dontRunFileURL string, client *http.Client) ([]*FilterTestRecord, error) {
+	logger.Infof("fetching filter file %q", dontRunFileURL)
+	response, err := client.Get(dontRunFileURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch %q: %v", dontRunFileURL, err)
+	}
+	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusBadRequest {
+		return nil, fmt.Errorf("when fetching %q received status code: %d", dontRunFileURL, response.StatusCode)
+	}
+
 	defer response.Body.Close()
 	var records []*FilterTestRecord
 	err = json.NewDecoder(response.Body).Decode(&records)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode %q: %v", jobNamePatternToDontRunFileURL.DontRunFileURL, err)
+		return nil, fmt.Errorf("failed to decode %q: %v", dontRunFileURL, err)
 	}
 	return records, nil
 }
 
-func FilterMatchingJobs(ctx context.Context, jenkins *gojenkins.Jenkins, innerJobs []gojenkins.InnerJob, config *Config) ([]*gojenkins.Job, error) {
+func FilterMatchingJobsByJobNamePattern(ctx context.Context, jenkins *gojenkins.Jenkins, innerJobs []gojenkins.InnerJob, jobNamePattern *regexp.Regexp) ([]*gojenkins.Job, error) {
 	filteredJobs := []*gojenkins.Job{}
-	jobNamePattern := regexp.MustCompile(config.JobNamePattern)
 	logger.Printf("Filtering for jobs matching %s", jobNamePattern)
 	for _, innerJob := range innerJobs {
 		if !jobNamePattern.MatchString(innerJob.Name) {
