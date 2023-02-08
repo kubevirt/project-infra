@@ -630,42 +630,6 @@ periodics:
         requests:
           memory: "200Mi"
 
-- name: periodic-kubevirt-e2e-jobs-overview
-  cron: "15 5 * * *"
-  max_concurrency: 1
-  annotations:
-    testgrid-create-test-group: "false"
-  labels:
-    preset-gcs-credentials: "true"
-  decorate: true
-  decoration_config:
-    timeout: 1h
-    grace_period: 5m
-  extra_refs:
-  - org: kubevirt
-    repo: project-infra
-    base_ref: main
-    workdir: true
-  cluster: prow-workloads
-  spec:
-    securityContext:
-      runAsUser: 0
-    containers:
-    - image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
-      env:
-      command:
-      - /usr/local/bin/runner.sh
-      - /bin/sh
-      - -c
-      args:
-      - |
-        bazel run //robots/cmd/kubevirt:kubevirt -- get presubmits --job-config-path-kubevirt-presubmits $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path '' --output-file /tmp/presubmits.html
-        bazel run //robots/cmd/kubevirt:kubevirt -- get periodics --job-config-path-kubevirt-periodics $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path '' --output-file /tmp/periodics.html
-        gsutil cp /tmp/presubmits.html /tmp/periodics.html gs://kubevirt-prow/reports/e2ejobs/kubevirt/kubevirt
-      resources:
-        requests:
-          memory: "200Mi"
-
 - name: periodic-project-infra-mirror-istioctl
   cron: "25 1 * * 1"
   decorate: true
