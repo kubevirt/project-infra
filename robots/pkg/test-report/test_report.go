@@ -118,6 +118,10 @@ type Config struct {
 	// JobNamePattern is a regexp.Regexp that describes which jobs are considered for the report
 	JobNamePattern string `yaml:"jobNamePattern"`
 
+	// JobNamePatternForTestNames is a regexp.Regexp that describes which jobs are considered to contain all test names
+	// we should be looking at
+	JobNamePatternForTestNames string `yaml:"jobNamePatternForTestNames,omitempty"`
+
 	// TestNamePattern is a regexp.Regexp that describes what tests are considered for the report
 	TestNamePattern string `yaml:"testNamePattern"`
 
@@ -206,7 +210,7 @@ func CreateReportData(jobNamePatternsToTestNameFilterRegexps map[*regexp.Regexp]
 	return data
 }
 
-func GetTestNamesToJobNamesToTestExecutions(jobs []*gojenkins.Job, startOfReport time.Time, ctx context.Context, testNamePattern *regexp.Regexp) map[string]map[string]int {
+func GetTestNamesToJobNamesToTestExecutions(jobs []*gojenkins.Job, startOfReport time.Time, ctx context.Context, testNamePattern *regexp.Regexp, jobNamePatternForTestNames *regexp.Regexp) map[string]map[string]int {
 	resultsChan := make(chan map[string]map[string]int)
 	go getTestNamesToJobNamesToTestExecutionForAllJobs(resultsChan, jobs, startOfReport, ctx, logger)
 
@@ -226,6 +230,22 @@ func GetTestNamesToJobNamesToTestExecutions(jobs []*gojenkins.Job, startOfReport
 			}
 		}
 	}
+
+	if jobNamePatternForTestNames != nil {
+		for testName, jobNamesToExecutionStatus := range testNamesToJobNamesToExecutionStatus {
+			jobNamePatternMatchesAnyJobNameForTestNames := false
+			for jobName := range jobNamesToExecutionStatus {
+				if jobNamePatternForTestNames.MatchString(jobName) {
+					jobNamePatternMatchesAnyJobNameForTestNames = true
+					break
+				}
+			}
+			if !jobNamePatternMatchesAnyJobNameForTestNames {
+				delete(testNamesToJobNamesToExecutionStatus, testName)
+			}
+		}
+	}
+
 	return testNamesToJobNamesToExecutionStatus
 }
 
