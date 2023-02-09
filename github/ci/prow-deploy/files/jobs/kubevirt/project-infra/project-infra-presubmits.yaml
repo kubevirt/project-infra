@@ -836,4 +836,28 @@ presubmits:
         - --only=nmstate/kubernetes-nmstate
         - --token=/etc/github/oauth
       restartPolicy: Never
-
+  - annotations:
+      testgrid-create-test-group: "false"
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    name: pull-project-infra-job-config-validator
+    run_if_changed: 'robots/cmd/job-config-validator/.*|go.mod|go.sum'
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20221222-8f66e7e
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.19"
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-ce"
+        - |
+          ( cd robots/cmd/job-config-validator && go build ./... )
+          ./robots/cmd/job-config-validator/job-config-validator --help
+        resources:
+          requests:
+            memory: "100Mi"
