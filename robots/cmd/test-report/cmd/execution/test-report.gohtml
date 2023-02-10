@@ -1,16 +1,16 @@
 <html>
 <head>
     <title>test execution report</title>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <style>
         table, th, td {
             border: 1px solid black;
         }
+        table.noborder, th.noborder, td.noborder {
+            border: 0px;
+        }
         .yellow {
             background-color: #ffff80;
-        }
-        .almostgreen {
-            background-color: #dfff80;
         }
         .green {
             background-color: #9fff80;
@@ -18,25 +18,10 @@
         .red {
             background-color: #ff8080;
         }
-        .orange {
-            background-color: #ffbf80;
-        }
         .gray {
             background-color: #898989;
         }
         .unimportant {
-        }
-        .tests_passed {
-            color: #226c18;
-            font-weight: bold;
-        }
-        .tests_failed {
-            color: #8a1717;
-            font-weight: bold;
-        }
-        .tests_skipped {
-            color: #535453;
-            font-weight: bold;
         }
         .right {
             text-align: right;
@@ -82,14 +67,74 @@
         }
 
     </style>
-    </meta>
+    <script>
+        function enableFilterFields() {
+            document.getElementById("filterByName").disabled = false;
+            document.getElementById("excludeByName").disabled = false;
+            document.getElementById("filterByNotRunCheckBox").disabled = false;
+        }
+        function updateFilteredRows() {
+            let filter, table, tr, td, i, txtValue, checked, shouldShow, rowsShown;
+            filterTerms = document.getElementById("filterByName").value.toUpperCase().split("|");
+            excludeTerms = document.getElementById("excludeByName").value.toUpperCase().split("|");
+            checked = document.getElementById("filterByNotRunCheckBox").checked;
+            table = document.getElementById("report");
+            tr = table.getElementsByTagName("tr");
+
+            rowsShown = 0;
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1];
+                if (td) {
+                    shouldShow = true
+                    txtValue = td.textContent || td.innerText;
+                    if (checked && td.className !== "red") {
+                        shouldShow = false
+                    }
+                    if (excludeTerms.length > 0 && excludeTerms[0] !== "") {
+                        for (k = 0; k < excludeTerms.length; k++) {
+                            if (txtValue.toUpperCase().indexOf(excludeTerms[k]) !== -1) {
+                                shouldShow = false
+                                break;
+                            }
+                        }
+                    }
+                    if (shouldShow === true && filterTerms.length > 0 && filterTerms[0] !== "") {
+                        let found = false
+                        for (k = 0; k < filterTerms.length; k++) {
+                            if (txtValue.toUpperCase().indexOf(filterTerms[k]) !== -1) {
+                                found = true
+                                break;
+                            }
+                        }
+                        if (found !== true) {
+                            shouldShow = false
+                        }
+                    }
+                    if (shouldShow === true) {
+                        tr[i].style.display = "";
+                        rowsShown++;
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+            updateRowsShown(rowsShown);
+        }
+        function initRowsShown() {
+            updateRowsShown(document.getElementById("report").getElementsByTagName("tr").length - 1);
+        }
+        function updateRowsShown(rowsShown) {
+            let rowsTotal = document.getElementById("report").getElementsByTagName("tr").length - 1;
+            document.getElementById("totalRowsShown").innerText = "Showing "+rowsShown+" of "+rowsTotal;
+        }
+    </script>
 </head>
-<body>
+<body onload="initRowsShown();enableFilterFields();">
 {{- /* gotype: kubevirt.io/project-infra/robots/main.Data */ -}}
 <h1>test execution report</h1>
 <div>
     {{ $.ReportConfigName }} report configuration<br/>
-    data from {{ $.StartOfReport }} till {{ $.EndOfReport }}
+    data from {{ $.StartOfReport }} till {{ $.EndOfReport }}<br/>
 </div>
 
 <div id="reportConfig" class="popup right" >
@@ -115,12 +160,47 @@
     </div>
 </div>
 
-<table>
+<table class="noborder">
     <tr>
-        <td></td>
-        <td></td>
+        <td class="noborder">
+        <b>Filters:</b>
+        </td>
+        <td class="noborder">
+            <label for="filterByName">Include tests that contain</label>
+        </td>
+        <td class="noborder">
+            <input type="text" id="filterByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..." disabled>
+        </td>
+    </tr>
+    <tr>
+        <td class="noborder">
+        </td>
+        <td class="noborder">
+            <label for="excludeByName">Exclude tests that contain</label>
+        </td>
+        <td class="noborder">
+            <input type="text" id="excludeByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..." disabled>
+        </td>
+    </tr>
+    <tr>
+        <td class="noborder">
+        </td>
+        <td class="noborder">
+    <label for="filterByNotRunCheckBox">Only not run tests</label>
+        </td>
+        <td class="noborder">
+            <input type="checkbox" id="filterByNotRunCheckBox" onClick="updateFilteredRows()" title="Show only rows that have not been run" disabled>
+        </td>
+    </tr>
+</table>
+
+<div id="totalRowsShown"><i>Loading rows...</i></div>
+<table id="report">
+    <tr>
+        <th></th>
+        <th></th>
         {{ range $job := $.LookedAtJobs }}
-            <td><a href="{{ $.JenkinsBaseURL }}/job/{{ $job }}/">{{ $job }}</a></td>
+            <th><a href="{{ $.JenkinsBaseURL }}/job/{{ $job }}/">{{ $job }}</a></th>
         {{ end }}
     </tr>
     {{ range $row, $test := $.TestNames }}
@@ -129,14 +209,25 @@
             <td class="{{ if (index $.SkippedTests $test) }}red{{ end }}">{{ $test }}</td>
             {{ range $col, $job := $.LookedAtJobs }}
                 <td class="center">{{ with $skipped := (index $.TestNamesToJobNamesToSkipped $test $job) }}
-                        <div id="r{{$row}}c{{$col}}" title="test {{ if eq $skipped (index $.TestExecutionMapping "TestExecution_Skipped") }}skipped{{ else if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }}run{{ else if eq $skipped (index $.TestExecutionMapping "TestExecution_Unsupported") }}unsupported{{ else }}{{ end }}" class="{{ if eq $skipped (index $.TestExecutionMapping "TestExecution_Skipped") }}yellow{{ else if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }}green{{ else if eq $skipped (index $.TestExecutionMapping "TestExecution_Unsupported") }}gray{{ else }}{{ end }}" >
-                            <input title="{{ $test }} &#013; {{ $job }}" type="checkbox" readonly {{ if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }}checked{{ end }}/>
+                        <div id="r{{$row}}c{{$col}}" title="test
+                                {{- if eq $skipped (index $.TestExecutionMapping "TestExecution_Skipped") }} skipped
+                                {{- else if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }} run
+                                {{- else if eq $skipped (index $.TestExecutionMapping "TestExecution_Unsupported") }} unsupported
+                                {{- else }}
+                                {{ end -}}"
+                             class="
+                                {{- if eq $skipped (index $.TestExecutionMapping "TestExecution_Skipped") }}yellow
+                                {{- else if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }}green
+                                {{- else if eq $skipped (index $.TestExecutionMapping "TestExecution_Unsupported") }}gray
+                                {{- else }}
+                                {{ end -}}" >
+                            <input title="{{ $test }} &#013; {{ $job }}" type="checkbox" disabled
+                                   {{- if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }} checked{{ end -}}/>
                         </div>
                     {{ else }}n/a{{ end }}</td>
             {{ end }}
         </tr>
     {{ end }}
 </table>
-
 </body>
 </html>

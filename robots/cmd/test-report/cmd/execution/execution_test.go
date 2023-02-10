@@ -46,7 +46,7 @@ func Test_writeHTMLReportToOutput(t *testing.T) {
 			name: "test template",
 			args: args{
 				htmlReportOutputWriter: os.Stdout,
-				testNames:              []string{"a", "b", "c"},
+				testNames:              []string{"a", "b", "c", "d"},
 				filteredTestNames:      []string{"la", "le", "lu"},
 				skippedTests: map[string]interface{}{
 					"a": struct{}{}},
@@ -65,6 +65,11 @@ func Test_writeHTMLReportToOutput(t *testing.T) {
 						"job1": test_report.TestExecution_Skipped,
 						"job2": test_report.TestExecution_Skipped,
 						"job3": test_report.TestExecution_Run,
+					},
+					"d": {
+						"job1": test_report.TestExecution_Unsupported,
+						"job2": test_report.TestExecution_Skipped,
+						"job3": test_report.TestExecution_NoData,
 					},
 				},
 				err:  nil,
