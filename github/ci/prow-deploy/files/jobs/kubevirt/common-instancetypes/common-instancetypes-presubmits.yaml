@@ -26,7 +26,7 @@ presubmits:
     branches:
       - main
     always_run: false
-    run_if_changed: ./common*bundle.yaml
+    run_if_changed: common*bundle.yaml
     cluster: prow-workloads
     decorate: true
     decoration_config:
