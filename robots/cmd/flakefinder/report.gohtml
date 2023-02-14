@@ -242,9 +242,9 @@
         <tr>
             <td></td>
             <td></td>
-            {{ range $header := $.Headers }}
+            {{ range $header := $.Headers -}}
                 <td>{{ $header }}</td>
-            {{ end }}
+            {{- end }}
         </tr>
         {{ range $row, $test := $.Tests }}
             <tr>
@@ -267,7 +267,7 @@
                         <td class="center">
                             N/A
                         </td>
-                    {{- else }}
+                    {{- else -}}
                         <td class="{{ (index $.Data $test $header).Severity }} center"
                             title="{{ $test }}&#10;{{ $header }}">
                             <div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup">

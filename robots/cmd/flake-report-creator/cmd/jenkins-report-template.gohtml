@@ -128,6 +128,51 @@
             white-space: nowrap;
         }
 
+        .testAttributeType0 {
+            background-color: red;
+        }
+
+        .testAttributeType1 {
+            background-color: indianred;
+        }
+
+        .testAttributeType2 {
+            background-color: darkorange;
+        }
+
+        .testAttributeType3 {
+            background-color: lightseagreen;
+        }
+
+        .testAttributeType4 {
+            background-color: forestgreen;
+        }
+
+        .testAttributeType5 {
+            background-color: dimgray;
+        }
+
+        span.testAttribute {
+            display: inline-block;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 1px 1px 0px 0px;
+        }
+
+        span.testAttributeName {
+            font-style: italic;
+        }
+
+        span.testAttributeValue {
+            font-weight: bold;
+        }
+
+        div.testAttribute {
+            margin: 2px 0px;
+        }
+
         @-webkit-keyframes fadeIn {
             from {
                 opacity: 0;
@@ -233,14 +278,24 @@
                 <td><a href="{{ $.JenkinsBaseURL }}/job/{{ $header }}/">{{ $header }}</a></td>
             {{- end }}
         </tr>
-        {{ range $row, $test := $.Tests -}}
+        {{ range $row, $test := $.Tests }}
             <tr>
                 <td>
                     <div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a></div>
                 </td>
-                <td>{{ $test }}</td>
-                {{ range $col, $header := $.Headers -}}
-                    {{ if not (index $.Data $test $header) -}}
+                <td>{{- if (index $.TestAttributes $test) }}
+                        <div class="testAttribute">
+                            {{- range $testAttribute := (index $.TestAttributes $test) -}}
+                                <span class="testAttribute testAttributeType{{ $testAttribute.AttributeType }}"><span class="testAttribute testAttributeName">{{ $testAttribute.Name }}</span>
+                                    {{- if $testAttribute.Value }}:<span class="testAttribute testAttributeValue">{{ $testAttribute.Value }}</span>{{ end -}}
+                                </span>
+                            {{- end -}}
+                        </div>{{- end }}
+                    {{ if (index $.BareTestNames $test) }}{{- index $.BareTestNames $test -}}{{ else }}{{- $test -}}{{ end }}
+                    <div hidden="" id="testName{{$row}}">{{- $test -}}</div><button title="Copy full test name to clipboard" class="clipboard" onclick="handleCopyTextFromArea('testName{{- $row -}}')">📋</button>
+                </td>
+                {{- range $col, $header := $.Headers -}}
+                    {{- if not (index $.Data $test $header) }}
                         <td class="center">
                             N/A
                         </td>
@@ -270,6 +325,14 @@
         {{- end }}
     </table>
 {{ end -}}
+
+<script>
+    function handleCopyTextFromArea(id) {
+        let hiddenDiv = document.getElementById(id);
+        let text = hiddenDiv.innerText || hiddenDiv.textContent;
+        navigator.clipboard.writeText(text)
+    }
+</script>
 
 </body>
 </html>
