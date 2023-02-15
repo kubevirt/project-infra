@@ -59,6 +59,7 @@ func GetPresubmitsCommand() *cobra.Command {
 type getPresubmitsJobruntimesOptions struct {
 	jobConfigPathKubevirtPresubmits string
 	outputFile                      string
+	outputFormat                    string
 }
 
 func (o getPresubmitsJobruntimesOptions) Validate() error {
@@ -73,9 +74,13 @@ var getPresubmitsJobruntimesOpts = getPresubmitsJobruntimesOptions{}
 //go:embed presubmits.gohtml
 var presubmitsHTMLTemplate string
 
+//go:embed presubmits.gocsv
+var presubmitsCSVTemplate string
+
 func init() {
 	getPresubmitsCommand.PersistentFlags().StringVar(&getPresubmitsJobruntimesOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The path to the kubevirt presubmits job definitions")
 	getPresubmitsCommand.PersistentFlags().StringVar(&getPresubmitsJobruntimesOpts.outputFile, "output-file", "", "The file to write the output to, if empty, a temp file will be generated. If file exits, it will be overwritten")
+	getPresubmitsCommand.PersistentFlags().StringVar(&getPresubmitsJobruntimesOpts.outputFormat, "output-format", "html", "The format of the output file (html or csv)")
 }
 
 type presubmits []config.Presubmit
@@ -128,7 +133,15 @@ func GetPresubmits(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to read jobconfig %s: %v", getPresubmitsJobruntimesOpts.jobConfigPathKubevirtPresubmits, err)
 	}
 
-	presubmitsTemplate, err := template.New("presubmits").Parse(presubmitsHTMLTemplate)
+	var presubmitsTemplate *template.Template
+	switch getPresubmitsJobruntimesOpts.outputFormat {
+	case "html":
+		presubmitsTemplate, err = template.New("presubmits").Parse(presubmitsHTMLTemplate)
+	case "csv":
+		presubmitsTemplate, err = template.New("presubmits").Parse(presubmitsCSVTemplate)
+	default:
+		return fmt.Errorf("invalid output format %s", getPresubmitsJobruntimesOpts.outputFormat)
+	}
 	if err != nil {
 		return fmt.Errorf("failed to parse template: %v", err)
 	}
@@ -150,7 +163,7 @@ func GetPresubmits(cmd *cobra.Command, args []string) error {
 
 	outputFile := getPresubmitsJobruntimesOpts.outputFile
 	if outputFile == "" {
-		tempFile, err := os.CreateTemp("", "presubmits-*.html")
+		tempFile, err := os.CreateTemp("", fmt.Sprintf("presubmits-*.%s", getPresubmitsJobruntimesOpts.outputFormat))
 		if err != nil {
 			return fmt.Errorf("failed to parse template: %v", err)
 		}

@@ -58,6 +58,7 @@ func GetPeriodicsCommand() *cobra.Command {
 type getPeriodicJobsOptions struct {
 	jobConfigPathKubevirtPeriodics string
 	outputFile                     string
+	outputFormat                   string
 }
 
 func (o getPeriodicJobsOptions) Validate() error {
@@ -72,6 +73,7 @@ var getPeriodicJobsOpts = getPeriodicJobsOptions{}
 func init() {
 	getPeriodicsCommand.PersistentFlags().StringVar(&getPeriodicJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
 	getPeriodicsCommand.PersistentFlags().StringVar(&getPeriodicJobsOpts.outputFile, "output-file", "", "The file to write the output to, if empty, a temp file will be generated. If file exits, it will be overwritten")
+	getPeriodicsCommand.PersistentFlags().StringVar(&getPeriodicJobsOpts.outputFormat, "output-format", "html", "The output format of the file (html or csv)")
 }
 
 type PeriodicsData struct {
@@ -180,6 +182,9 @@ func (d PeriodicsData) Swap(i, k int) {
 //go:embed periodics.gohtml
 var periodicsHTMLTemplate string
 
+//go:embed periodics.gocsv
+var periodicsCSVTemplate string
+
 func GetPeriodics(cmd *cobra.Command, args []string) error {
 	err := flags.ParseFlags(cmd, args, getPeriodicJobsOpts)
 	if err != nil {
@@ -208,7 +213,15 @@ func GetPeriodics(cmd *cobra.Command, args []string) error {
 
 	sort.Sort(data)
 
-	periodicsTemplate, err := template.New("periodics").Parse(periodicsHTMLTemplate)
+	var periodicsTemplate *template.Template
+	switch getPeriodicJobsOpts.outputFormat {
+	case "html":
+		periodicsTemplate, err = template.New("periodics").Parse(periodicsHTMLTemplate)
+	case "csv":
+		periodicsTemplate, err = template.New("periodics").Parse(periodicsCSVTemplate)
+	default:
+		return fmt.Errorf("invalid output format %s", getPeriodicJobsOpts.outputFormat)
+	}
 	if err != nil {
 		return fmt.Errorf("failed to parse template: %v", err)
 	}
@@ -221,7 +234,7 @@ func GetPeriodics(cmd *cobra.Command, args []string) error {
 
 	outputFile := getPeriodicJobsOpts.outputFile
 	if outputFile == "" {
-		tempFile, err := os.CreateTemp("", "periodics-*.html")
+		tempFile, err := os.CreateTemp("", fmt.Sprintf("periodics-*.%s", getPeriodicJobsOpts.outputFormat))
 		if err != nil {
 			return fmt.Errorf("failed to parse template: %v", err)
 		}
