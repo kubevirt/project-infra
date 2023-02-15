@@ -2307,6 +2307,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-operator-upgrade
+        - name: KUBEVIRT_PSA
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         name: ""
         resources:
