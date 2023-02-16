@@ -11,7 +11,7 @@ As the cluster is only available remotely over SSH, an SSH tunnel is required to
 
 
 ## Automated SEV tests
-A [periodic prowjob](https://github.com/kubevirt/project-infra/blob/main/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml#L713) and an optional presubmit prowjob are available to carry out automated testing of SEV. These test lanes treat the AMD cluster as an external provider by setting `KUBEVIRT_PROVIDER="external"`.
+A [periodic prowjob](https://github.com/kubevirt/project-infra/blob/287514a66695bc2f06885c7d979e31e9cdece629/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml#L629) and an optional [presubmit prowjob](https://github.com/kubevirt/project-infra/blob/287514a66695bc2f06885c7d979e31e9cdece629/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml#L2425) are available to carry out automated testing of SEV. These test lanes treat the AMD cluster as an external provider by setting `KUBEVIRT_PROVIDER="external"`.
 
 ## Hardware Details
 - Two 64 Core AMD EPYC CPUs
