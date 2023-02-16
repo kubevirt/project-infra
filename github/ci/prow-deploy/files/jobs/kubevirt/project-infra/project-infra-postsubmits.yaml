@@ -1000,7 +1000,8 @@ postsubmits:
           - -c
           args:
           - |
-            bazel run //robots/cmd/kubevirt:kubevirt -- get presubmits --job-config-path-kubevirt-presubmits $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path '' --output-file /tmp/presubmits.html
+            # we fetch presubmits for kubevirt/kubevirt branches main and release-0.59
+            bazel run //robots/cmd/kubevirt:kubevirt -- get presubmits --job-config-path-kubevirt-presubmits $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-presubmits $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits-0.59.yaml --github-token-path '' --output-file /tmp/presubmits.html
             bazel run //robots/cmd/kubevirt:kubevirt -- get periodics --job-config-path-kubevirt-periodics $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path '' --output-file /tmp/periodics.html
             gsutil cp /tmp/presubmits.html /tmp/periodics.html gs://kubevirt-prow/reports/e2ejobs/kubevirt/kubevirt
           resources:
