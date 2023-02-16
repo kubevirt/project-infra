@@ -1,7 +1,7 @@
 presubmits:
   kubevirt/containerdisks:
   - always_run: true
-    optional: true
+    optional: false
     annotations:
       testgrid-create-test-group: "false"
     cluster: ibm-prow-jobs
@@ -23,7 +23,7 @@ presubmits:
         - ./build.sh -b
         env:
         - name: GIMME_GO_VERSION
-          value: "1.17"
+          value: "1.19"
         image: quay.io/kubevirtci/golang:v20230105-1dbefc0
         name: ""
         resources:
@@ -32,7 +32,7 @@ presubmits:
         securityContext:
           privileged: true
   - always_run: true
-    optional: true
+    optional: false
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
@@ -54,7 +54,7 @@ presubmits:
         - ./pipeline.sh
         env:
         - name: GIMME_GO_VERSION
-          value: "1.17"
+          value: "1.19"
         image: quay.io/kubevirtci/golang:v20230105-1dbefc0
         name: ""
         resources:
