@@ -82,7 +82,7 @@ make_bazel_rc () {
     cache_id="$(get_workspace),$(hash_toolchains)"
     local cache_url
     cache_url="http://${CACHE_HOST}:${CACHE_PORT}/${cache_id}"
-    echo "build --remote_http_cache=${cache_url}"
+    echo "build --remote_cache=${cache_url}"
 }
 
 # https://docs.bazel.build/versions/master/user-manual.html#bazelrc
