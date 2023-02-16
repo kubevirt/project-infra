@@ -2401,3 +2401,74 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: false
+    optional: true
+    annotations:
+      testgrid-dashboards: kubevirt-presubmits
+      fork-per-release: "true"
+    cluster: ibm-prow-jobs
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    extra_refs:
+    - base_ref: main
+      org: kubevirt
+      repo: project-infra
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-github-credentials: "true"
+      preset-kubevirtci-quay-credential: "true"
+      preset-pgp-bot-key: "true"
+    max_concurrency: 1
+    name: pull-kubevirt-e2e-k8s-1.26-sev
+    skip_branches:
+      - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          # install yq
+          curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+          chmod +x ./yq && mv ./yq /usr/local/bin/yq
+
+          # install sshuttle and kubectl
+          dnf -y install sshuttle kubernetes-client
+          # get kubeconfig and ssh key
+          source ../project-infra/hack/manage-secrets.sh
+          decrypt_secrets
+          extract_secret 'amdKubeConfig' /kubeconfig
+          extract_secret 'amdSEVClusterKey' /ssh-key && chmod 400 /ssh-key
+
+          # login quay.io
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+
+          # Set up tunnel
+          sshuttle -v -r kubevirt@165.204.53.121 10.216.91.126/32 192.168.0.0/24 --ssh-cmd 'ssh -o StrictHostKeyChecking=no -i /ssh-key -p 30026' > /var/log/sshuttle.log 2>&1 & echo "${!}" > /var/run/sshuttle.pid
+
+          # run test
+          make cluster-up && make cluster-sync && FUNC_TEST_LABEL_FILTER='--label-filter=(SEV)' make functest && make cluster-clean || (make cluster-clean && exit 1)
+        env:
+        - name: TARGET
+          value: external
+        - name: KUBEVIRT_PROVIDER
+          value: external
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirtci
+        - name: DOCKER_TAG
+          value: amd_sev_test
+        - name: KUBECONFIG
+          value: /kubeconfig
+        - name: IMAGE_PULL_POLICY
+          value: Always
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
