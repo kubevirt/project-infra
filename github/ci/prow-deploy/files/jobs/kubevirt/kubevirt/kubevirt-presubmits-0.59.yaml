@@ -2165,7 +2165,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.26-sig-network
+          value: k8s-1.26-centos9-sig-network-no-istio
         - name: KUBEVIRT_PSA
           value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
@@ -2203,7 +2203,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.26-sig-storage
+          value: k8s-1.26-centos9-sig-storage
         - name: KUBEVIRT_PSA
           value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
@@ -2241,7 +2241,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.26-sig-compute
+          value: k8s-1.26-centos9-sig-compute
         - name: KUBEVIRT_PSA
           value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
@@ -2257,7 +2257,7 @@ presubmits:
     branches:
     - release-0.59
     cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.26-sig-operator
+    context: pull-kubevirt-e2e-k8s-1.26-sig-operator-upgrade
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -2269,7 +2269,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.26-sig-operator-0.59
+    name: pull-kubevirt-e2e-k8s-1.26-sig-operator-upgrade-0.59
     spec:
       containers:
       - command:
@@ -2279,7 +2279,45 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.26-sig-operator
+          value: k8s-1.26-centos9-sig-operator-upgrade
+        image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-0.59
+    cluster: prow-workloads
+    context: pull-kubevirt-e2e-k8s-1.26-sig-operator-configuration
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.26-sig-operator-configuration-0.59
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.26-centos9-sig-operator-configuration
+        - name: KUBEVIRT_PSA
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         name: ""
         resources:
@@ -2319,154 +2357,6 @@ presubmits:
           value: k8s-1.26-sig-operator
         - name: KUBEVIRT_PSA
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    branches:
-    - release-0.59
-    cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.26-centos9-sig-network
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-unnested: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.26-centos9-sig-network-0.59
-    optional: true
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.26-centos9-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    branches:
-    - release-0.59
-    cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.26-centos9-sig-storage
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-unnested: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.26-centos9-sig-storage-0.59
-    optional: true
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.26-centos9-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    branches:
-    - release-0.59
-    cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.26-centos9-sig-compute
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 7h0m0s
-    labels:
-      preset-bazel-unnested: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.26-centos9-sig-compute-0.59
-    optional: true
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.26-centos9-sig-compute
-        image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    branches:
-    - release-0.59
-    cluster: prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.26-centos9-sig-operator
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 7h0m0s
-    labels:
-      preset-bazel-unnested: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.26-centos9-sig-operator-0.59
-    optional: true
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.26-centos9-sig-operator
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         name: ""
         resources:
