@@ -1,7 +1,7 @@
 presubmits:
   kubevirt/containerdisks:
   - always_run: true
-    optional: true
+    optional: false
     annotations:
       testgrid-create-test-group: "false"
     cluster: ibm-prow-jobs
@@ -32,7 +32,7 @@ presubmits:
         securityContext:
           privileged: true
   - always_run: true
-    optional: true
+    optional: false
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
