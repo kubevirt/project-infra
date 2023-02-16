@@ -21,7 +21,7 @@ require (
 	github.com/cilium/ebpf v0.7.0 // indirect
 	github.com/container-orchestrated-devices/container-device-interface v0.5.3 // indirect
 	github.com/containerd/cgroups v1.0.4 // indirect
-	github.com/containerd/containerd v1.6.15 // indirect
+	github.com/containerd/containerd v1.6.18 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.13.0 // indirect
 	github.com/containers/buildah v1.29.0 // indirect
 	github.com/containers/common v0.51.0 // indirect
