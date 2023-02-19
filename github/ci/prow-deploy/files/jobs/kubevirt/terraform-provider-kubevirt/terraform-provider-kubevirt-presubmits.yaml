@@ -1,6 +1,6 @@
 presubmits:
   kubevirt/terraform-provider-kubevirt:
-  - name: pull-terraform-provider-kubevirt-e2e-k8s-1.20
+  - name: pull-terraform-provider-kubevirt-e2e
     branches:
       - main
     annotations:
@@ -26,9 +26,6 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
-          env:
-            - name: KUBEVIRT_PROVIDER
-              value: "k8s-1.20"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
