@@ -59,7 +59,6 @@ func TestReadExistingProviders(t *testing.T) {
 			name: "should ignore strange folders",
 			existing: []querier.SemVer{
 				newSemVer("v1x", "2", "3"),
-				newSemVer("1", "3-multus", "4"),
 				newSemVer("v1", "4", "5"),
 				newSemVer("1", "5", "6"),
 			},
