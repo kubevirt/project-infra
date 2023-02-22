@@ -6,6 +6,7 @@ RUN dnf install -y \
     libguestfs-tools-c \
     libvirt \
     qemu-img \
+    genisoimage \
     virt-install && \
     dnf clean all && \
     rm -rf /var/cache /var/log/dnf* /var/log/yum.*
