@@ -10,3 +10,6 @@ RUN dnf install -y \
     virt-install && \
     dnf clean all && \
     rm -rf /var/cache /var/log/dnf* /var/log/yum.*
+
+COPY qemu.conf /etc/libvirt/qemu.conf
+COPY start_libvirtd.sh /usr/local/bin/start_libvirtd.sh
