@@ -374,6 +374,9 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
+      decoration_config:
+        grace_period: 5m0s
+        timeout: 5h0m0s
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -389,15 +392,15 @@ postsubmits:
               - |
                 cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
-                ./publish_image.sh vm-image-builder quay.io kubevirtci
+                ./publish_multiarch_image.sh vm-image-builder quay.io kubevirtci
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
               requests:
-                memory: "1Gi"
+                memory: "29Gi"
               limits:
-                memory: "1Gi"
+                memory: "29Gi"
     - name: publish-kubot-image
       always_run: false
       run_if_changed: "images/kubot/.*"
