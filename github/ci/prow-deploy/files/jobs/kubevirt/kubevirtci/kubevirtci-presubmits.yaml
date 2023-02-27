@@ -90,7 +90,7 @@ presubmits:
     decoration_config:
       timeout: 3h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-installer-pull-token: "true"
       rehearsal.allowed: "true"
@@ -132,7 +132,7 @@ presubmits:
           value: "true"
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=SRIOV
-        image: quay.io/kubevirtci/golang-legacy:v20220810-a8f2e6c
+        image: quay.io/kubevirtci/golang:v20221222-8f66e7e
         name: ""
         resources:
           requests:
