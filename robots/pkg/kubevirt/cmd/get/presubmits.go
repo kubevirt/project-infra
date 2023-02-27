@@ -57,13 +57,19 @@ func GetPresubmitsCommand() *cobra.Command {
 }
 
 type getPresubmitsJobruntimesOptions struct {
-	jobConfigPathKubevirtPresubmits string
+	jobConfigPathKubevirtPresubmits []string
 	outputFile                      string
+	outputFormat                    string
 }
 
 func (o getPresubmitsJobruntimesOptions) Validate() error {
-	if _, err := os.Stat(o.jobConfigPathKubevirtPresubmits); os.IsNotExist(err) {
-		return fmt.Errorf("jobConfigPathKubevirtPresubmits is required: %v", err)
+	if len(o.jobConfigPathKubevirtPresubmits) == 0 {
+		return fmt.Errorf("no job config pathes for presubmits given")
+	}
+	for _, file := range o.jobConfigPathKubevirtPresubmits {
+		if _, err := os.Stat(file); os.IsNotExist(err) {
+			return fmt.Errorf("jobConfigPathKubevirtPresubmits is required: %v", err)
+		}
 	}
 	return nil
 }
@@ -73,9 +79,13 @@ var getPresubmitsJobruntimesOpts = getPresubmitsJobruntimesOptions{}
 //go:embed presubmits.gohtml
 var presubmitsHTMLTemplate string
 
+//go:embed presubmits.gocsv
+var presubmitsCSVTemplate string
+
 func init() {
-	getPresubmitsCommand.PersistentFlags().StringVar(&getPresubmitsJobruntimesOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The path to the kubevirt presubmits job definitions")
+	getPresubmitsCommand.PersistentFlags().StringArrayVar(&getPresubmitsJobruntimesOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", nil, "The path to the kubevirt presubmits job definitions")
 	getPresubmitsCommand.PersistentFlags().StringVar(&getPresubmitsJobruntimesOpts.outputFile, "output-file", "", "The file to write the output to, if empty, a temp file will be generated. If file exits, it will be overwritten")
+	getPresubmitsCommand.PersistentFlags().StringVar(&getPresubmitsJobruntimesOpts.outputFormat, "output-format", "html", "The format of the output file (html or csv)")
 }
 
 type presubmits []config.Presubmit
@@ -123,24 +133,34 @@ func GetPresubmits(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	presubmitJobConfig, err := config.ReadJobConfig(getPresubmitsJobruntimesOpts.jobConfigPathKubevirtPresubmits)
-	if err != nil {
-		return fmt.Errorf("failed to read jobconfig %s: %v", getPresubmitsJobruntimesOpts.jobConfigPathKubevirtPresubmits, err)
-	}
+	var e2ePresubmits presubmits
+	for _, kubevirtPresubmit := range getPresubmitsJobruntimesOpts.jobConfigPathKubevirtPresubmits {
+		presubmitJobConfig, err := config.ReadJobConfig(kubevirtPresubmit)
+		if err != nil {
+			return fmt.Errorf("failed to read jobconfig %s: %v", getPresubmitsJobruntimesOpts.jobConfigPathKubevirtPresubmits, err)
+		}
 
-	presubmitsTemplate, err := template.New("presubmits").Parse(presubmitsHTMLTemplate)
+		for _, presubmit := range presubmitJobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] {
+			if !strings.Contains(presubmit.Name, "e2e") {
+				continue
+			}
+			e2ePresubmits = append(e2ePresubmits, presubmit)
+		}
+	}
+	sort.Sort(e2ePresubmits)
+
+	var presubmitsTemplate *template.Template
+	switch getPresubmitsJobruntimesOpts.outputFormat {
+	case "html":
+		presubmitsTemplate, err = template.New("presubmits").Parse(presubmitsHTMLTemplate)
+	case "csv":
+		presubmitsTemplate, err = template.New("presubmits").Parse(presubmitsCSVTemplate)
+	default:
+		return fmt.Errorf("invalid output format %s", getPresubmitsJobruntimesOpts.outputFormat)
+	}
 	if err != nil {
 		return fmt.Errorf("failed to parse template: %v", err)
 	}
-
-	var e2ePresubmits presubmits
-	for _, presubmit := range presubmitJobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] {
-		if !strings.Contains(presubmit.Name, "e2e") {
-			continue
-		}
-		e2ePresubmits = append(e2ePresubmits, presubmit)
-	}
-	sort.Sort(e2ePresubmits)
 
 	buffer := bytes.NewBuffer([]byte{})
 	err = presubmitsTemplate.Execute(buffer, e2ePresubmits)
@@ -150,7 +170,7 @@ func GetPresubmits(cmd *cobra.Command, args []string) error {
 
 	outputFile := getPresubmitsJobruntimesOpts.outputFile
 	if outputFile == "" {
-		tempFile, err := os.CreateTemp("", "presubmits-*.html")
+		tempFile, err := os.CreateTemp("", fmt.Sprintf("presubmits-*.%s", getPresubmitsJobruntimesOpts.outputFormat))
 		if err != nil {
 			return fmt.Errorf("failed to parse template: %v", err)
 		}
@@ -158,5 +178,10 @@ func GetPresubmits(cmd *cobra.Command, args []string) error {
 	}
 
 	log.Log().Infof("Writing output to %s", outputFile)
-	return os.WriteFile(outputFile, buffer.Bytes(), 0666)
+	err = os.WriteFile(outputFile, buffer.Bytes(), 0666)
+	if err != nil {
+		return fmt.Errorf("failed to write output file: %v", err)
+	}
+
+	return nil
 }

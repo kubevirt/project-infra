@@ -10,6 +10,8 @@ go_library(
     embedsrcs = [
         "periodics.gohtml",
         "presubmits.gohtml",
+        "periodics.gocsv",
+        "presubmits.gocsv",
     ],
     importpath = "kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/get",
     visibility = ["//visibility:public"],
