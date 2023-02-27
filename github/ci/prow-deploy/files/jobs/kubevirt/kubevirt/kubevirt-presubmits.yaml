@@ -2368,7 +2368,7 @@ presubmits:
           cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
 
           # Set up tunnel
-          sshuttle -v -r kubevirt@165.204.53.121 10.216.91.126/32 192.168.0.0/24 --ssh-cmd 'ssh -o StrictHostKeyChecking=no -i /ssh-key -p 30026' > /var/log/sshuttle.log 2>&1 & echo "${!}" > /var/run/sshuttle.pid
+          sshuttle -v -r kubevirt@165.204.53.121 10.216.91.126/32 192.168.0.0/24 --ssh-cmd 'ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -i /ssh-key -p 30026' > /var/log/sshuttle.log 2>&1 & echo "${!}" > /var/run/sshuttle.pid
 
           # run test
           make cluster-up && make cluster-sync && FUNC_TEST_LABEL_FILTER='--label-filter=(SEV)' make functest && make cluster-clean || (make cluster-clean && exit 1)
