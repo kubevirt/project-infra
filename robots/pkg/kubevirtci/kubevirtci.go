@@ -17,7 +17,7 @@ import (
 )
 
 var SemVerRegex = regexp.MustCompile(`^[v]?([0-9]+)\.([0-9]+)\.([0-9]+)$`)
-var SemVerMinorRegex = regexp.MustCompile(`^([0-9]+)\.([0-9]+)*`)
+var ProviderFolderRegex = regexp.MustCompile(`^([0-9]+)\.([0-9]+)(-[a-z0-9-]+)?$`)
 
 func BumpMinorReleaseOfProvider(providerDir string, minors []*github.RepositoryRelease) error {
 	// Update the latest three minor k8s versions
@@ -78,7 +78,7 @@ func isProviderDirectory(entry os.DirEntry) bool {
 	if !entry.IsDir() {
 		return false
 	}
-	return SemVerMinorRegex.MatchString(entry.Name())
+	return ProviderFolderRegex.MatchString(entry.Name())
 }
 
 func isSupportedProvider(entry os.DirEntry, supportedReleases []*github.RepositoryRelease) bool {
@@ -171,7 +171,7 @@ func ReadExistingProviders(providerDir string) ([]querier.SemVer, error) {
 	}
 	for _, file := range fileinfo {
 		if file.IsDir() {
-			if SemVerMinorRegex.MatchString(file.Name()) {
+			if ProviderFolderRegex.MatchString(file.Name()) {
 				versionBytes, err := ioutil.ReadFile(filepath.Join(providerDir, file.Name(), "version"))
 				if os.IsNotExist(err) {
 					continue
