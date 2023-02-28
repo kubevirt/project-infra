@@ -27,12 +27,5 @@ spec:
         - --deck-uri=https://prow.ci.kubevirt.io/
         - --job-uri-prefix=https://prow.ci.kubevirt.io/view/gs/
         - --index-bucket=kubevirt-prow
-        - --bugzilla-url=https://bugzilla.redhat.com/rest
-        - --bugzilla-search=OPEN version:1.4,2.5,2.6 product="Container Native Virtualization (CNV)" AND delta_ts>-2w
-        - --bugzilla-token-file=/etc/bugzilla/api
       securityContext:
         fsGroup: 1000
-      volumes:
-      - name: bugzilla-token
-        secret:
-          secretName: bugzilla-credentials
