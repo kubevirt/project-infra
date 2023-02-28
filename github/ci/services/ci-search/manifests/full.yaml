@@ -56,10 +56,6 @@ spec:
       nodeSelector:
         ci.openshift.io/ci-search: "true"
       automountServiceAccountToken: false
-      volumes:
-      - name: bugzilla-token
-        secret:
-          secretName: bugzilla-credentials-openshift-bugzilla-robot
       containers:
       - name: web
         image: ci-search:latest
@@ -68,8 +64,6 @@ spec:
             cpu: 100m
             memory: 1Gi
         volumeMounts:
-        - name: bugzilla-token
-          mountPath: /etc/bugzilla/
         - mountPath: /var/lib/ci-search/
           name: search
         command:
@@ -80,9 +74,6 @@ spec:
         - --interval=10m
         - --path=/var/lib/ci-search/
         - --deck-uri=https://prow.ci.openshift.org
-        - --bugzilla-url=https://bugzilla.redhat.com/rest
-        - --bugzilla-token-file=/etc/bugzilla/api
-        - --bugzilla-search=OPEN version:4.7,4.6,4.5,4.4,4.3,4.2 product="OpenShift Container Platform" AND delta_ts>-2w
   updateStrategy:
     rollingUpdate:
       partition: 0
