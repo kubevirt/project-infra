@@ -635,3 +635,13 @@ lgtm:
 
 override:
   allow_top_level_owners: true
+
+label:
+  restricted_labels:
+    'kubevirt':
+    - allowed_teams:
+      - maintainers
+      allowed_users:
+      - aburdenthehand
+      - alicefr
+      label: good-first-issue
