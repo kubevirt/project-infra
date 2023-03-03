@@ -640,8 +640,9 @@ label:
   restricted_labels:
     'kubevirt':
     - allowed_teams:
-      - maintainers
-      allowed_users:
-      - aburdenthehand
-      - alicefr
+      - kubevirtorg-label
+      label: good-first-issue
+    'kubevirt/kubevirt':
+    - allowed_teams:
+      - kubevirtkubevirt-label
       label: good-first-issue
