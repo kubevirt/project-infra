@@ -59,7 +59,6 @@ func TestReadExistingProviders(t *testing.T) {
 			name: "should ignore strange folders",
 			existing: []querier.SemVer{
 				newSemVer("v1x", "2", "3"),
-				newSemVer("1", "3-multus", "4"),
 				newSemVer("v1", "4", "5"),
 				newSemVer("1", "5", "6"),
 			},
@@ -169,8 +168,8 @@ func readExistingClusterUpFolders(clusterUpDir string) ([]querier.SemVer, error)
 	for _, file := range fileinfo {
 		if file.IsDir() {
 			semverPartOfDir := strings.TrimPrefix(file.Name(), "k8s-")
-			if SemVerMinorRegex.MatchString(semverPartOfDir) {
-				matches := SemVerMinorRegex.FindStringSubmatch(semverPartOfDir)
+			if ProviderFolderRegex.MatchString(semverPartOfDir) {
+				matches := ProviderFolderRegex.FindStringSubmatch(semverPartOfDir)
 				semvers = append(semvers, querier.SemVer{Major: matches[1], Minor: matches[2]})
 				// TODO check whether the docs contain wrong semvers
 			}

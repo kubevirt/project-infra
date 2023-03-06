@@ -17,7 +17,7 @@ import (
 )
 
 var SemVerRegex = regexp.MustCompile(`^[v]?([0-9]+)\.([0-9]+)\.([0-9]+)$`)
-var SemVerMinorRegex = regexp.MustCompile(`^([0-9]+)\.([0-9]+)$`)
+var ProviderFolderRegex = regexp.MustCompile(`^([0-9]+)\.([0-9]+)(-[a-z0-9-]+)?$`)
 
 func BumpMinorReleaseOfProvider(providerDir string, minors []*github.RepositoryRelease) error {
 	// Update the latest three minor k8s versions
@@ -32,19 +32,21 @@ func BumpMinorReleaseOfProvider(providerDir string, minors []*github.RepositoryR
 
 func bumpRelease(providerDir string, release *github.RepositoryRelease) error {
 	r := querier.ParseRelease(release)
-	dir := filepath.Join(providerDir, fmt.Sprintf("%s.%s", r.Major, r.Minor))
-	_, err := os.Stat(dir)
-	if os.IsNotExist(err) {
-		logrus.Infof("Minor version %s.%s does not exist, ignoring", r.Minor, r.Minor)
-		return nil
-	} else if err != nil {
-		return fmt.Errorf("Failed to check directory '%s': %v", dir, err)
-	}
-	err = ioutil.WriteFile(filepath.Join(dir, "version"), []byte(r.String()), os.ModePerm)
+	dirEntries, err := os.ReadDir(providerDir)
 	if err != nil {
-		return fmt.Errorf("Failed to bump the version file '%s': %v", filepath.Join(dir, "version"), err)
+		logrus.Infof("Failed to get contents of %s", providerDir)
 	}
-	logrus.Infof("Minor version %s.%s updated to %v", r.Major, r.Minor, r)
+	k8sVersion := fmt.Sprintf("%s.%s", r.Major, r.Minor)
+	for _, entry := range dirEntries {
+		if (isProviderDirectory(entry)) && (strings.Contains(entry.Name(), k8sVersion)) {
+			dir := filepath.Join(providerDir, entry.Name())
+			err = ioutil.WriteFile(filepath.Join(dir, "version"), []byte(r.String()), os.ModePerm)
+			if err != nil {
+				return fmt.Errorf("Failed to bump the version file '%s': %v", filepath.Join(dir, "version"), err)
+			}
+			logrus.Infof("Minor version %s.%s updated to %v", r.Major, r.Minor, r)
+		}
+	}
 	return nil
 }
 
@@ -76,7 +78,7 @@ func isProviderDirectory(entry os.DirEntry) bool {
 	if !entry.IsDir() {
 		return false
 	}
-	return SemVerMinorRegex.MatchString(entry.Name())
+	return ProviderFolderRegex.MatchString(entry.Name())
 }
 
 func isSupportedProvider(entry os.DirEntry, supportedReleases []*github.RepositoryRelease) bool {
@@ -169,7 +171,7 @@ func ReadExistingProviders(providerDir string) ([]querier.SemVer, error) {
 	}
 	for _, file := range fileinfo {
 		if file.IsDir() {
-			if SemVerMinorRegex.MatchString(file.Name()) {
+			if ProviderFolderRegex.MatchString(file.Name()) {
 				versionBytes, err := ioutil.ReadFile(filepath.Join(providerDir, file.Name(), "version"))
 				if os.IsNotExist(err) {
 					continue
