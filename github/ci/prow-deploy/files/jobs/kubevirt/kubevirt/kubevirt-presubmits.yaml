@@ -1978,9 +1978,6 @@ presubmits:
           value: k8s-1.26-centos9-sig-operator
         - name: KUBEVIRT_PSA
           value: "true"
-        # FIXME: remove after 0.59 release
-        - name: PREVIOUS_RELEASE_TAG
-          value: v0.59.0-rc.0
         image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
         name: ""
         resources:
