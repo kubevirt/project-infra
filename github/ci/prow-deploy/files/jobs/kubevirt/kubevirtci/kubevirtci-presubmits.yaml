@@ -458,7 +458,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.26-centos9
-    optional: true
     spec:
       containers:
       - command:
