@@ -80,7 +80,11 @@ func init() {
 	executionCmd.PersistentFlags().StringVar(&executionReportFlagOpts.endpoint, "endpoint", test_report.DefaultJenkinsBaseUrl, "jenkins base url")
 	executionCmd.PersistentFlags().DurationVar(&executionReportFlagOpts.startFrom, "start-from", 14*24*time.Hour, "time period for report")
 	executionCmd.PersistentFlags().StringVar(&executionReportFlagOpts.configFile, "config-file", "", "yaml file that contains job names associated with dont_run_tests.json and the job name pattern, if set overrides default-config.yaml")
-	executionCmd.PersistentFlags().StringVar(&executionReportFlagOpts.config, "config", "default", "one of {'default', 'compute', 'storage', 'network'}, chooses one of the default configurations, if set overrides default-config.yaml")
+	var keys []string
+	for key := range configs {
+		keys = append(keys, key)
+	}
+	executionCmd.PersistentFlags().StringVar(&executionReportFlagOpts.config, "config", "default", fmt.Sprintf("one of { %s }, chooses one of the default configurations, if set overrides default-config.yaml", strings.Join(keys, ", ")))
 	executionCmd.PersistentFlags().StringVar(&executionReportFlagOpts.outputFile, "outputFile", "", "Path to output file, if not given, a temporary file will be used")
 	executionCmd.PersistentFlags().BoolVar(&executionReportFlagOpts.overwrite, "overwrite", true, "overwrite output file")
 	executionCmd.PersistentFlags().BoolVar(&executionReportFlagOpts.dryRun, "dry-run", false, "only check which jobs would be considered, do not create an actual report")
@@ -239,7 +243,11 @@ func runExecutionReport() error {
 	startOfReport := time.Now().Add(-1 * executionReportFlagOpts.startFrom)
 	endOfReport := time.Now()
 
-	testNamesToJobNamesToExecutionStatus := test_report.GetTestNamesToJobNamesToTestExecutions(jobs, startOfReport, ctx, regexp.MustCompile(config.TestNamePattern))
+	var jobNamePatternForTestNames *regexp.Regexp
+	if config.JobNamePatternForTestNames != "" {
+		jobNamePatternForTestNames = regexp.MustCompile(config.JobNamePatternForTestNames)
+	}
+	testNamesToJobNamesToExecutionStatus := test_report.GetTestNamesToJobNamesToTestExecutions(jobs, startOfReport, ctx, regexp.MustCompile(config.TestNamePattern), jobNamePatternForTestNames)
 
 	err = writeJsonBaseDataFile(testNamesToJobNamesToExecutionStatus)
 	if err != nil {
