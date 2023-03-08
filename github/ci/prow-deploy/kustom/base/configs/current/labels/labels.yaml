@@ -274,6 +274,12 @@ default:
       target: prs
       prowPlugin: trigger
       addedBy: prow
+    - name: good-first-issue
+      color: 128A0C
+      target: issues
+      previously:
+      - name: good first issue
+        color: 128A0C
 repos:
   kubevirt/kubevirt:
     labels:
@@ -301,12 +307,6 @@ repos:
       - name: for/users
         color: fef2c0
         target: both
-      - name: good-first-issue
-        color: 128A0C
-        target: issues
-        previously:
-          - name: good first issue
-            color: 128A0C
       - name: help-wanted
         color: 128A0C
         target: issues

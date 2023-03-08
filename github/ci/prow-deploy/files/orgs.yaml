@@ -900,3 +900,31 @@ orgs:
           - ksimon1
         repos:
           common-instancetypes: admin
+      kubevirtorg-label:
+        description: "Users who can apply restricted labels to any issue inside the KubeVirt org"
+        members:
+         - davidvossel
+         - vladikr
+         - rmohr
+         - fabiand
+         - stu-gott
+         - vasiliy-ul
+         - rthallisey
+         - aburdenthehand
+      kubevirtkubevirt-label:
+        description: "Users who can apply restricted labels to any issue inside the kubevirt/kubevirt repo"
+        members:
+         - davidvossel
+         - vladikr
+         - rmohr
+         - stu-gott
+         - fabiand
+         - AlonaKaplan
+         - dhiller
+         - jean-edouard
+         - mhenriks
+         - enp0s3
+         - xpivarc
+         - vasiliy-ul
+         - acardace
+         - alicefr
