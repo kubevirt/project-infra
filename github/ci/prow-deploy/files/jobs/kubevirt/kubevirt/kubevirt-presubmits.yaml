@@ -407,7 +407,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       vgpu: "true"
     max_concurrency: 1
-    name: pull-kubevirt-e2e-kind-1.23-vgpu
+    name: pull-kubevirt-e2e-kind-1.25-vgpu
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -432,7 +432,7 @@ presubmits:
           automation/test.sh
         env:
         - name: TARGET
-          value: kind-1.23-vgpu
+          value: kind-1.25-vgpu
         image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
         name: ""
         resources:
