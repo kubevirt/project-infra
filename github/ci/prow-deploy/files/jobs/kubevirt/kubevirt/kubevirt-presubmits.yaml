@@ -470,7 +470,7 @@ presubmits:
           path: /var/log/audit
           type: Directory
         name: audit
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
@@ -549,7 +549,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
