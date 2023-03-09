@@ -7,7 +7,15 @@
             border: 1px solid black;
         }
         table.noborder, th.noborder, td.noborder {
-            border: 0px;
+            border: 0;
+        }
+        th.vertical {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+        td.stateCell {
+            min-width: 2em;
+            text-align: center;
         }
         .yellow {
             background-color: #ffff80;
@@ -21,30 +29,13 @@
         .gray {
             background-color: #898989;
         }
-        .unimportant {
-        }
         .right {
             text-align: right;
             width: 100%;
         }
-
-        .popup .popuptextFilteredTestNames {
-            display: none;
-            width: 1024px;
-            background-color: #FFFFFF;
-            text-align: center;
-            border-radius: 6px;
-            padding: 8px 8px;
-            position: absolute;
-            z-index: 1;
-            left: 100%;
-            margin-left: -1024px;
-        }
-
-        .popup:hover .popuptextFilteredTestNames {
-            display: block;
-            -webkit-animation: fadeIn 1s;
-            animation: fadeIn 1s;
+        .filtered {
+            text-decoration-line: underline;
+            text-decoration-style: dotted;
         }
 
         .popup .popuptextReportConfig {
@@ -72,12 +63,14 @@
             document.getElementById("filterByName").disabled = false;
             document.getElementById("excludeByName").disabled = false;
             document.getElementById("filterByNotRunCheckBox").disabled = false;
+            document.getElementById("showDontRunCheckBox").disabled = false;
         }
         function updateFilteredRows() {
-            let filter, table, tr, td, i, txtValue, checked, shouldShow, rowsShown;
+            let filter, table, tr, td, i, txtValue, filterByNotRunChecked, shouldShow, rowsShown;
             filterTerms = document.getElementById("filterByName").value.toUpperCase().split("|");
             excludeTerms = document.getElementById("excludeByName").value.toUpperCase().split("|");
-            checked = document.getElementById("filterByNotRunCheckBox").checked;
+            filterByNotRunChecked = document.getElementById("filterByNotRunCheckBox").checked;
+            showDontRunChecked = document.getElementById("showDontRunCheckBox").checked;
             table = document.getElementById("report");
             tr = table.getElementsByTagName("tr");
 
@@ -87,7 +80,10 @@
                 if (td) {
                     shouldShow = true
                     txtValue = td.textContent || td.innerText;
-                    if (checked && td.className !== "red") {
+                    if (filterByNotRunChecked && td.className.indexOf("red") == -1) {
+                        shouldShow = false
+                    }
+                    if (!showDontRunChecked && td.className.indexOf("filtered") !== -1) {
                         shouldShow = false
                     }
                     if (excludeTerms.length > 0 && excludeTerms[0] !== "") {
@@ -129,7 +125,7 @@
         }
     </script>
 </head>
-<body onload="initRowsShown();enableFilterFields();">
+<body onload="initRowsShown();updateFilteredRows();enableFilterFields();">
 {{- /* gotype: kubevirt.io/project-infra/robots/pkg/test-report.Data */ -}}
 <h1>test execution report</h1>
 <div>
@@ -142,31 +138,33 @@
     <pre class="popuptextReportConfig right" id="targetReportConfig">{{ $.ReportConfig }}</pre>
 </div>
 
-<div id="filteredTests" class="popup right" >
-    <u>list of filtered tests</u>
-    <div class="popuptextFilteredTestNames right" id="targetfilteredTests">
-        <table width="100%">
-            <tr class="unimportant">
-                <td>
-                    Filtered test names:
-                </td>
-            </tr>{{ range $filteredTestName := $.FilteredTestNames }}
-        <tr class="unimportant">
-            <td>
-                {{ $filteredTestName | html }}
-            </td>
-        </tr>{{ end }}
-        </table>
-    </div>
-</div>
-
 <table class="noborder">
     <tr>
         <td class="noborder">
-        <b>Filters:</b>
         </td>
         <td class="noborder">
-            <label for="filterByName">Include tests that contain</label>
+            <label for="filterByNotRunCheckBox">Only <span class="red">not run tests</span></label>
+        </td>
+        <td class="noborder">
+            <input type="checkbox" id="filterByNotRunCheckBox" onClick="updateFilteredRows()" title="Show only rows that have not been run on any lane" disabled checked>
+        </td>
+    </tr>
+    <tr>
+        <td class="noborder">
+        </td>
+        <td class="noborder">
+            <label for="showDontRunCheckBox">Include <span class="red filtered">tests that have been filtered</span> on all lanes</label>
+        </td>
+        <td class="noborder">
+            <input type="checkbox" id="showDontRunCheckBox" onClick="updateFilteredRows()" title="Include tests that have been filtered with dont_run_tests.json on all lanes" disabled checked>
+        </td>
+    </tr>
+    <tr>
+        <td class="noborder">
+            <b>Filters:</b>
+        </td>
+        <td class="noborder">
+            <label for="filterByName">Exclude tests that don't contain</label>
         </td>
         <td class="noborder">
             <input type="text" id="filterByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..." disabled>
@@ -182,16 +180,6 @@
             <input type="text" id="excludeByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..." disabled>
         </td>
     </tr>
-    <tr>
-        <td class="noborder">
-        </td>
-        <td class="noborder">
-    <label for="filterByNotRunCheckBox">Only not run tests</label>
-        </td>
-        <td class="noborder">
-            <input type="checkbox" id="filterByNotRunCheckBox" onClick="updateFilteredRows()" title="Show only rows that have not been run" disabled>
-        </td>
-    </tr>
 </table>
 
 <div id="totalRowsShown"><i>Loading rows...</i></div>
@@ -200,15 +188,15 @@
         <th></th>
         <th></th>
         {{ range $job := $.LookedAtJobs }}
-            <th><a href="{{ $.JenkinsBaseURL }}/job/{{ $job }}/">{{ $job }}</a></th>
+            <th class="vertical"><a href="{{ $.JenkinsBaseURL }}/job/{{ $job }}/">{{ $job }}</a></th>
         {{ end }}
     </tr>
     {{ range $row, $test := $.TestNames }}
         <tr>
             <td><div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a></div></td>
-            <td class="{{ if (index $.SkippedTests $test) }}red{{ end }}">{{ $test }}</td>
+            <td class="{{ if (index $.SkippedTests $test) }}red{{ end }}{{ if (index $.FilteredTestNames $test) }} filtered{{ end }}">{{ $test }}</td>
             {{ range $col, $job := $.LookedAtJobs }}
-                <td class="center">{{ with $skipped := (index $.TestNamesToJobNamesToSkipped $test $job) }}
+                <td class="center stateCell">{{ with $skipped := (index $.TestNamesToJobNamesToSkipped $test $job) }}
                         <div id="r{{$row}}c{{$col}}" title="test
                                 {{- if eq $skipped (index $.TestExecutionMapping "TestExecution_Skipped") }} skipped
                                 {{- else if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }} run
