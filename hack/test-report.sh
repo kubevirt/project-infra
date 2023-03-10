@@ -3,7 +3,7 @@
 function run_test_report() {
     podman run -v "$tmp_dir:/tmp:Z" \
             --network host \
-            quay.io/kubevirtci/test-report:v20230303-9f7c25ce \
+            quay.io/kubevirtci/test-report:v20230310-afd0f6b5 \
             "$@"
 }
 
