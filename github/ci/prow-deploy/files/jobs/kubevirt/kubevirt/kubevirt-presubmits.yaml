@@ -429,6 +429,7 @@ presubmits:
         - /bin/bash
         - -ce
         - |
+          curl -sL https://github.com/kubevirt/kubevirt/pull/9384.diff | git apply
           automation/test.sh
         env:
         - name: TARGET
