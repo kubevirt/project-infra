@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"k8s.io/apimachinery/pkg/util/errors"
 	"log"
 	"path"
 	"path/filepath"
@@ -79,41 +80,11 @@ func main() {
 	// todo: make this a flag
 	since := time.Now().Add(-(time.Duration(24 * 30 * time.Hour)))
 
-	r := map[string]struct {
-		VMIResult Result
-		VMResult  Result
-	}{}
 	// convert to perfStats
 	fmt.Print(jobResults)
-	for _, j := range jobResults {
-		date, err := getDateForJob(ctx, storageClient, j.Job)
-		if err != nil {
-			log.Printf("error getting build-log.txt ready for job: %s, err: %#v\n", j.Job, err)
-			continue
-		}
+	results, err := getJobResults(ctx, storageClient, jobResults, since)
 
-		if date.Before(since) {
-			continue
-		}
-
-		vmiResult, err := getVMIResult(ctx, storageClient, j.Job)
-		if err != nil {
-			// todo
-		}
-		vmResult, err := getVMResult(ctx, storageClient, j.Job)
-		if err != nil {
-			// todo
-		}
-
-		d := date.Format("2006-01-02T00:00:00Z00:00")
-		r[d] = struct {
-			VMIResult Result
-			VMResult  Result
-		}{
-			vmiResult,
-			vmResult,
-		}
-	}
+	fmt.Print(results)
 
 	// Now we can use bucket to store our representation of all results
 	// This will be then used to compute nice graph
@@ -128,6 +99,75 @@ func main() {
 	}
 
 	log.Println("Successfully finished")
+}
+
+type YearWeek struct {
+	Year int
+	Week int
+}
+
+type Collection map[string]struct {
+	VMIResult Result
+	VMResult  Result
+}
+
+func getJobResults(ctx context.Context, storageClient *storage.Client, jobResults []*JobResult, since time.Time) (Collection, error) {
+	r := Collection{}
+	errs := []error{}
+	for _, j := range jobResults {
+		date, err := getDateForJob(ctx, storageClient, j.Job)
+		if err != nil {
+			log.Printf("error getting build-log.txt ready for job: %s, err: %#v\n", j.Job, err)
+			continue
+		}
+
+		if date.Before(since) {
+			continue
+		}
+
+		vmiResult, err := getVMIResult(ctx, storageClient, j.Job)
+		if err != nil {
+			errs = append(errs, err)
+		}
+		vmResult, err := getVMResult(ctx, storageClient, j.Job)
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		d := date.Format("2006-01-02T00:00:00Z00:00")
+		r[d] = struct {
+			VMIResult Result
+			VMResult  Result
+		}{
+			vmiResult,
+			vmResult,
+		}
+	}
+	return r, errors.NewAggregate(errs)
+}
+
+func getWeeklyVMIResults(results Collection) (map[YearWeek][]Result, error) {
+	// todo: aggregate error if needed
+	//errs := []error{}
+	weeklyData := map[YearWeek][]Result{}
+	// loop over the original map and aggregate the values for each Week
+	for dateStr, value := range results {
+		date, err := time.Parse("2006-01-02", dateStr) // convert the string to a time.Time object
+		if err != nil {
+			return nil, err
+		}
+
+		year, week := date.ISOWeek() // get the Year and Week number of the date
+		//weekStr := fmt.Sprintf("%d-W%02d", Year, Week) // format the Year and Week number as a string
+		yw := YearWeek{Year: year, Week: week}
+		_, ok := weeklyData[yw]
+		if ok {
+			weeklyData[yw] = append(weeklyData[yw], value.VMIResult)
+			continue
+		} // add the value to the weekly map
+		weeklyData[yw] = []Result{value.VMIResult}
+	}
+	return weeklyData, nil
 }
 
 func listAllJobs(ctx context.Context, client *storage.Client) ([]string, error) {
@@ -229,4 +269,44 @@ func unmarshalJson(jsonText string) (Result, error) {
 	}
 
 	return r, nil
+}
+
+func getWeeklyVMResults(results Collection) (map[YearWeek][]Result, error) {
+	// todo: aggregate error if needed
+	//errs := []error{}
+	weeklyData := map[YearWeek][]Result{}
+	// loop over the original map and aggregate the values for each Week
+	for dateStr, value := range results {
+		date, err := time.Parse("2006-01-02", dateStr) // convert the string to a time.Time object
+		if err != nil {
+			return nil, err
+		}
+
+		year, week := date.ISOWeek() // get the Year and Week number of the date
+		//weekStr := fmt.Sprintf("%d-W%02d", Year, Week) // format the Year and Week number as a string
+		yw := YearWeek{Year: year, Week: week}
+		_, ok := weeklyData[yw]
+		if ok {
+			weeklyData[yw] = append(weeklyData[yw], value.VMResult)
+			continue
+		}
+		// add the value to the weekly map
+		weeklyData[yw] = []Result{value.VMResult}
+	}
+	return weeklyData, nil
+}
+
+func getMondayOfWeekDate(year, week int) string {
+	// Get the first Monday of the Year
+	firstDayOfYear := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
+	daysUntilFirstMonday := int(time.Monday - firstDayOfYear.Weekday())
+	if daysUntilFirstMonday < 0 {
+		daysUntilFirstMonday += 7
+	}
+
+	// create a time.Time object representing the Monday of the ISO Week
+	weekMonday := firstDayOfYear.AddDate(0, 0, daysUntilFirstMonday+((week-1)*7))
+
+	// print the Monday in ISO format
+	return fmt.Sprintf("%s", weekMonday.Format("2006-01-02"))
 }
