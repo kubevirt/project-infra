@@ -337,7 +337,7 @@ presubmits:
         - /bin/bash
         - -c
         - cd cluster-provision/gocli/ && make all container
-        image: quay.io/kubevirtci/golang:v20230306-5b8ee3f
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
         name: ""
         resources:
           requests:
@@ -363,7 +363,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.25 && KUBEVIRT_PSA='true' ../provision.sh
-        image: quay.io/kubevirtci/golang:v20230306-5b8ee3f
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
         name: ""
         resources:
           requests:
@@ -399,7 +399,7 @@ presubmits:
         - -c
         - dnf install -y genisoimage libvirt && cd cluster-provision/images/vm-image-builder
           && ./create-containerdisk.sh alpine-cloud-init
-        image: quay.io/kubevirtci/golang:v20230306-5b8ee3f
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
         name: ""
         resources:
           requests:
@@ -441,7 +441,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.24-psa && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20230306-5b8ee3f
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
         name: ""
         resources:
           requests:
@@ -467,7 +467,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.24 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20230306-5b8ee3f
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
         name: ""
         resources:
           requests:
@@ -493,7 +493,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.25 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20230306-5b8ee3f
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
         name: ""
         resources:
           requests:
@@ -519,7 +519,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.26 && KUBEVIRT_PSA='true' ../provision.sh
-        image: quay.io/kubevirtci/golang:v20230306-5b8ee3f
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
         name: ""
         resources:
           requests:
@@ -545,7 +545,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.26-centos9 && KUBEVIRT_PSA='true' ../provision.sh
-        image: quay.io/kubevirtci/golang:v20230306-5b8ee3f
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
         name: ""
         resources:
           requests:

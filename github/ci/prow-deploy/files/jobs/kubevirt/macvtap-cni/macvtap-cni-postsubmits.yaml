@@ -15,7 +15,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20230306-5b8ee3f
+          - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
             env:
             - name: OCI_BIN
               value: podman
@@ -41,7 +41,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20230306-5b8ee3f
+          - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
             env:
             - name: OCI_BIN
               value: podman
