@@ -6,15 +6,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"k8s.io/apimachinery/pkg/util/errors"
 	"log"
-	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
+	"k8s.io/apimachinery/pkg/util/errors"
 	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
@@ -25,6 +24,7 @@ type opts struct {
 var (
 	options              = opts{}
 	performanceJobsRegex = "periodic-kubevirt-e2e-k8s-1.25-sig-performance"
+	outputDir            = "output"
 )
 
 // two situations
@@ -49,54 +49,52 @@ func main() {
 		}
 	}
 
-	startOfReport, endOfReport := GetReportInterval(ReportIntervalOptions{
-		Today:  true,
-		Merged: 24 * time.Hour,
-		Till:   time.Now(),
-	})
-
-	jobResults, err := FindUnitTestFilesForPeriodicJob(ctx,
-		storageClient,
-		BucketName,
-		// TODO
-		jobsDirs,
-		startOfReport,
-		endOfReport,
-	)
-	if err != nil {
-		log.Fatalf("Failed to get job results for periodics, %s", err)
-	}
-
-	// get all the jobs for each day
-
-	// TODO Now we should have all the perf runs
-	// We need to extract the numbers
-	// Insert code
-	type perfStats struct {
-		// whatever we need
-		vmiCreationToRunningSecondsP99 float64
-	}
-
 	// todo: make this a flag
-	since := time.Now().Add(-(time.Duration(24 * 30 * time.Hour)))
+	// currently it is equivalent of zero
+	// The zero value of type Time is January 1, year 1, 00:00:00.000000000 UTC.
+	// As this time is unlikely to come up in practice, the IsZero method gives
+	// a simple way of detecting a time that has not been initialized explicitly.
+	since := time.Date(1, 1, 0, 0, 0, 0, 0, time.UTC)
 
 	// convert to perfStats
-	fmt.Print(jobResults)
-	results, err := getJobResults(ctx, storageClient, jobResults, since)
+	fmt.Print(allJobs)
+	results, err := getJobResults(ctx, storageClient, allJobs, since)
+	if err != nil {
+		log.Fatalf("error getting job results %#+v\n", err)
+	}
 
 	fmt.Print(results)
 
+	weeklyVMIResults, err := getWeeklyVMIResults(results)
+	if err != nil {
+		log.Fatalf("error getting weekly vmi results %#+v\n", err)
+	}
+
+	weeklyVMResults, err := getWeeklyVMResults(results)
+	if err != nil {
+		log.Fatalf("error getting weekly vm results %#+v\n", err)
+	}
+
+	err = calculateAVGAndWriteOutput(weeklyVMIResults, "vmi", ResultTypeVMICreationToRunningP95)
+	if err != nil {
+		log.Fatalf("error writing vmi avg results to json file %#+v\n", err)
+	}
+
+	err = calculateAVGAndWriteOutput(weeklyVMResults, "vm", ResultTypeVMICreationToRunningP95)
+	if err != nil {
+		log.Fatalf("error writing vm avg results to json file %#+v\n", err)
+	}
 	// Now we can use bucket to store our representation of all results
 	// This will be then used to compute nice graph
 
-	reportObject := storageClient.Bucket(BucketName).Object(path.Join("reports/performance", "thisShouldBeSomethingUnique"))
-	reportWriter := reportObject.NewWriter(ctx)
-	defer reportWriter.Close()
-
-	err = json.NewEncoder(reportWriter).Encode(perfStats{})
-	if err != nil {
-		log.Fatalf("Failed to write results to bucket. %s", err)
-	}
+	//reportObject := storageClient.Bucket(BucketName).Object(path.Join("reports/performance", "thisShouldBeSomethingUnique"))
+	//reportWriter := reportObject.NewWriter(ctx)
+	//defer reportWriter.Close()
+	//
+	//err = json.NewEncoder(reportWriter).Encode(perfStats{})
+	//if err != nil {
+	//	log.Fatalf("Failed to write results to bucket. %s", err)
+	//}
 
 	log.Println("Successfully finished")
 }
@@ -111,13 +109,13 @@ type Collection map[string]struct {
 	VMResult  Result
 }
 
-func getJobResults(ctx context.Context, storageClient *storage.Client, jobResults []*JobResult, since time.Time) (Collection, error) {
+func getJobResults(ctx context.Context, storageClient *storage.Client, jobResults []string, since time.Time) (Collection, error) {
 	r := Collection{}
 	errs := []error{}
 	for _, j := range jobResults {
-		date, err := getDateForJob(ctx, storageClient, j.Job)
+		date, err := getDateForJob(ctx, storageClient, j)
 		if err != nil {
-			log.Printf("error getting build-log.txt ready for job: %s, err: %#v\n", j.Job, err)
+			log.Printf("error getting build-log.txt ready for job: %s, err: %#v\n", j, err)
 			continue
 		}
 
@@ -125,11 +123,11 @@ func getJobResults(ctx context.Context, storageClient *storage.Client, jobResult
 			continue
 		}
 
-		vmiResult, err := getVMIResult(ctx, storageClient, j.Job)
+		vmiResult, err := getVMIResult(ctx, storageClient, j)
 		if err != nil {
 			errs = append(errs, err)
 		}
-		vmResult, err := getVMResult(ctx, storageClient, j.Job)
+		vmResult, err := getVMResult(ctx, storageClient, j)
 		if err != nil {
 			errs = append(errs, err)
 		}
