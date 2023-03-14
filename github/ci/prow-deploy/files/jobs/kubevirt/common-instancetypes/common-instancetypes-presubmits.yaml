@@ -48,7 +48,7 @@ presubmits:
         - "/bin/sh"
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
-        image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+        image: quay.io/kubevirtci/bootstrap:v20230306-5b8ee3f
         name: ""
         resources:
           requests:
