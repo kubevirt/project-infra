@@ -10,7 +10,7 @@ format:
 	gofmt -w .
 
 test:
-	$(bazelbin) test //external-plugins/rehearse/plugin:*
+	$(bazelbin) test //external-plugins/rehearse/...
 
 push:
 	$(bazelbin) run //external-plugins/rehearse/plugin:push

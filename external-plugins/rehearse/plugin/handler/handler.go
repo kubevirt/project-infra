@@ -27,6 +27,7 @@ import (
 )
 
 var log *logrus.Logger
+var rehearseCommentRe = regexp.MustCompile(`(?m)^/rehearse\s*?($|\s.*)`)
 
 func init() {
 	log = logrus.New()
@@ -117,7 +118,6 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 		return
 	}
 
-	rehearseCommentRe := regexp.MustCompile(`(?m)^/rehearse$`)
 	if !rehearseCommentRe.MatchString(event.Comment.Body) {
 		return
 	}
@@ -136,7 +136,7 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 		log.WithError(err).Errorln("Could not get pull request for comment")
 	}
 
-	h.handleRehearsalForPR(log, pr, event.GUID)
+	h.handleRehearsalForPR(log, pr, event.GUID, event.Comment.Body)
 }
 
 func (h *GitHubEventsHandler) shouldActOnPREvent(event *github.PullRequestEvent) bool {
@@ -196,10 +196,10 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 		return
 	}
 
-	h.handleRehearsalForPR(log, &event.PullRequest, event.GUID)
+	h.handleRehearsalForPR(log, &event.PullRequest, event.GUID, "")
 }
 
-func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github.PullRequest, eventGUID string) {
+func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github.PullRequest, eventGUID string, commentBody string) {
 	repo, org, err := gitv2.OrgRepo(pr.Base.Repo.FullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Base.Repo.FullName)
@@ -245,6 +245,9 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 	log.Infoln("Base configs:", baseConfigs)
 
 	prowjobs := h.generateProwJobs(headConfigs, baseConfigs, pr, eventGUID)
+	jobNames := h.extractJobNamesFromComment(commentBody)
+	prowjobs = h.filterProwJobsByJobNames(prowjobs, jobNames)
+
 	log.Infof("Will create %d jobs", len(prowjobs))
 	for _, job := range prowjobs {
 		if job.Labels == nil {
@@ -261,6 +264,43 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		}
 		log.Infof("Created a rehearse job: %s", job.Name)
 	}
+}
+
+func (h *GitHubEventsHandler) extractJobNamesFromComment(body string) []string {
+	if body == "" {
+		return nil
+	}
+	var jobNames []string
+	allStringSubmatch := rehearseCommentRe.FindAllStringSubmatch(body, -1)
+	for _, subMatches := range allStringSubmatch {
+		if len(subMatches) < 2 {
+			continue
+		}
+		trimmedJobName := strings.TrimSpace(subMatches[1])
+		if trimmedJobName == "" || trimmedJobName == "all" {
+			continue
+		}
+		jobNames = append(jobNames, trimmedJobName)
+	}
+	return jobNames
+}
+
+func (h *GitHubEventsHandler) filterProwJobsByJobNames(prowjobs []prowapi.ProwJob, jobNames []string) []prowapi.ProwJob {
+	if len(jobNames) == 0 {
+		return prowjobs
+	}
+	jobNamesToFilter := map[string]struct{}{}
+	for _, jobName := range jobNames {
+		jobNamesToFilter[jobName] = struct{}{}
+	}
+	var filteredProwJobs []prowapi.ProwJob
+	for _, prowjob := range prowjobs {
+		if _, exists := jobNamesToFilter[prowjob.Spec.Job]; !exists {
+			continue
+		}
+		filteredProwJobs = append(filteredProwJobs, prowjob)
+	}
+	return filteredProwJobs
 }
 
 const rehearsalRestrictedAnnotation = "rehearsal.restricted"
