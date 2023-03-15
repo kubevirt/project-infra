@@ -38,7 +38,7 @@ func NewRecordDateWithAverage(rdps []RecordDataPoint) RecordData {
 	return r
 }
 
-func calculateAVGAndWriteOutput(results map[YearWeek][]Result, objType string, metrics ...ResultType) error {
+func calculateAVGAndWriteOutput(results map[YearWeek][]Result, objType string, outputDir string, metrics ...string) error {
 	for _, metric := range metrics {
 		for yw, _ := range results {
 			record := Record{
@@ -54,7 +54,7 @@ func calculateAVGAndWriteOutput(results map[YearWeek][]Result, objType string, m
 			rdp := []RecordDataPoint{}
 			for _, result := range results[yw] {
 				rdp = append(rdp, RecordDataPoint{
-					Value: result.Values[metric].Value,
+					Value: result.Values[ResultType(metric)].Value,
 					// todo: find a way to populate date
 				})
 			}

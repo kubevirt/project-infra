@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -17,20 +18,28 @@ import (
 	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
-type opts struct {
-	startFrom time.Duration
+type options struct {
+	since              time.Duration
+	performanceJobName string
+	vmMetricsList      string
+	vmiMetricsList     string
+	outputDir          string
 }
 
-var (
-	options              = opts{}
-	performanceJobsRegex = "periodic-kubevirt-e2e-k8s-1.25-sig-performance"
-	outputDir            = "output"
-)
+func flagOptions() options {
+	o := options{}
+	flag.DurationVar(&o.since, "since", 24*7*time.Hour, "Filter the periodic job in the time window")
+	flag.StringVar(&o.performanceJobName, "performance-job-name", "periodic-kubevirt-e2e-k8s-1.25-sig-performance", "usuage, name of the performance job for which data is collected")
+	flag.StringVar(&o.vmMetricsList, "vm-metrics-list", string(ResultTypeVMICreationToRunningP95), "comma separated list of metrics to be extracted for vms")
+	flag.StringVar(&o.vmiMetricsList, "vmi-metrics-list", string(ResultTypeVMICreationToRunningP95), "comma separated list of metrics to be extracted for vmis")
+	flag.StringVar(&o.outputDir, "output-dir", "output", "the output directory were json data will be written")
+	flag.Parse()
+	return o
+}
 
-// two situations
-// 1. get all the historical jobs data organized
-// 2. on a regular interval run the job
 func main() {
+	opts := flagOptions()
+
 	ctx := context.Background()
 	storageClient, err := storage.NewClient(ctx)
 	if err != nil {
@@ -44,43 +53,43 @@ func main() {
 
 	jobsDirs := []string{}
 	for _, jobDir := range allJobs {
-		if jobDir == performanceJobsRegex {
+		if jobDir == opts.performanceJobName {
 			jobsDirs = append(jobsDirs, jobDir)
 		}
 	}
 
-	// todo: make this a flag
 	// currently it is equivalent of zero
 	// The zero value of type Time is January 1, year 1, 00:00:00.000000000 UTC.
 	// As this time is unlikely to come up in practice, the IsZero method gives
 	// a simple way of detecting a time that has not been initialized explicitly.
-	since := time.Date(1, 1, 0, 0, 0, 0, 0, time.UTC)
+	//since := time.Date(1, 1, 0, 0, 0, 0, 0, time.UTC)
+	since := time.Now().Add(-opts.since)
 
 	// convert to perfStats
-	fmt.Print(allJobs)
-	results, err := getJobResults(ctx, storageClient, allJobs, since)
+	//fmt.Print(allJobs)
+	collection, err := extractCollectionFromLogs(ctx, storageClient, allJobs, since)
 	if err != nil {
-		log.Fatalf("error getting job results %#+v\n", err)
+		log.Fatalf("error getting job collection %#+v\n", err)
 	}
 
-	fmt.Print(results)
+	//fmt.Print(collection)
 
-	weeklyVMIResults, err := getWeeklyVMIResults(results)
+	weeklyVMIResults, err := getWeeklyVMIResults(collection)
 	if err != nil {
-		log.Fatalf("error getting weekly vmi results %#+v\n", err)
+		log.Fatalf("error getting weekly vmi collection %#+v\n", err)
 	}
 
-	weeklyVMResults, err := getWeeklyVMResults(results)
+	weeklyVMResults, err := getWeeklyVMResults(collection)
 	if err != nil {
 		log.Fatalf("error getting weekly vm results %#+v\n", err)
 	}
 
-	err = calculateAVGAndWriteOutput(weeklyVMIResults, "vmi", ResultTypeVMICreationToRunningP95)
+	err = calculateAVGAndWriteOutput(weeklyVMIResults, "vmi", opts.outputDir, strings.Split(opts.vmiMetricsList, ",")...)
 	if err != nil {
 		log.Fatalf("error writing vmi avg results to json file %#+v\n", err)
 	}
 
-	err = calculateAVGAndWriteOutput(weeklyVMResults, "vm", ResultTypeVMICreationToRunningP95)
+	err = calculateAVGAndWriteOutput(weeklyVMResults, "vm", opts.outputDir, strings.Split(opts.vmiMetricsList, ",")...)
 	if err != nil {
 		log.Fatalf("error writing vm avg results to json file %#+v\n", err)
 	}
@@ -109,7 +118,16 @@ type Collection map[string]struct {
 	VMResult  Result
 }
 
-func getJobResults(ctx context.Context, storageClient *storage.Client, jobResults []string, since time.Time) (Collection, error) {
+func listAllJobs(ctx context.Context, client *storage.Client) ([]string, error) {
+	jobDir := "logs"
+	jobDirs, err := ListGcsObjects(ctx, client, BucketName, jobDir+"/", "/")
+	if err != nil {
+		return nil, fmt.Errorf("Failed to list jobs for bucket %s: %s", BucketName, jobDir)
+	}
+	return jobDirs, nil
+}
+
+func extractCollectionFromLogs(ctx context.Context, storageClient *storage.Client, jobResults []string, since time.Time) (Collection, error) {
 	r := Collection{}
 	errs := []error{}
 	for _, j := range jobResults {
@@ -166,15 +184,6 @@ func getWeeklyVMIResults(results Collection) (map[YearWeek][]Result, error) {
 		weeklyData[yw] = []Result{value.VMIResult}
 	}
 	return weeklyData, nil
-}
-
-func listAllJobs(ctx context.Context, client *storage.Client) ([]string, error) {
-	jobDir := "logs"
-	jobDirs, err := ListGcsObjects(ctx, client, BucketName, jobDir+"/", "/")
-	if err != nil {
-		return nil, fmt.Errorf("Failed to list jobs for bucket %s: %s", BucketName, jobDir)
-	}
-	return jobDirs, nil
 }
 
 func getDateForJob(ctx context.Context, client *storage.Client, jobID string) (time.Time, error) {
