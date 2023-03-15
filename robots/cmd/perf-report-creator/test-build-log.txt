@@ -1,0 +1,2826 @@
+Bazel remote cache is enabled, generating .bazelrcs ...
+CC:12.2.1,PY:3.11.1,RPM:4.18.0
+create_bazel_cache_rcs.sh: Configuring '/root/.bazelrc' and '/etc/bazel.bazelrc' with
+# ------------------------------------------------------------------------------
+startup --host_jvm_args=-Dbazel.DigestFunction=sha256
+build --remote_local_fallback
+build --remote_http_cache=http://bazel-cache.kubevirt-prow:8080/kubevirt/kubevirt,e0d67400dd7b93d17d0afe6617a10001
+# ------------------------------------------------------------------------------
+Adding /etc/docker-mirror-proxy/ca.crt as a trusted root CA
+Enabling IPV6.
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.all.forwarding = 1
+Podman in Container enabled, initializing in podman compatible mode...
+Waiting for podman socket to be ready, sleeping for 1 seconds.
+================================================================================
+Done setting up podman in container.
++ /bin/sh -c '# Build the perfscale-audit binary
+make bazel-build
+
+# Create k8s cluster
+make cluster-up
+
+# Push and deploy kubevirt
+make cluster-sync
+
+FUNC_TEST_ARGS="--no-color --seed=42" make perftest
+'
+hack/dockerized "export BUILD_ARCH= && export DOCKER_TAG= && hack/bazel-fmt.sh && ./hack/multi-arch.sh build"
+Regenerating sandbox
+2023/03/13 13:39:46 Downloading https://releases.bazel.build/5.3.1/release/bazel-5.3.1-linux-x86_64...
+Extracting Bazel installation...
+Starting local Bazel server and connecting to it...
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 880f2ae2-8c7c-4c4b-b0ff-2b39ee3a43f2
+Loading:
+Loading: 0 packages loaded
+Loading: 0 packages loaded
+Loading: 0 packages loaded
+Loading: 0 packages loaded
+Loading: 0 packages loaded
+Loading: 0 packages loaded
+Loading: 0 packages loaded
+Loading: 0 packages loaded
+Loading: 0 packages loaded
+Loading: 0 packages loaded
+Analyzing: target //:gazelle (1 packages loaded, 0 targets configured)
+INFO: Analyzed target //:gazelle (91 packages loaded, 9128 targets configured).
+INFO: Found 1 target...
+[0 / 10] [Prepa] Expanding template gazelle-runner.bash
+Target //:gazelle up-to-date:
+  bazel-bin/gazelle-runner.bash
+  bazel-bin/gazelle
+INFO: Elapsed time: 41.347s, Critical Path: 1.64s
+INFO: 55 processes: 42 remote cache hit, 13 internal.
+INFO: Build completed successfully, 55 total actions
+INFO: Running command line: bazel-bin/gazelle -exclude vendor/google.golang.org/grpc --exclude cluster-up
+INFO: Build completed successfully, 55 total actions
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/github.com/seccomp/libseccomp-golang/seccomp_internal.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/github.com/seccomp/libseccomp-golang/seccomp_internal.go: pkg-config not supported: #cgo pkg-config: libseccomp
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/callbacks_helper.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/callbacks_helper.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/connect.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/connect.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/connect_helper.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/connect_helper.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/domain.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/domain.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/domain_checkpoint.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/domain_checkpoint.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/domain_events.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/domain_events.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/domain_events_helper.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/domain_events_helper.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/domain_snapshot.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/domain_snapshot.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/error.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/error.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/error_helper.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/error_helper.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/events.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/events.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/events_helper.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/events_helper.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/interface.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/interface.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_common.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_common.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_domain.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_domain.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_domain_checkpoint.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_domain_checkpoint.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_domain_snapshot.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_domain_snapshot.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_event.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_event.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_host.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_host.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_interface.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_interface.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_network.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_network.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_nodedev.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_nodedev.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_nwfilter.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_nwfilter.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_secret.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_secret.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_storage.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_storage.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_stream.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_stream.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_virterror.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_generated_functions_static_virterror.go: pkg-config not supported: #cgo pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_lxc_generated_functions_static.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_lxc_generated_functions_static.go: pkg-config not supported: #cgo pkg-config: libvirt-lxc
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_qemu_generated_functions_static.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/libvirt_qemu_generated_functions_static.go: pkg-config not supported: #cgo pkg-config: libvirt-qemu
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/lxc.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/lxc.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/network.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/network.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/network_events.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/network_events.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/network_events_helper.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/network_events_helper.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/network_port.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/network_port.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/node_device.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/node_device.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/node_device_events.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/node_device_events.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/node_device_events_helper.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/node_device_events_helper.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/nwfilter.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/nwfilter.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/nwfilter_binding.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/nwfilter_binding.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/qemu.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/qemu.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/qemu_helper.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/qemu_helper.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/secret.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/secret.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/secret_events.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/secret_events.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/secret_events_helper.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/secret_events_helper.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/storage_pool.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/storage_pool.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/storage_pool_events.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/storage_pool_events.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/storage_pool_events_helper.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/storage_pool_events_helper.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/storage_volume.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/storage_volume.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/stream.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/stream.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/stream_helper.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/stream_helper.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+gazelle: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/typedparams.go: error reading go file: /home/prow/go/src/github.com/kubevirt/kubevirt/vendor/libvirt.org/go/libvirt/typedparams.go: pkg-config not supported: #cgo !libvirt_dlopen pkg-config: libvirt
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: bf2d038f-553d-4804-8974-2bd2454d0d00
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //rpm:sandbox_x86_64 (1 packages loaded, 0 targets configured)
+Analyzing: target //rpm:sandbox_x86_64 (109 packages loaded, 1 target configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_crypto: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+Analyzing: target //rpm:sandbox_x86_64 (171 packages loaded, 1192 targets configured)
+Analyzing: target //rpm:sandbox_x86_64 (172 packages loaded, 1192 targets configured)
+Analyzing: target //rpm:sandbox_x86_64 (192 packages loaded, 1609 targets configured)
+INFO: Analyzed target //rpm:sandbox_x86_64 (252 packages loaded, 2421 targets configured).
+INFO: Found 1 target...
+[0 / 3] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+[200 / 327] GoCompilePkg external/org_golang_google_protobuf/internal/impl/impl.a; Downloading external/org_golang_google_protobuf/internal/impl/impl.a, 3.7 MiB / 4.9 MiB; 0s remote-cache ... (3 actions, 0 running)
+[325 / 327] GoLink external/bazeldnf/cmd/cmd_/cmd; Downloading external/bazeldnf/cmd/cmd_/cmd, 9.4 MiB / 14.8 MiB; 0s remote-cache
+[326 / 327] Converting sandboxroot_x86_64 to tar; Downloading rpm/sandboxroot_x86_64.tar, 120.8 MiB / 281.5 MiB; 1s remote-cache
+INFO: From Converting sandboxroot_x86_64 to tar:
+Flag shorthand -s has been deprecated, use --symlinks instead
+Target //rpm:sandbox_x86_64 up-to-date:
+  bazel-bin/rpm/sandbox_x86_64.bash
+INFO: Elapsed time: 11.835s, Critical Path: 5.64s
+INFO: 319 processes: 302 remote cache hit, 17 internal.
+INFO: Build completed successfully, 319 total actions
+INFO: Running command line: bazel-bin/rpm/sandbox_x86_64.bash
+INFO: Build completed successfully, 319 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 3d822000-0ff3-4e83-85c2-28e99dd168c7
+INFO: Starting clean (this may take a while). Consider using --async if the clean takes more than several minutes.
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 47a89e29-cfec-4133-a13f-cd8a9a33b363
+Loading:
+Loading: 0 packages loaded
+Loading: 0 packages loaded
+    currently loading: vendor/mvdan.cc/sh/v3/cmd/shfmt
+Analyzing: target //vendor/mvdan.cc/sh/v3/cmd/shfmt:shfmt (1 packages loaded, 0 targets configured)
+INFO: Analyzed target //vendor/mvdan.cc/sh/v3/cmd/shfmt:shfmt (123 packages loaded, 9785 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //vendor/mvdan.cc/sh/v3/cmd/shfmt:shfmt up-to-date:
+  bazel-bin/vendor/mvdan.cc/sh/v3/cmd/shfmt/shfmt_/shfmt
+INFO: Elapsed time: 2.599s, Critical Path: 0.64s
+INFO: 80 processes: 75 remote cache hit, 5 internal.
+INFO: Build completed successfully, 80 total actions
+INFO: Running command line: bazel-bin/vendor/mvdan.cc/sh/v3/cmd/shfmt/shfmt_/shfmt -i 4 -w /home/prow/go/src/github.com/kubevirt/kubevirt/hack/ /home/prow/go/src/github.com/kubevirt/kubevirt/images/
+INFO: Build completed successfully, 80 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 3a47a103-a743-4059-a89c-db9461f3680f
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:gazelle (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:gazelle (35 packages loaded, 438 targets configured).
+INFO: Found 1 target...
+[0 / 4] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:gazelle up-to-date:
+  bazel-bin/gazelle-runner.bash
+  bazel-bin/gazelle
+INFO: Elapsed time: 2.037s, Critical Path: 1.39s
+INFO: 55 processes: 42 remote cache hit, 13 internal.
+INFO: Build completed successfully, 55 total actions
+INFO: Running command line: bazel-bin/gazelle pkg/ tools/ tests/ cmd/
+INFO: Build completed successfully, 55 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: cf7ceddb-0abd-4c18-b81e-77bdf14aa2bd
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:goimports (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:goimports (10 packages loaded, 144 targets configured).
+INFO: Found 1 target...
+[0 / 2] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:goimports up-to-date:
+  bazel-bin/goimports.bash
+INFO: Elapsed time: 0.438s, Critical Path: 0.16s
+INFO: 16 processes: 12 remote cache hit, 4 internal.
+INFO: Build completed successfully, 16 total actions
+INFO: Running command line: bazel-bin/goimports.bash
+INFO: Build completed successfully, 16 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: d16def3f-26f6-4b23-b853-c4e57496d886
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:buildifier (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:buildifier (62 packages loaded, 292 targets configured).
+INFO: Found 1 target...
+[0 / 2] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:buildifier up-to-date:
+  bazel-bin/buildifier.bash
+INFO: Elapsed time: 1.163s, Critical Path: 0.81s
+INFO: 78 processes: 69 remote cache hit, 9 internal.
+INFO: Build completed successfully, 78 total actions
+INFO: Running command line: bazel-bin/buildifier.bash
+INFO: Build completed successfully, 78 total actions
+Sandbox is up to date
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: bf5a2064-dbc5-4d33-b72c-148e841782aa
+Loading:
+Loading: 0 packages loaded
+Analyzing: 107 targets (35 packages loaded, 0 targets configured)
+Analyzing: 107 targets (1127 packages loaded, 6952 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+Analyzing: 107 targets (1305 packages loaded, 13405 targets configured)
+Analyzing: 107 targets (1307 packages loaded, 13646 targets configured)
+Analyzing: 107 targets (1308 packages loaded, 13649 targets configured)
+Analyzing: 107 targets (1311 packages loaded, 13681 targets configured)
+Analyzing: 107 targets (1311 packages loaded, 13681 targets configured)
+Analyzing: 107 targets (1311 packages loaded, 13681 targets configured)
+Analyzing: 107 targets (1330 packages loaded, 13949 targets configured)
+Analyzing: 107 targets (1331 packages loaded, 13956 targets configured)
+Analyzing: 107 targets (1331 packages loaded, 13956 targets configured)
+INFO: Analyzed 107 targets (1386 packages loaded, 14846 targets configured).
+INFO: Found 107 targets...
+[0 / 5] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+[809 / 4,811] GUNZIP external/go_image_base/image/001.tar.gz.nogz; Downloading external/go_image_base/image/001.tar.gz.nogz, 7.3 MiB / 17.5 MiB; 3s remote-cache ... (66 actions, 0 running)
+[814 / 4,811] GUNZIP external/fedora/image/000.tar.gz.nogz; Downloading external/fedora/image/000.tar.gz.nogz, 37.5 MiB / 175 MiB; 8s remote-cache ... (65 actions, 0 running)
+[1,055 / 4,811] GUNZIP external/fedora/image/000.tar.gz.nogz; Downloading external/fedora/image/000.tar.gz.nogz, 82 MiB / 175 MiB; 14s remote-cache ... (43 actions, 0 running)
+[2,235 / 4,811] GUNZIP external/fedora/image/000.tar.gz.nogz; Downloading external/fedora/image/000.tar.gz.nogz, 117.7 MiB / 175 MiB; 20s remote-cache ... (21 actions, 0 running)
+[2,912 / 4,811] GUNZIP external/fedora/image/000.tar.gz.nogz; Downloading external/fedora/image/000.tar.gz.nogz, 138.3 MiB / 175 MiB; 27s remote-cache ... (77 actions, 0 running)
+[3,465 / 4,811] GUNZIP external/fedora/image/000.tar.gz.nogz; Downloading external/fedora/image/000.tar.gz.nogz, 154.1 MiB / 175 MiB; 36s remote-cache ... (44 actions, 0 running)
+[4,229 / 4,811] GUNZIP external/fedora/image/000.tar.gz.nogz; Downloading external/fedora/image/000.tar.gz.nogz, 172 MiB / 175 MiB; 45s remote-cache ... (36 actions, 4 running)
+INFO: From GoLink cmd/virt-exportserver/virt-exportserver_/virt-exportserver:
+/usr/bin/ld: /tmp/go-link-2406345088/000021.o: in function `mygetgrouplist':
+/_/os/user/getgrouplist_unix.go:15: warning: Using 'getgrouplist' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-2406345088/000020.o: in function `mygetgrgid_r':
+/_/os/user/cgo_lookup_unix.go:37: warning: Using 'getgrgid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-2406345088/000020.o: in function `mygetgrnam_r':
+/_/os/user/cgo_lookup_unix.go:42: warning: Using 'getgrnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-2406345088/000020.o: in function `mygetpwnam_r':
+/_/os/user/cgo_lookup_unix.go:32: warning: Using 'getpwnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-2406345088/000020.o: in function `mygetpwuid_r':
+/_/os/user/cgo_lookup_unix.go:27: warning: Using 'getpwuid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-2406345088/000004.o: in function `_cgo_2ac87069779a_C2func_getaddrinfo':
+/tmp/go-build/cgo-gcc-prolog:58: warning: Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+[4,575 / 4,811] Converting libvirt-devel_x86_64 to tar; Downloading rpm/libvirt-devel_x86_64.tar, 81.3 MiB / 153.4 MiB; 35s remote-cache ... (23 actions, 2 running)
+INFO: From ImageLayer cmd/virt-exportserver/version-container-layer.tar:
+Duplicate file in archive: ./etc/passwd, picking first occurrence
+INFO: From GoLink cmd/virt-exportproxy/virt-exportproxy_/virt-exportproxy:
+/usr/bin/ld: /tmp/go-link-1456631206/000021.o: in function `mygetgrouplist':
+/_/os/user/getgrouplist_unix.go:15: warning: Using 'getgrouplist' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-1456631206/000020.o: in function `mygetgrgid_r':
+/_/os/user/cgo_lookup_unix.go:37: warning: Using 'getgrgid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-1456631206/000020.o: in function `mygetgrnam_r':
+/_/os/user/cgo_lookup_unix.go:42: warning: Using 'getgrnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-1456631206/000020.o: in function `mygetpwnam_r':
+/_/os/user/cgo_lookup_unix.go:32: warning: Using 'getpwnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-1456631206/000020.o: in function `mygetpwuid_r':
+/_/os/user/cgo_lookup_unix.go:27: warning: Using 'getpwuid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-1456631206/000004.o: in function `_cgo_2ac87069779a_C2func_getaddrinfo':
+/tmp/go-build/cgo-gcc-prolog:58: warning: Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+INFO: From GoLink cmd/virt-api/virt-api_/virt-api:
+/usr/bin/ld: /tmp/go-link-2481899668/000021.o: in function `mygetgrouplist':
+/_/os/user/getgrouplist_unix.go:15: warning: Using 'getgrouplist' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-2481899668/000020.o: in function `mygetgrgid_r':
+/_/os/user/cgo_lookup_unix.go:37: warning: Using 'getgrgid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-2481899668/000020.o: in function `mygetgrnam_r':
+/_/os/user/cgo_lookup_unix.go:42: warning: Using 'getgrnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-2481899668/000020.o: in function `mygetpwnam_r':
+/_/os/user/cgo_lookup_unix.go:32: warning: Using 'getpwnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-2481899668/000020.o: in function `mygetpwuid_r':
+/_/os/user/cgo_lookup_unix.go:27: warning: Using 'getpwuid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-2481899668/000004.o: in function `_cgo_2ac87069779a_C2func_getaddrinfo':
+/tmp/go-build/cgo-gcc-prolog:58: warning: Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+INFO: From Converting handlerbase_x86_64 to tar:
+Flag shorthand -s has been deprecated, use --symlinks instead
+INFO: From GoLink cmd/virt-controller/virt-controller_/virt-controller:
+/usr/bin/ld: /tmp/go-link-3640855813/000021.o: in function `mygetgrouplist':
+/_/os/user/getgrouplist_unix.go:15: warning: Using 'getgrouplist' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-3640855813/000020.o: in function `mygetgrgid_r':
+/_/os/user/cgo_lookup_unix.go:37: warning: Using 'getgrgid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-3640855813/000020.o: in function `mygetgrnam_r':
+/_/os/user/cgo_lookup_unix.go:42: warning: Using 'getgrnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-3640855813/000020.o: in function `mygetpwnam_r':
+/_/os/user/cgo_lookup_unix.go:32: warning: Using 'getpwnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-3640855813/000020.o: in function `mygetpwuid_r':
+/_/os/user/cgo_lookup_unix.go:27: warning: Using 'getpwuid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-3640855813/000004.o: in function `_cgo_2ac87069779a_C2func_getaddrinfo':
+/tmp/go-build/cgo-gcc-prolog:58: warning: Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+INFO: From GoLink cmd/virt-operator/virt-operator_/virt-operator:
+/usr/bin/ld: /tmp/go-link-3185040216/000021.o: in function `mygetgrouplist':
+/_/os/user/getgrouplist_unix.go:15: warning: Using 'getgrouplist' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-3185040216/000020.o: in function `mygetgrgid_r':
+/_/os/user/cgo_lookup_unix.go:37: warning: Using 'getgrgid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-3185040216/000020.o: in function `mygetgrnam_r':
+/_/os/user/cgo_lookup_unix.go:42: warning: Using 'getgrnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-3185040216/000020.o: in function `mygetpwnam_r':
+/_/os/user/cgo_lookup_unix.go:32: warning: Using 'getpwnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-3185040216/000020.o: in function `mygetpwuid_r':
+/_/os/user/cgo_lookup_unix.go:27: warning: Using 'getpwuid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /tmp/go-link-3185040216/000004.o: in function `_cgo_2ac87069779a_C2func_getaddrinfo':
+/tmp/go-build/cgo-gcc-prolog:58: warning: Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+[4,765 / 4,811] Converting libguestfs-tools to tar; Downloading rpm/libguestfs-tools.tar, 265.8 MiB / 353.2 MiB; 49s remote-cache ... (8 actions, 0 running)
+INFO: From Converting launcherbase_x86_64 to tar:
+Flag shorthand -s has been deprecated, use --symlinks instead
+INFO: From Converting libguestfs-tools to tar:
+Flag shorthand -s has been deprecated, use --symlinks instead
+INFO: From ImageLayer cmd/virt-handler/version-container-layer.tar:
+Duplicate file in archive: ./etc/nsswitch.conf, picking first occurrence
+Duplicate file in archive: ./etc/group, picking first occurrence
+Duplicate file in archive: ./etc/passwd, picking first occurrence
+INFO: From ImageLayer cmd/virt-launcher/version-container-layer.tar:
+Duplicate file in archive: ./etc/nsswitch.conf, picking first occurrence
+Duplicate file in archive: ./etc/libvirt/qemu.conf, picking first occurrence
+Duplicate file in archive: ./etc/libvirt/virtqemud.conf, picking first occurrence
+Duplicate file in archive: ./etc/group, picking first occurrence
+Duplicate file in archive: ./etc/passwd, picking first occurrence
+Duplicate file in archive: ./usr/share/licenses/systemd/LICENSE.LGPL2.1, picking first occurrence
+INFO: From ImageLayer cmd/libguestfs/version-container-layer.tar:
+Duplicate file in archive: ./usr/share/man/man3/nfs4_uid_to_name.3.gz, picking first occurrence
+Duplicate file in archive: ./etc/passwd, picking first occurrence
+Duplicate file in archive: ./usr/share/licenses/systemd/LICENSE.LGPL2.1, picking first occurrence
+[4,804 / 4,811] [Prepa] SHA256 cmd/libguestfs/version-container-layer.tar.sha256
+INFO: Elapsed time: 113.324s, Critical Path: 86.69s
+INFO: 4747 processes: 4414 remote cache hit, 306 internal, 27 linux-sandbox.
+INFO: Build completed successfully, 4747 total actions
+INFO: Build completed successfully, 4747 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 926dad19-62dd-4750-898d-9a6fd5775df1
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-dump (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:build-dump (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 2] [Prepa] BazelWorkspaceStatusAction stable-status.txt ... (2 actions, 0 running)
+Target //:build-dump up-to-date:
+  bazel-bin/dump-copier
+INFO: Elapsed time: 0.674s, Critical Path: 0.08s
+INFO: 2 processes: 1 remote cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/dump-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/dump/dump
+INFO: Build completed successfully, 2 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 86ac6070-8b9e-4b2c-be30-36296ccbb7d9
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-perfscale-audit (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-perfscale-audit (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-perfscale-audit up-to-date:
+  bazel-bin/perfscale-audit-copier
+INFO: Elapsed time: 0.501s, Critical Path: 0.08s
+INFO: 2 processes: 1 remote cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/perfscale-audit-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/perfscale-audit/perfscale-audit
+INFO: Build completed successfully, 2 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 48f3812d-85ff-4a4a-949c-40041825743e
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-perfscale-load-generator (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-perfscale-load-generator (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-perfscale-load-generator up-to-date:
+  bazel-bin/perfscale-load-generator-copier
+INFO: Elapsed time: 0.514s, Critical Path: 0.08s
+INFO: 2 processes: 1 remote cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/perfscale-load-generator-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/perfscale-load-generator/perfscale-load-generator
+INFO: Build completed successfully, 2 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 782c9f85-4b97-46c3-8718-c534ca3ad615
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-cluster-profiler (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-cluster-profiler (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-cluster-profiler up-to-date:
+  bazel-bin/cluster-profiler-copier
+INFO: Elapsed time: 0.443s, Critical Path: 0.08s
+INFO: 2 processes: 1 remote cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/cluster-profiler-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/cluster-profiler/cluster-profiler
+INFO: Build completed successfully, 2 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: ea97d4ed-b4f6-491d-90c4-7d87ef51cee1
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-virtctl (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-virtctl (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-virtctl up-to-date:
+  bazel-bin/virtctl-copier
+INFO: Elapsed time: 0.549s, Critical Path: 0.08s
+INFO: 2 processes: 1 remote cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/virtctl-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/virtctl/virtctl
+INFO: Build completed successfully, 2 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 14587633-be50-4f7b-aecb-bd80cd7bd455
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-virtctl-amd64 (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-virtctl-amd64 (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-virtctl-amd64 up-to-date:
+  bazel-bin/virtctl-copier-amd64
+INFO: Elapsed time: 0.484s, Critical Path: 0.12s
+INFO: 2 processes: 1 internal, 1 linux-sandbox.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/virtctl-copier-amd64 /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/virtctl/virtctl-v0.59.0-rc.1-282-gbaaec5ccd-linux-amd64
+INFO: Build completed successfully, 2 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 7ae68777-7a6c-454a-bbb7-fe209be6aac5
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-virtctl-darwin (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-virtctl-darwin (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-virtctl-darwin up-to-date:
+  bazel-bin/virtctl-copier-darwin
+INFO: Elapsed time: 0.541s, Critical Path: 0.13s
+INFO: 2 processes: 1 internal, 1 linux-sandbox.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/virtctl-copier-darwin /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/virtctl/virtctl-v0.59.0-rc.1-282-gbaaec5ccd-darwin-amd64
+INFO: Build completed successfully, 2 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 6f66d94f-7a0d-40e6-be65-e55cd4c0c6ee
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-virtctl-windows (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-virtctl-windows (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-virtctl-windows up-to-date:
+  bazel-bin/virtctl-copier-windows
+INFO: Elapsed time: 0.543s, Critical Path: 0.12s
+INFO: 2 processes: 1 internal, 1 linux-sandbox.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/virtctl-copier-windows /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/virtctl/virtctl-v0.59.0-rc.1-282-gbaaec5ccd-windows-amd64.exe
+INFO: Build completed successfully, 2 total actions
+./hack/cluster-up.sh
+selecting podman as container runtime
+Trying to pull quay.io/kubevirtci/gocli:2303091010-3e52bb0...
+Getting image source signatures
+Copying blob sha256:50d282b9f3ddae109516f02eb5aa3cedd03ec3b9162d5e1e6eabbc2c7cbc4e11
+Copying config sha256:3f889da733fa221ea8d461e64450c8314290fe9977e26ca2944d3f698ee459e0
+Writing manifest to image destination
+Storing signatures
+Download the image quay.io/kubevirtci/k8s-1.25:2303091010-3e52bb0
+time="2023-03-13T13:42:56Z" level=info msg="Using remote image quay.io/kubevirtci/k8s-1.25:2303091010-3e52bb0"
+Downloading ..................................................................................................................................................
+time="2023-03-13T13:45:13Z" level=info msg="Using remote image quay.io/libpod/registry:2.7"
+Downloading ................
+time="2023-03-13T13:45:14Z" level=info msg="waiting for node to come up"
+VM is up
++ '[' --vendor '!=' --vendor ']'
++ vendor=8086:2668
++ pci_address=(`lspci -D -d ${vendor}`)
+++ lspci -D -d 8086:2668
++ pci_address=0000:00:04.0
++ dev_sysfs_path=/sys/bus/pci/devices/0000:00:04.0
++ [[ ! -d /sys/bus/pci/devices/0000:00:04.0 ]]
++ [[ ! -d /sys/bus/pci/devices/0000:00:04.0/iommu/ ]]
++ driver_path=/sys/bus/pci/devices/0000:00:04.0/driver
++ driver_override=/sys/bus/pci/devices/0000:00:04.0/driver_override
++ modprobe -i vfio-pci
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:04.0/driver
+++ local dev_driver=../../../bus/pci/drivers/snd_hda_intel
+++ echo snd_hda_intel
++ driver=snd_hda_intel
++ [[ snd_hda_intel != \v\f\i\o\-\p\c\i ]]
++ echo 0000:00:04.0
++ echo vfio-pci
++ echo 0000:00:04.0
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:04.0/driver
+++ local dev_driver=../../../bus/pci/drivers/vfio-pci
+++ echo vfio-pci
++ new_driver=vfio-pci
++ [[ vfio-pci != \v\f\i\o\-\p\c\i ]]
++ '[' --vendor '!=' --vendor ']'
++ vendor=8086:2415
++ pci_address=(`lspci -D -d ${vendor}`)
+++ lspci -D -d 8086:2415
++ pci_address=0000:00:05.0
++ dev_sysfs_path=/sys/bus/pci/devices/0000:00:05.0
++ [[ ! -d /sys/bus/pci/devices/0000:00:05.0 ]]
++ [[ ! -d /sys/bus/pci/devices/0000:00:05.0/iommu/ ]]
++ driver_path=/sys/bus/pci/devices/0000:00:05.0/driver
++ driver_override=/sys/bus/pci/devices/0000:00:05.0/driver_override
++ modprobe -i vfio-pci
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:05.0/driver
+++ local dev_driver=../../../bus/pci/drivers/snd_intel8x0
+++ echo snd_intel8x0
++ driver=snd_intel8x0
++ [[ snd_intel8x0 != \v\f\i\o\-\p\c\i ]]
++ echo 0000:00:05.0
++ echo vfio-pci
++ echo 0000:00:05.0
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:05.0/driver
+++ local dev_driver=../../../bus/pci/drivers/vfio-pci
+++ echo vfio-pci
++ new_driver=vfio-pci
++ [[ vfio-pci != \v\f\i\o\-\p\c\i ]]
++ kubeadm_conf=/etc/kubernetes/kubeadm.conf
++ cni_manifest=/provision/cni.yaml
++ '[' -f /home/vagrant/single_stack ']'
++ timeout=30
++ interval=5
++ hostnamectl
++ grep Transient
+Transient hostname: node01
++ '[' -f /sys/fs/cgroup/cgroup.controllers ']'
+++ kubectl version --short --client
+++ cut -d: -f2
+++ sed 's/ //g'
+++ cut -c2-
+Flag --short has been deprecated, and will be removed in the future. The --short output will become the default.
++ version='1.25.7
+4.5.7'
+++ systemctl status crio
+++ grep active
+++ wc -l
++ [[ 1 -eq 0 ]]
++ sudo swapoff -a
++ ip address show dev eth0
++ grep global
++ grep inet6
+    inet6 fd00::101/128 scope global tentative noprefixroute
++ kubeadm init --config /etc/kubernetes/kubeadm.conf -v5
+I0313 13:45:29.747651    1933 initconfiguration.go:254] loading configuration from "/etc/kubernetes/kubeadm.conf"
+I0313 13:45:29.752457    1933 initconfiguration.go:116] detected and using CRI socket: unix:///var/run/crio/crio.sock
+I0313 13:45:29.752709    1933 interface.go:432] Looking for default routes with IPv4 addresses
+I0313 13:45:29.752721    1933 interface.go:437] Default route transits interface "eth0"
+I0313 13:45:29.752794    1933 interface.go:209] Interface eth0 is up
+I0313 13:45:29.752838    1933 interface.go:257] Interface "eth0" has 3 addresses :[192.168.66.101/24 fd00::101/128 fe80::ff4e:be5:88a1:5c18/64].
+I0313 13:45:29.752875    1933 interface.go:224] Checking addr  192.168.66.101/24.
+I0313 13:45:29.752882    1933 interface.go:231] IP found 192.168.66.101
+I0313 13:45:29.752888    1933 interface.go:263] Found valid IPv4 address 192.168.66.101 for interface "eth0".
+I0313 13:45:29.752892    1933 interface.go:443] Found active IP 192.168.66.101
+I0313 13:45:29.752930    1933 kubelet.go:196] the value of KubeletConfiguration.cgroupDriver is empty; setting it to "systemd"
+[init] Using Kubernetes version: v1.25.7
+[preflight] Running pre-flight checks
+I0313 13:45:29.765258    1933 checks.go:568] validating Kubernetes and kubeadm version
+I0313 13:45:29.765278    1933 checks.go:168] validating if the firewall is enabled and active
+I0313 13:45:29.779211    1933 checks.go:203] validating availability of port 6443
+I0313 13:45:29.780285    1933 checks.go:203] validating availability of port 10259
+I0313 13:45:29.780322    1933 checks.go:203] validating availability of port 10257
+I0313 13:45:29.780345    1933 checks.go:280] validating the existence of file /etc/kubernetes/manifests/kube-apiserver.yaml
+I0313 13:45:29.780523    1933 checks.go:280] validating the existence of file /etc/kubernetes/manifests/kube-controller-manager.yaml
+I0313 13:45:29.780534    1933 checks.go:280] validating the existence of file /etc/kubernetes/manifests/kube-scheduler.yaml
+I0313 13:45:29.780540    1933 checks.go:280] validating the existence of file /etc/kubernetes/manifests/etcd.yaml
+I0313 13:45:29.780548    1933 checks.go:430] validating if the connectivity type is via proxy or direct
+I0313 13:45:29.780589    1933 checks.go:469] validating http connectivity to first IP address in the CIDR
+I0313 13:45:29.780604    1933 checks.go:469] validating http connectivity to first IP address in the CIDR
+I0313 13:45:29.780612    1933 checks.go:469] validating http connectivity to first IP address in the CIDR
+I0313 13:45:29.780618    1933 checks.go:469] validating http connectivity to first IP address in the CIDR
+I0313 13:45:29.780626    1933 checks.go:104] validating the container runtime
+I0313 13:45:29.826030    1933 checks.go:329] validating the contents of file /proc/sys/net/bridge/bridge-nf-call-iptables
+I0313 13:45:29.826109    1933 checks.go:329] validating the contents of file /proc/sys/net/ipv4/ip_forward
+I0313 13:45:29.826139    1933 checks.go:644] validating whether swap is enabled or not
+I0313 13:45:29.826178    1933 checks.go:370] validating the presence of executable crictl
+I0313 13:45:29.826201    1933 checks.go:370] validating the presence of executable conntrack
+I0313 13:45:29.826382    1933 checks.go:370] validating the presence of executable ip
+I0313 13:45:29.826396    1933 checks.go:370] validating the presence of executable iptables
+I0313 13:45:29.826406    1933 checks.go:370] validating the presence of executable mount
+I0313 13:45:29.826466    1933 checks.go:370] validating the presence of executable nsenter
+I0313 13:45:29.826480    1933 checks.go:370] validating the presence of executable ebtables
+I0313 13:45:29.826514    1933 checks.go:370] validating the presence of executable ethtool
+I0313 13:45:29.826527    1933 checks.go:370] validating the presence of executable socat
+I0313 13:45:29.826648    1933 checks.go:370] validating the presence of executable tc
+I0313 13:45:29.826733    1933 checks.go:370] validating the presence of executable touch
+I0313 13:45:29.826760    1933 checks.go:516] running all checks
+I0313 13:45:29.835461    1933 checks.go:401] checking whether the given node name is valid and reachable using net.LookupHost
+I0313 13:45:29.836746    1933 checks.go:610] validating kubelet version
+I0313 13:45:29.907010    1933 checks.go:130] validating if the "kubelet" service is enabled and active
+I0313 13:45:29.925325    1933 checks.go:203] validating availability of port 10250
+I0313 13:45:29.925610    1933 checks.go:203] validating availability of port 2379
+I0313 13:45:29.925660    1933 checks.go:203] validating availability of port 2380
+I0313 13:45:29.925684    1933 checks.go:243] validating the existence and emptiness of directory /var/lib/etcd
+[preflight] Pulling images required for setting up a Kubernetes cluster
+[preflight] This might take a minute or two, depending on the speed of your internet connection
+[preflight] You can also perform this action in beforehand using 'kubeadm config images pull'
+I0313 13:45:29.926183    1933 checks.go:832] using image pull policy: IfNotPresent
+I0313 13:45:29.985135    1933 checks.go:841] image exists: k8s.gcr.io/kube-apiserver:v1.25.7
+I0313 13:45:30.021198    1933 checks.go:841] image exists: k8s.gcr.io/kube-controller-manager:v1.25.7
+I0313 13:45:30.053243    1933 checks.go:841] image exists: k8s.gcr.io/kube-scheduler:v1.25.7
+I0313 13:45:30.088319    1933 checks.go:841] image exists: k8s.gcr.io/kube-proxy:v1.25.7
+I0313 13:45:30.119461    1933 checks.go:841] image exists: k8s.gcr.io/pause:3.8
+I0313 13:45:30.154502    1933 checks.go:841] image exists: k8s.gcr.io/etcd:3.5.6-0
+[certs] Using certificateDir folder "/etc/kubernetes/pki"
+I0313 13:45:30.189061    1933 checks.go:841] image exists: k8s.gcr.io/coredns:v1.9.3
+I0313 13:45:30.189136    1933 certs.go:112] creating a new certificate authority for ca
+[certs] Generating "ca" certificate and key
+I0313 13:45:30.586125    1933 certs.go:522] validating certificate period for ca certificate
+[certs] Generating "apiserver" certificate and key
+[certs] apiserver serving cert is signed for DNS names [kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local node01] and IPs [10.96.0.1 192.168.66.101]
+[certs] Generating "apiserver-kubelet-client" certificate and key
+I0313 13:45:30.959040    1933 certs.go:112] creating a new certificate authority for front-proxy-ca
+[certs] Generating "front-proxy-ca" certificate and key
+I0313 13:45:31.200435    1933 certs.go:522] validating certificate period for front-proxy-ca certificate
+[certs] Generating "front-proxy-client" certificate and key
+I0313 13:45:31.244459    1933 certs.go:112] creating a new certificate authority for etcd-ca
+[certs] Generating "etcd/ca" certificate and key
+I0313 13:45:31.328418    1933 certs.go:522] validating certificate period for etcd/ca certificate
+[certs] Generating "etcd/server" certificate and key
+[certs] etcd/server serving cert is signed for DNS names [localhost node01] and IPs [192.168.66.101 127.0.0.1 ::1]
+[certs] Generating "etcd/peer" certificate and key
+[certs] etcd/peer serving cert is signed for DNS names [localhost node01] and IPs [192.168.66.101 127.0.0.1 ::1]
+[certs] Generating "etcd/healthcheck-client" certificate and key
+[certs] Generating "apiserver-etcd-client" certificate and key
+I0313 13:45:32.502719    1933 certs.go:78] creating new public/private key files for signing service account users
+[certs] Generating "sa" key and public key
+[kubeconfig] Using kubeconfig folder "/etc/kubernetes"
+I0313 13:45:32.734172    1933 kubeconfig.go:103] creating kubeconfig file for admin.conf
+[kubeconfig] Writing "admin.conf" kubeconfig file
+I0313 13:45:32.869504    1933 kubeconfig.go:103] creating kubeconfig file for kubelet.conf
+[kubeconfig] Writing "kubelet.conf" kubeconfig file
+I0313 13:45:33.030583    1933 kubeconfig.go:103] creating kubeconfig file for controller-manager.conf
+[kubeconfig] Writing "controller-manager.conf" kubeconfig file
+I0313 13:45:33.114633    1933 kubeconfig.go:103] creating kubeconfig file for scheduler.conf
+[kubeconfig] Writing "scheduler.conf" kubeconfig file
+I0313 13:45:33.163323    1933 kubelet.go:66] Stopping the kubelet
+[kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+[patches] Reading patches from path "/provision/kubeadm-patches"
+[patches] Ignoring file "add-security-context-deployment-patch.yaml": unknown target, must be one of [etcd kube-apiserver kube-controller-manager kube-scheduler kubeletconfiguration]
+[patches] Found the following patch files: [etcd.yaml kube-apiserver.yaml kube-controller-manager.yaml kube-scheduler.yaml]
+[patches] Ignored the following files: [add-security-context-deployment-patch.yaml]
+[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+[kubelet-start] Starting the kubelet
+[control-plane] Using manifest folder "/etc/kubernetes/manifests"
+[control-plane] Creating static Pod manifest for "kube-apiserver"
+I0313 13:45:33.350022    1933 manifests.go:99] [control-plane] getting StaticPodSpecs
+I0313 13:45:33.350431    1933 certs.go:522] validating certificate period for CA certificate
+I0313 13:45:33.350507    1933 manifests.go:125] [control-plane] adding volume "audit-conf" for component "kube-apiserver"
+I0313 13:45:33.350513    1933 manifests.go:125] [control-plane] adding volume "audit-log" for component "kube-apiserver"
+I0313 13:45:33.350517    1933 manifests.go:125] [control-plane] adding volume "ca-certs" for component "kube-apiserver"
+I0313 13:45:33.350521    1933 manifests.go:125] [control-plane] adding volume "etc-pki" for component "kube-apiserver"
+I0313 13:45:33.350525    1933 manifests.go:125] [control-plane] adding volume "k8s-certs" for component "kube-apiserver"
+I0313 13:45:33.350529    1933 manifests.go:125] [control-plane] adding volume "psa" for component "kube-apiserver"
+[patches] Applied patch of type "application/strategic-merge-patch+json" to target "kube-apiserver"
+[control-plane] Creating static Pod manifest for "kube-controller-manager"
+[patches] Applied patch of type "application/strategic-merge-patch+json" to target "kube-controller-manager"
+[control-plane] Creating static Pod manifest for "kube-scheduler"
+[patches] Applied patch of type "application/strategic-merge-patch+json" to target "kube-scheduler"
+I0313 13:45:33.358539    1933 manifests.go:154] [control-plane] wrote static Pod manifest for component "kube-apiserver" to "/etc/kubernetes/manifests/kube-apiserver.yaml"
+I0313 13:45:33.358558    1933 manifests.go:99] [control-plane] getting StaticPodSpecs
+I0313 13:45:33.358758    1933 manifests.go:125] [control-plane] adding volume "ca-certs" for component "kube-controller-manager"
+I0313 13:45:33.358764    1933 manifests.go:125] [control-plane] adding volume "etc-pki" for component "kube-controller-manager"
+I0313 13:45:33.358769    1933 manifests.go:125] [control-plane] adding volume "flexvolume-dir" for component "kube-controller-manager"
+I0313 13:45:33.358773    1933 manifests.go:125] [control-plane] adding volume "k8s-certs" for component "kube-controller-manager"
+I0313 13:45:33.358777    1933 manifests.go:125] [control-plane] adding volume "kubeconfig" for component "kube-controller-manager"
+I0313 13:45:33.360732    1933 manifests.go:154] [control-plane] wrote static Pod manifest for component "kube-controller-manager" to "/etc/kubernetes/manifests/kube-controller-manager.yaml"
+I0313 13:45:33.360743    1933 manifests.go:99] [control-plane] getting StaticPodSpecs
+I0313 13:45:33.360927    1933 manifests.go:125] [control-plane] adding volume "kubeconfig" for component "kube-scheduler"
+[etcd] Creating static Pod manifest for local etcd in "/etc/kubernetes/manifests"
+I0313 13:45:33.362584    1933 manifests.go:154] [control-plane] wrote static Pod manifest for component "kube-scheduler" to "/etc/kubernetes/manifests/kube-scheduler.yaml"
+[patches] Applied patch of type "application/strategic-merge-patch+json" to target "etcd"
+I0313 13:45:33.368505    1933 local.go:65] [etcd] wrote Static Pod manifest for a local etcd member to "/etc/kubernetes/manifests/etcd.yaml"
+I0313 13:45:33.368530    1933 waitcontrolplane.go:83] [wait-control-plane] Waiting for the API server to be healthy
+[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 4m0s
+[apiclient] All control plane components are healthy after 7.004274 seconds
+[upload-config] Storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
+I0313 13:45:40.375557    1933 uploadconfig.go:110] [upload-config] Uploading the kubeadm ClusterConfiguration to a ConfigMap
+[kubelet] Creating a ConfigMap "kubelet-config" in namespace kube-system with the configuration for the kubelets in the cluster
+I0313 13:45:40.385809    1933 uploadconfig.go:124] [upload-config] Uploading the kubelet component config to a ConfigMap
+I0313 13:45:40.395030    1933 uploadconfig.go:129] [upload-config] Preserving the CRISocket information for the control-plane node
+I0313 13:45:40.395056    1933 patchnode.go:31] [patchnode] Uploading the CRI Socket information "unix:///var/run/crio/crio.sock" to the Node API object "node01" as an annotation
+[upload-certs] Skipping phase. Please see --upload-certs
+[mark-control-plane] Marking the node node01 as control-plane by adding the labels: [node-role.kubernetes.io/control-plane node.kubernetes.io/exclude-from-external-load-balancers]
+[mark-control-plane] Marking the node node01 as control-plane by adding the taints [node-role.kubernetes.io/control-plane:NoSchedule]
+[bootstrap-token] Using token: abcdef.1234567890123456
+[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles
+[bootstrap-token] Configured RBAC rules to allow Node Bootstrap tokens to get nodes
+[bootstrap-token] Configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
+[bootstrap-token] Configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
+[bootstrap-token] Configured RBAC rules to allow certificate rotation for all node client certificates in the cluster
+[bootstrap-token] Creating the "cluster-info" ConfigMap in the "kube-public" namespace
+I0313 13:45:41.464566    1933 clusterinfo.go:47] [bootstrap-token] loading admin kubeconfig
+I0313 13:45:41.465465    1933 clusterinfo.go:58] [bootstrap-token] copying the cluster from admin.conf to the bootstrap kubeconfig
+I0313 13:45:41.465733    1933 clusterinfo.go:70] [bootstrap-token] creating/updating ConfigMap in kube-public namespace
+I0313 13:45:41.467876    1933 clusterinfo.go:84] creating the RBAC rules for exposing the cluster-info ConfigMap in the kube-public namespace
+[kubelet-finalize] Updating "/etc/kubernetes/kubelet.conf" to point to a rotatable kubelet client certificate and key
+I0313 13:45:41.471858    1933 kubeletfinalize.go:90] [kubelet-finalize] Assuming that kubelet client certificate rotation is enabled: found "/var/lib/kubelet/pki/kubelet-client-current.pem"
+I0313 13:45:41.473891    1933 kubeletfinalize.go:134] [kubelet-finalize] Restarting the kubelet to enable client certificate rotation
+[addons] Applied essential addon: CoreDNS
+I0313 13:45:41.855412    1933 request.go:622] Waited for 150.153605ms due to client-side throttling, not priority and fairness, request: POST:https://192.168.66.101:6443/apis/rbac.authorization.k8s.io/v1/namespaces/kube-system/rolebindings?timeout=10s
+[addons] Applied essential addon: kube-proxy
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 192.168.66.101:6443 --token abcdef.1234567890123456 \
+	--discovery-token-ca-cert-hash sha256:4fa4d18c19b608c3edc5e13121e6b584ca9e52dd5f60110421f7dbc67fafc184
+++ cat /provision/kubeadm-patches/add-security-context-deployment-patch.yaml
++ kubectl --kubeconfig=/etc/kubernetes/admin.conf patch deployment coredns -n kube-system -p 'spec:
+  template:
+    spec:
+      securityContext:
+        seLinuxOptions:
+          type: spc_t'
+deployment.apps/coredns patched
++ kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f /provision/cni.yaml
+configmap/calico-config created
+customresourcedefinition.apiextensions.k8s.io/bgpconfigurations.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/bgppeers.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/blockaffinities.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/clusterinformations.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/felixconfigurations.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/globalnetworkpolicies.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/globalnetworksets.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/hostendpoints.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ipamblocks.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ipamconfigs.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ipamhandles.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ippools.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/kubecontrollersconfigurations.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/networkpolicies.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/networksets.crd.projectcalico.org created
+clusterrole.rbac.authorization.k8s.io/calico-kube-controllers created
+clusterrolebinding.rbac.authorization.k8s.io/calico-kube-controllers created
+clusterrole.rbac.authorization.k8s.io/calico-node created
+clusterrolebinding.rbac.authorization.k8s.io/calico-node created
+daemonset.apps/calico-node created
+serviceaccount/calico-node created
+deployment.apps/calico-kube-controllers created
+serviceaccount/calico-kube-controllers created
+poddisruptionbudget.policy/calico-kube-controllers created
++ kubectl --kubeconfig=/etc/kubernetes/admin.conf taint nodes node01 node-role.kubernetes.io/control-plane:NoSchedule-
+node/node01 untainted
++ kubectl --kubeconfig=/etc/kubernetes/admin.conf get nodes --no-headers
+node01   Ready   control-plane   4s    v1.25.7
++ kubectl_rc=0
++ retry_counter=0
++ [[ 0 -lt 20 ]]
++ [[ 0 -ne 0 ]]
++ local_volume_manifest=/provision/local-volume.yaml
++ kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f /provision/local-volume.yaml
+storageclass.storage.k8s.io/local created
+configmap/local-storage-config created
+clusterrolebinding.rbac.authorization.k8s.io/local-storage-provisioner-pv-binding created
+clusterrole.rbac.authorization.k8s.io/local-storage-provisioner-node-clusterrole created
+clusterrolebinding.rbac.authorization.k8s.io/local-storage-provisioner-node-binding created
+role.rbac.authorization.k8s.io/local-storage-provisioner-jobs-role created
+rolebinding.rbac.authorization.k8s.io/local-storage-provisioner-jobs-rolebinding created
+serviceaccount/local-storage-admin created
+daemonset.apps/local-volume-provisioner created
++ mkdir -p /var/lib/rook
++ chcon -t container_file_t /var/lib/rook
+time="2023-03-13T13:45:44Z" level=info msg="waiting for node to come up"
+VM is up
++ '[' --vendor '!=' --vendor ']'
++ vendor=8086:2668
++ pci_address=(`lspci -D -d ${vendor}`)
+++ lspci -D -d 8086:2668
++ pci_address=0000:00:04.0
++ dev_sysfs_path=/sys/bus/pci/devices/0000:00:04.0
++ [[ ! -d /sys/bus/pci/devices/0000:00:04.0 ]]
++ [[ ! -d /sys/bus/pci/devices/0000:00:04.0/iommu/ ]]
++ driver_path=/sys/bus/pci/devices/0000:00:04.0/driver
++ driver_override=/sys/bus/pci/devices/0000:00:04.0/driver_override
++ modprobe -i vfio-pci
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:04.0/driver
+++ local dev_driver=../../../bus/pci/drivers/snd_hda_intel
+++ echo snd_hda_intel
++ driver=snd_hda_intel
++ [[ snd_hda_intel != \v\f\i\o\-\p\c\i ]]
++ echo 0000:00:04.0
++ echo vfio-pci
++ echo 0000:00:04.0
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:04.0/driver
+++ local dev_driver=../../../bus/pci/drivers/vfio-pci
+++ echo vfio-pci
++ new_driver=vfio-pci
++ [[ vfio-pci != \v\f\i\o\-\p\c\i ]]
++ '[' --vendor '!=' --vendor ']'
++ vendor=8086:2415
++ pci_address=(`lspci -D -d ${vendor}`)
+++ lspci -D -d 8086:2415
++ pci_address=0000:00:05.0
++ dev_sysfs_path=/sys/bus/pci/devices/0000:00:05.0
++ [[ ! -d /sys/bus/pci/devices/0000:00:05.0 ]]
++ [[ ! -d /sys/bus/pci/devices/0000:00:05.0/iommu/ ]]
++ driver_path=/sys/bus/pci/devices/0000:00:05.0/driver
++ driver_override=/sys/bus/pci/devices/0000:00:05.0/driver_override
++ modprobe -i vfio-pci
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:05.0/driver
+++ local dev_driver=../../../bus/pci/drivers/snd_intel8x0
+++ echo snd_intel8x0
++ driver=snd_intel8x0
++ [[ snd_intel8x0 != \v\f\i\o\-\p\c\i ]]
++ echo 0000:00:05.0
++ echo vfio-pci
++ echo 0000:00:05.0
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:05.0/driver
+++ local dev_driver=../../../bus/pci/drivers/vfio-pci
+++ echo vfio-pci
++ new_driver=vfio-pci
++ [[ vfio-pci != \v\f\i\o\-\p\c\i ]]
++ source /var/lib/kubevirtci/shared_vars.sh
+++ set -ex
+++ export 'KUBELET_CGROUP_ARGS=--cgroup-driver=systemd --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice'
+++ KUBELET_CGROUP_ARGS='--cgroup-driver=systemd --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice'
+++ export ISTIO_VERSION=1.15.0
+++ ISTIO_VERSION=1.15.0
+++ export ISTIO_BIN_DIR=/opt/istio-/bin
+++ ISTIO_BIN_DIR=/opt/istio-/bin
++ nodeip=
++ control_ip=192.168.66.101
++ '[' -f /home/vagrant/single_stack ']'
++ timeout=30
++ interval=5
++ hostnamectl
++ grep Transient
+Transient hostname: node02
++ '[' -f /sys/fs/cgroup/cgroup.controllers ']'
+++ systemctl status crio
+++ grep active
+++ wc -l
++ [[ 1 -eq 0 ]]
++ '[' -f /etc/sysconfig/kubelet ']'
++ cat
++ systemctl daemon-reload
++ service kubelet restart
+Redirecting to /bin/systemctl restart kubelet.service
++ kubelet_rc=0
++ [[ 0 -ne 0 ]]
++ sudo swapoff -a
++ ip address show dev eth0
++ grep global
++ grep inet6
+    inet6 fd00::102/128 scope global noprefixroute
++ kubeadm join --token abcdef.1234567890123456 192.168.66.101:6443 --ignore-preflight-errors=all --discovery-token-unsafe-skip-ca-verification=true
+[preflight] Running pre-flight checks
+[preflight] Reading configuration from the cluster...
+[preflight] FYI: You can look at this config file with 'kubectl -n kube-system get cm kubeadm-config -o yaml'
+[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+[kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+[kubelet-start] Starting the kubelet
+[kubelet-start] Waiting for the kubelet to perform the TLS Bootstrap...
+
+This node has joined the cluster:
+* Certificate signing request was sent to apiserver and a response was received.
+* The Kubelet was informed of the new secure connection details.
+
+Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
+
++ mkdir -p /var/lib/rook
++ chcon -t container_file_t /var/lib/rook
+time="2023-03-13T13:46:11Z" level=info msg="waiting for node to come up"
+VM is up
++ '[' --vendor '!=' --vendor ']'
++ vendor=8086:2668
++ pci_address=(`lspci -D -d ${vendor}`)
+++ lspci -D -d 8086:2668
++ pci_address=0000:00:04.0
++ dev_sysfs_path=/sys/bus/pci/devices/0000:00:04.0
++ [[ ! -d /sys/bus/pci/devices/0000:00:04.0 ]]
++ [[ ! -d /sys/bus/pci/devices/0000:00:04.0/iommu/ ]]
++ driver_path=/sys/bus/pci/devices/0000:00:04.0/driver
++ driver_override=/sys/bus/pci/devices/0000:00:04.0/driver_override
++ modprobe -i vfio-pci
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:04.0/driver
+++ local dev_driver=../../../bus/pci/drivers/snd_hda_intel
+++ echo snd_hda_intel
++ driver=snd_hda_intel
++ [[ snd_hda_intel != \v\f\i\o\-\p\c\i ]]
++ echo 0000:00:04.0
++ echo vfio-pci
++ echo 0000:00:04.0
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:04.0/driver
+++ local dev_driver=../../../bus/pci/drivers/vfio-pci
+++ echo vfio-pci
++ new_driver=vfio-pci
++ [[ vfio-pci != \v\f\i\o\-\p\c\i ]]
++ '[' --vendor '!=' --vendor ']'
++ vendor=8086:2415
++ pci_address=(`lspci -D -d ${vendor}`)
+++ lspci -D -d 8086:2415
++ pci_address=0000:00:05.0
++ dev_sysfs_path=/sys/bus/pci/devices/0000:00:05.0
++ [[ ! -d /sys/bus/pci/devices/0000:00:05.0 ]]
++ [[ ! -d /sys/bus/pci/devices/0000:00:05.0/iommu/ ]]
++ driver_path=/sys/bus/pci/devices/0000:00:05.0/driver
++ driver_override=/sys/bus/pci/devices/0000:00:05.0/driver_override
++ modprobe -i vfio-pci
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:05.0/driver
+++ local dev_driver=../../../bus/pci/drivers/snd_intel8x0
+++ echo snd_intel8x0
++ driver=snd_intel8x0
++ [[ snd_intel8x0 != \v\f\i\o\-\p\c\i ]]
++ echo 0000:00:05.0
++ echo vfio-pci
++ echo 0000:00:05.0
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:05.0/driver
+++ local dev_driver=../../../bus/pci/drivers/vfio-pci
+++ echo vfio-pci
++ new_driver=vfio-pci
++ [[ vfio-pci != \v\f\i\o\-\p\c\i ]]
++ source /var/lib/kubevirtci/shared_vars.sh
+++ set -ex
+++ export 'KUBELET_CGROUP_ARGS=--cgroup-driver=systemd --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice'
+++ KUBELET_CGROUP_ARGS='--cgroup-driver=systemd --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice'
+++ export ISTIO_VERSION=1.15.0
+++ ISTIO_VERSION=1.15.0
+++ export ISTIO_BIN_DIR=/opt/istio-/bin
+++ ISTIO_BIN_DIR=/opt/istio-/bin
++ nodeip=
++ control_ip=192.168.66.101
++ '[' -f /home/vagrant/single_stack ']'
++ timeout=30
++ interval=5
++ hostnamectl
++ grep Transient
+Transient hostname: node03
++ '[' -f /sys/fs/cgroup/cgroup.controllers ']'
+++ systemctl status crio
+++ grep active
+++ wc -l
++ [[ 1 -eq 0 ]]
++ '[' -f /etc/sysconfig/kubelet ']'
++ cat
++ systemctl daemon-reload
++ service kubelet restart
+Redirecting to /bin/systemctl restart kubelet.service
++ kubelet_rc=0
++ [[ 0 -ne 0 ]]
++ sudo swapoff -a
++ ip address show dev eth0
++ grep global
++ grep inet6
+    inet6 fd00::103/128 scope global noprefixroute
++ kubeadm join --token abcdef.1234567890123456 192.168.66.101:6443 --ignore-preflight-errors=all --discovery-token-unsafe-skip-ca-verification=true
+[preflight] Running pre-flight checks
+[preflight] Reading configuration from the cluster...
+[preflight] FYI: You can look at this config file with 'kubectl -n kube-system get cm kubeadm-config -o yaml'
+[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+[kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+[kubelet-start] Starting the kubelet
+[kubelet-start] Waiting for the kubelet to perform the TLS Bootstrap...
+
+This node has joined the cluster:
+* Certificate signing request was sent to apiserver and a response was received.
+* The Kubelet was informed of the new secure connection details.
+
+Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
+
++ mkdir -p /var/lib/rook
++ chcon -t container_file_t /var/lib/rook
+time="2023-03-13T13:46:42Z" level=info msg="waiting for node to come up"
+VM is up
++ '[' --vendor '!=' --vendor ']'
++ vendor=8086:2668
++ pci_address=(`lspci -D -d ${vendor}`)
+++ lspci -D -d 8086:2668
++ pci_address=0000:00:04.0
++ dev_sysfs_path=/sys/bus/pci/devices/0000:00:04.0
++ [[ ! -d /sys/bus/pci/devices/0000:00:04.0 ]]
++ [[ ! -d /sys/bus/pci/devices/0000:00:04.0/iommu/ ]]
++ driver_path=/sys/bus/pci/devices/0000:00:04.0/driver
++ driver_override=/sys/bus/pci/devices/0000:00:04.0/driver_override
++ modprobe -i vfio-pci
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:04.0/driver
+++ local dev_driver=../../../bus/pci/drivers/snd_hda_intel
+++ echo snd_hda_intel
++ driver=snd_hda_intel
++ [[ snd_hda_intel != \v\f\i\o\-\p\c\i ]]
++ echo 0000:00:04.0
++ echo vfio-pci
++ echo 0000:00:04.0
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:04.0/driver
+++ local dev_driver=../../../bus/pci/drivers/vfio-pci
+++ echo vfio-pci
++ new_driver=vfio-pci
++ [[ vfio-pci != \v\f\i\o\-\p\c\i ]]
++ '[' --vendor '!=' --vendor ']'
++ vendor=8086:2415
++ pci_address=(`lspci -D -d ${vendor}`)
+++ lspci -D -d 8086:2415
++ pci_address=0000:00:05.0
++ dev_sysfs_path=/sys/bus/pci/devices/0000:00:05.0
++ [[ ! -d /sys/bus/pci/devices/0000:00:05.0 ]]
++ [[ ! -d /sys/bus/pci/devices/0000:00:05.0/iommu/ ]]
++ driver_path=/sys/bus/pci/devices/0000:00:05.0/driver
++ driver_override=/sys/bus/pci/devices/0000:00:05.0/driver_override
++ modprobe -i vfio-pci
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:05.0/driver
+++ local dev_driver=../../../bus/pci/drivers/snd_intel8x0
+++ echo snd_intel8x0
++ driver=snd_intel8x0
++ [[ snd_intel8x0 != \v\f\i\o\-\p\c\i ]]
++ echo 0000:00:05.0
++ echo vfio-pci
++ echo 0000:00:05.0
+++ get_device_driver
++++ readlink /sys/bus/pci/devices/0000:00:05.0/driver
+++ local dev_driver=../../../bus/pci/drivers/vfio-pci
+++ echo vfio-pci
++ new_driver=vfio-pci
++ [[ vfio-pci != \v\f\i\o\-\p\c\i ]]
++ source /var/lib/kubevirtci/shared_vars.sh
+++ set -ex
+++ export 'KUBELET_CGROUP_ARGS=--cgroup-driver=systemd --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice'
+++ KUBELET_CGROUP_ARGS='--cgroup-driver=systemd --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice'
+++ export ISTIO_VERSION=1.15.0
+++ ISTIO_VERSION=1.15.0
+++ export ISTIO_BIN_DIR=/opt/istio-/bin
+++ ISTIO_BIN_DIR=/opt/istio-/bin
++ nodeip=
++ control_ip=192.168.66.101
++ '[' -f /home/vagrant/single_stack ']'
++ timeout=30
++ interval=5
++ hostnamectl
++ grep Transient
+Transient hostname: node04
++ '[' -f /sys/fs/cgroup/cgroup.controllers ']'
+++ systemctl status crio
+++ grep active
+++ wc -l
++ [[ 1 -eq 0 ]]
++ '[' -f /etc/sysconfig/kubelet ']'
++ cat
++ systemctl daemon-reload
++ service kubelet restart
+Redirecting to /bin/systemctl restart kubelet.service
++ kubelet_rc=0
++ [[ 0 -ne 0 ]]
++ sudo swapoff -a
++ ip address show dev eth0
++ grep global
++ grep inet6
+    inet6 fd00::104/128 scope global tentative noprefixroute
++ kubeadm join --token abcdef.1234567890123456 192.168.66.101:6443 --ignore-preflight-errors=all --discovery-token-unsafe-skip-ca-verification=true
+[preflight] Running pre-flight checks
+[preflight] Reading configuration from the cluster...
+[preflight] FYI: You can look at this config file with 'kubectl -n kube-system get cm kubeadm-config -o yaml'
+[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+[kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+[kubelet-start] Starting the kubelet
+[kubelet-start] Waiting for the kubelet to perform the TLS Bootstrap...
+
+This node has joined the cluster:
+* Certificate signing request was sent to apiserver and a response was received.
+* The Kubelet was informed of the new secure connection details.
+
+Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
+
++ mkdir -p /var/lib/rook
++ chcon -t container_file_t /var/lib/rook
+namespace/monitoring created
+clusterrolebinding.rbac.authorization.k8s.io/prometheus-operator created
+clusterrole.rbac.authorization.k8s.io/prometheus-operator created
+serviceaccount/prometheus-operator created
+customresourcedefinition.apiextensions.k8s.io/prometheuses.monitoring.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/servicemonitors.monitoring.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/podmonitors.monitoring.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/probes.monitoring.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/prometheusrules.monitoring.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/thanosrulers.monitoring.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/alertmanagers.monitoring.coreos.com created
+customresourcedefinition.apiextensions.k8s.io/alertmanagerconfigs.monitoring.coreos.com created
+service/prometheus-operator created
+deployment.apps/prometheus-operator created
+Waiting for prometheus operator to be Ready, sleeping 20s and rechecking
+clusterrole.rbac.authorization.k8s.io/prometheus-k8s created
+clusterrolebinding.rbac.authorization.k8s.io/prometheus-k8s created
+rolebinding.rbac.authorization.k8s.io/prometheus-k8s-config created
+rolebinding.rbac.authorization.k8s.io/prometheus-k8s created
+rolebinding.rbac.authorization.k8s.io/prometheus-k8s created
+rolebinding.rbac.authorization.k8s.io/prometheus-k8s created
+role.rbac.authorization.k8s.io/prometheus-k8s-config created
+role.rbac.authorization.k8s.io/prometheus-k8s created
+role.rbac.authorization.k8s.io/prometheus-k8s created
+role.rbac.authorization.k8s.io/prometheus-k8s created
+serviceaccount/prometheus-k8s created
+poddisruptionbudget.policy/prometheus-k8s created
+service/prometheus-k8s created
+prometheus.monitoring.coreos.com/k8s created
+servicemonitor.monitoring.coreos.com/kube-apiserver created
+servicemonitor.monitoring.coreos.com/coredns created
+servicemonitor.monitoring.coreos.com/kube-controller-manager created
+servicemonitor.monitoring.coreos.com/kube-scheduler created
+servicemonitor.monitoring.coreos.com/kubelet created
+servicemonitor.monitoring.coreos.com/prometheus-operator created
+servicemonitor.monitoring.coreos.com/prometheus-k8s created
+clusterrole.rbac.authorization.k8s.io/kube-state-metrics created
+clusterrolebinding.rbac.authorization.k8s.io/kube-state-metrics created
+prometheusrule.monitoring.coreos.com/kube-state-metrics-rules created
+serviceaccount/kube-state-metrics created
+servicemonitor.monitoring.coreos.com/kube-state-metrics created
+service/kube-state-metrics created
+deployment.apps/kube-state-metrics created
+clusterrole.rbac.authorization.k8s.io/node-exporter created
+clusterrolebinding.rbac.authorization.k8s.io/node-exporter created
+prometheusrule.monitoring.coreos.com/node-exporter-rules created
+serviceaccount/node-exporter created
+servicemonitor.monitoring.coreos.com/node-exporter created
+daemonset.apps/node-exporter created
+service/node-exporter created
+service/prometheus-nodeport created
+service/grafana-nodeport created
+Cluster "kubernetes" set.
+Cluster "kubernetes" set.
+node/node02 labeled
+node/node03 labeled
+node/node04 labeled
+namespace/cdi created
+customresourcedefinition.apiextensions.k8s.io/cdis.cdi.kubevirt.io created
+clusterrole.rbac.authorization.k8s.io/cdi-operator-cluster created
+clusterrolebinding.rbac.authorization.k8s.io/cdi-operator created
+serviceaccount/cdi-operator created
+role.rbac.authorization.k8s.io/cdi-operator created
+rolebinding.rbac.authorization.k8s.io/cdi-operator created
+deployment.apps/cdi-operator created
+configmap/cdi-operator-leader-election-helper created
+cdi.cdi.kubevirt.io/cdi created
+NAME                            READY   STATUS    RESTARTS   AGE
+cdi-operator-6cfc8694bd-2cmpp   1/1     Running   0          4s
+pod/cdi-apiserver-88d5f7749-jjhcc condition met
+pod/cdi-deployment-57764c89b6-gg55z condition met
+pod/cdi-operator-6cfc8694bd-2cmpp condition met
+pod/cdi-uploadproxy-6cb666dd97-4s2sk condition met
+selecting podman as container runtime
+./hack/cluster-sync.sh
+make[1]: Entering directory '/home/prow/go/src/github.com/kubevirt/kubevirt'
+./hack/cluster-build.sh
+selecting podman as container runtime
+Building ...
+Sandbox is up to date
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: d6fc1164-9974-4364-a47c-7e4d24a3c68a
+Loading:
+Loading: 0 packages loaded
+Analyzing: 7 targets (3 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed 7 targets (71 packages loaded, 491 targets configured).
+INFO: Found 7 targets...
+[0 / 3] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+[87 / 91] GoLink vendor/github.com/onsi/ginkgo/v2/ginkgo/ginkgo_/ginkgo; Downloading vendor/github.com/onsi/ginkgo/v2/ginkgo/ginkgo_/ginkgo, 10.3 MiB / 13.2 MiB; 0s remote-cache ... (3 actions, 0 running)
+INFO: Elapsed time: 2.939s, Critical Path: 2.21s
+INFO: 90 processes: 81 remote cache hit, 9 internal.
+INFO: Build completed successfully, 90 total actions
+INFO: Build completed successfully, 90 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: f7c8753d-010d-4675-a5e0-f9d5176a081b
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-ginkgo (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-ginkgo (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-ginkgo up-to-date:
+  bazel-bin/ginkgo-copier
+INFO: Elapsed time: 0.437s, Critical Path: 0.08s
+INFO: 2 processes: 1 remote cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/ginkgo-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/tests/ginkgo
+INFO: Build completed successfully, 2 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 74b4f355-dd09-4935-9750-cbf082d7d71c
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-functests (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:build-functests (0 packages loaded, 2 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-functests up-to-date:
+  bazel-bin/functests-copier
+INFO: Elapsed time: 0.637s, Critical Path: 0.08s
+INFO: 2 processes: 1 remote cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/functests-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/tests/tests.test
+INFO: Build completed successfully, 2 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 3ef61d9d-754c-46d1-b9dc-933f36f33f4e
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-junit-merger (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-junit-merger (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 2] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-junit-merger up-to-date:
+  bazel-bin/junit-merger-copier
+INFO: Elapsed time: 0.482s, Critical Path: 0.08s
+INFO: 2 processes: 1 remote cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/junit-merger-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/tests/junit-merger
+INFO: Build completed successfully, 2 total actions
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: d98c30e3-745f-4d2e-83c5-81bcda21ed95
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-dump (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:build-dump (0 packages loaded, 0 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-dump up-to-date:
+  bazel-bin/dump-copier
+INFO: Elapsed time: 0.472s, Critical Path: 0.08s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/dump-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/dump/dump
+INFO: Build completed successfully, 1 total action
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: e44f5d28-f1d5-4b28-86e1-f29a4aacdfd2
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-virtctl (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-virtctl (0 packages loaded, 0 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-virtctl up-to-date:
+  bazel-bin/virtctl-copier
+INFO: Elapsed time: 0.481s, Critical Path: 0.08s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/virtctl-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/virtctl/virtctl
+INFO: Build completed successfully, 1 total action
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: c902c8ce-52d4-44b5-9f6f-3a189ae833e9
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-example-guest-agent (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:build-example-guest-agent (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-example-guest-agent up-to-date:
+  bazel-bin/example-guest-agent-copier
+INFO: Elapsed time: 0.467s, Critical Path: 0.08s
+INFO: 2 processes: 1 remote cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/example-guest-agent-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/example-guest-agent/example-guest-agent
+INFO: Build completed successfully, 2 total actions
+Sandbox is up to date
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: be59a49b-1d04-4519-ba57-2479dfbfb4bf
+Loading:
+Loading: 0 packages loaded
+INFO: Build option --define has changed, discarding analysis cache.
+Analyzing: target //:push-other-images (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+Analyzing: target //:push-other-images (24 packages loaded, 13370 targets configured)
+Analyzing: target //:push-other-images (36 packages loaded, 13412 targets configured)
+Analyzing: target //:push-other-images (42 packages loaded, 13422 targets configured)
+Analyzing: target //:push-other-images (76 packages loaded, 13602 targets configured)
+Analyzing: target //:push-other-images (78 packages loaded, 13614 targets configured)
+Analyzing: target //:push-other-images (78 packages loaded, 13614 targets configured)
+Analyzing: target //:push-other-images (78 packages loaded, 13614 targets configured)
+Analyzing: target //:push-other-images (78 packages loaded, 13614 targets configured)
+Analyzing: target //:push-other-images (78 packages loaded, 13614 targets configured)
+Analyzing: target //:push-other-images (78 packages loaded, 13614 targets configured)
+Analyzing: target //:push-other-images (78 packages loaded, 13614 targets configured)
+Analyzing: target //:push-other-images (78 packages loaded, 13614 targets configured)
+Analyzing: target //:push-other-images (79 packages loaded, 13618 targets configured)
+Analyzing: target //:push-other-images (80 packages loaded, 13622 targets configured)
+Analyzing: target //:push-other-images (80 packages loaded, 13622 targets configured)
+INFO: Analyzed target //:push-other-images (81 packages loaded, 13628 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+[753 / 812] Executing genrule //images/disks-images-provider:custom-img; Downloading images/disks-images-provider/images/custom/disk.img, 58.1 MiB / 64 MiB; 5s remote-cache ... (15 actions, 0 running)
+[774 / 812] Converting testimage_x86_64 to tar; Downloading rpm/testimage_x86_64.tar, 108.7 MiB / 145.4 MiB; 11s remote-cache ... (10 actions, 0 running)
+INFO: From Converting testimage_x86_64 to tar:
+Flag shorthand -s has been deprecated, use --symlinks instead
+[789 / 812] GUNZIP external/nfs-server/image/000.tar.gz.nogz; Downloading external/nfs-server/image/000.tar.gz.nogz, 209.5 MiB / 269.9 MiB; 18s remote-cache ... (6 actions, 0 running)
+INFO: From ImageLayer images/kubevirt-testing-base-layer.tar:
+Duplicate file in archive: ./etc/group, picking first occurrence
+Duplicate file in archive: ./etc/passwd, picking first occurrence
+Duplicate file in archive: ./usr/share/licenses/systemd/LICENSE.LGPL2.1, picking first occurrence
+[800 / 812] PackageTar containerimages/virtio-image-tar.tar; Downloading containerimages/virtio-image-tar.tar, 359 MiB / 506.9 MiB; 23s remote-cache ... (4 actions, 0 running)
+[804 / 812] GUNZIP external/fedora_realtime/image/000.tar.gz.nogz; Downloading external/fedora_realtime/image/000.tar.gz.nogz, 764.5 MiB / 1 GiB; 31s remote-cache ... (3 actions, 0 running)
+Target //:push-other-images up-to-date:
+  bazel-bin/push-other-images
+INFO: Elapsed time: 71.902s, Critical Path: 42.61s
+INFO: 242 processes: 201 remote cache hit, 41 internal.
+INFO: Build completed successfully, 242 total actions
+INFO: Running command line: bazel-bin/push-other-images
+INFO: Build completed successfully, 242 total actions
+2023/03/13 13:49:33 Successfully pushed Docker image to localhost:45013/kubevirt/cirros-custom-container-disk-demo:devel
+2023/03/13 13:49:33 Successfully pushed Docker image to localhost:45013/kubevirt/cirros-container-disk-demo:devel
+2023/03/13 13:49:33 Successfully pushed Docker image to localhost:45013/kubevirt/alpine-container-disk-demo:devel
+2023/03/13 13:49:34 Successfully pushed Docker image to localhost:45013/kubevirt/vm-killer:devel
+2023/03/13 13:49:34 Successfully pushed Docker image to localhost:45013/kubevirt/alpine-ext-kernel-boot-demo:devel
+2023/03/13 13:49:34 Successfully pushed Docker image to localhost:45013/kubevirt/example-cloudinit-hook-sidecar:devel
+2023/03/13 13:49:34 Successfully pushed Docker image to localhost:45013/kubevirt/example-disk-mutation-hook-sidecar:devel
+2023/03/13 13:49:34 Successfully pushed Docker image to localhost:45013/kubevirt/winrmcli:devel
+2023/03/13 13:49:34 Successfully pushed Docker image to localhost:45013/kubevirt/example-hook-sidecar:devel
+2023/03/13 13:49:34 Successfully pushed Docker image to localhost:45013/kubevirt/alpine-with-test-tooling-container-disk:devel
+2023/03/13 13:49:35 Successfully pushed Docker image to localhost:45013/kubevirt/disks-images-provider:devel
+2023/03/13 13:49:35 Successfully pushed Docker image to localhost:45013/kubevirt/nfs-server:devel
+2023/03/13 13:49:36 Successfully pushed Docker image to localhost:45013/kubevirt/virtio-container-disk:devel
+2023/03/13 13:49:43 Successfully pushed Docker image to localhost:45013/kubevirt/fedora-with-test-tooling-container-disk:devel
+2023/03/13 13:49:47 Successfully pushed Docker image to localhost:45013/kubevirt/fedora-realtime-container-disk:devel
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 60accb1c-125f-41c9-8c87-e613514c51f5
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-operator (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:push-virt-operator (0 packages loaded, 4538 targets configured).
+INFO: Found 1 target...
+[0 / 3] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+[1,117 / 1,119] [Prepa] SHA256 cmd/virt-operator/virt-operator-image-layer.tar.gz.sha256
+Target //:push-virt-operator up-to-date:
+  bazel-bin/push-virt-operator.digest
+  bazel-bin/push-virt-operator
+INFO: Elapsed time: 1.830s, Critical Path: 1.08s
+INFO: 17 processes: 11 remote cache hit, 6 internal.
+INFO: Build completed successfully, 17 total actions
+INFO: Running command line: bazel-bin/push-virt-operator
+INFO: Build completed successfully, 17 total actions
+2023/03/13 13:49:51 Successfully pushed Docker image to localhost:45013/kubevirt/virt-operator:devel
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 4d91c18d-2a53-4cc0-9331-847e4d97a5b3
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-api (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:push-virt-api (0 packages loaded, 1120 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+[262 / 263] [Prepa] ContainerPushDigest push-virt-api.digest
+Target //:push-virt-api up-to-date:
+  bazel-bin/push-virt-api.digest
+  bazel-bin/push-virt-api
+INFO: Elapsed time: 1.798s, Critical Path: 1.22s
+INFO: 9 processes: 5 remote cache hit, 4 internal.
+INFO: Build completed successfully, 9 total actions
+INFO: Running command line: bazel-bin/push-virt-api
+INFO: Build completed successfully, 9 total actions
+2023/03/13 13:49:54 Successfully pushed Docker image to localhost:45013/kubevirt/virt-api:devel
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 782e5aa0-0fb3-4cd5-9f7a-e23d7a4f0d0c
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-controller (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:push-virt-controller (0 packages loaded, 54 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-virt-controller up-to-date:
+  bazel-bin/push-virt-controller.digest
+  bazel-bin/push-virt-controller
+INFO: Elapsed time: 0.750s, Critical Path: 0.40s
+INFO: 9 processes: 5 remote cache hit, 4 internal.
+INFO: Build completed successfully, 9 total actions
+INFO: Running command line: bazel-bin/push-virt-controller
+INFO: Build completed successfully, 9 total actions
+2023/03/13 13:49:55 Successfully pushed Docker image to localhost:45013/kubevirt/virt-controller:devel
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 4af27cbc-d157-40bd-9a29-a6b6359be7a2
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-handler (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:push-virt-handler (0 packages loaded, 611 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+[195 / 199] GZIP cmd/virt-handler/version-container-layer.tar.gz; Downloading cmd/virt-handler/version-container-layer.tar.gz, 41.1 MiB / 64.2 MiB; 1s remote-cache ... (2 actions, 0 running)
+Target //:push-virt-handler up-to-date:
+  bazel-bin/push-virt-handler.digest
+  bazel-bin/push-virt-handler
+INFO: Elapsed time: 2.459s, Critical Path: 1.99s
+INFO: 9 processes: 5 remote cache hit, 4 internal.
+INFO: Build completed successfully, 9 total actions
+INFO: Running command line: bazel-bin/push-virt-handler
+INFO: Build completed successfully, 9 total actions
+2023/03/13 13:50:00 Successfully pushed Docker image to localhost:45013/kubevirt/virt-handler:devel
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 90c8e74c-9e23-4c72-aff9-a9b98db37a6f
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-launcher (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:push-virt-launcher (0 packages loaded, 322 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+[178 / 182] GZIP cmd/virt-launcher/virt-launcher-image-layer.tar.gz; Downloading cmd/virt-launcher/virt-launcher-image-layer.tar.gz, 55.2 MiB / 58.4 MiB; 1s remote-cache ... (2 actions, 0 running)
+Target //:push-virt-launcher up-to-date:
+  bazel-bin/push-virt-launcher.digest
+  bazel-bin/push-virt-launcher
+INFO: Elapsed time: 2.292s, Critical Path: 1.86s
+INFO: 9 processes: 5 remote cache hit, 4 internal.
+INFO: Build completed successfully, 9 total actions
+INFO: Running command line: bazel-bin/push-virt-launcher
+INFO: Build completed successfully, 9 total actions
+2023/03/13 13:50:05 Successfully pushed Docker image to localhost:45013/kubevirt/virt-launcher:devel
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: d2574654-dbb9-49f4-b16f-2cf932f3cea8
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-exportserver (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:push-virt-exportserver (0 packages loaded, 12 targets configured).
+INFO: Found 1 target...
+[0 / 2] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-virt-exportserver up-to-date:
+  bazel-bin/push-virt-exportserver.digest
+  bazel-bin/push-virt-exportserver
+INFO: Elapsed time: 0.849s, Critical Path: 0.48s
+INFO: 9 processes: 5 remote cache hit, 4 internal.
+INFO: Build completed successfully, 9 total actions
+INFO: Running command line: bazel-bin/push-virt-exportserver
+INFO: Build completed successfully, 9 total actions
+2023/03/13 13:50:07 Successfully pushed Docker image to localhost:45013/kubevirt/virt-exportserver:devel
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 68110a31-4d6e-480e-8517-d28f159dfc05
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-exportproxy (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:push-virt-exportproxy (0 packages loaded, 6 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-virt-exportproxy up-to-date:
+  bazel-bin/push-virt-exportproxy.digest
+  bazel-bin/push-virt-exportproxy
+INFO: Elapsed time: 0.656s, Critical Path: 0.36s
+INFO: 9 processes: 5 remote cache hit, 4 internal.
+INFO: Build completed successfully, 9 total actions
+INFO: Running command line: bazel-bin/push-virt-exportproxy
+INFO: Build completed successfully, 9 total actions
+2023/03/13 13:50:09 Successfully pushed Docker image to localhost:45013/kubevirt/virt-exportproxy:devel
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 758a22a0-3b3b-4505-8b0a-aa28411d6954
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-conformance (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:push-conformance (1 packages loaded, 1253 targets configured).
+INFO: Found 1 target...
+[0 / 2] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+[313 / 315] [Prepa] SHA256 tests/conformance_image-layer.tar.gz.sha256
+Target //:push-conformance up-to-date:
+  bazel-bin/push-conformance.digest
+  bazel-bin/push-conformance
+INFO: Elapsed time: 1.728s, Critical Path: 1.15s
+INFO: 19 processes: 13 remote cache hit, 6 internal.
+INFO: Build completed successfully, 19 total actions
+INFO: Running command line: bazel-bin/push-conformance
+INFO: Build completed successfully, 19 total actions
+2023/03/13 13:50:12 Successfully pushed Docker image to localhost:45013/kubevirt/conformance:devel
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 745db5f8-bc05-4564-b652-a5e8caa544a9
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-libguestfs (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:push-libguestfs (0 packages loaded, 72 targets configured).
+INFO: Found 1 target...
+[0 / 3] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+[21 / 24] GZIP cmd/libguestfs/version-container-layer.tar.gz; Downloading cmd/libguestfs/version-container-layer.tar.gz, 181.3 MiB / 274 MiB; 1s remote-cache
+[21 / 24] GZIP cmd/libguestfs/version-container-layer.tar.gz; 2s remote-cache
+Target //:push-libguestfs up-to-date:
+  bazel-bin/push-libguestfs.digest
+  bazel-bin/push-libguestfs
+INFO: Elapsed time: 5.002s, Critical Path: 3.47s
+INFO: 9 processes: 5 remote cache hit, 4 internal.
+INFO: Build completed successfully, 9 total actions
+INFO: Running command line: bazel-bin/push-libguestfs
+INFO: Build completed successfully, 9 total actions
+2023/03/13 13:50:22 Successfully pushed Docker image to localhost:45013/kubevirt/libguestfs-tools:devel
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: cd1b4867-f80a-4671-b9aa-493851804916
+Loading:
+Loading: 0 packages loaded
+INFO: Build option --define has changed, discarding analysis cache.
+Analyzing: target //:push-other-images (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:push-other-images (0 packages loaded, 13628 targets configured).
+INFO: Found 1 target...
+[0 / 2] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-other-images up-to-date:
+  bazel-bin/push-other-images
+INFO: Elapsed time: 0.951s, Critical Path: 0.09s
+INFO: 16 processes: 16 internal.
+INFO: Build completed successfully, 16 total actions
+INFO: Running command line: bazel-bin/push-other-images
+INFO: Build completed successfully, 16 total actions
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/cirros-custom-container-disk-demo:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/alpine-container-disk-demo:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/virtio-container-disk:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/example-disk-mutation-hook-sidecar:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/fedora-with-test-tooling-container-disk:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/cirros-container-disk-demo:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/alpine-with-test-tooling-container-disk:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/example-cloudinit-hook-sidecar:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/disks-images-provider:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/example-hook-sidecar:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/winrmcli:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/fedora-realtime-container-disk:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/vm-killer:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/alpine-ext-kernel-boot-demo:devel_alt
+2023/03/13 13:50:23 Successfully pushed Docker image to localhost:45013/kubevirt/nfs-server:devel_alt
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 8818d4db-2d91-4e79-b8af-4a91d8664670
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-operator (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:push-virt-operator (0 packages loaded, 4538 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-virt-operator up-to-date:
+  bazel-bin/push-virt-operator.digest
+  bazel-bin/push-virt-operator
+INFO: Elapsed time: 0.786s, Critical Path: 0.10s
+INFO: 2 processes: 2 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/push-virt-operator
+INFO: Build completed successfully, 2 total actions
+2023/03/13 13:50:25 Successfully pushed Docker image to localhost:45013/kubevirt/virt-operator:devel_alt
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 77ea5775-b2f6-47b6-8d65-2e6bc9ed6dcc
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-api (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:push-virt-api (0 packages loaded, 1120 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-virt-api up-to-date:
+  bazel-bin/push-virt-api.digest
+  bazel-bin/push-virt-api
+INFO: Elapsed time: 0.666s, Critical Path: 0.09s
+INFO: 2 processes: 2 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/push-virt-api
+INFO: Build completed successfully, 2 total actions
+2023/03/13 13:50:26 Successfully pushed Docker image to localhost:45013/kubevirt/virt-api:devel_alt
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 3347f9bc-999f-4f24-986d-50fff425f756
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-controller (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:push-virt-controller (0 packages loaded, 54 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-virt-controller up-to-date:
+  bazel-bin/push-virt-controller.digest
+  bazel-bin/push-virt-controller
+INFO: Elapsed time: 0.430s, Critical Path: 0.08s
+INFO: 2 processes: 2 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/push-virt-controller
+INFO: Build completed successfully, 2 total actions
+2023/03/13 13:50:27 Successfully pushed Docker image to localhost:45013/kubevirt/virt-controller:devel_alt
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: e6fa803a-205e-47b4-996d-846c9a2280fa
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-handler (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:push-virt-handler (0 packages loaded, 611 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-virt-handler up-to-date:
+  bazel-bin/push-virt-handler.digest
+  bazel-bin/push-virt-handler
+INFO: Elapsed time: 0.506s, Critical Path: 0.09s
+INFO: 2 processes: 2 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/push-virt-handler
+INFO: Build completed successfully, 2 total actions
+2023/03/13 13:50:29 Successfully pushed Docker image to localhost:45013/kubevirt/virt-handler:devel_alt
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: d4d370d8-caa9-498d-a18f-e71ef2fca792
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-launcher (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:push-virt-launcher (0 packages loaded, 322 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-virt-launcher up-to-date:
+  bazel-bin/push-virt-launcher.digest
+  bazel-bin/push-virt-launcher
+INFO: Elapsed time: 0.427s, Critical Path: 0.08s
+INFO: 2 processes: 2 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/push-virt-launcher
+INFO: Build completed successfully, 2 total actions
+2023/03/13 13:50:30 Successfully pushed Docker image to localhost:45013/kubevirt/virt-launcher:devel_alt
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 43823252-e791-4452-8951-649999e730a4
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-exportserver (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:push-virt-exportserver (0 packages loaded, 12 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-virt-exportserver up-to-date:
+  bazel-bin/push-virt-exportserver.digest
+  bazel-bin/push-virt-exportserver
+INFO: Elapsed time: 0.460s, Critical Path: 0.08s
+INFO: 2 processes: 2 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/push-virt-exportserver
+INFO: Build completed successfully, 2 total actions
+2023/03/13 13:50:31 Successfully pushed Docker image to localhost:45013/kubevirt/virt-exportserver:devel_alt
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 43aa791d-e3da-4923-bf3c-93e1f2f88a22
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-virt-exportproxy (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:push-virt-exportproxy (0 packages loaded, 6 targets configured).
+INFO: Found 1 target...
+[0 / 2] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-virt-exportproxy up-to-date:
+  bazel-bin/push-virt-exportproxy.digest
+  bazel-bin/push-virt-exportproxy
+INFO: Elapsed time: 0.411s, Critical Path: 0.08s
+INFO: 2 processes: 2 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/push-virt-exportproxy
+INFO: Build completed successfully, 2 total actions
+2023/03/13 13:50:32 Successfully pushed Docker image to localhost:45013/kubevirt/virt-exportproxy:devel_alt
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: ff8e3405-4e94-48af-96f2-b3cf32f06bfb
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-conformance (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:push-conformance (0 packages loaded, 1253 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-conformance up-to-date:
+  bazel-bin/push-conformance.digest
+  bazel-bin/push-conformance
+INFO: Elapsed time: 0.674s, Critical Path: 0.09s
+INFO: 2 processes: 2 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/push-conformance
+INFO: Build completed successfully, 2 total actions
+2023/03/13 13:50:33 Successfully pushed Docker image to localhost:45013/kubevirt/conformance:devel_alt
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 138c6084-897d-487c-9655-4c2fd0d75697
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:push-libguestfs (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:push-libguestfs (0 packages loaded, 72 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:push-libguestfs up-to-date:
+  bazel-bin/push-libguestfs.digest
+  bazel-bin/push-libguestfs
+INFO: Elapsed time: 0.433s, Critical Path: 0.08s
+INFO: 2 processes: 2 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/push-libguestfs
+INFO: Build completed successfully, 2 total actions
+2023/03/13 13:50:35 Successfully pushed Docker image to localhost:45013/kubevirt/libguestfs-tools:devel_alt
+Done ./hack/cluster-build.sh
+make[1]: Leaving directory '/home/prow/go/src/github.com/kubevirt/kubevirt'
+make[1]: Entering directory '/home/prow/go/src/github.com/kubevirt/kubevirt'
+hack/manifests.sh
+Building manifests...
+Sandbox is up to date
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 95e4593e-b366-4cfa-b5a3-655b086f7d77
+Loading:
+Loading: 0 packages loaded
+INFO: Build option --define has changed, discarding analysis cache.
+Analyzing: target //:build-manifest-templator (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-manifest-templator (0 packages loaded, 13551 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-manifest-templator up-to-date:
+  bazel-bin/manifest-templator-copier
+INFO: Elapsed time: 0.905s, Critical Path: 0.10s
+INFO: 2 processes: 1 remote cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running command line: bazel-bin/manifest-templator-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/tests/tools/manifest-templator
+INFO: Build completed successfully, 2 total actions
+Done hack/manifests.sh
+make[1]: Leaving directory '/home/prow/go/src/github.com/kubevirt/kubevirt'
+waiting for cluster-clean to finish
++ DOCKER_TAG=devel
++ KUBEVIRT_DEPLOY_CDI=true
++ CDI_DV_GC=0
++ source hack/common.sh
+++ '[' -f cluster-up/hack/common.sh ']'
+++ source cluster-up/hack/common.sh
++++ '[' -z '' ']'
++++++ dirname 'cluster-up/hack/common.sh[0]'
+++++ cd cluster-up/hack/../
++++++ pwd
+++++ echo /home/prow/go/src/github.com/kubevirt/kubevirt/cluster-up/
++++ KUBEVIRTCI_PATH=/home/prow/go/src/github.com/kubevirt/kubevirt/cluster-up/
++++ '[' -z '' ']'
++++++ dirname 'cluster-up/hack/common.sh[0]'
+++++ cd cluster-up/hack/../../
++++++ pwd
+++++ echo /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs
++++ KUBEVIRTCI_CONFIG_PATH=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs
++++ KUBEVIRTCI_CLUSTER_PATH=/home/prow/go/src/github.com/kubevirt/kubevirt/cluster-up//cluster
++++ KUBEVIRT_PROVIDER=k8s-1.25
++++ KUBEVIRT_NUM_NODES=4
++++ KUBEVIRT_MEMORY_SIZE=12G
++++ KUBEVIRT_NUM_SECONDARY_NICS=0
++++ KUBEVIRT_DEPLOY_ISTIO=false
++++ KUBEVIRT_PSA=false
++++ KUBEVIRT_SINGLE_STACK=false
++++ KUBEVIRT_DEPLOY_NFS_CSI=false
++++ KUBEVIRT_DEPLOY_PROMETHEUS=true
++++ KUBEVIRT_DEPLOY_PROMETHEUS_ALERTMANAGER=false
++++ KUBEVIRT_DEPLOY_GRAFANA=false
++++ KUBEVIRT_CGROUPV2=false
++++ KUBEVIRT_DEPLOY_CDI=true
++++ KUBEVIRT_DEPLOY_CDI_LATEST=false
++++ KUBEVIRT_SWAP_ON=false
++++ KUBEVIRT_KSM_ON=false
++++ KUBEVIRT_UNLIMITEDSWAP=false
++++ '[' -z pull-kubevirt-e2e-k8s-1.25-sig-performance ']'
++++ provider_prefix=pull-kubevirt-e2e-k8s-1.25-sig-performance
++++ job_prefix=pull-kubevirt-e2e-k8s-1.25-sig-performance
++++ mkdir -p /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25
++++ KUBEVIRTCI_TAG=2303091010-3e52bb0
+++ export 'GOFLAGS= -mod=vendor'
+++ GOFLAGS=' -mod=vendor'
+++++ dirname 'hack/common.sh[0]'
++++ cd hack/../
++++ pwd
+++ KUBEVIRT_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt
+++ OUT_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt/_out
+++ SANDBOX_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt/.bazeldnf/sandbox
+++ VENDOR_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt/vendor
+++ CMD_OUT_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd
+++ TESTS_OUT_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt/_out/tests
+++ APIDOCS_OUT_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt/_out/apidocs
+++ ARTIFACTS=/logs/artifacts
+++ DIGESTS_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt/_out/digests
+++ MANIFESTS_OUT_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt/_out/manifests
+++ MANIFEST_TEMPLATES_OUT_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt/_out/templates/manifests
+++ PYTHON_CLIENT_OUT_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt/_out/client-python
++++ uname -m
+++ ARCHITECTURE=x86_64
++++ uname -m
+++ HOST_ARCHITECTURE=x86_64
+++ KUBEVIRT_NO_BAZEL=false
+++ OPERATOR_MANIFEST_PATH=/home/prow/go/src/github.com/kubevirt/kubevirt/_out/manifests/release/kubevirt-operator.yaml
+++ TESTING_MANIFEST_PATH=/home/prow/go/src/github.com/kubevirt/kubevirt/_out/manifests/testing
++++ determine_cri_bin
++++ '[' '' = podman ']'
++++ '[' '' = docker ']'
++++ podman ps
++++ echo podman
+++ KUBEVIRT_CRI=podman
+++ '[' -z '' ']'
+++ KUBEVIRT_GO_BUILD_TAGS=selinux
++++ kubevirt_version
++++ '[' -n '' ']'
++++ '[' -d /home/prow/go/src/github.com/kubevirt/kubevirt/.git ']'
+++++ git describe --always --tags
++++ echo v0.59.0-rc.1-282-gbaaec5ccd
+++ KUBEVIRT_VERSION=v0.59.0-rc.1-282-gbaaec5ccd
+++ DOCKER_CA_CERT_FILE=
+++ DOCKERIZED_CUSTOM_CA_PATH=/etc/pki/ca-trust/source/anchors/custom-ca.crt
++ source cluster-up/cluster/k8s-1.25/provider.sh
+++ set -e
+++ '[' false == true ']'
+++ source /home/prow/go/src/github.com/kubevirt/kubevirt/cluster-up//cluster/k8s-provider-common.sh
++++ set -e
++++ source /home/prow/go/src/github.com/kubevirt/kubevirt/cluster-up//cluster/ephemeral-provider-common.sh
+++++ set -e
+++++ KUBEVIRT_WITH_ETC_IN_MEMORY=false
+++++ KUBEVIRT_WITH_ETC_CAPACITY=none
+++++ KUBEVIRT_DNS_HOST_PORT=31111
+++++ export KUBEVIRTCI_PODMAN_SOCKET=/run/podman/podman.sock
+++++ KUBEVIRTCI_PODMAN_SOCKET=/run/podman/podman.sock
+++++ '[' -z 2303091010-3e52bb0 ']'
+++++ '[' -n 2303091010-3e52bb0 ']'
+++++ '[' -n '' ']'
+++++ '[' '' = podman ']'
+++++ '[' '' = docker ']'
++++++ detect_podman_socket
++++++ curl --unix-socket /run/podman/podman.sock http://d/v3.0.0/libpod/info
++++++ echo /run/podman/podman.sock
+++++ _cri_socket=/run/podman/podman.sock
+++++ '[' -n /run/podman/podman.sock ']'
+++++ _cri_bin='podman --remote --url=unix:///run/podman/podman.sock'
+++++ echo 'selecting podman as container runtime'
+selecting podman as container runtime
+++++ _cli_container=quay.io/kubevirtci/gocli:2303091010-3e52bb0
+++++ _cli='podman --remote --url=unix:///run/podman/podman.sock run --privileged --net=host --rm  -v /run/podman/podman.sock:/var/run/docker.sock'
+++++ '[' -d /lib/modules ']'
+++++ _cli='podman --remote --url=unix:///run/podman/podman.sock run --privileged --net=host --rm  -v /run/podman/podman.sock:/var/run/docker.sock -v /lib/modules/:/lib/modules/'
+++++ [[ podman --remote --url=unix:///run/podman/podman.sock = podman* ]]
+++++ _cli='podman --remote --url=unix:///run/podman/podman.sock run --privileged --net=host --rm  -v /run/podman/podman.sock:/var/run/docker.sock -v /lib/modules/:/lib/modules/ -v /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25:/kubevirtci_config'
+++++ _cli='podman --remote --url=unix:///run/podman/podman.sock run --privileged --net=host --rm  -v /run/podman/podman.sock:/var/run/docker.sock -v /lib/modules/:/lib/modules/ -v /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25:/kubevirtci_config quay.io/kubevirtci/gocli:2303091010-3e52bb0'
++ source hack/config.sh
+++ unset binaries docker_images docker_tag docker_tag_alt image_prefix image_prefix_alt manifest_templates namespace image_pull_policy verbosity csv_version package_name
+++ source hack/config-default.sh
++++ binaries='cmd/virt-operator cmd/virt-controller cmd/virt-launcher cmd/virt-handler cmd/virtctl cmd/fake-qemu-process cmd/virt-api cmd/example-hook-sidecar cmd/example-cloudinit-hook-sidecar cmd/virt-chroot'
++++ docker_images='cmd/virt-operator cmd/virt-controller cmd/virt-launcher cmd/virt-handler cmd/virt-api images/disks-images-provider images/vm-killer images/nfs-server images/winrmcli cmd/example-hook-sidecar cmd/example-cloudinit-hook-sidecar tests/conformance'
++++ docker_tag=devel
++++ docker_tag_alt=
++++ image_prefix=
++++ image_prefix_alt=
++++ namespace=kubevirt
++++ deploy_testing_infra=false
++++ csv_namespace=placeholder
++++ cdi_namespace=cdi
++++ image_pull_policy=IfNotPresent
++++ verbosity=2
++++ package_name=kubevirt-dev
++++ kubevirtci_git_hash=2303091010-3e52bb0
++++ conn_check_ipv4_address=
++++ conn_check_ipv6_address=
++++ conn_check_dns=
++++ migration_network_nic=eth1
++++ infra_replicas=0
++++ default_csv_version=devel
++++ default_csv_version=0.0.0
++++ [[ 0.0.0 == v* ]]
++++ csv_version=0.0.0
+++ source cluster-up/hack/config.sh
++++ unset docker_prefix master_ip network_provider kubeconfig manifest_docker_prefix
++++ KUBEVIRT_PROVIDER=k8s-1.25
++++ source /home/prow/go/src/github.com/kubevirt/kubevirt/cluster-up/hack/config-default.sh
+++++ docker_prefix=kubevirt
+++++ master_ip=192.168.200.2
+++++ network_provider=flannel
++++ test -f /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/config-provider-k8s-1.25.sh
++++ source /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/config-provider-k8s-1.25.sh
+++++ master_ip=127.0.0.1
+++++ kubeconfig=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
+++++ kubectl=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl
+++++ gocli=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/../cluster-up/cli.sh
+++++ docker_prefix=localhost:45013/kubevirt
+++++ manifest_docker_prefix=registry:5000/kubevirt
++++ export docker_prefix master_ip network_provider kubeconfig manifest_docker_prefix
+++ export binaries docker_images docker_tag docker_tag_alt image_prefix image_prefix_alt manifest_templates namespace image_pull_policy verbosity csv_version package_name
++ trap dump_kubevirt EXIT
++ echo 'Deploying ...'
+Deploying ...
++ _kubectl apply -f -
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl apply -f -
+namespace/kubevirt created
++ [[ k8s-1.25 =~ kind.* ]]
++ [[ k8s-1.25 = \e\x\t\e\r\n\a\l ]]
++ _deploy_infra_for_tests
++ [[ true == \f\a\l\s\e ]]
++ _kubectl create -f /home/prow/go/src/github.com/kubevirt/kubevirt/_out/manifests/testing
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl create -f /home/prow/go/src/github.com/kubevirt/kubevirt/_out/manifests/testing
+Warning: would violate PodSecurity "restricted:latest": privileged (container "target" must not set securityContext.privileged=true), allowPrivilegeEscalation != false (container "target" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (container "target" must set securityContext.capabilities.drop=["ALL"]), restricted volume types (volumes "images", "local-storage", "host-dir" use restricted volume type "hostPath"), runAsNonRoot != true (pod or container "target" must set securityContext.runAsNonRoot=true), seccompProfile (pod or container "target" must set securityContext.seccompProfile.type to "RuntimeDefault" or "Localhost")
+daemonset.apps/disks-images-provider created
+serviceaccount/kubevirt-testing created
+clusterrolebinding.rbac.authorization.k8s.io/kubevirt-testing-cluster-admin created
+service/cdi-uploadproxy-nodeport created
++ [[ true != \f\a\l\s\e ]]
++ [[ x86_64 != *aarch64 ]]
++ _ensure_cdi_deployment
++ _kubectl patch cdi cdi --type merge -p '{"spec": {"config": {"featureGates": [ "HonorWaitForFirstConsumer" ]}}}'
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl patch cdi cdi --type merge -p '{"spec": {"config": {"featureGates": [ "HonorWaitForFirstConsumer" ]}}}'
+cdi.cdi.kubevirt.io/cdi patched
++ _kubectl patch cdi cdi --type merge -p '{"spec": {"config": {"insecureRegistries": [ "registry:5000", "fakeregistry:5000" ]}}}'
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl patch cdi cdi --type merge -p '{"spec": {"config": {"insecureRegistries": [ "registry:5000", "fakeregistry:5000" ]}}}'
+cdi.cdi.kubevirt.io/cdi patched
+++ cluster-up/cli.sh ports uploadproxy
+++ xargs
+selecting podman as container runtime
++ host_port=44733
++ override=https://127.0.0.1:44733
++ _kubectl patch cdi cdi --type merge -p '{"spec": {"config": {"uploadProxyURLOverride": "https://127.0.0.1:44733"}}}'
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl patch cdi cdi --type merge -p '{"spec": {"config": {"uploadProxyURLOverride": "https://127.0.0.1:44733"}}}'
+cdi.cdi.kubevirt.io/cdi patched
++ [[ 0 != \0 ]]
++ _kubectl apply -f /home/prow/go/src/github.com/kubevirt/kubevirt/_out/manifests/release/kubevirt-operator.yaml
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl apply -f /home/prow/go/src/github.com/kubevirt/kubevirt/_out/manifests/release/kubevirt-operator.yaml
+namespace/kubevirt configured
+customresourcedefinition.apiextensions.k8s.io/kubevirts.kubevirt.io created
+priorityclass.scheduling.k8s.io/kubevirt-cluster-critical created
+clusterrole.rbac.authorization.k8s.io/kubevirt.io:operator created
+serviceaccount/kubevirt-operator created
+role.rbac.authorization.k8s.io/kubevirt-operator created
+rolebinding.rbac.authorization.k8s.io/kubevirt-operator-rolebinding created
+clusterrole.rbac.authorization.k8s.io/kubevirt-operator created
+clusterrolebinding.rbac.authorization.k8s.io/kubevirt-operator created
+deployment.apps/virt-operator created
++ count=0
++ _kubectl get crd kubevirts.kubevirt.io
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl get crd kubevirts.kubevirt.io
+NAME                    CREATED AT
+kubevirts.kubevirt.io   2023-03-13T13:50:40Z
++ count=0
++ _kubectl api-resources --api-group=kubevirt.io
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl api-resources --api-group=kubevirt.io
++ grep kubevirts
+kubevirts   kv,kvs       kubevirt.io/v1   true         KubeVirt
++ _kubectl create -n kubevirt -f /home/prow/go/src/github.com/kubevirt/kubevirt/_out/manifests/release/kubevirt-cr.yaml
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl create -n kubevirt -f /home/prow/go/src/github.com/kubevirt/kubevirt/_out/manifests/release/kubevirt-cr.yaml
+kubevirt.kubevirt.io/kubevirt created
++ count=0
++ _kubectl -n kubevirt get kv kubevirt
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl -n kubevirt get kv kubevirt
+NAME       AGE   PHASE
+kubevirt   0s
++ count=0
++ _kubectl wait -n kubevirt kv kubevirt --for condition=Available --timeout 5m
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl wait -n kubevirt kv kubevirt --for condition=Available --timeout 5m
+kubevirt.kubevirt.io/kubevirt condition met
++ configure_prometheus
++ [[ true == \t\r\u\e ]]
++ _kubectl get crd prometheuses.monitoring.coreos.com
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl get crd prometheuses.monitoring.coreos.com
+NAME                                 CREATED AT
+prometheuses.monitoring.coreos.com   2023-03-13T13:47:11Z
++ _kubectl patch prometheus k8s -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/ruleSelector", "value":{}}, {"op": "replace", "path": "/spec/ruleNamespaceSelector", "value":{"matchLabels": {"kubevirt.io": ""}}}]'
++ export KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ KUBECONFIG=/home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubeconfig
++ /home/prow/go/src/github.com/kubevirt/kubevirt/_ci-configs/k8s-1.25/.kubectl patch prometheus k8s -n monitoring --type=json -p '[{"op": "replace", "path": "/spec/ruleSelector", "value":{}}, {"op": "replace", "path": "/spec/ruleNamespaceSelector", "value":{"matchLabels": {"kubevirt.io": ""}}}]'
+prometheus.monitoring.coreos.com/k8s patched
++ echo 'Done ./hack/cluster-deploy.sh'
+Done ./hack/cluster-deploy.sh
++ dump_kubevirt
++ '[' 0 -ne 0 ']'
+hack/dockerized "hack/bazel-fmt.sh && hack/bazel-build-functests.sh"
+Sandbox is up to date
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: faef1355-9975-4de5-8e84-8bbd076fdcc1
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //vendor/mvdan.cc/sh/v3/cmd/shfmt:shfmt (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //vendor/mvdan.cc/sh/v3/cmd/shfmt:shfmt (0 packages loaded, 33 targets configured).
+INFO: Found 1 target...
+[0 / 3] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //vendor/mvdan.cc/sh/v3/cmd/shfmt:shfmt up-to-date:
+  bazel-bin/vendor/mvdan.cc/sh/v3/cmd/shfmt/shfmt_/shfmt
+INFO: Elapsed time: 0.486s, Critical Path: 0.08s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/vendor/mvdan.cc/sh/v3/cmd/shfmt/shfmt_/shfmt -i 4 -w /home/prow/go/src/github.com/kubevirt/kubevirt/hack/ /home/prow/go/src/github.com/kubevirt/kubevirt/images/
+INFO: Build completed successfully, 1 total action
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: dec9bcfb-c1a2-4d74-b88c-91be286ee820
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:gazelle (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:gazelle (0 packages loaded, 438 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:gazelle up-to-date:
+  bazel-bin/gazelle-runner.bash
+  bazel-bin/gazelle
+INFO: Elapsed time: 0.934s, Critical Path: 0.37s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/gazelle pkg/ tools/ tests/ cmd/
+INFO: Build completed successfully, 1 total action
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 98dc7f11-1f4c-417e-84e2-d25a9fc173db
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:goimports (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:goimports (0 packages loaded, 44 targets configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:goimports up-to-date:
+  bazel-bin/goimports.bash
+INFO: Elapsed time: 0.388s, Critical Path: 0.09s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/goimports.bash
+INFO: Build completed successfully, 1 total action
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: a02a4cb7-e862-404c-9cd2-611ca306a6fe
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:buildifier (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:buildifier (0 packages loaded, 291 targets configured).
+INFO: Found 1 target...
+[0 / 3] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:buildifier up-to-date:
+  bazel-bin/buildifier.bash
+INFO: Elapsed time: 0.475s, Critical Path: 0.09s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/buildifier.bash
+INFO: Build completed successfully, 1 total action
+Sandbox is up to date
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 2bdb1495-4138-4ffd-845f-6dbeac5235e3
+Loading:
+Loading: 0 packages loaded
+Analyzing: 7 targets (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed 7 targets (0 packages loaded, 3832 targets configured).
+INFO: Found 7 targets...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+INFO: Elapsed time: 0.745s, Critical Path: 0.09s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Build completed successfully, 1 total action
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 1f4e644f-77f7-4846-aa24-783e6fcdb72a
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-ginkgo (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-ginkgo (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 2] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-ginkgo up-to-date:
+  bazel-bin/ginkgo-copier
+INFO: Elapsed time: 0.400s, Critical Path: 0.08s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/ginkgo-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/tests/ginkgo
+INFO: Build completed successfully, 1 total action
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 75a9fa0d-133c-4a4a-8e0e-9b73372ffa86
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-functests (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:build-functests (0 packages loaded, 2 targets configured).
+INFO: Found 1 target...
+[0 / 2] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-functests up-to-date:
+  bazel-bin/functests-copier
+INFO: Elapsed time: 0.521s, Critical Path: 0.08s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/functests-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/tests/tests.test
+INFO: Build completed successfully, 1 total action
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 598af529-d8e1-4515-af0e-00e4a36e91d9
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-junit-merger (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-junit-merger (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-junit-merger up-to-date:
+  bazel-bin/junit-merger-copier
+INFO: Elapsed time: 0.358s, Critical Path: 0.08s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/junit-merger-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/tests/junit-merger
+INFO: Build completed successfully, 1 total action
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 0fe0e105-43ec-4040-8ab2-dc02ba8b3a8a
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-dump (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:build-dump (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-dump up-to-date:
+  bazel-bin/dump-copier
+INFO: Elapsed time: 0.393s, Critical Path: 0.08s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/dump-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/dump/dump
+INFO: Build completed successfully, 1 total action
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: 1c2b52b9-3276-4d05-be34-fec58bbe22e1
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-virtctl (0 packages loaded, 0 targets configured)
+INFO: Analyzed target //:build-virtctl (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-virtctl up-to-date:
+  bazel-bin/virtctl-copier
+INFO: Elapsed time: 0.407s, Critical Path: 0.08s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/virtctl-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/virtctl/virtctl
+INFO: Build completed successfully, 1 total action
+WARNING: Option 'remote_http_cache' is deprecated: Use --remote_cache instead
+INFO: Invocation ID: b78a1a5a-5ac5-46c8-9fc2-07cfab7c4b16
+Loading:
+Loading: 0 packages loaded
+Analyzing: target //:build-example-guest-agent (0 packages loaded, 0 targets configured)
+DEBUG: /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle/internal/go_repository.bzl:209:18: org_golang_x_net: gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+gazelle: finding module path for import golang.org/x/sys/windows: finding module path for import golang.org/x/sys/windows: package golang.org/x/sys/windows: build constraints exclude all Go files in /tmp/cache/bazel/18316b1300bb8985bc913139d5cc6323/external/bazel_gazelle_go_repository_cache/pkg/mod/golang.org/x/sys@v0.6.0/windows
+INFO: Analyzed target //:build-example-guest-agent (0 packages loaded, 1 target configured).
+INFO: Found 1 target...
+[0 / 1] [Prepa] BazelWorkspaceStatusAction stable-status.txt
+Target //:build-example-guest-agent up-to-date:
+  bazel-bin/example-guest-agent-copier
+INFO: Elapsed time: 0.416s, Critical Path: 0.07s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/example-guest-agent-copier /home/prow/go/src/github.com/kubevirt/kubevirt/_out/cmd/example-guest-agent/example-guest-agent
+INFO: Build completed successfully, 1 total action
+hack/perftests.sh
+Performance testing
+Preparing directory for artifacts
+ARTIFACTS  /logs/artifacts/performance
+TESTS_OUT_DIR  /home/prow/go/src/github.com/kubevirt/kubevirt/_out/tests
+Running Suite: Tests Suite - /home/prow/go/src/github.com/kubevirt/kubevirt/_out/tests
+======================================================================================
+Random Seed: 42
+
+Will run 4 of 1406 specs
+SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+------------------------------
+P [PENDING]
+[rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] VM Live Migration Starting a VirtualMachineInstance  [Serial] migration monitor [test_id:2227] should abort a vmi migration without progress [sig-compute-migrations, sig-compute]
+tests/migration_test.go:2268
+------------------------------
+SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+------------------------------
+S [SKIPPED] [5.476 seconds]
+[sig-performance][Serial] CPU latency tests for measuring realtime VMs performance [BeforeEach]
+tests/performance/realtime.go:51
+  running cyclictest and collecting results directly from VM
+  tests/performance/realtime.go:58
+
+  Begin Captured GinkgoWriter Output >>
+    Global test cleanup started.
+    Forwarding from 127.0.0.1:6208 -> 8443
+    Forwarding from [::1]:6208 -> 8443
+    Handling connection for 6208
+    Forwarding from 127.0.0.1:6168 -> 8443
+    Forwarding from [::1]:6168 -> 8443
+    Handling connection for 6168
+    Forwarding from 127.0.0.1:4380 -> 8443
+    Forwarding from [::1]:4380 -> 8443
+    Handling connection for 4380
+    Forwarding from 127.0.0.1:8402 -> 8443
+    Forwarding from [::1]:8402 -> 8443
+    Handling connection for 8402
+    Forwarding from 127.0.0.1:7639 -> 8443
+    Forwarding from [::1]:7639 -> 8443
+    Handling connection for 7639
+    Forwarding from 127.0.0.1:6746 -> 8443
+    Forwarding from [::1]:6746 -> 8443
+    Handling connection for 6746
+    Forwarding from 127.0.0.1:6861 -> 8443
+    Forwarding from [::1]:6861 -> 8443
+    Handling connection for 6861
+    Forwarding from 127.0.0.1:8777 -> 8443
+    Forwarding from [::1]:8777 -> 8443
+    Handling connection for 8777
+    {"component":"tests","level":"info","msg":"system is in sync with kubevirt config resource version 3587","pos":"utils.go:1778","timestamp":"2023-03-13T13:53:53.575256Z"}
+    Global test cleanup ended.
+  << End Captured GinkgoWriter Output
+
+  Realtime performance tests are not enabled
+  In [BeforeEach] at: tests/performance/framework.go:72
+------------------------------
+SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+------------------------------
+P [PENDING]
+Ensure stable functionality by repeately starting vmis many times without issues
+tests/stability_test.go:16
+------------------------------
+SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+------------------------------
+P [PENDING]
+[Serial][sig-compute]Infrastructure [rfe_id:3187][crit:medium][vendor:cnv-qe@redhat.com][level:component]Prometheus Endpoints [test_id:4136][flaky] should find one leading virt-controller and two ready [sig-compute]
+tests/infra_test.go:797
+------------------------------
+SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS{
+  "Values": {
+    "CREATE-events-count": {
+      "value": 163.5033688888889
+    },
+    "CREATE-pods-count": {
+      "value": 130.0522222222222
+    },
+    "GET-endpoints-count": {
+      "value": 317.4997344209488
+    },
+    "GET-nodes-count": {
+      "value": 27.015340738518965
+    },
+    "LIST-nodes-count": {
+      "value": 4.339022222222222
+    },
+    "PATCH-nodes-count": {
+      "value": 8.559992592148237
+    },
+    "PATCH-pods-count": {
+      "value": 271.7528
+    },
+    "PATCH-services-count": {
+      "value": 17.356088888888888
+    },
+    "PATCH-virtualmachineinstances-count": {
+      "value": 59.073499999999996,
+      "thresholdResult": {
+        "thresholdValue": 260.1044444444444,
+        "thresholdMetric": "CREATE-pods-count",
+        "thresholdRatio": 0.45422907037343974,
+        "thresholdExceeded": true
+      }
+    },
+    "UPDATE-endpoints-count": {
+      "value": 190.8424311111111
+    },
+    "UPDATE-kubevirts-count": {
+      "value": 1.0847555555555555
+    },
+    "UPDATE-virtualmachineinstances-count": {
+      "value": 740.2638222222222,
+      "thresholdResult": {
+        "thresholdValue": 1300.5222222222221,
+        "thresholdMetric": "CREATE-pods-count",
+        "thresholdRatio": 5.692050543798645,
+        "thresholdExceeded": false
+      }
+    },
+    "running-phase-count": {
+      "value": 101
+    },
+    "vmiCreationToRunningSecondsP50": {
+      "value": 20.05116361163009,
+      "thresholdResult": {
+        "thresholdValue": 45,
+        "thresholdExceeded": false
+      }
+    },
+    "vmiCreationToRunningSecondsP95": {
+      "value": 29.414207270253915,
+      "thresholdResult": {
+        "thresholdValue": 60,
+        "thresholdExceeded": false
+      }
+    },
+    "vmiCreationToRunningSecondsP99": {
+      "value": 35.42251198911723
+    },
+    "vmiDeletionToFailedSecondsP50": {
+      "value": 0
+    },
+    "vmiDeletionToFailedSecondsP95": {
+      "value": 0
+    },
+    "vmiDeletionToFailedSecondsP99": {
+      "value": 0
+    },
+    "vmiDeletionToSucceededSecondsP50": {
+      "value": 0
+    },
+    "vmiDeletionToSucceededSecondsP95": {
+      "value": 0
+    },
+    "vmiDeletionToSucceededSecondsP99": {
+      "value": 0
+    }
+  }
+}
+
+------------------------------
+• [SLOW TEST] [467.867 seconds]
+[sig-performance][Serial] Control Plane Performance Density Testing Density test [small] create a batch of 100 VMIs should sucessfully create all VMIS
+tests/performance/density.go:100
+------------------------------
+{
+  "Values": {
+    "CREATE-controllerrevisions-count": {
+      "value": 139.4725
+    },
+    "CREATE-events-count": {
+      "value": 824.4486421307785
+    },
+    "CREATE-pods-count": {
+      "value": 111.11111111111111
+    },
+    "CREATE-virtualmachineinstances-count": {
+      "value": 139.4725
+    },
+    "DELETE-pods-count": {
+      "value": 15.131499999999999
+    },
+    "GET-configmaps-count": {
+      "value": 1.1111111111111112
+    },
+    "GET-endpoints-count": {
+      "value": 487.7805762146039
+    },
+    "GET-nodes-count": {
+      "value": 18.88909465782683
+    },
+    "LIST-cdiconfigs-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-cdis-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-clusterrolebindings-count": {
+      "value": 1.1111440338973007
+    },
+    "LIST-clusterroles-count": {
+      "value": 2.222255145008412
+    },
+    "LIST-configmaps-count": {
+      "value": 15.555604941045656
+    },
+    "LIST-controllerrevisions-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-customresourcedefinitions-count": {
+      "value": 10.000074076573778
+    },
+    "LIST-daemonsets-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-datasources-count": {
+      "value": 2.222209876680383
+    },
+    "LIST-datavolumes-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-deployments-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-ingresses-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-jobs-count": {
+      "value": 1.1111440338973007
+    },
+    "LIST-kubevirts-count": {
+      "value": 8.888917697134639
+    },
+    "LIST-migrationpolicies-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-mutatingwebhookconfigurations-count": {
+      "value": 2.222255145008412
+    },
+    "LIST-namespaces-count": {
+      "value": 3.3333662561195228
+    },
+    "LIST-nodes-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-persistentvolumeclaims-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-poddisruptionbudgets-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-pods-count": {
+      "value": 3.3333662561195228
+    },
+    "LIST-rolebindings-count": {
+      "value": 1.1111440338973007
+    },
+    "LIST-roles-count": {
+      "value": 2.222255145008412
+    },
+    "LIST-secrets-count": {
+      "value": 2.222255145008412
+    },
+    "LIST-serviceaccounts-count": {
+      "value": 2.222255145008412
+    },
+    "LIST-servicemonitors-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-services-count": {
+      "value": 3.3333662561195228
+    },
+    "LIST-storageclasses-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-validatingwebhookconfigurations-count": {
+      "value": 2.222255145008412
+    },
+    "LIST-virtualmachineclones-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachineclusterinstancetypes-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachineclusterpreferences-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachineexports-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachineinstancemigrations-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachineinstancepresets-count": {
+      "value": 2.222209876680383
+    },
+    "LIST-virtualmachineinstancereplicasets-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachineinstances-count": {
+      "value": 10.000082307575177
+    },
+    "LIST-virtualmachineinstancetypes-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachinepools-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachinepreferences-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachinerestores-count": {
+      "value": 2.222209876680383
+    },
+    "LIST-virtualmachines-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachinesnapshotcontents-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachinesnapshots-count": {
+      "value": 1.1111111111111112
+    },
+    "PATCH-events-count": {
+      "value": 2.8853
+    },
+    "PATCH-nodes-count": {
+      "value": 14.444609059594802
+    },
+    "PATCH-pods-count": {
+      "value": 232.22222222222223
+    },
+    "PATCH-virtualmachineinstances-count": {
+      "value": 180,
+      "thresholdResult": {
+        "thresholdValue": 222.22222222222223,
+        "thresholdMetric": "CREATE-pods-count",
+        "thresholdRatio": 1.6199999999999999,
+        "thresholdExceeded": false
+      }
+    },
+    "PATCH-virtualmachines-count": {
+      "value": 139.4725
+    },
+    "UPDATE-endpoints-count": {
+      "value": 297.77777777777777
+    },
+    "UPDATE-virtualmachineinstances-count": {
+      "value": 997.7804939277586,
+      "thresholdResult": {
+        "thresholdValue": 1111.111111111111,
+        "thresholdMetric": "CREATE-pods-count",
+        "thresholdRatio": 8.980024445349827,
+        "thresholdExceeded": false
+      }
+    },
+    "UPDATE-virtualmachines-count": {
+      "value": 1439.3029999999999
+    },
+    "running-phase-count": {
+      "value": 100
+    },
+    "vmiCreationToRunningSecondsP50": {
+      "value": 18.026315789473685,
+      "thresholdResult": {
+        "thresholdValue": 45,
+        "thresholdExceeded": false
+      }
+    },
+    "vmiCreationToRunningSecondsP95": {
+      "value": 28.673913043478258,
+      "thresholdResult": {
+        "thresholdValue": 60,
+        "thresholdExceeded": false
+      }
+    },
+    "vmiCreationToRunningSecondsP99": {
+      "value": 29.734782608695653
+    },
+    "vmiDeletionToFailedSecondsP50": {
+      "value": 0
+    },
+    "vmiDeletionToFailedSecondsP95": {
+      "value": 0
+    },
+    "vmiDeletionToFailedSecondsP99": {
+      "value": 0
+    },
+    "vmiDeletionToSucceededSecondsP50": {
+      "value": 1.535156820528858
+    },
+    "vmiDeletionToSucceededSecondsP95": {
+      "value": 4.452884044467584
+    },
+    "vmiDeletionToSucceededSecondsP99": {
+      "value": 4.890576808893517
+    }
+  }
+}
+• [SLOW TEST] [394.802 seconds]
+[sig-performance][Serial] Control Plane Performance Density Testing Density test [small] create a batch of 100 running VMs should sucessfully create all VMS
+tests/performance/density.go:110
+------------------------------
+{
+  "Values": {
+    "CREATE-controllerrevisions-count": {
+      "value": 333.33333333333337
+    },
+    "CREATE-events-count": {
+      "value": 993.3311440653555
+    },
+    "CREATE-pods-count": {
+      "value": 111.11111111111111
+    },
+    "CREATE-virtualmachineinstances-count": {
+      "value": 111.11111111111111
+    },
+    "DELETE-pods-count": {
+      "value": 111.11111111111111
+    },
+    "DELETE-virtualmachineinstances-count": {
+      "value": 59.33288571428572
+    },
+    "GET-controllerrevisions-count": {
+      "value": 413.66078333333337
+    },
+    "GET-endpoints-count": {
+      "value": 481.1084116026192
+    },
+    "GET-nodes-count": {
+      "value": 14.444378601798492
+    },
+    "GET-virtualmachineinstancetypes-count": {
+      "value": 336.48120000000006
+    },
+    "GET-virtualmachinepreferences-count": {
+      "value": 684.322
+    },
+    "LIST-cdis-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-clusterrolebindings-count": {
+      "value": 2.2222222222222223
+    },
+    "LIST-clusterroles-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-configmaps-count": {
+      "value": 8.888872428227401
+    },
+    "LIST-controllerrevisions-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-customresourcedefinitions-count": {
+      "value": 6.666633745831399
+    },
+    "LIST-datasources-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-datavolumes-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-deployments-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-jobs-count": {
+      "value": 2.2222222222222223
+    },
+    "LIST-kubevirts-count": {
+      "value": 5.555522634720289
+    },
+    "LIST-migrationpolicies-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-namespaces-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-nodes-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-poddisruptionbudgets-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-pods-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-rolebindings-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-roles-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-secrets-count": {
+      "value": 2.2222222222222223
+    },
+    "LIST-serviceaccounts-count": {
+      "value": 2.2222222222222223
+    },
+    "LIST-servicemonitors-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-validatingwebhookconfigurations-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachineclones-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachineclusterinstancetypes-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachineinstancemigrations-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachineinstancepresets-count": {
+      "value": 2.2222222222222223
+    },
+    "LIST-virtualmachineinstances-count": {
+      "value": 7.777761317116289
+    },
+    "LIST-virtualmachinepools-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachinepreferences-count": {
+      "value": 1.1111111111111112
+    },
+    "LIST-virtualmachinerestores-count": {
+      "value": 2.2222222222222223
+    },
+    "LIST-virtualmachinesnapshots-count": {
+      "value": 1.1111111111111112
+    },
+    "PATCH-events-count": {
+      "value": 41.40537323098607
+    },
+    "PATCH-nodes-count": {
+      "value": 9.999950618015536
+    },
+    "PATCH-pods-count": {
+      "value": 245.55555555555557
+    },
+    "PATCH-virtualmachineinstances-count": {
+      "value": 448.9094166666667,
+      "thresholdResult": {
+        "thresholdValue": 222.22222222222223,
+        "thresholdMetric": "CREATE-pods-count",
+        "thresholdRatio": 4.04018475,
+        "thresholdExceeded": false
+      }
+    },
+    "PATCH-virtualmachines-count": {
+      "value": 333.33333333333337
+    },
+    "UPDATE-endpoints-count": {
+      "value": 297.77777777777777
+    },
+    "UPDATE-virtualmachineinstances-count": {
+      "value": 1191.1417004449318,
+      "thresholdResult": {
+        "thresholdValue": 1111.111111111111,
+        "thresholdMetric": "CREATE-pods-count",
+        "thresholdRatio": 10.720275304004385,
+        "thresholdExceeded": false
+      }
+    },
+    "UPDATE-virtualmachines-count": {
+      "value": 955.5555555555557
+    },
+    "running-phase-count": {
+      "value": 100
+    },
+    "vmiCreationToRunningSecondsP50": {
+      "value": 3.773889202407381,
+      "thresholdResult": {
+        "thresholdValue": 45,
+        "thresholdExceeded": false
+      }
+    },
+    "vmiCreationToRunningSecondsP95": {
+      "value": 13.817237541733657,
+      "thresholdResult": {
+        "thresholdValue": 60,
+        "thresholdExceeded": false
+      }
+    },
+    "vmiCreationToRunningSecondsP99": {
+      "value": 18.76344750834673
+    },
+    "vmiDeletionToFailedSecondsP50": {
+      "value": 0.75
+    },
+    "vmiDeletionToFailedSecondsP95": {
+      "value": 0.975
+    },
+    "vmiDeletionToFailedSecondsP99": {
+      "value": 0.995
+    },
+    "vmiDeletionToSucceededSecondsP50": {
+      "value": 0.7361111111111112
+    },
+    "vmiDeletionToSucceededSecondsP95": {
+      "value": 1.266666666666667
+    },
+    "vmiDeletionToSucceededSecondsP99": {
+      "value": 1.8533333333333344
+    }
+  }
+}
+• [SLOW TEST] [388.168 seconds]
+[sig-performance][Serial] Control Plane Performance Density Testing Density test [small] create a batch of 100 running VMs using a single instancetype and preference should sucessfully create all VMS with instancetype and preference
+tests/performance/density.go:120
+------------------------------
+SSSSSSSSSSSSS
+Waiting for namespace kubevirt-test-default1 to be removed, this can take a while ...
+Waiting for namespace kubevirt-test-alternative1 to be removed, this can take a while ...
+Waiting for namespace kubevirt-test-operator1 to be removed, this can take a while ...
+Waiting for namespace kubevirt-test-privileged1 to be removed, this can take a while ...
+
+JUnit report was created: /logs/artifacts/performance/junit.functest.xml
+
+
+Ran 3 of 1406 Specs in 1296.145 seconds
+SUCCESS! -- 3 Passed | 0 Failed | 3 Pending | 1400 Skipped
+PASS
+
+Ginkgo ran 1 suite in 21m40.216836746s
+Test Suite Passed
++ EXIT_VALUE=0
++ set +o xtrace
+Cleaning up after podman in container.
+================================================================================
+Cleaning up after podman
+db117eb10cb9
+e9f28396c333
+a2b80c0e4c6b
+c5ef42bf7351
+7f044427ae86
+Error: container a9f0acc05d8362557128a52be47e4db103dfdacf5c8360244f3ed41c6fec46d0 has dependent containers which must be removed before it: 7f044427ae86254c8428440bfc91c3c299eaa6ae87a6e3cdf8408e546e9bfe22, a2b80c0e4c6b5e9b13d9f97da6f07965076d68d18ec71f58ab2fef4204e146de, c5ef42bf7351ef39f9a7def2b58419c8f76d4e5bfbf4be7b7fa0c15897f023a4, db117eb10cb9f08745b895a69a0529f69eb542355002d6cc4a4c1be5210b2390, e9f28396c33307080567c77f040fae1c85dcebcd4db14debdba9746e27b75bfe: container already exists
+/usr/local/bin/runner.sh: line 50: wait: pid 48 is not a child of this shell
+================================================================================
+Done cleaning up after podman in container.

@@ -106,7 +106,7 @@ func Test_getWeeklyVMResults(t *testing.T) {
 				}
 				results[date] = result
 			}
-			f, err := os.Create("/Users/alayp/nid/project-infra/robots/cmd/perf-report-creator/results-1.json")
+			f, err := os.Create("results-1.json")
 			if err != nil {
 				t.Errorf("unable to open file %+v", err)
 				return
