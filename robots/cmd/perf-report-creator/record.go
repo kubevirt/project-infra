@@ -58,6 +58,7 @@ func calculateAVGAndWriteOutput(results map[YearWeek][]Result, objType string, o
 					// todo: find a way to populate date
 				})
 			}
+			record.NumberOfDays = 7
 			record.Data = NewRecordDateWithAverage(rdp)
 			f, err := os.Create(outputPath)
 			if err != nil {
