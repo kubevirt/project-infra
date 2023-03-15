@@ -1135,6 +1135,51 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+      rehearsal.allowed: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.26-sig-network-multus-v4
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.26-centos9-sig-network-no-istio
+        # Set cluster-up to not deploy Multus V3 from manifests, instead CNAO will deploy Multus V4,
+        # and make the test suite run the hotplug NICs tests.
+        - name: KUBEVIRT_WITH_MULTUS_V3
+          value: "false"
+        image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
   - always_run: true
     annotations:
       fork-per-release: "true"
