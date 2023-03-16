@@ -371,6 +371,13 @@ plugins:
     - lgtm
     - trigger
 
+  kubevirt/sig-release:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - trigger
+
   kubevirt/ssp-operator:
     plugins:
     - approve
@@ -508,6 +515,7 @@ triggers:
   - kubevirt/node-labeller
   - kubevirt/kubevirt-template-validator
   - kubevirt/kubevirt-ssp-operator
+  - kubevirt/sig-release
   - kubevirt/ssp-operator
   - kubevirt/must-gather
   - kubevirt/demo
@@ -576,6 +584,7 @@ approve:
   - kubevirt/cloud-provider-kubevirt
   - kubevirt/test-benchmarks
   - kubevirt/vm-console-proxy
+  - kubevirt/sig-release
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -631,6 +640,7 @@ lgtm:
   - kubevirt/secrets
   - kubevirt/test-benchmarks
   - kubevirt/vm-console-proxy
+  - kubevirt/sig-release
   review_acts_as_lgtm: true
 
 override:

@@ -465,6 +465,10 @@ orgs:
         description: A repo to store all our secrets for automation
         has_projects: true
         private: true
+      sig-release:
+        default_branch: main
+        description: A repo to hold and organize all the information required for KubeVirt releases
+        has_wiki: true
       ssp-operator:
         description: Kubevirt SSP Operator
         has_projects: true
@@ -786,6 +790,17 @@ orgs:
           - isaacdorfman
         repos:
           terraform-provider-kubevirt: admin
+      release-team:
+        description: Team maintaining the release of KubeVirt
+        maintainers:
+        - aburdenthehand
+        - acardace
+        - dhiller
+        - davidvossel
+        - fabiand
+        - xpivarc
+        repos:
+          sig-release: write
       rerun-jobs-hco:
         description: can rerun failed job in the hyperconverged-cluster-operator repository
         maintainers:
