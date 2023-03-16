@@ -69,9 +69,11 @@
             document.getElementById("excludeByName").disabled = false;
             document.getElementById("filterByNotRunCheckBox").disabled = false;
             document.getElementById("showDontRunCheckBox").disabled = false;
+            document.getElementById("filterByJobName").disabled = false;
+            document.getElementById("excludeByJobName").disabled = false;
         }
         function updateFilteredRows() {
-            let filter, table, tr, td, i, txtValue, filterByNotRunChecked, shouldShow, rowsShown;
+            let filterTerms, excludeTerms, table, tr, td, i, txtValue, filterByNotRunChecked, showDontRunChecked, shouldShow, rowsShown;
             filterTerms = document.getElementById("filterByName").value.toUpperCase().split("|");
             excludeTerms = document.getElementById("excludeByName").value.toUpperCase().split("|");
             filterByNotRunChecked = document.getElementById("filterByNotRunCheckBox").checked;
@@ -121,12 +123,62 @@
             }
             updateRowsShown(rowsShown);
         }
+        function updateFilteredColumns() {
+            let filterByJobNameTerms, excludeByJobNameTerms, table, tr, th, td, i, shouldShow, txtValue;
+            filterByJobNameTerms = document.getElementById("filterByJobName").value.toUpperCase().split("|");
+            excludeByJobNameTerms = document.getElementById("excludeByJobName").value.toUpperCase().split("|");
+            table = document.getElementById("report");
+            tr = table.getElementsByTagName("tr");
+            th = tr[0].getElementsByTagName("th");
+
+            for (i = 2; i < th.length; i++) {
+                if (th[i]) {
+                    shouldShow = true
+                    txtValue = th[i].textContent || th[i].innerText;
+                    if (excludeByJobNameTerms.length > 0 && excludeByJobNameTerms[0] !== "") {
+                        for (k = 0; k < excludeByJobNameTerms.length; k++) {
+                            if (txtValue.toUpperCase().indexOf(excludeByJobNameTerms[k]) !== -1) {
+                                shouldShow = false
+                                break;
+                            }
+                        }
+                    }
+                    if (shouldShow === true && filterByJobNameTerms.length > 0 && filterByJobNameTerms[0] !== "") {
+                        let found = false
+                        for (k = 0; k < filterByJobNameTerms.length; k++) {
+                            if (txtValue.toUpperCase().indexOf(filterByJobNameTerms[k]) !== -1) {
+                                found = true
+                                break;
+                            }
+                        }
+                        if (found !== true) {
+                            shouldShow = false
+                        }
+                    }
+                    if (shouldShow === true) {
+                        th[i].style.display = "";
+                    } else {
+                        th[i].style.display = "none";
+                    }
+                    for (k = 1; k < tr.length; k++) {
+                        td = tr[k].getElementsByTagName("td")[i];
+                        if (td) {
+                            if (shouldShow === true) {
+                                td.style.display = "";
+                            } else {
+                                td.style.display = "none";
+                            }
+                        }
+                    }
+                }
+            }
+        }
         function initRowsShown() {
             updateRowsShown(document.getElementById("report").getElementsByTagName("tr").length - 1);
         }
         function updateRowsShown(rowsShown) {
             let rowsTotal = document.getElementById("report").getElementsByTagName("tr").length - 1;
-            document.getElementById("totalRowsShown").innerText = "Showing "+rowsShown+" of "+rowsTotal;
+            document.getElementById("totalRowsShown").innerText = "Showing "+rowsShown+" of "+rowsTotal+"";
         }
     </script>
 </head>
@@ -134,24 +186,35 @@
 {{- /* gotype: kubevirt.io/project-infra/robots/pkg/test-report.Data */ -}}
 <h1>test execution report</h1>
 <div>
-    {{ $.ReportConfigName }} report configuration<br/>
-    data from {{ $.StartOfReport }} till {{ $.EndOfReport }}<br/>
+    data from <b>{{ $.StartOfReport }}</b> till <b>{{ $.EndOfReport }}</b><br/>
 </div>
 
 <div id="reportConfig" class="popup right" >
-    <u>report configuration</u>
+    <u>report configuration &quot;{{ $.ReportConfigName }}&quot;</u>
     <pre class="popuptextReportConfig right" id="targetReportConfig">{{ $.ReportConfig }}</pre>
 </div>
 
 <table class="noborder">
     <tr>
         <td class="noborder">
+            <b>Test filters:</b>
         </td>
         <td class="noborder">
             <label for="filterByNotRunCheckBox">Only <span class="red">not run tests</span></label>
         </td>
         <td class="noborder">
             <input type="checkbox" id="filterByNotRunCheckBox" onClick="updateFilteredRows()" title="Show only rows that have not been run on any lane" disabled checked>
+        </td>
+        <td class="noborder filler">
+        </td>
+        <td class="noborder">
+            <b>Job filters:</b>
+        </td>
+        <td class="noborder">
+            <label for="filterByJobName">Exclude lanes that don't contain</span></label>
+        </td>
+        <td class="noborder">
+            <input type="text" id="filterByJobName" onkeyup="updateFilteredColumns()" placeholder="term1|term2|..." title="Show only lanes that contain term(s)" disabled>
         </td>
     </tr>
     <tr>
@@ -163,10 +226,19 @@
         <td class="noborder">
             <input type="checkbox" id="showDontRunCheckBox" onClick="updateFilteredRows()" title="Include tests that have been filtered with dont_run_tests.json on all lanes" disabled checked>
         </td>
+        <td class="noborder filler">
+        </td>
+        <td class="noborder">
+        </td>
+        <td class="noborder">
+            <label for="excludeByJobName">Exclude lanes that contain</label>
+        </td>
+        <td class="noborder">
+            <input type="text" id="excludeByJobName" onkeyup="updateFilteredColumns()" placeholder="term1|term2|..." title="Exclude lanes that contain term(s)" disabled>
+        </td>
     </tr>
     <tr>
         <td class="noborder">
-            <b>Filters:</b>
         </td>
         <td class="noborder">
             <label for="filterByName">Exclude tests that don't contain</label>
@@ -174,6 +246,9 @@
         <td class="noborder">
             <input type="text" id="filterByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..." disabled>
         </td>
+        <td class="noborder filler">
+        </td>
+        <td class="noborder" colspan="3"/>
     </tr>
     <tr>
         <td class="noborder">
@@ -184,10 +259,23 @@
         <td class="noborder">
             <input type="text" id="excludeByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..." disabled>
         </td>
+        <td class="noborder filler">
+        </td>
+        <td class="noborder" colspan="3"/>
+    </tr>
+    <tr>
+        <td class="noborder">
+        </td>
+        <td class="noborder" colspan="2">
+            <div id="totalRowsShown"><i>Loading rows...</i></div>
+        </td>
+        <td class="noborder filler">
+        </td>
+        <td class="noborder" colspan="3"/>
     </tr>
 </table>
 
-<div id="totalRowsShown"><i>Loading rows...</i></div>
+
 <table id="report">
     <tr>
         <th></th>
