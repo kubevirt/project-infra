@@ -46,17 +46,13 @@ func main() {
 		// return fmt.Errorf("Failed to create new storage client: %v.\n", err)
 	}
 
-	allJobs, err := listAllJobs(ctx, storageClient)
+	jobsDirs, err := listAllRunsForJob(ctx, storageClient, opts.performanceJobName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	jobsDirs := []string{}
-	for _, jobDir := range allJobs {
-		if jobDir == opts.performanceJobName {
-			jobsDirs = append(jobsDirs, jobDir)
-		}
-	}
+	// TODO: find a way to handle opts.since it would be great if there is a way to get
+	//    objects after a specific timestamp
 
 	// currently it is equivalent of zero
 	// The zero value of type Time is January 1, year 1, 00:00:00.000000000 UTC.
@@ -66,8 +62,8 @@ func main() {
 	since := time.Now().Add(-opts.since)
 
 	// convert to perfStats
-	//fmt.Print(allJobs)
-	collection, err := extractCollectionFromLogs(ctx, storageClient, allJobs, since)
+	//fmt.Print(jobsDirs)
+	collection, err := extractCollectionFromLogs(ctx, storageClient, jobsDirs, since)
 	if err != nil {
 		log.Fatalf("error getting job collection %#+v\n", err)
 	}
@@ -118,9 +114,9 @@ type Collection map[string]struct {
 	VMResult  Result
 }
 
-func listAllJobs(ctx context.Context, client *storage.Client) ([]string, error) {
+func listAllRunsForJob(ctx context.Context, client *storage.Client, jobName string) ([]string, error) {
 	jobDir := "logs"
-	jobDirs, err := ListGcsObjects(ctx, client, BucketName, jobDir+"/", "/")
+	jobDirs, err := ListGcsObjects(ctx, client, BucketName, jobDir+"/"+jobName+"/", "/")
 	if err != nil {
 		return nil, fmt.Errorf("Failed to list jobs for bucket %s: %s", BucketName, jobDir)
 	}
