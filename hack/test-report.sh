@@ -13,7 +13,7 @@ if [[ $* =~ ^dequarantine.report ]]; then
 elif [[ $* =~ ^dequarantine.execute ]]; then
     run_test_report --output-file=/tmp/quarantined_tests.json "$@"
 else
-    run_test_report --overwrite --outputFile=/tmp/test-report.html "$@"
+    run_test_report --overwrite --output-file=/tmp/test-report.html "$@"
 fi
 
 echo "test-report output written to $tmp_dir: $(ls $tmp_dir)"

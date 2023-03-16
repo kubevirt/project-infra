@@ -29,6 +29,7 @@ import (
 	"github.com/bndr/gojenkins"
 	"github.com/sirupsen/logrus"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
@@ -85,19 +86,21 @@ func init() {
 		keys = append(keys, key)
 	}
 	executionCmd.PersistentFlags().StringVar(&executionReportFlagOpts.config, "config", "default", fmt.Sprintf("one of { %s }, chooses one of the default configurations, if set overrides default-config.yaml", strings.Join(keys, ", ")))
-	executionCmd.PersistentFlags().StringVar(&executionReportFlagOpts.outputFile, "outputFile", "", "Path to output file, if not given, a temporary file will be used")
+	executionCmd.PersistentFlags().StringVar(&executionReportFlagOpts.outputFile, "output-file", "", "Path to output file, if not given, a temporary file will be used")
 	executionCmd.PersistentFlags().BoolVar(&executionReportFlagOpts.overwrite, "overwrite", true, "overwrite output file")
 	executionCmd.PersistentFlags().BoolVar(&executionReportFlagOpts.dryRun, "dry-run", false, "only check which jobs would be considered, do not create an actual report")
+	executionCmd.PersistentFlags().StringVar(&executionReportFlagOpts.exportConfigFilePath, "config-file-export-path", "", "just export selected config as a file, do not create an actual report")
 }
 
 type executionReportFlagOptions struct {
-	endpoint   string
-	startFrom  time.Duration
-	configFile string
-	config     string
-	outputFile string
-	overwrite  bool
-	dryRun     bool
+	endpoint             string
+	startFrom            time.Duration
+	configFile           string
+	config               string
+	outputFile           string
+	overwrite            bool
+	dryRun               bool
+	exportConfigFilePath string
 }
 
 func (o *executionReportFlagOptions) Validate() error {
@@ -114,6 +117,9 @@ func (o *executionReportFlagOptions) Validate() error {
 		}
 	}
 	if o.configFile != "" {
+		if o.exportConfigFilePath != "" {
+			return fmt.Errorf("exporting --config-file is a redundant operation")
+		}
 		_, err := os.Stat(o.configFile)
 		if err != nil && errors.Is(err, os.ErrNotExist) {
 			return err
@@ -191,6 +197,23 @@ func runExecutionReport() error {
 	err := executionReportFlagOpts.Validate()
 	if err != nil {
 		return fmt.Errorf("failed to validate command line arguments: %v", err)
+	}
+
+	if executionReportFlagOpts.exportConfigFilePath != "" {
+		_, err = os.Stat(executionReportFlagOpts.exportConfigFilePath)
+		if err == nil {
+			return fmt.Errorf("target file exists, cancelling export to %q", executionReportFlagOpts.exportConfigFilePath)
+		}
+		if !errors.Is(err, fs.ErrNotExist) {
+			return err
+		}
+
+		err = os.WriteFile(executionReportFlagOpts.exportConfigFilePath, configs[executionReportFlagOpts.config], 0644)
+		if err != nil {
+			return err
+		}
+		logger.Infof("config file written to %q, cancelling report creation", executionReportFlagOpts.exportConfigFilePath)
+		return nil
 	}
 
 	client := &http.Client{
