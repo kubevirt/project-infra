@@ -12,10 +12,14 @@
         th.vertical {
             writing-mode: vertical-rl;
             text-orientation: mixed;
+            text-align: right;
         }
         td.stateCell {
             min-width: 2em;
             text-align: center;
+        }
+        td.filler {
+            min-width: 2em;
         }
         .yellow {
             background-color: #ffff80;
@@ -40,15 +44,16 @@
 
         .popup .popuptextReportConfig {
             display: none;
-            width: 1024px;
+            width: 1280px;
             background-color: #FFFFFF;
             text-align: left;
             border-radius: 6px;
+            border: 1px solid black;
             padding: 8px 8px;
             position: absolute;
             z-index: 1;
             left: 100%;
-            margin-left: -1024px;
+            margin-left: -1280px;
         }
 
         .popup:hover .popuptextReportConfig {
