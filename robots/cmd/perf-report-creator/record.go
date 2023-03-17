@@ -64,7 +64,9 @@ func calculateAVGAndWriteOutput(results map[YearWeek][]Result, objType string, o
 			if err != nil {
 				return err
 			}
-			err = json.NewEncoder(f).Encode(&record)
+			e := json.NewEncoder(f)
+			e.SetIndent("", "  ")
+			err = e.Encode(&record)
 			if err != nil {
 				return err
 			}

@@ -1,0 +1,17 @@
+{
+  "JobDirCreationTime": "2022-10-14T00:00:00Z",
+  "VMIResult": {
+    "Values": {
+      "CREATE-pods-count": {
+        "value": 115.11111111111111
+      }
+    }
+  },
+  "VMResult": {
+    "Values": {
+      "CREATE-pods-count": {
+        "value": 115.11111111111111
+      }
+    }
+  }
+}

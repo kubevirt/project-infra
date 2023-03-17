@@ -1,15 +1,15 @@
 {
   "StartDate": "2022-10-10",
-  "NumberOfDays": 0,
+  "NumberOfDays": 7,
   "Data": {
-    "Average": 113.11111111111111,
+    "Average": 0,
     "DataPoints": [
       {
-        "Value": 115.11111111111111,
+        "Value": 0,
         "Date": "0001-01-01T00:00:00Z"
       },
       {
-        "Value": 111.11111111111111,
+        "Value": 0,
         "Date": "0001-01-01T00:00:00Z"
       }
     ]
