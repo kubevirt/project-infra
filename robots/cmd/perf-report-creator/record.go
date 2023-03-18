@@ -20,7 +20,7 @@ type RecordData struct {
 
 type RecordDataPoint struct {
 	Value float64
-	Date  time.Time `json:",omitempty"`
+	Date  *time.Time `json:",omitempty"`
 }
 
 func NewRecordDateWithAverage(rdps []RecordDataPoint) RecordData {
@@ -38,14 +38,14 @@ func NewRecordDateWithAverage(rdps []RecordDataPoint) RecordData {
 	return r
 }
 
-func calculateAVGAndWriteOutput(results map[YearWeek][]Result, objType string, outputDir string, metrics ...string) error {
+func calculateAVGAndWriteOutput(results map[YearWeek][]ResultWithDate, objType string, outputDir string, metrics ...string) error {
 	for _, metric := range metrics {
-		for yw, _ := range results {
+		for yw := range results {
 			record := Record{
 				StartDate:    getMondayOfWeekDate(yw.Year, yw.Week),
 				NumberOfDays: 0,
 			}
-			outputDirPath := filepath.Join(outputDir, objType, string(metric), getMondayOfWeekDate(yw.Year, yw.Week), "data")
+			outputDirPath := filepath.Join(outputDir, objType, metric, getMondayOfWeekDate(yw.Year, yw.Week), "data")
 			err := os.MkdirAll(outputDirPath, 0755)
 			if err != nil {
 				return err
@@ -53,9 +53,10 @@ func calculateAVGAndWriteOutput(results map[YearWeek][]Result, objType string, o
 			outputPath := filepath.Join(outputDirPath, "results.json")
 			rdp := []RecordDataPoint{}
 			for _, result := range results[yw] {
+				result := result
 				rdp = append(rdp, RecordDataPoint{
 					Value: result.Values[ResultType(metric)].Value,
-					// todo: find a way to populate date
+					Date:  result.Date,
 				})
 			}
 			record.NumberOfDays = 7

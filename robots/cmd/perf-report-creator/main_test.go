@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-var resultsDir = "output/results"
-var weeklyResultsDir = "output/weekly"
+//var resultsDir = "output/results"
+//var weeklyResultsDir = "output/weekly"
 
 func Test_readLinesAndMatchRegex(t *testing.T) {
 	tests := []struct {
@@ -104,7 +104,7 @@ func Test_getWeeklyVMResults(t *testing.T) {
 			//}
 			//fmt.Println(got)
 
-			results := map[string][]Result{}
+			results := map[string][]ResultWithDate{}
 			for yw, result := range got {
 				date := getMondayOfWeekDate(yw.Year, yw.Week)
 				//fmt.Println(date, result)

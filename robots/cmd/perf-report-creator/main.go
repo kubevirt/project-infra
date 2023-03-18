@@ -249,21 +249,22 @@ func extractCollectionFromLogs(ctx context.Context, storageClient *storage.Clien
 	return r, errors.NewAggregate(errs)
 }
 
-func getWeeklyVMIResults(results *Collection) (map[YearWeek][]Result, error) {
+func getWeeklyVMIResults(results *Collection) (map[YearWeek][]ResultWithDate, error) {
 	// todo: aggregate error if needed
 	//errs := []error{}
-	weeklyData := map[YearWeek][]Result{}
+	weeklyData := map[YearWeek][]ResultWithDate{}
 	// loop over the original map and aggregate the values for each Week
 	for _, value := range *results {
+		value := value
 		year, week := value.JobDirCreationTime.ISOWeek() // get the Year and Week number of the date
 		//weekStr := fmt.Sprintf("%d-W%02d", Year, Week) // format the Year and Week number as a string
 		yw := YearWeek{Year: year, Week: week}
 		_, ok := weeklyData[yw]
 		if ok {
-			weeklyData[yw] = append(weeklyData[yw], value.VMIResult)
+			weeklyData[yw] = append(weeklyData[yw], ResultWithDate{Values: value.VMIResult.Values, Date: &value.JobDirCreationTime})
 			continue
 		} // add the value to the weekly map
-		weeklyData[yw] = []Result{value.VMIResult}
+		weeklyData[yw] = []ResultWithDate{{Values: value.VMIResult.Values, Date: &value.JobDirCreationTime}}
 	}
 	return weeklyData, nil
 }
@@ -360,22 +361,23 @@ func unmarshalJson(jsonText string) (Result, error) {
 	return r, nil
 }
 
-func getWeeklyVMResults(results *Collection) (map[YearWeek][]Result, error) {
+func getWeeklyVMResults(results *Collection) (map[YearWeek][]ResultWithDate, error) {
 	// todo: aggregate error if needed
 	//errs := []error{}
-	weeklyData := map[YearWeek][]Result{}
+	weeklyData := map[YearWeek][]ResultWithDate{}
 	// loop over the original map and aggregate the values for each Week
 	for _, value := range *results {
+		value := value
 		year, week := value.JobDirCreationTime.ISOWeek() // get the Year and Week number of the date
 		//weekStr := fmt.Sprintf("%d-W%02d", Year, Week) // format the Year and Week number as a string
 		yw := YearWeek{Year: year, Week: week}
 		_, ok := weeklyData[yw]
 		if ok {
-			weeklyData[yw] = append(weeklyData[yw], value.VMResult)
+			weeklyData[yw] = append(weeklyData[yw], ResultWithDate{Values: value.VMResult.Values, Date: &value.JobDirCreationTime})
 			continue
 		}
 		// add the value to the weekly map
-		weeklyData[yw] = []Result{value.VMResult}
+		weeklyData[yw] = []ResultWithDate{{Values: value.VMResult.Values, Date: &value.JobDirCreationTime}}
 	}
 	return weeklyData, nil
 }
