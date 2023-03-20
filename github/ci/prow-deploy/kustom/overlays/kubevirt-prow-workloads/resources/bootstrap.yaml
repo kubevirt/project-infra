@@ -16,3 +16,10 @@ metadata:
   labels:
     type: bare-metal-external
     ci.kubevirt.io/cachenode: 'true'
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: kubevirt-sm-bm03.rhvcnv-devops.cloud
+  labels:
+    type: bare-metal-external
