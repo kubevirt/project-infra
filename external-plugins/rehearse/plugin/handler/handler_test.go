@@ -283,6 +283,15 @@ var _ = Describe("PR filtering", func() {
 			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
 			Expect(presubmits).ToNot(BeEmpty())
 		})
+	})
+
+	Context("extracting job names from PR comments", func() {
+
+		var handler *GitHubEventsHandler
+
+		BeforeEach(func() {
+			handler = &GitHubEventsHandler{}
+		})
 
 		It("extracts job names from comment body", func() {
 			commentBody := `/rehearse jobname1 
@@ -308,6 +317,65 @@ Gna meh whatever
 `
 			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeNil())
 		})
+	})
+
+	Context("filtering jobs by name", func() {
+
+		var handler *GitHubEventsHandler
+		var prowJobs []prowapi.ProwJob
+
+		BeforeEach(func() {
+			handler = &GitHubEventsHandler{}
+			prowJobs = []prowapi.ProwJob{
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job: "prowJob1",
+					},
+				},
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job: "prowJob2",
+					},
+				},
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job: "prowJob3",
+					},
+				},
+			}
+		})
+
+		It("filters nothing if slice is nil", func() {
+			Expect(handler.filterProwJobsByJobNames(prowJobs, nil)).To(BeEquivalentTo(prowJobs))
+		})
+
+		It("filters one job", func() {
+			expected := []prowapi.ProwJob{
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job: "prowJob1",
+					},
+				},
+			}
+			Expect(handler.filterProwJobsByJobNames(prowJobs, []string{"prowJob1"})).To(BeEquivalentTo(expected))
+		})
+
+		It("filters two jobs", func() {
+			expected := []prowapi.ProwJob{
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job: "prowJob1",
+					},
+				},
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job: "prowJob3",
+					},
+				},
+			}
+			Expect(handler.filterProwJobsByJobNames(prowJobs, []string{"prowJob1", "prowJob3"})).To(BeEquivalentTo(expected))
+		})
+
 	})
 
 })
