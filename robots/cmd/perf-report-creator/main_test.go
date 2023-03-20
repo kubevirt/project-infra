@@ -187,13 +187,15 @@ func Test_getWeeklyVMIResults(t *testing.T) {
 
 func Test_writeCollection(t *testing.T) {
 	tests := []struct {
-		name       string
-		collection *Collection
-		outputDir  string
-		wantErr    bool
+		name               string
+		collection         *Collection
+		performanceJobName string
+		outputDir          string
+		wantErr            bool
 	}{
 		{
-			name: "check results directory for a example result",
+			name:               "check results directory for a example result",
+			performanceJobName: "test-job-name",
 			collection: &Collection{
 				"job-123-0": {
 					JobDirCreationTime: time.Date(2022, 10, 13, 0, 0, 0, 0, time.UTC),
@@ -241,7 +243,7 @@ func Test_writeCollection(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := writeCollection(tt.collection, tt.outputDir); (err != nil) != tt.wantErr {
+			if err := writeCollection(tt.collection, tt.outputDir, tt.performanceJobName); (err != nil) != tt.wantErr {
 				t.Errorf("writeCollection() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			dirs, err := os.ReadDir(tt.outputDir)

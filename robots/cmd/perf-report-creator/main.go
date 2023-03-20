@@ -33,17 +33,28 @@ type weeklyReportOpts struct {
 	vmiMetricsList string
 }
 
-func resultsFlagOpts() resultOpts {
+type weeklyGraphOpts struct {
+	metric           string
+	resource         string
+	weeklyReportsDir string
+	plotlyHTML       bool
+}
+
+func resultsFlagOpts(subcommands []string) resultOpts {
 	fs := flag.NewFlagSet("results", flag.ExitOnError)
 	r := resultOpts{}
 	fs.DurationVar(&r.since, "since", 24*7*time.Hour, "Filter the periodic job in the time window")
 	fs.StringVar(&r.performanceJobName, "performance-job-name", "periodic-kubevirt-e2e-k8s-1.25-sig-performance", "usuage, name of the performance job for which data is collected")
 	fs.StringVar(&r.outputDir, "output-dir", "output/results", "the output directory were json data will be written")
-	fs.Parse([]string{})
+	err := fs.Parse(subcommands)
+	if err != nil {
+		fmt.Printf("error parsing flags: %+v\n", err)
+		os.Exit(1)
+	}
 	return r
 }
 
-func weeklyReportFlagOpts() weeklyReportOpts {
+func weeklyReportFlagOpts(subcommands []string) weeklyReportOpts {
 	w := weeklyReportOpts{}
 	fs := flag.NewFlagSet("weekly-report", flag.ExitOnError)
 	fs.DurationVar(&w.since, "since", 24*7*time.Hour, "Filter the periodic job in the time window")
@@ -51,14 +62,37 @@ func weeklyReportFlagOpts() weeklyReportOpts {
 	fs.StringVar(&w.vmMetricsList, "vm-metrics-list", string(ResultTypeVMICreationToRunningP95), "comma separated list of metrics to be extracted for vms")
 	fs.StringVar(&w.vmiMetricsList, "vmi-metrics-list", string(ResultTypeVMICreationToRunningP95), "comma separated list of metrics to be extracted for vmis")
 	fs.StringVar(&w.outputDir, "output-dir", "output/weekly", "the output directory were json data will be written")
-	fs.Parse([]string{})
+	err := fs.Parse(subcommands)
+	if err != nil {
+		fmt.Printf("error parsing flags: %+v\n", err)
+		os.Exit(1)
+	}
+	return w
+}
+
+func weeklyGraphFlagOpts(subcommands []string) weeklyGraphOpts {
+	w := weeklyGraphOpts{}
+	fs := flag.NewFlagSet("weekly-graph", flag.ExitOnError)
+	fs.StringVar(&w.metric, "metric", string(ResultTypeVMICreationToRunningP95), "the metric for which graph will be plotted")
+	fs.StringVar(&w.resource, "resource", "vmi", "resource for which the graph will be plotted")
+	fs.StringVar(&w.weeklyReportsDir, "weekly-reports-dir", "output/weekly", "the output directory from which weekly json data will be read")
+	fs.BoolVar(&w.plotlyHTML, "plotly-html", true, "boolean for selecting what kind of graph will be plotted")
+	err := fs.Parse(subcommands)
+	if err != nil {
+		fmt.Printf("error parsing flags: %+v\n", err)
+		os.Exit(1)
+	}
 	return w
 }
 
 func main() {
 	fs := flag.NewFlagSet("perf-report-creator", flag.ExitOnError)
-	fs.Parse(os.Args[1:])
-	if len(fs.Args()) != 1 {
+	err := fs.Parse(os.Args[1:])
+	if err != nil {
+		fmt.Printf("error parsing flags: %+v\n", err)
+		os.Exit(1)
+	}
+	if len(fs.Args()) < 1 {
 		fmt.Println("usuage: perf-report-creator <subcommand> [subcommand options]")
 		os.Exit(1)
 	}
@@ -66,15 +100,21 @@ func main() {
 	subCMD := fs.Arg(0)
 	switch subCMD {
 	case "results":
-		err := runResults(resultsFlagOpts())
+		err := runResults(resultsFlagOpts(fs.Args()[1:]))
 		if err != nil {
-			fmt.Println("unable to gather results")
+			fmt.Printf("unable to gather results, err: %+v\n", err)
 			os.Exit(1)
 		}
 	case "weekly-report":
-		err := runWeeklyReports(weeklyReportFlagOpts())
+		err := runWeeklyReports(weeklyReportFlagOpts(fs.Args()[1:]))
 		if err != nil {
-			fmt.Println("unable to gather weekly report")
+			fmt.Printf("unable to gather weekly report, err: %+v\n", err)
+			os.Exit(1)
+		}
+	case "weekly-graph":
+		err := plotWeeklyGraph(weeklyGraphFlagOpts(fs.Args()[1:]))
+		if err != nil {
+			fmt.Printf("unable to plot graph for given configuration, err: %+v\n", err)
 			os.Exit(1)
 		}
 	}
@@ -112,16 +152,16 @@ func runResults(r resultOpts) error {
 		log.Fatalf("error getting job collection %#+v\n", err)
 	}
 
-	err = writeCollection(&collection, r.outputDir)
+	err = writeCollection(&collection, r.outputDir, r.performanceJobName)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func writeCollection(collection *Collection, outputDir string) error {
+func writeCollection(collection *Collection, outputDir string, performanceJobName string) error {
 	for job, result := range *collection {
-		outputPath := filepath.Join(outputDir, job, "results.json")
+		outputPath := filepath.Join(outputDir, performanceJobName, job, "results.json")
 		err := os.MkdirAll(filepath.Dir(outputPath), 0755)
 		if err != nil {
 			return err
@@ -185,7 +225,7 @@ func runWeeklyReports(w weeklyReportOpts) error {
 		log.Fatalf("error writing vmi avg results to json file %#+v\n", err)
 	}
 
-	err = calculateAVGAndWriteOutput(weeklyVMResults, "vm", w.outputDir, strings.Split(w.vmiMetricsList, ",")...)
+	err = calculateAVGAndWriteOutput(weeklyVMResults, "vm", w.outputDir, strings.Split(w.vmMetricsList, ",")...)
 	if err != nil {
 		log.Fatalf("error writing vm avg results to json file %#+v\n", err)
 	}
