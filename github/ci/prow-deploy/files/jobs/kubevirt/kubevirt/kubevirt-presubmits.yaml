@@ -1537,7 +1537,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.26-sig-monitoring
+          value: k8s-1.26-centos9-sig-monitoring
         - name: KUBEVIRT_NUM_NODES
           value: "2"
         image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
