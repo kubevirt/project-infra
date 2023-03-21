@@ -1,0 +1,59 @@
+presubmits:
+  kubevirt/common-instancetypes:
+  - name: pull-common-instancetypes
+    branches:
+      - release-0.1
+    always_run: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 3h
+    max_concurrency: 5
+    labels:
+      preset-docker-mirror: "true"
+    cluster: ibm-prow-jobs
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/common-instancetypes-builder:v20221104-3adec0b
+        command:
+        - "/bin/bash"
+        - "-c"
+        - "make"
+        resources:
+          requests:
+            memory: "1Gi"
+  - name: pull-common-instancetypes-kubevirt-functest
+    branches:
+      - release-0.1
+    always_run: false
+    run_if_changed: "^common.*yaml"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-gcs-credentials: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 1
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - "/bin/sh"
+        - "-c"
+        - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
+        image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+        name: ""
+        resources:
+          requests:
+            memory: 16Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
