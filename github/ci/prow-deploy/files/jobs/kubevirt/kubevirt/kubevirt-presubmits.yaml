@@ -1245,7 +1245,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.26-centos9-sig-network-no-istio
+          value: k8s-1.26-centos9-sig-network
         # Set cluster-up to not deploy Multus V3 from manifests, instead CNAO will deploy Multus V4,
         # and make the test suite run the hotplug NICs tests.
         - name: KUBEVIRT_WITH_MULTUS_V3
@@ -1980,7 +1980,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.26-centos9-sig-network-no-istio
+          value: k8s-1.26-centos9-sig-network
         - name: KUBEVIRT_PSA
           value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
