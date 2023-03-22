@@ -489,7 +489,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 22, 11 * * *
+  cron: 0 23 * * 6
   decorate: true
   decoration_config:
     grace_period: 30m0s
@@ -571,7 +571,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 22, 12 * * *
+  cron: 0 21 * * *
   decorate: true
   decoration_config:
     grace_period: 30m0s
