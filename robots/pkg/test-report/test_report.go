@@ -52,23 +52,41 @@ func init() {
 }
 
 type Data struct {
+
+	// JenkinsBaseURL is the URL pointing to the Jenkins instance to query for build data
 	JenkinsBaseURL string `json:"jenkinsBaseURL"`
+
 	// TestNames contains the names of all tests that have not been filtered on all lanes
 	TestNames []string `json:"testNames"`
+
 	// FilteredTestNames contains the names of all tests that have been filtered on all lanes
-	FilteredTestNames []string `json:"filteredTestNames"`
+	FilteredTestNames map[string]interface{} `json:"filteredTestNames"`
+
 	// SkippedTests contains the test names for all tests that have been skipped on all lanes, aka not having been run on any lane
 	SkippedTests map[string]interface{} `json:"skippedTests"`
+
 	// LookedAtJobs contains the names of all test lanes that have been looked at
 	LookedAtJobs []string `json:"lookedAtJobs"`
 
-	// TestNamesToJobNamesToSkipped contains a map of test names per test pointing to the jobs where that test has been seen, which points to the state that was seen on that lane (see TestExecution_NoData, TestExecution_Skipped, TestExecution_Run, TestExecution_Unsupported)
+	// TestNamesToJobNamesToSkipped contains a map of test names per test pointing to the jobs where that test has been seen, which
+	// points to the state that was seen on that lane.
+	// See TestExecution_NoData, TestExecution_Skipped, TestExecution_Run, TestExecution_Unsupported
 	TestNamesToJobNamesToSkipped map[string]map[string]int `json:"testNamesToJobNamesToSkipped"`
-	TestExecutionMapping         map[string]int
-	StartOfReport                string
-	EndOfReport                  string
-	ReportConfig                 string
-	ReportConfigName             string
+
+	// TestExecutionMapping is a map containing the string names of the const that is used inside the template
+	TestExecutionMapping map[string]int
+
+	// StartOfReport contains the lower end of the data interval for the report
+	StartOfReport string
+
+	// EndOfReport contains the upper end of the data interval for the report
+	EndOfReport string
+
+	// ReportConfig holds the full report configuration for displaying it inside the report
+	ReportConfig string
+
+	// ReportConfigName holds the name of the report configuration being used for this report
+	ReportConfigName string
 }
 
 func (d Data) String() string {
@@ -95,7 +113,7 @@ func (d *Data) SetReportConfigName(name string) {
 	d.ReportConfigName = name
 }
 
-func NewData(testNames []string, filteredTestNames []string, skippedTests map[string]interface{}, lookedAtJobs []string, testNamesToJobNamesToSkipped map[string]map[string]int) Data {
+func NewData(testNames []string, filteredTestNames map[string]interface{}, skippedTests map[string]interface{}, lookedAtJobs []string, testNamesToJobNamesToSkipped map[string]map[string]int) Data {
 	return Data{
 		TestNames:                    testNames,
 		FilteredTestNames:            filteredTestNames,
@@ -154,7 +172,7 @@ func (r *FilterTestRecord) String() string {
 func CreateReportData(jobNamePatternsToTestNameFilterRegexps map[*regexp.Regexp]*regexp.Regexp, testNamesToJobNamesToExecutionStatus map[string]map[string]int) Data {
 	testNames := []string{}
 	skippedTests := map[string]interface{}{}
-	filteredTestNames := []string{}
+	filteredTestNames := map[string]interface{}{}
 	lookedAtJobsMap := map[string]interface{}{}
 
 	for testName, jobNamesToSkipped := range testNamesToJobNamesToExecutionStatus {
@@ -189,11 +207,10 @@ func CreateReportData(jobNamePatternsToTestNameFilterRegexps map[*regexp.Regexp]
 				filteredOnAllLanes = false
 			}
 		}
-		if !filteredOnAllLanes {
-			testNames = append(testNames, testName)
-		} else {
-			filteredTestNames = append(filteredTestNames, testName)
+		if filteredOnAllLanes {
+			filteredTestNames[testName] = struct{}{}
 		}
+		testNames = append(testNames, testName)
 		if testSkipped {
 			skippedTests[testName] = struct{}{}
 		}
@@ -204,7 +221,6 @@ func CreateReportData(jobNamePatternsToTestNameFilterRegexps map[*regexp.Regexp]
 	}
 
 	sort.Strings(testNames)
-	sort.Strings(filteredTestNames)
 	sort.Strings(lookedAtJobs)
 	data := NewData(testNames, filteredTestNames, skippedTests, lookedAtJobs, testNamesToJobNamesToExecutionStatus)
 	return data
@@ -295,7 +311,7 @@ func CreateJobNamePatternsToTestNameFilterRegexps(config *Config, client *http.C
 		if err != nil {
 			return nil, err
 		}
-		logger.Infof("for jobNamePattern %q filter expression is %q", nil, completeFilterRegex)
+		logger.Infof("for jobNamePattern %q filter expression is %q", jobNamePattern, completeFilterRegex)
 		jobNamePatternsToTestNameFilterRegexpsResult[jobNamePattern] = completeFilterRegex
 	}
 	return jobNamePatternsToTestNameFilterRegexpsResult, nil

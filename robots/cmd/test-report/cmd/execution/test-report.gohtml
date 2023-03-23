@@ -7,7 +7,19 @@
             border: 1px solid black;
         }
         table.noborder, th.noborder, td.noborder {
-            border: 0px;
+            border: 0;
+        }
+        th.vertical {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            text-align: right;
+        }
+        td.stateCell {
+            min-width: 2em;
+            text-align: center;
+        }
+        td.filler {
+            min-width: 2em;
         }
         .yellow {
             background-color: #ffff80;
@@ -21,43 +33,27 @@
         .gray {
             background-color: #898989;
         }
-        .unimportant {
-        }
         .right {
             text-align: right;
             width: 100%;
         }
-
-        .popup .popuptextFilteredTestNames {
-            display: none;
-            width: 1024px;
-            background-color: #FFFFFF;
-            text-align: center;
-            border-radius: 6px;
-            padding: 8px 8px;
-            position: absolute;
-            z-index: 1;
-            left: 100%;
-            margin-left: -1024px;
-        }
-
-        .popup:hover .popuptextFilteredTestNames {
-            display: block;
-            -webkit-animation: fadeIn 1s;
-            animation: fadeIn 1s;
+        .filtered {
+            text-decoration-line: underline;
+            text-decoration-style: dotted;
         }
 
         .popup .popuptextReportConfig {
             display: none;
-            width: 1024px;
+            width: 1280px;
             background-color: #FFFFFF;
             text-align: left;
             border-radius: 6px;
+            border: 1px solid black;
             padding: 8px 8px;
             position: absolute;
             z-index: 1;
             left: 100%;
-            margin-left: -1024px;
+            margin-left: -1280px;
         }
 
         .popup:hover .popuptextReportConfig {
@@ -72,12 +68,16 @@
             document.getElementById("filterByName").disabled = false;
             document.getElementById("excludeByName").disabled = false;
             document.getElementById("filterByNotRunCheckBox").disabled = false;
+            document.getElementById("showDontRunCheckBox").disabled = false;
+            document.getElementById("filterByJobName").disabled = false;
+            document.getElementById("excludeByJobName").disabled = false;
         }
         function updateFilteredRows() {
-            let filter, table, tr, td, i, txtValue, checked, shouldShow, rowsShown;
+            let filterTerms, excludeTerms, table, tr, td, i, txtValue, filterByNotRunChecked, showDontRunChecked, shouldShow, rowsShown;
             filterTerms = document.getElementById("filterByName").value.toUpperCase().split("|");
             excludeTerms = document.getElementById("excludeByName").value.toUpperCase().split("|");
-            checked = document.getElementById("filterByNotRunCheckBox").checked;
+            filterByNotRunChecked = document.getElementById("filterByNotRunCheckBox").checked;
+            showDontRunChecked = document.getElementById("showDontRunCheckBox").checked;
             table = document.getElementById("report");
             tr = table.getElementsByTagName("tr");
 
@@ -87,7 +87,10 @@
                 if (td) {
                     shouldShow = true
                     txtValue = td.textContent || td.innerText;
-                    if (checked && td.className !== "red") {
+                    if (filterByNotRunChecked && td.className.indexOf("red") == -1) {
+                        shouldShow = false
+                    }
+                    if (!showDontRunChecked && td.className.indexOf("filtered") !== -1) {
                         shouldShow = false
                     }
                     if (excludeTerms.length > 0 && excludeTerms[0] !== "") {
@@ -120,57 +123,132 @@
             }
             updateRowsShown(rowsShown);
         }
+        function updateFilteredColumns() {
+            let filterByJobNameTerms, excludeByJobNameTerms, table, tr, th, td, i, shouldShow, txtValue;
+            filterByJobNameTerms = document.getElementById("filterByJobName").value.toUpperCase().split("|");
+            excludeByJobNameTerms = document.getElementById("excludeByJobName").value.toUpperCase().split("|");
+            table = document.getElementById("report");
+            tr = table.getElementsByTagName("tr");
+            th = tr[0].getElementsByTagName("th");
+
+            for (i = 2; i < th.length; i++) {
+                if (th[i]) {
+                    shouldShow = true
+                    txtValue = th[i].textContent || th[i].innerText;
+                    if (excludeByJobNameTerms.length > 0 && excludeByJobNameTerms[0] !== "") {
+                        for (k = 0; k < excludeByJobNameTerms.length; k++) {
+                            if (txtValue.toUpperCase().indexOf(excludeByJobNameTerms[k]) !== -1) {
+                                shouldShow = false
+                                break;
+                            }
+                        }
+                    }
+                    if (shouldShow === true && filterByJobNameTerms.length > 0 && filterByJobNameTerms[0] !== "") {
+                        let found = false
+                        for (k = 0; k < filterByJobNameTerms.length; k++) {
+                            if (txtValue.toUpperCase().indexOf(filterByJobNameTerms[k]) !== -1) {
+                                found = true
+                                break;
+                            }
+                        }
+                        if (found !== true) {
+                            shouldShow = false
+                        }
+                    }
+                    if (shouldShow === true) {
+                        th[i].style.display = "";
+                    } else {
+                        th[i].style.display = "none";
+                    }
+                    for (k = 1; k < tr.length; k++) {
+                        td = tr[k].getElementsByTagName("td")[i];
+                        if (td) {
+                            if (shouldShow === true) {
+                                td.style.display = "";
+                            } else {
+                                td.style.display = "none";
+                            }
+                        }
+                    }
+                }
+            }
+        }
         function initRowsShown() {
             updateRowsShown(document.getElementById("report").getElementsByTagName("tr").length - 1);
         }
         function updateRowsShown(rowsShown) {
             let rowsTotal = document.getElementById("report").getElementsByTagName("tr").length - 1;
-            document.getElementById("totalRowsShown").innerText = "Showing "+rowsShown+" of "+rowsTotal;
+            document.getElementById("totalRowsShown").innerText = "Showing "+rowsShown+" of "+rowsTotal+"";
         }
     </script>
 </head>
-<body onload="initRowsShown();enableFilterFields();">
-{{- /* gotype: kubevirt.io/project-infra/robots/main.Data */ -}}
+<body onload="initRowsShown();updateFilteredRows();enableFilterFields();">
+{{- /* gotype: kubevirt.io/project-infra/robots/pkg/test-report.Data */ -}}
 <h1>test execution report</h1>
 <div>
-    {{ $.ReportConfigName }} report configuration<br/>
-    data from {{ $.StartOfReport }} till {{ $.EndOfReport }}<br/>
+    data from <b>{{ $.StartOfReport }}</b> till <b>{{ $.EndOfReport }}</b><br/>
 </div>
 
 <div id="reportConfig" class="popup right" >
-    <u>report configuration</u>
+    <u>report configuration &quot;{{ $.ReportConfigName }}&quot;</u>
     <pre class="popuptextReportConfig right" id="targetReportConfig">{{ $.ReportConfig }}</pre>
-</div>
-
-<div id="filteredTests" class="popup right" >
-    <u>list of filtered tests</u>
-    <div class="popuptextFilteredTestNames right" id="targetfilteredTests">
-        <table width="100%">
-            <tr class="unimportant">
-                <td>
-                    Filtered test names:
-                </td>
-            </tr>{{ range $filteredTestName := $.FilteredTestNames }}
-        <tr class="unimportant">
-            <td>
-                {{ $filteredTestName | html }}
-            </td>
-        </tr>{{ end }}
-        </table>
-    </div>
 </div>
 
 <table class="noborder">
     <tr>
         <td class="noborder">
-        <b>Filters:</b>
+            <b>Test filters:</b>
         </td>
         <td class="noborder">
-            <label for="filterByName">Include tests that contain</label>
+            <label for="filterByNotRunCheckBox">Only <span class="red">not run tests</span></label>
+        </td>
+        <td class="noborder">
+            <input type="checkbox" id="filterByNotRunCheckBox" onClick="updateFilteredRows()" title="Show only rows that have not been run on any lane" disabled checked>
+        </td>
+        <td class="noborder filler">
+        </td>
+        <td class="noborder">
+            <b>Job filters:</b>
+        </td>
+        <td class="noborder">
+            <label for="filterByJobName">Exclude lanes that don't contain</span></label>
+        </td>
+        <td class="noborder">
+            <input type="text" id="filterByJobName" onkeyup="updateFilteredColumns()" placeholder="term1|term2|..." title="Show only lanes that contain term(s)" disabled>
+        </td>
+    </tr>
+    <tr>
+        <td class="noborder">
+        </td>
+        <td class="noborder">
+            <label for="showDontRunCheckBox">Include <span class="red filtered">tests that have been filtered</span> on all lanes</label>
+        </td>
+        <td class="noborder">
+            <input type="checkbox" id="showDontRunCheckBox" onClick="updateFilteredRows()" title="Include tests that have been filtered with dont_run_tests.json on all lanes" disabled checked>
+        </td>
+        <td class="noborder filler">
+        </td>
+        <td class="noborder">
+        </td>
+        <td class="noborder">
+            <label for="excludeByJobName">Exclude lanes that contain</label>
+        </td>
+        <td class="noborder">
+            <input type="text" id="excludeByJobName" onkeyup="updateFilteredColumns()" placeholder="term1|term2|..." title="Exclude lanes that contain term(s)" disabled>
+        </td>
+    </tr>
+    <tr>
+        <td class="noborder">
+        </td>
+        <td class="noborder">
+            <label for="filterByName">Exclude tests that don't contain</label>
         </td>
         <td class="noborder">
             <input type="text" id="filterByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..." disabled>
         </td>
+        <td class="noborder filler">
+        </td>
+        <td class="noborder" colspan="3"/>
     </tr>
     <tr>
         <td class="noborder">
@@ -181,34 +259,37 @@
         <td class="noborder">
             <input type="text" id="excludeByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..." disabled>
         </td>
+        <td class="noborder filler">
+        </td>
+        <td class="noborder" colspan="3"/>
     </tr>
     <tr>
         <td class="noborder">
         </td>
-        <td class="noborder">
-    <label for="filterByNotRunCheckBox">Only not run tests</label>
+        <td class="noborder" colspan="2">
+            <div id="totalRowsShown"><i>Loading rows...</i></div>
         </td>
-        <td class="noborder">
-            <input type="checkbox" id="filterByNotRunCheckBox" onClick="updateFilteredRows()" title="Show only rows that have not been run" disabled>
+        <td class="noborder filler">
         </td>
+        <td class="noborder" colspan="3"/>
     </tr>
 </table>
 
-<div id="totalRowsShown"><i>Loading rows...</i></div>
+
 <table id="report">
     <tr>
         <th></th>
         <th></th>
         {{ range $job := $.LookedAtJobs }}
-            <th><a href="{{ $.JenkinsBaseURL }}/job/{{ $job }}/">{{ $job }}</a></th>
+            <th class="vertical"><a href="{{ $.JenkinsBaseURL }}/job/{{ $job }}/">{{ $job }}</a></th>
         {{ end }}
     </tr>
     {{ range $row, $test := $.TestNames }}
         <tr>
             <td><div id="row{{$row}}"><a href="#row{{$row}}">{{ $row }}</a></div></td>
-            <td class="{{ if (index $.SkippedTests $test) }}red{{ end }}">{{ $test }}</td>
+            <td class="{{ if (index $.SkippedTests $test) }}red{{ end }}{{ if (index $.FilteredTestNames $test) }} filtered{{ end }}">{{ $test }}</td>
             {{ range $col, $job := $.LookedAtJobs }}
-                <td class="center">{{ with $skipped := (index $.TestNamesToJobNamesToSkipped $test $job) }}
+                <td class="center stateCell">{{ with $skipped := (index $.TestNamesToJobNamesToSkipped $test $job) }}
                         <div id="r{{$row}}c{{$col}}" title="test
                                 {{- if eq $skipped (index $.TestExecutionMapping "TestExecution_Skipped") }} skipped
                                 {{- else if eq $skipped (index $.TestExecutionMapping "TestExecution_Run") }} run

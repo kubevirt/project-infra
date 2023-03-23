@@ -3,7 +3,7 @@
 function run_test_report() {
     podman run -v "$tmp_dir:/tmp:Z" \
             --network host \
-            quay.io/kubevirtci/test-report:v20230303-9f7c25ce \
+            quay.io/kubevirtci/test-report:v20230316-94768735 \
             "$@"
 }
 
@@ -13,7 +13,8 @@ if [[ $* =~ ^dequarantine.report ]]; then
 elif [[ $* =~ ^dequarantine.execute ]]; then
     run_test_report --output-file=/tmp/quarantined_tests.json "$@"
 else
-    run_test_report --overwrite --outputFile=/tmp/test-report.html "$@"
+    run_test_report --overwrite --output-file=/tmp/test-report.html "$@"
 fi
 
-echo "test-report output written to $tmp_dir: $(ls $tmp_dir)"
+echo "test-report output written to:"
+find $tmp_dir -type f -print

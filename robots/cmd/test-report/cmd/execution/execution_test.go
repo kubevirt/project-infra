@@ -31,7 +31,7 @@ func Test_writeHTMLReportToOutput(t *testing.T) {
 	type args struct {
 		htmlReportOutputWriter       io.Writer
 		testNames                    []string
-		filteredTestNames            []string
+		filteredTestNames            map[string]interface{}
 		skippedTests                 map[string]interface{}
 		lookedAtJobs                 []string
 		testNamesToJobNamesToSkipped map[string]map[string]int
@@ -47,7 +47,7 @@ func Test_writeHTMLReportToOutput(t *testing.T) {
 			args: args{
 				htmlReportOutputWriter: os.Stdout,
 				testNames:              []string{"a", "b", "c", "d"},
-				filteredTestNames:      []string{"la", "le", "lu"},
+				filteredTestNames:      map[string]interface{}{"la": struct{}{}, "le": struct{}{}, "lu": struct{}{}},
 				skippedTests: map[string]interface{}{
 					"a": struct{}{}},
 				lookedAtJobs: []string{"job1", "job2", "job3"},

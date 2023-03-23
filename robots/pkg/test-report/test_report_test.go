@@ -47,8 +47,8 @@ func Test_CreateReportData(t *testing.T) {
 				},
 			},
 			want: NewData(
-				[]string{"testName"}, // testNames
-				[]string{},           // filteredTestNames
+				[]string{"testName"},                           // testNames
+				map[string]interface{}{},                       // filteredTestNames
 				map[string]interface{}{"testName": struct{}{}}, // skippedTests
 				[]string{"jobName"},                            // lookedAtJobs
 				map[string]map[string]int{
@@ -70,7 +70,7 @@ func Test_CreateReportData(t *testing.T) {
 			},
 			want: NewData(
 				[]string{"testName"},     // testNames
-				[]string{},               // filteredTestNames
+				map[string]interface{}{}, // filteredTestNames
 				map[string]interface{}{}, // skippedTests
 				[]string{"jobName"},      // lookedAtJobs
 				map[string]map[string]int{
@@ -91,8 +91,8 @@ func Test_CreateReportData(t *testing.T) {
 				},
 			},
 			want: NewData(
-				[]string{"testName"}, // testNames
-				[]string{},           // filteredTestNames
+				[]string{"testName"},                           // testNames
+				map[string]interface{}{},                       // filteredTestNames
 				map[string]interface{}{"testName": struct{}{}}, // skippedTests
 				[]string{"jobName"},                            // lookedAtJobs
 				map[string]map[string]int{
@@ -125,8 +125,8 @@ func Test_CreateReportData(t *testing.T) {
 				* rewrite of map to include the dont_run aka TestExecution_Unsupported
 			*/
 			want: NewData(
-				[]string{"testName"}, // testNames
-				[]string{},           // filteredTestNames
+				[]string{"testName"},                                       // testNames
+				map[string]interface{}{},                                   // filteredTestNames
 				map[string]interface{}{"testName": struct{}{}},             // skippedTests
 				[]string{"test-version-1.2-lane", "test-version-2.3-lane"}, // lookedAtJobs
 				map[string]map[string]int{
@@ -161,7 +161,7 @@ func Test_CreateReportData(t *testing.T) {
 			*/
 			want: NewData(
 				[]string{"testName"},     // testNames
-				[]string{},               // filteredTestNames
+				map[string]interface{}{}, // filteredTestNames
 				map[string]interface{}{}, // skippedTests
 				[]string{"test-version-1.2-lane", "test-version-2.3-lane"}, // lookedAtJobs
 				map[string]map[string]int{
@@ -189,14 +189,14 @@ func Test_CreateReportData(t *testing.T) {
 			},
 			/*
 				Outcome should be:
-				* it doesn't appear in the testcases
+				* it does appear in the testcases
 				* it does appear in the filtered testcases
 				* it doesn't appear in the skipped testcases
 				* rewrite of map to include the dont_run aka TestExecution_Unsupported for all
 			*/
 			want: NewData(
-				[]string{},           // testNames
-				[]string{"testName"}, // filteredTestNames
+				[]string{"testName"},                                       // testNames
+				map[string]interface{}{"testName": struct{}{}},             // filteredTestNames
 				map[string]interface{}{"testName": struct{}{}},             // skippedTests
 				[]string{"test-version-1.2-lane", "test-version-2.3-lane"}, // lookedAtJobs
 				map[string]map[string]int{
@@ -233,7 +233,7 @@ func Test_CreateReportData(t *testing.T) {
 			*/
 			want: NewData(
 				[]string{"testName"},     // testNames
-				[]string{},               // filteredTestNames
+				map[string]interface{}{}, // filteredTestNames
 				map[string]interface{}{}, // skippedTests
 				[]string{"test-version-1.2-lane", "test-version-2.3-lane", "test-version-3.4-lane"}, // lookedAtJobs
 				map[string]map[string]int{
