@@ -311,6 +311,7 @@ dashboards:
 - name: kubevirt-velero-plugin-presubmits
 - name: kubevirt-velero-plugin-periodics
 - name: kubevirt-csi-driver-presubmits
+- name: kubevirt-containerdisks-periodics
 
 dashboard_groups:
 - name: kubevirt
@@ -327,6 +328,7 @@ dashboard_groups:
   - kubevirt-velero-plugin-presubmits
   - kubevirt-velero-plugin-periodics
   - kubevirt-csi-driver-presubmits
+  - kubevirt-containerdisks-periodics
 
 test_groups:
   - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index
