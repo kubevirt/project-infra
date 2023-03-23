@@ -150,6 +150,13 @@ go_repository(
     version = "v1.1.1",
 )
 
+go_repository(
+    name = "com_github_onsi_ginkgo_v2",
+    importpath = "github.com/onsi/ginkgo/v2",
+    sum = "h1:zie5Ly042PD3bsCvsSOPvRnFwyo3rKe64TJlD6nu0mk=",
+    version = "v2.9.1",
+)
+
 gazelle_dependencies()
 
 register_toolchains("//:py_toolchain")
