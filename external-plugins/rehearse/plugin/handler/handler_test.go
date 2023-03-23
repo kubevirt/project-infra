@@ -317,6 +317,26 @@ Gna meh whatever
 `
 			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeNil())
 		})
+
+		It("extracts no job names from comment body if no element is found since only whitespace after command", func() {
+			commentBody := `Gna meh whatever 
+
+/rehearse    
+
+
+`
+			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeNil())
+		})
+
+		It("extracts no job names from comment body", func() {
+			commentBody := `Gna meh whatever 
+
+/rehearse
+
+
+`
+			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeNil())
+		})
 	})
 
 	Context("filtering jobs by name", func() {
