@@ -131,6 +131,7 @@ tide:
     kubevirt/secrets: merge
     kubevirt/test-benchmarks: merge
     kubevirt/vm-console-proxy: merge
+    kubevirt/sig-release: merge
 
   queries:
   - repos:
@@ -154,6 +155,7 @@ tide:
     - kubevirt/cloud-provider-kubevirt
     - kubevirt/secrets
     - kubevirt/test-benchmarks
+    - kubevirt/sig-release
     labels:
     - lgtm
     - approved
@@ -413,6 +415,10 @@ branch-protection:
             main:
               protect: true
         kubesecondarydns:
+          branches:
+            main:
+              protect: true
+        sig-release:
           branches:
             main:
               protect: true
