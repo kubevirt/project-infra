@@ -106,7 +106,7 @@ data:
             "nodePathMap":[
             {
                     "node":"DEFAULT_PATH_FOR_NON_LISTED_NODES",
-                    "paths":["/opt/local-path-provisioner"]
+                    "paths":["/var/local-path-provisioner"]
             }
             ]
     }
