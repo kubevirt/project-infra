@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
@@ -12,6 +11,7 @@ import (
 	"k8s.io/test-infra/prow/config"
 	"k8s.io/test-infra/prow/git/localgit"
 	gitv2 "k8s.io/test-infra/prow/git/v2"
+	"k8s.io/test-infra/prow/github"
 )
 
 var _ = Describe("Events", func() {
@@ -174,4 +174,228 @@ var _ = Describe("Events", func() {
 		})
 
 	})
+
+})
+
+var _ = Describe("PR filtering", func() {
+
+	Context("Handler filtering jobs", func() {
+
+		var handler *GitHubEventsHandler
+		var headConfig *config.Config
+		var baseConfig *config.Config
+		var pr *github.PullRequest
+
+		BeforeEach(func() {
+			handler = &GitHubEventsHandler{}
+			headConfig = &config.Config{
+				JobConfig: config.JobConfig{
+					Presets: nil,
+					PresubmitsStatic: map[string][]config.Presubmit{
+						"kubevirt/kubevirt": {
+							config.Presubmit{
+								JobBase: config.JobBase{
+									Name: "testJob",
+									Spec: &v1.PodSpec{
+										Containers: []v1.Container{
+											{
+												Name:                     "blah",
+												Image:                    "v2/test42",
+												Command:                  nil,
+												Args:                     nil,
+												WorkingDir:               "",
+												Ports:                    nil,
+												EnvFrom:                  nil,
+												Env:                      nil,
+												Resources:                v1.ResourceRequirements{},
+												VolumeMounts:             nil,
+												VolumeDevices:            nil,
+												LivenessProbe:            nil,
+												ReadinessProbe:           nil,
+												StartupProbe:             nil,
+												Lifecycle:                nil,
+												TerminationMessagePath:   "",
+												TerminationMessagePolicy: "",
+												ImagePullPolicy:          "",
+												SecurityContext:          nil,
+												Stdin:                    false,
+												StdinOnce:                false,
+												TTY:                      false,
+											},
+										},
+									},
+								},
+								AlwaysRun:           false,
+								Optional:            false,
+								Trigger:             "",
+								RerunCommand:        "",
+								Brancher:            config.Brancher{},
+								RegexpChangeMatcher: config.RegexpChangeMatcher{},
+								Reporter:            config.Reporter{},
+								JenkinsSpec:         nil,
+							},
+						},
+					},
+					PostsubmitsStatic: nil,
+					Periodics:         nil,
+					AllRepos:          nil,
+					ProwYAMLGetter:    nil,
+					DecorateAllJobs:   false,
+				},
+			}
+			baseConfig = &config.Config{
+				JobConfig: config.JobConfig{
+					Presets: nil,
+					PresubmitsStatic: map[string][]config.Presubmit{
+						"kubevirt/kubevirt": {
+							config.Presubmit{
+								JobBase: config.JobBase{
+									Name: "testJob",
+								},
+								AlwaysRun:           false,
+								Optional:            false,
+								Trigger:             "",
+								RerunCommand:        "",
+								Brancher:            config.Brancher{},
+								RegexpChangeMatcher: config.RegexpChangeMatcher{},
+								Reporter:            config.Reporter{},
+								JenkinsSpec:         nil,
+							},
+						},
+					},
+					PostsubmitsStatic: nil,
+					Periodics:         nil,
+					AllRepos:          nil,
+					ProwYAMLGetter:    nil,
+					DecorateAllJobs:   false,
+				},
+			}
+			pr = &github.PullRequest{
+				Base: github.PullRequestBranch{
+					Repo: github.Repo{
+						FullName: "kubevirt/kubevirt",
+					},
+				},
+			}
+		})
+
+		It("generates a prowjob", func() {
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			Expect(presubmits).ToNot(BeEmpty())
+		})
+	})
+
+	Context("extracting job names from PR comments", func() {
+
+		var handler *GitHubEventsHandler
+
+		BeforeEach(func() {
+			handler = &GitHubEventsHandler{}
+		})
+
+		It("extracts job names from comment body", func() {
+			commentBody := `/rehearse jobname1 
+/rehearse jobname2
+
+Gna meh whatever 
+
+/rehearse jobname3    
+`
+			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeEquivalentTo([]string{
+				"jobname1",
+				"jobname2",
+				"jobname3",
+			}))
+		})
+
+		It("extracts no job names from comment body if all is found", func() {
+			commentBody := `Gna meh whatever 
+
+/rehearse all
+
+
+`
+			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeNil())
+		})
+
+		It("extracts no job names from comment body if no element is found since only whitespace after command", func() {
+			commentBody := `Gna meh whatever 
+
+/rehearse    
+
+
+`
+			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeNil())
+		})
+
+		It("extracts no job names from comment body", func() {
+			commentBody := `Gna meh whatever 
+
+/rehearse
+
+
+`
+			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeNil())
+		})
+	})
+
+	Context("filtering jobs by name", func() {
+
+		var handler *GitHubEventsHandler
+		var prowJobs []prowapi.ProwJob
+
+		BeforeEach(func() {
+			handler = &GitHubEventsHandler{}
+			prowJobs = []prowapi.ProwJob{
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job: "prowJob1",
+					},
+				},
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job: "prowJob2",
+					},
+				},
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job: "prowJob3",
+					},
+				},
+			}
+		})
+
+		It("filters nothing if slice is nil", func() {
+			Expect(handler.filterProwJobsByJobNames(prowJobs, nil)).To(BeEquivalentTo(prowJobs))
+		})
+
+		It("filters one job", func() {
+			expected := []prowapi.ProwJob{
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job: "prowJob1",
+					},
+				},
+			}
+			Expect(handler.filterProwJobsByJobNames(prowJobs, []string{"prowJob1"})).To(BeEquivalentTo(expected))
+		})
+
+		It("filters two jobs", func() {
+			expected := []prowapi.ProwJob{
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job: "prowJob1",
+					},
+				},
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job: "prowJob3",
+					},
+				},
+			}
+			Expect(handler.filterProwJobsByJobNames(prowJobs, []string{"prowJob1", "prowJob3"})).To(BeEquivalentTo(expected))
+		})
+
+	})
+
 })

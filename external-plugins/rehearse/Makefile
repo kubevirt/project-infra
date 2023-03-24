@@ -10,8 +10,8 @@ format:
 	gofmt -w .
 
 test:
-	$(bazelbin) test //external-plugins/rehearse/plugin:*
+	$(bazelbin) test //external-plugins/rehearse/...
 
 push:
-	$(bazelbin) run //external-plugins/rehearse/plugin:push
-	bash -x ../../hack/update-jobs-with-latest-image.sh kubevirtci/rehearse
+	$(bazelbin) run --stamp --workspace_status_command="./hack/print-workspace-status-no-git-tag.sh" //external-plugins/rehearse/plugin:push
+	bash -x ../../hack/update-jobs-with-latest-image.sh quay.io/kubevirtci/rehearse
