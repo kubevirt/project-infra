@@ -27,6 +27,12 @@ import (
 )
 
 var log *logrus.Logger
+
+// rehearseCommentRe matches either the sole command, i.e.
+// /rehearse
+// or the command followed by a job name which we then extract by the
+// capturing group, i.e.
+// /rehearse job-name
 var rehearseCommentRe = regexp.MustCompile(`(?m)^/rehearse\s*?($|\s.*)`)
 
 func init() {
