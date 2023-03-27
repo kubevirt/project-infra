@@ -102,6 +102,7 @@ if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
         else
             echo "Reached maximum attempts, not waiting any longer..."
 	    echo "Podman daemon failed to start successfully"
+            cat /var/log/podman.log
             exit 1
         fi
     done
