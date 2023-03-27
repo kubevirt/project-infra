@@ -1179,7 +1179,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 30 21 * * *
   decorate: true
   decoration_config:
@@ -1228,7 +1228,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 30 21 * * *
   decorate: true
   decoration_config:
@@ -1489,7 +1489,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 30 1,9,17 * * *
   decorate: true
   decoration_config:
@@ -1677,7 +1677,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 40 2,10,18 * * *
   decorate: true
   decoration_config:
@@ -1972,7 +1972,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 50 3,11,19 * * *
   decorate: true
   decoration_config:
@@ -2021,7 +2021,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 20 3,19 * * *
   decorate: true
   decoration_config:
