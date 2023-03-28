@@ -121,6 +121,7 @@ presubmits:
         - /bin/bash
         - -ce
         - |
+          curl -L https://github.com/kubevirt/kubevirtci/pull/987.diff | git apply
           trap "echo teardown && make cluster-down" EXIT SIGINT
           make cluster-up
           ./cluster-up/cluster/k3d/check-cluster-up.sh
