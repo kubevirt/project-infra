@@ -12,8 +12,6 @@ RUN mkdir -p /src && cd /src && \
       nodejs npm python3-pip ruby ruby-devel rubygems rubygems-devel \
       rubygem-bundler rubygem-json rubygem-nenv rubygem-rake && \
     alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
-    npm config set user 0 && \
-    npm config set unsafe-perm true && \
     npm install -g markdownlint-cli casperjs phantomjs-prebuilt yaspeller && \
     cd /src && bundle install && bundle update && cd && \
     pip install --upgrade pip && \
