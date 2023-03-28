@@ -12,9 +12,9 @@ if [ $# -gt 1 ]; then
         echo "$2 is not a directory!"
         exit 1
     fi
-    job_dir="$2"
+    deployment_dir="$2"
 else
-    job_dir="$(readlink --canonicalize "$(cd "$(cd "$(dirname "$0")" && pwd)"'/../github/ci/prow-deploy/kustom/base/manifests/local' && pwd)")"
+    deployment_dir="$(readlink --canonicalize "$(cd "$(cd "$(dirname "$0")" && pwd)"'/../github/ci/prow-deploy/kustom/base/manifests/local' && pwd)")"
 fi
 
 IMAGE_NAME="$1"
@@ -27,4 +27,4 @@ IMAGE_NAME_WITH_TAG="$IMAGE_NAME:$latest_image_tag"
 
 replace_regex='s#'"$IMAGE_NAME"'(@sha256\:|:v?[a-z0-9]+-).*$#'"$IMAGE_NAME_WITH_TAG"'#g'
 
-find "$job_dir" -regextype egrep -regex '.*-deployment\.yaml' -exec sed -i -E "$replace_regex" {} +
+find "$deployment_dir" -regextype egrep -regex '.*-deployment\.yaml' -exec sed -i -E "$replace_regex" {} +
