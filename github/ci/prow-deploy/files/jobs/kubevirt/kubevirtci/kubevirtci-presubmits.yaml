@@ -424,7 +424,7 @@ presubmits:
           type: Directory
         name: devices
   - always_run: false
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
@@ -451,7 +451,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
@@ -477,7 +477,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
@@ -529,7 +529,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
@@ -555,7 +555,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
