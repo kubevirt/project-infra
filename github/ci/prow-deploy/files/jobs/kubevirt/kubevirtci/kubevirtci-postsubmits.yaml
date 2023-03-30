@@ -33,6 +33,7 @@ postsubmits:
                   - bare-metal-9
         nodeSelector:
           type: bare-metal-external
+        restartPolicy: OnFailure
         volumes:
         - hostPath:
             path: /lib/modules
