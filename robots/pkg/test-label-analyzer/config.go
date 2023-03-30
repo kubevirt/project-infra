@@ -32,8 +32,8 @@ type Config struct {
 	Categories []LabelCategory `yaml:"categories"`
 }
 
-func NewQuarantineDefaultConfig() Config {
-	return Config{
+func NewQuarantineDefaultConfig() *Config {
+	return &Config{
 		Categories: []LabelCategory{
 			{
 				Name:            "Quarantine",

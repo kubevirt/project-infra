@@ -19,9 +19,11 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
-
 	"github.com/spf13/cobra"
+	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
+	"os"
 )
 
 // statsCmd represents the stats command
@@ -36,13 +38,34 @@ func init() {
 	rootCmd.AddCommand(statsCmd)
 }
 
-func runStatsCommand(cmd *cobra.Command, args []string) error {
-	err := configOpts.verify()
+func runStatsCommand(_ *cobra.Command, _ []string) error {
+	err := configOpts.validate()
 	if err != nil {
 		return err
 	}
 
-	ginkgo.internal.
+	// collect the test outline data from the files and merge it into one slice
+	var testOutlines []*test_label_analyzer.GinkgoNode
+	for _, filepath := range configOpts.ginkgoOutlinePathes {
+		fileData, err := os.ReadFile(filepath)
+		if err != nil {
+			return fmt.Errorf("failed to read file %q: %v", filepath, err)
+		}
+		var testOutline []*test_label_analyzer.GinkgoNode
+		err = json.Unmarshal(fileData, &testOutline)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal file %q: %v", filepath, err)
+		}
+		testOutlines = append(testOutlines, testOutline...)
+	}
 
-	return fmt.Errorf("stats called")
+	testStats := test_label_analyzer.GetStatsFromGinkgoOutline(configNamesToConfigs[configOpts.configName], testOutlines)
+	marshal, err := json.Marshal(testStats)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf(string(marshal))
+
+	return nil
 }

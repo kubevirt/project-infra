@@ -21,6 +21,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
 )
 
@@ -35,25 +36,31 @@ type configOptions struct {
 	// configName is the name of the default configuration that resembles the test_label_analyzer.Config
 	configName string
 
-	// testPath is the path to the files that contain the tests to analyze
-	testPath string
+	// ginkgoOutlinePathes is the pathes to the files that contain the test outlines to analyze
+	ginkgoOutlinePathes []string
 }
 
-func (s *configOptions) verify() error {
+func (s *configOptions) validate() error {
 	if s.configFile == "" && s.configName == "" || s.configFile != "" && s.configName != "" {
 		return fmt.Errorf("one of configFile or configName is required")
 	}
-	stat, err := os.Stat(s.testPath)
-	if os.IsNotExist(err) {
-		return fmt.Errorf("test-path not set correctly, %q is not a directory, %v", s.testPath, err)
-	}
-	if !stat.IsDir() {
-		return fmt.Errorf("test-path not set correctly, %q is not a directory", s.testPath)
+	for _, ginkgoOutlinePath := range s.ginkgoOutlinePathes {
+		stat, err := os.Stat(ginkgoOutlinePath)
+		if os.IsNotExist(err) {
+			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file, %v", s.ginkgoOutlinePathes, err)
+		}
+		if stat.IsDir() {
+			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file", s.ginkgoOutlinePathes)
+		}
 	}
 	return nil
 }
 
 var configOpts = configOptions{}
+
+var configNamesToConfigs = map[string]*test_label_analyzer.Config{
+	"quarantine": test_label_analyzer.NewQuarantineDefaultConfig(),
+}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -73,6 +80,10 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().StringVar(&configOpts.configFile, "config-file", "", "config file defining categories of tests")
-	rootCmd.PersistentFlags().StringVar(&configOpts.configName, "config-name", "", "config name defining categories of tests")
-	rootCmd.PersistentFlags().StringVar(&configOpts.testPath, "test-path", "", "path containing tests to be analyzed")
+	configNames := []string{}
+	for configName := range configNamesToConfigs {
+		configNames = append(configNames, configName)
+	}
+	rootCmd.PersistentFlags().StringVar(&configOpts.configName, "config-name", "", fmt.Sprintf("config name defining categories of tests (possible values: %v)", configNames))
+	rootCmd.PersistentFlags().StringArrayVar(&configOpts.ginkgoOutlinePathes, "test-outline-filepath", nil, "path containing tests to be analyzed")
 }
