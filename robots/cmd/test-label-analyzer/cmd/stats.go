@@ -22,8 +22,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
+	"io/fs"
 	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
 )
 
 // statsCmd represents the stats command
@@ -31,41 +35,100 @@ var statsCmd = &cobra.Command{
 	Use:   "stats",
 	Short: "Generates stats over test categories",
 	Long:  `TODO`,
-	RunE:  runStatsCommand,
+	RunE: func(_ *cobra.Command, _ []string) error {
+		return runStatsCommand(rootConfigOpts)
+	},
 }
 
 func init() {
 	rootCmd.AddCommand(statsCmd)
 }
 
-func runStatsCommand(_ *cobra.Command, _ []string) error {
-	err := configOpts.validate()
+func runStatsCommand(configurationOptions configOptions) error {
+	err := configurationOptions.validate()
 	if err != nil {
 		return err
 	}
 
+	if len(configurationOptions.ginkgoOutlinePathes) > 0 {
+		jsonOutput, err := collectStatsFromGinkgoOutlines(configurationOptions)
+		if err != nil {
+			return err
+		}
+		fmt.Printf(jsonOutput)
+		return nil
+	}
+
+	if configurationOptions.testFilePath != "" {
+
+		var testOutlines []*test_label_analyzer.GinkgoNode
+		err := filepath.Walk(configurationOptions.testFilePath, func(path string, info fs.FileInfo, err error) error {
+			if info.IsDir() {
+				return nil
+			}
+			if !strings.HasSuffix(path, ".go") {
+				return nil
+			}
+			ginkgoCommand := exec.Command("ginkgo", "outline", "--format", "json", path)
+			output, err := ginkgoCommand.Output()
+			if err != nil {
+				e := err.(*exec.ExitError)
+				stdErr := string(e.Stderr)
+				if strings.Contains(stdErr, "file does not import \"github.com/onsi/ginkgo/v2\"") {
+					return nil
+				}
+				return fmt.Errorf("command %v failed on %s: %v\n%v", ginkgoCommand, path, err, stdErr)
+			}
+			testOutline, err := toOutline(output)
+			if err != nil {
+				return fmt.Errorf("toOutline failed on %s: %v", path, err)
+			}
+			testOutlines = append(testOutlines, testOutline...)
+			return nil
+		})
+		if err != nil {
+			return fmt.Errorf("failed to walk test file path %q: %v", configurationOptions.testFilePath, err)
+		}
+
+		testStats := test_label_analyzer.GetStatsFromGinkgoOutline(configNamesToConfigs[configurationOptions.configName], testOutlines)
+		marshal, err := json.Marshal(testStats)
+		if err != nil {
+			return err
+		}
+		fmt.Printf(string(marshal))
+		return nil
+	}
+
+	return fmt.Errorf("not implemented")
+}
+
+func collectStatsFromGinkgoOutlines(configurationOptions configOptions) (string, error) {
+
 	// collect the test outline data from the files and merge it into one slice
 	var testOutlines []*test_label_analyzer.GinkgoNode
-	for _, filepath := range configOpts.ginkgoOutlinePathes {
-		fileData, err := os.ReadFile(filepath)
+	for _, path := range configurationOptions.ginkgoOutlinePathes {
+		fileData, err := os.ReadFile(path)
 		if err != nil {
-			return fmt.Errorf("failed to read file %q: %v", filepath, err)
+			return "", fmt.Errorf("failed to read file %q: %v", path, err)
 		}
-		var testOutline []*test_label_analyzer.GinkgoNode
-		err = json.Unmarshal(fileData, &testOutline)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal file %q: %v", filepath, err)
+		testOutline, err2 := toOutline(fileData)
+		if err2 != nil {
+			return "", fmt.Errorf("failed to unmarshal file %q: %v", path, err)
 		}
 		testOutlines = append(testOutlines, testOutline...)
 	}
 
-	testStats := test_label_analyzer.GetStatsFromGinkgoOutline(configNamesToConfigs[configOpts.configName], testOutlines)
+	testStats := test_label_analyzer.GetStatsFromGinkgoOutline(configNamesToConfigs[configurationOptions.configName], testOutlines)
 	marshal, err := json.Marshal(testStats)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	fmt.Printf(string(marshal))
+	jsonOutput := string(marshal)
+	return jsonOutput, nil
+}
 
-	return nil
+func toOutline(fileData []byte) (testOutline []*test_label_analyzer.GinkgoNode, err error) {
+	err = json.Unmarshal(fileData, &testOutline)
+	return testOutline, err
 }

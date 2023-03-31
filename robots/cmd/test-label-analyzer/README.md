@@ -12,24 +12,47 @@ Say we want to know about how many tests of a given set (i.e. directory or file 
 
 The tool then prints an overview of how many tests are in each category, additionally it prints out a list of all test names including their attributes as where to find each test inside the code base.
 
-Example:
+### Examples
+
+#### Using outline files
 
 ```sh
 $ # create an output directory
 $ mkdir -p /tmp/ginkgo-outlines
 $ # generate outline data files from the ginkgo test files (those that contain an import from ginkgo)
-$ for test_file in $(cd $ginkgo_test_dir && grep -l 'github.com/onsi/ginkgo/v2' ./*.go); do; ginkgo outline --format json $test_file > /tmp/ginkgo-outlines/${test_file//[\/\.]/_}.ginkgooutline.json ; done
+$ for test_file in $(cd $ginkgo_test_dir && grep -l 'github.com/onsi/ginkgo/v2' ./*.go); do; \
+    ginkgo outline --format json $test_file \
+        > /tmp/ginkgo-outlines/${test_file//[\/\.]/_}.ginkgooutline.json ; \
+  done
 $ # feed input files to test-label-analyzer to generate stats
 $ test-label-analyzer stats --config-name quarantine \
     $(for outline_file in $(ls /tmp/ginkgo-outlines/); do; \
         echo " --test-outline-filepath /tmp/ginkgo-outlines/$outline_file" | \
         tr -d '\n'; done; echo "") \
         > /tmp/test-label-analyzer-output.json
+$ # print the output
+$ cat /tmp/test-label-analyzer-output.json
+{"SpecsTotal":1483,"SpecsMatching":9,"MatchingSpecPathes":[[{"name":"Describe","text":"...
+$ # from the output we can generate the concatenated test names
+$ jq '.MatchingSpecPathes[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer-output.json
+```
+
+#### Letting `test-labels-analyzer` call ginkgo to retrieve the outline data
+
+```sh
+# point test-label-analyzer to the directory containing the test source files
+$ test-label-analyzer stats --config-name quarantine --test-file-path /path/to/tests \
+        > /tmp/test-label-analyzer-output.json
+$ # print the output
+$ cat /tmp/test-label-analyzer-output.json
+{"SpecsTotal":1483,"SpecsMatching":9,"MatchingSpecPathes":[[{"name":"Describe","text":"...
 $ # from the output we can generate the concatenated test names
 $ jq '.MatchingSpecPathes[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer-output.json
 ```
 
 ## generate a string that can be used directly with [Ginkgo] `--filter` or `--skip` flags
+
+_**NOT YET IMPLEMENTED**_
 
 [Ginkgo]: https://onsi.github.io/ginkgo/
 [Ginkgo label]: https://onsi.github.io/ginkgo/#spec-labels

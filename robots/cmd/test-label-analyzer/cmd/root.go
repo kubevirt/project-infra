@@ -38,11 +38,17 @@ type configOptions struct {
 
 	// ginkgoOutlinePathes is the pathes to the files that contain the test outlines to analyze
 	ginkgoOutlinePathes []string
+
+	// testFilePath is the path to the files that contain the test code
+	testFilePath string
 }
 
 func (s *configOptions) validate() error {
 	if s.configFile == "" && s.configName == "" || s.configFile != "" && s.configName != "" {
 		return fmt.Errorf("one of configFile or configName is required")
+	}
+	if _, exists := configNamesToConfigs[s.configName]; s.configName != "" && !exists {
+		return fmt.Errorf("configName %s is invalid", s.configName)
 	}
 	for _, ginkgoOutlinePath := range s.ginkgoOutlinePathes {
 		stat, err := os.Stat(ginkgoOutlinePath)
@@ -53,10 +59,19 @@ func (s *configOptions) validate() error {
 			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file", s.ginkgoOutlinePathes)
 		}
 	}
+	if s.testFilePath != "" {
+		stat, err := os.Stat(s.testFilePath)
+		if os.IsNotExist(err) {
+			return fmt.Errorf("test-file-path not set correctly, %q is not a directory, %v", s.ginkgoOutlinePathes, err)
+		}
+		if !stat.IsDir() {
+			return fmt.Errorf("test-file-path not set correctly, %q is not a directory", s.ginkgoOutlinePathes)
+		}
+	}
 	return nil
 }
 
-var configOpts = configOptions{}
+var rootConfigOpts = configOptions{}
 
 var configNamesToConfigs = map[string]*test_label_analyzer.Config{
 	"quarantine": test_label_analyzer.NewQuarantineDefaultConfig(),
@@ -79,11 +94,12 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&configOpts.configFile, "config-file", "", "config file defining categories of tests")
+	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.configFile, "config-file", "", "config file defining categories of tests")
 	configNames := []string{}
 	for configName := range configNamesToConfigs {
 		configNames = append(configNames, configName)
 	}
-	rootCmd.PersistentFlags().StringVar(&configOpts.configName, "config-name", "", fmt.Sprintf("config name defining categories of tests (possible values: %v)", configNames))
-	rootCmd.PersistentFlags().StringArrayVar(&configOpts.ginkgoOutlinePathes, "test-outline-filepath", nil, "path containing tests to be analyzed")
+	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.configName, "config-name", "", fmt.Sprintf("config name defining categories of tests (possible values: %v)", configNames))
+	rootCmd.PersistentFlags().StringArrayVar(&rootConfigOpts.ginkgoOutlinePathes, "test-outline-filepath", nil, "path to test outline file to be analyzed")
+	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testFilePath, "test-file-path", "", "path containing tests to be analyzed")
 }
