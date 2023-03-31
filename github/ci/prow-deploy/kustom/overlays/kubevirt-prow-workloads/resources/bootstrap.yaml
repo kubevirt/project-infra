@@ -23,3 +23,18 @@ metadata:
   name: kubevirt-sm-bm03.rhvcnv-devops.cloud
   labels:
     type: bare-metal-external
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: kubevirt-sm-bm04.rhvcnv-devops.cloud
+  labels:
+    type: bare-metal-external
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: kubevirt-sm-bm09.rhvcnv-devops.cloud
+  labels:
+    type: bare-metal-external
+    hardwareSupport: gpu
