@@ -26,6 +26,13 @@ import (
 	"k8s.io/test-infra/prow/pjutil"
 )
 
+const basicHelpCommentText = `You can trigger rehearsal for all jobs by commenting either ` + "`/rehearse`" + ` or ` + "`/rehearse all`" + `
+on this PR.
+
+For a specific PR you can comment ` + "`/rehearse {job-name}`" + `.
+
+For a list of jobs that you can rehearse you can comment ` + "`/rehearse ?`" + `.`
+
 var log *logrus.Logger
 
 // rehearseCommentRe matches either the sole command, i.e.
@@ -84,6 +91,7 @@ func NewGitHubEventsHandler(
 type githubClientInterface interface {
 	IsMember(string, string) (bool, error)
 	GetPullRequest(string, string, int) (*github.PullRequest, error)
+	CreateComment(org, repo string, number int, comment string) error
 }
 
 func (h *GitHubEventsHandler) Handle(incomingEvent *GitHubEvent) {
@@ -128,20 +136,18 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 		return
 	}
 
-	if !h.validateEventUser(event.Repo.FullName, event.Comment.User.Login, event.Issue.Number) {
-		log.Infoln("Skipping event - user validation failed")
-		return
-	}
-
 	org, repo, err := gitv2.OrgRepo(event.Repo.FullName)
 	if err != nil {
-		log.WithError(err).Errorln("Could not get org and repo from comment")
+		log.WithError(err).Errorf("Could not get org/repo from the event")
 	}
 	pr, err := h.ghClient.GetPullRequest(org, repo, event.Issue.Number)
 	if err != nil {
-		log.WithError(err).Errorln("Could not get pull request for comment")
+		log.WithError(err).Errorf("Could not get PR number %d", event.Issue.Number)
 	}
-
+	if !h.canUserRehearse(err, org, event.Comment.User.Login, pr) {
+		log.Infoln("Skipping event - user validation failed")
+		return
+	}
 	h.handleRehearsalForPR(log, pr, event.GUID, event.Comment.Body)
 }
 
@@ -162,15 +168,7 @@ func (h *GitHubEventsHandler) shouldActOnIssueComment(event *github.IssueComment
 	return false
 }
 
-func (h *GitHubEventsHandler) validateEventUser(repoFullName, userName string, prNumber int) bool {
-	org, repo, err := gitv2.OrgRepo(repoFullName)
-	if err != nil {
-		log.WithError(err).Errorf("Could not get org/repo from the event")
-	}
-	pr, err := h.ghClient.GetPullRequest(org, repo, prNumber)
-	if err != nil {
-		log.WithError(err).Errorf("Could not get PR number %d", prNumber)
-	}
+func (h *GitHubEventsHandler) canUserRehearse(err error, org string, userName string, pr *github.PullRequest) bool {
 	isMember, err := h.ghClient.IsMember(org, userName)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate PR author with the repo org")
@@ -197,7 +195,15 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 		return
 	}
 
-	if !h.validateEventUser(event.Repo.FullName, event.Sender.Login, event.PullRequest.Number) {
+	org, repo, err := gitv2.OrgRepo(event.Repo.FullName)
+	if err != nil {
+		log.WithError(err).Errorf("Could not get org/repo from the event")
+	}
+	pr, err := h.ghClient.GetPullRequest(org, repo, event.PullRequest.Number)
+	if err != nil {
+		log.WithError(err).Errorf("Could not get PR number %d", event.PullRequest.Number)
+	}
+	if !h.canUserRehearse(err, org, event.Sender.Login, pr) {
 		log.Infoln("Skipping event. User is not authorized.")
 		return
 	}
@@ -206,13 +212,13 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 }
 
 func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github.PullRequest, eventGUID string, commentBody string) {
-	repo, org, err := gitv2.OrgRepo(pr.Base.Repo.FullName)
+	org, repo, err := gitv2.OrgRepo(pr.Base.Repo.FullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Base.Repo.FullName)
 		return
 	}
 	log.Infoln("Generating git client")
-	git, err := h.gitClientFactory.ClientFor(repo, org)
+	git, err := h.gitClientFactory.ClientFor(org, repo)
 	if err != nil {
 		return
 	}
@@ -252,9 +258,30 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 
 	prowjobs := h.generateProwJobs(headConfigs, baseConfigs, pr, eventGUID)
 	jobNames := h.extractJobNamesFromComment(commentBody)
+	if len(jobNames) == 1 && jobNames[0] == "?" {
+		var prowJobNames []string
+		for _, prowJob := range prowjobs {
+			prowJobNames = append(prowJobNames, prowJob.Spec.Job)
+		}
+		commentText := fmt.Sprintf(`Rehearsal is available for the following jobs in this PR:
+
+`+"```"+`
+%s
+`+"```"+`
+
+`+basicHelpCommentText, strings.Join(prowJobNames, "\n"))
+		err := h.ghClient.CreateComment(org, repo, pr.Number, commentText)
+		if err != nil {
+			log.WithError(err).Errorf("Failed to create comment on %s/%s PR: %d", org, repo, pr.Number)
+		}
+		return
+	}
+
 	prowjobs = h.filterProwJobsByJobNames(prowjobs, jobNames)
 
 	log.Infof("Will create %d jobs", len(prowjobs))
+	var rehearsalsGenerated []string
+	var rehearsalsFailed []string
 	for _, job := range prowjobs {
 		if job.Labels == nil {
 			job.Labels = make(map[string]string)
@@ -266,9 +293,36 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		job.Spec.Context = rehearsalName
 		_, err := h.prowClient.Create(context.Background(), &job, metav1.CreateOptions{})
 		if err != nil {
+			rehearsalsFailed = append(rehearsalsFailed, rehearsalName)
 			log.WithError(err).Errorf("Failed to create prow job: %s", job.Spec.Job)
+			continue
 		}
+		rehearsalsGenerated = append(rehearsalsGenerated, rehearsalName)
 		log.Infof("Created a rehearse job: %s", job.Name)
+	}
+	commentText := fmt.Sprintf(`Rehearsal jobs created for this PR:
+
+`+"```"+`
+%s
+`+"```"+`
+
+`+basicHelpCommentText, strings.Join(rehearsalsGenerated, "\n"))
+	err = h.ghClient.CreateComment(org, repo, pr.Number, commentText)
+	if err != nil {
+		log.WithError(err).Errorf("Failed to create comment on %s/%s PR: %d", org, repo, pr.Number)
+	}
+	if len(rehearsalsFailed) > 0 {
+		commentText = fmt.Sprintf(`Rehearsal jobs failed to create for this PR:
+
+`+"```"+`
+%s
+`+"```"+`
+
+`+basicHelpCommentText, strings.Join(rehearsalsFailed, "\n"))
+		err = h.ghClient.CreateComment(org, repo, pr.Number, commentText)
+		if err != nil {
+			log.WithError(err).Errorf("Failed to create comment on %s/%s PR: %d", org, repo, pr.Number)
+		}
 	}
 }
 
