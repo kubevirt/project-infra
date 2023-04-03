@@ -19,6 +19,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
 	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
@@ -41,14 +42,33 @@ type configOptions struct {
 
 	// testFilePath is the path to the files that contain the test code
 	testFilePath string
+
+	// remoteURL is the absolute path to the test files containing the test code with the analyzed state, most likely
+	// containing a commit id defining the state of the observed outlines
+	remoteURL string
+
+	// testNameLabelRE is the regular expression for an on the fly created configuration of test names to match against
+	testNameLabelRE string
 }
 
+// validate checks the configuration options for validity and returns an error describing the first error encountered
 func (s *configOptions) validate() error {
-	if s.configFile == "" && s.configName == "" || s.configFile != "" && s.configName != "" {
-		return fmt.Errorf("one of configFile or configName is required")
+	if s.testNameLabelRE == "" {
+		if s.configFile == "" && s.configName == "" || s.configFile != "" && s.configName != "" {
+			return fmt.Errorf("one of configFile or configName is required")
+		}
 	}
 	if _, exists := configNamesToConfigs[s.configName]; s.configName != "" && !exists {
 		return fmt.Errorf("configName %s is invalid", s.configName)
+	}
+	if s.configFile != "" {
+		stat, err := os.Stat(s.configFile)
+		if os.IsNotExist(err) {
+			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file, %v", s.ginkgoOutlinePathes, err)
+		}
+		if stat.IsDir() {
+			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file", s.ginkgoOutlinePathes)
+		}
 	}
 	for _, ginkgoOutlinePath := range s.ginkgoOutlinePathes {
 		stat, err := os.Stat(ginkgoOutlinePath)
@@ -67,8 +87,31 @@ func (s *configOptions) validate() error {
 		if !stat.IsDir() {
 			return fmt.Errorf("test-file-path not set correctly, %q is not a directory", s.ginkgoOutlinePathes)
 		}
+		if s.remoteURL == "" {
+			return fmt.Errorf("remote-url is required together with test-file-path")
+		}
 	}
 	return nil
+}
+
+// getConfig returns a configuration with which the matching tests are being retrieved or an error in case the configuration is wrong
+func (s *configOptions) getConfig() (*test_label_analyzer.Config, error) {
+	if s.testNameLabelRE != "" {
+		return test_label_analyzer.NewTestNameDefaultConfig(s.testNameLabelRE), nil
+	}
+	if s.configName != "" {
+		return configNamesToConfigs[s.configName], nil
+	}
+	if s.configFile != "" {
+		file, err := os.ReadFile(s.configFile)
+		if err != nil {
+			return nil, err
+		}
+		var config *test_label_analyzer.Config
+		err = json.Unmarshal(file, &config)
+		return config, err
+	}
+	return nil, fmt.Errorf("no configuration found!")
 }
 
 var rootConfigOpts = configOptions{}
@@ -102,4 +145,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.configName, "config-name", "", fmt.Sprintf("config name defining categories of tests (possible values: %v)", configNames))
 	rootCmd.PersistentFlags().StringArrayVar(&rootConfigOpts.ginkgoOutlinePathes, "test-outline-filepath", nil, "path to test outline file to be analyzed")
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testFilePath, "test-file-path", "", "path containing tests to be analyzed")
+	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.remoteURL, "remote-url", "", "remote path to tests to be analyzed")
+	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testNameLabelRE, "test-name-label-re", "", "regular expression for test names to match against")
 }

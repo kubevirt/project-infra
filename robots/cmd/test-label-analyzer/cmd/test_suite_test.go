@@ -17,12 +17,16 @@
  *
  */
 
-package testdata
+package cmd
 
-import "github.com/onsi/ginkgo/v2"
+import (
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
-var _ = ginkgo.Describe("whatever", func() {
-	ginkgo.Context("i don't care", func() {
-		ginkgo.It("is so meh", func() {})
-	})
-})
+	"testing"
+)
+
+func TestCmd(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Cmd Main Suite")
+}

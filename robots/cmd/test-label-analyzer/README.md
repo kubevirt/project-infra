@@ -50,6 +50,22 @@ $ # from the output we can generate the concatenated test names
 $ jq '.MatchingSpecPathes[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer-output.json
 ```
 
+#### Directly letting `test-labels-analyzer` filter tests with regular expression
+
+```sh
+# point test-label-analyzer to the directory containing the test source files
+$ test-label-analyzer stats --test-name-label-re '.*Console Proxy Operand Resource.*' --test-file-path /home/dhiller/Projects/github.com/kubevirt.io/ssp-operator/tests \
+        > /tmp/test-label-analyzer-output.json
+$ # print the output
+$ cat /tmp/test-label-analyzer-output.json
+{"SpecsTotal":278,"SpecsMatching":40,"MatchingSpecPathes":[[{"name":"Describe", ...
+$ # from the output we can generate the concatenated test names
+$ jq '.MatchingSpecPathes[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer-output.json
+"VM Console Proxy Operand Resource creation created cluster resource [test_id:TODO] cluster role"
+"VM Console Proxy Operand Resource creation created cluster resource [test_id:TODO] cluster role binding"
+...
+```
+
 ## generate a string that can be used directly with [Ginkgo] `--filter` or `--skip` flags
 
 _**NOT YET IMPLEMENTED**_

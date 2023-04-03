@@ -17,12 +17,19 @@
  *
  */
 
-package testdata
+package cmd
 
-import "github.com/onsi/ginkgo/v2"
+import (
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+)
 
-var _ = ginkgo.Describe("whatever", func() {
-	ginkgo.Context("i don't care", func() {
-		ginkgo.It("is so meh", func() {})
+var _ = Describe("", func() {
+	Context("", func() {
+		It("", func() {
+			outline, err := getGinkgoOutlineFromFile("testdata/simple_test.go")
+			Expect(err).To(BeNil())
+			Expect(outline).ToNot(BeNil())
+		})
 	})
 })

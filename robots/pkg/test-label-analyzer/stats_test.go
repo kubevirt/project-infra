@@ -22,6 +22,7 @@ package test_label_analyzer
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"time"
 )
 
 var _ = Describe("GetStatsFromGinkgoOutline", func() {
@@ -36,8 +37,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					},
 				})).To(BeEquivalentTo(
 				&TestStats{
-					SpecsTotal:    0,
-					SpecsMatching: 0,
+					SpecsTotal: 0,
 				}))
 		})
 
@@ -50,8 +50,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					},
 				})).To(BeEquivalentTo(
 				&TestStats{
-					SpecsTotal:    1,
-					SpecsMatching: 0,
+					SpecsTotal: 1,
 				}))
 		})
 
@@ -65,13 +64,14 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					},
 				})).To(BeEquivalentTo(
 				&TestStats{
-					SpecsTotal:    1,
-					SpecsMatching: 1,
-					MatchingSpecPathes: [][]*GinkgoNode{
+					SpecsTotal: 1,
+					MatchingSpecPathes: []*PathStats{
 						{
-							{
-								Text: "[QUARANTINE]",
-								Spec: true,
+							Path: []*GinkgoNode{
+								{
+									Text: "[QUARANTINE]",
+									Spec: true,
+								},
 							},
 						},
 					},
@@ -95,8 +95,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					},
 				})).To(BeEquivalentTo(
 				&TestStats{
-					SpecsTotal:    1,
-					SpecsMatching: 0,
+					SpecsTotal: 1,
 				}))
 		})
 
@@ -114,14 +113,15 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					},
 				})).To(BeEquivalentTo(
 				&TestStats{
-					SpecsTotal:    1,
-					SpecsMatching: 1,
-					MatchingSpecPathes: [][]*GinkgoNode{
+					SpecsTotal: 1,
+					MatchingSpecPathes: []*PathStats{
 						{
-							{},
-							{
-								Text: "[QUARANTINE]",
-								Spec: true,
+							Path: []*GinkgoNode{
+								{},
+								{
+									Text: "[QUARANTINE]",
+									Spec: true,
+								},
 							},
 						},
 					},
@@ -149,24 +149,24 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					},
 				})).To(BeEquivalentTo(
 				&TestStats{
-					SpecsTotal:    1,
-					SpecsMatching: 1,
-					MatchingSpecPathes: [][]*GinkgoNode{
+					SpecsTotal: 1,
+					MatchingSpecPathes: []*PathStats{
 						{
-							{
-								Text: "parent",
-							},
-							{
-								Text: "child",
-								Spec: false,
-							},
-							{
-								Text: "[QUARANTINE]",
-								Spec: true,
+							Path: []*GinkgoNode{
+								{
+									Text: "parent",
+								},
+								{
+									Text: "child",
+									Spec: false,
+								},
+								{
+									Text: "[QUARANTINE]",
+									Spec: true,
+								},
 							},
 						},
-					},
-				}))
+					}}))
 		})
 
 		It("collects the test names if parent contains the matching label", func() {
@@ -190,24 +190,24 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					},
 				})).To(BeEquivalentTo(
 				&TestStats{
-					SpecsTotal:    1,
-					SpecsMatching: 1,
-					MatchingSpecPathes: [][]*GinkgoNode{
+					SpecsTotal: 1,
+					MatchingSpecPathes: []*PathStats{
 						{
-							{
-								Text: "parent",
-							},
-							{
-								Text: "[QUARANTINE]",
-								Spec: false,
-							},
-							{
-								Text: "child",
-								Spec: true,
+							Path: []*GinkgoNode{
+								{
+									Text: "parent",
+								},
+								{
+									Text: "[QUARANTINE]",
+									Spec: false,
+								},
+								{
+									Text: "child",
+									Spec: true,
+								},
 							},
 						},
-					},
-				}))
+					}}))
 		})
 
 		It("doesnt collect the test names twice if parent and child contain the matching label", func() {
@@ -231,24 +231,24 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					},
 				})).To(BeEquivalentTo(
 				&TestStats{
-					SpecsTotal:    1,
-					SpecsMatching: 1,
-					MatchingSpecPathes: [][]*GinkgoNode{
+					SpecsTotal: 1,
+					MatchingSpecPathes: []*PathStats{
 						{
-							{
-								Text: "parent",
-							},
-							{
-								Text: "[QUARANTINE]",
-								Spec: false,
-							},
-							{
-								Text: "[QUARANTINE]",
-								Spec: true,
+							Path: []*GinkgoNode{
+								{
+									Text: "parent",
+								},
+								{
+									Text: "[QUARANTINE]",
+									Spec: false,
+								},
+								{
+									Text: "[QUARANTINE]",
+									Spec: true,
+								},
 							},
 						},
-					},
-				}))
+					}}))
 		})
 
 		It("does collect the test nodes twice if parent contains the matching label", func() {
@@ -276,39 +276,132 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					},
 				})).To(BeEquivalentTo(
 				&TestStats{
-					SpecsTotal:    2,
-					SpecsMatching: 2,
-					MatchingSpecPathes: [][]*GinkgoNode{
+					SpecsTotal: 2,
+					MatchingSpecPathes: []*PathStats{
 						{
-							{
-								Text: "parent",
-							},
-							{
-								Text: "[QUARANTINE]",
-								Spec: false,
-							},
-							{
-								Text: "first",
-								Spec: true,
-							},
-						},
+							Path: []*GinkgoNode{
+								{
+									Text: "parent",
+								},
+								{
+									Text: "[QUARANTINE]",
+									Spec: false,
+								},
+								{
+									Text: "first",
+									Spec: true,
+								},
+							}},
 						{
-							{
-								Text: "parent",
+							Path: []*GinkgoNode{
+								{
+									Text: "parent",
+								},
+								{
+									Text: "[QUARANTINE]",
+									Spec: false,
+								},
+								{
+									Text: "second",
+									Spec: true,
+								},
 							},
+						}},
+				}))
+		})
+
+		It("does collect the test node if the expression would match more than a single node", func() {
+			Expect(GetStatsFromGinkgoOutline(
+				NewTestNameDefaultConfig("parent first child"),
+				[]*GinkgoNode{
+					{
+						Text: "parent",
+						Nodes: []*GinkgoNode{
 							{
-								Text: "[QUARANTINE]",
+								Text: "first child",
 								Spec: false,
-							},
-							{
-								Text: "second",
-								Spec: true,
+								Nodes: []*GinkgoNode{
+									{
+										Text: "child of first child",
+										Spec: true,
+									},
+									{
+										Text: "second child of first child",
+										Spec: true,
+									},
+								},
 							},
 						},
 					},
-				}))
+				})).To(BeEquivalentTo(
+				&TestStats{
+					SpecsTotal: 2,
+					MatchingSpecPathes: []*PathStats{
+						{
+							Path: []*GinkgoNode{
+								{
+									Text: "parent",
+								},
+								{
+									Text: "first child",
+									Spec: false,
+								},
+								{
+									Text: "child of first child",
+									Spec: true,
+								},
+							}},
+						{Path: []*GinkgoNode{
+							{
+								Text: "parent",
+							},
+							{
+								Text: "first child",
+								Spec: false,
+							},
+							{
+								Text: "second child of first child",
+								Spec: true,
+							},
+						},
+						},
+					}}))
 		})
 
 	})
 
+})
+
+var _ = Describe("Extract git info", func() {
+	Context("blame", func() {
+
+		var lines = []string{
+			"749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200  26) var _ = Describe(\"VM Console Proxy Operand\", func() {",
+			"749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 179) \tContext(\"Resource change\", func() {",
+			"749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 208) \t\tDescribeTable(\"should restore modified app labels\", expectAppLabelsRestoreAfterUpdate,",
+			"749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 213) \t\t\tEntry(\"[test_id:TODO] deployment\", \u0026deploymentResource),",
+		}
+		var expectedCommitID = "749cf0488"
+		var expectedAuthor = "Ben Oukhanov"
+		var expectedDate time.Time
+		var expectedLineNo = 26
+		var expectedLine = "var _ = Describe(\"VM Console Proxy Operand\", func() {"
+
+		BeforeEach(func() {
+			expectedDate, _ = time.Parse(gitDateLayout, "2023-02-15 18:24:49 +0200")
+		})
+
+		It("extracts info", func() {
+			Expect(ExtractGitBlameInfo(lines)).ToNot(BeNil())
+		})
+
+		It("fills fields", func() {
+			gitBlameInfo := ExtractGitBlameInfo(lines)[0]
+			Expect(gitBlameInfo.CommitID).To(BeEquivalentTo(expectedCommitID))
+			Expect(gitBlameInfo.Author).To(BeEquivalentTo(expectedAuthor))
+			Expect(gitBlameInfo.Date).To(BeEquivalentTo(expectedDate))
+			Expect(gitBlameInfo.LineNo).To(BeEquivalentTo(expectedLineNo))
+			Expect(gitBlameInfo.Line).To(BeEquivalentTo(expectedLine))
+		})
+	})
 })

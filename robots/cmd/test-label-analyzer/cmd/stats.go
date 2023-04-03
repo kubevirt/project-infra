@@ -26,6 +26,7 @@ import (
 	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -61,7 +62,7 @@ func runStatsCommand(configurationOptions configOptions) error {
 
 	if configurationOptions.testFilePath != "" {
 
-		var testOutlines []*test_label_analyzer.GinkgoNode
+		testFileOutlines := map[string][]*test_label_analyzer.GinkgoNode{}
 		err := filepath.Walk(configurationOptions.testFilePath, func(path string, info fs.FileInfo, err error) error {
 			if info.IsDir() {
 				return nil
@@ -69,29 +70,66 @@ func runStatsCommand(configurationOptions configOptions) error {
 			if !strings.HasSuffix(path, ".go") {
 				return nil
 			}
-			ginkgoCommand := exec.Command("ginkgo", "outline", "--format", "json", path)
-			output, err := ginkgoCommand.Output()
-			if err != nil {
-				e := err.(*exec.ExitError)
-				stdErr := string(e.Stderr)
-				if strings.Contains(stdErr, "file does not import \"github.com/onsi/ginkgo/v2\"") {
-					return nil
-				}
-				return fmt.Errorf("command %v failed on %s: %v\n%v", ginkgoCommand, path, err, stdErr)
+			testOutline, err2 := getGinkgoOutlineFromFile(path)
+			if err2 != nil {
+				return err2
 			}
-			testOutline, err := toOutline(output)
-			if err != nil {
-				return fmt.Errorf("toOutline failed on %s: %v", path, err)
+			if testOutline == nil {
+				return nil
 			}
-			testOutlines = append(testOutlines, testOutline...)
+			testFileOutlines[path] = testOutline
 			return nil
 		})
 		if err != nil {
 			return fmt.Errorf("failed to walk test file path %q: %v", configurationOptions.testFilePath, err)
 		}
 
-		testStats := test_label_analyzer.GetStatsFromGinkgoOutline(configNamesToConfigs[configurationOptions.configName], testOutlines)
-		marshal, err := json.Marshal(testStats)
+		config, err := configurationOptions.getConfig()
+		if err != nil {
+			return err
+		}
+
+		var testFilesStats []*test_label_analyzer.FileStats
+		for testFilePath, testFileOutline := range testFileOutlines {
+			testStatsForFile := test_label_analyzer.GetStatsFromGinkgoOutline(config, testFileOutline)
+			file, err := os.ReadFile(testFilePath)
+			if err != nil {
+				// Should only happen if the file has been deleted after the outline has been retrieved
+				panic(err)
+			}
+			testFileContent := string(file)
+			for _, matchingSpecPathes := range testStatsForFile.MatchingSpecPathes {
+
+				var lineNos []int
+				offset := 0
+				lineNo := 1
+				for _, node := range matchingSpecPathes.Path {
+					lineNo += newlineCount(testFileContent, offset, node.Start)
+					lineNos = append(lineNos, lineNo)
+					offset = node.Start + 1
+				}
+				matchingSpecPathes.Lines = lineNos
+
+				blameArgs := []string{"blame", filepath.Base(testFilePath)}
+				for _, blameLineNo := range lineNos {
+					blameArgs = append(blameArgs, fmt.Sprintf("-L %d,%d", blameLineNo, blameLineNo))
+				}
+				command := exec.Command("git", blameArgs...)
+				command.Dir = filepath.Dir(testFilePath)
+				output, err := command.Output()
+				if err != nil {
+					e := err.(*exec.ExitError)
+					return fmt.Errorf("exec %v failed: %v", command, e)
+				}
+				matchingSpecPathes.GitBlameLines = test_label_analyzer.ExtractGitBlameInfo(strings.Split(string(output), "\n"))
+			}
+			testFilesStats = append(testFilesStats, &test_label_analyzer.FileStats{
+				RemoteURL: path.Join(configurationOptions.remoteURL, strings.TrimPrefix(strings.TrimPrefix(testFilePath, configurationOptions.testFilePath), "/")),
+				Config:    config,
+				TestStats: testStatsForFile,
+			})
+		}
+		marshal, err := json.Marshal(testFilesStats)
 		if err != nil {
 			return err
 		}
@@ -100,6 +138,34 @@ func runStatsCommand(configurationOptions configOptions) error {
 	}
 
 	return fmt.Errorf("not implemented")
+}
+
+func newlineCount(s string, start int, end int) int {
+	n := 0
+	for i := start; i < len(s) && i < end; i++ {
+		if s[i] == '\n' {
+			n++
+		}
+	}
+	return n
+}
+
+func getGinkgoOutlineFromFile(path string) ([]*test_label_analyzer.GinkgoNode, error) {
+	ginkgoCommand := exec.Command("ginkgo", "outline", "--format", "json", path)
+	output, err := ginkgoCommand.Output()
+	if err != nil {
+		e := err.(*exec.ExitError)
+		stdErr := string(e.Stderr)
+		if strings.Contains(stdErr, "file does not import \"github.com/onsi/ginkgo/v2\"") {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("command %v failed on %s: %v\n%v", ginkgoCommand, path, err, stdErr)
+	}
+	testOutline, err := toOutline(output)
+	if err != nil {
+		return nil, fmt.Errorf("toOutline failed on %s: %v", path, err)
+	}
+	return testOutline, nil
 }
 
 func collectStatsFromGinkgoOutlines(configurationOptions configOptions) (string, error) {
@@ -118,7 +184,11 @@ func collectStatsFromGinkgoOutlines(configurationOptions configOptions) (string,
 		testOutlines = append(testOutlines, testOutline...)
 	}
 
-	testStats := test_label_analyzer.GetStatsFromGinkgoOutline(configNamesToConfigs[configurationOptions.configName], testOutlines)
+	config, err := configurationOptions.getConfig()
+	if err != nil {
+		return "", err
+	}
+	testStats := test_label_analyzer.GetStatsFromGinkgoOutline(config, testOutlines)
 	marshal, err := json.Marshal(testStats)
 	if err != nil {
 		return "", err

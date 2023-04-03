@@ -22,23 +22,63 @@ import "regexp"
 
 // A LabelCategory defines a category of tests that share a common label either in their test name or as a Ginkgo label
 type LabelCategory struct {
-	Name            string         `yaml:"name"`
-	TestNameLabelRE *regexp.Regexp `yaml:"testNameLabelRE"`
-	GinkgoLabelRE   *regexp.Regexp `yaml:"ginkgoLabelRE"`
+	Name            string  `json:"name"`
+	TestNameLabelRE *Regexp `json:"test_name_label_re"`
+	GinkgoLabelRE   *Regexp `json:"ginkgo_label_re"`
 }
 
 // Config defines the configuration file structure that is required to map tests to categories.
 type Config struct {
-	Categories []LabelCategory `yaml:"categories"`
+	Categories []LabelCategory `json:"categories"`
 }
 
+// Regexp adds unmarshalling from json for regexp.Regexp
+type Regexp struct {
+	*regexp.Regexp
+}
+
+func NewRegexp(value string) *Regexp {
+	return &Regexp{Regexp: regexp.MustCompile(value)}
+}
+
+// UnmarshalText unmarshals json into a regexp.Regexp
+func (r *Regexp) UnmarshalText(b []byte) error {
+	regex, err := regexp.Compile(string(b))
+	if err != nil {
+		return err
+	}
+
+	r.Regexp = regex
+
+	return nil
+}
+
+// MarshalText marshals regexp.Regexp as string
+func (r *Regexp) MarshalText() ([]byte, error) {
+	if r.Regexp != nil {
+		return []byte(r.Regexp.String()), nil
+	}
+
+	return nil, nil
+}
 func NewQuarantineDefaultConfig() *Config {
 	return &Config{
 		Categories: []LabelCategory{
 			{
 				Name:            "Quarantine",
-				TestNameLabelRE: regexp.MustCompile("\\[QUARANTINE\\]"),
-				GinkgoLabelRE:   regexp.MustCompile("Quarantine"),
+				TestNameLabelRE: NewRegexp("\\[QUARANTINE\\]"),
+				GinkgoLabelRE:   NewRegexp("Quarantine"),
+			},
+		},
+	}
+}
+
+func NewTestNameDefaultConfig(partialTestName string) *Config {
+	return &Config{
+		Categories: []LabelCategory{
+			{
+				Name:            "PartialTestNameCategory",
+				TestNameLabelRE: NewRegexp(partialTestName),
 			},
 		},
 	}
