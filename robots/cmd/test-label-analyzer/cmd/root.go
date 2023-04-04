@@ -49,6 +49,9 @@ type configOptions struct {
 
 	// testNameLabelRE is the regular expression for an on the fly created configuration of test names to match against
 	testNameLabelRE string
+
+	// outputHTML defines whether HTML should be generated, default is JSON
+	outputHTML bool
 }
 
 // validate checks the configuration options for validity and returns an error describing the first error encountered
@@ -147,4 +150,5 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testFilePath, "test-file-path", "", "path containing tests to be analyzed")
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.remoteURL, "remote-url", "", "remote path to tests to be analyzed")
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testNameLabelRE, "test-name-label-re", "", "regular expression for test names to match against")
+	rootCmd.PersistentFlags().BoolVar(&rootConfigOpts.outputHTML, "output-html", false, "defines whether HTML output should be generated, default is JSON")
 }

@@ -26,6 +26,17 @@ import (
 	"time"
 )
 
+// FileStats contains the information of the file whose outline was traversed and the results of the
+// traversal.
+type FileStats struct {
+	*Config    `json:"config"`
+	*TestStats `json:"test_stats"`
+
+	// RemoteURL is the absolute path to the file, most certainly an absolute URL inside a version control repository
+	// containing a commit ID in order to exactly define the state of the file that was traversed
+	RemoteURL string `json:"path"`
+}
+
 // TestStats contains the results of traversing a set of Ginkgo outlines and collecting the pathes in the form of
 // GinkgoNode slices matching a Config describing the criteria to match against.
 type TestStats struct {
@@ -50,17 +61,6 @@ type PathStats struct {
 
 	// Path denotes the path to the spec that has been found to match
 	Path []*GinkgoNode `json:"path"`
-}
-
-// FileStats contains the information of the file whose outline was traversed and the results of the
-// traversal.
-type FileStats struct {
-	*Config    `json:"config"`
-	*TestStats `json:"test_stats"`
-
-	// RemoteURL is the absolute path to the file, most certainly an absolute URL inside a version control repository
-	// containing a commit ID in order to exactly define the state of the file that was traversed
-	RemoteURL string `json:"path"`
 }
 
 func GetStatsFromGinkgoOutline(config *Config, gingkoOutline []*GinkgoNode) *TestStats {

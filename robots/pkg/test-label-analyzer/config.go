@@ -18,7 +18,10 @@
 
 package test_label_analyzer
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
 
 // A LabelCategory defines a category of tests that share a common label either in their test name or as a Ginkgo label
 type LabelCategory struct {
@@ -27,9 +30,21 @@ type LabelCategory struct {
 	GinkgoLabelRE   *Regexp `json:"ginkgo_label_re"`
 }
 
+func (c *LabelCategory) String() string {
+	return c.Name
+}
+
 // Config defines the configuration file structure that is required to map tests to categories.
 type Config struct {
 	Categories []LabelCategory `json:"categories"`
+}
+
+func (c *Config) String() string {
+	var s []string
+	for _, cat := range c.Categories {
+		s = append(s, cat.String())
+	}
+	return strings.Join(s, ", ")
 }
 
 // Regexp adds unmarshalling from json for regexp.Regexp

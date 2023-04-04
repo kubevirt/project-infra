@@ -19,16 +19,20 @@
 package cmd
 
 import (
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
+	"html/template"
 	"io/fs"
 	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
+	"regexp"
+	"sort"
 	"strings"
+	"time"
 )
 
 // statsCmd represents the stats command
@@ -41,8 +45,118 @@ var statsCmd = &cobra.Command{
 	},
 }
 
+//go:embed stats.gohtml
+var statsHTMLTemplate string
+
 func init() {
 	rootCmd.AddCommand(statsCmd)
+}
+
+type TestHTMLData struct {
+	*test_label_analyzer.Config `json:"config"`
+
+	// RemoteURL is the absolute path to the file, most certainly an absolute URL inside a version control repository
+	// containing a commit ID in order to exactly define the state of the file that was traversed
+	RemoteURL string `json:"path"`
+
+	// GitBlameLines is the output of the blame command for each of the Lines
+	GitBlameLines []*test_label_analyzer.GitBlameInfo `json:"git_blame_lines"`
+
+	// ElementsMatchingConfig contains whether each of the GitBlameLines matches the *test_label_analyzer.Config
+	ElementsMatchingConfig []bool
+	Permalinks             []string
+}
+
+// initElementsMatchingConfig initializes ElementsMatchingConfig with the indices of the GitBlameLines that are
+// matching the *test_label_analyzer.Config
+func (t *TestHTMLData) initElementsMatchingConfig() {
+	if len(t.ElementsMatchingConfig) > 0 {
+		panic("t.ElementsMatchingConfig already initialized")
+	}
+	for _, gitLine := range t.GitBlameLines {
+		for _, category := range t.Config.Categories {
+			matchString := category.TestNameLabelRE.MatchString(gitLine.Line)
+			t.ElementsMatchingConfig = append(t.ElementsMatchingConfig, matchString)
+		}
+	}
+}
+
+var replaceToPermaLinkMatcher = regexp.MustCompile("https://github.com/[\\w]+/[\\w]+/((tree|blob)/[\\w]+)/.*")
+
+// initPermalinks initializes Permalinks with the permanent links to the GitBlameLines
+func (t *TestHTMLData) initPermalinks() {
+	if len(t.Permalinks) > 0 {
+		panic("t.Permalinks already initialized")
+	}
+	submatch := replaceToPermaLinkMatcher.FindStringSubmatch(t.RemoteURL)
+	if len(submatch) < 2 {
+		return
+	}
+	for _, gitLine := range t.GitBlameLines {
+		permaLink := strings.ReplaceAll(t.RemoteURL, submatch[1], fmt.Sprintf("commit/%s", gitLine.CommitID))
+		t.Permalinks = append(t.Permalinks, permaLink)
+	}
+}
+
+func (t *TestHTMLData) collectEarliestChangeDateFromGitLines() time.Time {
+	if len(t.ElementsMatchingConfig) == 0 {
+		panic("t.ElementsMatchingConfig not initialized")
+	}
+	changeDate := time.Now()
+	for index, matches := range t.ElementsMatchingConfig {
+		if !matches {
+			continue
+		}
+		if t.GitBlameLines[index].Date.Before(changeDate) {
+			changeDate = t.GitBlameLines[index].Date
+		}
+	}
+	return changeDate
+}
+
+type StatsHTMLData struct {
+	*test_label_analyzer.Config
+	TestHTMLData []*TestHTMLData
+	Date         time.Time
+}
+
+func (s *StatsHTMLData) Len() int {
+	return len(s.TestHTMLData)
+}
+
+func (s *StatsHTMLData) Less(i, k int) bool {
+	return s.TestHTMLData[i].collectEarliestChangeDateFromGitLines().Before(s.TestHTMLData[k].collectEarliestChangeDateFromGitLines())
+}
+
+func (s *StatsHTMLData) Swap(i, k int) {
+	s.TestHTMLData[i], s.TestHTMLData[k] = s.TestHTMLData[k], s.TestHTMLData[i]
+}
+
+func NewStatsHTMLData(stats []*test_label_analyzer.FileStats) *StatsHTMLData {
+	statsHTMLData := &StatsHTMLData{
+		Date: time.Now(),
+	}
+	for index, fileStats := range stats {
+		if index == 0 {
+			statsHTMLData.Config = fileStats.Config
+		}
+		for _, path := range fileStats.TestStats.MatchingSpecPathes {
+			statsHTMLData.TestHTMLData = append(statsHTMLData.TestHTMLData, newTestHTMLData(fileStats, path))
+		}
+	}
+	sort.Sort(statsHTMLData)
+	return statsHTMLData
+}
+
+func newTestHTMLData(fileStats *test_label_analyzer.FileStats, path *test_label_analyzer.PathStats) *TestHTMLData {
+	testHTMLData := &TestHTMLData{
+		Config:        fileStats.Config,
+		RemoteURL:     fileStats.RemoteURL,
+		GitBlameLines: path.GitBlameLines,
+	}
+	testHTMLData.initElementsMatchingConfig()
+	testHTMLData.initPermalinks()
+	return testHTMLData
 }
 
 func runStatsCommand(configurationOptions configOptions) error {
@@ -62,24 +176,7 @@ func runStatsCommand(configurationOptions configOptions) error {
 
 	if configurationOptions.testFilePath != "" {
 
-		testFileOutlines := map[string][]*test_label_analyzer.GinkgoNode{}
-		err := filepath.Walk(configurationOptions.testFilePath, func(path string, info fs.FileInfo, err error) error {
-			if info.IsDir() {
-				return nil
-			}
-			if !strings.HasSuffix(path, ".go") {
-				return nil
-			}
-			testOutline, err2 := getGinkgoOutlineFromFile(path)
-			if err2 != nil {
-				return err2
-			}
-			if testOutline == nil {
-				return nil
-			}
-			testFileOutlines[path] = testOutline
-			return nil
-		})
+		testFileOutlines, err := getTestFileOutlines(configurationOptions)
 		if err != nil {
 			return fmt.Errorf("failed to walk test file path %q: %v", configurationOptions.testFilePath, err)
 		}
@@ -89,55 +186,97 @@ func runStatsCommand(configurationOptions configOptions) error {
 			return err
 		}
 
-		var testFilesStats []*test_label_analyzer.FileStats
-		for testFilePath, testFileOutline := range testFileOutlines {
-			testStatsForFile := test_label_analyzer.GetStatsFromGinkgoOutline(config, testFileOutline)
-			file, err := os.ReadFile(testFilePath)
-			if err != nil {
-				// Should only happen if the file has been deleted after the outline has been retrieved
-				panic(err)
-			}
-			testFileContent := string(file)
-			for _, matchingSpecPathes := range testStatsForFile.MatchingSpecPathes {
-
-				var lineNos []int
-				offset := 0
-				lineNo := 1
-				for _, node := range matchingSpecPathes.Path {
-					lineNo += newlineCount(testFileContent, offset, node.Start)
-					lineNos = append(lineNos, lineNo)
-					offset = node.Start + 1
-				}
-				matchingSpecPathes.Lines = lineNos
-
-				blameArgs := []string{"blame", filepath.Base(testFilePath)}
-				for _, blameLineNo := range lineNos {
-					blameArgs = append(blameArgs, fmt.Sprintf("-L %d,%d", blameLineNo, blameLineNo))
-				}
-				command := exec.Command("git", blameArgs...)
-				command.Dir = filepath.Dir(testFilePath)
-				output, err := command.Output()
-				if err != nil {
-					e := err.(*exec.ExitError)
-					return fmt.Errorf("exec %v failed: %v", command, e)
-				}
-				matchingSpecPathes.GitBlameLines = test_label_analyzer.ExtractGitBlameInfo(strings.Split(string(output), "\n"))
-			}
-			testFilesStats = append(testFilesStats, &test_label_analyzer.FileStats{
-				RemoteURL: path.Join(configurationOptions.remoteURL, strings.TrimPrefix(strings.TrimPrefix(testFilePath, configurationOptions.testFilePath), "/")),
-				Config:    config,
-				TestStats: testStatsForFile,
-			})
-		}
-		marshal, err := json.Marshal(testFilesStats)
+		testFilesStats, err := generateStatsFromOutlinesWithGitBlameInfo(configurationOptions, testFileOutlines, config)
 		if err != nil {
 			return err
 		}
-		fmt.Printf(string(marshal))
-		return nil
+
+		if !configurationOptions.outputHTML {
+			data, err := json.Marshal(testFilesStats)
+			if err != nil {
+				return err
+			}
+			fmt.Printf(string(data))
+			return nil
+		}
+
+		htmlTemplate, err := template.New("statsWithGitBlameInfo").Parse(statsHTMLTemplate)
+		if err != nil {
+			return err
+		}
+
+		statsHTMLData := NewStatsHTMLData(testFilesStats)
+		err = htmlTemplate.Execute(os.Stdout, statsHTMLData)
+		return err
 	}
 
 	return fmt.Errorf("not implemented")
+}
+
+func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions configOptions, testFileOutlines map[string][]*test_label_analyzer.GinkgoNode, config *test_label_analyzer.Config) ([]*test_label_analyzer.FileStats, error) {
+	var testFilesStats []*test_label_analyzer.FileStats
+	for testFilePath, testFileOutline := range testFileOutlines {
+		testStatsForFile := test_label_analyzer.GetStatsFromGinkgoOutline(config, testFileOutline)
+		file, err := os.ReadFile(testFilePath)
+		if err != nil {
+			// Should only happen if the file has been deleted after the outline has been retrieved
+			panic(err)
+		}
+		testFileContent := string(file)
+		for _, matchingSpecPathes := range testStatsForFile.MatchingSpecPathes {
+
+			var lineNos []int
+			offset := 0
+			lineNo := 1
+			for _, node := range matchingSpecPathes.Path {
+				lineNo += newlineCount(testFileContent, offset, node.Start)
+				lineNos = append(lineNos, lineNo)
+				offset = node.Start + 1
+			}
+			matchingSpecPathes.Lines = lineNos
+
+			blameArgs := []string{"blame", filepath.Base(testFilePath)}
+			for _, blameLineNo := range lineNos {
+				blameArgs = append(blameArgs, fmt.Sprintf("-L %d,%d", blameLineNo, blameLineNo))
+			}
+			command := exec.Command("git", blameArgs...)
+			command.Dir = filepath.Dir(testFilePath)
+			output, err := command.Output()
+			if err != nil {
+				e := err.(*exec.ExitError)
+				return nil, fmt.Errorf("exec %v failed: %v", command, e)
+			}
+			matchingSpecPathes.GitBlameLines = test_label_analyzer.ExtractGitBlameInfo(strings.Split(string(output), "\n"))
+		}
+		testFilesStats = append(testFilesStats, &test_label_analyzer.FileStats{
+			RemoteURL: fmt.Sprintf("%s/%s", strings.TrimSuffix(configurationOptions.remoteURL, "/"), strings.TrimPrefix(strings.TrimPrefix(testFilePath, configurationOptions.testFilePath), "/")),
+			Config:    config,
+			TestStats: testStatsForFile,
+		})
+	}
+	return testFilesStats, nil
+}
+
+func getTestFileOutlines(configurationOptions configOptions) (map[string][]*test_label_analyzer.GinkgoNode, error) {
+	testFileOutlines := map[string][]*test_label_analyzer.GinkgoNode{}
+	err := filepath.Walk(configurationOptions.testFilePath, func(path string, info fs.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		if !strings.HasSuffix(path, ".go") {
+			return nil
+		}
+		testOutline, err2 := getGinkgoOutlineFromFile(path)
+		if err2 != nil {
+			return err2
+		}
+		if testOutline == nil {
+			return nil
+		}
+		testFileOutlines[path] = testOutline
+		return nil
+	})
+	return testFileOutlines, err
 }
 
 func newlineCount(s string, start int, end int) int {
