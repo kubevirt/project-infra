@@ -337,6 +337,16 @@ Gna meh whatever
 `
 			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeNil())
 		})
+
+		It("extracts question mark from comment body", func() {
+			commentBody := `Gna meh whatever 
+
+/rehearse ?
+
+
+`
+			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeEquivalentTo([]string{"?"}))
+		})
 	})
 
 	Context("filtering jobs by name", func() {
