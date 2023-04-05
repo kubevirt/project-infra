@@ -18,6 +18,7 @@ import (
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
 	"gonum.org/v1/plot/vg/draw"
+	"k8s.io/apimachinery/pkg/util/errors"
 )
 
 var DateFormat = "2006-01-02"
@@ -49,59 +50,50 @@ func gatherPlotData(basePath string, resource string, metric ResultType) ([]Curv
 		}
 	}
 
-	err := filepath.Walk(basePath, func(entryPath string, info os.FileInfo, err error) error {
+	err := filepath.Walk(filepath.Join(basePath, resource, string(metric)), func(entryPath string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if !(info.IsDir() && info.Name() == "data") {
-			//fmt.Println(info.IsDir(), info.Name())
-			return nil
-		}
+		//if !(info.IsDir()) {
+		//	//fmt.Println(info.IsDir(), info.Name())
+		//	return nil
+		//}
 		if entryPath == basePath {
 			return nil
 		}
 
-		fmt.Println(metric, resource, entryPath)
-		// only process if the results.json is in the metric dir
-		if !strings.Contains(entryPath, string(metric)) {
+		//const JSONResultsFileName = "results.json"
+		if !info.IsDir() && strings.Contains(entryPath, "results.json") {
+			fmt.Println(entryPath)
+			jsonFile, err := os.Open(entryPath)
+			if err != nil {
+				return err
+			}
+			//defer jsonFile.Close()
+			byteValue, err := ioutil.ReadAll(jsonFile)
+			if err != nil {
+				return err
+			}
+
+			var record Record
+			err = json.Unmarshal(byteValue, &record)
+			if err != nil {
+				return err
+			}
+
+			//switch metricName {
+			//case constants.MergeQueueLengthName:
+			//	addPRRangeResults(results, curves, metricName)
+			//case constants.RetestsToMergeName, constants.TimeToMergeName:
+			//	addPRUnitResults(results, curves, metricName)
+			//}
+			addMetricRangeResults(record, curves)
+
+			curves[1].X = append(curves[1].X, record.StartDate)
+			curves[1].Y = append(curves[1].Y, record.Data.Average)
+
 			return nil
 		}
-		// only process if the results.json is in the resource dir
-		if !strings.Contains(entryPath, resource) {
-			return nil
-		}
-		fmt.Println("reached here")
-		const JSONResultsFileName = "results.json"
-		//fmt.Println(entryPath)
-		dataFile := filepath.Join(entryPath, JSONResultsFileName)
-
-		jsonFile, err := os.Open(dataFile)
-		if err != nil {
-			return err
-		}
-		//defer jsonFile.Close()
-		byteValue, err := ioutil.ReadAll(jsonFile)
-		if err != nil {
-			return err
-		}
-
-		var record Record
-		err = json.Unmarshal(byteValue, &record)
-		if err != nil {
-			return err
-		}
-
-		//switch metricName {
-		//case constants.MergeQueueLengthName:
-		//	addPRRangeResults(results, curves, metricName)
-		//case constants.RetestsToMergeName, constants.TimeToMergeName:
-		//	addPRUnitResults(results, curves, metricName)
-		//}
-		addMetricRangeResults(record, curves)
-
-		curves[1].X = append(curves[1].X, record.StartDate)
-		curves[1].Y = append(curves[1].Y, record.Data.Average)
-
 		return nil
 	})
 	if err != nil {
@@ -113,6 +105,7 @@ func gatherPlotData(basePath string, resource string, metric ResultType) ([]Curv
 
 func addMetricRangeResults(record Record, curves []Curve) {
 	for _, dataPoint := range record.Data.DataPoints {
+		dataPoint := dataPoint
 		if dataPoint.Date != nil {
 			curves[0].X = append(curves[0].X, dataPoint.Date.Format(DateFormat))
 			curves[0].Y = append(curves[0].Y, dataPoint.Value)
@@ -131,10 +124,8 @@ func drawStaticGraph(filePath string, data PlotData) error {
 	p.Add(plotter.NewGrid())
 
 	// first curve represent raw data, second curve aggregates
-	cont := 0
-	for _, curve := range data.Curves {
+	for cont, curve := range data.Curves {
 		data, err := transformForStaticGraph(curve.X, curve.Y)
-		fmt.Println(data)
 		if err != nil {
 			return err
 		}
@@ -159,7 +150,6 @@ func drawStaticGraph(filePath string, data PlotData) error {
 		points.Color = curve.Color
 
 		p.Add(points)
-		cont++
 	}
 
 	log.Printf("before saving image to %s", filePath)
@@ -222,25 +212,41 @@ func transformForStaticGraph(x []string, y []float64) (plotter.XYs, error) {
 }
 
 func plotWeeklyGraph(opts weeklyGraphOpts) error {
-	data, err := gatherPlotData(opts.weeklyReportsDir, opts.resource, ResultType(opts.metric))
-	if err != nil {
-		return err
-	}
-	fmt.Println(data)
 
-	if !opts.plotlyHTML {
-		return drawStaticGraph(filepath.Join(opts.weeklyReportsDir, opts.resource, opts.metric, "plot.png"), PlotData{
-			Title:      fmt.Sprintf("Weekly %s for %s", opts.metric, opts.resource),
+	var errs []error
+	metrics := strings.Split(opts.metricList, ",")
+	for _, metric := range metrics {
+		data, err := gatherPlotData(opts.weeklyReportsDir, opts.resource, ResultType(metric))
+		if err != nil {
+			fmt.Println("error gathering data for metric", err)
+			fmt.Println("ignoring")
+			continue
+		}
+		if !opts.plotlyHTML {
+			err = drawStaticGraph(filepath.Join(opts.weeklyReportsDir, opts.resource, metric, "plot.png"), PlotData{
+				Title:      fmt.Sprintf("Weekly %s for %s", metric, opts.resource),
+				XAxisLabel: "Start date of week",
+				YAxisLabel: "Metric Value",
+				Curves:     data,
+			})
+			if err != nil {
+				errs = append(errs, err)
+				fmt.Println("error drawing a static graph for metric", err)
+				fmt.Println("ignoring")
+			}
+		}
+		// todo: plotly HTML
+		err = drawDynamicGraph(filepath.Join(opts.weeklyReportsDir, opts.resource, metric, "index.html"), PlotData{
+			Title:      fmt.Sprintf("Weekly %s for %s", metric, opts.resource),
 			XAxisLabel: "Start date of week",
 			YAxisLabel: "Metric Value",
 			Curves:     data,
 		})
+		if err != nil {
+			errs = append(errs, err)
+			fmt.Println("error drawing a static graph for metric", err)
+			fmt.Println("ignoring")
+		}
 	}
-	// todo: plotly HTML
-	return drawDynamicGraph(filepath.Join(opts.weeklyReportsDir, opts.resource, opts.metric, "index.html"), PlotData{
-		Title:      fmt.Sprintf("Weekly %s for %s", opts.metric, opts.resource),
-		XAxisLabel: "Start date of week",
-		YAxisLabel: "Metric Value",
-		Curves:     data,
-	})
+	return errors.NewAggregate(errs)
 }

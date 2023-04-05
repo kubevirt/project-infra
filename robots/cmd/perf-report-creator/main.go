@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 	"k8s.io/apimachinery/pkg/util/errors"
 	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
@@ -23,6 +24,7 @@ type resultOpts struct {
 	outputDir          string
 	performanceJobName string
 	since              time.Duration
+	credentialsFile    string
 }
 
 type weeklyReportOpts struct {
@@ -34,7 +36,7 @@ type weeklyReportOpts struct {
 }
 
 type weeklyGraphOpts struct {
-	metric           string
+	metricList       string
 	resource         string
 	weeklyReportsDir string
 	plotlyHTML       bool
@@ -46,6 +48,7 @@ func resultsFlagOpts(subcommands []string) resultOpts {
 	fs.DurationVar(&r.since, "since", 24*7*time.Hour, "Filter the periodic job in the time window")
 	fs.StringVar(&r.performanceJobName, "performance-job-name", "periodic-kubevirt-e2e-k8s-1.25-sig-performance", "usuage, name of the performance job for which data is collected")
 	fs.StringVar(&r.outputDir, "output-dir", "output/results", "the output directory were json data will be written")
+	fs.StringVar(&r.credentialsFile, "credentials-file", "", "the credentials json file for GCS storage client")
 	err := fs.Parse(subcommands)
 	if err != nil {
 		fmt.Printf("error parsing flags: %+v\n", err)
@@ -73,7 +76,7 @@ func weeklyReportFlagOpts(subcommands []string) weeklyReportOpts {
 func weeklyGraphFlagOpts(subcommands []string) weeklyGraphOpts {
 	w := weeklyGraphOpts{}
 	fs := flag.NewFlagSet("weekly-graph", flag.ExitOnError)
-	fs.StringVar(&w.metric, "metric", string(ResultTypeVMICreationToRunningP95), "the metric for which graph will be plotted")
+	fs.StringVar(&w.metricList, "metrics-list", string(ResultTypeVMICreationToRunningP95), "comma separated list of metrics to be plotted")
 	fs.StringVar(&w.resource, "resource", "vmi", "resource for which the graph will be plotted")
 	fs.StringVar(&w.weeklyReportsDir, "weekly-reports-dir", "output/weekly", "the output directory from which weekly json data will be read")
 	fs.BoolVar(&w.plotlyHTML, "plotly-html", true, "boolean for selecting what kind of graph will be plotted")
@@ -124,9 +127,16 @@ func main() {
 
 func runResults(r resultOpts) error {
 	ctx := context.Background()
-	storageClient, err := storage.NewClient(ctx)
+	// todo: make the credentials file a flag
+	var storageClient *storage.Client
+	var err error
+	if r.credentialsFile == "" {
+		storageClient, err = storage.NewClient(ctx)
+	} else {
+		storageClient, err = storage.NewClient(ctx, option.WithCredentialsFile(r.credentialsFile))
+	}
 	if err != nil {
-		// return fmt.Errorf("Failed to create new storage client: %v.\n", err)
+		return fmt.Errorf("Failed to create new storage client: %v.\n", err)
 		return err
 	}
 
@@ -146,10 +156,9 @@ func runResults(r resultOpts) error {
 	since := time.Now().Add(-r.since)
 
 	// convert to perfStats
-	//fmt.Print(jobsDirs)
-	collection, err := extractCollectionFromLogs(ctx, storageClient, jobsDirs, since)
+	collection, err := extractCollectionFromLogs(ctx, storageClient, jobsDirs, since, r.performanceJobName)
 	if err != nil {
-		log.Fatalf("error getting job collection %#+v\n", err)
+		log.Printf("error getting job collection %+v\n", err)
 	}
 
 	err = writeCollection(&collection, r.outputDir, r.performanceJobName)
@@ -252,26 +261,29 @@ func listAllRunsForJob(ctx context.Context, client *storage.Client, jobName stri
 	return jobDirs, nil
 }
 
-func extractCollectionFromLogs(ctx context.Context, storageClient *storage.Client, jobResults []string, since time.Time) (Collection, error) {
+func extractCollectionFromLogs(ctx context.Context, storageClient *storage.Client, jobResults []string, since time.Time, performanceJobName string) (Collection, error) {
 	r := Collection{}
 	errs := []error{}
 	for _, j := range jobResults {
-		creationTime, err := getDateForJob(ctx, storageClient, j)
+		creationTime, err := getDateForJob(ctx, storageClient, j, performanceJobName)
 		if err != nil {
 			log.Printf("error getting build-log.txt ready for job: %s, err: %#v\n", j, err)
 			continue
 		}
 
 		if creationTime.Before(since) {
+			log.Printf("job: %s, before creation time. %v, %v\n", j, creationTime, since)
 			continue
 		}
 
-		vmiResult, err := getVMIResult(ctx, storageClient, j)
+		vmiResult, err := getVMIResult(ctx, storageClient, j, performanceJobName)
 		if err != nil {
+			log.Printf("job: %s, error getting VMI Result. %+v\n", j, err)
 			errs = append(errs, err)
 		}
-		vmResult, err := getVMResult(ctx, storageClient, j)
+		vmResult, err := getVMResult(ctx, storageClient, j, performanceJobName)
 		if err != nil {
+			log.Printf("job: %s, error getting VM Result. %+v\n", j, err)
 			errs = append(errs, err)
 		}
 
@@ -309,8 +321,8 @@ func getWeeklyVMIResults(results *Collection) (map[YearWeek][]ResultWithDate, er
 	return weeklyData, nil
 }
 
-func getDateForJob(ctx context.Context, client *storage.Client, jobID string) (time.Time, error) {
-	objPath := filepath.Join("logs", jobID, "build-log.txt")
+func getDateForJob(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (time.Time, error) {
+	objPath := filepath.Join("logs", performanceJobName, jobID, "build-log.txt")
 
 	attrs, err := ReadGcsObjectAttrs(ctx, client, BucketName, objPath)
 	if err != nil {
@@ -319,8 +331,8 @@ func getDateForJob(ctx context.Context, client *storage.Client, jobID string) (t
 	return attrs.Created, err
 }
 
-func getVMIResult(ctx context.Context, client *storage.Client, jobID string) (Result, error) {
-	reader, err := getBuildLogReaderForJob(ctx, client, jobID)
+func getVMIResult(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (Result, error) {
+	reader, err := getBuildLogReaderForJob(ctx, client, jobID, performanceJobName)
 	if err != nil {
 		return Result{}, err
 	}
@@ -332,22 +344,24 @@ func getVMIResult(ctx context.Context, client *storage.Client, jobID string) (Re
 	return unmarshalJson(jsonText)
 }
 
-func getVMResult(ctx context.Context, client *storage.Client, jobID string) (Result, error) {
-	reader, err := getBuildLogReaderForJob(ctx, client, jobID)
+func getVMResult(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (Result, error) {
+	reader, err := getBuildLogReaderForJob(ctx, client, jobID, performanceJobName)
 	if err != nil {
+		log.Printf("job: %s, error getting BuildLogReaderForJob. %+v\n", jobID, err)
 		return Result{}, err
 	}
 
 	lines, err := readLinesAndMatchRegex(reader, "create a batch of 100 running VMs should sucessfully create all VMS")
 	if err != nil {
+		log.Printf("job: %s, error running readLinesAndMatchRegex. %+v\n", jobID, err)
 		return Result{}, err
 	}
-	lines = lines[3:]
+	//lines = lines[3:]
 	return unmarshalJson(lines)
 }
 
-func getBuildLogReaderForJob(ctx context.Context, client *storage.Client, jobID string) (io.Reader, error) {
-	objPath := filepath.Join("logs", jobID, "build-log.txt")
+func getBuildLogReaderForJob(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (io.Reader, error) {
+	objPath := filepath.Join("logs", performanceJobName, jobID, "build-log.txt")
 	return client.Bucket(BucketName).Object(objPath).NewReader(ctx)
 }
 
@@ -395,6 +409,7 @@ func unmarshalJson(jsonText string) (Result, error) {
 	r := Result{}
 	err := json.Unmarshal([]byte(jsonText), &r)
 	if err != nil {
+		log.Printf("error unmarshaling json: %+v\ntext: %v\n", err, jsonText)
 		return Result{}, err
 	}
 

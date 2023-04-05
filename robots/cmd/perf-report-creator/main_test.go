@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-//var resultsDir = "output/results"
-//var weeklyResultsDir = "output/weekly"
+var resultsDir = "output/results"
+var weeklyResultsDir = "output/weekly"
 
 func Test_readLinesAndMatchRegex(t *testing.T) {
 	tests := []struct {

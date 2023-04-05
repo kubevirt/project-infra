@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -51,6 +52,7 @@ func calculateAVGAndWriteOutput(results map[YearWeek][]ResultWithDate, objType s
 				return err
 			}
 			outputPath := filepath.Join(outputDirPath, "results.json")
+			fmt.Println("writing output to", outputPath)
 			rdp := []RecordDataPoint{}
 			for _, result := range results[yw] {
 				result := result
