@@ -64,7 +64,12 @@ type TestHTMLData struct {
 
 	// ElementsMatchingConfig contains whether each of the GitBlameLines matches the *test_label_analyzer.Config
 	ElementsMatchingConfig []bool
-	Permalinks             []string
+
+	// Permalinks contain the links that point to the commits related to the GitBlameLines
+	Permalinks []string
+
+	// Age contain the textual representations of time passed since the change was done in GitBlameLines
+	Age []string
 }
 
 // initElementsMatchingConfig initializes ElementsMatchingConfig with the indices of the GitBlameLines that are
@@ -95,6 +100,16 @@ func (t *TestHTMLData) initPermalinks() {
 	for _, gitLine := range t.GitBlameLines {
 		permaLink := strings.ReplaceAll(t.RemoteURL, submatch[1], fmt.Sprintf("commit/%s", gitLine.CommitID))
 		t.Permalinks = append(t.Permalinks, permaLink)
+	}
+}
+
+// initAge initializes Age with the textual description of the GitBlameLines age
+func (t *TestHTMLData) initAge() {
+	if len(t.Age) > 0 {
+		panic("t.Age already initialized")
+	}
+	for _, gitLine := range t.GitBlameLines {
+		t.Age = append(t.Age, test_label_analyzer.Since(gitLine.Date))
 	}
 }
 
@@ -156,6 +171,7 @@ func newTestHTMLData(fileStats *test_label_analyzer.FileStats, path *test_label_
 	}
 	testHTMLData.initElementsMatchingConfig()
 	testHTMLData.initPermalinks()
+	testHTMLData.initAge()
 	return testHTMLData
 }
 
@@ -179,6 +195,9 @@ func runStatsCommand(configurationOptions configOptions) error {
 		testFileOutlines, err := getTestFileOutlines(configurationOptions)
 		if err != nil {
 			return fmt.Errorf("failed to walk test file path %q: %v", configurationOptions.testFilePath, err)
+		}
+		if len(testFileOutlines) == 0 {
+			return fmt.Errorf("could not derive an outline, tests are likely not Ginkgo V2 based")
 		}
 
 		config, err := configurationOptions.getConfig()
@@ -243,8 +262,16 @@ func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions configOption
 			command.Dir = filepath.Dir(testFilePath)
 			output, err := command.Output()
 			if err != nil {
-				e := err.(*exec.ExitError)
-				return nil, fmt.Errorf("exec %v failed: %v", command, e)
+				switch err.(type) {
+				case *exec.ExitError:
+					e := err.(*exec.ExitError)
+					return nil, fmt.Errorf("exec %v failed: %v", command, e.Stderr)
+				case *exec.Error:
+					e := err.(*exec.Error)
+					return nil, fmt.Errorf("exec %v failed: %v", command, e)
+				default:
+					return nil, fmt.Errorf("exec %v failed: %v", command, err)
+				}
 			}
 			matchingSpecPathes.GitBlameLines = test_label_analyzer.ExtractGitBlameInfo(strings.Split(string(output), "\n"))
 		}
@@ -293,12 +320,20 @@ func getGinkgoOutlineFromFile(path string) ([]*test_label_analyzer.GinkgoNode, e
 	ginkgoCommand := exec.Command("ginkgo", "outline", "--format", "json", path)
 	output, err := ginkgoCommand.Output()
 	if err != nil {
-		e := err.(*exec.ExitError)
-		stdErr := string(e.Stderr)
-		if strings.Contains(stdErr, "file does not import \"github.com/onsi/ginkgo/v2\"") {
-			return nil, nil
+		switch err.(type) {
+		case *exec.ExitError:
+			e := err.(*exec.ExitError)
+			stdErr := string(e.Stderr)
+			if strings.Contains(stdErr, "file does not import \"github.com/onsi/ginkgo/v2\"") {
+				return nil, nil
+			}
+			return nil, fmt.Errorf("exec %v failed: %v", ginkgoCommand, e.Stderr)
+		case *exec.Error:
+			e := err.(*exec.Error)
+			return nil, fmt.Errorf("exec %v failed: %v", ginkgoCommand, e)
+		default:
+			return nil, fmt.Errorf("exec %v failed: %v", ginkgoCommand, err)
 		}
-		return nil, fmt.Errorf("command %v failed on %s: %v\n%v", ginkgoCommand, path, err, stdErr)
 	}
 	testOutline, err := toOutline(output)
 	if err != nil {

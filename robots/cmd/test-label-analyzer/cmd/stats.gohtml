@@ -27,16 +27,15 @@
         .date {
             white-space: nowrap;
         }
-        a.permalink {
+
+        a.nounderline {
             text-decoration: none;
         }
-        .matchingDate {
-            color: crimson;
-            font-weight: bold;
-        }
+
         .matchingLine {
             font-weight: bold;
         }
+
         .code {
             font-family: monospace;
             display: block;
@@ -45,21 +44,34 @@
     </style>
 </head>
 <body>
-    <h1>Overview of {{ (index $.Config.Categories 0).Name }} tests</h1>
-    <div>Total: {{ $.TestHTMLData | len }} tests</div>
-    <table>
-{{- range $testHTMLDataElem := $.TestHTMLData }}
-    {{- if $testHTMLDataElem.GitBlameLines }}
-        {{- range $index, $gitBlame := $testHTMLDataElem.GitBlameLines }}<tr>
-            {{ if (index $testHTMLDataElem.ElementsMatchingConfig $index) -}}
-                <td class="date matchingDate">{{ $gitBlame.Date.Format "2006-01-02" }}{{ if (index $testHTMLDataElem.Permalinks $index) }}<a class="permalink" title="{{ $gitBlame.CommitID }} by {{ $gitBlame.Author }}" href="{{ index $testHTMLDataElem.Permalinks $index }}">🔗</a>{{ end }}
-                </td>{{ else }}<td></td>{{ end }}
-            <td class="{{ if (index $testHTMLDataElem.ElementsMatchingConfig $index) }}matchingLine{{ end }}"><a href="{{ $testHTMLDataElem.RemoteURL }}#L{{ $gitBlame.LineNo }}"><span class="code">{{ $gitBlame.Line }}</span></a></td>
-        </tr>{{ end -}}
-        <tr><td colspan="2"><hr/></td></tr>
+<h1>Overview of {{ (index $.Config.Categories 0).Name }} tests</h1>
+<div>Total: {{ $.TestHTMLData | len }} tests</div>
+<table>
+    {{- range $testHTMLDataElem := $.TestHTMLData }}
+        {{- if $testHTMLDataElem.GitBlameLines }}
+            {{- range $index, $gitBlame := $testHTMLDataElem.GitBlameLines }}
+                <tr>
+                    {{ if (index $testHTMLDataElem.ElementsMatchingConfig $index) -}}
+                        <td class="date">{{ index $testHTMLDataElem.Age $index }}
+                            {{- if (index $testHTMLDataElem.Permalinks $index) -}}
+                                <a class="nounderline" title="{{ $gitBlame.CommitID }} by {{ $gitBlame.Author }}"
+                                   href="{{ index $testHTMLDataElem.Permalinks $index }}">🔗</a>
+                            {{- end }}</td>
+                    {{- else }}
+                        <td></td>{{ end }}
+                    <td
+                            {{- if (index $testHTMLDataElem.ElementsMatchingConfig $index) }} class="matchingLine"{{ end -}}
+                    ><a class="nounderline" href="{{ $testHTMLDataElem.RemoteURL }}#L{{ $gitBlame.LineNo }}"><span
+                                    class="code">{{ $gitBlame.Line }}</span></a></td>
+                </tr>{{ end -}}
+            <tr>
+                <td colspan="2">
+                    <hr/>
+                </td>
+            </tr>
+        {{ end -}}
     {{ end -}}
-{{ end -}}
-    </table>
-    <div style="text-align: right"><i>Last updated: {{ $.Date}}</i></div>
+</table>
+<div style="text-align: right"><i>Last updated: {{ $.Date}}</i></div>
 </body>
 </html>
