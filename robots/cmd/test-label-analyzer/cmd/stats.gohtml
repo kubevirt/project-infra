@@ -48,14 +48,15 @@
 <div>Total: {{ $.TestHTMLData | len }} tests</div>
 <table>
     {{- range $testHTMLDataElem := $.TestHTMLData }}
+        <tr><td colspan="2"><a href="{{ $testHTMLDataElem.RemoteURL }}">{{ $testHTMLDataElem.RemoteURL }}</a></td></tr>
         {{- if $testHTMLDataElem.GitBlameLines }}
             {{- range $index, $gitBlame := $testHTMLDataElem.GitBlameLines }}
                 <tr>
                     {{ if (index $testHTMLDataElem.ElementsMatchingConfig $index) -}}
-                        <td class="date">{{ index $testHTMLDataElem.Age $index }}
+                        <td class="date">
                             {{- if (index $testHTMLDataElem.Permalinks $index) -}}
                                 <a class="nounderline" title="{{ $gitBlame.CommitID }} by {{ $gitBlame.Author }}"
-                                   href="{{ index $testHTMLDataElem.Permalinks $index }}">🔗</a>
+                                   href="{{ index $testHTMLDataElem.Permalinks $index }}">{{ index $testHTMLDataElem.Age $index }}</a>
                             {{- end }}</td>
                     {{- else }}
                         <td></td>{{ end }}
