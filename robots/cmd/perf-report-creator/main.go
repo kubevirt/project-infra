@@ -45,7 +45,7 @@ type weeklyGraphOpts struct {
 func resultsFlagOpts(subcommands []string) resultOpts {
 	fs := flag.NewFlagSet("results", flag.ExitOnError)
 	r := resultOpts{}
-	fs.DurationVar(&r.since, "since", 24*7*time.Hour, "Filter the periodic job in the time window")
+	fs.DurationVar(&r.since, "since", 24*time.Hour, "Filter the periodic job in the time window")
 	fs.StringVar(&r.performanceJobName, "performance-job-name", "periodic-kubevirt-e2e-k8s-1.25-sig-performance", "usuage, name of the performance job for which data is collected")
 	fs.StringVar(&r.outputDir, "output-dir", "output/results", "the output directory were json data will be written")
 	fs.StringVar(&r.credentialsFile, "credentials-file", "", "the credentials json file for GCS storage client")
@@ -60,7 +60,7 @@ func resultsFlagOpts(subcommands []string) resultOpts {
 func weeklyReportFlagOpts(subcommands []string) weeklyReportOpts {
 	w := weeklyReportOpts{}
 	fs := flag.NewFlagSet("weekly-report", flag.ExitOnError)
-	fs.DurationVar(&w.since, "since", 24*7*time.Hour, "Filter the periodic job in the time window")
+	fs.DurationVar(&w.since, "since", 24*time.Hour, "Filter the periodic job in the time window")
 	fs.StringVar(&w.resultsDir, "results-dir", "output/results/periodic-kubevirt-e2e-k8s-1.25-sig-performance", "usuage, name of the performance job for which data is collected")
 	fs.StringVar(&w.vmMetricsList, "vm-metrics-list", string(ResultTypeVMICreationToRunningP95), "comma separated list of metrics to be extracted for vms")
 	fs.StringVar(&w.vmiMetricsList, "vmi-metrics-list", string(ResultTypeVMICreationToRunningP95), "comma separated list of metrics to be extracted for vmis")

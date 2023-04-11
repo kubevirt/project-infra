@@ -22,7 +22,7 @@ Usage of results:
   -performance-job-name string
         usuage, name of the performance job for which data is collected (default "periodic-kubevirt-e2e-k8s-1.25-sig-performance")
   -since duration
-        Filter the periodic job in the time window (default 168h0m0s)
+        Filter the periodic job in the time window (default 24h0m0s)
 ```
 
 This step uses regex to match certain strings and grab results from build-log.txt. It organizes the output dir as 
@@ -40,7 +40,7 @@ Usage of weekly-report:
   -results-dir string
         usuage, name of the performance job for which data is collected (default "output/results/periodic-kubevirt-e2e-k8s-1.25-sig-performance")
   -since duration
-        Filter the periodic job in the time window (default 168h0m0s)
+        Filter the periodic job in the time window (default 24h0m0s)
   -vm-metrics-list string
         comma separated list of metrics to be extracted for vms (default "vmiCreationToRunningSecondsP95")
   -vmi-metrics-list string
