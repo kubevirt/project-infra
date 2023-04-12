@@ -147,12 +147,6 @@ func runResults(r resultOpts) error {
 
 	// TODO: find a way to handle opts.since it would be great if there is a way to get
 	//    objects after a specific timestamp
-
-	// currently it is equivalent of zero
-	// The zero value of type Time is January 1, year 1, 00:00:00.000000000 UTC.
-	// As this time is unlikely to come up in practice, the IsZero method gives
-	// a simple way of detecting a time that has not been initialized explicitly.
-	//since := time.Date(1, 1, 0, 0, 0, 0, 0, time.UTC)
 	since := time.Now().Add(-r.since)
 
 	// convert to perfStats
@@ -287,7 +281,6 @@ func extractCollectionFromLogs(ctx context.Context, storageClient *storage.Clien
 			errs = append(errs, err)
 		}
 
-		//d := creationTime.Format("2006-01-02T00:00:00Z00:00")
 		r[j] = struct {
 			JobDirCreationTime time.Time
 			VMIResult          Result
@@ -309,7 +302,6 @@ func getWeeklyVMIResults(results *Collection) (map[YearWeek][]ResultWithDate, er
 	for _, value := range *results {
 		value := value
 		year, week := value.JobDirCreationTime.ISOWeek() // get the Year and Week number of the date
-		//weekStr := fmt.Sprintf("%d-W%02d", Year, Week) // format the Year and Week number as a string
 		yw := YearWeek{Year: year, Week: week}
 		_, ok := weeklyData[yw]
 		if ok {
@@ -356,7 +348,6 @@ func getVMResult(ctx context.Context, client *storage.Client, jobID string, perf
 		log.Printf("job: %s, error running readLinesAndMatchRegex. %+v\n", jobID, err)
 		return Result{}, err
 	}
-	//lines = lines[3:]
 	return unmarshalJson(lines)
 }
 
@@ -366,15 +357,9 @@ func getBuildLogReaderForJob(ctx context.Context, client *storage.Client, jobID 
 }
 
 func readLinesAndMatchRegex(file io.Reader, jsonStartRegex string) (string, error) {
-	//jsonStartRegex := "^\\{$"
 	jsonEndRegex := "^\\}$"
-	// Open the file for reading
-
-	// Create a regular expression object
 	startRegex := regexp.MustCompile(jsonStartRegex)
 	endRegex := regexp.MustCompile(jsonEndRegex)
-
-	// Create a scanner to read the file line by line
 	scanner := bufio.NewScanner(file)
 
 	// Read each line of the file and compare it against the regular expression
@@ -385,14 +370,13 @@ func readLinesAndMatchRegex(file io.Reader, jsonStartRegex string) (string, erro
 			for scanner.Scan() {
 				line := scanner.Text()
 				if !endRegex.MatchString(line) {
-					// If the regular expression matches the line, add it to the list of lines
 					lines = append(lines, line)
 					continue
 				}
-				// json end match
 				lines = append(lines, line)
 				break
 			}
+			// This is needed to make sure the starting of match is json object `{`
 			lines = lines[3:]
 			jsonText := strings.ReplaceAll(strings.Join(lines, ""), "\\n", " ")
 			if err := scanner.Err(); err != nil {
@@ -424,7 +408,6 @@ func getWeeklyVMResults(results *Collection) (map[YearWeek][]ResultWithDate, err
 	for _, value := range *results {
 		value := value
 		year, week := value.JobDirCreationTime.ISOWeek() // get the Year and Week number of the date
-		//weekStr := fmt.Sprintf("%d-W%02d", Year, Week) // format the Year and Week number as a string
 		yw := YearWeek{Year: year, Week: week}
 		_, ok := weeklyData[yw]
 		if ok {
