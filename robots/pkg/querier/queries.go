@@ -107,17 +107,17 @@ type SemVer struct {
 }
 
 func (i *SemVer) MajorInt() int {
-	v, _  := strconv.Atoi(i.Major)
+	v, _ := strconv.Atoi(i.Major)
 	return v
 }
 
 func (i *SemVer) MinorInt() int {
-	v, _  := strconv.Atoi(i.Minor)
+	v, _ := strconv.Atoi(i.Minor)
 	return v
 }
 
 func (i *SemVer) PatchInt() int {
-	v, _  := strconv.Atoi(i.Patch)
+	v, _ := strconv.Atoi(i.Patch)
 	return v
 }
 
@@ -159,7 +159,7 @@ func (i *SemVer) CompareMajorMinor(j *SemVer) int {
 	return 0
 }
 
-func (i * SemVer) String() string {
+func (i *SemVer) String() string {
 	return fmt.Sprintf("%s.%s.%s", i.Major, i.Minor, i.Patch)
 }
 
