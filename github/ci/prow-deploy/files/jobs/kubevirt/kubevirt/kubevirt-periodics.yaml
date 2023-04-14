@@ -402,7 +402,7 @@ periodics:
       type: bare-metal-external
 - annotations:
     testgrid-dashboards: kubevirt-periodics
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 0 22, 10 * * *
   decorate: true
   decoration_config:
