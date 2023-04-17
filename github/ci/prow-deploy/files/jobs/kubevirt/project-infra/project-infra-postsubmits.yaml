@@ -96,7 +96,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: prow-workloads
+      cluster: kubevirt-prow-workloads
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
@@ -316,7 +316,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: prow-workloads
+      cluster: kubevirt-prow-workloads
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
@@ -346,7 +346,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: prow-workloads
+      cluster: kubevirt-prow-workloads
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
@@ -979,7 +979,7 @@ postsubmits:
       always_run: false
       annotations:
         testgrid-create-test-group: "false"
-      cluster: prow-workloads
+      cluster: ibm-prow-jobs
       decorate: true
       decoration_config:
         grace_period: 5m

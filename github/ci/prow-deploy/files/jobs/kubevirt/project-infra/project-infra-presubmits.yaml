@@ -328,7 +328,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
@@ -355,7 +355,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
@@ -435,7 +435,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-pgp-bot-key: "true"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -477,7 +477,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -514,7 +514,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -551,7 +551,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -588,7 +588,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -625,7 +625,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -662,7 +662,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -700,7 +700,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external

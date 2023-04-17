@@ -175,7 +175,7 @@ periodics:
     repo: project-infra
     base_ref: main
     work_dir: true
-  cluster: prow-workloads
+  cluster: ibm-prow-jobs
   spec:
     containers:
     - image: quay.io/kubevirtci/autoowners:v20220817-6d185c5
@@ -524,7 +524,7 @@ periodics:
       repo: project-infra
       base_ref: main
       workdir: true
-  cluster: prow-workloads
+  cluster: ibm-prow-jobs
   spec:
     securityContext:
       runAsUser: 0
@@ -553,7 +553,7 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  cluster: prow-workloads
+  cluster: ibm-prow-jobs
   spec:
     securityContext:
       runAsUser: 0
@@ -584,7 +584,7 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  cluster: prow-workloads
+  cluster: ibm-prow-jobs
   spec:
     securityContext:
       runAsUser: 0
@@ -615,7 +615,7 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  cluster: prow-workloads
+  cluster: ibm-prow-jobs
   spec:
     securityContext:
       runAsUser: 0
@@ -647,7 +647,7 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-shared-images: "true"
-  cluster: prow-workloads
+  cluster: ibm-prow-jobs
   spec:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
