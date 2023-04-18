@@ -66,6 +66,15 @@ $ jq '.MatchingSpecPathes[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer
 ...
 ```
 
+#### Generating an html page from an existing profile
+
+```shell
+$ test-label-analyzer stats --output-html=true \
+  --config-name quarantine \
+  --test-file-path $(cd ../kubevirt && pwd)/tests \
+  --remote-url 'https://github.com/kubevirt/kubevirt/tree/main/tests' > /tmp/test-output.html
+
+```
 ## generate a string that can be used directly with [Ginkgo] `--filter` or `--skip` flags
 
 _**NOT YET IMPLEMENTED**_
