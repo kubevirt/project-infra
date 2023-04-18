@@ -35,11 +35,16 @@ import (
 	"time"
 )
 
+const shortStatsDescription = "Generates stats over test categories"
+
 // statsCmd represents the stats command
 var statsCmd = &cobra.Command{
 	Use:   "stats",
-	Short: "Generates stats over test categories",
-	Long:  `TODO`,
+	Short: shortStatsDescription,
+	Long: shortStatsDescription + `
+
+Can either emit json or html format data about the targeted tests.
+`,
 	RunE: func(_ *cobra.Command, _ []string) error {
 		return runStatsCommand(rootConfigOpts)
 	},

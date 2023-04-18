@@ -123,15 +123,16 @@ var configNamesToConfigs = map[string]*test_label_analyzer.Config{
 	"quarantine": test_label_analyzer.NewQuarantineDefaultConfig(),
 }
 
-// rootCmd represents the base command when called without any subcommands
+const shortRootDescription = "Collects a set of tools for generating statistics and filter strings over sets of Ginkgo tests"
+
 var rootCmd = &cobra.Command{
 	Use:   "test-label-analyzer",
-	Short: "blah",
-	Long:  `TODO`,
+	Short: shortRootDescription,
+	Long: shortRootDescription + `
+
+Supports predefined configuration profiles and custom configurations to define which sets of tests should be targeted.`,
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
