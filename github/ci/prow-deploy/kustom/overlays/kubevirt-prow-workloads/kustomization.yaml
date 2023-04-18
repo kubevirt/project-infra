@@ -6,7 +6,9 @@ resources:
   - resources/bootstrap.yaml
   - resources/shared-images-controller.yaml
   - resources/greenhouse-storage.yaml
+  - resources/place-holder.yaml
   - resources/priority-classes.yaml
+  - resources/sriov-passthrough-ds.yaml
   - ../../components/docker-mirror-proxy/base
   - ../../components/greenhouse/base
 

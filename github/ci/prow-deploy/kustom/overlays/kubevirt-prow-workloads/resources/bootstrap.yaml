@@ -20,6 +20,14 @@ metadata:
 apiVersion: v1
 kind: Node
 metadata:
+  name: kubevirt-sm-bm01.rhvcnv-devops.cloud
+  labels:
+    type: bare-metal-external
+    hardwareSupport: sriov-nic
+---
+apiVersion: v1
+kind: Node
+metadata:
   name: kubevirt-sm-bm03.rhvcnv-devops.cloud
   labels:
     type: bare-metal-external
