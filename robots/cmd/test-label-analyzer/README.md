@@ -32,7 +32,7 @@ $ test-label-analyzer stats --config-name quarantine \
         > /tmp/test-label-analyzer-output.json
 $ # print the output
 $ cat /tmp/test-label-analyzer-output.json
-{"SpecsTotal":1483,"SpecsMatching":9,"MatchingSpecPathes":[[{"name":"Describe","text":"...
+{"SpecsTotal":1483,"SpecsMatching":9,"MatchingSpecPathes":[[{"name":"Describe","text":...
 $ # from the output we can generate the concatenated test names
 $ jq '.MatchingSpecPathes[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer-output.json
 ```
@@ -45,7 +45,7 @@ $ test-label-analyzer stats --config-name quarantine --test-file-path /path/to/t
         > /tmp/test-label-analyzer-output.json
 $ # print the output
 $ cat /tmp/test-label-analyzer-output.json
-{"SpecsTotal":1483,"SpecsMatching":9,"MatchingSpecPathes":[[{"name":"Describe","text":"...
+{"SpecsTotal":1483,"SpecsMatching":9,"MatchingSpecPathes":[[{"name":"Describe","text":...
 $ # from the output we can generate the concatenated test names
 $ jq '.MatchingSpecPathes[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer-output.json
 ```

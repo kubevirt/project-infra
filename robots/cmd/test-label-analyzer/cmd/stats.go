@@ -186,7 +186,7 @@ func runStatsCommand(configurationOptions configOptions) error {
 		return err
 	}
 
-	if len(configurationOptions.ginkgoOutlinePathes) > 0 {
+	if len(configurationOptions.ginkgoOutlinePaths) > 0 {
 		jsonOutput, err := collectStatsFromGinkgoOutlines(configurationOptions)
 		if err != nil {
 			return err
@@ -351,7 +351,7 @@ func collectStatsFromGinkgoOutlines(configurationOptions configOptions) (string,
 
 	// collect the test outline data from the files and merge it into one slice
 	var testOutlines []*test_label_analyzer.GinkgoNode
-	for _, path := range configurationOptions.ginkgoOutlinePathes {
+	for _, path := range configurationOptions.ginkgoOutlinePaths {
 		fileData, err := os.ReadFile(path)
 		if err != nil {
 			return "", fmt.Errorf("failed to read file %q: %v", path, err)

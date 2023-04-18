@@ -22,7 +22,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
-	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
+	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
 )
 
@@ -37,8 +37,8 @@ type configOptions struct {
 	// configName is the name of the default configuration that resembles the test_label_analyzer.Config
 	configName string
 
-	// ginkgoOutlinePathes is the pathes to the files that contain the test outlines to analyze
-	ginkgoOutlinePathes []string
+	// ginkgoOutlinePaths holds the paths to the files that contain the test outlines to analyze
+	ginkgoOutlinePaths []string
 
 	// testFilePath is the path to the files that contain the test code
 	testFilePath string
@@ -67,28 +67,28 @@ func (s *configOptions) validate() error {
 	if s.configFile != "" {
 		stat, err := os.Stat(s.configFile)
 		if os.IsNotExist(err) {
-			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file, %v", s.ginkgoOutlinePathes, err)
+			return fmt.Errorf("config-file not set correctly, %q is not a file, %v", s.configFile, err)
 		}
 		if stat.IsDir() {
-			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file", s.ginkgoOutlinePathes)
+			return fmt.Errorf("config-file not set correctly, %q is not a file", s.configFile)
 		}
 	}
-	for _, ginkgoOutlinePath := range s.ginkgoOutlinePathes {
+	for _, ginkgoOutlinePath := range s.ginkgoOutlinePaths {
 		stat, err := os.Stat(ginkgoOutlinePath)
 		if os.IsNotExist(err) {
-			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file, %v", s.ginkgoOutlinePathes, err)
+			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file, %v", s.ginkgoOutlinePaths, err)
 		}
 		if stat.IsDir() {
-			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file", s.ginkgoOutlinePathes)
+			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file", s.ginkgoOutlinePaths)
 		}
 	}
 	if s.testFilePath != "" {
 		stat, err := os.Stat(s.testFilePath)
 		if os.IsNotExist(err) {
-			return fmt.Errorf("test-file-path not set correctly, %q is not a directory, %v", s.ginkgoOutlinePathes, err)
+			return fmt.Errorf("test-file-path not set correctly, %q is not a directory, %v", s.ginkgoOutlinePaths, err)
 		}
 		if !stat.IsDir() {
-			return fmt.Errorf("test-file-path not set correctly, %q is not a directory", s.ginkgoOutlinePathes)
+			return fmt.Errorf("test-file-path not set correctly, %q is not a directory", s.ginkgoOutlinePaths)
 		}
 		if s.remoteURL == "" {
 			return fmt.Errorf("remote-url is required together with test-file-path")
@@ -98,9 +98,9 @@ func (s *configOptions) validate() error {
 }
 
 // getConfig returns a configuration with which the matching tests are being retrieved or an error in case the configuration is wrong
-func (s *configOptions) getConfig() (*test_label_analyzer.Config, error) {
+func (s *configOptions) getConfig() (*testlabelanalyzer.Config, error) {
 	if s.testNameLabelRE != "" {
-		return test_label_analyzer.NewTestNameDefaultConfig(s.testNameLabelRE), nil
+		return testlabelanalyzer.NewTestNameDefaultConfig(s.testNameLabelRE), nil
 	}
 	if s.configName != "" {
 		return configNamesToConfigs[s.configName], nil
@@ -110,7 +110,7 @@ func (s *configOptions) getConfig() (*test_label_analyzer.Config, error) {
 		if err != nil {
 			return nil, err
 		}
-		var config *test_label_analyzer.Config
+		var config *testlabelanalyzer.Config
 		err = json.Unmarshal(file, &config)
 		return config, err
 	}
@@ -119,8 +119,8 @@ func (s *configOptions) getConfig() (*test_label_analyzer.Config, error) {
 
 var rootConfigOpts = configOptions{}
 
-var configNamesToConfigs = map[string]*test_label_analyzer.Config{
-	"quarantine": test_label_analyzer.NewQuarantineDefaultConfig(),
+var configNamesToConfigs = map[string]*testlabelanalyzer.Config{
+	"quarantine": testlabelanalyzer.NewQuarantineDefaultConfig(),
 }
 
 const shortRootDescription = "Collects a set of tools for generating statistics and filter strings over sets of Ginkgo tests"
@@ -147,7 +147,7 @@ func init() {
 		configNames = append(configNames, configName)
 	}
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.configName, "config-name", "", fmt.Sprintf("config name defining categories of tests (possible values: %v)", configNames))
-	rootCmd.PersistentFlags().StringArrayVar(&rootConfigOpts.ginkgoOutlinePathes, "test-outline-filepath", nil, "path to test outline file to be analyzed")
+	rootCmd.PersistentFlags().StringArrayVar(&rootConfigOpts.ginkgoOutlinePaths, "test-outline-filepath", nil, "path to test outline file to be analyzed")
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testFilePath, "test-file-path", "", "path containing tests to be analyzed")
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.remoteURL, "remote-url", "", "remote path to tests to be analyzed")
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testNameLabelRE, "test-name-label-re", "", "regular expression for test names to match against")
