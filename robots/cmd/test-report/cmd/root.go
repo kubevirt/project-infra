@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/cobra"
 	"kubevirt.io/project-infra/robots/cmd/test-report/cmd/dequarantine"
 	"kubevirt.io/project-infra/robots/cmd/test-report/cmd/execution"
+	"kubevirt.io/project-infra/robots/cmd/test-report/cmd/filter"
 )
 
 var rootCmd *cobra.Command
@@ -47,6 +48,7 @@ func init() {
 
 	rootCmd.AddCommand(execution.ExecutionCmd(logger))
 	rootCmd.AddCommand(dequarantine.DequarantineCmd(logger))
+	rootCmd.AddCommand(filter.FilterCmd())
 }
 
 func Execute() error {
