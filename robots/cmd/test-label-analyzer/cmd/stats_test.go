@@ -49,7 +49,7 @@ var _ = Describe("cmd/stats", func() {
 					Config: simpleQuarantineConfig,
 					TestStats: &test_label_analyzer.TestStats{
 						SpecsTotal: 2,
-						MatchingSpecPathes: []*test_label_analyzer.PathStats{
+						MatchingSpecPaths: []*test_label_analyzer.PathStats{
 							{
 								Lines: nil,
 								GitBlameLines: []*test_label_analyzer.GitBlameInfo{
@@ -76,7 +76,7 @@ var _ = Describe("cmd/stats", func() {
 					Config: simpleQuarantineConfig,
 					TestStats: &test_label_analyzer.TestStats{
 						SpecsTotal: 2,
-						MatchingSpecPathes: []*test_label_analyzer.PathStats{
+						MatchingSpecPaths: []*test_label_analyzer.PathStats{
 							{
 								Lines: nil,
 								GitBlameLines: []*test_label_analyzer.GitBlameInfo{

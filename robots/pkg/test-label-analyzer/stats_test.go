@@ -65,7 +65,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 				})).To(BeEquivalentTo(
 				&TestStats{
 					SpecsTotal: 1,
-					MatchingSpecPathes: []*PathStats{
+					MatchingSpecPaths: []*PathStats{
 						{
 							Path: []*GinkgoNode{
 								{
@@ -114,7 +114,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 				})).To(BeEquivalentTo(
 				&TestStats{
 					SpecsTotal: 1,
-					MatchingSpecPathes: []*PathStats{
+					MatchingSpecPaths: []*PathStats{
 						{
 							Path: []*GinkgoNode{
 								{},
@@ -150,7 +150,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 				})).To(BeEquivalentTo(
 				&TestStats{
 					SpecsTotal: 1,
-					MatchingSpecPathes: []*PathStats{
+					MatchingSpecPaths: []*PathStats{
 						{
 							Path: []*GinkgoNode{
 								{
@@ -191,7 +191,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 				})).To(BeEquivalentTo(
 				&TestStats{
 					SpecsTotal: 1,
-					MatchingSpecPathes: []*PathStats{
+					MatchingSpecPaths: []*PathStats{
 						{
 							Path: []*GinkgoNode{
 								{
@@ -232,7 +232,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 				})).To(BeEquivalentTo(
 				&TestStats{
 					SpecsTotal: 1,
-					MatchingSpecPathes: []*PathStats{
+					MatchingSpecPaths: []*PathStats{
 						{
 							Path: []*GinkgoNode{
 								{
@@ -277,7 +277,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 				})).To(BeEquivalentTo(
 				&TestStats{
 					SpecsTotal: 2,
-					MatchingSpecPathes: []*PathStats{
+					MatchingSpecPaths: []*PathStats{
 						{
 							Path: []*GinkgoNode{
 								{
@@ -336,7 +336,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 				})).To(BeEquivalentTo(
 				&TestStats{
 					SpecsTotal: 2,
-					MatchingSpecPathes: []*PathStats{
+					MatchingSpecPaths: []*PathStats{
 						{
 							Path: []*GinkgoNode{
 								{

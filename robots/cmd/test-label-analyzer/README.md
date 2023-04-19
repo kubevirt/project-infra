@@ -32,9 +32,9 @@ $ test-label-analyzer stats --config-name quarantine \
         > /tmp/test-label-analyzer-output.json
 $ # print the output
 $ cat /tmp/test-label-analyzer-output.json
-{"SpecsTotal":1483,"SpecsMatching":9,"MatchingSpecPathes":[[{"name":"Describe","text":...
+{"SpecsTotal":1483,"SpecsMatching":9,"MatchingSpecPaths":[[{"name":"Describe","text":...
 $ # from the output we can generate the concatenated test names
-$ jq '.MatchingSpecPathes[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer-output.json
+$ jq '.MatchingSpecPaths[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer-output.json
 ```
 
 #### Letting `test-labels-analyzer` call ginkgo to retrieve the outline data
@@ -45,9 +45,9 @@ $ test-label-analyzer stats --config-name quarantine --test-file-path /path/to/t
         > /tmp/test-label-analyzer-output.json
 $ # print the output
 $ cat /tmp/test-label-analyzer-output.json
-{"SpecsTotal":1483,"SpecsMatching":9,"MatchingSpecPathes":[[{"name":"Describe","text":...
+{"SpecsTotal":1483,"SpecsMatching":9,"MatchingSpecPaths":[[{"name":"Describe","text":...
 $ # from the output we can generate the concatenated test names
-$ jq '.MatchingSpecPathes[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer-output.json
+$ jq '.MatchingSpecPaths[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer-output.json
 ```
 
 #### Directly letting `test-labels-analyzer` filter tests with regular expression
@@ -58,9 +58,9 @@ $ test-label-analyzer stats --test-name-label-re '.*Console Proxy Operand Resour
         > /tmp/test-label-analyzer-output.json
 $ # print the output
 $ cat /tmp/test-label-analyzer-output.json
-{"SpecsTotal":278,"SpecsMatching":40,"MatchingSpecPathes":[[{"name":"Describe", ...
+{"SpecsTotal":278,"SpecsMatching":40,"MatchingSpecPaths":[[{"name":"Describe", ...
 $ # from the output we can generate the concatenated test names
-$ jq '.MatchingSpecPathes[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer-output.json
+$ jq '.MatchingSpecPaths[] | [ .[].text ] | join(" ")' /tmp/test-label-analyzer-output.json
 "VM Console Proxy Operand Resource creation created cluster resource [test_id:TODO] cluster role"
 "VM Console Proxy Operand Resource creation created cluster resource [test_id:TODO] cluster role binding"
 ...

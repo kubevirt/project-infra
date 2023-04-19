@@ -44,10 +44,10 @@ type TestStats struct {
 	// SpecsTotal is the total number of specs encountered during traversal of the outline
 	SpecsTotal int `json:"specs_total"`
 
-	// MatchingSpecPathes is the slice of PathStats to matching specs for the collection of outlines traversed.
+	// MatchingSpecPaths is the slice of PathStats to matching specs for the collection of outlines traversed.
 	// Each PathStats inside this slice is the path to each of the matching specs defined by the Config
 	// being used. Please note that the GinkgoNode.Nodes are being removed during traversal.
-	MatchingSpecPathes []*PathStats `json:"matching_spec_pathes"`
+	MatchingSpecPaths []*PathStats `json:"matching_spec_paths"`
 }
 
 // PathStats contains all relevant data to a path matching a Config.
@@ -88,7 +88,7 @@ func traverseNodesRecursively(stats *TestStats, config *Config, gingkoOutline []
 					for _, pathNode := range parentsWithNode {
 						path = append(path, pathNode.CloneWithoutNodes())
 					}
-					stats.MatchingSpecPathes = append(stats.MatchingSpecPathes, &PathStats{
+					stats.MatchingSpecPaths = append(stats.MatchingSpecPaths, &PathStats{
 						Path: path,
 					})
 				}

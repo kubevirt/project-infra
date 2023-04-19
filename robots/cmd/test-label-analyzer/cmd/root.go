@@ -85,10 +85,10 @@ func (s *configOptions) validate() error {
 	if s.testFilePath != "" {
 		stat, err := os.Stat(s.testFilePath)
 		if os.IsNotExist(err) {
-			return fmt.Errorf("test-file-path not set correctly, %q is not a directory, %v", s.ginkgoOutlinePaths, err)
+			return fmt.Errorf("test-file-path not set correctly, %q is not a directory, %v", s.testFilePath, err)
 		}
 		if !stat.IsDir() {
-			return fmt.Errorf("test-file-path not set correctly, %q is not a directory", s.ginkgoOutlinePaths)
+			return fmt.Errorf("test-file-path not set correctly, %q is not a directory", s.testFilePath)
 		}
 		if s.remoteURL == "" {
 			return fmt.Errorf("remote-url is required together with test-file-path")
