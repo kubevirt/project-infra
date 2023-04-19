@@ -210,3 +210,39 @@ postsubmits:
         - name: kubevirtci-fossa
           secret:
             secretName: kubevirtci-fossa-token
+  - name: publish-kubevirt-builder
+    always_run: false
+    run_if_changed: "hack/builder/.*"
+    branches:
+      - main
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-gcs-credentials: "true"
+      preset-github-credentials: "true"
+      preset-kubevirtci-quay-credential: "true"
+    annotations:
+      testgrid-create-test-group: "false"
+    reporter_config:
+      slack:
+        job_states_to_report: []
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - >
+              cat $QUAY_PASSWORD | docker login quay.io --username $(cat $QUAY_USER) --password-stdin=true &&
+              make builder-publish
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
