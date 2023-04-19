@@ -96,9 +96,9 @@ presubmits:
         - "bazel build //github/ci/services/..."
         resources:
           requests:
-            memory: "2Gi"
+            memory: "4Gi"
           limits:
-            memory: "2Gi"
+            memory: "4Gi"
         securityContext:
           runAsUser: 0
   - name: build-kubevirt-infra-bootstrap-image
