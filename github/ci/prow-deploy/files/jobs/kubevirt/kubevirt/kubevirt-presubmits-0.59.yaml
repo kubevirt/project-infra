@@ -5,7 +5,7 @@ presubmits:
   - always_run: false
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-sig-compute-cgroupsv2
     decorate: true
     decoration_config:
@@ -44,7 +44,7 @@ presubmits:
   - always_run: false
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.24-sig-compute-cgroupsv2
     decorate: true
     decoration_config:
@@ -83,7 +83,7 @@ presubmits:
   - always_run: false
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.25-sig-compute-cgroupsv2
     decorate: true
     decoration_config:
@@ -275,7 +275,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.24-sig-compute-root
     decorate: true
     decoration_config:
@@ -677,7 +677,7 @@ presubmits:
   - always_run: false
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-kind-1.23-vgpu-root
     decorate: true
     decoration_config:
@@ -1301,7 +1301,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.25-sig-compute-migrations-root
     decorate: true
     decoration_config:
@@ -1343,7 +1343,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.25-sig-compute-migrations
     decorate: true
     decoration_config:
@@ -1383,7 +1383,7 @@ presubmits:
   - always_run: false
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.24-sig-compute-realtime
     decorate: true
     decoration_config:
@@ -1419,7 +1419,7 @@ presubmits:
   - always_run: false
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.24-sig-compute-realtime-root
     decorate: true
     decoration_config:
@@ -1809,7 +1809,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.24-sig-compute
     decorate: true
     decoration_config:
@@ -1845,7 +1845,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.24-operator
     decorate: true
     decoration_config:
@@ -1881,7 +1881,7 @@ presubmits:
   - always_run: false
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.25-psa-sig-compute
     decorate: true
     decoration_config:
@@ -2031,7 +2031,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.25-sig-compute
     decorate: true
     decoration_config:
@@ -2067,7 +2067,7 @@ presubmits:
   - always_run: false
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.25-fips-sig-compute
     decorate: true
     decoration_config:
@@ -2106,7 +2106,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.25-sig-operator
     decorate: true
     decoration_config:
@@ -2218,7 +2218,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-sig-compute
     decorate: true
     decoration_config:
@@ -2256,7 +2256,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-sig-operator-upgrade
     decorate: true
     decoration_config:
@@ -2292,7 +2292,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-sig-operator-configuration
     decorate: true
     decoration_config:
@@ -2330,7 +2330,7 @@ presubmits:
   - always_run: false
     branches:
     - release-0.59
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-psa-sig-operator
     decorate: true
     decoration_config:
