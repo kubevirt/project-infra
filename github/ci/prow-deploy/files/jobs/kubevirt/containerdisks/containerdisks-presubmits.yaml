@@ -34,10 +34,7 @@ presubmits:
     decorate: true
     decoration_config:
       grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
+      timeout: 1h0m0s
     max_concurrency: 11
     name: pull-containerdisks-build
     spec:
@@ -55,8 +52,6 @@ presubmits:
         resources:
           requests:
             memory: 4Gi
-        securityContext:
-          privileged: true
   - always_run: true
     optional: false
     annotations:
@@ -65,7 +60,7 @@ presubmits:
     decorate: true
     decoration_config:
       grace_period: 5m0s
-      timeout: 7h0m0s
+      timeout: 1h0m0s
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
