@@ -26,10 +26,14 @@ deps-update:
 	$(bazelbin) run //:gazelle
 
 gazelle:
-	bazel run //:gazelle
+	$(bazelbin) run //:gazelle
 
 gazelle-update-repos:
-	bazel run //:gazelle -- update-repos -from_file=go.mod
+	$(bazelbin) run //:gazelle -- update-repos -from_file=go.mod
 
 install-bazelisk:
 	go get -u github.com/bazelbuild/bazelisk
+
+test:
+	$(bazelbin) test //external-plugins/... //releng/... //robots/...
+	$(bazelbin) build //github/ci/services/...
