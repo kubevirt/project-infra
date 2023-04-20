@@ -6,6 +6,8 @@ readonly GW_IP=169.255.0.1
 readonly CONTAINER_NETNS_LINK="/var/run/netns/$CNI_CONTAINERID"
 readonly LOGFILE=/var/log/pfcni.log
 readonly PF_COUNT=1
+# SYSTEM_RESERVED_PFS comma seperated list of interfaces that will not be allocated, e.g: "enp1f1,enp1f2,.."
+readonly SYSTEM_RESERVED_PFS=""
 
 function main() {
     case "$CNI_COMMAND" in
@@ -38,6 +40,11 @@ function setns_sriov_pfs() {
   for pf in "${sriov_pfs[@]}"; do
     local pf_name="${pf%%/device/*}"
     pf_name="${pf_name##*/}"
+
+    if reserved_pf "${pf_name}"; then
+      continue
+    fi
+
     if ip link set "$pf_name" netns "$CNI_CONTAINERID"; then
       if timeout 5s bash -c "until ip netns exec $CNI_CONTAINERID ip link show $pf_name > /dev/null; do sleep 1; done"; then
         log "Added $pf_name to netns $CNI_CONTAINERID"
@@ -52,6 +59,13 @@ function setns_sriov_pfs() {
 
   log "FATAL: Could not allocate enough PFs"
   exit 1
+}
+
+function reserved_pf() {
+    local -r pf=$1
+    if [ -n "${SYSTEM_RESERVED_PFS}" ]; then
+        grep -w -q ${pf} <<< "${SYSTEM_RESERVED_PFS}"
+    fi
 }
 
 function gen_result_config() {

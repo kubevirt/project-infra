@@ -68,3 +68,12 @@ requests:
 limits:
   prow/sriov: "2"
 ```
+
+# Reserved system SR-IOV PFs
+Some nodes external network interfaces have SR-IOV capabilities, including the cluster network interface.
+The CNI may allocate such interfaces and cause network disconnection to the node.
+
+In order to prevent from the CNI to allocate such interfaces, set the `SYSTEM_RESERVED_PFS` with the interfaces that CNI should not allocate in a comma seperated form:
+```bash
+SYSTEM_RESERVED_PFS="eno1,eno2,eno3"
+```
