@@ -52,8 +52,7 @@ presubmits:
         resources:
           requests:
             memory: 4Gi
-  - always_run: false
-    skip_if_only_changed: "artifacts/.*"
+  - always_run: true
     optional: false
     annotations:
       testgrid-create-test-group: "false"
@@ -90,7 +89,6 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     run_if_changed: "artifacts/centos/.*"
-    optional: false
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
@@ -126,7 +124,6 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     run_if_changed: "artifacts/centosstream/.*"
-    optional: false
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
@@ -162,7 +159,6 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     run_if_changed: "artifacts/fedora/.*"
-    optional: false
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
@@ -198,7 +194,6 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     run_if_changed: "artifacts/rhcos/.*|artifacts/rhcosprerelease/.*"
-    optional: false
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
@@ -234,7 +229,6 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     run_if_changed: "artifacts/ubuntu/.*"
-    optional: false
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
