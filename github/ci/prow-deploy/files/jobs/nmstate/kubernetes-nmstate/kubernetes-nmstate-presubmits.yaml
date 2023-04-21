@@ -60,7 +60,7 @@ presubmits:
                 memory: "29Gi"
             env:
               - name: GIMME_GO_VERSION
-                value: "1.16"
+                value: "1.18"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -96,12 +96,14 @@ presubmits:
                 memory: "29Gi"
             env:
               - name: GIMME_GO_VERSION
-                value: "1.16"
+                value: "1.18"
+              - name: NMSTATE_PIN
+                value: "future"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
               - "-c"
-              - "git pull --rebase https://github.com/qinqon/kubernetes-nmstate use-nmstatectl-rust && NMSTATE_PIN=future automation/check-patch.e2e-k8s.sh"
+              - "automation/check-patch.e2e-k8s.sh"
 
     - name: pull-kubernetes-nmstate-docs
       cluster: ibm-prow-jobs
