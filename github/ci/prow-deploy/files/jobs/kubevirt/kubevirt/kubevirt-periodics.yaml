@@ -1798,7 +1798,11 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/sh
       - -c
-      - automation/test.sh
+      - |
+        # Set cluster-up to not deploy Multus V3 from manifests, instead CNAO will deploy Multus V4,
+        # and make the test suite run the hotplug NICs tests.
+        export KUBEVIRT_WITH_MULTUS_V3='false'
+        automation/test.sh
       env:
       - name: KUBEVIRT_E2E_RUN_ALL_SUITES
         value: "true"
@@ -1808,8 +1812,6 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.26-centos9-sig-network-no-istio
-      - name: KUBEVIRT_WITH_MULTUS_V3
-        value: "false"
       image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
       name: ""
       resources:
