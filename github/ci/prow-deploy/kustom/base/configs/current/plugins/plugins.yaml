@@ -143,6 +143,7 @@ plugins:
     - owners-label
     - release-note
     - trigger
+    - help
 
   kubevirt/common-templates:
     plugins:
@@ -151,6 +152,7 @@ plugins:
     - owners-label
     - release-note
     - trigger
+    - help
 
   kubevirt/community:
     plugins:
@@ -166,6 +168,7 @@ plugins:
     - owners-label
     - release-note
     - trigger
+    - help
 
   kubevirt/containerized-data-importer:
     plugins:
@@ -385,6 +388,7 @@ plugins:
     - owners-label
     - release-note
     - trigger
+    - help
 
   kubevirt/terraform-provider-kubevirt:
     plugins:
@@ -414,6 +418,7 @@ plugins:
     - owners-label
     - release-note
     - trigger
+    - help
 
   kubevirt/vm-import-operator:
     plugins:
