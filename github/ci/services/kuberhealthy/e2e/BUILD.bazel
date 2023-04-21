@@ -5,8 +5,7 @@ go_test(
     srcs = ["e2e_test.go"],
     deps = [
         "//github/ci/services/common/k8s/pkg/check:go_default_library",
-        "@com_github_onsi_ginkgo//:go_default_library",
-        "@com_github_onsi_ginkgo//extensions/table:go_default_library",
+        "@com_github_onsi_ginkgo_v2//:go_default_library",
         "@com_github_onsi_gomega//:go_default_library",
     ],
 )

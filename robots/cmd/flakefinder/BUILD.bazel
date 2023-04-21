@@ -60,8 +60,7 @@ go_test(
     deps = [
         "//robots/pkg/flakefinder:go_default_library",
         "//robots/pkg/validation:go_default_library",
-        "@com_github_onsi_ginkgo//:go_default_library",
-        "@com_github_onsi_ginkgo//extensions/table:go_default_library",
+        "@com_github_onsi_ginkgo_v2//:go_default_library",
         "@com_github_onsi_gomega//:go_default_library",
     ],
 )

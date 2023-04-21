@@ -1,11 +1,12 @@
 package flakefinder_test
 
 import (
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"time"
 )
+
 var _ = Describe("flakefinder.go", func() {
 
 	parseAndFailTime := func(timeAsString string) time.Time {
@@ -24,7 +25,7 @@ var _ = Describe("flakefinder.go", func() {
 		return flakefinder.ReportIntervalOptions{
 			Today:  today,
 			Merged: parseAndFailDuration(durationAsString),
-			Till: parseAndFailTime(timeAsString),
+			Till:   parseAndFailTime(timeAsString),
 		}
 	}
 
@@ -36,7 +37,7 @@ var _ = Describe("flakefinder.go", func() {
 	When("on 24h report GetReportInterval", func() {
 
 		It("has start of previous day as report start time", func() {
-			startOfReport, _ := flakefinder.GetReportInterval(reportIntervalOptionsWithDurationTodayAndTill("24h", false,reportExecutionTime))
+			startOfReport, _ := flakefinder.GetReportInterval(reportIntervalOptionsWithDurationTodayAndTill("24h", false, reportExecutionTime))
 
 			Expect(startOfReport).To(BeEquivalentTo(parseAndFailTime(previousDayStartFromExecutionTime)))
 		})

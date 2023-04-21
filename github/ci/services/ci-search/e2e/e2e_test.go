@@ -3,7 +3,7 @@ package e2e
 import (
 	"testing"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/check"

@@ -22,7 +22,7 @@ package jenkins
 import (
 	"fmt"
 	"github.com/bndr/gojenkins"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
 	"kubevirt.io/project-infra/robots/pkg/circuitbreaker"
