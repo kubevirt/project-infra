@@ -16,7 +16,7 @@ go_test(
     srcs = ["limiter_test.go"],
     embed = [":go_default_library"],
     deps = [
-        "@com_google_cloud_go//iam:go_default_library",
+        "@com_google_cloud_go_iam//:go_default_library",
         "@com_google_cloud_go_storage//:go_default_library",
         "@org_golang_google_api//option:go_default_library",
     ],

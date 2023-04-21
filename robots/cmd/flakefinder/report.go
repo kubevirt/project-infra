@@ -59,7 +59,7 @@ func WriteReportToBucket(ctx context.Context, client *storage.Client, merged tim
 		reportJSONOutputWriter = reportJSONObject.NewWriter(ctx)
 		defer reportJSONOutputWriter.Close()
 	}
-	err = Report(reportBaseData.JobResults, reportOutputWriter, reportCSVOutputWriter, reportJSONOutputWriter, org, repo, reportBaseData.PRNumbers, isDryRun, reportBaseData.StartOfReport, reportBaseData.EndOfReport)
+	err = DoReport(reportBaseData.JobResults, reportOutputWriter, reportCSVOutputWriter, reportJSONOutputWriter, org, repo, reportBaseData.PRNumbers, isDryRun, reportBaseData.StartOfReport, reportBaseData.EndOfReport)
 	if err != nil {
 		return fmt.Errorf("failed on generating report: %v", err)
 	}
@@ -74,7 +74,7 @@ type CSVParams struct {
 	Data map[string]map[string]*flakefinder.Details
 }
 
-func Report(results []*flakefinder.JobResult, reportOutputWriter, reportCSVOutputWriter, reportJSONOutputWriter *storage.Writer, org, repo string, prNumbers []int, isDryRun bool, startOfReport, endOfReport time.Time) error {
+func DoReport(results []*flakefinder.JobResult, reportOutputWriter, reportCSVOutputWriter, reportJSONOutputWriter *storage.Writer, org, repo string, prNumbers []int, isDryRun bool, startOfReport, endOfReport time.Time) error {
 	parameters := flakefinder.CreateFlakeReportData(results, prNumbers, endOfReport, org, repo, startOfReport)
 	csvParams := CSVParams{Data: parameters.Data}
 	var err error
