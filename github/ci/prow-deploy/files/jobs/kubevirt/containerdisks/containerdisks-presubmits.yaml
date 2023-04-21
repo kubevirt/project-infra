@@ -34,10 +34,7 @@ presubmits:
     decorate: true
     decoration_config:
       grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
+      timeout: 1h0m0s
     max_concurrency: 11
     name: pull-containerdisks-build
     spec:
@@ -55,9 +52,8 @@ presubmits:
         resources:
           requests:
             memory: 4Gi
-        securityContext:
-          privileged: true
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: "artifacts/.*"
     optional: false
     annotations:
       testgrid-create-test-group: "false"
@@ -65,12 +61,12 @@ presubmits:
     decorate: true
     decoration_config:
       grace_period: 5m0s
-      timeout: 7h0m0s
+      timeout: 1h0m0s
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
-    name: pull-containerdisks-pipeline
+    name: pull-containerdisks-pipeline-cirros
     spec:
       containers:
       - command:
@@ -81,6 +77,188 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.19"
+        - name: FOCUS
+          value: "cirros:*"
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
+        name: ""
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    run_if_changed: "artifacts/centos/.*"
+    optional: false
+    annotations:
+      testgrid-create-test-group: "false"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-containerdisks-pipeline-centos
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - ./pipeline.sh
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.19"
+        - name: FOCUS
+          value: "centos:*"
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
+        name: ""
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    run_if_changed: "artifacts/centosstream/.*"
+    optional: false
+    annotations:
+      testgrid-create-test-group: "false"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-containerdisks-pipeline-centosstream
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - ./pipeline.sh
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.19"
+        - name: FOCUS
+          value: "centos-stream:*"
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
+        name: ""
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    run_if_changed: "artifacts/fedora/.*"
+    optional: false
+    annotations:
+      testgrid-create-test-group: "false"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-containerdisks-pipeline-fedora
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - ./pipeline.sh
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.19"
+        - name: FOCUS
+          value: "fedora:*"
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
+        name: ""
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    run_if_changed: "artifacts/rhcos/.*|artifacts/rhcosprerelease/.*"
+    optional: false
+    annotations:
+      testgrid-create-test-group: "false"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-containerdisks-pipeline-rhcos
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - ./pipeline.sh
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.19"
+        - name: FOCUS
+          value: "rhcos:*"
+        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
+        name: ""
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    run_if_changed: "artifacts/ubuntu/.*"
+    optional: false
+    annotations:
+      testgrid-create-test-group: "false"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-containerdisks-pipeline-ubuntu
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - ./pipeline.sh
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.19"
+        - name: FOCUS
+          value: "ubuntu:*"
         image: quay.io/kubevirtci/golang:v20230105-1dbefc0
         name: ""
         resources:
