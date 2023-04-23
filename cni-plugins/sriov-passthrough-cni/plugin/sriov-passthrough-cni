@@ -6,8 +6,7 @@ readonly GW_IP=169.255.0.1
 readonly CONTAINER_NETNS_LINK="/var/run/netns/$CNI_CONTAINERID"
 readonly LOGFILE=/var/log/pfcni.log
 readonly PF_COUNT=1
-# SYSTEM_RESERVED_PFS comma seperated list of interfaces that will not be allocated, e.g: "enp1f1,enp1f2,.."
-readonly SYSTEM_RESERVED_PFS=""
+readonly SYSTEM_RESERVED_PFS_LIST_FILE="/etc/pfscni-system-reserved-interfaces"
 
 function main() {
     case "$CNI_COMMAND" in
@@ -63,8 +62,8 @@ function setns_sriov_pfs() {
 
 function reserved_pf() {
     local -r pf=$1
-    if [ -n "${SYSTEM_RESERVED_PFS}" ]; then
-        grep -w -q ${pf} <<< "${SYSTEM_RESERVED_PFS}"
+    if [ -f "${SYSTEM_RESERVED_PFS_LIST_FILE}" ]; then
+        grep -w -q ${pf} ${SYSTEM_RESERVED_PFS_LIST_FILE}
     fi
 }
 
