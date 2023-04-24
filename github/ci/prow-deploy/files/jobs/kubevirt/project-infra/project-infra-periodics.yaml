@@ -770,4 +770,4 @@ periodics:
         ./hack/git-pr.sh -c "bazel run //robots/cmd/dependabot:dependabot -- --github-token-path /etc/github/oauth --repo project-infra --org kubevirt --repo-dir $(pwd) && make gazelle gazelle-update-repos test" -b dependabot-update -T main
       resources:
         requests:
-          memory: "200Mi"
+          memory: "1Gi"
