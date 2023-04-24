@@ -741,3 +741,33 @@ periodics:
       resources:
         requests:
           memory: "1Gi"
+- annotations:
+    testgrid-create-test-group: "false"
+  cluster: ibm-prow-jobs
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    workdir: true
+  interval: 168h
+  labels:
+    preset-bazel-cache: "true"
+    preset-github-credentials: "true"
+  max_concurrency: 1
+  name: periodic-project-infra-dependabot-update
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
+      env:
+      command: ["/bin/sh"]
+      args:
+      - "-ce"
+      - |
+        ./hack/git-pr.sh -c "bazel run //robots/cmd/dependabot:dependabot -- --github-token-path /etc/github/oauth --repo project-infra --org kubevirt --repo-dir $(pwd) && make gazelle gazelle-update-repos test" -b dependabot-update -T main
+      resources:
+        requests:
+          memory: "1Gi"
