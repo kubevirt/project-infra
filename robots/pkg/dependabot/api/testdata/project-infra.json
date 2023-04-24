@@ -1,0 +1,3351 @@
+[
+  {
+    "number": 105,
+    "state": "open",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/image"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-qgc7-mgm3-q253",
+      "cve_id": "CVE-2022-41727",
+      "summary": "Uncontrolled Resource Consumption",
+      "description": "An attacker can craft a malformed TIFF image which will consume a significant amount of memory when passed to DecodeConfig. This could lead to a denial of service.",
+      "severity": "medium",
+      "identifiers": [
+        {
+          "value": "GHSA-qgc7-mgm3-q253",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2022-41727",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-41727"
+        },
+        {
+          "url": "https://go.dev/cl/468195"
+        },
+        {
+          "url": "https://go.dev/issue/58003"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/ag-FiyjlD5o"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2023-1572"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-qgc7-mgm3-q253"
+        }
+      ],
+      "published_at": "2023-02-17T13:59:44Z",
+      "updated_at": "2023-03-10T03:38:12Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/image"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003c 0.5.0",
+          "first_patched_version": {
+            "identifier": "0.5.0"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+        "score": 5.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-400",
+          "name": "Uncontrolled Resource Consumption"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/image"
+      },
+      "severity": "medium",
+      "vulnerable_version_range": "\u003c 0.5.0",
+      "first_patched_version": {
+        "identifier": "0.5.0"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/105",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/105",
+    "created_at": "2023-04-12T13:56:09Z",
+    "updated_at": "2023-04-12T13:56:09Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "0001-01-01T00:00:00Z"
+  },
+  {
+    "number": 104,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/docker/docker"
+      },
+      "manifest_path": "images/shared-images-controller/go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-232p-vwff-86mp",
+      "cve_id": "CVE-2023-28840",
+      "summary": "Docker Swarm encrypted overlay network may be unauthenticated",
+      "description": "[Moby](https://mobyproject.org/) is an open source container framework developed by Docker Inc. that is distributed as Docker, Mirantis Container Runtime, and various other downstream projects/products. The Moby daemon component (`dockerd`), which is developed as [moby/moby](https://github.com/moby/moby) is commonly referred to as *Docker*.\n\nSwarm Mode, which is compiled in and delivered by default in `dockerd` and is thus present in most major Moby downstreams, is a simple, built-in container orchestrator that is implemented through a combination of [SwarmKit](https://github.com/moby/swarmkit) and supporting network code.\n\nThe `overlay` network driver is a core feature of Swarm Mode, providing isolated virtual LANs that allow communication between containers and services across the cluster. This driver is an implementation/user of [VXLAN](https://en.wikipedia.org/wiki/Virtual_Extensible_LAN), which encapsulates link-layer (Ethernet) frames in UDP datagrams that tag the frame with a VXLAN Network ID (VNI) that identifies the originating overlay network. In addition, the overlay network driver supports an optional, off-by-default encrypted mode, which is especially useful when VXLAN packets traverses an untrusted network between nodes.\n\nEncrypted overlay networks function by encapsulating the VXLAN datagrams through the use of the [IPsec Encapsulating Security Payload](https://en.wikipedia.org/wiki/IPsec#Encapsulating_Security_Payload) protocol in [Transport mode](https://en.wikipedia.org/wiki/IPsec#Transport_mode). By deploying IPSec encapsulation, encrypted overlay networks gain the additional properties of source authentication through cryptographic proof, data integrity through check-summing, and confidentiality through encryption.\n\nWhen setting an endpoint up on an encrypted overlay network, Moby installs three [iptables](https://www.netfilter.org/projects/iptables/index.html) (Linux kernel firewall) rules that enforce both incoming and outgoing IPSec. These rules rely on the `u32` iptables extension provided by the `xt_u32` kernel module to directly filter on a VXLAN packet's VNI field, so that IPSec guarantees can be enforced on encrypted overlay networks without interfering with other overlay networks or other users of VXLAN.\n\n[Two iptables rules](https://github.com/moby/libnetwork/blob/d9fae4c73daf76c3b0f77e14b45b8bf612ba764d/drivers/overlay/encryption.go#L230-L234) serve to filter incoming VXLAN datagrams with a VNI that corresponds to an encrypted network and discards unencrypted datagrams. The rules are appended to the end of the `INPUT` filter chain, following any rules that have been previously set by the system administrator. Administrator-set rules take precedence over the rules Moby sets to discard unencrypted VXLAN datagrams, which can potentially admit unencrypted datagrams that should have been discarded.\n\nOn Red Hat Enterprise Linux and derivatives such as CentOS and Rocky, the `xt_u32` module has been:\n* [moved to the kernel-modules-extra package and no longer installed by default in RHEL 8.3](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/8.3_release_notes/rhel-8-3-0-release#technology-preview_networking)\n* [officially deprecated in RHEL 8.6](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/8.6_release_notes/deprecated_functionality#deprecated-functionality_networking)\n* [removed completely in RHEL 9](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/considerations_in_adopting_rhel_9/assembly_networking_considerations-in-adopting-rhel-9#ref_firewall-networking_assembly_networking)\n\nThese rules are not created when `xt_u32` is unavailable, even though the container is still attached to the network.\n\n## Impact\nEncrypted overlay networks on affected configurations silently accept cleartext VXLAN datagrams that are tagged with the VNI of an encrypted overlay network. As a result, it is possible to inject arbitrary Ethernet frames into the encrypted overlay network by encapsulating them in VXLAN datagrams.\n\nThe injection of arbitrary Ethernet frames can enable a Denial of Service attack. A sophisticated attacker may be able to establish a UDP or TCP connection by way of the container’s outbound gateway that would otherwise be blocked by a stateful firewall, or carry out other escalations beyond simple injection by smuggling packets into the overlay network.\n\n## Patches\nPatches are available in Moby releases 23.0.3, and 20.10.24. As Mirantis Container Runtime's 20.10 releases are numbered differently, users of that platform should update to 20.10.16.\n\n## Workarounds\n* Close the VXLAN port (by default, UDP port 4789) to incoming traffic at the Internet boundary (see [GHSA-vwm3-crmr-xfxw](https://github.com/moby/moby/security/advisories/GHSA-vwm3-crmr-xfxw)) to prevent all VXLAN packet injection.\n* Ensure that the `xt_u32` kernel module is available on all nodes of the Swarm cluster.\n\n## Background\n* [#43382](https://github.com/moby/moby/issues/43382) partially discussed this concern, but did not consider the security implications.\n* Mirantis FIELD-5788 essentially duplicates [#43382](https://github.com/moby/moby/issues/43382), and was created six months earlier; it similarly overlooked the security implications.\n* [#45118](https://github.com/moby/moby/pull/45118) is the ancestor of the final patches, and was where the security implications were discovered.\n\n## Related\n* [CVE-2023-28841: Encrypted overlay network traffic may be unencrypted](https://github.com/moby/moby/security/advisories/GHSA-33pg-m6jh-5237)\n* [CVE-2023-28842: Encrypted overlay network with a single endpoint is unauthenticated](https://github.com/moby/moby/security/advisories/GHSA-6wrf-mxfj-pf5p)\n* [GHSA-vwm3-crmr-xfxw: The Swarm VXLAN port may be exposed to attack due to ambiguous documentation](https://github.com/moby/moby/security/advisories/GHSA-vwm3-crmr-xfxw)\n* [GHSA-gvm4-2qqg-m333: Security issues in encrypted overlay networks](https://github.com/moby/libnetwork/security/advisories/GHSA-gvm4-2qqg-m333) (libnetwork)",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-232p-vwff-86mp",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2023-28840",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/moby/libnetwork/security/advisories/GHSA-gvm4-2qqg-m333"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-232p-vwff-86mp"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-33pg-m6jh-5237"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-6wrf-mxfj-pf5p"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-vwm3-crmr-xfxw"
+        },
+        {
+          "url": "https://github.com/moby/moby/issues/43382"
+        },
+        {
+          "url": "https://github.com/moby/moby/pull/45118"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-28840"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-232p-vwff-86mp"
+        }
+      ],
+      "published_at": "2023-04-04T21:13:06Z",
+      "updated_at": "2023-04-05T23:16:24Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/docker/docker"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003e= 1.12.0, \u003c 20.10.24",
+          "first_patched_version": {
+            "identifier": "20.10.24"
+          }
+        },
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/docker/docker"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003e= 23.0.0, \u003c 23.0.3",
+          "first_patched_version": {
+            "identifier": "23.0.3"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:H/I:N/A:L",
+        "score": 7.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-420",
+          "name": "Unprotected Alternate Channel"
+        },
+        {
+          "cwe_id": "CWE-636",
+          "name": "Not Failing Securely ('Failing Open')"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/docker/docker"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003e= 1.12.0, \u003c 20.10.24",
+      "first_patched_version": {
+        "identifier": "20.10.24"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/104",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/104",
+    "created_at": "2023-04-04T21:19:40Z",
+    "updated_at": "2023-04-19T10:05:47Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-04-19T10:05:47Z"
+  },
+  {
+    "number": 103,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/docker/docker"
+      },
+      "manifest_path": "images/shared-images-controller/go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-33pg-m6jh-5237",
+      "cve_id": "CVE-2023-28841",
+      "summary": "Docker Swarm encrypted overlay network traffic may be unencrypted",
+      "description": "[Moby](https://mobyproject.org/) is an open source container framework developed by Docker Inc. that is distributed as Docker, Mirantis Container Runtime, and various other downstream projects/products. The Moby daemon component (`dockerd`), which is developed as [moby/moby](https://github.com/moby/moby) is commonly referred to as *Docker*.\n\nSwarm Mode, which is compiled in and delivered by default in `dockerd` and is thus present in most major Moby downstreams, is a simple, built-in container orchestrator that is implemented through a combination of [SwarmKit](https://github.com/moby/swarmkit) and supporting network code.\n\nThe `overlay` network driver is a core feature of Swarm Mode, providing isolated virtual LANs that allow communication between containers and services across the cluster. This driver is an implementation/user of [VXLAN](https://en.wikipedia.org/wiki/Virtual_Extensible_LAN), which encapsulates link-layer (Ethernet) frames in UDP datagrams that tag the frame with a VXLAN Network ID (VNI) that identifies the originating overlay network. In addition, the overlay network driver supports an optional, off-by-default encrypted mode, which is especially useful when VXLAN packets traverses an untrusted network between nodes.\n\nEncrypted overlay networks function by encapsulating the VXLAN datagrams through the use of the [IPsec Encapsulating Security Payload](https://en.wikipedia.org/wiki/IPsec#Encapsulating_Security_Payload) protocol in [Transport mode](https://en.wikipedia.org/wiki/IPsec#Transport_mode). By deploying IPSec encapsulation, encrypted overlay networks gain the additional properties of source authentication through cryptographic proof, data integrity through check-summing, and confidentiality through encryption.\n\nWhen setting an endpoint up on an encrypted overlay network, Moby installs three [iptables](https://www.netfilter.org/projects/iptables/index.html) (Linux kernel firewall) rules that enforce both incoming and outgoing IPSec. These rules rely on the `u32` iptables extension provided by the `xt_u32` kernel module to directly filter on a VXLAN packet's VNI field, so that IPSec guarantees can be enforced on encrypted overlay networks without interfering with other overlay networks or other users of VXLAN.\n\nAn [iptables rule](https://github.com/moby/libnetwork/blob/d9fae4c73daf76c3b0f77e14b45b8bf612ba764d/drivers/overlay/encryption.go#L205-L207) designates outgoing VXLAN datagrams with a VNI that corresponds to an encrypted overlay network for IPsec encapsulation.\n\nOn Red Hat Enterprise Linux and derivatives such as CentOS and Rocky, the `xt_u32` module has been:\n* [moved to the kernel-modules-extra package and no longer installed by default in RHEL 8.3](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/8.3_release_notes/rhel-8-3-0-release#technology-preview_networking)\n* [officially deprecated in RHEL 8.6](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/8.6_release_notes/deprecated_functionality#deprecated-functionality_networking)\n* [removed completely in RHEL 9](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/considerations_in_adopting_rhel_9/assembly_networking_considerations-in-adopting-rhel-9#ref_firewall-networking_assembly_networking)\n\nThis rule is not created when `xt_u32` is unavailable, even though the container is still attached to the network.\n\n## Impact\nEncrypted overlay networks on affected platforms silently transmit unencrypted data. As a result, `overlay` networks may appear to be functional, passing traffic as expected, but without any of the expected confidentiality or data integrity guarantees.\n\nIt is possible for an attacker sitting in a trusted position on the network to read all of the application traffic that is moving across the overlay network, resulting in unexpected secrets or user data disclosure. Thus, because many database protocols, internal APIs, etc. are not protected by a second layer of encryption, a user may rely on Swarm encrypted overlay networks to provide confidentiality, which due to this vulnerability is no longer guaranteed.\n\n## Patches\nPatches are available in Moby releases 23.0.3, and 20.10.24. As Mirantis Container Runtime's 20.10 releases are numbered differently, users of that platform should update to 20.10.16.\n\n## Workarounds\n* Close the VXLAN port (by default, UDP port 4789) to outgoing traffic at the Internet boundary (see [GHSA-vwm3-crmr-xfxw](https://github.com/moby/moby/security/advisories/GHSA-vwm3-crmr-xfxw)) in order to prevent unintentionally leaking unencrypted traffic over the Internet.\n* Ensure that the `xt_u32` kernel module is available on all nodes of the Swarm cluster.\n\n## Background\n* [#43382 ](https://github.com/moby/moby/issues/43382)partially discussed this concern, but did not consider the security implications.\n* Mirantis FIELD-5788 essentially duplicates [#43382](https://github.com/moby/moby/issues/43382), and was created six months earlier; it similarly overlooked the security implications.\n* [#45118](https://github.com/moby/moby/pull/45118) is the ancestor of the final patches, and was where the security implications were discovered.\n\n## Related\n* [CVE-2023-28840: Encrypted overlay network may be unauthenticated](https://github.com/moby/moby/security/advisories/GHSA-232p-vwff-86mp)\n* [CVE-2023-28842: Encrypted overlay network with a single endpoint is unauthenticated](https://github.com/moby/moby/security/advisories/GHSA-6wrf-mxfj-pf5p)\n* [GHSA-vwm3-crmr-xfxw: The Swarm VXLAN port may be exposed to attack due to ambiguous documentation](https://github.com/moby/moby/security/advisories/GHSA-vwm3-crmr-xfxw)\n* [GHSA-gvm4-2qqg-m333: Security issues in encrypted overlay networks](https://github.com/moby/libnetwork/security/advisories/GHSA-gvm4-2qqg-m333) (libnetwork)",
+      "severity": "medium",
+      "identifiers": [
+        {
+          "value": "GHSA-33pg-m6jh-5237",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2023-28841",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/moby/libnetwork/security/advisories/GHSA-gvm4-2qqg-m333"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-232p-vwff-86mp"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-33pg-m6jh-5237"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-6wrf-mxfj-pf5p"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-vwm3-crmr-xfxw"
+        },
+        {
+          "url": "https://github.com/moby/moby/issues/43382"
+        },
+        {
+          "url": "https://github.com/moby/moby/pull/45118"
+        },
+        {
+          "url": "https://github.com/moby/libnetwork/blob/d9fae4c73daf76c3b0f77e14b45b8bf612ba764d/drivers/overlay/encryption.go#L205-L207"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-28841"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-33pg-m6jh-5237"
+        }
+      ],
+      "published_at": "2023-04-04T21:12:20Z",
+      "updated_at": "2023-04-18T22:03:56Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/docker/docker"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003e= 1.12.0, \u003c 20.10.24",
+          "first_patched_version": {
+            "identifier": "20.10.24"
+          }
+        },
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/docker/docker"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003e= 23.0.0, \u003c 23.0.3",
+          "first_patched_version": {
+            "identifier": "23.0.3"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:H/I:N/A:N",
+        "score": 6.8
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-311",
+          "name": "Missing Encryption of Sensitive Data"
+        },
+        {
+          "cwe_id": "CWE-636",
+          "name": "Not Failing Securely ('Failing Open')"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/docker/docker"
+      },
+      "severity": "medium",
+      "vulnerable_version_range": "\u003e= 1.12.0, \u003c 20.10.24",
+      "first_patched_version": {
+        "identifier": "20.10.24"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/103",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/103",
+    "created_at": "2023-04-04T21:19:06Z",
+    "updated_at": "2023-04-19T10:05:47Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-04-19T10:05:47Z"
+  },
+  {
+    "number": 102,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/docker/docker"
+      },
+      "manifest_path": "images/shared-images-controller/go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-6wrf-mxfj-pf5p",
+      "cve_id": "CVE-2023-28842",
+      "summary": "Docker Swarm encrypted overlay network with a single endpoint is unauthenticated",
+      "description": "[Moby](https://mobyproject.org/) is an open source container framework developed by Docker Inc. that is distributed as Docker, Mirantis Container Runtime, and various other downstream projects/products. The Moby daemon component (`dockerd`), which is developed as [moby/moby](https://github.com/moby/moby) is commonly referred to as *Docker*.\n\nSwarm Mode, which is compiled in and delivered by default in `dockerd` and is thus present in most major Moby downstreams, is a simple, built-in container orchestrator that is implemented through a combination of [SwarmKit](https://github.com/moby/swarmkit) and supporting network code.\n\nThe `overlay` network driver is a core feature of Swarm Mode, providing isolated virtual LANs that allow communication between containers and services across the cluster. This driver is an implementation/user of [VXLAN](https://en.wikipedia.org/wiki/Virtual_Extensible_LAN), which encapsulates link-layer (Ethernet) frames in UDP datagrams that tag the frame with a VXLAN Network ID (VNI) that identifies the originating overlay network. In addition, the overlay network driver supports an optional, off-by-default encrypted mode, which is especially useful when VXLAN packets traverses an untrusted network between nodes.\n\nEncrypted overlay networks function by encapsulating the VXLAN datagrams through the use of the [IPsec Encapsulating Security Payload](https://en.wikipedia.org/wiki/IPsec#Encapsulating_Security_Payload) protocol in [Transport mode](https://en.wikipedia.org/wiki/IPsec#Transport_mode). By deploying IPSec encapsulation, encrypted overlay networks gain the additional properties of source authentication through cryptographic proof, data integrity through check-summing, and confidentiality through encryption.\n\nWhen setting an endpoint up on an encrypted overlay network, Moby installs three [iptables](https://www.netfilter.org/projects/iptables/index.html) (Linux kernel firewall) rules that enforce both incoming and outgoing IPSec. These rules rely on the `u32` iptables extension provided by the `xt_u32` kernel module to directly filter on a VXLAN packet's VNI field, so that IPSec guarantees can be enforced on encrypted overlay networks without interfering with other overlay networks or other users of VXLAN.\n\nThe `overlay` driver dynamically and lazily defines the kernel configuration for the VXLAN network on each node as containers are attached and detached. Routes and encryption parameters are only defined for destination nodes that participate in the network. The iptables rules that prevent encrypted overlay networks from accepting unencrypted packets are not created until a peer is available with which to communicate.\n\n## Impact\nEncrypted overlay networks silently accept cleartext VXLAN datagrams that are tagged with the VNI of an encrypted overlay network. As a result, it is possible to inject arbitrary Ethernet frames into the encrypted overlay network by encapsulating them in VXLAN datagrams. The implications of this can be quite dire, and [GHSA-vwm3-crmr-xfxw](https://github.com/moby/moby/security/advisories/GHSA-vwm3-crmr-xfxw) should be referenced for a deeper exploration.\n\n## Patches\nPatches are available in Moby releases 23.0.3, and 20.10.24. As Mirantis Container Runtime's 20.10 releases are numbered differently, users of that platform should update to 20.10.16.\n\n## Workarounds\n* In multi-node clusters, deploy a global ‘pause’ container for each encrypted overlay network, on every node. For example, use the `registry.k8s.io/pause` image and a `--mode global` service.\n* For a single-node cluster, do not use overlay networks of any sort. Bridge networks provide the same connectivity on a single node and have no multi-node features.\nThe Swarm ingress feature is implemented using an overlay network, but can be disabled by publishing ports in `host` mode instead of `ingress` mode (allowing the use of an external load balancer), and removing the `ingress` network.\n* If encrypted overlay networks are in exclusive use, block UDP port 4789 from traffic that has not been validated by IPSec. For example, `iptables -A INPUT -m udp —-dport 4789 -m policy --dir in --pol none -j DROP`.\n\n## Background\n* This issue was discovered while characterizing and mitigating [CVE-2023-28840](https://github.com/moby/moby/security/advisories/GHSA-232p-vwff-86mp) and [CVE-2023-28841](https://github.com/moby/moby/security/advisories/GHSA-33pg-m6jh-5237).\n\n## Related\n* [CVE-2023-28841: Encrypted overlay network traffic may be unencrypted](https://github.com/moby/moby/security/advisories/GHSA-33pg-m6jh-5237)\n* [CVE-2023-28840: Encrypted overlay network may be unauthenticated](https://github.com/moby/moby/security/advisories/GHSA-232p-vwff-86mp)\n* [GHSA-vwm3-crmr-xfxw: The Swarm VXLAN port may be exposed to attack due to ambiguous documentation](https://github.com/moby/moby/security/advisories/GHSA-vwm3-crmr-xfxw)\n* [GHSA-gvm4-2qqg-m333: Security issues in encrypted overlay networks](https://github.com/moby/libnetwork/security/advisories/GHSA-gvm4-2qqg-m333) (libnetwork)",
+      "severity": "medium",
+      "identifiers": [
+        {
+          "value": "GHSA-6wrf-mxfj-pf5p",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2023-28842",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/moby/libnetwork/security/advisories/GHSA-gvm4-2qqg-m333"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-232p-vwff-86mp"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-33pg-m6jh-5237"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-6wrf-mxfj-pf5p"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-vwm3-crmr-xfxw"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-28842"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-6wrf-mxfj-pf5p"
+        }
+      ],
+      "published_at": "2023-04-04T21:11:24Z",
+      "updated_at": "2023-04-18T22:04:07Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/docker/docker"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003e= 1.12.0, \u003c 20.10.24",
+          "first_patched_version": {
+            "identifier": "20.10.24"
+          }
+        },
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/docker/docker"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003e= 23.0.0, \u003c 23.0.3",
+          "first_patched_version": {
+            "identifier": "23.0.3"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:N/I:H/A:N",
+        "score": 6.8
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-420",
+          "name": "Unprotected Alternate Channel"
+        },
+        {
+          "cwe_id": "CWE-636",
+          "name": "Not Failing Securely ('Failing Open')"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/docker/docker"
+      },
+      "severity": "medium",
+      "vulnerable_version_range": "\u003e= 1.12.0, \u003c 20.10.24",
+      "first_patched_version": {
+        "identifier": "20.10.24"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/102",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/102",
+    "created_at": "2023-04-04T21:18:11Z",
+    "updated_at": "2023-04-19T10:05:47Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-04-19T10:05:47Z"
+  },
+  {
+    "number": 101,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "manifest_path": "images/shared-images-controller/go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-g2j6-57v7-gm8c",
+      "cve_id": "CVE-2023-28642",
+      "summary": "runc AppArmor bypass with symlinked /proc",
+      "description": "### Impact\nIt was found that AppArmor, and potentially SELinux, can be bypassed when `/proc` inside the container is symlinked with a specific mount configuration.\n\n### Patches\nFixed in runc v1.1.5, by prohibiting symlinked `/proc`: https://github.com/opencontainers/runc/pull/3785\n\nThis PR fixes CVE-2023-27561 as well.\n\n### Workarounds\nAvoid using an untrusted container image.\n\n",
+      "severity": "medium",
+      "identifiers": [
+        {
+          "value": "GHSA-g2j6-57v7-gm8c",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2023-28642",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/opencontainers/runc/security/advisories/GHSA-g2j6-57v7-gm8c"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-28642"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/pull/3785"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-g2j6-57v7-gm8c"
+        }
+      ],
+      "published_at": "2023-03-30T20:20:23Z",
+      "updated_at": "2023-04-06T22:56:28Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/runc"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003c 1.1.5",
+          "first_patched_version": {
+            "identifier": "1.1.5"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:L",
+        "score": 6.1
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-59",
+          "name": "Improper Link Resolution Before File Access ('Link Following')"
+        },
+        {
+          "cwe_id": "CWE-281",
+          "name": "Improper Preservation of Permissions"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "severity": "medium",
+      "vulnerable_version_range": "\u003c 1.1.5",
+      "first_patched_version": {
+        "identifier": "1.1.5"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/101",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/101",
+    "created_at": "2023-03-30T20:24:55Z",
+    "updated_at": "2023-04-19T10:05:47Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-04-19T10:05:47Z"
+  },
+  {
+    "number": 100,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "manifest_path": "images/shared-images-controller/go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-m8cg-xc2p-r3fc",
+      "cve_id": "CVE-2023-25809",
+      "summary": "rootless: `/sys/fs/cgroup` is writable when cgroupns isn't unshared in runc",
+      "description": "### Impact\nIt was found that rootless runc makes `/sys/fs/cgroup` writable in following conditons:\n1. when runc is executed inside the user namespace, and the `config.json` does not specify the cgroup namespace to be unshared (e.g.., `(docker|podman|nerdctl) run --cgroupns=host`, with Rootless Docker/Podman/nerdctl)\n2. or, when runc is executed outside the user namespace, and `/sys` is mounted with `rbind, ro` (e.g., `runc spec --rootless`; this condition is very rare)\n\nA container may gain the write access to user-owned cgroup hierarchy `/sys/fs/cgroup/user.slice/...` on the host .\nOther users's cgroup hierarchies are not affected.\n\n### Patches\nv1.1.5 (planned)\n\n### Workarounds\n- Condition 1: Unshare the cgroup namespace (`(docker|podman|nerdctl) run --cgroupns=private)`. This is the default behavior of Docker/Podman/nerdctl on cgroup v2 hosts.\n- Condition 2 (very rare): add `/sys/fs/cgroup` to `maskedPaths`\n",
+      "severity": "low",
+      "identifiers": [
+        {
+          "value": "GHSA-m8cg-xc2p-r3fc",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2023-25809",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/opencontainers/runc/security/advisories/GHSA-m8cg-xc2p-r3fc"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-25809"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/commit/0d62b950e60f6980b54fe3bafd9a9c608dc1df17"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-m8cg-xc2p-r3fc"
+        }
+      ],
+      "published_at": "2023-03-30T20:17:24Z",
+      "updated_at": "2023-03-30T20:17:26Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/runc"
+          },
+          "severity": "low",
+          "vulnerable_version_range": "\u003c 1.1.5",
+          "first_patched_version": {
+            "identifier": "1.1.5"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:N/I:N/A:L",
+        "score": 2.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-281",
+          "name": "Improper Preservation of Permissions"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "severity": "low",
+      "vulnerable_version_range": "\u003c 1.1.5",
+      "first_patched_version": {
+        "identifier": "1.1.5"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/100",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/100",
+    "created_at": "2023-03-30T20:21:50Z",
+    "updated_at": "2023-04-19T10:05:46Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-04-19T10:05:46Z"
+  },
+  {
+    "number": 99,
+    "state": "open",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-g2j6-57v7-gm8c",
+      "cve_id": "CVE-2023-28642",
+      "summary": "runc AppArmor bypass with symlinked /proc",
+      "description": "### Impact\nIt was found that AppArmor, and potentially SELinux, can be bypassed when `/proc` inside the container is symlinked with a specific mount configuration.\n\n### Patches\nFixed in runc v1.1.5, by prohibiting symlinked `/proc`: https://github.com/opencontainers/runc/pull/3785\n\nThis PR fixes CVE-2023-27561 as well.\n\n### Workarounds\nAvoid using an untrusted container image.\n\n",
+      "severity": "medium",
+      "identifiers": [
+        {
+          "value": "GHSA-g2j6-57v7-gm8c",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2023-28642",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/opencontainers/runc/security/advisories/GHSA-g2j6-57v7-gm8c"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-28642"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/pull/3785"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-g2j6-57v7-gm8c"
+        }
+      ],
+      "published_at": "2023-03-30T20:20:23Z",
+      "updated_at": "2023-04-06T22:56:28Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/runc"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003c 1.1.5",
+          "first_patched_version": {
+            "identifier": "1.1.5"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:L",
+        "score": 6.1
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-59",
+          "name": "Improper Link Resolution Before File Access ('Link Following')"
+        },
+        {
+          "cwe_id": "CWE-281",
+          "name": "Improper Preservation of Permissions"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "severity": "medium",
+      "vulnerable_version_range": "\u003c 1.1.5",
+      "first_patched_version": {
+        "identifier": "1.1.5"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/99",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/99",
+    "created_at": "2023-03-30T20:20:49Z",
+    "updated_at": "2023-03-30T20:20:49Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "0001-01-01T00:00:00Z"
+  },
+  {
+    "number": 98,
+    "state": "open",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-m8cg-xc2p-r3fc",
+      "cve_id": "CVE-2023-25809",
+      "summary": "rootless: `/sys/fs/cgroup` is writable when cgroupns isn't unshared in runc",
+      "description": "### Impact\nIt was found that rootless runc makes `/sys/fs/cgroup` writable in following conditons:\n1. when runc is executed inside the user namespace, and the `config.json` does not specify the cgroup namespace to be unshared (e.g.., `(docker|podman|nerdctl) run --cgroupns=host`, with Rootless Docker/Podman/nerdctl)\n2. or, when runc is executed outside the user namespace, and `/sys` is mounted with `rbind, ro` (e.g., `runc spec --rootless`; this condition is very rare)\n\nA container may gain the write access to user-owned cgroup hierarchy `/sys/fs/cgroup/user.slice/...` on the host .\nOther users's cgroup hierarchies are not affected.\n\n### Patches\nv1.1.5 (planned)\n\n### Workarounds\n- Condition 1: Unshare the cgroup namespace (`(docker|podman|nerdctl) run --cgroupns=private)`. This is the default behavior of Docker/Podman/nerdctl on cgroup v2 hosts.\n- Condition 2 (very rare): add `/sys/fs/cgroup` to `maskedPaths`\n",
+      "severity": "low",
+      "identifiers": [
+        {
+          "value": "GHSA-m8cg-xc2p-r3fc",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2023-25809",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/opencontainers/runc/security/advisories/GHSA-m8cg-xc2p-r3fc"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-25809"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/commit/0d62b950e60f6980b54fe3bafd9a9c608dc1df17"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-m8cg-xc2p-r3fc"
+        }
+      ],
+      "published_at": "2023-03-30T20:17:24Z",
+      "updated_at": "2023-03-30T20:17:26Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/runc"
+          },
+          "severity": "low",
+          "vulnerable_version_range": "\u003c 1.1.5",
+          "first_patched_version": {
+            "identifier": "1.1.5"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:N/I:N/A:L",
+        "score": 2.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-281",
+          "name": "Improper Preservation of Permissions"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "severity": "low",
+      "vulnerable_version_range": "\u003c 1.1.5",
+      "first_patched_version": {
+        "identifier": "1.1.5"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/98",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/98",
+    "created_at": "2023-03-30T20:17:51Z",
+    "updated_at": "2023-03-30T20:17:51Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "0001-01-01T00:00:00Z"
+  },
+  {
+    "number": 97,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "manifest_path": "images/shared-images-controller/go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-vpvm-3wq2-2wvm",
+      "cve_id": "CVE-2023-27561",
+      "summary": "Opencontainers runc Incorrect Authorization vulnerability",
+      "description": "runc 1.0.0-rc95 through 1.1.4 has Incorrect Access Control leading to Escalation of Privileges, related to `libcontainer/rootfs_linux.go`. To exploit this, an attacker must be able to spawn two containers with custom volume-mount configurations, and be able to run custom images. NOTE: this issue exists because of a CVE-2019-19921 regression.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-vpvm-3wq2-2wvm",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2023-27561",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-27561"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/issues/2197#issuecomment-1437617334"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/issues/3751"
+        },
+        {
+          "url": "https://gist.github.com/LiveOverflow/c937820b688922eb127fb760ce06dab9"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/03/msg00023.html"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/pull/3785"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/releases/tag/v1.1.5"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DHGVGGMKGZSJ7YO67TGGPFEHBYMS63VF/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/FYVE3GB4OG3BNT5DLQHYO4M5SXX33AQ5/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/I6BF24VCZRFTYBTT3T7HDZUOTKOTNPLZ/"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-vpvm-3wq2-2wvm"
+        }
+      ],
+      "published_at": "2023-03-03T21:30:19Z",
+      "updated_at": "2023-04-21T15:06:08Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/runc"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003e= 1.0.0-rc95, \u003c 1.1.5",
+          "first_patched_version": {
+            "identifier": "1.1.5"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+        "score": 7
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-706",
+          "name": "Use of Incorrectly-Resolved Name or Reference"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003e= 1.0.0-rc95, \u003c 1.1.5",
+      "first_patched_version": {
+        "identifier": "1.1.5"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/97",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/97",
+    "created_at": "2023-03-29T14:49:14Z",
+    "updated_at": "2023-04-19T10:05:46Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-04-19T10:05:46Z"
+  },
+  {
+    "number": 96,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/text"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-69ch-w2m2-3vjp",
+      "cve_id": "CVE-2022-32149",
+      "summary": "Denial of service in golang.org/x/text/language",
+      "description": "The BCP 47 tag parser has quadratic time complexity due to inherent aspects of its design. Since the parser is, by design, exposed to untrusted user input, this can be leveraged to force a program to consume significant time parsing Accept-Language headers. The parser cannot be easily rewritten to fix this behavior for various reasons. Instead the solution implemented in this CL is to limit the total complexity of tags passed into ParseAcceptLanguage by limiting the number of dashes in the string to 1000. This should be more than enough for the majority of real world use cases, where the number of tags being sent is likely to be in the single digits.\n",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-69ch-w2m2-3vjp",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2022-32149",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-32149"
+        },
+        {
+          "url": "https://go.dev/cl/442235"
+        },
+        {
+          "url": "https://go.dev/issue/56152"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/-hjNw559_tE/m/KlGTfid5CAAJ"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2022-1059"
+        },
+        {
+          "url": "https://github.com/golang/go/issues/56152"
+        },
+        {
+          "url": "https://github.com/golang/text/commit/434eadcdbc3b0256971992e8c70027278364c72c"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-69ch-w2m2-3vjp"
+        }
+      ],
+      "published_at": "2022-10-14T19:00:40Z",
+      "updated_at": "2023-02-22T23:31:16Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/text/language"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.3.8",
+          "first_patched_version": {
+            "identifier": "0.3.8"
+          }
+        },
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/text"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.3.8",
+          "first_patched_version": {
+            "identifier": "0.3.8"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+        "score": 7.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-772",
+          "name": "Missing Release of Resource after Effective Lifetime"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/text"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c 0.3.8",
+      "first_patched_version": {
+        "identifier": "0.3.8"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/96",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/96",
+    "created_at": "2023-03-07T02:37:00Z",
+    "updated_at": "2023-04-21T15:03:57Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-04-21T15:03:57Z"
+  },
+  {
+    "number": 95,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/crypto"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-gwc9-m7rh-j2ww",
+      "cve_id": "CVE-2021-43565",
+      "summary": "x/crypto/ssh vulnerable to panic via SSH server",
+      "description": "The x/crypto/ssh package before 0.0.0-20211202192323-5770296d904e of golang.org/x/crypto allows an unauthenticated attacker to panic an SSH server.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-gwc9-m7rh-j2ww",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2021-43565",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-43565"
+        },
+        {
+          "url": "https://groups.google.com/forum/#!forum/golang-announce"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/2AR1sKiM-Qs"
+        },
+        {
+          "url": "https://go.dev/cl/368814/"
+        },
+        {
+          "url": "https://go.dev/issues/49932"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2022-0968"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-gwc9-m7rh-j2ww"
+        }
+      ],
+      "published_at": "2022-09-07T00:01:52Z",
+      "updated_at": "2023-02-24T17:29:43Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/crypto"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.0.0-20211202192323-5770296d904e",
+          "first_patched_version": {
+            "identifier": "0.0.0-20211202192323-5770296d904e"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+        "score": 7.5
+      },
+      "cwes": []
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/crypto"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c 0.0.0-20211202192323-5770296d904e",
+      "first_patched_version": {
+        "identifier": "0.0.0-20211202192323-5770296d904e"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/95",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/95",
+    "created_at": "2023-03-07T02:37:00Z",
+    "updated_at": "2023-04-21T15:03:57Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-04-21T15:03:57Z"
+  },
+  {
+    "number": 94,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/net"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-69cg-p879-7622",
+      "cve_id": "CVE-2022-27664",
+      "summary": "golang.org/x/net/http2 Denial of Service vulnerability",
+      "description": "In net/http in Go before 1.18.6 and 1.19.x before 1.19.1, attackers can cause a denial of service because an HTTP/2 connection can hang during closing if shutdown were preempted by a fatal error.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-69cg-p879-7622",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2022-27664",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-27664"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/x49AQzIVX-s"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TXS2OQ57KZC5XZKK5UW4SYKPVQAHIOJX/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXKTHIGE5F576MAPFYCIJXNRGBSPISUF/"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/202209-26"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20220923-0004/"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2022-0969"
+        },
+        {
+          "url": "https://go.dev/cl/428735"
+        },
+        {
+          "url": "https://go.dev/issue/54658"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-69cg-p879-7622"
+        }
+      ],
+      "published_at": "2022-09-07T00:01:51Z",
+      "updated_at": "2023-02-18T01:35:48Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/net"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.0.0-20220906165146-f3363e06e74c",
+          "first_patched_version": {
+            "identifier": "0.0.0-20220906165146-f3363e06e74c"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+        "score": 7.5
+      },
+      "cwes": []
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/net"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c 0.0.0-20220906165146-f3363e06e74c",
+      "first_patched_version": {
+        "identifier": "0.0.0-20220906165146-f3363e06e74c"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/94",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/94",
+    "created_at": "2023-03-07T02:37:00Z",
+    "updated_at": "2023-04-21T15:03:57Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-04-21T15:03:57Z"
+  },
+  {
+    "number": 93,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/crypto"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-8c26-wmh5-6g9v",
+      "cve_id": "CVE-2022-27191",
+      "summary": "Use of a Broken or Risky Cryptographic Algorithm in golang.org/x/crypto/ssh",
+      "description": "golang.org/x/crypto/ssh versions 0.0.0-20220214200702-86341886e292 and prior in Go through 1.16.15 and 1.17.x through 1.17.8 allows an attacker to crash a server in certain circumstances involving AddHostKey. Version 0.0.0-20220315160706-3147a52a75dd includes a fix for the vulnerability and support for SHA-2.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-8c26-wmh5-6g9v",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2022-27191",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-27191"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/-cp44ypCT5s"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HHGBEGJ54DZZGTXFUQNS7ZIG3E624YAF/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/QTFOIDHQRGNI4P6LYN6ILH5G443RYYKB/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/YHYRQB7TRMHDB3NEHW5XBRG7PPMUTPGV/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZQNPPQWSTP2IX7SHE6TS4SP4EVMI5EZK/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/J5WPM42UR6XIBQNQPNQHM32X7S4LJTRX/"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20220429-0002/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EZ3S7LB65N54HXXBCB67P4TTOHTNPP5O/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZFUNHFHQVJSADNH7EZ3B53CYDZVEEPBP/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DLUJZV3HBP56ADXU6QH2V7RNYUPMVBXQ/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZY2SLWOQR4ZURQ7UBRZ7JIX6H6F5JHJR/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/Z55VUVGO7E5PJFXIOVAY373NZRHBNCI5/"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/golang/vulndb/df2d3d326300e2ae768f00351ffa96cc2c56cf54/reports/GO-2021-0356.yaml"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RQXU752ALW53OJAF5MG3WMR5CCZVLWW6/"
+        },
+        {
+          "url": "https://go.dev/cl/392355"
+        },
+        {
+          "url": "https://go.googlesource.com/crypto/+/1baeb1ce4c0b006eff0f294c47cb7617598dfb3d"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2021-0356"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-8c26-wmh5-6g9v"
+        }
+      ],
+      "published_at": "2022-03-19T00:01:02Z",
+      "updated_at": "2023-02-17T23:58:13Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/crypto"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.0.0-20220314234659-1baeb1ce4c0b",
+          "first_patched_version": {
+            "identifier": "0.0.0-20220314234659-1baeb1ce4c0b"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+        "score": 7.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-327",
+          "name": "Use of a Broken or Risky Cryptographic Algorithm"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/crypto"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c 0.0.0-20220314234659-1baeb1ce4c0b",
+      "first_patched_version": {
+        "identifier": "0.0.0-20220314234659-1baeb1ce4c0b"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/93",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/93",
+    "created_at": "2023-03-07T02:36:59Z",
+    "updated_at": "2023-04-21T15:03:57Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-04-21T15:03:57Z"
+  },
+  {
+    "number": 92,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/net"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-vvpx-j8f3-3w6h",
+      "cve_id": "CVE-2022-41723",
+      "summary": "Uncontrolled Resource Consumption",
+      "description": "A maliciously crafted HTTP/2 stream could cause excessive CPU consumption in the HPACK decoder, sufficient to cause a denial of service from a small number of small requests.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-vvpx-j8f3-3w6h",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2022-41723",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-41723"
+        },
+        {
+          "url": "https://go.dev/cl/468135"
+        },
+        {
+          "url": "https://go.dev/issue/57855"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/V0aBFqaFs_E"
+        },
+        {
+          "url": "https://vuln.go.dev/ID/GO-2023-1571.json"
+        },
+        {
+          "url": "https://go.dev/cl/468295"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2023-1571"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4MA5XS5DAOJ5PKKNG5TUXKPQOFHT5VBC/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RLBQ3A7ROLEQXQLXFDLNJ7MYPKG5GULE/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGW7GE2Z32ZT47UFAQFDRQE33B7Q7LMT/"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-vvpx-j8f3-3w6h"
+        }
+      ],
+      "published_at": "2023-02-17T14:00:02Z",
+      "updated_at": "2023-04-20T14:20:47Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/net"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.7.0",
+          "first_patched_version": {
+            "identifier": "0.7.0"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+        "score": 7.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-400",
+          "name": "Uncontrolled Resource Consumption"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/net"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c 0.7.0",
+      "first_patched_version": {
+        "identifier": "0.7.0"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/92",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/92",
+    "created_at": "2023-03-07T02:36:59Z",
+    "updated_at": "2023-04-21T15:03:57Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-04-21T15:03:57Z"
+  },
+  {
+    "number": 91,
+    "state": "open",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-fh74-hm69-rqjw",
+      "cve_id": "CVE-2019-19921",
+      "summary": "opencontainers runc contains procfs race condition with a shared volume mount",
+      "description": "### Impact\nBy crafting a malicious root filesystem (with `/proc` being a symlink to a directory which was inside a volume shared with another running container), an attacker in control of both containers can trick `runc` into not correctly configuring the container\u0026amp;amp;amp;amp;#39;s security labels and not correctly masking paths inside `/proc` which contain potentially-sensitive information about the host (or even allow for direct attacks against the host).\n\nIn order to exploit this bug, an untrusted user must be able to spawn custom containers with custom mount configurations (such that a volume is shared between two containers). It should be noted that we consider this to be a fairly high level of access for an untrusted user -- and we do not recommend allowing completely untrusted users to have such degrees of access without further restrictions.\n\n### Patches\nThis vulnerability has been fixed in `1.0.0-rc10`. It should be noted that the current fix is effectively a hot-fix, and there are known ways for it to be worked around (such as making the entire root filesystem a shared volume controlled by another container). We recommend that users review their access policies to ensure that untrusted users do not have such high levels of controls over container mount configuration.\n\n### Workarounds\nIf you are not providing the ability for untrusted users to configure mountpoints for `runc` (or through a higher-level tool such as `docker run -v`) then you are not vulnerable to this issue. This exploit requires fairly complicated levels of access (which are available for some public clouds but are not necessarily available for all deployments).\n\nAdditionally, it appears as though it is not possible to exploit this vulnerability through Docker (due to the order of mounts Docker generates). However you should not depend on this, as it may be possible to work around this roadblock.\n\n### Credits\nThis vulnerability was discovered by Cure53, as part of a third-party security audit.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* [Open an issue](https://github.com/opencontainers/runc/issues/new).\n* Email us at [dev@opencontainers.org](mailto:dev@opencontainers.org), or [security@opencontainers.org](mailto:security@opencontainers.org) if you think you\u0026amp;amp;amp;amp;#39;ve found a security bug.",
+      "severity": "medium",
+      "identifiers": [
+        {
+          "value": "GHSA-fh74-hm69-rqjw",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2019-19921",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/opencontainers/runc/security/advisories/GHSA-fh74-hm69-rqjw"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-19921"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/issues/2197"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/pull/2190"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/pull/2207"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2020:0688"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2020:0695"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/releases"
+        },
+        {
+          "url": "https://security-tracker.debian.org/tracker/CVE-2019-19921"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/202003-21"
+        },
+        {
+          "url": "https://usn.ubuntu.com/4297-1/"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00018.html"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/commit/2fc03cc11c775b7a8b2e48d7ee447cb9bef32ad0"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2021-0087"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-fh74-hm69-rqjw"
+        }
+      ],
+      "published_at": "2021-05-27T18:41:17Z",
+      "updated_at": "2023-03-01T18:44:57Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/runc"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003c 1.0.0-rc9.0.20200122160610-2fc03cc11c77",
+          "first_patched_version": {
+            "identifier": "1.0.0-rc9.0.20200122160610-2fc03cc11c77"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N/E:U/RL:U/RC:U",
+        "score": 5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-362",
+          "name": "Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')"
+        },
+        {
+          "cwe_id": "CWE-706",
+          "name": "Use of Incorrectly-Resolved Name or Reference"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "severity": "medium",
+      "vulnerable_version_range": "\u003c 1.0.0-rc9.0.20200122160610-2fc03cc11c77",
+      "first_patched_version": {
+        "identifier": "1.0.0-rc9.0.20200122160610-2fc03cc11c77"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/91",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/91",
+    "created_at": "2023-03-07T02:36:59Z",
+    "updated_at": "2023-03-07T02:36:59Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "0001-01-01T00:00:00Z"
+  },
+  {
+    "number": 90,
+    "state": "open",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-fgv8-vj5c-2ppq",
+      "cve_id": "CVE-2019-16884",
+      "summary": "Incorrect Authorization in runc",
+      "description": "runc through 1.0.0-rc8, as used in Docker through 19.03.2-ce and other products, allows AppArmor restriction bypass because libcontainer/rootfs_linux.go incorrectly checks mount targets, and thus a malicious Docker image can mount over a /proc directory.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-fgv8-vj5c-2ppq",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2019-16884",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-16884"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/issues/2128"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/pull/2129"
+        },
+        {
+          "url": "https://github.com/crosbymichael/runc/commit/78dce1cf1ec36bbe7fe6767bdb81f7cbf6d34d70"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2019:3940"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2019:4074"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2019:4269"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/62OQ2P7K5YDZ5BRCH2Q6DHUJIHQD3QCD/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DGK6IV5JGVDXHOXEKJOJWKOVNZLT6MYR/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SPK4JWP32BUIVDJ3YODZSOEVEW6BHQCF/"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/202003-21"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20220221-0004/"
+        },
+        {
+          "url": "https://usn.ubuntu.com/4297-1/"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00073.html"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00009.html"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00010.html"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/pull/2130"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/commit/cad42f6e0932db0ce08c3a3d9e89e6063ec283e4"
+        },
+        {
+          "url": "https://github.com/opencontainers/selinux/commit/03b517dc4fd57245b1cf506e8ba7b817b6d309da"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2021-0085"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/02/msg00016.html"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-fgv8-vj5c-2ppq"
+        }
+      ],
+      "published_at": "2022-02-22T15:38:08Z",
+      "updated_at": "2023-02-24T17:01:50Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/runc"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 1.0.0-rc8.0.20190930145003-cad42f6e0932",
+          "first_patched_version": {
+            "identifier": "1.0.0-rc8.0.20190930145003-cad42f6e0932"
+          }
+        },
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/selinux"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 1.3.1-0.20190929122143-5215b1806f52",
+          "first_patched_version": {
+            "identifier": "1.3.1-0.20190929122143-5215b1806f52"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+        "score": 7.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-863",
+          "name": "Incorrect Authorization"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c 1.0.0-rc8.0.20190930145003-cad42f6e0932",
+      "first_patched_version": {
+        "identifier": "1.0.0-rc8.0.20190930145003-cad42f6e0932"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/90",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/90",
+    "created_at": "2023-03-07T02:36:59Z",
+    "updated_at": "2023-03-07T02:36:59Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "0001-01-01T00:00:00Z"
+  },
+  {
+    "number": 89,
+    "state": "open",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-v95c-p5hm-xq8f",
+      "cve_id": "CVE-2021-43784",
+      "summary": "Overflow in netlink bytemsg length field allows attacker to override netlink-based container configuration",
+      "description": "### Impact\n\nIn runc, [netlink](https://www.man7.org/linux/man-pages/man7/netlink.7.html) is used internally as a serialization system for specifying the relevant container configuration to the C portion of our code (responsible for the based namespace setup of containers). In all versions of runc prior to 1.0.3, the encoder did not handle the possibility of an integer overflow in the 16-bit length field for the byte array attribute type, meaning that a large enough malicious byte array attribute could result in the length overflowing and the attribute contents being parsed as netlink messages for container configuration.\n\nThis vulnerability requires the attacker to have some control over the configuration of the container and would allow the attacker to bypass the namespace restrictions of the container by simply adding their own netlink payload which disables all namespaces.\n\nPrior to 9c444070ec7bb83995dbc0185da68284da71c554, in practice it was fairly difficult to specify an arbitrary-length netlink message with most container runtimes. The only user-controlled byte array was the namespace paths attributes which can be specified in runc's `config.json`, but as far as we can tell no container runtime gives raw access to that configuration setting -- and having raw access to that setting **would allow the attacker to disable namespace protections entirely anyway** (setting them to `/proc/1/ns/...` for instance). In addition, each namespace path is limited to 4096 bytes (with only 7 namespaces supported by runc at the moment) meaning that even with custom namespace paths it appears an attacker still cannot shove enough bytes into the netlink bytemsg in order to overflow the uint16 counter.\n\nHowever, out of an abundance of caution (given how old this bug is) we decided to treat it as a potentially exploitable vulnerability with a low severity. After 9c444070ec7bb83995dbc0185da68284da71c554 (which was not present in any release of runc prior to the discovery of this bug), all mount paths are included as a giant netlink message which means that this bug becomes significantly more exploitable in more reasonable threat scenarios.\n\nThe main users impacted are those who allow untrusted images with untrusted configurations to run on their machines (such as with shared cloud infrastructure), though as mentioned above it appears this bug was not practically exploitable on any released version of runc to date.\n\n### Patches\nThe patch for this is d72d057ba794164c3cce9451a00b72a78b25e1ae and runc 1.0.3 was released with this bug fixed.\n\n### Workarounds\nTo the extent this is exploitable, disallowing untrusted namespace paths in container configuration should eliminate all practical ways of exploiting this bug. It should be noted that untrusted namespace paths would allow the attacker to disable namespace protections entirely even in the absence of this bug.\n\n### References\n* commit d72d057ba794 (\"runc init: avoid netlink message length overflows\")\n* https://bugs.chromium.org/p/project-zero/issues/detail?id=2241\n\n### Credits\nThanks to Felix Wilhelm from Google Project Zero for discovering and reporting this vulnerability. In particular, the fact they found this vulnerability so quickly, before we made a 1.1 release of runc (which would've been vulnerable) was quite impressive.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [our repo](https://github.com/opencontainers/runc)\n",
+      "severity": "medium",
+      "identifiers": [
+        {
+          "value": "GHSA-v95c-p5hm-xq8f",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2021-43784",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/opencontainers/runc/security/advisories/GHSA-v95c-p5hm-xq8f"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-43784"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/commit/9c444070ec7bb83995dbc0185da68284da71c554"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/commit/d72d057ba794164c3cce9451a00b72a78b25e1ae"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/commit/f50369af4b571e358f20b139eea52d612eb55eed"
+        },
+        {
+          "url": "https://bugs.chromium.org/p/project-zero/issues/detail?id=2241"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2021/12/msg00005.html"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/commit/dde509df4e28cec33b3c99c6cda3d4fd5beafc77"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2022-0274"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-v95c-p5hm-xq8f"
+        }
+      ],
+      "published_at": "2021-12-07T21:22:39Z",
+      "updated_at": "2023-02-15T00:52:42Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/runc"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003c 1.0.3",
+          "first_patched_version": {
+            "identifier": "1.0.3"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:C/C:L/I:L/A:L",
+        "score": 6
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-190",
+          "name": "Integer Overflow or Wraparound"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "severity": "medium",
+      "vulnerable_version_range": "\u003c 1.0.3",
+      "first_patched_version": {
+        "identifier": "1.0.3"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/89",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/89",
+    "created_at": "2023-03-07T02:36:59Z",
+    "updated_at": "2023-03-07T02:36:59Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "0001-01-01T00:00:00Z"
+  },
+  {
+    "number": 88,
+    "state": "open",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-g54h-m393-cpwq",
+      "cve_id": "",
+      "summary": "devices resource list treated as a blacklist by default",
+      "description": "### Impact\nContrary to the [OCI runtime specification](https://github.com/opencontainers/runtime-spec/blob/v1.0.2/config-linux.md#device-whitelist), `runc`'s implementation of the `linux.resources.devices` list was a black-list by default. This means that users who created their own `config.json` objects and didn't prefix a deny-all rule (`{\"allow\": false, \"permissions\": \"rwm\"}` or equivalent) were not provided protection by the `devices` cgroup. This would allow malicious containers (with sufficient privileges) to create arbitrary device inodes (assuming they have `CAP_MKNOD`) and operate on any device inodes they may have access to (assuming they have regular Unix DAC permissions).\n\nHowever, most (if not all) programs that make use of `runc` include this deny-all rule. This was most likely added before the specification mandated a white-list of devices, and the fact that all programs wrote their own deny-all rule obscured the existence of this bug for several years. In fact, even the specification's examples include a default deny-all rule! We therefore believe that while this is a security bug (and has been fixed as such), it was almost certainly not exploitable in the wild due to the inclusion of default deny-all rules by all known users of `runc` -- hence why this advisory has low severity.\n\n### Patches\nThis issue has been fixed in [a patch that was part of a larger rework of the devices cgroup code in runc](https://github.com/opencontainers/runc/pull/2391) -- which lead to the discovery of this security bug. Users should upgrade to 1.0.0-rc91 as soon as it is released, or wait for your distribution to backport the relevant fixes.\n\n### Workarounds\nIf you are using `runc` directly, ensure that there is a deny-all entry at the beginning of `linux.resources.devices` -- such an entry would look like `{\"allow\": false, \"permissions\": \"rwm\"}` (all other fields are ignored, though `type` must be set to `\"a\"` or `null` if it is present).\n\nUsers which consume `runc` through another program should check whether their containers are operating under a white-list -- this can be done by reading `/sys/fs/cgroup/devices/devices.list` inside the container. If the file contains only the entry `a *:* rwm` (meaning the cgroup is in black-list mode, which likely means \"allow all device access\") then your containers are vulnerable to this issue.\n\nAs always, we recommend **in the strongest possible terms** that all of our users enable user namespaces on all of their workloads (or pressure their vendors to do so). User namespaces are one of the most significant defense-in-depth protections you can enable for containers, and have prevented many container-related vulnerabilities (both kernel 0days as well as bugs in container runtimes, such as this one).\n\n### References\n* https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v1/devices.html\n* [opencontainers/runtime-spec/config-linux.md#device-whitelist](https://github.com/opencontainers/runtime-spec/blob/v1.0.2/config-linux.md#device-whitelist)\n* https://github.com/opencontainers/runc/pull/2391\n\n### For more information\nIf you have any questions or comments about this advisory:\n* [Open an issue in this repo](https://github.com/opencontainers/runc/issues/new).\n* Email us at \u003csecurity@opencontainers.org\u003e.",
+      "severity": "low",
+      "identifiers": [
+        {
+          "value": "GHSA-g54h-m393-cpwq",
+          "type": "GHSA"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/opencontainers/runc/security/advisories/GHSA-g54h-m393-cpwq"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-g54h-m393-cpwq"
+        }
+      ],
+      "published_at": "2021-12-20T18:21:54Z",
+      "updated_at": "2023-01-09T05:05:06Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/runc"
+          },
+          "severity": "low",
+          "vulnerable_version_range": "\u003c= 1.0.0-rc90",
+          "first_patched_version": {
+            "identifier": "1.0.0-rc91"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "",
+        "score": 0
+      },
+      "cwes": []
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "severity": "low",
+      "vulnerable_version_range": "\u003c= 1.0.0-rc90",
+      "first_patched_version": {
+        "identifier": "1.0.0-rc91"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/88",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/88",
+    "created_at": "2023-03-07T02:36:59Z",
+    "updated_at": "2023-03-07T02:36:59Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "0001-01-01T00:00:00Z"
+  },
+  {
+    "number": 87,
+    "state": "open",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-c3xm-pvg7-gh7r",
+      "cve_id": "CVE-2021-30465",
+      "summary": "mount destinations can be swapped via symlink-exchange to cause mounts outside the rootfs",
+      "description": "### Summary\n\nrunc 1.0.0-rc94 and earlier are vulnerable to a symlink exchange attack whereby\nan attacker can request a seemingly-innocuous container configuration that\nactually results in the host filesystem being bind-mounted into the container\n(allowing for a container escape). CVE-2021-30465 has been assigned for this\nissue.\n\nAn attacker must have the ability to start containers using some kind of custom\nvolume configuration, and while recommended container hardening mechanisms such\nas LSMs (AppArmor/SELinux) and user namespaces will restrict the amount of\ndamage an attacker could do, they do not block this attack outright. We have a\nreproducer using Kubernetes (and the below description mentions\nKubernetes-specific paths), but this is not a Kubernetes-specific issue.\n\nThe now-released [runc v1.0.0-rc95][release] contains a fix for this issue, we\nrecommend users update as soon as possible.\n\n[release]: https://github.com/opencontainers/runc/releases/tag/v1.0.0-rc95\n\n### Details\n\nIn circumstances where a container is being started, and runc is mounting\ninside a volume shared with another container (which is conducting a\nsymlink-exchange attack), runc can be tricked into mounting outside of the\ncontainer rootfs by swapping the target of a mount with a symlink due to a\ntime-of-check-to-time-of-use (TOCTTOU) flaw. This is fairly similar in style to\nprevious TOCTTOU attacks (and is a problem we are working on solving with\nlibpathrs).\n\nHowever, this alone is not useful because this happens inside a mount namespace\nwith `MS_SLAVE` propagation applied to `/` (meaning that the mount doesn't\nappear on the host -- it's only a \"host-side mount\" inside the container's\nnamespace). To exploit this, you must have additional mount entries in the\nconfiguration that use some subpath of the mounted-over host path as a source\nfor a subsequent mount.\n\nHowever, it turns out with some container orchestrators (such as Kubernetes --\nthough it is very likely that other downstream users of runc could have similar\nbehaviour be accessible to untrusted users), the existence of additional volume\nmanagement infrastructure allows this attack to be applied to gain access to\nthe host filesystem without requiring the attacker to have completely arbitrary\ncontrol over container configuration.\n\nIn the case of Kubernetes, this is exploitable by creating a symlink in a\nvolume to the top-level (well-known) directory where volumes are sourced from\n(for instance,\n`/var/lib/kubelet/pods/$MY_POD_UID/volumes/kubernetes.io~empty-dir`), and then\nusing that symlink as the target of a mount. The source of the mount is an\nattacker controlled directory, and thus the source directory from which\nsubsequent mounts will occur is an attacker-controlled directory. Thus the\nattacker can first place a symlink to `/` in their malicious source directory\nwith the name of a volume, and a subsequent mount in the container will\nbind-mount `/` into the container.\n\nApplying this attack requires the attacker to start containers with a slightly\npeculiar volume configuration (though not explicitly malicious-looking such as\nbind-mounting `/` into the container explicitly), and be able to run malicious\ncode in a container that shares volumes with said volume configuration. It\nhelps the attacker if the host paths used for volume management are well known,\nthough this is not a hard requirement.\n\n### Patches\nThis has been patched in runc 1.0.0-rc95, and users should upgrade as soon as\npossible. The patch itself can be found [here](https://github.com/opencontainers/runc/commit/0ca91f44f1664da834bc61115a849b56d22f595f).\n\n### Workarounds\n\nThere are no known workarounds for this issue.\n\nHowever, users who enforce running containers with more confined security\nprofiles (such as reduced capabilities, not running code as root in the\ncontainer, user namespaces, AppArmor/SELinux, and seccomp) will restrict what\nan attacker can do in the case of a container breakout -- we recommend users\nmake use of strict security profiles if possible (most notably user namespaces\n-- which can massively restrict the impact a container breakout can have on the\nhost system).\n\n### References\n* [commit](https://github.com/opencontainers/runc/commit/0ca91f44f1664da834bc61115a849b56d22f595f)\n* [seclists public disclosure](https://www.openwall.com/lists/oss-security/2021/05/19/2)\n\n### Credit\n\nThanks to Etienne Champetier for discovering and disclosing this vulnerability,\nto Noah Meyerhans for writing the first draft of this patch, and to Samuel Karp\nfor testing it.\n\n### For more information\n\nIf you have any questions or comments about this advisory:\n* Open an issue in [our issue tracker](https://github.com/opencontainers/runc/issues).\n* Email us at \u003csecurity@opencontainers.org\u003e.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-c3xm-pvg7-gh7r",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2021-30465",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/opencontainers/runc/security/advisories/GHSA-c3xm-pvg7-gh7r"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-30465"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/releases"
+        },
+        {
+          "url": "http://www.openwall.com/lists/oss-security/2021/05/19/2"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/35ZW6NBZSBH5PWIT7JU4HXOXGFVDCOHH/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4HOARVIT47RULTTFWAU7XBG4WY6TDDHV/"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/commit/0ca91f44f1664da834bc61115a849b56d22f595f"
+        },
+        {
+          "url": "https://bugzilla.opensuse.org/show_bug.cgi?id=1185405"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20210708-0003/"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/202107-26"
+        },
+        {
+          "url": "https://lists.debian.org/debian-lts-announce/2023/03/msg00023.html"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-c3xm-pvg7-gh7r"
+        }
+      ],
+      "published_at": "2021-05-25T18:44:42Z",
+      "updated_at": "2023-03-27T22:23:46Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/runc"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c= 1.0.0-rc94",
+          "first_patched_version": {
+            "identifier": "1.0.0-rc95"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:A/AC:L/PR:L/UI:N/S:C/C:H/I:L/A:N",
+        "score": 7.6
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-22",
+          "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+        },
+        {
+          "cwe_id": "CWE-362",
+          "name": "Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')"
+        },
+        {
+          "cwe_id": "CWE-367",
+          "name": "Time-of-check Time-of-use (TOCTOU) Race Condition"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c= 1.0.0-rc94",
+      "first_patched_version": {
+        "identifier": "1.0.0-rc95"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/87",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/87",
+    "created_at": "2023-03-07T02:36:58Z",
+    "updated_at": "2023-03-07T02:36:58Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "0001-01-01T00:00:00Z"
+  },
+  {
+    "number": 86,
+    "state": "open",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-gp4j-w3vj-7299",
+      "cve_id": "CVE-2016-9962",
+      "summary": "Information Exposure in RunC",
+      "description": "RunC allowed additional container processes via 'runc exec' to be ptraced by the pid 1 of the container.  This allows the main processes of the container, if running as root, to gain access to file-descriptors of these new processes during the initialization and can lead to container escapes or modification of runC state before the process is fully placed inside the container.",
+      "severity": "medium",
+      "identifiers": [
+        {
+          "value": "GHSA-gp4j-w3vj-7299",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2016-9962",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-9962"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/commit/50a19c6ff828c58e5dab13830bd3dacde268afe5"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/commit/5d93fed3d27f1e2bab58bad13b180a7a81d0b378"
+        },
+        {
+          "url": "https://access.redhat.com/security/vulnerabilities/cve-2016-9962"
+        },
+        {
+          "url": "https://bugzilla.suse.com/show_bug.cgi?id=1012568#c6"
+        },
+        {
+          "url": "https://github.com/docker/docker/releases/tag/v1.12.6"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BQAXJMMLRU7DD2IMG47SR2K4BOFFG7FZ/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/FINGBFMIXBG6B6ZWYH3TMRP5V3PDBNXR/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UVM7FCOQMPKOFLDTUYSS4ES76DDM56VP/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/WUQ3MQNEL5IBZZLMLR72Q4YDCL2SCKRK/"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/201701-34"
+        },
+        {
+          "url": "https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2016-9962"
+        },
+        {
+          "url": "http://rhn.redhat.com/errata/RHSA-2017-0116.html"
+        },
+        {
+          "url": "http://rhn.redhat.com/errata/RHSA-2017-0123.html"
+        },
+        {
+          "url": "http://rhn.redhat.com/errata/RHSA-2017-0127.html"
+        },
+        {
+          "url": "http://seclists.org/fulldisclosure/2017/Jan/21"
+        },
+        {
+          "url": "http://seclists.org/fulldisclosure/2017/Jan/29"
+        },
+        {
+          "url": "http://www.securityfocus.com/archive/1/540001/100/0/threaded"
+        },
+        {
+          "url": "http://www.securityfocus.com/bid/95361"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-gp4j-w3vj-7299"
+        }
+      ],
+      "published_at": "2021-12-20T18:21:43Z",
+      "updated_at": "2023-01-09T05:04:47Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/runc"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003c= 1.0.0-rc2",
+          "first_patched_version": {
+            "identifier": "1.0.0-rc3"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+        "score": 6.4
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-200",
+          "name": "Exposure of Sensitive Information to an Unauthorized Actor"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "severity": "medium",
+      "vulnerable_version_range": "\u003c= 1.0.0-rc2",
+      "first_patched_version": {
+        "identifier": "1.0.0-rc3"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/86",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/86",
+    "created_at": "2023-03-07T02:36:58Z",
+    "updated_at": "2023-03-07T02:36:58Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "0001-01-01T00:00:00Z"
+  },
+  {
+    "number": 85,
+    "state": "open",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/dgrijalva/jwt-go"
+      },
+      "manifest_path": "go.mod",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-w73w-5m7g-f7qc",
+      "cve_id": "CVE-2020-26160",
+      "summary": "Authorization bypass in github.com/dgrijalva/jwt-go",
+      "description": "jwt-go allows attackers to bypass intended access restrictions in situations with []string{} for m[\"aud\"] (which is allowed by the specification). Because the type assertion fails, \"\" is the value of aud. This is a security problem if the JWT token is presented to a service that lacks its own audience check. There is no patch available and users of jwt-go are advised to migrate to [golang-jwt](https://github.com/golang-jwt/jwt) at version 3.2.1",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-w73w-5m7g-f7qc",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2020-26160",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-26160"
+        },
+        {
+          "url": "https://github.com/dgrijalva/jwt-go/issues/422"
+        },
+        {
+          "url": "https://github.com/dgrijalva/jwt-go/pull/426"
+        },
+        {
+          "url": "https://snyk.io/vuln/SNYK-GOLANG-GITHUBCOMDGRIJALVAJWTGO-596515"
+        },
+        {
+          "url": "https://github.com/dgrijalva/jwt-go/issues/462"
+        },
+        {
+          "url": "https://github.com/dgrijalva/jwt-go/commit/ec0a89a131e3e8567adcb21254a5cd20a70ea4ab"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2020-0017"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-w73w-5m7g-f7qc"
+        }
+      ],
+      "published_at": "2021-05-18T21:08:21Z",
+      "updated_at": "2023-02-07T21:29:33Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/dgrijalva/jwt-go"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c= 3.2.0",
+          "first_patched_version": {
+            "identifier": ""
+          }
+        },
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/dgrijalva/jwt-go/v4"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 4.0.0-preview1",
+          "first_patched_version": {
+            "identifier": "4.0.0-preview1"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+        "score": 7.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-287",
+          "name": "Improper Authentication"
+        },
+        {
+          "cwe_id": "CWE-755",
+          "name": "Improper Handling of Exceptional Conditions"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/dgrijalva/jwt-go"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c= 3.2.0",
+      "first_patched_version": {
+        "identifier": ""
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/85",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/85",
+    "created_at": "2023-03-07T02:36:58Z",
+    "updated_at": "2023-03-07T02:36:58Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "0001-01-01T00:00:00Z"
+  },
+  {
+    "number": 84,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/text"
+      },
+      "manifest_path": "go.sum",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-69ch-w2m2-3vjp",
+      "cve_id": "CVE-2022-32149",
+      "summary": "Denial of service in golang.org/x/text/language",
+      "description": "The BCP 47 tag parser has quadratic time complexity due to inherent aspects of its design. Since the parser is, by design, exposed to untrusted user input, this can be leveraged to force a program to consume significant time parsing Accept-Language headers. The parser cannot be easily rewritten to fix this behavior for various reasons. Instead the solution implemented in this CL is to limit the total complexity of tags passed into ParseAcceptLanguage by limiting the number of dashes in the string to 1000. This should be more than enough for the majority of real world use cases, where the number of tags being sent is likely to be in the single digits.\n",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-69ch-w2m2-3vjp",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2022-32149",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-32149"
+        },
+        {
+          "url": "https://go.dev/cl/442235"
+        },
+        {
+          "url": "https://go.dev/issue/56152"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/-hjNw559_tE/m/KlGTfid5CAAJ"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2022-1059"
+        },
+        {
+          "url": "https://github.com/golang/go/issues/56152"
+        },
+        {
+          "url": "https://github.com/golang/text/commit/434eadcdbc3b0256971992e8c70027278364c72c"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-69ch-w2m2-3vjp"
+        }
+      ],
+      "published_at": "2022-10-14T19:00:40Z",
+      "updated_at": "2023-02-22T23:31:16Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/text/language"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.3.8",
+          "first_patched_version": {
+            "identifier": "0.3.8"
+          }
+        },
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/text"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.3.8",
+          "first_patched_version": {
+            "identifier": "0.3.8"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+        "score": 7.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-772",
+          "name": "Missing Release of Resource after Effective Lifetime"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/text"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c 0.3.8",
+      "first_patched_version": {
+        "identifier": "0.3.8"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/84",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/84",
+    "created_at": "2023-02-23T10:57:32Z",
+    "updated_at": "2023-03-07T02:36:58Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-03-07T02:36:58Z"
+  },
+  {
+    "number": 83,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/net"
+      },
+      "manifest_path": "go.sum",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-69cg-p879-7622",
+      "cve_id": "CVE-2022-27664",
+      "summary": "golang.org/x/net/http2 Denial of Service vulnerability",
+      "description": "In net/http in Go before 1.18.6 and 1.19.x before 1.19.1, attackers can cause a denial of service because an HTTP/2 connection can hang during closing if shutdown were preempted by a fatal error.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-69cg-p879-7622",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2022-27664",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-27664"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/x49AQzIVX-s"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TXS2OQ57KZC5XZKK5UW4SYKPVQAHIOJX/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXKTHIGE5F576MAPFYCIJXNRGBSPISUF/"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/202209-26"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20220923-0004/"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2022-0969"
+        },
+        {
+          "url": "https://go.dev/cl/428735"
+        },
+        {
+          "url": "https://go.dev/issue/54658"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-69cg-p879-7622"
+        }
+      ],
+      "published_at": "2022-09-07T00:01:51Z",
+      "updated_at": "2023-02-18T01:35:48Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/net"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.0.0-20220906165146-f3363e06e74c",
+          "first_patched_version": {
+            "identifier": "0.0.0-20220906165146-f3363e06e74c"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+        "score": 7.5
+      },
+      "cwes": []
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/net"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c 0.0.0-20220906165146-f3363e06e74c",
+      "first_patched_version": {
+        "identifier": "0.0.0-20220906165146-f3363e06e74c"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/83",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/83",
+    "created_at": "2023-02-18T11:55:09Z",
+    "updated_at": "2023-03-07T02:36:58Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-03-07T02:36:58Z"
+  },
+  {
+    "number": 82,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/crypto"
+      },
+      "manifest_path": "go.sum",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-gwc9-m7rh-j2ww",
+      "cve_id": "CVE-2021-43565",
+      "summary": "x/crypto/ssh vulnerable to panic via SSH server",
+      "description": "The x/crypto/ssh package before 0.0.0-20211202192323-5770296d904e of golang.org/x/crypto allows an unauthenticated attacker to panic an SSH server.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-gwc9-m7rh-j2ww",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2021-43565",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-43565"
+        },
+        {
+          "url": "https://groups.google.com/forum/#!forum/golang-announce"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/2AR1sKiM-Qs"
+        },
+        {
+          "url": "https://go.dev/cl/368814/"
+        },
+        {
+          "url": "https://go.dev/issues/49932"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2022-0968"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-gwc9-m7rh-j2ww"
+        }
+      ],
+      "published_at": "2022-09-07T00:01:52Z",
+      "updated_at": "2023-02-24T17:29:43Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/crypto"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.0.0-20211202192323-5770296d904e",
+          "first_patched_version": {
+            "identifier": "0.0.0-20211202192323-5770296d904e"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+        "score": 7.5
+      },
+      "cwes": []
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/crypto"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c 0.0.0-20211202192323-5770296d904e",
+      "first_patched_version": {
+        "identifier": "0.0.0-20211202192323-5770296d904e"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/82",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/82",
+    "created_at": "2023-02-18T06:40:57Z",
+    "updated_at": "2023-03-07T02:36:58Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-03-07T02:36:58Z"
+  },
+  {
+    "number": 81,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/crypto"
+      },
+      "manifest_path": "go.sum",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-8c26-wmh5-6g9v",
+      "cve_id": "CVE-2022-27191",
+      "summary": "Use of a Broken or Risky Cryptographic Algorithm in golang.org/x/crypto/ssh",
+      "description": "golang.org/x/crypto/ssh versions 0.0.0-20220214200702-86341886e292 and prior in Go through 1.16.15 and 1.17.x through 1.17.8 allows an attacker to crash a server in certain circumstances involving AddHostKey. Version 0.0.0-20220315160706-3147a52a75dd includes a fix for the vulnerability and support for SHA-2.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-8c26-wmh5-6g9v",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2022-27191",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-27191"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/-cp44ypCT5s"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HHGBEGJ54DZZGTXFUQNS7ZIG3E624YAF/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/QTFOIDHQRGNI4P6LYN6ILH5G443RYYKB/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/YHYRQB7TRMHDB3NEHW5XBRG7PPMUTPGV/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZQNPPQWSTP2IX7SHE6TS4SP4EVMI5EZK/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/J5WPM42UR6XIBQNQPNQHM32X7S4LJTRX/"
+        },
+        {
+          "url": "https://security.netapp.com/advisory/ntap-20220429-0002/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EZ3S7LB65N54HXXBCB67P4TTOHTNPP5O/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZFUNHFHQVJSADNH7EZ3B53CYDZVEEPBP/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DLUJZV3HBP56ADXU6QH2V7RNYUPMVBXQ/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZY2SLWOQR4ZURQ7UBRZ7JIX6H6F5JHJR/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/Z55VUVGO7E5PJFXIOVAY373NZRHBNCI5/"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/golang/vulndb/df2d3d326300e2ae768f00351ffa96cc2c56cf54/reports/GO-2021-0356.yaml"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RQXU752ALW53OJAF5MG3WMR5CCZVLWW6/"
+        },
+        {
+          "url": "https://go.dev/cl/392355"
+        },
+        {
+          "url": "https://go.googlesource.com/crypto/+/1baeb1ce4c0b006eff0f294c47cb7617598dfb3d"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2021-0356"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-8c26-wmh5-6g9v"
+        }
+      ],
+      "published_at": "2022-03-19T00:01:02Z",
+      "updated_at": "2023-02-17T23:58:13Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/crypto"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.0.0-20220314234659-1baeb1ce4c0b",
+          "first_patched_version": {
+            "identifier": "0.0.0-20220314234659-1baeb1ce4c0b"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+        "score": 7.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-327",
+          "name": "Use of a Broken or Risky Cryptographic Algorithm"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/crypto"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c 0.0.0-20220314234659-1baeb1ce4c0b",
+      "first_patched_version": {
+        "identifier": "0.0.0-20220314234659-1baeb1ce4c0b"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/81",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/81",
+    "created_at": "2023-02-18T05:15:15Z",
+    "updated_at": "2023-03-07T02:36:57Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-03-07T02:36:57Z"
+  },
+  {
+    "number": 80,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/net"
+      },
+      "manifest_path": "images/shared-images-controller/go.sum",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-vvpx-j8f3-3w6h",
+      "cve_id": "CVE-2022-41723",
+      "summary": "Uncontrolled Resource Consumption",
+      "description": "A maliciously crafted HTTP/2 stream could cause excessive CPU consumption in the HPACK decoder, sufficient to cause a denial of service from a small number of small requests.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-vvpx-j8f3-3w6h",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2022-41723",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-41723"
+        },
+        {
+          "url": "https://go.dev/cl/468135"
+        },
+        {
+          "url": "https://go.dev/issue/57855"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/V0aBFqaFs_E"
+        },
+        {
+          "url": "https://vuln.go.dev/ID/GO-2023-1571.json"
+        },
+        {
+          "url": "https://go.dev/cl/468295"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2023-1571"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4MA5XS5DAOJ5PKKNG5TUXKPQOFHT5VBC/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RLBQ3A7ROLEQXQLXFDLNJ7MYPKG5GULE/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGW7GE2Z32ZT47UFAQFDRQE33B7Q7LMT/"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-vvpx-j8f3-3w6h"
+        }
+      ],
+      "published_at": "2023-02-17T14:00:02Z",
+      "updated_at": "2023-04-20T14:20:47Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/net"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.7.0",
+          "first_patched_version": {
+            "identifier": "0.7.0"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+        "score": 7.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-400",
+          "name": "Uncontrolled Resource Consumption"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/net"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c 0.7.0",
+      "first_patched_version": {
+        "identifier": "0.7.0"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/80",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/80",
+    "created_at": "2023-02-18T04:13:56Z",
+    "updated_at": "2023-03-07T02:36:57Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-03-07T02:36:57Z"
+  },
+  {
+    "number": 79,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/net"
+      },
+      "manifest_path": "go.sum",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-vvpx-j8f3-3w6h",
+      "cve_id": "CVE-2022-41723",
+      "summary": "Uncontrolled Resource Consumption",
+      "description": "A maliciously crafted HTTP/2 stream could cause excessive CPU consumption in the HPACK decoder, sufficient to cause a denial of service from a small number of small requests.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-vvpx-j8f3-3w6h",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2022-41723",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-41723"
+        },
+        {
+          "url": "https://go.dev/cl/468135"
+        },
+        {
+          "url": "https://go.dev/issue/57855"
+        },
+        {
+          "url": "https://groups.google.com/g/golang-announce/c/V0aBFqaFs_E"
+        },
+        {
+          "url": "https://vuln.go.dev/ID/GO-2023-1571.json"
+        },
+        {
+          "url": "https://go.dev/cl/468295"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2023-1571"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4MA5XS5DAOJ5PKKNG5TUXKPQOFHT5VBC/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RLBQ3A7ROLEQXQLXFDLNJ7MYPKG5GULE/"
+        },
+        {
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGW7GE2Z32ZT47UFAQFDRQE33B7Q7LMT/"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-vvpx-j8f3-3w6h"
+        }
+      ],
+      "published_at": "2023-02-17T14:00:02Z",
+      "updated_at": "2023-04-20T14:20:47Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "golang.org/x/net"
+          },
+          "severity": "high",
+          "vulnerable_version_range": "\u003c 0.7.0",
+          "first_patched_version": {
+            "identifier": "0.7.0"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+        "score": 7.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-400",
+          "name": "Uncontrolled Resource Consumption"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "golang.org/x/net"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "\u003c 0.7.0",
+      "first_patched_version": {
+        "identifier": "0.7.0"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/79",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/79",
+    "created_at": "2023-02-18T01:10:58Z",
+    "updated_at": "2023-03-07T02:36:57Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-03-07T02:36:57Z"
+  },
+  {
+    "number": 78,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/containerd/containerd"
+      },
+      "manifest_path": "images/shared-images-controller/go.sum",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-259w-8hf6-59c2",
+      "cve_id": "CVE-2023-25153",
+      "summary": "OCI image importer memory exhaustion in github.com/containerd/containerd",
+      "description": "### Impact\n\nWhen importing an OCI image, there was no limit on the number of bytes read for certain files. A maliciously crafted image with a large file where a limit was not applied could cause a denial of service.\n\n### Patches\n\nThis bug has been fixed in containerd 1.6.18 and 1.5.18.  Users should update to these versions to resolve the issue.\n\n### Workarounds\n\nEnsure that only trusted images are used and that only trusted users have permissions to import images. \n\n### Credits\n\nThe containerd project would like to thank [David Korczynski](https://github.com/DavidKorczynski) and [Adam Korczynski](https://github.com/AdamKorcz) of ADA Logics for responsibly disclosing this issue in accordance with the [containerd security policy](https://github.com/containerd/project/blob/main/SECURITY.md) during a security fuzzing audit sponsored by CNCF.\n\n### For more information\n\nIf you have any questions or comments about this advisory:\n\n* Open an issue in [containerd](https://github.com/containerd/containerd/issues/new/choose)\n* Email us at [security@containerd.io](mailto:security@containerd.io)\n\nTo report a security issue in containerd:\n* [Report a new vulnerability](https://github.com/containerd/containerd/security/advisories/new)\n* Email us at [security@containerd.io](mailto:security@containerd.io)",
+      "severity": "medium",
+      "identifiers": [
+        {
+          "value": "GHSA-259w-8hf6-59c2",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2023-25153",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/containerd/containerd/security/advisories/GHSA-259w-8hf6-59c2"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-25153"
+        },
+        {
+          "url": "https://github.com/containerd/containerd/commit/0c314901076a74a7b797a545d2f462285fdbb8c4"
+        },
+        {
+          "url": "https://github.com/containerd/containerd/releases/tag/v1.5.18"
+        },
+        {
+          "url": "https://github.com/containerd/containerd/releases/tag/v1.6.18"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2023-1573"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-259w-8hf6-59c2"
+        }
+      ],
+      "published_at": "2023-02-16T14:12:36Z",
+      "updated_at": "2023-02-24T19:11:48Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/containerd/containerd"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003c= 1.5.17",
+          "first_patched_version": {
+            "identifier": "1.5.18"
+          }
+        },
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/containerd/containerd"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003e= 1.6.0, \u003c 1.6.18",
+          "first_patched_version": {
+            "identifier": "1.6.18"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+        "score": 5.5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-400",
+          "name": "Uncontrolled Resource Consumption"
+        },
+        {
+          "cwe_id": "CWE-770",
+          "name": "Allocation of Resources Without Limits or Throttling"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/containerd/containerd"
+      },
+      "severity": "medium",
+      "vulnerable_version_range": "\u003e= 1.6.0, \u003c 1.6.18",
+      "first_patched_version": {
+        "identifier": "1.6.18"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/78",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/78",
+    "created_at": "2023-02-16T14:23:13Z",
+    "updated_at": "2023-03-07T02:36:57Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-03-07T02:36:57Z"
+  },
+  {
+    "number": 77,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/containerd/containerd"
+      },
+      "manifest_path": "images/shared-images-controller/go.sum",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-hmfx-3pcx-653p",
+      "cve_id": "CVE-2023-25173",
+      "summary": "Supplementary groups are not set up properly in github.com/containerd/containerd",
+      "description": "### Impact\n\nA bug was found in containerd where supplementary groups are not set up properly inside a container.  If an attacker has direct access to a container and manipulates their supplementary group access, they may be able to use supplementary group access to bypass primary group restrictions in some cases, potentially gaining access to sensitive information or gaining the ability to execute code in that container.\n\nDownstream applications that use the containerd client library may be affected as well.\n\n### Patches\nThis bug has been fixed in containerd v1.6.18 and v.1.5.18.  Users should update to these versions and recreate containers to resolve this issue.  Users who rely on a downstream application that uses containerd's client library should check that application for a separate advisory and instructions.\n\n### Workarounds\n\nEnsure that the `\"USER $USERNAME\"` Dockerfile instruction is not used.  Instead, set the container entrypoint to a value similar to `ENTRYPOINT [\"su\", \"-\", \"user\"]` to allow `su` to properly set up supplementary groups.\n\n### References\n\n- https://www.benthamsgaze.org/2022/08/22/vulnerability-in-linux-containers-investigation-and-mitigation/\n- Docker/Moby: CVE-2022-36109, fixed in Docker 20.10.18\n- CRI-O: CVE-2022-2995, fixed in CRI-O 1.25.0\n- Podman: CVE-2022-2989, fixed in Podman 3.0.1 and 4.2.0\n- Buildah: CVE-2022-2990, fixed in Buildah 1.27.1\n\nNote that CVE IDs apply to a particular implementation, even if an issue is common.\n\n### For more information\n\nIf you have any questions or comments about this advisory:\n\n* Open an issue in [containerd](https://github.com/containerd/containerd/issues/new/choose)\n* Email us at [security@containerd.io](mailto:security@containerd.io)\n\nTo report a security issue in containerd:\n* [Report a new vulnerability](https://github.com/containerd/containerd/security/advisories/new)\n* Email us at [security@containerd.io](mailto:security@containerd.io)",
+      "severity": "medium",
+      "identifiers": [
+        {
+          "value": "GHSA-hmfx-3pcx-653p",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2023-25173",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/containerd/containerd/security/advisories/GHSA-hmfx-3pcx-653p"
+        },
+        {
+          "url": "https://github.com/moby/moby/security/advisories/GHSA-rc4r-wh2q-q6c4"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-25173"
+        },
+        {
+          "url": "https://github.com/containerd/containerd/commit/133f6bb6cd827ce35a5fb279c1ead12b9d21460a"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-4wjj-jwc9-2x96"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-fjm8-m7m6-2fjp"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-phjr-8j92-w5v7"
+        },
+        {
+          "url": "https://github.com/containerd/containerd/releases/tag/v1.5.18"
+        },
+        {
+          "url": "https://github.com/containerd/containerd/releases/tag/v1.6.18"
+        },
+        {
+          "url": "https://www.benthamsgaze.org/2022/08/22/vulnerability-in-linux-containers-investigation-and-mitigation/"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2023-1574"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-hmfx-3pcx-653p"
+        }
+      ],
+      "published_at": "2023-02-16T14:11:33Z",
+      "updated_at": "2023-02-24T19:12:22Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/containerd/containerd"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003c= 1.5.17",
+          "first_patched_version": {
+            "identifier": "1.5.18"
+          }
+        },
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/containerd/containerd"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003e= 1.6.0, \u003c 1.6.18",
+          "first_patched_version": {
+            "identifier": "1.6.18"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+        "score": 5.3
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-269",
+          "name": "Improper Privilege Management"
+        },
+        {
+          "cwe_id": "CWE-863",
+          "name": "Incorrect Authorization"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/containerd/containerd"
+      },
+      "severity": "medium",
+      "vulnerable_version_range": "\u003e= 1.6.0, \u003c 1.6.18",
+      "first_patched_version": {
+        "identifier": "1.6.18"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/77",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/77",
+    "created_at": "2023-02-16T14:22:23Z",
+    "updated_at": "2023-03-07T02:36:57Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-03-07T02:36:57Z"
+  },
+  {
+    "number": 76,
+    "state": "fixed",
+    "dependency": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "manifest_path": "go.sum",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-fh74-hm69-rqjw",
+      "cve_id": "CVE-2019-19921",
+      "summary": "opencontainers runc contains procfs race condition with a shared volume mount",
+      "description": "### Impact\nBy crafting a malicious root filesystem (with `/proc` being a symlink to a directory which was inside a volume shared with another running container), an attacker in control of both containers can trick `runc` into not correctly configuring the container\u0026amp;amp;amp;amp;#39;s security labels and not correctly masking paths inside `/proc` which contain potentially-sensitive information about the host (or even allow for direct attacks against the host).\n\nIn order to exploit this bug, an untrusted user must be able to spawn custom containers with custom mount configurations (such that a volume is shared between two containers). It should be noted that we consider this to be a fairly high level of access for an untrusted user -- and we do not recommend allowing completely untrusted users to have such degrees of access without further restrictions.\n\n### Patches\nThis vulnerability has been fixed in `1.0.0-rc10`. It should be noted that the current fix is effectively a hot-fix, and there are known ways for it to be worked around (such as making the entire root filesystem a shared volume controlled by another container). We recommend that users review their access policies to ensure that untrusted users do not have such high levels of controls over container mount configuration.\n\n### Workarounds\nIf you are not providing the ability for untrusted users to configure mountpoints for `runc` (or through a higher-level tool such as `docker run -v`) then you are not vulnerable to this issue. This exploit requires fairly complicated levels of access (which are available for some public clouds but are not necessarily available for all deployments).\n\nAdditionally, it appears as though it is not possible to exploit this vulnerability through Docker (due to the order of mounts Docker generates). However you should not depend on this, as it may be possible to work around this roadblock.\n\n### Credits\nThis vulnerability was discovered by Cure53, as part of a third-party security audit.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* [Open an issue](https://github.com/opencontainers/runc/issues/new).\n* Email us at [dev@opencontainers.org](mailto:dev@opencontainers.org), or [security@opencontainers.org](mailto:security@opencontainers.org) if you think you\u0026amp;amp;amp;amp;#39;ve found a security bug.",
+      "severity": "medium",
+      "identifiers": [
+        {
+          "value": "GHSA-fh74-hm69-rqjw",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2019-19921",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/opencontainers/runc/security/advisories/GHSA-fh74-hm69-rqjw"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-19921"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/issues/2197"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/pull/2190"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/pull/2207"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2020:0688"
+        },
+        {
+          "url": "https://access.redhat.com/errata/RHSA-2020:0695"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/releases"
+        },
+        {
+          "url": "https://security-tracker.debian.org/tracker/CVE-2019-19921"
+        },
+        {
+          "url": "https://security.gentoo.org/glsa/202003-21"
+        },
+        {
+          "url": "https://usn.ubuntu.com/4297-1/"
+        },
+        {
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00018.html"
+        },
+        {
+          "url": "https://github.com/opencontainers/runc/commit/2fc03cc11c775b7a8b2e48d7ee447cb9bef32ad0"
+        },
+        {
+          "url": "https://pkg.go.dev/vuln/GO-2021-0087"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-fh74-hm69-rqjw"
+        }
+      ],
+      "published_at": "2021-05-27T18:41:17Z",
+      "updated_at": "2023-03-01T18:44:57Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "package": {
+            "ecosystem": "go",
+            "name": "github.com/opencontainers/runc"
+          },
+          "severity": "medium",
+          "vulnerable_version_range": "\u003c 1.0.0-rc9.0.20200122160610-2fc03cc11c77",
+          "first_patched_version": {
+            "identifier": "1.0.0-rc9.0.20200122160610-2fc03cc11c77"
+          }
+        }
+      ],
+      "cvss": {
+        "vector_string": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N/E:U/RL:U/RC:U",
+        "score": 5
+      },
+      "cwes": [
+        {
+          "cwe_id": "CWE-362",
+          "name": "Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')"
+        },
+        {
+          "cwe_id": "CWE-706",
+          "name": "Use of Incorrectly-Resolved Name or Reference"
+        }
+      ]
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/opencontainers/runc"
+      },
+      "severity": "medium",
+      "vulnerable_version_range": "\u003c 1.0.0-rc9.0.20200122160610-2fc03cc11c77",
+      "first_patched_version": {
+        "identifier": "1.0.0-rc9.0.20200122160610-2fc03cc11c77"
+      }
+    },
+    "url": "https://api.github.com/repos/kubevirt/project-infra/dependabot/alerts/76",
+    "html_url": "https://github.com/kubevirt/project-infra/security/dependabot/76",
+    "created_at": "2023-02-13T23:48:34Z",
+    "updated_at": "2023-03-07T02:36:57Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": "2023-03-07T02:36:57Z"
+  }
+]
