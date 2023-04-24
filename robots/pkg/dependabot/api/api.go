@@ -94,10 +94,14 @@ func GetOpenGolangCVEs(alerts []Alert) []CVE {
 		if strings.HasSuffix(alert.Dependency.ManifestPath, "go.sum") {
 			gomod = strings.TrimSuffix(alert.Dependency.ManifestPath, "go.sum") + "go.mod"
 		}
+		version := ""
+		if alert.SecurityVulnerability.FirstPatchedVersion.Identifier != "" {
+			version = "v" + strings.TrimPrefix(alert.SecurityVulnerability.FirstPatchedVersion.Identifier, "v")
+		}
 
 		cves = append(cves, CVE{
 			PackageName:         alert.SecurityVulnerability.Package.Name,
-			FixedPackageVersion: "v" + strings.TrimPrefix(alert.SecurityVulnerability.FirstPatchedVersion.Identifier, "v"),
+			FixedPackageVersion: version,
 			CVE:                 alert.SecurityAdvisory.CveID,
 			GoMod:               gomod,
 		})

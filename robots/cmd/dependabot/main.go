@@ -14,6 +14,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/oauth2"
+	"kubevirt.io/project-infra/robots/pkg/dependabot"
 	"kubevirt.io/project-infra/robots/pkg/dependabot/api"
 )
 
@@ -93,9 +94,17 @@ func main() {
 	}
 	msgs := []string{}
 	cves := api.GetOpenGolangCVEs(alerts)
+	filteredAlerts := dependabot.FilterAlerts(alerts)
 	for _, cve := range cves {
-		msg := fmt.Sprintf("%v: bump %q to version %q in %q", cve.CVE, cve.PackageName, cve.FixedPackageVersion, cve.GoMod)
-		logrus.Infof(msg)
+
+		if cve.FixedPackageVersion == "" {
+			msgs = append(msgs, fmt.Sprintf("%v: skip %q in %q, no fix available yet", cve.CVE, cve.PackageName, cve.GoMod))
+			continue
+		}
+
+		latestVersion := filteredAlerts[cve.PackageName]
+		msg := fmt.Sprintf("%v: bump %q to version %q in %q", cve.CVE, cve.PackageName, latestVersion.LatestVersion, cve.GoMod)
+		logrus.Debug(msg)
 		rawFile, err := os.ReadFile(filepath.Join(o.repoDir, cve.GoMod))
 		if err != nil {
 			log().Panicln(err)
@@ -104,7 +113,7 @@ func main() {
 		if err != nil {
 			log().Panicln(err)
 		}
-		if err := modFile.AddRequire(cve.PackageName, cve.FixedPackageVersion); err != nil {
+		if err := modFile.AddRequire(cve.PackageName, latestVersion.LatestVersion); err != nil {
 			log().Panicln(err)
 		}
 		rawFile, err = modFile.Format()
