@@ -485,10 +485,10 @@ periodics:
         type: Directory
       name: audit
 - annotations:
-    k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
+    k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 0 23 * * 6
   decorate: true
   decoration_config:
@@ -567,10 +567,10 @@ periodics:
         type: Directory
       name: vfio
 - annotations:
-    k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
+    k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 0 21 * * *
   decorate: true
   decoration_config:

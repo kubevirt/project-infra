@@ -2,8 +2,8 @@ presubmits:
   kubevirt/kubevirtci:
   - always_run: false
     annotations:
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
-    cluster: prow-workloads
+      k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
@@ -84,8 +84,8 @@ presubmits:
         name: vfio
   - always_run: true
     annotations:
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
-    cluster: prow-workloads
+      k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
