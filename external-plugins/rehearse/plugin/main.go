@@ -178,14 +178,14 @@ func main() {
 
 func helpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	pluginHelp := &pluginhelp.PluginHelp{
-		Description: `The rehearse plugin is used run modified Prow jobs from a PR to provide pre-merge feedback.`,
+		Description: `The rehearse plugin is used to test modifications of Prow jobs to provide pre-merge feedback.`,
 	}
 	pluginHelp.AddCommand(pluginhelp.Command{
-		Usage:       "Send a PR or type /rehearse on the PRs page",
-		Description: "Rehearse Prow jobs from a pull request.",
+		Usage:       "/rehearse [all|job-name|?]",
+		Description: "Rehearses modified Prow jobs inside a pull request.",
 		Featured:    true,
 		WhoCanUse:   "Project members",
-		Examples:    []string{"/rehearse"},
+		Examples:    []string{"/rehearse", "/rehearse all", "/rehearse job-name", "/rehearse ?"},
 	})
 	return pluginHelp, nil
 }
