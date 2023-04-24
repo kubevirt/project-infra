@@ -767,7 +767,7 @@ periodics:
       args:
       - "-ce"
       - |
-        ./hack/git-pr.sh -c "bazel run //robots/cmd/dependabot:dependabot -- --github-token-path /etc/github/oauth --repo project-infra --org kubevirt --repo-dir $(pwd) && make gazelle gazelle-update-repos test" -b dependabot-update -T main
+        ./hack/git-pr.sh -c "bazel run //robots/cmd/dependabot:dependabot -- --github-token-path /etc/github/oauth --repo project-infra --org kubevirt --repo-dir $(pwd) && make gazelle gazelle-update-repos test" -b dependabot-update -r project-infra -T main
       resources:
         requests:
           memory: "1Gi"
