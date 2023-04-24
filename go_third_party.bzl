@@ -3067,8 +3067,8 @@ def go_deps():
         name = "com_github_opencontainers_runc",
         build_file_proto_mode = "disable",
         importpath = "github.com/opencontainers/runc",
-        sum = "h1:GlxAyO6x8rfZYN9Tt0Kti5a/cP41iuiO2yYT0IJGY8Y=",
-        version = "v0.1.1",
+        sum = "h1:L44KXEpKmfWDcS02aeGm8QNTFXTo2D+8MYGDIJ/GDEs=",
+        version = "v1.1.5",
     )
     go_repository(
         name = "com_github_opencontainers_runtime_spec",
@@ -4668,8 +4668,8 @@ def go_deps():
         name = "org_golang_x_image",
         build_file_proto_mode = "disable",
         importpath = "golang.org/x/image",
-        sum = "h1:Lj6HJGCSn5AjxRAH2+r35Mir4icalbqku+CLUtjnvXY=",
-        version = "v0.0.0-20220902085622-e7cb96979f69",
+        sum = "h1:5JMiNunQeQw++mMOz48/ISeNu3Iweh/JaZU8ZLqHRrI=",
+        version = "v0.5.0",
     )
     go_repository(
         name = "org_golang_x_lint",
