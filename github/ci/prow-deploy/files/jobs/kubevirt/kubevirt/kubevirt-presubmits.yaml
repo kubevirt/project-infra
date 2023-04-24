@@ -389,9 +389,9 @@ presubmits:
   - always_run: false
     annotations:
       fork-per-release: "true"
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
+      k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 30m0s
@@ -468,9 +468,9 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
+      k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 30m0s

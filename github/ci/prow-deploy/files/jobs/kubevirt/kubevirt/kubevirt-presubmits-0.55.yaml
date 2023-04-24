@@ -471,10 +471,10 @@ presubmits:
       priorityClassName: windows
   - always_run: false
     annotations:
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
+      k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
     branches:
     - release-0.55
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-kind-1.22-sriov-nonroot
     decorate: true
     decoration_config:
@@ -552,10 +552,10 @@ presubmits:
         name: vfio
   - always_run: true
     annotations:
-      k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
+      k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
     branches:
     - release-0.55
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-kind-1.22-sriov
     decorate: true
     decoration_config:
