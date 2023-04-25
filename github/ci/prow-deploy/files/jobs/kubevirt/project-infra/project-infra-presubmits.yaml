@@ -20,7 +20,7 @@ presubmits:
           requests:
             memory: "500Mi"
   - name: pull-project-infra-test-robots
-    run_if_changed: "robots/.*|WORKSPACE|go_third_party.bzl"
+    run_if_changed: "robots/.*|WORKSPACE|go_third_party.bzl|go.mod"
     optional: false
     decorate: true
     cluster: ibm-prow-jobs
@@ -32,14 +32,16 @@ presubmits:
         command:
           - "/bin/bash"
           - "-c"
-          - "bazelisk test //robots/..."
+          - |
+            make gazelle-update-repos
+            bazelisk test //robots/...
         resources:
           requests:
             memory: "8Gi"
           limits:
             memory: "8Gi"
   - name: pull-project-infra-test-releng
-    run_if_changed: "releng/.*|WORKSPACE|go_third_party.bzl"
+    run_if_changed: "releng/.*|WORKSPACE|go_third_party.bzl|go.mod"
     optional: false
     decorate: true
     cluster: ibm-prow-jobs
@@ -51,14 +53,16 @@ presubmits:
         command:
           - "/bin/bash"
           - "-c"
-          - "bazel test //releng/..."
+          - |
+            make gazelle-update-repos
+            bazel test //releng/...
         resources:
           requests:
             memory: "4Gi"
           limits:
             memory: "4Gi"
   - name: pull-project-infra-test-external-plugins
-    run_if_changed: external-plugins/.*
+    run_if_changed: "external-plugins/.*|WORKSPACE|go_third_party.bzl|go.mod"
     cluster: ibm-prow-jobs
     optional: false
     decorate: true
@@ -71,7 +75,9 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "bazelisk test //external-plugins/..."
+        - |
+          make gazelle-update-repos
+          bazelisk test //external-plugins/...
         securityContext:
           runAsUser: 0
         resources:
@@ -80,7 +86,7 @@ presubmits:
           limits:
             memory: "8Gi"
   - name: pull-project-infra-test-github-ci-services
-    run_if_changed: "github/ci/services/.*|WORKSPACE|go_third_party.bzl"
+    run_if_changed: "github/ci/services/.*|WORKSPACE|go_third_party.bzl|go.mod"
     optional: false
     decorate: true
     cluster: ibm-prow-jobs
@@ -93,7 +99,9 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-c"
-        - "bazel build //github/ci/services/..."
+        - |
+          make gazelle-update-repos
+          bazel build //github/ci/services/...
         resources:
           requests:
             memory: "4Gi"
