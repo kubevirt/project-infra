@@ -26,34 +26,155 @@ import (
 
 var _ = Describe("runFilter", func() {
 
-	It("removes run test", func() {
-		Expect(runFilter(
-			&map[string]map[string]int{
-				"[sig-storage] [rfe_id:6364][[Serial]Guestfs Run libguestfs on PVCs with root Should successfully run guestfs command on a filesystem-based PVC with root": {
+	const expectedTestName = "[sig-storage] [rfe_id:6364][[Serial]Guestfs Run libguestfs on PVCs with root Should successfully run guestfs command on a filesystem-based PVC with root"
+
+	Context("simple", func() {
+
+		It("removes run test", func() {
+			Expect(runFilter(&map[string]map[string]int{
+				expectedTestName: {
 					"test-kubevirt-cnv-4.12-compute-ocs":     1,
 					"test-kubevirt-cnv-4.12-network-ovn-ocs": 1,
 					"test-kubevirt-cnv-4.12-operator-ocs":    1,
 					"test-kubevirt-cnv-4.12-quarantined-ocs": 1,
 					"test-kubevirt-cnv-4.12-storage-ocs":     2,
 				},
-			},
-		)).To(BeEmpty())
-	})
+			}, defaultGroupConfigs)).To(BeEmpty())
+		})
 
-	It("does not remove not run test", func() {
-		Expect(runFilter(
-			&map[string]map[string]int{
-				"[sig-storage] [rfe_id:6364][[Serial]Guestfs Run libguestfs on PVCs with root Should successfully run guestfs command on a filesystem-based PVC with root": {
+		It("does not remove not run test", func() {
+			Expect(runFilter(&map[string]map[string]int{
+				expectedTestName: {
 					"test-kubevirt-cnv-4.12-compute-ocs":     1,
 					"test-kubevirt-cnv-4.12-network-ovn-ocs": 1,
 					"test-kubevirt-cnv-4.12-operator-ocs":    1,
 					"test-kubevirt-cnv-4.12-quarantined-ocs": 1,
 					"test-kubevirt-cnv-4.12-storage-ocs":     1,
 				},
+			}, defaultGroupConfigs)).To(BeEquivalentTo(map[string]map[string][]string{
+				"storage": {
+					"4.12": []string{expectedTestName},
+				},
+			}))
+		})
+
+	})
+
+	Context("multiple", func() {
+
+		const computeExpectedTestName = "[Serial][ref_id:2717][sig-compute]KubeVirt control plane resilience pod eviction evicting pods of control plane [test_id:2799]last eviction should fail for multi-replica virt-api pods"
+		It("does encounter run test per version", func() {
+			Expect(runFilter(&map[string]map[string]int{
+				computeExpectedTestName: {
+					"test-kubevirt-cnv-4.11-compute-ocs":     2,
+					"test-kubevirt-cnv-4.11-network-ovn-ocs": 1,
+					"test-kubevirt-cnv-4.11-operator-ocs":    1,
+					"test-kubevirt-cnv-4.11-quarantined-ocs": 1,
+					"test-kubevirt-cnv-4.11-storage-ocs":     1,
+					"test-kubevirt-cnv-4.12-compute-ocs":     2,
+					"test-kubevirt-cnv-4.12-network-ovn-ocs": 1,
+					"test-kubevirt-cnv-4.12-operator-ocs":    1,
+					"test-kubevirt-cnv-4.12-quarantined-ocs": 1,
+					"test-kubevirt-cnv-4.12-storage-ocs":     1,
+					"test-kubevirt-cnv-4.13-compute-ocs":     2,
+					"test-kubevirt-cnv-4.13-network-ovn-ocs": 1,
+					"test-kubevirt-cnv-4.13-operator-ocs":    1,
+					"test-kubevirt-cnv-4.13-quarantined-ocs": 1,
+					"test-kubevirt-cnv-4.13-storage-ocs":     1,
+				},
+			}, defaultGroupConfigs)).To(BeEmpty())
+		})
+
+		It("doesn't encounter run test for all versions", func() {
+			Expect(runFilter(&map[string]map[string]int{
+				computeExpectedTestName: {
+					"test-kubevirt-cnv-4.11-compute-ocs":     2,
+					"test-kubevirt-cnv-4.11-network-ovn-ocs": 1,
+					"test-kubevirt-cnv-4.11-operator-ocs":    1,
+					"test-kubevirt-cnv-4.11-quarantined-ocs": 1,
+					"test-kubevirt-cnv-4.11-storage-ocs":     1,
+					"test-kubevirt-cnv-4.12-compute-ocs":     1,
+					"test-kubevirt-cnv-4.12-network-ovn-ocs": 1,
+					"test-kubevirt-cnv-4.12-operator-ocs":    1,
+					"test-kubevirt-cnv-4.12-quarantined-ocs": 1,
+					"test-kubevirt-cnv-4.12-storage-ocs":     1,
+					"test-kubevirt-cnv-4.13-compute-ocs":     1,
+					"test-kubevirt-cnv-4.13-network-ovn-ocs": 1,
+					"test-kubevirt-cnv-4.13-operator-ocs":    1,
+					"test-kubevirt-cnv-4.13-quarantined-ocs": 1,
+					"test-kubevirt-cnv-4.13-storage-ocs":     1,
+				},
+			}, defaultGroupConfigs)).To(BeEquivalentTo(map[string]map[string][]string{
+				"virtualization": {
+					"4.12": []string{computeExpectedTestName},
+					"4.13": []string{computeExpectedTestName},
+				},
+			}))
+		})
+
+	})
+
+	Context("ssp", func() {
+
+		It("removes run ssp tests", func() {
+			Expect(runFilter(&map[string]map[string]int{
+				"DataSources without DataImportCron templates with added CDI label [test_id:8294] should remove CDI label from DataSource": {
+					"test-ssp-cnv-4.11": 2,
+					"test-ssp-cnv-4.12": 2,
+				},
+			}, defaultGroupConfigs)).To(BeEmpty())
+		})
+
+		It("doesn't remove skipped ssp tests", func() {
+			Expect(runFilter(&map[string]map[string]int{
+				"DataSources with DataImportCron template without existing PVC [QUARANTINE][test_id:8112] should restore DataSource if DataImportCron removed from SSP CR": {
+					"test-ssp-cnv-4.12": 1,
+				},
+			}, defaultGroupConfigs)).To(BeEquivalentTo(map[string]map[string][]string{
+				"ssp": {
+					"4.12": []string{
+						"DataSources with DataImportCron template without existing PVC [QUARANTINE][test_id:8112] should restore DataSource if DataImportCron removed from SSP CR",
+					},
+				},
+			}))
+		})
+
+	})
+
+	const unknownSIGTestName = "Ensure stable functionality by repeately starting vmis many times without issues"
+
+	PIt("can not assign test to any sig", func() {
+		Expect(runFilter(&map[string]map[string]int{
+			unknownSIGTestName: {
+				"test-kubevirt-cnv-4.11-compute-ocs":     1,
+				"test-kubevirt-cnv-4.11-network-ovn-ocs": 1,
+				"test-kubevirt-cnv-4.11-operator-ocs":    1,
+				"test-kubevirt-cnv-4.11-quarantined-ocs": 1,
+				"test-kubevirt-cnv-4.11-storage-ocs":     1,
+				"test-kubevirt-cnv-4.12-compute-ocs":     1,
+				"test-kubevirt-cnv-4.12-network-ovn-ocs": 1,
+				"test-kubevirt-cnv-4.12-operator-ocs":    1,
+				"test-kubevirt-cnv-4.12-quarantined-ocs": 1,
+				"test-kubevirt-cnv-4.12-storage-ocs":     1,
+				"test-kubevirt-cnv-4.13-compute-ocs":     1,
+				"test-kubevirt-cnv-4.13-network-ovn-ocs": 1,
+				"test-kubevirt-cnv-4.13-operator-ocs":    1,
+				"test-kubevirt-cnv-4.13-quarantined-ocs": 1,
+				"test-kubevirt-cnv-4.13-storage-ocs":     1,
 			},
-		)).To(BeEquivalentTo(
-			[]string{
-				"[sig-storage] [rfe_id:6364][[Serial]Guestfs Run libguestfs on PVCs with root Should successfully run guestfs command on a filesystem-based PVC with root",
+		}, defaultGroupConfigs)).To(BeEquivalentTo(
+			map[string]map[string][]string{
+				"unknown": {
+					"4.11": []string{
+						"Ensure stable functionality by repeately starting vmis many times without issues",
+					},
+					"4.12": []string{
+						"Ensure stable functionality by repeately starting vmis many times without issues",
+					},
+					"4.13": []string{
+						"Ensure stable functionality by repeately starting vmis many times without issues",
+					},
+				},
 			},
 		))
 	})
