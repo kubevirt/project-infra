@@ -113,27 +113,38 @@ func runFilter(input *map[string]map[string]int, groupConfigs groupConfigs) map[
 			if !currentGroupConfig.sig.MatchString(testName) {
 				continue
 			}
-			testRunPerVersion := map[string]bool{}
+
+			type testState struct {
+				run         bool
+				unsupported bool
+			}
+			testStatePerVersion := map[string]*testState{}
+
 			for testLane, testExecution := range testLanesToExecutions {
 				if !currentGroupConfig.lanes.MatchString(testLane) || !currentGroupConfig.version.MatchString(testLane) {
 					continue
 				}
 				version := currentGroupConfig.version.FindStringSubmatch(testLane)[1]
-				if _, exists := testRunPerVersion[version]; !exists {
-					testRunPerVersion[version] = false
+				if _, exists := testStatePerVersion[version]; !exists {
+					testStatePerVersion[version] = &testState{}
 				}
 				if testExecution == test_report.TestExecution_Run {
-					testRunPerVersion[version] = true
+					testStatePerVersion[version].run = true
+				}
+				if testExecution == test_report.TestExecution_Unsupported {
+					testStatePerVersion[version].unsupported = true
 				}
 			}
-			for version, testRun := range testRunPerVersion {
-				if !testRun {
-					if _, exists := groupsToVersions[currentGroupConfig.name]; !exists {
-						groupsToVersions[currentGroupConfig.name] = map[string]struct{}{}
-					}
-					if _, exists := groupsToVersions[currentGroupConfig.name][version]; !exists {
-						groupsToVersions[currentGroupConfig.name][version] = struct{}{}
-					}
+
+			for version, testStateForVersion := range testStatePerVersion {
+				if testStateForVersion.run || testStateForVersion.unsupported {
+					continue
+				}
+				if _, exists := groupsToVersions[currentGroupConfig.name]; !exists {
+					groupsToVersions[currentGroupConfig.name] = map[string]struct{}{}
+				}
+				if _, exists := groupsToVersions[currentGroupConfig.name][version]; !exists {
+					groupsToVersions[currentGroupConfig.name][version] = struct{}{}
 				}
 			}
 		}

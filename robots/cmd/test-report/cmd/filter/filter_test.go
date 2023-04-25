@@ -141,42 +141,58 @@ var _ = Describe("runFilter", func() {
 
 	})
 
-	const unknownSIGTestName = "Ensure stable functionality by repeately starting vmis many times without issues"
+	Context("unsupported", func() {
 
-	PIt("can not assign test to any sig", func() {
-		Expect(runFilter(&map[string]map[string]int{
-			unknownSIGTestName: {
-				"test-kubevirt-cnv-4.11-compute-ocs":     1,
-				"test-kubevirt-cnv-4.11-network-ovn-ocs": 1,
-				"test-kubevirt-cnv-4.11-operator-ocs":    1,
-				"test-kubevirt-cnv-4.11-quarantined-ocs": 1,
-				"test-kubevirt-cnv-4.11-storage-ocs":     1,
-				"test-kubevirt-cnv-4.12-compute-ocs":     1,
-				"test-kubevirt-cnv-4.12-network-ovn-ocs": 1,
-				"test-kubevirt-cnv-4.12-operator-ocs":    1,
-				"test-kubevirt-cnv-4.12-quarantined-ocs": 1,
-				"test-kubevirt-cnv-4.12-storage-ocs":     1,
-				"test-kubevirt-cnv-4.13-compute-ocs":     1,
-				"test-kubevirt-cnv-4.13-network-ovn-ocs": 1,
-				"test-kubevirt-cnv-4.13-operator-ocs":    1,
-				"test-kubevirt-cnv-4.13-quarantined-ocs": 1,
-				"test-kubevirt-cnv-4.13-storage-ocs":     1,
-			},
-		}, defaultGroupConfigs)).To(BeEquivalentTo(
-			map[string]map[string][]string{
-				"unknown": {
-					"4.11": []string{
-						"Ensure stable functionality by repeately starting vmis many times without issues",
-					},
+		It("removes unsupported tests", func() {
+			Expect(runFilter(&map[string]map[string]int{
+				"[Serial][sig-compute] Hyper-V enlightenments VMI with HyperV re-enlightenment enabled TSC frequency is not exposed on the cluster should be marked as non-migratable": {
+					"test-kubevirt-cnv-4.11-compute-ocs":     2,
+					"test-kubevirt-cnv-4.11-network-ovn-ocs": 1,
+					"test-kubevirt-cnv-4.11-operator-ocs":    1,
+					"test-kubevirt-cnv-4.11-quarantined-ocs": 1,
+					"test-kubevirt-cnv-4.11-storage-ocs":     1,
+					"test-kubevirt-cnv-4.12-compute-ocs":     3,
+					"test-kubevirt-cnv-4.12-network-ovn-ocs": 3,
+					"test-kubevirt-cnv-4.12-operator-ocs":    3,
+					"test-kubevirt-cnv-4.12-quarantined-ocs": 3,
+					"test-kubevirt-cnv-4.12-storage-ocs":     3,
+					"test-kubevirt-cnv-4.13-compute-ocs":     2,
+					"test-kubevirt-cnv-4.13-network-ovn-ocs": 1,
+					"test-kubevirt-cnv-4.13-operator-ocs":    1,
+					"test-kubevirt-cnv-4.13-quarantined-ocs": 1,
+					"test-kubevirt-cnv-4.13-storage-ocs":     1,
+				},
+			}, defaultGroupConfigs)).To(BeEmpty())
+		})
+
+		It("does not remove skipped tests", func() {
+			Expect(runFilter(&map[string]map[string]int{
+				"[Serial][sig-compute] Hyper-V enlightenments VMI with HyperV re-enlightenment enabled TSC frequency is not exposed on the cluster should be marked as non-migratable": {
+					"test-kubevirt-cnv-4.11-compute-ocs":     2,
+					"test-kubevirt-cnv-4.11-network-ovn-ocs": 1,
+					"test-kubevirt-cnv-4.11-operator-ocs":    1,
+					"test-kubevirt-cnv-4.11-quarantined-ocs": 1,
+					"test-kubevirt-cnv-4.11-storage-ocs":     1,
+					"test-kubevirt-cnv-4.12-compute-ocs":     1,
+					"test-kubevirt-cnv-4.12-network-ovn-ocs": 1,
+					"test-kubevirt-cnv-4.12-operator-ocs":    1,
+					"test-kubevirt-cnv-4.12-quarantined-ocs": 1,
+					"test-kubevirt-cnv-4.12-storage-ocs":     1,
+					"test-kubevirt-cnv-4.13-compute-ocs":     2,
+					"test-kubevirt-cnv-4.13-network-ovn-ocs": 1,
+					"test-kubevirt-cnv-4.13-operator-ocs":    1,
+					"test-kubevirt-cnv-4.13-quarantined-ocs": 1,
+					"test-kubevirt-cnv-4.13-storage-ocs":     1,
+				},
+			}, defaultGroupConfigs)).To(BeEquivalentTo(map[string]map[string][]string{
+				"virtualization": {
 					"4.12": []string{
-						"Ensure stable functionality by repeately starting vmis many times without issues",
-					},
-					"4.13": []string{
-						"Ensure stable functionality by repeately starting vmis many times without issues",
+						"[Serial][sig-compute] Hyper-V enlightenments VMI with HyperV re-enlightenment enabled TSC frequency is not exposed on the cluster should be marked as non-migratable",
 					},
 				},
-			},
-		))
+			}))
+		})
+
 	})
 
 })
