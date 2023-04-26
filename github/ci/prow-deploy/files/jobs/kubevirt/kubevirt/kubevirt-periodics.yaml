@@ -2398,3 +2398,44 @@ periodics:
         privileged: true
     nodeSelector:
       type: bare-metal-external
+- annotations:
+    testgrid-create-test-group: "false"
+  cluster: ibm-prow-jobs
+  decorate: true
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: project-infra
+    workdir: true
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  interval: 24h
+  labels:
+    preset-gcs-credentials: "true"
+  name: periodic-kubevirt-quarantined-tests-daily-report
+  spec:
+    containers:
+    - args:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -ce
+      - |
+        go install github.com/onsi/ginkgo/v2/ginkgo
+        export PATH="$PATH:/root/go/bin"
+        output_file_name="/tmp/index.html"
+        git_commit=$(cd ../kubevirt && git --no-pager log -1 --format=%H | tr -d '\n')
+        go run ./robots/cmd/test-label-analyzer/... stats \
+          --output-html=true \
+          --config-name quarantine \
+          --test-file-path $(cd ../kubevirt && pwd)/tests \
+          --remote-url "https://github.com/kubevirt/kubevirt/tree/${git_commit}/tests" \
+            > ${output_file_name}
+          gsutil cp ${output_file_name} gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/
+      command: [ "/bin/sh" ]
+      env:
+      - name: GIMME_GO_VERSION
+        value: "1.19"
+      image: quay.io/kubevirtci/golang:v20230105-1dbefc0
+      name: ""
+    resources: {}
