@@ -32,7 +32,29 @@ import (
 
 var filterCmd = &cobra.Command{
 	Use:   "filter",
-	Short: "filter takes the first argument as a json in format map[string]map[string]int and returns the test names of tests that have not run",
+	Short: "Filters the output of test-report execution into yaml into lists of not run tests, grouping them by team and version",
+	Long: `Filters the output of test-report execution into yaml into lists of not run tests, grouping them by team and version. This way it can still be filtered using yaml tools like mikefarah's yq
+
+Usage:
+
+	$ test-report filter /path/to/test-report.json
+
+Base output structure is
+
+	{team-shortname}:
+		"{version}":
+		- '{test-name-1}'
+		- ...
+		- '{test-name-n}'
+
+Note: all the tests that are not run due to being part of dont_run_tests.json are eliminated from this list.
+
+You can extract i.e. the test names for a specific version of a team like this:
+
+    $ yq r $HOME/Documents/test-report/not-run-tests.yaml 'storage."4.13"'
+
+See https://github.com/mikefarah/yq
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return fmt.Errorf("no file as argument given")
