@@ -5,7 +5,7 @@ presubmits:
       - release-v1.38
       - release-v1.43
       - release-v1.49
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -140,7 +140,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -174,7 +174,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -208,7 +208,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -246,7 +246,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -284,7 +284,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -318,7 +318,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -352,7 +352,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
