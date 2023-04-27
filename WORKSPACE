@@ -1705,6 +1705,27 @@ go_repository(
     version = "v0.0.0-20191106174202-0a2b9b5464df",
 )
 
+go_repository(
+    name = "com_github_r3labs_diff_v3",
+    importpath = "github.com/r3labs/diff/v3",
+    sum = "h1:CBKqf3XmNRHXKmdU7mZP1w7TV0pDyVCis1AUHtA4Xtg=",
+    version = "v3.0.1",
+)
+
+go_repository(
+    name = "com_github_vmihailenco_msgpack_v5",
+    importpath = "github.com/vmihailenco/msgpack/v5",
+    sum = "h1:5gO0H1iULLWGhs2H5tbAHIZTV8/cYafcFOr9znI5mJU=",
+    version = "v5.3.5",
+)
+
+go_repository(
+    name = "com_github_vmihailenco_tagparser_v2",
+    importpath = "github.com/vmihailenco/tagparser/v2",
+    sum = "h1:y09buUbR+b5aycVFQs/g70pqKVZNBmxwAhO7/IwNM9g=",
+    version = "v2.0.0",
+)
+
 gazelle_dependencies()
 
 register_toolchains("//:py_toolchain")
