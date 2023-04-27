@@ -412,8 +412,8 @@ go_repository(
 go_repository(
     name = "com_github_godbus_dbus_v5",
     importpath = "github.com/godbus/dbus/v5",
-    sum = "h1:9349emZab16e7zQvpmsbtjc18ykshndd8y2PG3sgJbA=",
-    version = "v5.0.4",
+    sum = "h1:mkgN1ofwASrYnJ5W6U/BxG15eXXXjirgZc7CLqkcaro=",
+    version = "v5.0.6",
 )
 
 go_repository(
@@ -1647,6 +1647,62 @@ go_repository(
     importpath = "modernc.org/z",
     sum = "h1:RTNHdsrOpeoSeOF4FbzTo8gBYByaJ5xT7NgZ9ZqRiJM=",
     version = "v1.5.1",
+)
+
+go_repository(
+    name = "com_github_checkpoint_restore_go_criu_v5",
+    importpath = "github.com/checkpoint-restore/go-criu/v5",
+    sum = "h1:wpFFOoomK3389ue2lAb0Boag6XPht5QYpipxmSNL4d8=",
+    version = "v5.3.0",
+)
+
+go_repository(
+    name = "com_github_cilium_ebpf",
+    importpath = "github.com/cilium/ebpf",
+    sum = "h1:1k/q3ATgxSXRdrmPfH8d7YK0GfqVsEKZAX9dQZvs56k=",
+    version = "v0.7.0",
+)
+
+go_repository(
+    name = "com_github_moby_sys_mountinfo",
+    importpath = "github.com/moby/sys/mountinfo",
+    sum = "h1:2Ks8/r6lopsxWi9m58nlwjaeSzUX9iiL1vj5qB/9ObI=",
+    version = "v0.5.0",
+)
+
+go_repository(
+    name = "com_github_mrunalp_fileutils",
+    importpath = "github.com/mrunalp/fileutils",
+    sum = "h1:NKzVxiH7eSk+OQ4M+ZYW1K6h27RUV3MI6NUTsHhU6Z4=",
+    version = "v0.5.0",
+)
+
+go_repository(
+    name = "com_github_opencontainers_selinux",
+    importpath = "github.com/opencontainers/selinux",
+    sum = "h1:rAiKF8hTcgLI3w0DHm6i0ylVVcOrlgR1kK99DRLDhyU=",
+    version = "v1.10.0",
+)
+
+go_repository(
+    name = "com_github_seccomp_libseccomp_golang",
+    importpath = "github.com/seccomp/libseccomp-golang",
+    sum = "h1:RpforrEYXWkmGwJHIGnLZ3tTWStkjVVstwzNGqxX2Ds=",
+    version = "v0.9.2-0.20220502022130-f33da4d89646",
+)
+
+go_repository(
+    name = "com_github_vishvananda_netlink",
+    importpath = "github.com/vishvananda/netlink",
+    sum = "h1:1iyaYNBLmP6L0220aDnYQpo1QEV4t4hJ+xEEhhJH8j0=",
+    version = "v1.1.0",
+)
+
+go_repository(
+    name = "com_github_vishvananda_netns",
+    importpath = "github.com/vishvananda/netns",
+    sum = "h1:OviZH7qLw/7ZovXvuNyL3XQl8UFofeikI1NW1Gypu7k=",
+    version = "v0.0.0-20191106174202-0a2b9b5464df",
 )
 
 gazelle_dependencies()

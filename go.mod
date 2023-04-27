@@ -18,10 +18,10 @@ require (
 	github.com/lnquy/cron v1.1.1
 	github.com/onsi/ginkgo/v2 v2.9.2
 	github.com/onsi/gomega v1.27.4
-	github.com/opencontainers/runc v1.1.5
 	github.com/prometheus/client_golang v1.14.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.6.0
+	golang.org/x/mod v0.9.0
 	golang.org/x/oauth2 v0.6.0
 	gonum.org/v1/plot v0.12.0
 	google.golang.org/api v0.114.0
@@ -158,6 +158,7 @@ replace (
 	cloud.google.com/go/storage => cloud.google.com/go/storage v1.30.1
 	github.com/Azure/go-autorest => github.com/Azure/go-autorest v14.2.0+incompatible
 	github.com/googleapis/gnostic => github.com/googleapis/gnostic v0.4.1
+	github.com/opencontainers/runc => github.com/opencontainers/runc v1.1.5
 	golang.org/x/lint => golang.org/x/lint v0.0.0-20190409202823-959b441ac422
 	k8s.io/apimachinery => k8s.io/apimachinery v0.26.1
 	k8s.io/client-go => k8s.io/client-go v0.26.1
