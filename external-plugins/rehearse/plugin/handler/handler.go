@@ -399,7 +399,7 @@ func (h *GitHubEventsHandler) generatePresubmits(
 	for presubmitKey, headPresubmit := range headPresubmits {
 		basePresubmit, exists := basePresubmits[presubmitKey]
 
-		if exists && reflect.DeepEqual(basePresubmit.Spec, headPresubmit.Spec) {
+		if exists && reflect.DeepEqual(basePresubmit, headPresubmit) {
 			continue
 		}
 		log.Infof("Detected modified or new presubmit: %s.", headPresubmit.Name)

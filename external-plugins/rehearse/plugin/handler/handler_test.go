@@ -182,57 +182,33 @@ var _ = Describe("PR filtering", func() {
 
 		var handler *GitHubEventsHandler
 		var headConfig *config.Config
+		var headConfigPresubmit config.Presubmit
 		var baseConfig *config.Config
+		var baseConfigPresubmit config.Presubmit
 		var pr *github.PullRequest
 
 		BeforeEach(func() {
 			handler = &GitHubEventsHandler{}
+			headConfigPresubmit = config.Presubmit{
+				JobBase: config.JobBase{
+					Name: "testJob",
+					Spec: newPodSpec(),
+				},
+				AlwaysRun:           false,
+				Optional:            false,
+				Trigger:             "",
+				RerunCommand:        "",
+				Brancher:            config.Brancher{},
+				RegexpChangeMatcher: config.RegexpChangeMatcher{},
+				Reporter:            config.Reporter{},
+				JenkinsSpec:         nil,
+			}
 			headConfig = &config.Config{
 				JobConfig: config.JobConfig{
 					Presets: nil,
 					PresubmitsStatic: map[string][]config.Presubmit{
 						"kubevirt/kubevirt": {
-							config.Presubmit{
-								JobBase: config.JobBase{
-									Name: "testJob",
-									Spec: &v1.PodSpec{
-										Containers: []v1.Container{
-											{
-												Name:                     "blah",
-												Image:                    "v2/test42",
-												Command:                  nil,
-												Args:                     nil,
-												WorkingDir:               "",
-												Ports:                    nil,
-												EnvFrom:                  nil,
-												Env:                      nil,
-												Resources:                v1.ResourceRequirements{},
-												VolumeMounts:             nil,
-												VolumeDevices:            nil,
-												LivenessProbe:            nil,
-												ReadinessProbe:           nil,
-												StartupProbe:             nil,
-												Lifecycle:                nil,
-												TerminationMessagePath:   "",
-												TerminationMessagePolicy: "",
-												ImagePullPolicy:          "",
-												SecurityContext:          nil,
-												Stdin:                    false,
-												StdinOnce:                false,
-												TTY:                      false,
-											},
-										},
-									},
-								},
-								AlwaysRun:           false,
-								Optional:            false,
-								Trigger:             "",
-								RerunCommand:        "",
-								Brancher:            config.Brancher{},
-								RegexpChangeMatcher: config.RegexpChangeMatcher{},
-								Reporter:            config.Reporter{},
-								JenkinsSpec:         nil,
-							},
+							headConfigPresubmit,
 						},
 					},
 					PostsubmitsStatic: nil,
@@ -242,24 +218,26 @@ var _ = Describe("PR filtering", func() {
 					DecorateAllJobs:   false,
 				},
 			}
+			baseConfigPresubmit = config.Presubmit{
+				JobBase: config.JobBase{
+					Name: "testJob",
+					Spec: newPodSpec(),
+				},
+				AlwaysRun:           false,
+				Optional:            false,
+				Trigger:             "",
+				RerunCommand:        "",
+				Brancher:            config.Brancher{},
+				RegexpChangeMatcher: config.RegexpChangeMatcher{},
+				Reporter:            config.Reporter{},
+				JenkinsSpec:         nil,
+			}
 			baseConfig = &config.Config{
 				JobConfig: config.JobConfig{
 					Presets: nil,
 					PresubmitsStatic: map[string][]config.Presubmit{
 						"kubevirt/kubevirt": {
-							config.Presubmit{
-								JobBase: config.JobBase{
-									Name: "testJob",
-								},
-								AlwaysRun:           false,
-								Optional:            false,
-								Trigger:             "",
-								RerunCommand:        "",
-								Brancher:            config.Brancher{},
-								RegexpChangeMatcher: config.RegexpChangeMatcher{},
-								Reporter:            config.Reporter{},
-								JenkinsSpec:         nil,
-							},
+							baseConfigPresubmit,
 						},
 					},
 					PostsubmitsStatic: nil,
@@ -278,7 +256,19 @@ var _ = Describe("PR filtering", func() {
 			}
 		})
 
-		It("generates a prowjob", func() {
+		It("doesn't generate a prowjob without changes", func() {
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			Expect(presubmits).To(BeEmpty())
+		})
+
+		It("generates a prowjob if spec changes", func() {
+			headConfigPresubmit.Spec.Containers[0].Image = "v2/test37"
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			Expect(presubmits).ToNot(BeEmpty())
+		})
+
+		It("generates a prowjob if context changes", func() {
+			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Cluster = "new-cluster"
 			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
 			Expect(presubmits).ToNot(BeEmpty())
 		})
@@ -408,3 +398,34 @@ Gna meh whatever
 	})
 
 })
+
+func newPodSpec() *v1.PodSpec {
+	return &v1.PodSpec{
+		Containers: []v1.Container{
+			{
+				Name:                     "blah",
+				Image:                    "v2/test42",
+				Command:                  nil,
+				Args:                     nil,
+				WorkingDir:               "",
+				Ports:                    nil,
+				EnvFrom:                  nil,
+				Env:                      nil,
+				Resources:                v1.ResourceRequirements{},
+				VolumeMounts:             nil,
+				VolumeDevices:            nil,
+				LivenessProbe:            nil,
+				ReadinessProbe:           nil,
+				StartupProbe:             nil,
+				Lifecycle:                nil,
+				TerminationMessagePath:   "",
+				TerminationMessagePolicy: "",
+				ImagePullPolicy:          "",
+				SecurityContext:          nil,
+				Stdin:                    false,
+				StdinOnce:                false,
+				TTY:                      false,
+			},
+		},
+	}
+}
