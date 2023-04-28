@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/r3labs/diff/v3"
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -399,10 +401,15 @@ func (h *GitHubEventsHandler) generatePresubmits(
 	for presubmitKey, headPresubmit := range headPresubmits {
 		basePresubmit, exists := basePresubmits[presubmitKey]
 
-		if exists && reflect.DeepEqual(basePresubmit.Spec, headPresubmit.Spec) {
+		if exists && reflect.DeepEqual(basePresubmit, headPresubmit) {
 			continue
 		}
 		log.Infof("Detected modified or new presubmit: %s.", headPresubmit.Name)
+		changelog, err := diff.Diff(basePresubmit, headPresubmit)
+		if err != nil {
+			log.Errorf("could not diff presubmits: %v", err)
+		}
+		log.Infof("differences detected:/n%v", changelog)
 
 		job := pjutil.NewPresubmit(*pr, pr.Base.SHA, headPresubmit, eventGUID, map[string]string{})
 
@@ -479,6 +486,15 @@ func (h *GitHubEventsHandler) loadConfigsAtRef(
 		if err != nil {
 			log.WithError(err).Errorf("Could not load job config from path %s at git ref %s", jobConfigTmp, ref)
 			return nil, err
+		}
+		// `config.Load` sets field `.JobBase.SourcePath` inside each job to the path from where the config was
+		// read, thus a deep equals can not succeed if two (otherwise identical) configs are read from different
+		// directories as we do here
+		// thus we need to reset the SourcePath to the original value for each job config
+		for _, presubmits := range pc.PresubmitsStatic {
+			for index, _ := range presubmits {
+				presubmits[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
+			}
 		}
 		configs[changedJobConfig] = pc
 	}

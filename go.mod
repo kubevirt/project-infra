@@ -18,10 +18,10 @@ require (
 	github.com/lnquy/cron v1.1.1
 	github.com/onsi/ginkgo/v2 v2.9.2
 	github.com/onsi/gomega v1.27.4
-	github.com/opencontainers/runc v1.1.5
 	github.com/prometheus/client_golang v1.14.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.6.0
+	golang.org/x/mod v0.9.0
 	golang.org/x/oauth2 v0.6.0
 	gonum.org/v1/plot v0.12.0
 	google.golang.org/api v0.114.0
@@ -112,6 +112,7 @@ require (
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
+	github.com/r3labs/diff/v3 v3.0.1 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shurcooL/githubv4 v0.0.0-20210725200734-83ba7b4c9228 // indirect
@@ -119,6 +120,8 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tektoncd/pipeline v0.13.1-0.20200625065359-44f22a067b75 // indirect
 	github.com/trivago/tgo v1.0.1 // indirect
+	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
+	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go4.org v0.0.0-20201209231011-d4a079459e60 // indirect
@@ -158,6 +161,7 @@ replace (
 	cloud.google.com/go/storage => cloud.google.com/go/storage v1.30.1
 	github.com/Azure/go-autorest => github.com/Azure/go-autorest v14.2.0+incompatible
 	github.com/googleapis/gnostic => github.com/googleapis/gnostic v0.4.1
+	github.com/opencontainers/runc => github.com/opencontainers/runc v1.1.5
 	golang.org/x/lint => golang.org/x/lint v0.0.0-20190409202823-959b441ac422
 	k8s.io/apimachinery => k8s.io/apimachinery v0.26.1
 	k8s.io/client-go => k8s.io/client-go v0.26.1
