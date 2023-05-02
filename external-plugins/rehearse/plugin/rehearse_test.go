@@ -691,7 +691,7 @@ var _ = Describe("Rehearse", func() {
 
 					handlerEvent, err := makeHandlerPullRequestEvent(&event)
 					Expect(err).ShouldNot(HaveOccurred())
-					go eventsHandler.Handle(handlerEvent)
+					eventsHandler.Handle(handlerEvent)
 
 					By("Inspecting the response and the actions on the client", func() {
 						Expect(prowc.Actions()).Should(HaveLen(0))
@@ -1069,12 +1069,38 @@ var _ = Describe("Rehearse", func() {
 
 		var gitrepo *localgit.LocalGit
 		var gitClientFactory git2.ClientFactory
+		var sendIssueCommentEventToRehearsalServer func(gh *fakegithub.FakeClient, event *github.IssueCommentEvent) *fake.FakeProwV1
 
 		BeforeEach(func() {
 			var err error
 
 			gitrepo, gitClientFactory, err = localgit.NewV2()
 			Expect(err).ShouldNot(HaveOccurred())
+
+			sendIssueCommentEventToRehearsalServer = func(gh *fakegithub.FakeClient, event *github.IssueCommentEvent) *fake.FakeProwV1 {
+				prowc := &fake.FakeProwV1{
+					Fake: &testing.Fake{},
+				}
+				fakelog := logrus.New()
+				eventsChan := make(chan *handler.GitHubEvent)
+				eventsHandler := handler.NewGitHubEventsHandler(
+					eventsChan,
+					fakelog,
+					prowc.ProwJobs("test-ns"),
+					gh,
+					"prowconfig.yaml",
+					"",
+					true,
+					gitClientFactory)
+
+				handlerEvent, err := makeHandlerIssueCommentEvent(event)
+				Expect(err).ShouldNot(HaveOccurred())
+
+				eventsHandler.Handle(handlerEvent)
+
+				return prowc
+			}
+
 		})
 
 		AfterEach(func() {
@@ -1188,7 +1214,7 @@ var _ = Describe("Rehearse", func() {
 				})
 
 				gh := &fakegithub.FakeClient{}
-				var event github.IssueCommentEvent
+				var event *github.IssueCommentEvent
 
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
@@ -1220,7 +1246,7 @@ var _ = Describe("Rehearse", func() {
 						},
 					}
 
-					event = github.IssueCommentEvent{
+					event = &github.IssueCommentEvent{
 						Action: github.IssueCommentActionCreated,
 						Comment: github.IssueComment{
 							Body: "/rehearse",
@@ -1249,24 +1275,7 @@ var _ = Describe("Rehearse", func() {
 
 				By("Sending the event to the rehearsal server", func() {
 
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-					handlerEvent, err := makeHandlerIssueCommentEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
+					prowc := sendIssueCommentEventToRehearsalServer(gh, event)
 
 					By("Inspecting the response and the actions on the client", func() {
 						Expect(prowc.Actions()).Should(HaveLen(1))
@@ -1343,7 +1352,7 @@ var _ = Describe("Rehearse", func() {
 				})
 
 				gh := &fakegithub.FakeClient{}
-				var event github.IssueCommentEvent
+				var event *github.IssueCommentEvent
 
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
@@ -1354,7 +1363,7 @@ var _ = Describe("Rehearse", func() {
 					}
 				})
 				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.IssueCommentEvent{
+					event = &github.IssueCommentEvent{
 						Action: github.IssueCommentActionCreated,
 						Comment: github.IssueComment{
 							Body: "/rehearse",
@@ -1399,25 +1408,7 @@ var _ = Describe("Rehearse", func() {
 
 				By("Sending the event to the rehearsal server", func() {
 
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerIssueCommentEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
+					prowc := sendIssueCommentEventToRehearsalServer(gh, event)
 
 					By("Inspecting the response and the actions on the client", func() {
 						Expect(prowc.Actions()).Should(HaveLen(0))
@@ -1515,7 +1506,7 @@ var _ = Describe("Rehearse", func() {
 				})
 
 				gh := &fakegithub.FakeClient{}
-				var event github.IssueCommentEvent
+				var event *github.IssueCommentEvent
 
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
@@ -1524,7 +1515,7 @@ var _ = Describe("Rehearse", func() {
 					}
 				})
 				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.IssueCommentEvent{
+					event = &github.IssueCommentEvent{
 						Action: github.IssueCommentActionCreated,
 						Comment: github.IssueComment{
 							Body: "/rehearse",
@@ -1569,25 +1560,7 @@ var _ = Describe("Rehearse", func() {
 
 				By("Sending the event to the rehearsal server", func() {
 
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerIssueCommentEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
+					prowc := sendIssueCommentEventToRehearsalServer(gh, event)
 
 					By("Inspecting the response and the actions on the client", func() {
 						Expect(prowc.Actions()).Should(HaveLen(0))
@@ -1679,7 +1652,7 @@ var _ = Describe("Rehearse", func() {
 				})
 
 				gh := &fakegithub.FakeClient{}
-				var event github.IssueCommentEvent
+				var event *github.IssueCommentEvent
 
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
@@ -1688,7 +1661,7 @@ var _ = Describe("Rehearse", func() {
 					}
 				})
 				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.IssueCommentEvent{
+					event = &github.IssueCommentEvent{
 						Action: github.IssueCommentActionCreated,
 						Comment: github.IssueComment{
 							Body: "/rehearse",
@@ -1733,25 +1706,7 @@ var _ = Describe("Rehearse", func() {
 
 				By("Sending the event to the rehearsal server", func() {
 
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerIssueCommentEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
+					prowc := sendIssueCommentEventToRehearsalServer(gh, event)
 
 					By("Inspecting the response and the actions on the client", func() {
 						Expect(prowc.Actions()).Should(HaveLen(0))
@@ -1868,11 +1823,11 @@ var _ = Describe("Rehearse", func() {
 				})
 
 				gh := &fakegithub.FakeClient{}
-				var event github.IssueCommentEvent
+				var event *github.IssueCommentEvent
 
 				testuser := "testuser"
 				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.IssueCommentEvent{
+					event = &github.IssueCommentEvent{
 						Action: github.IssueCommentActionCreated,
 						Comment: github.IssueComment{
 							Body: "/rehearse",
@@ -1924,25 +1879,7 @@ var _ = Describe("Rehearse", func() {
 
 				By("Sending the event to the rehearsal server", func() {
 
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerIssueCommentEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
+					prowc := sendIssueCommentEventToRehearsalServer(gh, event)
 
 					By("Inspecting the response and the actions on the client", func() {
 						Expect(prowc.Actions()).Should(HaveLen(1))
@@ -2062,11 +1999,11 @@ var _ = Describe("Rehearse", func() {
 				})
 
 				gh := &fakegithub.FakeClient{}
-				var event github.IssueCommentEvent
+				var event *github.IssueCommentEvent
 
 				testuser := "testuser"
 				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.IssueCommentEvent{
+					event = &github.IssueCommentEvent{
 						Action: github.IssueCommentActionCreated,
 						Comment: github.IssueComment{
 							Body: "/rehearse",
@@ -2111,25 +2048,7 @@ var _ = Describe("Rehearse", func() {
 
 				By("Sending the event to the rehearsal server", func() {
 
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerIssueCommentEvent(&event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
+					prowc := sendIssueCommentEventToRehearsalServer(gh, event)
 
 					By("Inspecting the response and the actions on the client", func() {
 						Expect(prowc.Actions()).Should(HaveLen(0))
