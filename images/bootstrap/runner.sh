@@ -91,7 +91,7 @@ if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
     )
     # the service can be started but the socket not ready, wait for ready
     WAIT_N=0
-    MAX_WAIT=10
+    MAX_WAIT=20
     while true; do
         # wait for podman socket to be ready
         curl --unix-socket "${PODMAN_SOCKET}" http://d/v3.0.0/libpod/info >/dev/null 2>&1 && break
