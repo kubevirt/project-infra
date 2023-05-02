@@ -28,6 +28,14 @@ metadata:
 apiVersion: v1
 kind: Node
 metadata:
+  name: kubevirt-sm-bm02.rhvcnv-devops.cloud
+  labels:
+    type: bare-metal-external
+    hardwareSupport: sriov-nic
+---
+apiVersion: v1
+kind: Node
+metadata:
   name: kubevirt-sm-bm03.rhvcnv-devops.cloud
   labels:
     type: bare-metal-external
@@ -56,7 +64,29 @@ metadata:
 apiVersion: v1
 kind: Node
 metadata:
+  name: kubevirt-sm-bm07.rhvcnv-devops.cloud
+  labels:
+    type: bare-metal-external
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: kubevirt-sm-bm08.rhvcnv-devops.cloud
+  labels:
+    type: bare-metal-external
+---
+apiVersion: v1
+kind: Node
+metadata:
   name: kubevirt-sm-bm09.rhvcnv-devops.cloud
+  labels:
+    type: bare-metal-external
+    hardwareSupport: gpu
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: kubevirt-sm-bm10.rhvcnv-devops.cloud
   labels:
     type: bare-metal-external
     hardwareSupport: gpu

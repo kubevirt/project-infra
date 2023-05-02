@@ -466,7 +466,7 @@ postsubmits:
               memory: "8Gi"
     - name: post-project-infra-kubevirt-prow-workloads-deployment
       always_run: false
-      run_if_changed: "github/ci/prow-deploy/kustom/overlays/kubevirt-prow-workloads/.*|github/ci/prow-deploy/kustom/componenets/.*"
+      run_if_changed: "github/ci/prow-deploy/kustom/overlays/kubevirt-prow-workloads/.*|github/ci/prow-deploy/kustom/components/.*"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
