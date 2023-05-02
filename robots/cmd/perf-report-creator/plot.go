@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"image/color"
@@ -10,6 +11,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"text/template"
 	"time"
 
 	grob "github.com/MetalBlueberry/go-plotly/graph_objects"
@@ -194,6 +196,36 @@ func drawDynamicGraph(filepath string, data PlotData) error {
 	return nil
 }
 
+func figFromData(data PlotData) *grob.Fig {
+	fig := &grob.Fig{
+		Data: grob.Traces{
+			&grob.Scatter{
+				Name:  "individual metrics",
+				X:     data.Curves[0].X,
+				Y:     data.Curves[0].Y,
+				Mode:  "markers",
+				Xaxis: data.XAxisLabel,
+				Yaxis: data.YAxisLabel,
+			},
+			&grob.Scatter{
+				Name:  "weekly averages",
+				X:     data.Curves[1].X,
+				Y:     data.Curves[1].Y,
+				Mode:  "lines",
+				Xaxis: data.XAxisLabel,
+				Yaxis: data.YAxisLabel,
+			},
+		},
+		Layout: &grob.Layout{
+			Title: &grob.LayoutTitle{
+				Text: data.Title,
+			},
+			Xaxis: &grob.LayoutXaxis{Type: grob.LayoutXaxisTypeDate},
+		},
+	}
+	return fig
+}
+
 func transformForStaticGraph(x []string, y []float64) (plotter.XYs, error) {
 	pts := make(plotter.XYs, len(x))
 
@@ -214,6 +246,7 @@ func transformForStaticGraph(x []string, y []float64) (plotter.XYs, error) {
 func plotWeeklyGraph(opts weeklyGraphOpts) error {
 
 	var errs []error
+	var figs []*grob.Fig
 	metrics := strings.Split(opts.metricList, ",")
 	for _, metric := range metrics {
 		data, err := gatherPlotData(opts.weeklyReportsDir, opts.resource, ResultType(metric))
@@ -236,17 +269,56 @@ func plotWeeklyGraph(opts weeklyGraphOpts) error {
 			}
 		}
 		// todo: plotly HTML
-		err = drawDynamicGraph(filepath.Join(opts.weeklyReportsDir, opts.resource, metric, "index.html"), PlotData{
+		figs = append(figs, figFromData(PlotData{
 			Title:      fmt.Sprintf("Weekly %s for %s", metric, opts.resource),
 			XAxisLabel: "Start date of week",
 			YAxisLabel: "Metric Value",
 			Curves:     data,
-		})
-		if err != nil {
-			errs = append(errs, err)
-			fmt.Println("error drawing a static graph for metric", err)
-			fmt.Println("ignoring")
-		}
+		}))
 	}
+	ToHtml(figs, filepath.Join(opts.weeklyReportsDir, opts.resource, "index.html"))
+
 	return errors.NewAggregate(errs)
 }
+
+// ToHtml saves the figure as standalone HTML. It still requires internet to load plotly.js from CDN.
+func ToHtml(figs []*grob.Fig, path string) {
+	buf := figToBuffer(figs)
+	ioutil.WriteFile(path, buf.Bytes(), os.ModePerm)
+}
+
+func figToBuffer(figs []*grob.Fig) *bytes.Buffer {
+	figBytesList := []string{}
+	for _, fig := range figs {
+		figBytes, err := json.Marshal(fig)
+		if err != nil {
+			panic(err)
+		}
+		figBytesList = append(figBytesList, string(figBytes))
+	}
+
+	tmpl, err := template.New("plotly").Parse(baseHtml)
+	if err != nil {
+		panic(err)
+	}
+	buf := &bytes.Buffer{}
+	tmpl.Execute(buf, figBytesList)
+	return buf
+}
+
+var baseHtml = `
+	<head>
+		<script src="https://cdn.plot.ly/plotly-1.58.4.min.js"></script>
+	</head>
+	</body>
+		{{range $i, $bytes := .}}
+		<div id="plot-{{$i}}"></div>
+		{{end}}
+	<script>
+		{{range $i, $bytes := .}}
+		data_{{$i}} = JSON.parse('{{ $bytes }}')
+		Plotly.newPlot('plot-{{$i}}', data_{{$i}});
+		{{end}}
+	</script>
+	<body>
+	`

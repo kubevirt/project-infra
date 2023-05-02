@@ -329,7 +329,7 @@ func getVMIResult(ctx context.Context, client *storage.Client, jobID string, per
 		return Result{}, err
 	}
 
-	jsonText, err := readLinesAndMatchRegex(reader, "create a batch of 100 VMIs should sucessfully create all VMIS")
+	jsonText, err := readLinesAndMatchRegex(reader, "\"Values\": {", 0)
 	if err != nil {
 		return Result{}, err
 	}
@@ -343,7 +343,7 @@ func getVMResult(ctx context.Context, client *storage.Client, jobID string, perf
 		return Result{}, err
 	}
 
-	lines, err := readLinesAndMatchRegex(reader, "create a batch of 100 running VMs should sucessfully create all VMS")
+	lines, err := readLinesAndMatchRegex(reader, "\"Values\": {", 1)
 	if err != nil {
 		log.Printf("job: %s, error running readLinesAndMatchRegex. %+v\n", jobID, err)
 		return Result{}, err
@@ -356,16 +356,22 @@ func getBuildLogReaderForJob(ctx context.Context, client *storage.Client, jobID 
 	return client.Bucket(BucketName).Object(objPath).NewReader(ctx)
 }
 
-func readLinesAndMatchRegex(file io.Reader, jsonStartRegex string) (string, error) {
+func readLinesAndMatchRegex(file io.Reader, valuesRegex string, instance int) (string, error) {
 	jsonEndRegex := "^\\}$"
-	startRegex := regexp.MustCompile(jsonStartRegex)
+	startRegex := regexp.MustCompile(valuesRegex)
 	endRegex := regexp.MustCompile(jsonEndRegex)
 	scanner := bufio.NewScanner(file)
+	matchCount := 0
 
 	// Read each line of the file and compare it against the regular expression
 	for scanner.Scan() {
 		line := scanner.Text()
 		if startRegex.MatchString(line) {
+			if matchCount != instance {
+				matchCount += 1
+				continue
+			}
+			matchCount += 1
 			lines := []string{line}
 			for scanner.Scan() {
 				line := scanner.Text()
@@ -377,12 +383,12 @@ func readLinesAndMatchRegex(file io.Reader, jsonStartRegex string) (string, erro
 				break
 			}
 			// This is needed to make sure the starting of match is json object `{`
-			lines = lines[3:]
-			jsonText := strings.ReplaceAll(strings.Join(lines, ""), "\\n", " ")
+			//lines = lines[3:]
+			jsonText := "{" + strings.ReplaceAll(strings.Join(lines, ""), "\\n", " ")
 			if err := scanner.Err(); err != nil {
 				return "", err
 			}
-			return jsonText, nil
+			return strings.Trim(jsonText, "S"), nil
 		}
 	}
 
