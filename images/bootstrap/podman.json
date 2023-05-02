@@ -17,6 +17,9 @@
   "ipv6_enabled": true,
   "internal": false,
   "dns_enabled": true,
+  "network_dns_servers": [
+    "8.8.8.8"
+  ],
   "ipam_options": {
     "driver": "host-local"
   }
