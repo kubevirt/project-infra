@@ -16,7 +16,7 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-shared-images: "true"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   spec:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
@@ -59,7 +59,7 @@ periodics:
     preset-docker-mirror: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   spec:
     containers:
     - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
@@ -91,7 +91,7 @@ periodics:
   labels:
     preset-docker-mirror: "true"
     preset-github-credentials: "true"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   spec:
     containers:
     - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101

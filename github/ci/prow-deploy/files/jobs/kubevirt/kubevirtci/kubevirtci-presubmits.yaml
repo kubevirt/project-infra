@@ -240,7 +240,7 @@ presubmits:
           type: Directory
         name: vfio
   - always_run: false
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     labels:
       preset-docker-mirror-proxy: "true"
@@ -265,7 +265,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 20m0s
@@ -316,7 +316,7 @@ presubmits:
           type: Directory
         name: devices
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
@@ -332,7 +332,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.24 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
+        image: quay.io/kubevirtci/golang:v20230502-bfaa042
         name: ""
         resources:
           requests:
@@ -342,7 +342,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
@@ -358,7 +358,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.25 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
+        image: quay.io/kubevirtci/golang:v20230502-bfaa042
         name: ""
         resources:
           requests:
@@ -368,7 +368,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
@@ -384,7 +384,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.26-centos9 && KUBEVIRT_PSA='true' ../provision.sh
-        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
+        image: quay.io/kubevirtci/golang:v20230502-bfaa042
         name: ""
         resources:
           requests:
@@ -394,7 +394,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
@@ -410,7 +410,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.27 && KUBEVIRT_PSA='true' ../provision.sh
-        image: quay.io/kubevirtci/golang:v20230105-1dbefc0
+        image: quay.io/kubevirtci/golang:v20230502-bfaa042
         name: ""
         resources:
           requests:

@@ -20,7 +20,7 @@ postsubmits:
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: prow-workloads
+      cluster: kubevirt-prow-workloads
       spec:
         affinity:
           nodeAffinity:
