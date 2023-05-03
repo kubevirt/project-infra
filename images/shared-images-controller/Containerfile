@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/bootstrap:v20221222-8f66e7e as builder
+FROM quay.io/kubevirtci/bootstrap:v20230502-bfaa042 as builder
 
 WORKDIR /workspace
 
@@ -16,7 +16,7 @@ COPY ./ ./
 
 RUN go build .
 
-FROM quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
+FROM quay.io/kubevirtci/bootstrap:v20230502-bfaa042
 
 WORKDIR /
 

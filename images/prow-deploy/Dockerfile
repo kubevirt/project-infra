@@ -10,7 +10,7 @@ RUN git clone https://github.com/kubernetes/test-infra.git && \
   /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/hmac ./prow/cmd/hmac' && \
   hmac --help
 
-FROM quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
+FROM quay.io/kubevirtci/bootstrap:v20230502-bfaa042
 
 COPY --from=builder /usr/local/bin/config-bootstrapper /usr/local/bin/phony /usr/local/bin/hmac /usr/local/bin/
 
