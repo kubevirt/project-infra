@@ -15,7 +15,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-hyperconverged-cluster-operator-e2e-k8s-1.15.1
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       containers:
       - command:
@@ -45,7 +45,7 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     name: pull-hyperconverged-cluster-operator-e2e-ocp-4.3
     spec:
       containers:

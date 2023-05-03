@@ -15,7 +15,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 6
     name: pull-hyperconverged-cluster-operator-e2e-k8s-1.17
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       containers:
       - command:
