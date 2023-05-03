@@ -322,7 +322,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       vgpu: "true"
-    max_concurrency: 1
+    max_concurrency: 2
     name: pull-kubevirt-e2e-kind-1.25-vgpu
     skip_branches:
     - release-\d+\.\d+
