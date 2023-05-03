@@ -32,8 +32,8 @@ import (
 
 var filterCmd = &cobra.Command{
 	Use:   "filter",
-	Short: "Filters the output of test-report execution into yaml into lists of not run tests, grouping them by team and version",
-	Long: `Filters the output of test-report execution into yaml into lists of not run tests, grouping them by team and version. This way it can still be filtered using yaml tools like mikefarah's yq
+	Short: "Filters the output of test-report execution into yaml, containing lists of not run tests, grouping them by team and version",
+	Long: `Filters the output of test-report execution into yaml, containing lists of not run tests, grouping them by team and version. This way it can further be filtered using yaml tools like yq.
 
 Usage:
 
@@ -51,7 +51,7 @@ Note: all the tests that are not run due to being part of dont_run_tests.json ar
 
 You can extract i.e. the test names for a specific version of a team like this:
 
-    $ yq r $HOME/Documents/test-report/not-run-tests.yaml 'storage."4.13"'
+    $ yq '.storage."4.13".[]' $HOME/Documents/test-report/not-run-tests.yaml
 
 See https://github.com/mikefarah/yq
 `,
