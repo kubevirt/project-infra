@@ -14,7 +14,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 6
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     name: pull-hyperconverged-cluster-operator-e2e-k8s-1.17
     spec:
       containers:

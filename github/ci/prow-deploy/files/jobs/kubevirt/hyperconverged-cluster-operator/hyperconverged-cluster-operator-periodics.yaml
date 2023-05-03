@@ -20,7 +20,7 @@ periodics:
       repo: hyperconverged-cluster-operator
       base_ref: main
       work_dir: true
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   spec:
     nodeSelector:
       type: bare-metal-external
