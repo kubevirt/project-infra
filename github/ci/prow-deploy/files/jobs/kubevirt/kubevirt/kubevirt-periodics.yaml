@@ -1395,7 +1395,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 10 7,15,23 * * *
   decorate: true
   decoration_config:
@@ -1430,7 +1430,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.24-sig-network
-      image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+      image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
       name: ""
       resources:
         requests:
@@ -1583,7 +1583,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 20 0,8,16 * * *
   decorate: true
   decoration_config:
@@ -1618,7 +1618,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.25-sig-network
-      image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+      image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
       name: ""
       resources:
         requests:
@@ -1771,7 +1771,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 0 5 * * 0
   decorate: true
   decoration_config:
@@ -1812,7 +1812,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.26-centos9-sig-network-no-istio
-      image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+      image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
       name: ""
       resources:
         requests:
@@ -1824,7 +1824,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 30 1,9,17 * * *
   decorate: true
   decoration_config:
@@ -1861,7 +1861,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.26-centos9-sig-network
-      image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+      image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
       name: ""
       resources:
         requests:
@@ -2118,7 +2118,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 30 6,22 * * *
   decorate: true
   decoration_config:
@@ -2205,7 +2205,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: kubevirt-prow-workloads
   cron: 40 2,10,18 * * *
   decorate: true
   decoration_config:
@@ -2242,7 +2242,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.27-sig-network
-      image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+      image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
       name: ""
       resources:
         requests:

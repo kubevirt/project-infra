@@ -88,7 +88,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
+    cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1051,7 +1051,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1079,7 +1079,7 @@ presubmits:
           value: k8s-1.25-sig-network
         - name: KUBEVIRT_SINGLE_STACK
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+        image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
           requests:
@@ -1092,7 +1092,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1121,7 +1121,7 @@ presubmits:
           value: k8s-1.26-sig-network
         - name: KUBEVIRT_SINGLE_STACK
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+        image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
           requests:
@@ -1134,7 +1134,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1164,7 +1164,7 @@ presubmits:
           value: k8s-1.26-centos9-sig-network-no-istio
         - name: KUBEVIRT_WITH_MULTUS_V3
           value: "false"
-        image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+        image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
           requests:
@@ -1515,7 +1515,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1541,7 +1541,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.24-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+        image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
           requests:
@@ -1671,7 +1671,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1697,7 +1697,7 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.25-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+        image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
           requests:
@@ -1869,7 +1869,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1897,7 +1897,7 @@ presubmits:
           value: k8s-1.26-centos9-sig-network-no-istio
         - name: KUBEVIRT_PSA
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+        image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
           requests:
@@ -2104,7 +2104,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -2133,7 +2133,7 @@ presubmits:
           value: k8s-1.27-sig-network
         - name: KUBEVIRT_PSA
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+        image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
           requests:
