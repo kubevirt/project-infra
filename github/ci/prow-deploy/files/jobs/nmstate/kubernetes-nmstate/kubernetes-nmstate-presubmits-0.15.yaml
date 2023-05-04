@@ -41,7 +41,7 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror: "true"
         preset-shared-images: "true"
-      cluster: prow-workloads
+      cluster: kubevirt-prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
@@ -72,7 +72,7 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror: "true"
         preset-shared-images: "true"
-      cluster: prow-workloads
+      cluster: kubevirt-prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
@@ -104,7 +104,7 @@ presubmits:
         preset-docker-mirror: "true"
         preset-shared-images: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: prow-workloads
+      cluster: kubevirt-prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
