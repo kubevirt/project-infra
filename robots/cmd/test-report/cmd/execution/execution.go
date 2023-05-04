@@ -272,12 +272,13 @@ func runExecutionReport() error {
 	}
 	testNamesToJobNamesToExecutionStatus := test_report.GetTestNamesToJobNamesToTestExecutions(jobs, startOfReport, ctx, regexp.MustCompile(config.TestNamePattern), jobNamePatternForTestNames)
 
-	err = writeJsonBaseDataFile(testNamesToJobNamesToExecutionStatus)
+	data := test_report.CreateReportData(jobNamePatternsToTestNameFilterRegexps, testNamesToJobNamesToExecutionStatus)
+
+	err = writeJsonBaseDataFile(data.TestNamesToJobNamesToSkipped)
 	if err != nil {
 		logger.Fatalf("failed to write json data file: %v", err)
 	}
 
-	data := test_report.CreateReportData(jobNamePatternsToTestNameFilterRegexps, testNamesToJobNamesToExecutionStatus)
 	data.SetDataRange(startOfReport, endOfReport)
 	reportConfig, err := yaml.Marshal(config)
 	data.SetReportConfig(string(reportConfig))
