@@ -31,7 +31,7 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-kvp-functional-test
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     skip_branches:
       - release-\d+\.\d+
     annotations:
