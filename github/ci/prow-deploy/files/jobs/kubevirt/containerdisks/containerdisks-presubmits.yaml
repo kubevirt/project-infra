@@ -56,7 +56,7 @@ presubmits:
     optional: false
     annotations:
       testgrid-create-test-group: "false"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -91,7 +91,7 @@ presubmits:
     run_if_changed: "artifacts/centos/.*"
     annotations:
       testgrid-create-test-group: "false"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -126,7 +126,7 @@ presubmits:
     run_if_changed: "artifacts/centosstream/.*"
     annotations:
       testgrid-create-test-group: "false"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -161,7 +161,7 @@ presubmits:
     run_if_changed: "artifacts/fedora/.*"
     annotations:
       testgrid-create-test-group: "false"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -196,7 +196,7 @@ presubmits:
     run_if_changed: "artifacts/rhcos/.*|artifacts/rhcosprerelease/.*"
     annotations:
       testgrid-create-test-group: "false"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -231,7 +231,7 @@ presubmits:
     run_if_changed: "artifacts/ubuntu/.*"
     annotations:
       testgrid-create-test-group: "false"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
