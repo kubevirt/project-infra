@@ -947,6 +947,36 @@ postsubmits:
                 memory: "8Gi"
               limits:
                 memory: "8Gi"
+    - name: publish-test-report-image
+      always_run: false
+      run_if_changed: "robots/.*/test-report/.*"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      cluster: ibm-prow-jobs
+      max_concurrency: 1
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-kubevirtci-quay-credential: "true"
+        preset-bazel-cache: "true"
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                make -C ./robots/cmd/test-report push
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "8Gi"
+              limits:
+                memory: "8Gi"
     - name: post-project-infra-mirror-images-from-docker-hub
       always_run: false
       run_if_changed: "hack/mirror-images.sh|hack/images_to_mirror.csv"
