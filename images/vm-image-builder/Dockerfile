@@ -6,6 +6,7 @@ RUN dnf install -y \
     libguestfs-tools-c \
     libvirt \
     qemu-img \
+    qemu-system-aarch64 \
     genisoimage \
     virt-install && \
     dnf clean all && \
