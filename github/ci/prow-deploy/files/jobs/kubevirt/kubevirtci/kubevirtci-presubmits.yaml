@@ -315,6 +315,100 @@ presubmits:
           path: /dev
           type: Directory
         name: devices
+  - always_run: false
+    skip_report: false
+    cluster: kubevirt-prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 4h
+    run_if_changed: cluster-provision/images/vm-image-builder/.*\.sh$ | cluster-provision/images/vm-image-builder/fedora-with-test-tooling/.*
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 1
+    name: check-provision-fedora-with-test-tooling
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - start_libvirtd.sh && cd cluster-provision/images/vm-image-builder
+          && ./publish-multiarch-containerdisk.sh -b fedora-with-test-tooling kubevirtci quay.io
+        env:
+        - name: CONSOLE
+          value: "false"
+        image: quay.io/kubevirtci/vm-image-builder:v20230607-9021afd
+        name: ""
+        resources:
+          requests:
+            memory: 16G
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /dev
+          name: devices
+      nodeSelector:
+        type: bare-metal-external
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /dev
+          type: Directory
+        name: devices
+  - always_run: false
+    skip_report: false
+    cluster: kubevirt-prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 4h
+    run_if_changed: cluster-provision/images/vm-image-builder/.*\.sh$ | cluster-provision/images/vm-image-builder/fedora-realtime/.*
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 1
+    name: check-provision-fedora-realtime
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - start_libvirtd.sh && cd cluster-provision/images/vm-image-builder
+          && ./publish-multiarch-containerdisk.sh -b fedora-realtime kubevirtci quay.io
+        env:
+        - name: CONSOLE
+          value: "false"
+        image: quay.io/kubevirtci/vm-image-builder:v20230607-9021afd
+        name: ""
+        resources:
+          requests:
+            memory: 16G
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /dev
+          name: devices
+      nodeSelector:
+        type: bare-metal-external
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /dev
+          type: Directory
+        name: devices
   - always_run: true
     cluster: prow-workloads
     decorate: true
