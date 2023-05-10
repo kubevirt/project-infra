@@ -15,7 +15,7 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror: "false"
         preset-shared-images: "true"
-      cluster: prow-workloads
+      cluster: kubevirt-prow-workloads
       spec:
         containers:
           - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
@@ -41,7 +41,7 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
-      cluster: prow-workloads
+      cluster: kubevirt-prow-workloads
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
@@ -70,7 +70,7 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
-      cluster: prow-workloads
+      cluster: kubevirt-prow-workloads
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
