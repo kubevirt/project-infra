@@ -240,7 +240,7 @@ presubmits:
           type: Directory
         name: vfio
   - always_run: false
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     labels:
       preset-docker-mirror-proxy: "true"
@@ -265,7 +265,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 20m0s
@@ -316,7 +316,7 @@ presubmits:
           type: Directory
         name: devices
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
@@ -342,7 +342,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
@@ -368,7 +368,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
@@ -394,7 +394,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
