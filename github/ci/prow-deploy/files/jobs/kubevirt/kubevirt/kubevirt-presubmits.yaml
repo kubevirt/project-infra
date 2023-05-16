@@ -386,7 +386,7 @@ presubmits:
           path: /var/log/audit
           type: Directory
         name: audit
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
@@ -404,7 +404,7 @@ presubmits:
       rehearsal.allowed: "true"
       sriov-pod: "true"
     max_concurrency: 10
-    name: pull-kubevirt-e2e-kind-1.23-sriov
+    name: pull-kubevirt-e2e-kind-1.27-sriov
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -433,7 +433,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: kind-1.23-sriov
+          value: kind-1.27-sriov
         image: quay.io/kubevirtci/bootstrap-legacy:v20220810-a8f2e6c
         name: ""
         resources:
