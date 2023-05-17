@@ -31,6 +31,7 @@ orgs:
       - akrejcir
       - alicefr
       - AlonaKaplan
+      - alaypatel07
       - alonsadan
       - alosadagrande
       - alromeros
@@ -555,6 +556,9 @@ orgs:
         description: Officially built and maintained containerdisks of the KubeVirt project
         default_branch: main
         has_projects: true
+      ci-performance-benchmarks:
+        description: Store for performance results of perf-report-creator
+        default_branch: main
     teams:
       QE:
         description: ""
@@ -943,3 +947,11 @@ orgs:
          - vasiliy-ul
          - acardace
          - alicefr
+      sig-scale:
+        description: members of the scale and performance group
+        members:
+        - alaypatel07
+        - rthallisey
+        - xpivarc
+        repos:
+          ci-performance-benchmarks: admin
