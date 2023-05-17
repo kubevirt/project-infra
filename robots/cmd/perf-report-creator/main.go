@@ -195,8 +195,8 @@ func readCollection(resultsDir string) (*Collection, error) {
 		}
 		record := struct {
 			JobDirCreationTime time.Time
-			VMIResult          Result
-			VMResult           Result
+			VMIResult          *Result
+			VMResult           *Result
 		}{}
 		d := json.NewDecoder(f)
 		err = d.Decode(&record)
@@ -242,8 +242,8 @@ type YearWeek struct {
 
 type Collection map[string]struct {
 	JobDirCreationTime time.Time
-	VMIResult          Result
-	VMResult           Result
+	VMIResult          *Result
+	VMResult           *Result
 }
 
 func listAllRunsForJob(ctx context.Context, client *storage.Client, jobName string) ([]string, error) {
@@ -275,16 +275,19 @@ func extractCollectionFromLogs(ctx context.Context, storageClient *storage.Clien
 			log.Printf("job: %s, error getting VMI Result. %+v\n", j, err)
 			errs = append(errs, err)
 		}
-		vmResult, err := getVMResult(ctx, storageClient, j, performanceJobName)
-		if err != nil {
-			log.Printf("job: %s, error getting VM Result. %+v\n", j, err)
-			errs = append(errs, err)
+		var vmResult *Result
+		if !strings.Contains(performanceJobName, "density") {
+			vmResult, err = getVMResult(ctx, storageClient, j, performanceJobName)
+			if err != nil {
+				log.Printf("job: %s, error getting VM Result. %+v\n", j, err)
+				errs = append(errs, err)
+			}
 		}
 
 		r[j] = struct {
 			JobDirCreationTime time.Time
-			VMIResult          Result
-			VMResult           Result
+			VMIResult          *Result
+			VMResult           *Result
 		}{
 			creationTime,
 			vmiResult,
@@ -304,6 +307,10 @@ func getWeeklyVMIResults(results *Collection) (map[YearWeek][]ResultWithDate, er
 		year, week := value.JobDirCreationTime.ISOWeek() // get the Year and Week number of the date
 		yw := YearWeek{Year: year, Week: week}
 		_, ok := weeklyData[yw]
+		if value.VMIResult == nil {
+			log.Printf("VMIResult for date %s is empty, skipping\n", value.JobDirCreationTime)
+			continue
+		}
 		if ok {
 			weeklyData[yw] = append(weeklyData[yw], ResultWithDate{Values: value.VMIResult.Values, Date: &value.JobDirCreationTime})
 			continue
@@ -323,30 +330,30 @@ func getDateForJob(ctx context.Context, client *storage.Client, jobID string, pe
 	return attrs.Created, err
 }
 
-func getVMIResult(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (Result, error) {
+func getVMIResult(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (*Result, error) {
 	reader, err := getBuildLogReaderForJob(ctx, client, jobID, performanceJobName)
 	if err != nil {
-		return Result{}, err
+		return nil, err
 	}
 
 	jsonText, err := readLinesAndMatchRegex(reader, "\"Values\": {", 0)
 	if err != nil {
-		return Result{}, err
+		return nil, err
 	}
 	return unmarshalJson(jsonText)
 }
 
-func getVMResult(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (Result, error) {
+func getVMResult(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (*Result, error) {
 	reader, err := getBuildLogReaderForJob(ctx, client, jobID, performanceJobName)
 	if err != nil {
 		log.Printf("job: %s, error getting BuildLogReaderForJob. %+v\n", jobID, err)
-		return Result{}, err
+		return nil, err
 	}
 
 	lines, err := readLinesAndMatchRegex(reader, "\"Values\": {", 1)
 	if err != nil {
 		log.Printf("job: %s, error running readLinesAndMatchRegex. %+v\n", jobID, err)
-		return Result{}, err
+		return nil, err
 	}
 	return unmarshalJson(lines)
 }
@@ -395,12 +402,12 @@ func readLinesAndMatchRegex(file io.Reader, valuesRegex string, instance int) (s
 	return "", nil
 }
 
-func unmarshalJson(jsonText string) (Result, error) {
-	r := Result{}
-	err := json.Unmarshal([]byte(jsonText), &r)
+func unmarshalJson(jsonText string) (*Result, error) {
+	r := &Result{}
+	err := json.Unmarshal([]byte(jsonText), r)
 	if err != nil {
 		log.Printf("error unmarshaling json: %+v\ntext: %v\n", err, jsonText)
-		return Result{}, err
+		return nil, err
 	}
 
 	return r, nil
@@ -416,6 +423,10 @@ func getWeeklyVMResults(results *Collection) (map[YearWeek][]ResultWithDate, err
 		year, week := value.JobDirCreationTime.ISOWeek() // get the Year and Week number of the date
 		yw := YearWeek{Year: year, Week: week}
 		_, ok := weeklyData[yw]
+		if value.VMResult == nil {
+			log.Printf("VMResult for date %s is empty, skipping\n", value.JobDirCreationTime)
+			continue
+		}
 		if ok {
 			weeklyData[yw] = append(weeklyData[yw], ResultWithDate{Values: value.VMResult.Values, Date: &value.JobDirCreationTime})
 			continue
