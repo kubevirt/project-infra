@@ -815,7 +815,7 @@ periodics:
             git config user.name "$GIT_AUTHOR_NAME"
           )
           ci_perf_repo_dir=$(cd ../ci-performance-benchmarks && pwd)
-          bazel run //robots/cmd/perf-report-creator -- results --credentials-file $GOOGLE_APPLICATION_CREDENTIALS --output-dir $ci_perf_repo_dir/output/results
+          bazel run //robots/cmd/perf-report-creator -- results --since 168h --credentials-file $GOOGLE_APPLICATION_CREDENTIALS --output-dir $ci_perf_repo_dir/output/results
           cd $ci_perf_repo_dir
           git add -A $ci_perf_repo_dir/output/results
           current_date=$(date --iso-8601=date)
