@@ -2,6 +2,7 @@ docker.io,library/registry:2.7.1,quay.io/kubevirtci
 docker.io,kindest/node:v1.23.4,quay.io/kubevirtci
 docker.io,kindest/node:v1.23.13,quay.io/kubevirtci
 docker.io,kindest/node:v1.25.2,quay.io/kubevirtci
+docker.io,kindest/node:v1.27.1,quay.io/kubevirtci
 docker.io,grafana/grafana:7.5.4,quay.io/kubevirtci
 docker.io,istio/install-cni:1.15.0,quay.io/kubevirtci
 docker.io,istio/operator:1.15.0,quay.io/kubevirtci
