@@ -1,21 +1,17 @@
 filters:
   ".*":
     reviewers:
+      - ci-maintainers
       - aglitke
-      - brianmcarey
       - davidvossel
-      - dhiller
-      - enp0s3
       - phoracek
       - rmohr
       - tiraboschi
       - vladikr
     approvers:
+      - ci-maintainers
       - aglitke
-      - brianmcarey
       - davidvossel
-      - dhiller
-      - enp0s3
       - phoracek
       - rmohr
       - tiraboschi
