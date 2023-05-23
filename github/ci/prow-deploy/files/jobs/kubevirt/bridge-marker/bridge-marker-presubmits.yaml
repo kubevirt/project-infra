@@ -12,7 +12,7 @@ presubmits:
       decoration_config:
         timeout: 3h
         grace_period: 5m
-      cluster: prow-workloads
+      cluster: kubevirt-prow-workloads
       max_concurrency: 6
       labels:
         preset-podman-in-container-enabled: "true"

@@ -15,7 +15,7 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       annotations:
         testgrid-create-test-group: "false"
-      cluster: prow-workloads
+      cluster: kubevirt-prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external

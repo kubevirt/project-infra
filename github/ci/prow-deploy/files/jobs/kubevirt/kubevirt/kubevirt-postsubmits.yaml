@@ -228,7 +228,7 @@ postsubmits:
     reporter_config:
       slack:
         job_states_to_report: []
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external

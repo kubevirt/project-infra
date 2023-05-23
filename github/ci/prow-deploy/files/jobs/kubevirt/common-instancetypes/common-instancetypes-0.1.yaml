@@ -27,7 +27,7 @@ presubmits:
       - release-0.1
     always_run: false
     run_if_changed: "^common.*yaml"
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s

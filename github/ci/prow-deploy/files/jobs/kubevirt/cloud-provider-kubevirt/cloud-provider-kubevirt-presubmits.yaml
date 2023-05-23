@@ -9,7 +9,7 @@ presubmits:
     always_run: true
     optional: false
     skip_report: false
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 10m
@@ -47,7 +47,7 @@ presubmits:
     always_run: true
     optional: false
     skip_report: false
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 10m
@@ -80,7 +80,7 @@ presubmits:
     always_run: true
     optional: false
     decorate: true
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decoration_config:
       grace_period: 5m0s
       timeout: 3h0m0s
