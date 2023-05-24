@@ -8,7 +8,7 @@ presubmits:
       timeout: 3h
       grace_period: 5m
     max_concurrency: 6
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
