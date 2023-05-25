@@ -1434,7 +1434,7 @@ presubmits:
     decorate: true
     decoration_config:
       grace_period: 5m0s
-      timeout: 1h30m0s
+      timeout: 2h0m0s
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
