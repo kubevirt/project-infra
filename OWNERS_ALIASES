@@ -4,3 +4,8 @@ aliases:
   - brianmcarey
   - enp0s3
   - xpivarc
+
+  sig-scale-approvers:
+  - rthallisey
+  sig-scale-reviewers:
+  - rthallisey
