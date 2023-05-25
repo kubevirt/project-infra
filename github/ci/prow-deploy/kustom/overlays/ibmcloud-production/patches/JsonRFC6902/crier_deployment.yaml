@@ -14,3 +14,38 @@
     name: gcs
     secret:
       secretName: gcs
+
+# resets KUBECONFIG env to simple value
+- op: replace
+  path: /spec/template/spec/containers/0/env/0
+  value:
+    name: KUBECONFIG
+    value: "/etc/kubeconfig/config"
+
+# removes AWS env vars
+- op: remove
+  path: /spec/template/spec/containers/0/env/1
+- op: remove
+  path: /spec/template/spec/containers/0/env/2
+- op: remove
+  path: /spec/template/spec/containers/0/env/3
+
+# removes AWS_ROLE_ARN, AWS_WEB_IDENTITY_TOKEN_FILE and AWS_REGION env vars
+- op: replace
+  path: /spec/template/spec/containers/0/env/1
+- op: replace
+  path: /spec/template/spec/containers/0/env/2
+- op: replace
+  path: /spec/template/spec/containers/0/env/3
+
+# removes kubeconfig-eks-prow-build-cluster mount and volume
+- op: remove
+  path: /spec/template/spec/containers/0/volumeMounts/4
+- op: remove
+  path: /spec/template/spec/volumes/8
+
+# removes aws-iam-token mount and volume
+- op: remove
+  path: /spec/template/spec/containers/0/volumeMounts/9
+- op: remove
+  path: /spec/template/spec/volumes/9
