@@ -25,20 +25,20 @@
 
 # removes AWS env vars
 - op: remove
-  path: /spec/template/spec/containers/0/env/1
+  path: /spec/template/spec/containers/0/env/3
 - op: remove
   path: /spec/template/spec/containers/0/env/2
 - op: remove
-  path: /spec/template/spec/containers/0/env/3
-
-# removes mount and volume for kubeconfig-eks-prow-build-cluster
-- op: remove
-  path: /spec/template/spec/containers/0/volumemounts/6
-- op: remove
-  path: /spec/template/spec/volumes/7
+  path: /spec/template/spec/containers/0/env/1
 
 # removes aws-iam-token mount
 - op: remove
-  path: /spec/template/spec/containers/0/volumemounts/11
+  path: /spec/template/spec/containers/0/volumeMounts/11
 - op: remove
   path: /spec/template/spec/volumes/11
+
+# removes mount and volume for kubeconfig-eks-prow-build-cluster
+- op: remove
+  path: /spec/template/spec/containers/0/volumeMounts/6
+- op: remove
+  path: /spec/template/spec/volumes/7
