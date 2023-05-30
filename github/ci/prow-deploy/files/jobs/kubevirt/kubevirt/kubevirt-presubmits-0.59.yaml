@@ -2146,7 +2146,7 @@ presubmits:
     context: pull-kubevirt-e2e-k8s-1.26-sig-network
     decorate: true
     decoration_config:
-      grace_period: 5m0s
+      grace_period: 10m0s
       timeout: 4h0m0s
     labels:
       preset-bazel-unnested: "true"
