@@ -411,30 +411,44 @@ func (h *GitHubEventsHandler) generatePresubmits(
 		}
 		log.Infof("differences detected:/n%v", changelog)
 
-		job := pjutil.NewPresubmit(*pr, pr.Base.SHA, headPresubmit, eventGUID, map[string]string{})
-
-		if rehearsalRestricted(job) {
-			h.logger.Infof("Skipping rehersal job for: %s because it is restricted", job.Name)
-			continue
+		// respect the Branches configuration for the job, i.e. avoid always running against HEAD
+		branches := headPresubmit.Branches
+		if len(branches) == 0 {
+			branches = []string{"HEAD"}
 		}
 
-		repoOrg := repoFromJobKey(presubmitKey)
-		org, repo, err := gitv2.OrgRepo(repoOrg)
-		if err != nil {
-			log.Errorf(
-				"Could not extract repo and org from job key: %s. Job name: %s",
-				presubmitKey, headPresubmit.Name)
-		}
+		// since we can have multiple branches we need to create one job per branch
+		for _, branch := range branches {
+			job := pjutil.NewPresubmit(*pr, pr.Base.SHA, headPresubmit, eventGUID, map[string]string{})
 
-		headBranchName, err := discoverHeadBranchName(org, repo, headPresubmit.CloneURI)
-		if err != nil {
-			headBranchName = pr.Base.Ref
-		}
+			if rehearsalRestricted(job) {
+				h.logger.Infof("Skipping rehersal job for: %s because it is restricted", job.Name)
+				continue
+			}
 
-		if repoOrg != pr.Base.Repo.FullName {
-			job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, headBranchName))
+			repoOrg := repoFromJobKey(presubmitKey)
+			org, repo, err := gitv2.OrgRepo(repoOrg)
+			if err != nil {
+				log.Errorf(
+					"Could not extract repo and org from job key: %s. Job name: %s",
+					presubmitKey, headPresubmit.Name)
+			}
+
+			var targetBranchName string
+			if branch == "HEAD" {
+				targetBranchName, err = discoverHeadBranchName(org, repo, headPresubmit.CloneURI)
+				if err != nil {
+					targetBranchName = pr.Base.Ref
+				}
+			} else {
+				targetBranchName = branch
+			}
+
+			if repoOrg != pr.Base.Repo.FullName {
+				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName))
+			}
+			jobs = append(jobs, job)
 		}
-		jobs = append(jobs, job)
 	}
 	return jobs
 }
