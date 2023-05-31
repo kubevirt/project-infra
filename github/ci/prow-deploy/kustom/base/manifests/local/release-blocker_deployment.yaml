@@ -18,7 +18,7 @@ spec:
       containers:
       - name: release-blocker
         image: quay.io/kubevirtci/release-blocker:v20220815-ab4bb7e6
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         args:
         - --dry-run=false
         - --github-endpoint=http://ghproxy

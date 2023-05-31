@@ -19,7 +19,7 @@ spec:
       containers:
         - name: rehearse
           image: quay.io/kubevirtci/rehearse:v20230505-0cdece69
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           args:
             - --dry-run=false
             - --github-token-path=/etc/github/oauth
