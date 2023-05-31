@@ -1,6 +1,0 @@
----
-- hosts: k8s-cluster
-  tasks:
-    - name: include bootstrap role
-      include_role:
-        name: bootstrap

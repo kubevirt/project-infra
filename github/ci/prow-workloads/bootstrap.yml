@@ -1,6 +1,0 @@
----
-- hosts: kube-node
-  tasks:
-    - name: include bootstrap role
-      include_role:
-        name: bootstrap
