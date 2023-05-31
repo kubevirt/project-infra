@@ -559,6 +559,11 @@ orgs:
       ci-performance-benchmarks:
         description: Store for performance results of perf-report-creator
         default_branch: main
+      managed-tenant-quota:
+        default_branch: main
+        has_projects: true
+        has_wiki: true
+        has_issues: true
     teams:
       QE:
         description: ""
@@ -955,3 +960,10 @@ orgs:
         - xpivarc
         repos:
           ci-performance-benchmarks: admin
+      managed-tenant-quota:
+        description: members of the managed-tenant-quota group
+        members:
+          - Barakmor1
+          - vladikr
+        repos:
+          managed-tenant-quota: admin
