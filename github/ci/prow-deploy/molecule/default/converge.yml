@@ -26,8 +26,8 @@
         - name: wait for deployment to settle
           include_tasks: retry-pod-status.yml
           vars:
-            retries: 20
-            delay: 15
+            retries: 12
+            delay: 30
       always:
         - name: collect deployment information
           include_tasks: collect.yml

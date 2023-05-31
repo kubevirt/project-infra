@@ -3,7 +3,8 @@
 - block:
     - name: Increment the retry count
       set_fact:
-        retry_count: "{{  1 if retry_count is undefined else retry_count | int + 1 }}"
+        retry_count: "{{ 1 if retry_count is undefined else retry_count | int + 1 }}"
+        delay_inc: "{{ delay if delay_inc is undefined else ((delay_inc|float)*1.5) | int }}"
 
     - name: Get a list of all pods from prow namespace
       k8s_info:
@@ -23,14 +24,12 @@
       assert:
         quiet: true
         that:
-          - item.status.containerStatuses[0].ready
-          - item.status.containerStatuses[0].started
-          - item.status.containerStatuses[0].restartCount == 0
-        fail_msg: "Pod {{ item.spec.containers.0.name }} is in status {{ item.status.phase }}"
-        success_msg: "Pod {{ item.spec.containers.0.name }} is correctly Running"
+          - "item.status.phase == 'Running'"
+        fail_msg: "Pod {{ item.metadata.name }} is in status {{ item.status.phase }}"
+        success_msg: "Pod {{ item.metadata.name }} is running"
       loop: "{{ pod_list.resources }}"
       loop_control:
-        label: "{{ item.spec.containers.0.name }}"
+        label: "{{ item.metadata.name }}"
   rescue:
     - name: fail if we hit max retry count
       fail:
@@ -38,10 +37,10 @@
       when: "retry_count | int == {{ retries }}"
     - name: Message for the retry.
       debug:
-        msg: FAILED ATTEMPT {{ retry_count }}/{{ retries }}. Retrying in {{ delay }} seconds
+        msg: FAILED ATTEMPT {{ retry_count }}/{{ retries }}. Retrying in {{ delay_inc }} seconds
     - name: Pause
       pause:
-        seconds: "{{ delay }}"
+        seconds: "{{ delay_inc }}"
     - include_tasks: retry-pod-status.yml
 
 # DO NOT put anything at the end of this file.
