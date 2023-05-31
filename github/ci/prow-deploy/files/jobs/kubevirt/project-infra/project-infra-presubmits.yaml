@@ -490,8 +490,10 @@ presubmits:
             privileged: true
           resources:
             requests:
+              cpu: "2"
               memory: "8Gi"
             limits:
+              cpu: "2"
               memory: "8Gi"
           volumeMounts:
           - name: molecule-docker
