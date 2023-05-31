@@ -15,3 +15,30 @@
     requests:
       cpu: 300m
       memory: 2Gi
+
+# resets KUBECONFIG entry to simple value
+- op: replace
+  path: /spec/template/spec/containers/0/env/0
+  value:
+    name: KUBECONFIG
+    value: "/etc/kubeconfig/config"
+
+# removes AWS env vars
+- op: remove
+  path: /spec/template/spec/containers/0/env/3
+- op: remove
+  path: /spec/template/spec/containers/0/env/2
+- op: remove
+  path: /spec/template/spec/containers/0/env/1
+
+# removes aws-iam-token mount
+- op: remove
+  path: /spec/template/spec/containers/0/volumeMounts/11
+- op: remove
+  path: /spec/template/spec/volumes/11
+
+# removes mount and volume for kubeconfig-eks-prow-build-cluster
+- op: remove
+  path: /spec/template/spec/containers/0/volumeMounts/6
+- op: remove
+  path: /spec/template/spec/volumes/7

@@ -1,15 +1,43 @@
 ---
+# resets KUBECONFIG env to simple value
+- op: replace
+  path: /spec/template/spec/containers/0/env/0
+  value:
+    name: KUBECONFIG
+    value: "/etc/kubeconfig/config"
+
+# removes AWS env vars
+- op: remove
+  path: /spec/template/spec/containers/0/env/3
+- op: remove
+  path: /spec/template/spec/containers/0/env/2
+- op: remove
+  path: /spec/template/spec/containers/0/env/1
+
+# removes volume and moint for aws-iam-token
+- op: remove
+  path: /spec/template/spec/containers/0/volumeMounts/9
+- op: remove
+  path: /spec/template/spec/volumes/9
+
+# removes kubeconfig-eks-prow-build-cluster mount and volume
+- op: remove
+  path: /spec/template/spec/containers/0/volumeMounts/4
+- op: remove
+  path: /spec/template/spec/volumes/8
+
+# adds gcs service account arg, volume and mount
 - op: add
-  path: /spec/template/spec/containers/0/args/9
+  path: /spec/template/spec/containers/0/args/0
   value: --gcs-credentials-file=/etc/gcs/service-account.json
 - op: add
-  path: /spec/template/spec/containers/0/volumeMounts/4
+  path: /spec/template/spec/containers/0/volumeMounts/0
   value:
     name: gcs
     mountPath: /etc/gcs
     readOnly: true
 - op: add
-  path: /spec/template/spec/volumes/4
+  path: /spec/template/spec/volumes/0
   value:
     name: gcs
     secret:

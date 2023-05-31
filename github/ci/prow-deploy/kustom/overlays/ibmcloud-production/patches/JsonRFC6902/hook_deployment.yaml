@@ -2,3 +2,30 @@
   path: /spec/template/spec/containers/0/livenessProbe
 - op: remove
   path: /spec/template/spec/containers/0/readinessProbe
+
+# replaces KUBECONFIG env to simple value
+- op: replace
+  path: /spec/template/spec/containers/0/env/0
+  value:
+    name: KUBECONFIG
+    value: "/etc/kubeconfig/config"
+
+# removes AWS env vars
+- op: remove
+  path: /spec/template/spec/containers/0/env/3
+- op: remove
+  path: /spec/template/spec/containers/0/env/2
+- op: remove
+  path: /spec/template/spec/containers/0/env/1
+
+# removes aws-iam-token mount and volume
+- op: remove
+  path: /spec/template/spec/containers/0/volumeMounts/13
+- op: remove
+  path: /spec/template/spec/volumes/13
+
+# removes kubeconfig-eks-prow-build-cluster mount and volume
+- op: remove
+  path: /spec/template/spec/containers/0/volumeMounts/12
+- op: remove
+  path: /spec/template/spec/volumes/12
