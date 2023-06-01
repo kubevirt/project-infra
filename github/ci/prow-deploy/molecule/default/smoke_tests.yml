@@ -1,10 +1,13 @@
 - name: deploy ingress controller
   shell: |
     kubectl apply -f '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/resources/ingress-nginx-controller.yaml'
+    while [[ $(kubectl get pods --namespace ingress-nginx --selector=app.kubernetes.io/component=controller 2>&1) =~ ^No.resources.found.*$ ]]; do
+      echo "waiting for pods"; sleep 1;
+    done
     kubectl wait --namespace ingress-nginx \
-      --for=condition=ready pod \
-      --selector=app.kubernetes.io/component=controller \
-      --timeout=180s
+          --for=condition=ready pod \
+          --selector=app.kubernetes.io/component=controller \
+          --timeout=180s
   changed_when: false
   environment:
     KUBECONFIG: '{{ kubeconfig_path }}'
