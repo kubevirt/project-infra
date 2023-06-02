@@ -11,7 +11,7 @@
 
 - name: Query GCS interface
   uri:
-    url: "https://{{ gcswebUrl }}/healthz"
+    url: "https://{{ gcswebUrl }}./healthz"
     validate_certs: no
     return_content: yes
   register: gcs_response
@@ -26,7 +26,7 @@
 
 - name: Query deck interface
   uri:
-    url: "https://{{ deckUrl }}"
+    url: "https://{{ deckUrl }}."
     method: GET
     validate_certs: no
     return_content: yes
@@ -47,7 +47,7 @@
 - name: verify Prow hook is responding
   shell: |
     /usr/local/bin/phony \
-      --address="http://{{ deckUrl }}/hook" \
+      --address="http://{{ deckUrl }}./hook" \
       --hmac {{ prowHmac }}
   changed_when: false
 
