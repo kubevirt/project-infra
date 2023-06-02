@@ -428,7 +428,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-ce"
-            - "cd images && ./publish_image.sh -b vm-image-builder quay.io kubevirtci"
+            - "cd images && ./publish_multiarch_image.sh -a -b vm-image-builder quay.io kubevirtci"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
