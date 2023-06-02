@@ -279,6 +279,9 @@ func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions configOption
 				}
 			}
 			matchingSpecPathes.GitBlameLines = testlabelanalyzer.ExtractGitBlameInfo(strings.Split(string(output), "\n"))
+			if len(matchingSpecPathes.GitBlameLines) == 0 {
+				return nil, fmt.Errorf("git blame lines extraction failed!")
+			}
 		}
 		testFilesStats = append(testFilesStats, &testlabelanalyzer.FileStats{
 			RemoteURL: fmt.Sprintf("%s/%s", strings.TrimSuffix(configurationOptions.remoteURL, "/"), strings.TrimPrefix(strings.TrimPrefix(testFilePath, configurationOptions.testFilePath), "/")),
