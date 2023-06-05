@@ -37,6 +37,13 @@ EOF
 }
 
 IMAGE_NAME="quay.io/kubevirtci/bootstrap"
+if [ $# -gt 0 ]; then
+    if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+        usage
+        exit 0
+    fi
+    IMAGE_NAME="$1"
+fi
 if [ $# -gt 1 ]; then
     if [ ! -d "$2" ]; then
         usage
@@ -45,13 +52,6 @@ if [ $# -gt 1 ]; then
     fi
     image_dir="$2"
 else
-    if [ $# -gt 0 ]; then
-        if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
-            usage
-            exit 0
-        fi
-        IMAGE_NAME="$1"
-    fi
     image_dir="$(readlink --canonicalize "$(cd "$(cd "$(dirname "$0")" && pwd)"'/../images' && pwd)")"
 fi
 
