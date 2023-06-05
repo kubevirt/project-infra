@@ -10,10 +10,19 @@ main(){
 
     cd ${base_dir}
 
+    # preserve exit status for later to capture the artifacts in any case
+    set +e
     molecule test
+    retval=$?
+    set -e
+
     tmp=$(mktemp -d)
     docker cp instance:$ARTIFACTS $tmp
     cp -ar $tmp/artifacts/* $ARTIFACTS
+
+    if [ $retval -ne 0 ]; then
+        exit $retval
+    fi
 }
 
 main "${@}"

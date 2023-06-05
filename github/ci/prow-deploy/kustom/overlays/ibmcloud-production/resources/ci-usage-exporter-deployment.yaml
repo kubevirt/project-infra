@@ -20,7 +20,7 @@ spec:
       containers:
       - name: ci-usage-exporter
         image: quay.io/kubevirtci/ci-usage-exporter:v20210713-a46682bf
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - name: metrics
           containerPort: 9836

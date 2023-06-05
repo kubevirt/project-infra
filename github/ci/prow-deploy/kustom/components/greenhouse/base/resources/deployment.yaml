@@ -38,7 +38,7 @@ spec:
       containers:
       - name: greenhouse
         image: gcr.io/k8s-testimages/greenhouse@sha256:ab1a3421cc3c072a813d8543735f218ca6caa811011391a0e5b00104700e6e7b
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - name: cache
           containerPort: 8080
