@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20221222-8f66e7e as builder
+FROM quay.io/kubevirtci/golang:v20230502-bfaa042 as builder
 
 RUN git clone https://github.com/kubernetes/test-infra.git && \
   cd test-infra && \
