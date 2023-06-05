@@ -100,8 +100,7 @@ func traverseNodesRecursively(stats *TestStats, config *Config, gingkoOutline []
 
 const gitDateLayout = "2006-01-02 15:04:05 -0700"
 
-// "749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200  26) var _ = Describe(\"VM Console Proxy Operand\", func() {",
-var gitBlameRegex = regexp.MustCompile("^([0-9a-f]+) \\(([\\w ]+)\\s([0-9]{4}-[0-9]{2}-[0-9]{2}\\s[0-9]{2}:[0-9]{2}:[0-9]{2}\\s[-+][0-9]{4})\\s+([0-9]+)\\)\\s(.*)$")
+var gitBlameRegex = regexp.MustCompile("^([0-9a-f]+)(\\s+[^\\s]+)?\\s+\\(([\\w ]+)\\s([0-9]{4}-[0-9]{2}-[0-9]{2}\\s[0-9]{2}:[0-9]{2}:[0-9]{2}\\s[-+][0-9]{4})\\s+([0-9]+)\\)\\s(.*)$")
 
 type GitBlameInfo struct {
 	CommitID string    `json:"commit_id"`
@@ -118,20 +117,20 @@ func ExtractGitBlameInfo(lines []string) []*GitBlameInfo {
 			continue
 		}
 		submatches := gitBlameRegex.FindAllStringSubmatch(line, -1)
-		date, err := time.Parse(gitDateLayout, submatches[0][3])
+		date, err := time.Parse(gitDateLayout, submatches[0][4])
 		if err != nil {
 			panic(err)
 		}
-		lineNo, err := strconv.Atoi(submatches[0][4])
+		lineNo, err := strconv.Atoi(submatches[0][5])
 		if err != nil {
 			panic(err)
 		}
 		info = append(info, &GitBlameInfo{
 			CommitID: submatches[0][1],
-			Author:   submatches[0][2],
+			Author:   strings.TrimSpace(submatches[0][3]),
 			Date:     date,
 			LineNo:   lineNo,
-			Line:     submatches[0][5],
+			Line:     submatches[0][6],
 		})
 	}
 	return info

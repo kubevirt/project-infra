@@ -373,13 +373,24 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 })
 
 var _ = Describe("Extract git info", func() {
+
+	DescribeTable("parse regex",
+		func(valueToParse string) {
+			strings := gitBlameRegex.FindAllStringSubmatch(valueToParse, -1)
+			Expect(strings).To(HaveLen(1))
+			Expect(strings[0]).To(HaveLen(7))
+		},
+		Entry("basic 1", "749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200  26) var _ = Describe(\"VM Console Proxy Operand\", func() {"),
+		Entry("basic 2", `a32051d928 tests/operator_test.go     (fossedihelm   2022-11-30 09:45:57 +0100  111) var _ = Describe("[Serial][sig-operator]Operator", Serial, decorators.SigOperator, func() {`),
+	)
+
 	Context("blame", func() {
 
 		var lines = []string{
-			"749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200  26) var _ = Describe(\"VM Console Proxy Operand\", func() {",
-			"749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 179) \tContext(\"Resource change\", func() {",
-			"749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 208) \t\tDescribeTable(\"should restore modified app labels\", expectAppLabelsRestoreAfterUpdate,",
-			"749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 213) \t\t\tEntry(\"[test_id:TODO] deployment\", \u0026deploymentResource),",
+			`749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200  26) var _ = Describe("VM Console Proxy Operand", func() {`,
+			`749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 179) \tContext("Resource change", func() {`,
+			`749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 208) \t\tDescribeTable("should restore modified app labels", expectAppLabelsRestoreAfterUpdate,`,
+			`749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 213) \t\t\tEntry("[test_id:TODO] deployment", \u0026deploymentResource),`,
 		}
 		var expectedCommitID = "749cf0488"
 		var expectedAuthor = "Ben Oukhanov"
@@ -402,6 +413,23 @@ var _ = Describe("Extract git info", func() {
 			Expect(gitBlameInfo.Date).To(BeEquivalentTo(expectedDate))
 			Expect(gitBlameInfo.LineNo).To(BeEquivalentTo(expectedLineNo))
 			Expect(gitBlameInfo.Line).To(BeEquivalentTo(expectedLine))
+		})
+
+		It("extracts from other lines", func() {
+			errLines := []string{
+				`a32051d928 tests/operator_test.go     (fossedihelm   2022-11-30 09:45:57 +0100  111) var _ = Describe("[Serial][sig-operator]Operator", Serial, decorators.SigOperator, func() {`,
+				`eb6dc428cd tests/operator_test.go     (Igor Bezukh   2022-03-15 18:18:47 +0200 2928) 	Context("Obsolete ConfigMap", func() {`,
+				`52e637192d tests/operator/operator.go (Daniel Hiller 2023-05-26 10:21:35 +0200 2942) 		It("[QUARANTINE] should emit event if the obsolete kubevirt-config configMap still exists", func() {`,
+			}
+			blameInfo := ExtractGitBlameInfo(errLines)
+			Expect(blameInfo).ToNot(BeNil())
+			gitBlameInfo := blameInfo[0]
+			Expect(gitBlameInfo.CommitID).To(BeEquivalentTo("a32051d928"))
+			Expect(gitBlameInfo.Author).To(BeEquivalentTo("fossedihelm"))
+			expectedDate2, _ := time.Parse(gitDateLayout, "2022-11-30 09:45:57 +0100")
+			Expect(gitBlameInfo.Date).To(BeEquivalentTo(expectedDate2))
+			Expect(gitBlameInfo.LineNo).To(BeEquivalentTo(111))
+			Expect(gitBlameInfo.Line).To(BeEquivalentTo(`var _ = Describe("[Serial][sig-operator]Operator", Serial, decorators.SigOperator, func() {`))
 		})
 	})
 })
