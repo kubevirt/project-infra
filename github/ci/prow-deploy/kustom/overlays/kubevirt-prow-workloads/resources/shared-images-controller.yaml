@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: shared-images-controller
+  namespace: kubevirt-prow
+  labels:
+    name: shared-images-controller
+spec:
+  selector:
+    matchLabels:
+      name: shared-images-controller
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: shared-images-controller
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      terminationGracePeriodSeconds: 1
+      containers:
+      - name: shared-images-controller
+        image: quay.io/kubevirtci/shared-images-controller:v20221208-a669d6f
+        command: [ "/usr/local/bin/runner.sh", "/shared-images-controller"]
+        resources:
+          requests:
+            memory: 2Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /var/lib/shared-images
+          name: shared-images
+      volumes:
+      - hostPath:
+          path: /var/lib/shared-images
+          type: DirectoryOrCreate
+        name: shared-images
