@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Includes basic workspace setup, with gcloud and a bootstrap runner
-FROM fedora:37
+FROM fedora:38
 
 WORKDIR /workspace
 RUN mkdir -p /workspace
@@ -101,7 +101,7 @@ ENV _CONTAINERS_USERNS_CONFIGURED=""
 
 # Cache the most commonly used bazel versions in the container
 ARG ARCH
-RUN  curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-${ARCH} && \
+RUN  curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.17.0/bazelisk-linux-${ARCH} && \
      chmod +x ./bazelisk && mv ./bazelisk /usr/local/bin/bazelisk && \
      cd /usr/local/bin && ln -s bazelisk bazel
 
