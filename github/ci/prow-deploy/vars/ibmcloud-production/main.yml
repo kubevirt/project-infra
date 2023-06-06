@@ -11,7 +11,6 @@ kubeconfig_path: '{{ secrets_dir }}/kubeconfig'
 shell_environment:
   KUBECONFIG: "{{ kubeconfig_path }}"
 
-SRIOVNodes: []
 remote_cluster_prow_jobs_context: ibm-prow-jobs
 ansible_python_interpreter: /usr/bin/python3
 delete_priority_classes: false

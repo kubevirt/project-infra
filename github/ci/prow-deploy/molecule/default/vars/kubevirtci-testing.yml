@@ -12,10 +12,6 @@ kind:
 
 node_name: node01
 
-SRIOVNodes:
-- name: '{{ node_name }}'
-  capacity: 2
-
 ansible_python_interpreter: /usr/bin/python3
 
 githubUnprivileged:
