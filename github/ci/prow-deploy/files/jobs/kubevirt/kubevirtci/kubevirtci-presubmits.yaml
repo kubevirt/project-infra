@@ -314,7 +314,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: prow-workloads
+    cluster: ibm-prow-jobs
     decorate: true
     decoration_config:
       timeout: 0h5m0s
@@ -339,5 +339,3 @@ presubmits:
             memory: 1Gi
         securityContext:
           privileged: true
-      nodeSelector:
-        type: bare-metal-external
