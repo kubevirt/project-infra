@@ -381,7 +381,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-workloads
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
