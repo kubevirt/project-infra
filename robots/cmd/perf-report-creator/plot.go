@@ -39,7 +39,7 @@ type PlotData struct {
 	Curves     []Curve
 }
 
-func gatherPlotData(basePath string, resource string, metric ResultType) ([]Curve, error) {
+func gatherPlotData(basePath string, resource string, metric ResultType, since *time.Time) ([]Curve, error) {
 	totalCurves := 2
 	curves := make([]Curve, totalCurves)
 	for i := 0; i < totalCurves; i++ {
@@ -67,6 +67,13 @@ func gatherPlotData(basePath string, resource string, metric ResultType) ([]Curv
 		//const JSONResultsFileName = "results.json"
 		if !info.IsDir() && strings.Contains(entryPath, "results.json") {
 			fmt.Println(entryPath)
+			date, err := getDateFromEntryPath(entryPath)
+			if err != nil {
+				return err
+			}
+			if date.Before(*since) {
+				return nil
+			}
 			jsonFile, err := os.Open(entryPath)
 			if err != nil {
 				return err
@@ -103,6 +110,16 @@ func gatherPlotData(basePath string, resource string, metric ResultType) ([]Curv
 	}
 
 	return curves, nil
+}
+
+func getDateFromEntryPath(entryPath string) (*time.Time, error) {
+	slugs := strings.Split(entryPath, "/")
+	dateStr := slugs[len(slugs)-3]
+	date, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return nil, err
+	}
+	return &date, err
 }
 
 func addMetricRangeResults(record Record, curves []Curve) {
@@ -248,8 +265,12 @@ func plotWeeklyGraph(opts weeklyGraphOpts) error {
 	var errs []error
 	var figs []*grob.Fig
 	metrics := strings.Split(opts.metricList, ",")
+	since, err := time.Parse("2006-01-02", opts.since)
+	if err != nil {
+		return err
+	}
 	for _, metric := range metrics {
-		data, err := gatherPlotData(opts.weeklyReportsDir, opts.resource, ResultType(metric))
+		data, err := gatherPlotData(opts.weeklyReportsDir, opts.resource, ResultType(metric), &since)
 		if err != nil {
 			fmt.Println("error gathering data for metric", err)
 			fmt.Println("ignoring")
