@@ -3,9 +3,9 @@ BENCHMARKS_DIR=${2}
 OUTPUT_DIR=${3:-output}
 
 # scrape sig-performance 1.25 results
-perf-report-creator results --credentials-file=${CREDENTIALS_FILE} --output-dir ./${OUTPUT_DIR}/results --since 168h0s
+perf-report-creator results --credentials-file=${CREDENTIALS_FILE} --output-dir ${OUTPUT_DIR}/results --since 168h0s
 # scrape 100 density test results
-perf-report-creator results --credentials-file=${CREDENTIALS_FILE} --output-dir ./${OUTPUT_DIR}/results --since 168h0s --performance-job-name periodic-kubevirt-performance-cluster-100-density-test
+perf-report-creator results --credentials-file=${CREDENTIALS_FILE} --output-dir ${OUTPUT_DIR}/results --since 168h0s --performance-job-name periodic-kubevirt-performance-cluster-100-density-test
 
 # aggregate sig-performance 1.25 results in weekly directory
 perf-report-creator weekly-report --output-dir=${OUTPUT_DIR}/weekly/periodic-kubevirt-e2e-k8s-1.25-sig-performance \
