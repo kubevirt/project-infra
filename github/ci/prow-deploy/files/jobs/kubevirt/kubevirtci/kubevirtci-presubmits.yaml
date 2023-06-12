@@ -94,7 +94,7 @@ presubmits:
       rehearsal.allowed: "true"
       vgpu: "true"
     max_concurrency: 1
-    name: check-up-kind-1.25-vgpu
+    name: check-up-kind-1.27-vgpu
     optional: true
     spec:
       affinity:
@@ -120,7 +120,7 @@ presubmits:
           ./cluster-up/cluster/kind/check-cluster-up.sh
         env:
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.25-vgpu
+          value: kind-1.27-vgpu
         - name: KUBEVIRT_NUM_NODES
           value: "3"
         - name: RUN_KUBEVIRT_CONFORMANCE
