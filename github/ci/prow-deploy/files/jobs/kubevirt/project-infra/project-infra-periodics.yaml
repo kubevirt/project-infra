@@ -814,10 +814,11 @@ periodics:
             git config user.email "$GIT_AUTHOR_EMAIL"
             git config user.name "$GIT_AUTHOR_NAME"
           )
+          scrape_dir=$(mktemp -d)
           ci_perf_repo_dir=$(cd ../ci-performance-benchmarks && pwd)
-          bazel run //robots/cmd/perf-report-creator -- results --since 168h --credentials-file $GOOGLE_APPLICATION_CREDENTIALS --output-dir $ci_perf_repo_dir/output/results
+          ./robots/cmd/perf-report-creator/scrape.sh $GOOGLE_APPLICATION_CREDENTIALS $ci_perf_repo_dir $scrape_dir
           cd $ci_perf_repo_dir
-          git add -A $ci_perf_repo_dir/output/results
+          git add -A results weekly
           current_date=$(date --iso-8601=date)
           git commit --signoff -m "Periodic data update from $current_date"
           git push "https://kubevirt-bot@github.com/$TARGET_GITHUB_REPO.git" HEAD:main
