@@ -3,7 +3,7 @@
 
 [KubeVirt Prow] is the dedicated [Prow](https://docs.prow.k8s.io/docs/overview/) instance for the KubeVirt organization.
 
-[KubeVirt Prow] is the entry page for several prow components to look at, like [Tide](https://docs.prow.k8s.io/docs/components/core/tide/), which takes care of automated merging of PRs (if configured for a repository).
+[KubeVirt Prow] is the entry page for several prow components, like [Tide](https://docs.prow.k8s.io/docs/components/core/tide/), which takes care of automated merging of PRs (if configured for a repository).
 
 It holds the documentation of all the installed plugins that are available.
 
