@@ -32,6 +32,7 @@ postsubmits:
           make clean &&
           GOARCH=arm64 make manifest &&
           GOARCH=amd64 make manifest &&
+          GOARCH=ppc64le make manifest &&
           # Only push images on tags
           [ -z "$(git tag --points-at HEAD | head -1)" ] ||
           TAG="$(git tag --points-at HEAD | head -1)" make manifest-push
@@ -73,6 +74,7 @@ postsubmits:
           make clean &&
           GOARCH=arm64 make manifest &&
           GOARCH=amd64 make manifest &&
+          GOARCH=ppc64le make manifest &&
           make manifest-push
         # docker-in-docker needs privileged mode
         securityContext:
