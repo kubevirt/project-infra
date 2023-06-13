@@ -50,7 +50,7 @@ Each report contains rows for all tests where at least one test failed on any la
 
 When you click on any of the numbers inside the job rows, a popup will open that shows the job runs that are part of the report.
 
-Failed job runs are marked as red, the links lead to the Prow job details page of the selected job run. For pull request job runs also the link to the pull request in GitHub is available, for batch runs it contains links to multiple pull requests.
+Failed job runs are marked as red, the links lead to the Prow job details page of the selected job run. For pull request runs,  the link to the pull request is available while for batch runs it contains links to all the pull requests included in the batch .
 
 
 See also:
