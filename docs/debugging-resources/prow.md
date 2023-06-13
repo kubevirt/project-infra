@@ -3,13 +3,40 @@
 
 [KubeVirt Prow] is the dedicated [Prow](https://docs.prow.k8s.io/docs/overview/) instance for the KubeVirt organization.
 
-[KubeVirt Prow] is the entry page for several prow components, like [Tide](https://docs.prow.k8s.io/docs/components/core/tide/), which takes care of automated merging of PRs (if configured for a repository).
+[KubeVirt Prow] is the landing page for our Prow instance. This is the place where the status of all the jobs run on it can be inspected. Furthermore it serves as an entry for status of prow components and help of plugins to look at.
 
-It holds the documentation of all the installed plugins that are available.
+One example is [Tide](https://docs.prow.k8s.io/docs/components/core/tide/), which takes care of automated merging of PRs (if configured for a repository).
 
-It also runs the automation for the KubeVirt organization and automates merging of pull requests using Tide.
+The burger menu to the upper left holds links towards:
+* _Prow status_ - the job overview page
+* _PR status_ - a list of pull requests for a user and which status the are in currently
+* _Command help_ - list of commands that are available for pull requests and docs
+* _Tide status_ - current status, i.e. which PRs are currently tests, possibly as a batch, etc.
+* _Tide history_ - which PR has been handled when and how
+* _Plugins_ - list of installed plugins and docs
+* _Documentation_ - the main entrance to prow documentation
+
+KubeVirt GitHub organization management is done via [Peribolos](https://docs.prow.k8s.io/docs/components/cli-tools/peribolos/), which itself is run as an hourly periodic job on Prow.
 
 See also: https://github.com/kubevirt/community/tree/main/docs
+
+## Prow configuration
+
+Configuration files are found in this folder: https://github.com/kubevirt/project-infra/tree/main/github/ci/prow-deploy/files
+
+**Note: some of these need to be a symlink to the real files, please follow these and edit in target location.**
+
+| Type         | Holds configuration for                    |
+|--------------|--------------------------------------------|
+| orgs.yaml    | KubeVirt GitHub organization               |
+| config.yaml  | Prow components, prow job presets          |
+| plugins.yaml | Prow plugins                               |
+| labels.yaml  | GitHub labels for pull requests and issues |
+| mirror.yaml  | image mirror                               |
+| jobs         | job configurations per repository          |
+
+
+
 
 ## Prow and Prow Jobs
 
@@ -52,3 +79,5 @@ Each file in the artifacts folder has a numerical prefix. In this case we only s
 
 See also:
 * [KubeVirt Prow - periodic jobs](https://prow.ci.kubevirt.io?type=periodic&state=failure)
+
+[KubeVirt Prow]: https://prow.ci.kubevirt.io
