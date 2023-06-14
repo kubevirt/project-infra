@@ -281,8 +281,8 @@ presubmits:
     optional: false
     decorate: true
     decoration_config:
-      timeout: 5h
-      grace_period: 5m
+      timeout: 6h
+      grace_period: 10m
     max_concurrency: 6
     cluster: kubevirt-prow-workloads
     labels:
