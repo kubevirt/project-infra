@@ -807,6 +807,7 @@ periodics:
         - "/bin/sh"
         - "-ce"
         - |
+          go build -o /usr/local/bin/perf-report-creator ./robots/cmd/perf-report-creator/...
           (
             cd ..
             git clone "https://kubevirt-bot@github.com/$TARGET_GITHUB_REPO.git"
