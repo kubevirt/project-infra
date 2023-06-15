@@ -10,7 +10,7 @@
 
 ## KubeVirt TestGrid
 
-In contrast to [FlakeFinder], [KubeVirt TestGrid] shows all test results from all prowjobs, including results from broken and unmerged PRs.
+[KubeVirt TestGrid] shows all test results from all prowjobs, including results from broken and unmerged PRs.
 
 If no PRs get merged but there is a lot of activity, the chances are high that we have more serious issues which block merges completely. They should be visible on testgrid.
 

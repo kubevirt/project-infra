@@ -46,14 +46,25 @@ Each report contains rows for all tests where at least one test failed on any la
 
 ### FlakeFinder report job popup
 
-![flakefinder-popup.png](flakefinder-popup.png)
 
 When you click on any of the numbers inside the job rows, a popup will open that shows the job runs that are part of the report.
 
-Failed job runs are marked as red, the links lead to the Prow job details page of the selected job run. For pull request runs,  the link to the pull request is available while for batch runs it contains links to all the pull requests included in the batch .
+If you click on the cell for periodic jobs the popup will look like this:
 
+![Popup showing periodic runs](flakefinder-popup.png)
+
+Failed job runs are marked as red. The links of the left row lead to the Prow job details page of the job run.
+
+If you click on the cell for presubmit jobs the popup will look like in the below image.
+
+![Popup showing presubmit and batch runs](flakefinder-popup2.png)
+
+Please note the difference of the cells on the right side: There's always one link to a pull request, but sometimes more than one.
+
+If there's more than one PR linked, this job run has been a batch run issued by [Tide]. In a batch run multiple pull requests are tested at once.
 
 See also:
 * [FlakeFinder README](https://github.com/kubevirt/project-infra/tree/main/robots/cmd/flakefinder#readme)
 
 [Flakefinder reports]: https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/index.html
+[Tide]: https://docs.prow.k8s.io/docs/components/core/tide/
