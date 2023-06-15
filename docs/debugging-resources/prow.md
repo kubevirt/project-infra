@@ -45,7 +45,7 @@ All Prow job configurations are hosted on [kubevirt/project-infra](https://githu
 
 ![Prow - Deck](prow-deck.png)
 
-This is the entry page provided by [Deck](https://docs.prow.k8s.io/docs/components/core/deck/) where you have an overview of all job runs on the Prow instance. From here you can filter on various criteria to select the jobs that you need to have a look at
+This is the entry page provided by [Deck](https://docs.prow.k8s.io/docs/components/core/deck/) where you have an overview of all job runs on the Prow instance. From here you can filter on various criteria to select the jobs that you need to have a look at.
 
 ## Prow Job types
 
@@ -60,7 +60,7 @@ This is the entry page provided by [Deck](https://docs.prow.k8s.io/docs/componen
 
 ![Prow Job Details Page](prow-job-details.png)
 
-After you click on a job link in the prow status page you are taken to the job run overview page that, when finished, contains information about tests (if available), the log file (normally showing the relevant portion to highlight where it failed), and links to details (i.e. full log (see at the bottom)
+After you click on a job link in the prow status page you are taken to the job run overview page that, when finished, contains information about tests (if available), the log file (normally showing the relevant portion to highlight where it failed), and links to details (i.e. full log (see at the bottom).
 
 At the top of the page you see links to other detail sections:
 * job history - shows you the history of all job runs on a presubmit job for a specific lane.

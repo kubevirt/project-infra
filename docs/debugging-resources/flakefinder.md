@@ -22,7 +22,7 @@ Flakefinder aggregates reports over **failed tests for commits of merged PRs** b
 
 ### Flakefinder reports per project
 
-contains the index of recent reports for a project
+Contains the index of recent reports for a project.
 
 ### FlakeFinder report details page
 
@@ -30,7 +30,7 @@ contains the index of recent reports for a project
 
 In a nutshell the daily report of day x covers all merged PRs from the start of the day before until the runtime of the report. (Runtime of the reports can be found [here](https://prow.ci.kubevirt.io/?job=*flakefinder*).)
 
-Each report contains rows for all tests where at least one test failed on any lane for all PRs that were merged at or after the report date. Rows are sorted according to severity of test failures (i.e the more test fails, the more the test appears at the top of the report
+Each report contains rows for all tests where at least one test failed on any lane for all PRs that were merged at or after the report date. Rows are sorted according to severity of test failures (i.e the more test fails, the more the test appears at the top of the report).
 
 | Column No | Content |    
 |-----------| -------     |
