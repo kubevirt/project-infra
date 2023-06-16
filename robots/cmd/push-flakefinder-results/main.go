@@ -23,6 +23,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"log"
 	"net/http"
 	"strconv"
@@ -30,12 +31,6 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
-)
-
-const (
-	dateRange24h  = "024h"
-	dateRange168h = "168h"
-	dateRange672h = "672h"
 )
 
 const (
@@ -52,28 +47,22 @@ const (
 	subsystem = "report"
 )
 
-var dateRangeAllowedValues = map[string]struct{}{
-	dateRange24h:  {},
-	dateRange168h: {},
-	dateRange672h: {},
-}
-
 func main() {
 	var pushgatewayURL, dateRange, org, repo string
 	flag.StringVar(&pushgatewayURL, "pushgateway-url", "http://localhost:8080/", "pushgateway url to push values to")
-	flag.StringVar(&dateRange, "date-range", dateRange24h, "daterange of the report (one of 024h, 168h, 672h)")
+	flag.StringVar(&dateRange, "date-range", flakefinder.DateRange24h, "daterange of the report (one of 024h, 168h, 672h)")
 	flag.StringVar(&org, "github-org", "kubevirt", "github org")
 	flag.StringVar(&repo, "github-repo", "kubevirt", "github repo")
 	flag.Parse()
 
-	if _, exists := dateRangeAllowedValues[dateRange]; !exists {
-		log.Fatalf("Value %q not allowed for range, allowed values: %v", dateRange, dateRangeAllowedValues)
-	}
-
 	pusher := push.New(pushgatewayURL, fmt.Sprintf("flakefinder_results_%s", dateRange))
 
 	yesterday := time.Now().Add(-24 * time.Hour)
-	reportCSVURL := fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/%s/%s/flakefinder-%s-%s.csv", org, repo, yesterday.Format("2006-01-02"), dateRange)
+	fileType := "csv"
+	reportCSVURL, err := flakefinder.GenerateReportURL(org, repo, yesterday, dateRange, fileType)
+	if err != nil {
+		log.Fatalf("failed to generate report url: %v", err)
+	}
 	log.Printf("fetching report %q", reportCSVURL)
 	response, err := http.DefaultClient.Get(reportCSVURL)
 	if err != nil {

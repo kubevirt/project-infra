@@ -1,0 +1,213 @@
+{{- /*
+
+    This file is part of the KubeVirt project
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+    Copyright 2023 Red Hat, Inc.
+
+*/ -}}
+
+{{- /* gotype: kubevirt.io/project-infra/robots/cmd/flake-stats.TemplateData */ -}}
+
+{{ define "failure"}}
+    <table class="{{ if le .Sum 5 }}yellow{{ else if le .Sum 10}}orange{{ else }}red{{ end }}">
+        <tr>
+            <td colspan="2" class="failureHeader">
+                {{ .Name }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Sum
+            </td>
+            <td>
+                {{ .Sum }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Max
+            </td>
+            <td>
+                {{ .Max }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Avg
+            </td>
+            <td>
+                {{ printf "%.2f" .Avg }}
+            </td>
+        </tr>
+    </table>
+{{ end }}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flake stats for last {{ $.DaysInThePast }} days</title>
+    <style>
+        <!--
+        table {
+            border: 1px solid black;
+            display: inline-block;
+        }
+
+        th, td {
+            border: 1px solid black;
+        }
+
+        .testName {
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .failureHeader {
+            font-weight: bold;
+        }
+
+        .yellow {
+            background-color: #ffff80;
+        }
+
+        .orange {
+            background-color: #ffbf80;
+        }
+
+        .red {
+            background-color: #ff8080;
+        }
+
+        .noteHasBeenQuarantined {
+            background-color: gray;
+        }
+
+        -->
+    </style>
+    <script>
+        function enableFilterFields() {
+            document.getElementById("filterByName").disabled = false;
+            document.getElementById("excludeByName").disabled = false;
+        }
+
+        function updateFilteredRows() {
+            let filterTerms, excludeTerms, reportDiv, divs, td, i, testName, filterByNotRunChecked, showDontRunChecked,
+                shouldShow, rowsShown;
+            filterTerms = document.getElementById("filterByName").value.toUpperCase().split("|");
+            excludeTerms = document.getElementById("excludeByName").value.toUpperCase().split("|");
+            reportDiv = document.getElementById("report");
+            divs = reportDiv.getElementsByTagName("div");
+
+            rowsShown = 0;
+            for (i = 0; i < divs.length; i++) {
+                if (divs[i]) {
+                    shouldShow = true
+                    testName = divs[i].id;
+                    if (excludeTerms.length > 0 && excludeTerms[0] !== "") {
+                        for (k = 0; k < excludeTerms.length; k++) {
+                            if (testName.toUpperCase().indexOf(excludeTerms[k]) !== -1) {
+                                shouldShow = false
+                                break;
+                            }
+                        }
+                    }
+                    if (shouldShow === true && filterTerms.length > 0 && filterTerms[0] !== "") {
+                        let found = false
+                        for (k = 0; k < filterTerms.length; k++) {
+                            if (testName.toUpperCase().indexOf(filterTerms[k]) !== -1) {
+                                found = true
+                                break;
+                            }
+                        }
+                        if (found !== true) {
+                            shouldShow = false
+                        }
+                    }
+                    if (shouldShow === true) {
+                        divs[i].style.display = "";
+                        rowsShown++;
+                    } else {
+                        divs[i].style.display = "none";
+                    }
+                }
+            }
+            updateRowsShown(rowsShown);
+        }
+
+        function initRowsShown() {
+            updateRowsShown(document.getElementById("report").getElementsByTagName("div").length);
+        }
+
+        function updateRowsShown(rowsShown) {
+            let rowsTotal = document.getElementById("report").getElementsByTagName("div").length;
+            document.getElementById("totalRowsShown").innerText = "Showing " + rowsShown + " of " + rowsTotal + "";
+        }
+    </script>
+</head>
+<body onload="initRowsShown();updateFilteredRows();enableFilterFields();">
+
+<h1>Flake stats for last {{ $.DaysInThePast }} days</h1>
+
+<table class="noborder">
+    <tr>
+        <td class="noborder">
+        </td>
+        <td class="noborder">
+            <label for="filterByName">Exclude tests that don't contain</label>
+        </td>
+        <td class="noborder">
+            <input type="text" id="filterByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..." disabled>
+        </td>
+        <td class="noborder filler">
+        </td>
+        <td class="noborder" colspan="3"/>
+    </tr>
+    <tr>
+        <td class="noborder">
+        </td>
+        <td class="noborder">
+            <label for="excludeByName">Exclude tests that contain</label>
+        </td>
+        <td class="noborder">
+            <input type="text" id="excludeByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..." disabled>
+        </td>
+        <td class="noborder filler">
+        </td>
+        <td class="noborder" colspan="3"/>
+    </tr>
+</table>
+<div id="totalRowsShown">Showing x of y</div>
+<div id="report">
+    {{ range $key, $value := $.TopXTests }}
+        <div id="{{ .Name }}" {{ if .NoteHasBeenQuarantined }}class="noteHasBeenQuarantined"{{ end }}>
+            <span class="testName">{{ $key }}: {{ .Name }}</span><br/>
+            {{ template "failure" .AllFailures }}
+            &nbsp;
+            {{ range $key, $value := .FailuresPerDay }}
+                {{ template "failure" $value }}
+            {{ end }}
+            &nbsp;
+            {{ range $key, $value := .FailuresPerLane }}
+                {{ template "failure" $value }}
+            {{ end }}
+            <hr/>
+        </div>
+    {{ end }}
+</div>
+
+<div style="text-align: right"><i>Last updated: {{ $.Date }}</i></div>
+</body>
+</html>

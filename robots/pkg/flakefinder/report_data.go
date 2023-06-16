@@ -415,3 +415,27 @@ const (
 	Fine            = "green"
 	Unimportant     = "unimportant"
 )
+
+const (
+	DateRange24h  = "024h"
+	DateRange168h = "168h"
+	DateRange672h = "672h"
+)
+
+var dateRangeAllowedValues = map[string]struct{}{
+	DateRange24h:  {},
+	DateRange168h: {},
+	DateRange672h: {},
+}
+
+func IsAllowedDateRange(dateRange string) bool {
+	_, exists := dateRangeAllowedValues[dateRange]
+	return exists
+}
+
+func GenerateReportURL(org string, repo string, targetReportDate time.Time, dateRange string, fileType string) (string, error) {
+	if !IsAllowedDateRange(dateRange) {
+		return "", fmt.Errorf("Value %q not allowed for range, allowed values: %v", dateRange, dateRangeAllowedValues)
+	}
+	return fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/%s/%s/flakefinder-%s-%s.%s", org, repo, targetReportDate.Format("2006-01-02"), dateRange, fileType), nil
+}
