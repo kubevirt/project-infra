@@ -20,7 +20,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: prow-exporter
-        image: gcr.io/k8s-prow/exporter:v20230526-bc91fd978b
+        image: gcr.io/k8s-prow/exporter:v20230613-9df263832f
         imagePullPolicy: Always
         ports:
         - name: metrics
