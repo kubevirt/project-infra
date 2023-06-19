@@ -77,10 +77,3 @@
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   when: rescale_pushgateway_deployment
-
-- name: Patch SRIOV nodes
-  shell: |
-    {{ project_infra_root }}/hack/patch_node.sh {{ item.name }} {{ item.capacity }}
-  loop: "{{ SRIOVNodes }}"
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"

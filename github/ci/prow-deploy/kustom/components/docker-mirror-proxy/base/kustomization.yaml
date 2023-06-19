@@ -8,6 +8,10 @@ configMapGenerator:
     namespace: kubevirt-prow-jobs
     files:
       - configs/ca.crt
+  - name: mirror-proxy-config
+    namespace: kubevirt-prow
+    files:
+      - configs/ca.crt
   - name: docker-daemon-mirror-config
     namespace: kubevirt-prow-jobs
     files:

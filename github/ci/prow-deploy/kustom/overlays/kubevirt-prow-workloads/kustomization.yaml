@@ -1,0 +1,87 @@
+# Requires kustomize v3
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - resources/bootstrap.yaml
+  - resources/shared-images-controller.yaml
+  - resources/greenhouse-storage.yaml
+  - resources/place-holder.yaml
+  - resources/priority-classes.yaml
+  - resources/sriov-passthrough-ds.yaml
+  - ../../components/docker-mirror-proxy/base
+  - ../../components/greenhouse/base
+
+components:
+  - ../../components/docker-mirror-proxy/hostpath
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+secretGenerator:
+  - name: oauth-token
+    namespace: kubevirt-prow-jobs
+    files:
+      - oauth=secrets/oauth-token
+    type: Opaque
+  - name: unprivileged-oauth-token
+    namespace: kubevirt-prow-jobs
+    files:
+      - oauth=secrets/unprivileged-oauth-token
+    type: Opaque
+  - name: gcs
+    namespace: kubevirt-prow-jobs
+    files:
+      - secrets/service-account.json
+    type: Opaque
+  - name: kubevirtci-docker-credential
+    namespace: kubevirt-prow-jobs
+    # username=dockerUser
+    # password=dockerPass
+    envs:
+    - secrets/kubevirtci-docker-credential
+    type: Opaque
+
+  - name: kubevirtci-quay-credential
+    namespace: kubevirt-prow-jobs
+    # username=quayUser
+    # password=quayPass
+    # token=quayOAuthToken
+    envs:
+    - secrets/kubevirtci-quay-credential
+    type: Opaque
+  - name: kubevirtci-installer-pull-token
+    namespace: kubevirt-prow-jobs
+    files:
+      # installerPullToken
+      - token=secrets/kubevirtci-installer-pull-token
+    type: Opaque
+  - name: commenter-oauth-token
+    namespace: kubevirt-prow-jobs
+    # githubCommenterToken
+    files:
+      - oauth=secrets/commenter-oauth-token
+    type: Opaque
+  - name: kubevirtci-coveralls-token
+    namespace: kubevirt-prow-jobs
+    files:
+      # coverallsToken
+      - token=secrets/kubevirtci-coveralls-token
+    type: Opaque
+  - name: win-sysprep-001
+    namespace: kubevirt-prow-jobs
+    files:
+      - productKey=secrets/win-sysprep-001
+    type: Opaque
+  - name: kubevirtci-fossa-token
+    namespace: kubevirt-prow-jobs
+    files:
+      # fossaToken
+      - token=secrets/kubevirtci-fossa-token
+    type: Opaque
+  - name: prow-kubevirtbot-github-ssh-secret
+    namespace: kubevirt-prow-jobs
+    files:
+    # prowKubevirtbotSSHPrivateKey
+    - token=secrets/prow-kubevirtbot-github-ssh-secret
+    type: Opaque
