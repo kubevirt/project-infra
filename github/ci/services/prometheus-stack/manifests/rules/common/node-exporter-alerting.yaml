@@ -141,15 +141,16 @@ spec:
 #      labels:
 #        severity: warning
 #        namespace: monitoring
-    - alert: HostUnusualNetworkThroughputOut
-      annotations:
-        summary: Host unusual network throughput out (instance {{ $labels.instance }})
-        description: "Host network interfaces are probably sending too much data (> 3000 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-      expr: sum by (instance) (rate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 3000
-      for: 5m
-      labels:
-        severity: warning
-        namespace: monitoring
+# FIXME: turned off since they were flapping
+#    - alert: HostUnusualNetworkThroughputOut
+#      annotations:
+#        summary: Host unusual network throughput out (instance {{ $labels.instance }})
+#        description: "Host network interfaces are probably sending too much data (> 3000 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+#      expr: sum by (instance) (rate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 3000
+#      for: 5m
+#      labels:
+#        severity: warning
+#        namespace: monitoring
     - alert: HostNetworkReceiveErrors
       annotations:
         summary: Host Network Receive Errors (instance {{ $labels.instance }})
