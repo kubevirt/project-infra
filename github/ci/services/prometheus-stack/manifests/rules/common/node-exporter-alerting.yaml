@@ -27,24 +27,24 @@ spec:
       labels:
         severity: warning
         namespace: monitoring
-    - alert: HostUnusualDiskReadRate
-      annotations:
-        summary: Host unusual disk read rate (instance {{ $labels.instance }})
-        description: "Disk is probably reading too much data (> 400 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-      expr: sum by (instance) (rate(node_disk_read_bytes_total[2m])) / 1024 / 1024 > 400
-      for: 5m
-      labels:
-        severity: warning
-        namespace: monitoring
-    - alert: HostUnusualDiskWriteRate
-      annotations:
-        summary: Host unusual disk write rate (instance {{ $labels.instance }})
-        description: "Disk is probably writing too much data (> 200 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-      expr: sum by (instance) (rate(node_disk_written_bytes_total[2m])) / 1024 / 1024 > 200
-      for: 5m
-      labels:
-        severity: warning
-        namespace: monitoring
+#    - alert: HostUnusualDiskReadRate
+#      annotations:
+#        summary: Host unusual disk read rate (instance {{ $labels.instance }})
+#        description: "Disk is probably reading too much data (> 400 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+#      expr: sum by (instance) (rate(node_disk_read_bytes_total[2m])) / 1024 / 1024 > 400
+#      for: 5m
+#      labels:
+#        severity: warning
+#        namespace: monitoring
+#    - alert: HostUnusualDiskWriteRate
+#      annotations:
+#        summary: Host unusual disk write rate (instance {{ $labels.instance }})
+#        description: "Disk is probably writing too much data (> 200 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+#      expr: sum by (instance) (rate(node_disk_written_bytes_total[2m])) / 1024 / 1024 > 200
+#      for: 5m
+#      labels:
+#        severity: warning
+#        namespace: monitoring
     - alert: HostUnusualDiskReadLatency
       annotations:
         summary: Host unusual disk read latency (instance {{ $labels.instance }})
