@@ -22,40 +22,64 @@ package filter
 import (
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
 	"os"
+	"path/filepath"
 	"regexp"
-	"sigs.k8s.io/yaml"
 	"sort"
+	"strings"
 )
 
+// defaultFileOutputPattern defines the pattern that is used to generate the file names, to be output in target directory.
+const defaultFileOutputPattern = "not-run-tests-%s-%s.txt"
+const shortUsage = "Filters the output of test-report execution command into one text file per team and version, containing lists of not run tests"
+
+var fileOutputPattern string
+var outputDirectory string
 var filterCmd = &cobra.Command{
 	Use:   "filter",
-	Short: "Filters the output of test-report execution into yaml, containing lists of not run tests, grouping them by team and version",
-	Long: `Filters the output of test-report execution into yaml, containing lists of not run tests, grouping them by team and version. This way it can further be filtered using yaml tools like yq.
+	Short: shortUsage,
+	Long: shortUsage + `.
+In detail "not run" means, that per test there was no single occurrence of it being run, nor was it marked as unsupported by being part of the dont_run_tests.json. 
 
 Usage:
 
-	$ test-report filter /path/to/test-report.json
+	$ output_dir=$(mktemp -d) && \
+		test-report filter \
+			--output-directory $output_dir \
+			"--output-pattern=/not-run-tests-%s-%s.txt" /path/to/test-report.json
 
-Base output structure is
+Output will then be written to $output_dir, which contains a set of files that contain the test names of the test
+that have not been run. I.e. given
+	versions := ["4.11", "4.12"]
+	groups := ["virtualization", "network"]
 
-	{team-shortname}:
-		"{version}":
-		- '{test-name-1}'
-		- ...
-		- '{test-name-n}'
+it would create files
 
-Note: all the tests that are not run due to being part of dont_run_tests.json are eliminated from this list.
-
-You can extract i.e. the test names for a specific version of a team like this:
-
-    $ yq '.storage."4.13".[]' $HOME/Documents/test-report/not-run-tests.yaml
-
-See https://github.com/mikefarah/yq
+	not-run-tests-4.11-virtualization.txt
+	not-run-tests-4.12-virtualization.txt
+	not-run-tests-4.11-network.txt
+	not-run-tests-4.12-network.txt
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if outputDirectory == "" {
+			tempDir, err := os.MkdirTemp("", "test-report-*")
+			if err != nil {
+				return err
+			}
+			outputDirectory = tempDir
+			log.Printf("writing output to directory: %s", outputDirectory)
+		} else {
+			stat, err := os.Stat(outputDirectory)
+			if os.IsNotExist(err) {
+				return fmt.Errorf("directory %s does not exist: %v", outputDirectory, err)
+			}
+			if !stat.IsDir() {
+				return fmt.Errorf("%s is not a directory", outputDirectory)
+			}
+		}
 		if len(args) != 1 {
 			return fmt.Errorf("no file as argument given")
 		}
@@ -73,13 +97,22 @@ See https://github.com/mikefarah/yq
 			return err
 		}
 		filtered := runFilter(input, nil)
-		marshal, err := yaml.Marshal(filtered)
-		if err != nil {
-			return err
+		for group, versions := range filtered {
+			for version, tests := range versions {
+				testsWithNewlines := strings.Join(tests, "\n")
+				err := os.WriteFile(filepath.Join(outputDirectory, fmt.Sprintf(fileOutputPattern, version, group)), []byte(testsWithNewlines), os.ModePerm)
+				if err != nil {
+					return err
+				}
+			}
 		}
-		fmt.Printf(string(marshal))
 		return nil
 	},
+}
+
+func init() {
+	filterCmd.PersistentFlags().StringVar(&fileOutputPattern, "output-pattern", defaultFileOutputPattern, "")
+	filterCmd.PersistentFlags().StringVar(&outputDirectory, "output-directory", "", "")
 }
 
 func FilterCmd() *cobra.Command {
