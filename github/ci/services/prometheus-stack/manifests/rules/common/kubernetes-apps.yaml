@@ -143,17 +143,18 @@ spec:
       labels:
         severity: warning
         namespace: monitoring
-    - alert: KubeJobCompletion
-      annotations:
-        message: 'Job {{ $labels.namespaces }}/{{ $labels.job }} is taking more than
-          one hour to complete.'
-        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubejobcompletion
-      expr: |
-        kube_job_spec_completions{job="kube-state-metrics"} - kube_job_status_succeeded{job="kube-state-metrics"}  > 0
-      for: 1h
-      labels:
-        severity: warning
-        namespace: monitoring
+# FIXME: turned off since they were flapping
+#    - alert: KubeJobCompletion
+#      annotations:
+#        message: 'Job {{ $labels.namespace }}/{{ $labels.job_name }} is taking more than
+#          one hour to complete.'
+#        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubejobcompletion
+#      expr: |
+#        kube_job_spec_completions{job="kube-state-metrics"} - kube_job_status_succeeded{job="kube-state-metrics"}  > 0
+#      for: 1h
+#      labels:
+#        severity: warning
+#        namespace: monitoring
     - alert: KubeJobFailed
       annotations:
         message: 'Job {{ $labels.namespaces }}/{{ $labels.job }} failed to complete.'
