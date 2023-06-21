@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -15,6 +16,8 @@ import (
 
 //go:embed flake-stats.gohtml
 var htmlTemplate string
+
+var multipleSpacesRegex = regexp.MustCompile("[\\s]+")
 
 type TemplateData struct {
 	TopXTests
@@ -127,34 +130,39 @@ func main() {
 		targetReportDate = previousDay(targetReportDate)
 	}
 
+	// store test names for quarantined tests to later on mark the displayed results
+	// since we want to aggregate over a test that has a changing quarantine status during the period
 	quarantinedTestNames := map[string]struct{}{}
 	testNamesByTopXTests := map[string]*TopXTest{}
 	for _, reportData := range recentFlakefinderReports {
 		for i := 0; i < len(reportData.Tests); i++ {
-
-			topXTestName := reportData.Tests[i]
-			if strings.Contains(topXTestName, "[QUARANTINE]") {
-				// store the test name to later on filter the displayed results
-				testNameWithoutQuarantineLabel := strings.Replace(topXTestName, "[QUARANTINE]", "", -1)
-				quarantinedTestNames[testNameWithoutQuarantineLabel] = struct{}{}
-				topXTestName = testNameWithoutQuarantineLabel
+			if isQuarantineLabelPresent(reportData.Tests[i]) {
+				quarantinedTestNames[normalizeTestName(reportData.Tests[i])] = struct{}{}
 			}
 
-			currentTopXTest, topXTestsExists := testNamesByTopXTests[topXTestName]
-			if !topXTestsExists {
-				testNamesByTopXTests[topXTestName] = NewTopXTest(topXTestName)
-				currentTopXTest = testNamesByTopXTests[topXTestName]
-			}
+			// the original test name is used to retrieve the test data from the flakefinder report
+			// i.e. all access to `reportData`
+			originalTestName := reportData.Tests[i]
 
-			for jobName, jobFailures := range reportData.Data[topXTestName] {
+			// while the normalized test name is used to aggregate the test data for the stats report
+			// i.e. `testNamesByTopXTests`
+			normalizedTestName := normalizeTestName(originalTestName)
+
+			for jobName, jobFailures := range reportData.Data[originalTestName] {
+
+				if strings.Index(jobName, "periodic") == 0 {
+					continue
+				}
 
 				if jobFailures.Failed == 0 {
 					continue
 				}
 
-				if strings.Index(jobName, "periodic") == 0 {
-					continue
+				currentTopXTest, topXTestsExists := testNamesByTopXTests[normalizedTestName]
+				if !topXTestsExists {
+					testNamesByTopXTests[normalizedTestName] = NewTopXTest(normalizedTestName)
 				}
+				currentTopXTest = testNamesByTopXTests[normalizedTestName]
 
 				// aggregate all failures per test
 				currentTopXTest.AllFailures.add(jobFailures.Failed)
@@ -178,8 +186,9 @@ func main() {
 
 	var allTests TopXTests
 	for _, test := range testNamesByTopXTests {
-		_, wasQuarantined := quarantinedTestNames[test.Name]
-		test.NoteHasBeenQuarantined = wasQuarantined
+		if _, wasQuarantinedDuringReportRange := quarantinedTestNames[test.Name]; wasQuarantinedDuringReportRange {
+			test.NoteHasBeenQuarantined = true
+		}
 		allTests = append(allTests, test)
 	}
 	sort.Sort(allTests)
@@ -201,6 +210,16 @@ func main() {
 		log.Fatalf("Writing html to %q: %v", opts.outputFile, err)
 	}
 
+}
+
+func isQuarantineLabelPresent(testName string) bool {
+	return strings.Contains(testName, "[QUARANTINE]")
+}
+
+// normalizeTestName removes quarantine label and in that process eventually multiple spaces to have a chance to find
+// the test name again. However, for bigger renamings it can't do much.
+func normalizeTestName(testName string) string {
+	return multipleSpacesRegex.ReplaceAllString(strings.Replace(testName, "[QUARANTINE]", "", -1), " ")
 }
 
 func NewTopXTest(topXTestName string) *TopXTest {
