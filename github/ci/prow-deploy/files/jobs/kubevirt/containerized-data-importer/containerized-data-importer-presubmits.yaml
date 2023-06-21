@@ -5,6 +5,7 @@ presubmits:
       - release-v1.38
       - release-v1.43
       - release-v1.49
+    skip_if_only_changed: ^docs/|\.md$|^(?:.*/)?(?:\.gitignore|OWNERS|PROJECT|LICENSE)$
     cluster: kubevirt-prow-workloads
     annotations:
       fork-per-release: "true"
@@ -36,6 +37,7 @@ presubmits:
       - release-v1.38
       - release-v1.43
       - release-v1.49
+    skip_if_only_changed: ^docs/|\.md$|^(?:.*/)?(?:\.gitignore|OWNERS|PROJECT|LICENSE)$
     cluster: ibm-prow-jobs
     annotations:
       fork-per-release: "true"
@@ -100,6 +102,7 @@ presubmits:
       - release-v1.38
       - release-v1.43
       - release-v1.49
+    skip_if_only_changed: ^docs/|\.md$|^(?:.*/)?(?:\.gitignore|OWNERS|PROJECT|LICENSE)$
     cluster: ibm-prow-jobs
     annotations:
       fork-per-release: "true"
@@ -130,6 +133,7 @@ presubmits:
   - name: pull-containerized-data-importer-e2e-hpp-latest
     skip_branches:
       - release-v\d+\.\d+
+    skip_if_only_changed: ^docs/|\.md$|^(?:.*/)?(?:\.gitignore|OWNERS|PROJECT|LICENSE)$
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
@@ -162,6 +166,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-destructive
+    skip_if_only_changed: ^docs/|\.md$|^(?:.*/)?(?:\.gitignore|OWNERS|PROJECT|LICENSE)$
     skip_branches:
       - release-v\d+\.\d+
     annotations:
@@ -196,6 +201,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-istio
+    skip_if_only_changed: ^docs/|\.md$|^(?:.*/)?(?:\.gitignore|OWNERS|PROJECT|LICENSE)$
     skip_branches:
       - release-v\d+\.\d+
     annotations:
@@ -230,6 +236,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-hpp-previous
+    skip_if_only_changed: ^docs/|\.md$|^(?:.*/)?(?:\.gitignore|OWNERS|PROJECT|LICENSE)$
     skip_branches:
       - release-v1.28
       - release-v1.34
@@ -268,6 +275,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-ceph
+    skip_if_only_changed: ^docs/|\.md$|^(?:.*/)?(?:\.gitignore|OWNERS|PROJECT|LICENSE)$
     skip_branches:
       - release-v1.28
       - release-v1.34
@@ -306,6 +314,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-upg
+    skip_if_only_changed: ^docs/|\.md$|^(?:.*/)?(?:\.gitignore|OWNERS|PROJECT|LICENSE)$
     skip_branches:
       - release-v\d+\.\d+
     annotations:
@@ -340,6 +349,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-nfs
+    skip_if_only_changed: ^docs/|\.md$|^(?:.*/)?(?:\.gitignore|OWNERS|PROJECT|LICENSE)$
     skip_branches:
       - release-v\d+\.\d+
     annotations:
@@ -415,6 +425,7 @@ presubmits:
         secret:
           secretName: kubevirtci-fossa-token
   - name: pull-containerized-data-importer-non-csi-hpp
+    skip_if_only_changed: ^docs/|\.md$|^(?:.*/)?(?:\.gitignore|OWNERS|PROJECT|LICENSE)$
     skip_branches:
        - release-v\d+\.\d+
     annotations:
