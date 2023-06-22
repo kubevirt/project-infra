@@ -20,12 +20,46 @@ var htmlTemplate string
 var multipleSpacesRegex = regexp.MustCompile("[\\s]+")
 
 type TemplateData struct {
+	OverallFailures *TopXTest
 	TopXTests
-	DaysInThePast int
-	Date          time.Time
+	DaysInThePast   int
+	Date            time.Time
+	ShareCategories []ShareCategory
 }
 
 type TopXTests []*TopXTest
+
+type ShareCategory struct {
+	CSSClassName       string
+	MinPercentageValue float64
+}
+
+var shareCategories = []ShareCategory{
+	{
+		"lightyellow",
+		0.25,
+	},
+	{
+		"yellow",
+		1.0,
+	},
+	{
+		"orange",
+		2.5,
+	},
+	{
+		"orangered",
+		5.0,
+	},
+	{
+		"red",
+		10.0,
+	},
+	{
+		"darkred",
+		25.0,
+	},
+}
 
 func (t TopXTests) Len() int {
 	return len(t)
@@ -37,6 +71,42 @@ func (t TopXTests) Less(i, j int) bool {
 	return iAllFailures.Sum > jAllFailures.Sum ||
 		(iAllFailures.Sum == jAllFailures.Sum && iAllFailures.Max > jAllFailures.Max) ||
 		(iAllFailures.Sum == jAllFailures.Sum && iAllFailures.Max == jAllFailures.Max && iAllFailures.Avg > jAllFailures.Avg)
+}
+
+func (t TopXTests) CalculateShareFromTotalFailures() *TopXTest {
+	overall := &TopXTest{
+		Name:            "Test failures overall",
+		AllFailures:     &FailureCounter{Name: "overall"},
+		FailuresPerDay:  map[string]*FailureCounter{},
+		FailuresPerLane: map[string]*FailureCounter{},
+	}
+	for _, test := range t {
+		overall.AllFailures.add(test.AllFailures.Sum)
+
+		// aggregate failures per test per day
+		for day, failuresPerDay := range test.FailuresPerDay {
+			_, failuresPerDayExists := overall.FailuresPerDay[day]
+			if !failuresPerDayExists {
+				overall.FailuresPerDay[day] = &FailureCounter{Name: failuresPerDay.Name}
+			}
+			overall.FailuresPerDay[day].add(failuresPerDay.Sum)
+		}
+
+		// aggregate failures per test per lane
+		for lane, failuresPerLane := range test.FailuresPerLane {
+			_, failuresPerLaneExists := overall.FailuresPerLane[lane]
+			if !failuresPerLaneExists {
+				overall.FailuresPerLane[lane] = &FailureCounter{Name: lane, ShowURL: true}
+			}
+			overall.FailuresPerLane[lane].add(failuresPerLane.Sum)
+		}
+
+	}
+	for index := range t {
+		t[index].CalculateShareFromTotalFailures(overall.AllFailures.Sum)
+	}
+	overall.CalculateShareFromTotalFailures(overall.AllFailures.Sum)
+	return overall
 }
 
 func (t TopXTests) Swap(i, j int) {
@@ -51,12 +121,25 @@ type TopXTest struct {
 	NoteHasBeenQuarantined bool
 }
 
+func (t *TopXTest) CalculateShareFromTotalFailures(totalFailures int) {
+	t.AllFailures.setShare(totalFailures)
+	for key := range t.FailuresPerLane {
+		t.FailuresPerLane[key].setShare(totalFailures)
+	}
+	for key := range t.FailuresPerDay {
+		t.FailuresPerDay[key].setShare(totalFailures)
+	}
+}
+
 type FailureCounter struct {
-	Name  string
-	Count int
-	Sum   int
-	Avg   float64
-	Max   int
+	Name          string
+	Count         int
+	Sum           int
+	Avg           float64
+	Max           int
+	SharePercent  float64
+	ShareCategory ShareCategory
+	ShowURL       bool
 }
 
 func (c *FailureCounter) add(value int) {
@@ -66,6 +149,15 @@ func (c *FailureCounter) add(value int) {
 	}
 	c.Avg = (float64(value) + float64(c.Count)*c.Avg) / float64(c.Count+1)
 	c.Count++
+}
+
+func (f *FailureCounter) setShare(totalFailures int) {
+	f.SharePercent = float64(f.Sum) / float64(totalFailures) * 100
+	for _, shareCategory := range shareCategories {
+		if shareCategory.MinPercentageValue <= f.SharePercent {
+			f.ShareCategory = shareCategory
+		}
+	}
 }
 
 type options struct {
@@ -170,14 +262,14 @@ func main() {
 				// aggregate failures per test per day
 				_, failuresPerDayExists := currentTopXTest.FailuresPerDay[reportData.StartOfReport]
 				if !failuresPerDayExists {
-					currentTopXTest.FailuresPerDay[reportData.StartOfReport] = &FailureCounter{Name: strings.Replace(reportData.StartOfReport, "T00:00:00Z", "", -1)}
+					currentTopXTest.FailuresPerDay[reportData.StartOfReport] = &FailureCounter{Name: formatToDay(reportData.StartOfReport)}
 				}
 				currentTopXTest.FailuresPerDay[reportData.StartOfReport].add(jobFailures.Failed)
 
 				// aggregate failures per test per lane
 				_, failuresPerLaneExists := currentTopXTest.FailuresPerLane[jobName]
 				if !failuresPerLaneExists {
-					currentTopXTest.FailuresPerLane[jobName] = &FailureCounter{Name: jobName}
+					currentTopXTest.FailuresPerLane[jobName] = &FailureCounter{Name: jobName, ShowURL: true}
 				}
 				currentTopXTest.FailuresPerLane[jobName].add(jobFailures.Failed)
 			}
@@ -193,6 +285,8 @@ func main() {
 	}
 	sort.Sort(allTests)
 
+	overallFailures := allTests.CalculateShareFromTotalFailures()
+
 	htmlReportOutputWriter, err := os.Create(opts.outputFile)
 	if err != nil {
 		log.Fatalf("failed to write report %q: %v", opts.outputFile, err)
@@ -201,15 +295,25 @@ func main() {
 	defer htmlReportOutputWriter.Close()
 
 	templateData := &TemplateData{
-		TopXTests:     allTests,
-		DaysInThePast: opts.daysInThePast,
-		Date:          time.Now(),
+		OverallFailures: overallFailures,
+		TopXTests:       allTests,
+		DaysInThePast:   opts.daysInThePast,
+		Date:            time.Now(),
+		ShareCategories: shareCategories,
 	}
 	err = flakefinder.WriteTemplateToOutput(htmlTemplate, templateData, htmlReportOutputWriter)
 	if err != nil {
 		log.Fatalf("Writing html to %q: %v", opts.outputFile, err)
 	}
 
+}
+
+func formatToDay(dayDate string) string {
+	date, err := time.Parse(time.RFC3339, dayDate)
+	if err != nil {
+		panic(err)
+	}
+	return date.Format("Mon, 02 Jan 2006")
 }
 
 func isQuarantineLabelPresent(testName string) bool {

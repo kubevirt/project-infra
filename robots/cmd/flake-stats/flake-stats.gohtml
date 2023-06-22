@@ -20,11 +20,38 @@
 
 {{- /* gotype: kubevirt.io/project-infra/robots/cmd/flake-stats.TemplateData */ -}}
 
-{{ define "failure"}}
-    <table class="{{ if le .Sum 5 }}yellow{{ else if le .Sum 10}}orange{{ else }}red{{ end }}">
+{{ define "failures" }}
+    <div id="{{ .Name }}" {{ if .NoteHasBeenQuarantined }}class="noteHasBeenQuarantined"{{ end }}>
+        <span class="testName">{{ .Name }}</span><br/>
+        <span class="failureBlock">
+                <span class="failureBlockHeader">All</span><br/>
+                {{ template "failure" .AllFailures }}
+            </span>
+        <span class="failureBlock">
+            <span class="failureBlockHeader">Per Day</span><br/>
+                {{ range $key, $value := .FailuresPerDay }}
+                    {{ template "failure" $value }}
+                {{ end }}
+            </span>
+        <span class="failureBlock">
+            <span class="failureBlockHeader">Per Lane</span><br/>
+                {{ range $key, $value := .FailuresPerLane }}
+                    {{ template "failure" $value }}
+                {{ end }}
+            </span>
+        <hr/>
+    </div>
+{{ end }}
+
+{{ define "failure" }}
+    <table class="failureBlock {{ .ShareCategory.CSSClassName }}">
         <tr>
             <td colspan="2" class="failureHeader">
-                {{ .Name }}
+                {{ if .ShowURL }}
+                    <a href="https://testgrid.k8s.io/kubevirt-presubmits#{{ .Name }}&width=20">{{ .Name }}</a>
+                {{ else }}
+                    {{ .Name }}
+                {{ end }}
             </td>
         </tr>
         <tr>
@@ -51,6 +78,14 @@
                 {{ printf "%.2f" .Avg }}
             </td>
         </tr>
+        <tr>
+            <td>
+                Share
+            </td>
+            <td>
+                {{ printf "%.2f" .SharePercent }} %
+            </td>
+        </tr>
     </table>
 {{ end }}
 
@@ -63,7 +98,6 @@
         <!--
         table {
             border: 1px solid black;
-            display: inline-block;
         }
 
         th, td {
@@ -79,6 +113,26 @@
             font-weight: bold;
         }
 
+        .failureBlock {
+            display: inline-block;
+            padding-right: 5px;
+        }
+
+        .failureBlockHeader {
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        .legend {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+        }
+
+        .lightyellow {
+            background-color: lightgoldenrodyellow;
+        }
+
         .yellow {
             background-color: #ffff80;
         }
@@ -87,8 +141,16 @@
             background-color: #ffbf80;
         }
 
+        .orangered {
+            background-color: #ff9090;
+        }
+
         .red {
-            background-color: #ff8080;
+            background-color: #ff7070;
+        }
+
+        .darkred {
+            background-color: #ff5050;
         }
 
         .noteHasBeenQuarantined {
@@ -160,51 +222,52 @@
 <body onload="initRowsShown();updateFilteredRows();enableFilterFields();">
 
 <h1>Flake stats for last {{ $.DaysInThePast }} days</h1>
-
-<table class="noborder">
-    <tr>
-        <td class="noborder">
-        </td>
-        <td class="noborder">
-            <label for="filterByName">Exclude tests that don't contain</label>
-        </td>
-        <td class="noborder">
-            <input type="text" id="filterByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..." disabled>
-        </td>
-        <td class="noborder filler">
-        </td>
-        <td class="noborder" colspan="3"/>
-    </tr>
-    <tr>
-        <td class="noborder">
-        </td>
-        <td class="noborder">
-            <label for="excludeByName">Exclude tests that contain</label>
-        </td>
-        <td class="noborder">
-            <input type="text" id="excludeByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..." disabled>
-        </td>
-        <td class="noborder filler">
-        </td>
-        <td class="noborder" colspan="3"/>
-    </tr>
-</table>
-<div id="totalRowsShown">Showing x of y</div>
+<div id="legend" class="legend">
+    Share of overall failures:
+    {{ range $index, $value := $.ShareCategories }}
+        <span class="{{ $value.CSSClassName }}"> &gt;= {{ $value.MinPercentageValue }}% </span>
+    {{ end }}
+</div>
+<div id="overall">
+    {{ template "failures" $.OverallFailures }}
+</div>
 <div id="report">
+    <h1>Top most flaky tests</h1>
+
+    <table class="noborder">
+        <tr>
+            <td class="noborder">
+            </td>
+            <td class="noborder">
+                <label for="filterByName">Exclude tests that don't contain</label>
+            </td>
+            <td class="noborder">
+                <input type="text" id="filterByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..."
+                       disabled>
+            </td>
+            <td class="noborder filler">
+            </td>
+            <td class="noborder" colspan="3"/>
+        </tr>
+        <tr>
+            <td class="noborder">
+            </td>
+            <td class="noborder">
+                <label for="excludeByName">Exclude tests that contain</label>
+            </td>
+            <td class="noborder">
+                <input type="text" id="excludeByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..."
+                       disabled>
+            </td>
+            <td class="noborder filler">
+            </td>
+            <td class="noborder" colspan="3"/>
+        </tr>
+    </table>
+
+    <div id="totalRowsShown">Showing x of y</div>
     {{ range $key, $value := $.TopXTests }}
-        <div id="{{ .Name }}" {{ if .NoteHasBeenQuarantined }}class="noteHasBeenQuarantined"{{ end }}>
-            <span class="testName">{{ $key }}: {{ .Name }}</span><br/>
-            {{ template "failure" .AllFailures }}
-            &nbsp;
-            {{ range $key, $value := .FailuresPerDay }}
-                {{ template "failure" $value }}
-            {{ end }}
-            &nbsp;
-            {{ range $key, $value := .FailuresPerLane }}
-                {{ template "failure" $value }}
-            {{ end }}
-            <hr/>
-        </div>
+        {{ template "failures" $value }}
     {{ end }}
 </div>
 
