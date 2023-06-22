@@ -1050,7 +1050,7 @@ presubmits:
       - name: kubevirtci-coveralls
         secret:
           secretName: kubevirtci-coveralls-token
-  - always_run: true
+  - always_run: false
     branches:
     - release-0.59
     cluster: kubevirt-prow-workloads
@@ -1070,6 +1070,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
+        - # FIXME: reenable this lane after missing dependency issue has been resolved
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         name: ""
         resources:
