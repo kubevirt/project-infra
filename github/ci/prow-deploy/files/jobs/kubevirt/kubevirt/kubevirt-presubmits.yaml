@@ -741,7 +741,7 @@ presubmits:
       - name: kubevirtci-fossa
         secret:
           secretName: kubevirtci-fossa-token
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
@@ -763,6 +763,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
+        - # FIXME: reenable this lane after missing dependency issue has been resolved
         image: quay.io/kubevirtci/bootstrap:v20230607-07930d7
         name: ""
         resources:
