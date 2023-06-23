@@ -27,12 +27,8 @@ import (
 )
 
 const (
-	prowJobImageUpdateApproveComment = `This looks like a simple prow job image bump. The bot approves.
-
-/lgtm
-/approve
-`
-	prowJobImageUpdateDisapproveComment = `This doesn't look like a simple prow job image bump.
+	prowJobImageUpdateApproveComment    = `:thumbsup: This looks like a simple prow job image bump.`
+	prowJobImageUpdateDisapproveComment = `:thumbsdown: This doesn't look like a simple prow job image bump.
 
 These are the suspicious hunks I found:
 `
@@ -62,6 +58,14 @@ func (r ProwJobImageUpdateResult) String() string {
 		}
 		return comment
 	}
+}
+
+func (r ProwJobImageUpdateResult) IsApproved() bool {
+	return len(r.notMatchingHunks) == 0
+}
+
+func (r ProwJobImageUpdateResult) CanMerge() bool {
+	return true
 }
 
 type ProwJobImageUpdate struct {

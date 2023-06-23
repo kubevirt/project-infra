@@ -36,6 +36,12 @@ type KindOfChange interface {
 
 type BotReviewResult interface {
 	String() string
+
+	// IsApproved states if the review has only expected changes
+	IsApproved() bool
+
+	// CanMerge states if the pull request can get merged without any further action
+	CanMerge() bool
 }
 
 func newPossibleReviewTypes() []KindOfChange {
@@ -68,6 +74,14 @@ type BasicResult struct {
 
 func (n BasicResult) String() string {
 	return n.message
+}
+
+func (n BasicResult) IsApproved() bool {
+	return false
+}
+
+func (n BasicResult) CanMerge() bool {
+	return false
 }
 
 type Reviewer struct {
@@ -129,9 +143,8 @@ func (r *Reviewer) ReviewLocalCode() ([]BotReviewResult, error) {
 	}
 
 	types := GuessReviewTypes(files)
-	if len(types) > 1 {
-		r.info("doesn't look like a simple review, skipping")
-		r.debugF("reviewTypes: %v", types)
+	if len(types) == 0 {
+		r.info("this PR didn't match any review type")
 		return nil, nil
 	}
 
@@ -144,28 +157,60 @@ func (r *Reviewer) ReviewLocalCode() ([]BotReviewResult, error) {
 	return results, nil
 }
 
-var botReviewCommentPattern = `@%s's review-bot says:
+const botReviewCommentPattern = `@%s's review-bot says:
 
-%v
+%s
+
+%s
+
+%s
 
 **Note: botreview (kubevirt/project-infra#2448) is a Work In Progress!**
 `
+const holdPRComment = `Holding this PR for further manual action to occur.
+
+/hold`
+const unholdPRComment = "This PR does not require further manual action."
+
+const approvePRComment = `This PR satisfies all automated review criteria.
+
+/lgtm
+/approve`
+const unapprovePRComment = "This PR does not satisfy at least one automated review criteria."
 
 func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, githubClient github.Client) error {
 	botUser, err := githubClient.BotUser()
 	if err != nil {
 		return fmt.Errorf("error while fetching user data: %v", err)
 	}
+	isApproved, canMerge := true, true
+	botReviewComments := make([]string, 0, len(botReviewResults))
 	for _, reviewResult := range botReviewResults {
-		botReviewComment := fmt.Sprintf(botReviewCommentPattern, botUser.Login, reviewResult)
-		if !r.dryRun {
-			err = githubClient.CreateComment(r.org, r.repo, r.num, botReviewComment)
-			if err != nil {
-				return fmt.Errorf("error while creating review comment: %v", err)
-			}
-		} else {
-			r.l.Info(fmt.Sprintf("dry-run: %s/%s#%d <- %s", r.org, r.repo, r.num, botReviewComment))
+		isApproved, canMerge = isApproved && reviewResult.IsApproved(), canMerge && reviewResult.CanMerge()
+		botReviewComments = append(botReviewComments, fmt.Sprintf("%s", reviewResult))
+	}
+	approveLabels := unapprovePRComment
+	if isApproved {
+		approveLabels = approvePRComment
+	}
+	holdComment := holdPRComment
+	if canMerge {
+		holdComment = unholdPRComment
+	}
+	botReviewComment := fmt.Sprintf(
+		botReviewCommentPattern,
+		botUser.Login,
+		"* "+strings.Join(botReviewComments, "\n* "),
+		approveLabels,
+		holdComment,
+	)
+	if !r.dryRun {
+		err = githubClient.CreateComment(r.org, r.repo, r.num, botReviewComment)
+		if err != nil {
+			return fmt.Errorf("error while creating review comment: %v", err)
 		}
+	} else {
+		r.l.Info(fmt.Sprintf("dry-run: %s/%s#%d <- %s", r.org, r.repo, r.num, botReviewComment))
 	}
 	return nil
 }

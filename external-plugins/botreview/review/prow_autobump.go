@@ -27,16 +27,8 @@ import (
 )
 
 const (
-	prowAutobumpApproveComment = `This looks like a simple prow autobump. The bot approves.
-
-/lgtm
-/approve
-
-**Note**: the bot holds for manual removal when the time is right for this to go in.
-
-/hold
-`
-	prowAutobumpDisapproveComment = `This doesn't look like a simple prow autobump.
+	prowAutobumpApproveComment    = `:thumbsup: This looks like a simple prow autobump.`
+	prowAutobumpDisapproveComment = `:thumbsdown: This doesn't look like a simple prow autobump.
 
 These are the suspicious hunks I found:
 `
@@ -62,6 +54,14 @@ func (r ProwAutobumpResult) String() string {
 		}
 		return comment
 	}
+}
+
+func (r ProwAutobumpResult) IsApproved() bool {
+	return len(r.notMatchingHunks) == 0
+}
+
+func (r ProwAutobumpResult) CanMerge() bool {
+	return false
 }
 
 type ProwAutobump struct {

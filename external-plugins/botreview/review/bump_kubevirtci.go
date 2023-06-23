@@ -27,12 +27,8 @@ import (
 )
 
 const (
-	bumpKubevirtCIApproveComment = `This looks like a simple kubevirtci bump. The bot approves.
-
-/lgtm
-/approve
-`
-	bumpKubevirtCIDisapproveComment = `This doesn't look like a simple kubevirtci bump.
+	bumpKubevirtCIApproveComment    = `:thumbsup: This looks like a simple kubevirtci bump.`
+	bumpKubevirtCIDisapproveComment = `:thumbsdown: This doesn't look like a simple kubevirtci bump.
 
 These are the suspicious hunks I found:
 `
@@ -50,6 +46,14 @@ func init() {
 
 type BumpKubevirtCIResult struct {
 	notMatchingHunks []*diff.Hunk
+}
+
+func (r BumpKubevirtCIResult) IsApproved() bool {
+	return len(r.notMatchingHunks) == 0
+}
+
+func (r BumpKubevirtCIResult) CanMerge() bool {
+	return true
 }
 
 func (r BumpKubevirtCIResult) String() string {
