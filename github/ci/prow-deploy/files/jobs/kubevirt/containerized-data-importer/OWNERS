@@ -8,11 +8,16 @@ filters:
   .*:
     approvers:
     - aglitke
+    - akalenyu
     - awels
     - mhenriks
     reviewers:
     - aglitke
+    - akalenyu
+    - alromeros
+    - arnongilboa
     - awels
     - maya-r
     - mhenriks
+    - shellyka13
 options: {}
