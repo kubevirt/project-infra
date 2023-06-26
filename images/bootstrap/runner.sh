@@ -45,7 +45,7 @@ setup_ca(){
 cleanup_pinc() {
     if [[ "${PODMAN_IN_CONTAINER_ENABLED:-false}" == "true" ]]; then
         echo "Cleaning up after podman"
-        podman ps -aq | xargs -r podman rm -f || true
+        podman rm --all --force || true
         kill "$(</var/run/podman.pid)" || true
         wait "$(</var/run/podman.pid)" || true
     fi
