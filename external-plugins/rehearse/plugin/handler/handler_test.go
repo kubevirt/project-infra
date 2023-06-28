@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
@@ -28,7 +29,6 @@ var _ = Describe("Events", func() {
 			Expect(err).ShouldNot(HaveOccurred(), "Could not create local git repo and client factory")
 			dummyLog = logrus.New()
 			eventsServer = NewGitHubEventsHandler(
-				nil,
 				dummyLog,
 				nil,
 				nil,

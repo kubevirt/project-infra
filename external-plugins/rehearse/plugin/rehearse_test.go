@@ -197,9 +197,7 @@ var _ = Describe("Rehearse", func() {
 						Fake: &testing.Fake{},
 					}
 					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
 					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
 						fakelog,
 						prowc.ProwJobs("test-ns"),
 						gh,
@@ -338,9 +336,7 @@ var _ = Describe("Rehearse", func() {
 						Fake: &testing.Fake{},
 					}
 					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
 					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
 						fakelog,
 						prowc.ProwJobs("test-ns"),
 						gh,
@@ -501,9 +497,7 @@ var _ = Describe("Rehearse", func() {
 						Fake: &testing.Fake{},
 					}
 					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
 					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
 						fakelog,
 						prowc.ProwJobs("test-ns"),
 						gh,
@@ -678,9 +672,7 @@ var _ = Describe("Rehearse", func() {
 						Fake: &testing.Fake{},
 					}
 					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
 					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
 						fakelog,
 						prowc.ProwJobs("test-ns"),
 						gh,
@@ -858,9 +850,7 @@ var _ = Describe("Rehearse", func() {
 						Fake: &testing.Fake{},
 					}
 					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
 					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
 						fakelog,
 						prowc.ProwJobs("test-ns"),
 						gh,
@@ -1037,9 +1027,7 @@ var _ = Describe("Rehearse", func() {
 						Fake: &testing.Fake{},
 					}
 					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
 					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
 						fakelog,
 						prowc.ProwJobs("test-ns"),
 						gh,
@@ -1082,9 +1070,7 @@ var _ = Describe("Rehearse", func() {
 					Fake: &testing.Fake{},
 				}
 				fakelog := logrus.New()
-				eventsChan := make(chan *handler.GitHubEvent)
 				eventsHandler := handler.NewGitHubEventsHandler(
-					eventsChan,
 					fakelog,
 					prowc.ProwJobs("test-ns"),
 					gh,

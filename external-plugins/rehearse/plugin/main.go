@@ -152,10 +152,7 @@ func main() {
 	gitClientFactory, err := git.NewClientFactory(clientFactoryCacheDirOpt(opts.cacheDir))
 	mustSucceed(err, "Could not instantiate git client factory")
 
-	eventsChan := make(chan *handler.GitHubEvent)
-
 	eventsHandler := handler.NewGitHubEventsHandler(
-		eventsChan,
 		logger,
 		prowClient.ProwJobs(opts.jobsNs),
 		githubClient,

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/r3labs/diff/v3"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -13,6 +12,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/r3labs/diff/v3"
 
 	"github.com/go-git/go-git/v5"
 	gitconfig "github.com/go-git/go-git/v5/config"
@@ -57,7 +58,6 @@ type GitHubEvent struct {
 }
 
 type GitHubEventsHandler struct {
-	eventsChan       <-chan *GitHubEvent
 	logger           *logrus.Logger
 	prowClient       v1.ProwJobInterface
 	ghClient         githubClientInterface
@@ -69,7 +69,6 @@ type GitHubEventsHandler struct {
 
 // NewGitHubEventsHandler returns a new github events handler
 func NewGitHubEventsHandler(
-	eventsChan <-chan *GitHubEvent,
 	logger *logrus.Logger,
 	prowClient v1.ProwJobInterface,
 	ghClient githubClientInterface,
@@ -79,7 +78,6 @@ func NewGitHubEventsHandler(
 	gitClientFactory gitv2.ClientFactory) *GitHubEventsHandler {
 
 	return &GitHubEventsHandler{
-		eventsChan:       eventsChan,
 		logger:           logger,
 		prowClient:       prowClient,
 		ghClient:         ghClient,
