@@ -473,6 +473,7 @@ orgs:
       ssp-operator:
         description: Operator that deploys additional KubeVirt resources
         has_projects: true
+        default_branch: main
       storage-demo:
         description: 'Incubating: Container images for a kubevirt storage demo environment'
         has_projects: true
