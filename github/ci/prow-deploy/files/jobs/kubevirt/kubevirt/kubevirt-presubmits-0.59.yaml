@@ -1288,8 +1288,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-ipv6-sig-network
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
@@ -1758,8 +1756,6 @@ presubmits:
         - -c
         - automation/test.sh
         env:
-        - name: KUBEVIRT_PSA
-          value: "true"
         - name: TARGET
           value: k8s-1.25-sig-network
         image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
@@ -1905,8 +1901,6 @@ presubmits:
         - -c
         - automation/test.sh
         env:
-        - name: KUBEVIRT_PSA
-          value: "true"
         - name: TARGET
           value: k8s-1.25-sig-compute
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
@@ -1944,8 +1938,6 @@ presubmits:
         - -c
         - automation/test.sh
         env:
-        - name: KUBEVIRT_PSA
-          value: "true"
         - name: TARGET
           value: k8s-1.25-sig-storage
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
@@ -2167,8 +2159,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-network-no-istio
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
@@ -2205,8 +2195,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-storage
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         name: ""
         resources:
@@ -2243,8 +2231,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-compute
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         name: ""
         resources:
@@ -2317,8 +2303,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-operator-configuration
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         name: ""
         resources:
@@ -2356,8 +2340,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-sig-operator
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20221222-8f66e7e
         name: ""
         resources:

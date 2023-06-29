@@ -1438,8 +1438,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-network-no-istio
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
@@ -1477,8 +1475,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-storage
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
@@ -1516,8 +1512,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-compute
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
@@ -1555,8 +1549,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.26-centos9-sig-operator
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
@@ -1663,8 +1655,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.27-sig-network
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
@@ -1702,8 +1692,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.27-sig-storage
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
@@ -1741,8 +1729,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.27-sig-compute
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
@@ -1780,8 +1766,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.27-sig-operator
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
