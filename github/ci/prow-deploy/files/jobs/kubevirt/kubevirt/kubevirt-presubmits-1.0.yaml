@@ -673,7 +673,7 @@ presubmits:
       - name: kubevirtci-coveralls
         secret:
           secretName: kubevirtci-coveralls-token
-  - always_run: false
+  - always_run: true
     branches:
     - release-1.0
     cluster: ibm-prow-jobs
