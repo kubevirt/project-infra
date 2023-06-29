@@ -709,6 +709,8 @@ orgs:
           - phoracek
           - SchSeba
           - awels
+          - aburdenthehand
+          - xpivarc
         privacy: closed
         repos:
           cloud-provider-kubevirt: write
