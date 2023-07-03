@@ -19,6 +19,9 @@ import (
 	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/handler"
 )
 
+const org, repo = "foo", "bar"
+const orgRepo = org + "/" + repo
+
 var _ = Describe("Rehearse", func() {
 
 	Context("A valid pull request event", func() {
@@ -43,16 +46,14 @@ var _ = Describe("Rehearse", func() {
 
 			It("Should generate Prow jobs for the changed configs", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+				makeRepoWithEmptyProwConfig(gitrepo)
 
 				var baseref string
 				By("Generating a base commit with a job", func() {
 					baseConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -88,11 +89,11 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": baseConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -101,7 +102,7 @@ var _ = Describe("Rehearse", func() {
 					headConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -136,11 +137,11 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					headref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -150,7 +151,7 @@ var _ = Describe("Rehearse", func() {
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
 					gh.OrgMembers = map[string][]string{
-						"foo": {
+						org: {
 							testuser,
 						},
 					}
@@ -160,7 +161,7 @@ var _ = Describe("Rehearse", func() {
 						Action: github.PullRequestActionOpened,
 						GUID:   "guid",
 						Repo: github.Repo{
-							FullName: "foo/bar",
+							FullName: orgRepo,
 						},
 						Sender: github.User{
 							Login: testuser,
@@ -169,16 +170,16 @@ var _ = Describe("Rehearse", func() {
 							Number: 17,
 							Base: github.PullRequestBranch{
 								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
+									Name:     repo,
+									FullName: orgRepo,
 								},
 								Ref: baseref,
 								SHA: baseref,
 							},
 							Head: github.PullRequestBranch{
 								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
+									Name:     repo,
+									FullName: orgRepo,
 								},
 								Ref: headref,
 								SHA: headref,
@@ -220,16 +221,14 @@ var _ = Describe("Rehearse", func() {
 
 			It("Should not generate Prow jobs if there are no changes", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+				makeRepoWithEmptyProwConfig(gitrepo)
 
 				var baseref string
 				By("Generating a base commit with a job", func() {
 					baseConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -265,21 +264,21 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": baseConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
 				var headref string
 				By("Generating a head commit with an unrelated modified file", func() {
-					err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err := gitrepo.AddCommit(org, repo, map[string][]byte{
 						"some-file": []byte(""),
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					headref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -289,7 +288,7 @@ var _ = Describe("Rehearse", func() {
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
 					gh.OrgMembers = map[string][]string{
-						"foo": {
+						org: {
 							testuser,
 						},
 					}
@@ -299,7 +298,7 @@ var _ = Describe("Rehearse", func() {
 						Action: github.PullRequestActionOpened,
 						GUID:   "guid",
 						Repo: github.Repo{
-							FullName: "foo/bar",
+							FullName: orgRepo,
 						},
 						Sender: github.User{
 							Login: testuser,
@@ -308,16 +307,16 @@ var _ = Describe("Rehearse", func() {
 							Number: 17,
 							Base: github.PullRequestBranch{
 								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
+									Name:     repo,
+									FullName: orgRepo,
 								},
 								Ref: baseref,
 								SHA: baseref,
 							},
 							Head: github.PullRequestBranch{
 								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
+									Name:     repo,
+									FullName: orgRepo,
 								},
 								Ref: headref,
 								SHA: headref,
@@ -357,16 +356,14 @@ var _ = Describe("Rehearse", func() {
 
 			It("Should not generate Prow jobs if a job was deleted", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+				makeRepoWithEmptyProwConfig(gitrepo)
 
 				var baseref string
 				By("Generating a base commit with a job", func() {
 					baseConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -402,11 +399,11 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": baseConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -415,7 +412,7 @@ var _ = Describe("Rehearse", func() {
 					headConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "existing-job",
@@ -436,11 +433,11 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					headref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -450,7 +447,7 @@ var _ = Describe("Rehearse", func() {
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
 					gh.OrgMembers = map[string][]string{
-						"foo": {
+						org: {
 							testuser,
 						},
 					}
@@ -460,7 +457,7 @@ var _ = Describe("Rehearse", func() {
 						Action: github.PullRequestActionOpened,
 						GUID:   "guid",
 						Repo: github.Repo{
-							FullName: "foo/bar",
+							FullName: orgRepo,
 						},
 						Sender: github.User{
 							Login: testuser,
@@ -469,16 +466,16 @@ var _ = Describe("Rehearse", func() {
 							Number: 17,
 							Base: github.PullRequestBranch{
 								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
+									Name:     repo,
+									FullName: orgRepo,
 								},
 								Ref: baseref,
 								SHA: baseref,
 							},
 							Head: github.PullRequestBranch{
 								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
+									Name:     repo,
+									FullName: orgRepo,
 								},
 								Ref: headref,
 								SHA: headref,
@@ -518,16 +515,14 @@ var _ = Describe("Rehearse", func() {
 
 			It("Should not act on pull request event if always run is set to false", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+				makeRepoWithEmptyProwConfig(gitrepo)
 
 				var baseref string
 				By("Generating a base commit with a job", func() {
 					baseConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -563,11 +558,11 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": baseConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -576,7 +571,7 @@ var _ = Describe("Rehearse", func() {
 					headConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -611,11 +606,11 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					headref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -625,7 +620,7 @@ var _ = Describe("Rehearse", func() {
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
 					gh.OrgMembers = map[string][]string{
-						"foo": {
+						org: {
 							testuser,
 						},
 					}
@@ -635,7 +630,7 @@ var _ = Describe("Rehearse", func() {
 						Action: github.PullRequestActionOpened,
 						GUID:   "guid",
 						Repo: github.Repo{
-							FullName: "foo/bar",
+							FullName: orgRepo,
 						},
 						Sender: github.User{
 							Login: testuser,
@@ -644,16 +639,16 @@ var _ = Describe("Rehearse", func() {
 							Number: 17,
 							Base: github.PullRequestBranch{
 								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
+									Name:     repo,
+									FullName: orgRepo,
 								},
 								Ref: baseref,
 								SHA: baseref,
 							},
 							Head: github.PullRequestBranch{
 								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
+									Name:     repo,
+									FullName: orgRepo,
 								},
 								Ref: headref,
 								SHA: headref,
@@ -698,16 +693,14 @@ var _ = Describe("Rehearse", func() {
 
 			It("Should generate Prow jobs for the changed configs with ok-to-test label", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+				makeRepoWithEmptyProwConfig(gitrepo)
 
 				var baseref string
 				By("Generating a base commit with a job", func() {
 					baseConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -743,11 +736,11 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": baseConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -756,7 +749,7 @@ var _ = Describe("Rehearse", func() {
 					headConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -791,11 +784,11 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					headref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -808,7 +801,7 @@ var _ = Describe("Rehearse", func() {
 						Action: github.PullRequestActionOpened,
 						GUID:   "guid",
 						Repo: github.Repo{
-							FullName: "foo/bar",
+							FullName: orgRepo,
 						},
 						Sender: github.User{
 							Login: testuser,
@@ -822,16 +815,16 @@ var _ = Describe("Rehearse", func() {
 							},
 							Base: github.PullRequestBranch{
 								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
+									Name:     repo,
+									FullName: orgRepo,
 								},
 								Ref: baseref,
 								SHA: baseref,
 							},
 							Head: github.PullRequestBranch{
 								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
+									Name:     repo,
+									FullName: orgRepo,
 								},
 								Ref: headref,
 								SHA: headref,
@@ -880,16 +873,14 @@ var _ = Describe("Rehearse", func() {
 
 			It("Should not generate Prow jobs", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+				makeRepoWithEmptyProwConfig(gitrepo)
 
 				var baseref string
 				By("Generating a base commit with a job", func() {
 					baseConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -925,11 +916,11 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": baseConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -938,7 +929,7 @@ var _ = Describe("Rehearse", func() {
 					headConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -973,11 +964,11 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					headref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -990,7 +981,7 @@ var _ = Describe("Rehearse", func() {
 						Action: github.PullRequestActionOpened,
 						GUID:   "guid",
 						Repo: github.Repo{
-							FullName: "foo/bar",
+							FullName: orgRepo,
 						},
 						Sender: github.User{
 							Login: testuser,
@@ -999,16 +990,16 @@ var _ = Describe("Rehearse", func() {
 							Number: 17,
 							Base: github.PullRequestBranch{
 								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
+									Name:     repo,
+									FullName: orgRepo,
 								},
 								Ref: baseref,
 								SHA: baseref,
 							},
 							Head: github.PullRequestBranch{
 								Repo: github.Repo{
-									Name:     "bar",
-									FullName: "foo/bar",
+									Name:     repo,
+									FullName: orgRepo,
 								},
 								Ref: headref,
 								SHA: headref,
@@ -1096,18 +1087,16 @@ var _ = Describe("Rehearse", func() {
 		})
 
 		Context("User in org", func() {
-
+			//
 			It("Should generate Prow jobs for the changed configs", func() {
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+				makeRepoWithEmptyProwConfig(gitrepo)
 
 				var baseref string
 				By("Generating a base commit with a job", func() {
 					baseConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -1143,11 +1132,11 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": baseConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -1156,7 +1145,7 @@ var _ = Describe("Rehearse", func() {
 					headConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -1191,11 +1180,11 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					headref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -1204,7 +1193,7 @@ var _ = Describe("Rehearse", func() {
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
 					gh.OrgMembers = map[string][]string{
-						"foo": {
+						org: {
 							testuser,
 						},
 					}
@@ -1226,16 +1215,14 @@ var _ = Describe("Rehearse", func() {
 
 			It("Should not generate Prow jobs if there are no changes", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+				makeRepoWithEmptyProwConfig(gitrepo)
 
 				var baseref string
 				By("Generating a base commit with a job", func() {
 					baseConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -1271,21 +1258,21 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": baseConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
 				var headref string
 				By("Generating a head commit with an unrelated modified file", func() {
-					err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err := gitrepo.AddCommit(org, repo, map[string][]byte{
 						"some-file": []byte(""),
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					headref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -1294,7 +1281,7 @@ var _ = Describe("Rehearse", func() {
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
 					gh.OrgMembers = map[string][]string{
-						"foo": {
+						org: {
 							testuser,
 						},
 					}
@@ -1314,16 +1301,14 @@ var _ = Describe("Rehearse", func() {
 
 			It("Should not generate Prow jobs if a job was deleted", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+				makeRepoWithEmptyProwConfig(gitrepo)
 
 				var baseref string
 				By("Generating a base commit with a job", func() {
 					baseConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -1359,11 +1344,11 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": baseConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -1372,7 +1357,7 @@ var _ = Describe("Rehearse", func() {
 					headConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "existing-job",
@@ -1392,11 +1377,11 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					headref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -1405,7 +1390,7 @@ var _ = Describe("Rehearse", func() {
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
 					gh.OrgMembers = map[string][]string{
-						"foo": {testuser},
+						org: {testuser},
 					}
 				})
 				event := NewGHIssueCommentEvent(gh, baseref, headref)
@@ -1423,16 +1408,14 @@ var _ = Describe("Rehearse", func() {
 			//TODO - FIX me
 			PIt("Should not generate Prow jobs if a job is not permitted", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+				makeRepoWithEmptyProwConfig(gitrepo)
 
 				var baseref string
 				By("Generating a base commit with a job", func() {
 					baseConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -1462,11 +1445,11 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": baseConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -1475,7 +1458,7 @@ var _ = Describe("Rehearse", func() {
 					headConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "existing-job",
@@ -1495,11 +1478,11 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					headref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -1508,7 +1491,7 @@ var _ = Describe("Rehearse", func() {
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
 					gh.OrgMembers = map[string][]string{
-						"foo": {testuser},
+						org: {testuser},
 					}
 				})
 				event := NewGHIssueCommentEvent(gh, baseref, headref)
@@ -1529,16 +1512,14 @@ var _ = Describe("Rehearse", func() {
 
 			It("Should generate Prow jobs for the changed configs", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+				makeRepoWithEmptyProwConfig(gitrepo)
 
 				var baseref string
 				By("Generating a base commit with a job", func() {
 					baseConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -1574,11 +1555,11 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": baseConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -1587,7 +1568,7 @@ var _ = Describe("Rehearse", func() {
 					headConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -1622,11 +1603,11 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					headref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -1661,16 +1642,14 @@ var _ = Describe("Rehearse", func() {
 
 			It("Should not generate Prow jobs", func() {
 
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
-				})
+				makeRepoWithEmptyProwConfig(gitrepo)
 
 				var baseref string
 				By("Generating a base commit with a job", func() {
 					baseConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -1706,11 +1685,11 @@ var _ = Describe("Rehearse", func() {
 						},
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": baseConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -1719,7 +1698,7 @@ var _ = Describe("Rehearse", func() {
 					headConfig, err := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
-								"foo/bar": {
+								orgRepo: {
 									{
 										JobBase: config.JobBase{
 											Name: "modified-job",
@@ -1754,11 +1733,11 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err = gitrepo.AddCommit(org, repo, map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
-					headref, err = gitrepo.RevParse("foo", "bar", "HEAD")
+					headref, err = gitrepo.RevParse(org, repo, "HEAD")
 					Expect(err).ShouldNot(HaveOccurred())
 				})
 
@@ -1781,8 +1760,9 @@ var _ = Describe("Rehearse", func() {
 
 })
 
-func makeRepoWithEmptyProwConfig(lg *localgit.LocalGit, repo, org string) error {
-	err := lg.MakeFakeRepo(repo, org)
+func makeRepoWithEmptyProwConfig(lg *localgit.LocalGit) error {
+	By("Creating a fake git repo")
+	err := lg.MakeFakeRepo(org, repo)
 	if err != nil {
 		return err
 	}
@@ -1790,7 +1770,7 @@ func makeRepoWithEmptyProwConfig(lg *localgit.LocalGit, repo, org string) error 
 	if err != nil {
 		return err
 	}
-	return lg.AddCommit("foo", "bar", map[string][]byte{
+	return lg.AddCommit(org, repo, map[string][]byte{
 		"prowconfig.yaml": prowConfig,
 	})
 }
@@ -1835,7 +1815,7 @@ func NewGHIssueCommentEvent(gh *fakegithub.FakeClient, baseRef, headRef string, 
 		},
 		GUID: "guid",
 		Repo: github.Repo{
-			FullName: "foo/bar",
+			FullName: orgRepo,
 		},
 		Issue: github.Issue{
 			Number: 17,
@@ -1851,16 +1831,16 @@ func NewGHIssueCommentEvent(gh *fakegithub.FakeClient, baseRef, headRef string, 
 		Number: 17,
 		Base: github.PullRequestBranch{
 			Repo: github.Repo{
-				Name:     "bar",
-				FullName: "foo/bar",
+				Name:     repo,
+				FullName: orgRepo,
 			},
 			Ref: baseRef,
 			SHA: baseRef,
 		},
 		Head: github.PullRequestBranch{
 			Repo: github.Repo{
-				Name:     "bar",
-				FullName: "foo/bar",
+				Name:     repo,
+				FullName: orgRepo,
 			},
 			Ref: headRef,
 			SHA: headRef,
