@@ -157,10 +157,10 @@ spec:
 #        namespace: monitoring
     - alert: KubeJobFailed
       annotations:
-        message: 'Job {{ $labels.namespaces }}/{{ $labels.job }} failed to complete.'
+        message: 'Job {{ $labels.namespace }}/{{ $labels.job_name }} failed to complete.'
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubejobfailed
       expr: |
-        kube_job_status_failed{job="kube-state-metrics"}  > 0
+        kube_job_status_failed{job="kube-state-metrics"} > 0
       for: 1h
       labels:
         severity: warning
