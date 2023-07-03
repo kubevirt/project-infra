@@ -1443,7 +1443,7 @@ periodics:
       - name: KUBEVIRT_PSA
         value: "true"
       - name: TARGET
-        value: k8s-1.26-centos9-sig-network-no-istio
+        value: k8s-1.26-centos9-sig-network
       image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
       name: ""
       resources:
