@@ -1004,7 +1004,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.26-centos9-sig-network-no-istio
+          value: k8s-1.26-centos9-sig-network
         - name: KUBEVIRT_WITH_MULTUS_V3
           value: "false"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
@@ -1554,7 +1554,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.26-centos9-sig-network-no-istio
+          value: k8s-1.26-centos9-sig-network
         - name: KUBEVIRT_PSA
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
