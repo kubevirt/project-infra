@@ -56,7 +56,6 @@ var _ = Describe("Rehearse", func() {
 				)
 
 				gh := &fakegithub.FakeClient{}
-				var event github.PullRequestEvent
 
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
@@ -66,42 +65,7 @@ var _ = Describe("Rehearse", func() {
 						},
 					}
 				})
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.PullRequestEvent{
-						Action: github.PullRequestActionOpened,
-						GUID:   "guid",
-						Repo: github.Repo{
-							FullName: orgRepo,
-						},
-						Sender: github.User{
-							Login: testuser,
-						},
-						PullRequest: github.PullRequest{
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: &event.PullRequest,
-					}
-				})
-
+				event := NewGHPullRequestEvent(gh, baseref, headref)
 				By("Sending the event to the rehearsal server", func() {
 
 					prowc := &fake.FakeProwV1{
@@ -117,7 +81,7 @@ var _ = Describe("Rehearse", func() {
 						true,
 						gitClientFactory)
 
-					handlerEvent, err := makeHandlerPullRequestEvent(&event)
+					handlerEvent, err := makeHandlerPullRequestEvent(event)
 					Expect(err).ShouldNot(HaveOccurred())
 					eventsHandler.Handle(handlerEvent)
 					By("Inspecting the response and the actions on the client", func() {
@@ -146,7 +110,6 @@ var _ = Describe("Rehearse", func() {
 				})
 
 				gh := &fakegithub.FakeClient{}
-				var event github.PullRequestEvent
 
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
@@ -156,42 +119,7 @@ var _ = Describe("Rehearse", func() {
 						},
 					}
 				})
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.PullRequestEvent{
-						Action: github.PullRequestActionOpened,
-						GUID:   "guid",
-						Repo: github.Repo{
-							FullName: orgRepo,
-						},
-						Sender: github.User{
-							Login: testuser,
-						},
-						PullRequest: github.PullRequest{
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: &event.PullRequest,
-					}
-				})
-
+				event := NewGHPullRequestEvent(gh, baseref, headref)
 				By("Sending the event to the rehearsal server", func() {
 
 					prowc := &fake.FakeProwV1{
@@ -207,7 +135,7 @@ var _ = Describe("Rehearse", func() {
 						true,
 						gitClientFactory)
 
-					handlerEvent, err := makeHandlerPullRequestEvent(&event)
+					handlerEvent, err := makeHandlerPullRequestEvent(event)
 					eventsHandler.Handle(handlerEvent)
 					Expect(err).ShouldNot(HaveOccurred())
 					By("Inspecting the response and the actions on the client", func() {
@@ -229,7 +157,6 @@ var _ = Describe("Rehearse", func() {
 				)
 
 				gh := &fakegithub.FakeClient{}
-				var event github.PullRequestEvent
 
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
@@ -239,41 +166,7 @@ var _ = Describe("Rehearse", func() {
 						},
 					}
 				})
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.PullRequestEvent{
-						Action: github.PullRequestActionOpened,
-						GUID:   "guid",
-						Repo: github.Repo{
-							FullName: orgRepo,
-						},
-						Sender: github.User{
-							Login: testuser,
-						},
-						PullRequest: github.PullRequest{
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: &event.PullRequest,
-					}
-				})
+				event := NewGHPullRequestEvent(gh, baseref, headref)
 
 				By("Sending the event to the rehearsal server", func() {
 
@@ -289,7 +182,7 @@ var _ = Describe("Rehearse", func() {
 						"",
 						true,
 						gitClientFactory)
-					handlerEvent, err := makeHandlerPullRequestEvent(&event)
+					handlerEvent, err := makeHandlerPullRequestEvent(event)
 					Expect(err).ShouldNot(HaveOccurred())
 					eventsHandler.Handle(handlerEvent)
 
@@ -312,7 +205,6 @@ var _ = Describe("Rehearse", func() {
 				)
 
 				gh := &fakegithub.FakeClient{}
-				var event github.PullRequestEvent
 
 				testuser := "testuser"
 				By("Registering a user to the fake github client", func() {
@@ -322,41 +214,7 @@ var _ = Describe("Rehearse", func() {
 						},
 					}
 				})
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.PullRequestEvent{
-						Action: github.PullRequestActionOpened,
-						GUID:   "guid",
-						Repo: github.Repo{
-							FullName: orgRepo,
-						},
-						Sender: github.User{
-							Login: testuser,
-						},
-						PullRequest: github.PullRequest{
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: &event.PullRequest,
-					}
-				})
+				event := NewGHPullRequestEvent(gh, baseref, headref)
 
 				By("Sending the event to the rehearsal server", func() {
 
@@ -373,7 +231,7 @@ var _ = Describe("Rehearse", func() {
 						false,
 						gitClientFactory)
 
-					handlerEvent, err := makeHandlerPullRequestEvent(&event)
+					handlerEvent, err := makeHandlerPullRequestEvent(event)
 					Expect(err).ShouldNot(HaveOccurred())
 					eventsHandler.Handle(handlerEvent)
 
@@ -400,48 +258,9 @@ var _ = Describe("Rehearse", func() {
 				)
 
 				gh := &fakegithub.FakeClient{}
-				var event github.PullRequestEvent
 
-				testuser := "testuser"
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.PullRequestEvent{
-						Action: github.PullRequestActionOpened,
-						GUID:   "guid",
-						Repo: github.Repo{
-							FullName: orgRepo,
-						},
-						Sender: github.User{
-							Login: testuser,
-						},
-						PullRequest: github.PullRequest{
-							Number: 17,
-							Labels: []github.Label{
-								{
-									Name: "ok-to-test",
-								},
-							},
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: &event.PullRequest,
-					}
+				event := NewGHPullRequestEvent(gh, baseref, headref, func(pr *github.PullRequest) {
+					pr.Labels = append(pr.Labels, github.Label{Name: "ok-to-test"})
 				})
 
 				By("Sending the event to the rehearsal server", func() {
@@ -459,7 +278,7 @@ var _ = Describe("Rehearse", func() {
 						true,
 						gitClientFactory)
 
-					handlerEvent, err := makeHandlerPullRequestEvent(&event)
+					handlerEvent, err := makeHandlerPullRequestEvent(event)
 					Expect(err).ShouldNot(HaveOccurred())
 
 					eventsHandler.Handle(handlerEvent)
@@ -490,44 +309,8 @@ var _ = Describe("Rehearse", func() {
 				)
 
 				gh := &fakegithub.FakeClient{}
-				var event github.PullRequestEvent
 
-				testuser := "testuser"
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = github.PullRequestEvent{
-						Action: github.PullRequestActionOpened,
-						GUID:   "guid",
-						Repo: github.Repo{
-							FullName: orgRepo,
-						},
-						Sender: github.User{
-							Login: testuser,
-						},
-						PullRequest: github.PullRequest{
-							Number: 17,
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: baseref,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: headref,
-								SHA: headref,
-							},
-						},
-					}
-
-					gh.PullRequests = map[int]*github.PullRequest{
-						17: &event.PullRequest,
-					}
-				})
+				event := NewGHPullRequestEvent(gh, baseref, headref)
 
 				By("Sending the event to the rehearsal server", func() {
 
@@ -544,7 +327,7 @@ var _ = Describe("Rehearse", func() {
 						true,
 						gitClientFactory)
 
-					handlerEvent, err := makeHandlerPullRequestEvent(&event)
+					handlerEvent, err := makeHandlerPullRequestEvent(event)
 					Expect(err).ShouldNot(HaveOccurred())
 
 					eventsHandler.Handle(handlerEvent)
@@ -910,6 +693,50 @@ func NewGHIssueCommentEvent(gh *fakegithub.FakeClient, baseRef, headRef string, 
 		17: pr,
 	}
 	return event
+}
+
+func NewGHPullRequestEvent(gh *fakegithub.FakeClient, baseRef, headRef string, pullRequestOption ...pullRequestOption) *github.PullRequestEvent {
+	By("Generating a fake pull request event and registering it to the github client")
+	pr := github.PullRequest{
+		Number: 17,
+		Base: github.PullRequestBranch{
+			Repo: github.Repo{
+				Name:     repo,
+				FullName: orgRepo,
+			},
+			Ref: baseRef,
+			SHA: baseRef,
+		},
+		Head: github.PullRequestBranch{
+			Repo: github.Repo{
+				Name:     repo,
+				FullName: orgRepo,
+			},
+			Ref: headRef,
+			SHA: headRef,
+		},
+	}
+	for _, f := range pullRequestOption {
+		f(&pr)
+	}
+
+	event := github.PullRequestEvent{
+		Action: github.PullRequestActionOpened,
+		GUID:   "guid",
+		Repo: github.Repo{
+			FullName: orgRepo,
+		},
+		Sender: github.User{
+			Login: "testuser",
+		},
+		PullRequest: pr,
+	}
+
+	gh.PullRequests = map[int]*github.PullRequest{
+		17: &pr,
+	}
+
+	return &event
 }
 
 func GenerateBaseCommit(gitrepo *localgit.LocalGit) string {
