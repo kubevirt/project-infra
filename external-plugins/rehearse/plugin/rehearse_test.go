@@ -48,54 +48,7 @@ var _ = Describe("Rehearse", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				baseref := GenerateBaseCommit(gitrepo)
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
@@ -223,54 +176,7 @@ var _ = Describe("Rehearse", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				baseref := GenerateBaseCommit(gitrepo)
 
 				var headref string
 				By("Generating a head commit with an unrelated modified file", func() {
@@ -358,54 +264,7 @@ var _ = Describe("Rehearse", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				baseref := GenerateBaseCommit(gitrepo)
 
 				var headref string
 				By("Generating a head commit that removes a job", func() {
@@ -517,54 +376,7 @@ var _ = Describe("Rehearse", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				baseref := GenerateBaseCommit(gitrepo)
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
@@ -695,54 +507,7 @@ var _ = Describe("Rehearse", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				baseref := GenerateBaseCommit(gitrepo)
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
@@ -875,54 +640,7 @@ var _ = Describe("Rehearse", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				baseref := GenerateBaseCommit(gitrepo)
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
@@ -1091,54 +809,7 @@ var _ = Describe("Rehearse", func() {
 			It("Should generate Prow jobs for the changed configs", func() {
 				makeRepoWithEmptyProwConfig(gitrepo)
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				baseref := GenerateBaseCommit(gitrepo)
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
@@ -1217,54 +888,7 @@ var _ = Describe("Rehearse", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				baseref := GenerateBaseCommit(gitrepo)
 
 				var headref string
 				By("Generating a head commit with an unrelated modified file", func() {
@@ -1303,54 +927,7 @@ var _ = Describe("Rehearse", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				baseref := GenerateBaseCommit(gitrepo)
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
@@ -1410,48 +987,7 @@ var _ = Describe("Rehearse", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				baseref := GenerateBaseCommit(gitrepo)
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
@@ -1514,54 +1050,7 @@ var _ = Describe("Rehearse", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				baseref := GenerateBaseCommit(gitrepo)
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
@@ -1644,54 +1133,7 @@ var _ = Describe("Rehearse", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
-				var baseref string
-				By("Generating a base commit with a job", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "modified-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "some-image",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "existing-job",
-											Annotations: map[string]string{
-												"rehearsal.allowed": "true",
-											},
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "other-image",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
+				baseref := GenerateBaseCommit(gitrepo)
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
@@ -1854,4 +1296,54 @@ func NewGHIssueCommentEvent(gh *fakegithub.FakeClient, baseRef, headRef string, 
 		17: pr,
 	}
 	return event
+}
+
+func GenerateBaseCommit(gitrepo *localgit.LocalGit) string {
+	By("Generating a base commit with a jobs")
+	baseConfig, err := json.Marshal(&config.Config{
+		JobConfig: config.JobConfig{
+			PresubmitsStatic: map[string][]config.Presubmit{
+				orgRepo: {
+					{
+						JobBase: config.JobBase{
+							Name: "modified-job",
+							Annotations: map[string]string{
+								"rehearsal.allowed": "true",
+							},
+							Spec: &v1.PodSpec{
+								Containers: []v1.Container{
+									{
+										Image: "some-image",
+									},
+								},
+							},
+						},
+					},
+					{
+						JobBase: config.JobBase{
+							Name: "existing-job",
+							Annotations: map[string]string{
+								"rehearsal.allowed": "true",
+							},
+							Spec: &v1.PodSpec{
+								Containers: []v1.Container{
+									{
+										Image: "other-image",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	Expect(err).ShouldNot(HaveOccurred())
+	err = gitrepo.AddCommit(org, repo, map[string][]byte{
+		"jobs-config.yaml": baseConfig,
+	})
+	Expect(err).ShouldNot(HaveOccurred())
+	baseref, err := gitrepo.RevParse(org, repo, "HEAD")
+	Expect(err).ShouldNot(HaveOccurred())
+	return baseref
 }
