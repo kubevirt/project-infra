@@ -379,14 +379,14 @@ func (h *GitHubEventsHandler) generateProwJobs(
 	var jobs []prowapi.ProwJob
 
 	for path, headConfig := range headConfigs {
-		baseConfig, _ := baseConfigs[path]
-		jobs = append(jobs, h.generatePresubmits(headConfig, baseConfig, pr, eventGUID)...)
+		baseConfig := baseConfigs[path]
+		jobs = append(jobs, h.generateJobs(headConfig, baseConfig, pr, eventGUID)...)
 	}
 
 	return jobs
 }
 
-func (h *GitHubEventsHandler) generatePresubmits(
+func (h *GitHubEventsHandler) generateJobs(
 	headConfig, baseConfig *config.Config, pr *github.PullRequest, eventGUID string) []prowapi.ProwJob {
 	var jobs []prowapi.ProwJob
 
@@ -395,6 +395,23 @@ func (h *GitHubEventsHandler) generatePresubmits(
 	// much more efficient.
 	headPresubmits := hashPresubmitsConfig(headConfig.PresubmitsStatic)
 	basePresubmits := hashPresubmitsConfig(baseConfig.PresubmitsStatic)
+
+	headPeriodics := periodicsByName(headConfig.Periodics)
+	for name, basePeriodic := range periodicsByName(baseConfig.Periodics) {
+		// TODO - name, context, trigger, optional and report?
+		headConfig, exist := headPeriodics[name]
+		if !exist || reflect.DeepEqual(headConfig, basePeriodic) {
+			continue
+		}
+		// Add label to know this is rehearse?
+		job := pjutil.NewProwJob(pjutil.PeriodicSpec(headConfig), map[string]string{}, map[string]string{})
+		if rehearsalRestricted(job) {
+			h.logger.Infof("Skipping rehersal job for: %s because it is restricted", job.Name)
+			continue
+		}
+
+		jobs = append(jobs, job)
+	}
 
 	for presubmitKey, headPresubmit := range headPresubmits {
 		basePresubmit, exists := basePresubmits[presubmitKey]
@@ -508,6 +525,9 @@ func (h *GitHubEventsHandler) loadConfigsAtRef(
 				presubmits[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
 			}
 		}
+		for i := range pc.Periodics {
+			pc.Periodics[i].SourcePath = path.Join(git.Directory(), changedJobConfig)
+		}
 		configs[changedJobConfig] = pc
 	}
 
@@ -539,8 +559,8 @@ func repoFromJobKey(jobKey string) string {
 	return strings.Join(r, "/")
 }
 
-func hashPeriodicsConfig(periodics []config.Periodic) map[string]config.Periodic {
-	p := map[string]config.Periodic{}
+func periodicsByName(periodics []config.Periodic) map[string]config.Periodic {
+	p := make(map[string]config.Periodic, len(periodics))
 	for _, periodic := range periodics {
 		p[periodic.JobBase.Name] = periodic
 	}

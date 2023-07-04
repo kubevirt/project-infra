@@ -257,26 +257,26 @@ var _ = Describe("PR filtering", func() {
 		})
 
 		It("doesn't generate a prowjob without changes", func() {
-			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			presubmits := handler.generateJobs(headConfig, baseConfig, pr, "42")
 			Expect(presubmits).To(BeEmpty())
 		})
 
 		It("generates a prowjob if spec changes", func() {
 			headConfigPresubmit.Spec.Containers[0].Image = "v2/test37"
-			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			presubmits := handler.generateJobs(headConfig, baseConfig, pr, "42")
 			Expect(presubmits).ToNot(BeEmpty())
 		})
 
 		It("generates a prowjob if context changes", func() {
 			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Cluster = "new-cluster"
-			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			presubmits := handler.generateJobs(headConfig, baseConfig, pr, "42")
 			Expect(presubmits).ToNot(BeEmpty())
 		})
 
 		It("generates a prowjob for branch if context changes", func() {
 			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Cluster = "new-cluster"
 			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Branches = []string{"release-42"}
-			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			presubmits := handler.generateJobs(headConfig, baseConfig, pr, "42")
 			Expect(presubmits).ToNot(BeEmpty())
 			Expect(presubmits[0].Spec.ExtraRefs[0].BaseRef).To(BeEquivalentTo("release-42"))
 		})

@@ -81,6 +81,94 @@ var _ = Describe("Rehearse", func() {
 			}
 		})
 
+		Context("with Periodics", func() {
+			It("Should generate Prow jobs for changed config", func() {
+				makeRepoWithEmptyProwConfig(gitrepo)
+
+				By("Generating a base commit with a jobs")
+				baseRef := GenerateConfigCommit(gitrepo,
+					NewConfigWithPeriodics(BaseExistingPeriodicJob(), BaseModifiedJPeriodicob()),
+				)
+
+				By("Generating a head commit that modifies a job")
+				headRef := GenerateConfigCommit(gitrepo,
+					NewConfigWithPeriodics(BaseExistingPeriodicJob(), ModifiedJPeriodicob()),
+				)
+
+				gh := &fakegithub.FakeClient{}
+
+				testuser := "testuser"
+				By("Registering a user to the fake github client", func() {
+					gh.OrgMembers = map[string][]string{
+						org: {
+							testuser,
+						},
+					}
+				})
+				event := NewGHPullRequestEvent(gh, baseRef, headRef)
+				expectJobsCreated(gh, event)
+			})
+
+			It("Should not generate Prow jobs for not related change", func() {
+				makeRepoWithEmptyProwConfig(gitrepo)
+
+				By("Generating a base commit with a jobs")
+				baseRef := GenerateConfigCommit(gitrepo,
+					NewConfigWithPeriodics(BaseExistingPeriodicJob(), BaseModifiedJPeriodicob()),
+				)
+
+				var headRef string
+				By("Generating a head commit with an unrelated modified file", func() {
+					err := gitrepo.AddCommit(org, repo, map[string][]byte{
+						"some-file": []byte(""),
+					})
+					Expect(err).ShouldNot(HaveOccurred())
+					headRef, err = gitrepo.RevParse(org, repo, "HEAD")
+					Expect(err).ShouldNot(HaveOccurred())
+				})
+
+				gh := &fakegithub.FakeClient{}
+
+				testuser := "testuser"
+				By("Registering a user to the fake github client", func() {
+					gh.OrgMembers = map[string][]string{
+						org: {
+							testuser,
+						},
+					}
+				})
+				event := NewGHPullRequestEvent(gh, baseRef, headRef)
+				expectNoJobsCreated(gh, event)
+			})
+
+			It("Should not generate Prow jobs for removed job", func() {
+				makeRepoWithEmptyProwConfig(gitrepo)
+
+				By("Generating a base commit with a jobs")
+				baseRef := GenerateConfigCommit(gitrepo,
+					NewConfigWithPeriodics(BaseExistingPeriodicJob(), BaseModifiedJPeriodicob()),
+				)
+
+				By("Generating a head commit that removes job")
+				headRef := GenerateConfigCommit(gitrepo,
+					NewConfigWithPeriodics(BaseExistingPeriodicJob()),
+				)
+
+				gh := &fakegithub.FakeClient{}
+
+				testuser := "testuser"
+				By("Registering a user to the fake github client", func() {
+					gh.OrgMembers = map[string][]string{
+						org: {
+							testuser,
+						},
+					}
+				})
+				event := NewGHPullRequestEvent(gh, baseRef, headRef)
+				expectNoJobsCreated(gh, event)
+			})
+		})
+
 		Context("User in org", func() {
 
 			It("Should generate Prow jobs for the changed configs", func() {
@@ -695,6 +783,14 @@ func GenerateConfigCommit(gitrepo *localgit.LocalGit, config *config.Config) str
 	return ref
 }
 
+func NewConfigWithPeriodics(periodics ...config.Periodic) *config.Config {
+	return &config.Config{
+		JobConfig: config.JobConfig{
+			Periodics: periodics,
+		},
+	}
+}
+
 func NewConfig(presubmits ...config.Presubmit) *config.Config {
 	config := config.Config{
 		JobConfig: config.JobConfig{
@@ -706,40 +802,64 @@ func NewConfig(presubmits ...config.Presubmit) *config.Config {
 	return &config
 }
 
-func BaseExistingJob() config.Presubmit {
-	return config.Presubmit{
-		JobBase: config.JobBase{
-			Name: "existing-job",
-			Annotations: map[string]string{
-				"rehearsal.allowed": "true",
-			},
-			Spec: &v1.PodSpec{
-				Containers: []v1.Container{
-					{
-						Image: "other-image",
-					},
-				},
+var existingJobBase = config.JobBase{
+	Name: "existing-job",
+	Annotations: map[string]string{
+		"rehearsal.allowed": "true",
+	},
+	Spec: &v1.PodSpec{
+		Containers: []v1.Container{
+			{
+				Image: "other-image",
 			},
 		},
+	},
+}
+
+func BaseExistingPeriodicJob() config.Periodic {
+	return config.Periodic{
+		Cron:    "5 * * * *",
+		JobBase: existingJobBase,
+	}
+}
+
+func BaseExistingJob() config.Presubmit {
+	return config.Presubmit{
+		JobBase: existingJobBase,
 	}
 
 }
 
-func BaseModifiedJob() config.Presubmit {
-	return config.Presubmit{
-		JobBase: config.JobBase{
-			Name: "modified-job",
-			Annotations: map[string]string{
-				"rehearsal.allowed": "true",
-			},
-			Spec: &v1.PodSpec{
-				Containers: []v1.Container{
-					{
-						Image: "some-image",
-					},
-				},
+var modifiedJobBase = config.JobBase{
+	Name: "modified-job",
+	Annotations: map[string]string{
+		"rehearsal.allowed": "true",
+	},
+	Spec: &v1.PodSpec{
+		Containers: []v1.Container{
+			{
+				Image: "some-image",
 			},
 		},
+	},
+}
+
+func BaseModifiedJPeriodicob() config.Periodic {
+	return config.Periodic{
+		Cron:    "5 * * * *",
+		JobBase: modifiedJobBase,
+	}
+}
+
+func ModifiedJPeriodicob() config.Periodic {
+	job := BaseModifiedJPeriodicob()
+	job.Spec.Containers[0].Image = "modified"
+	return job
+}
+
+func BaseModifiedJob() config.Presubmit {
+	return config.Presubmit{
+		JobBase: modifiedJobBase,
 	}
 }
 
