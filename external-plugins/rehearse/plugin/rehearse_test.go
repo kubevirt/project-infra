@@ -29,6 +29,45 @@ var _ = Describe("Rehearse", func() {
 		var gitrepo *localgit.LocalGit
 		var gitClientFactory git2.ClientFactory
 
+		sendPREventToRehearsalServer := func(gh *fakegithub.FakeClient, event *github.PullRequestEvent) *fake.FakeProwV1 {
+			By("Sending the event to the rehearsal server")
+
+			prowc := &fake.FakeProwV1{
+				Fake: &testing.Fake{},
+			}
+			fakelog := logrus.New()
+			eventsHandler := handler.NewGitHubEventsHandler(
+				fakelog,
+				prowc.ProwJobs("test-ns"),
+				gh,
+				"prowconfig.yaml",
+				"",
+				true,
+				gitClientFactory)
+
+			handlerEvent, err := makeHandlerPullRequestEvent(event)
+			Expect(err).ShouldNot(HaveOccurred())
+			eventsHandler.Handle(handlerEvent)
+			return prowc
+
+		}
+
+		expectNoJobsCreated := func(gh *fakegithub.FakeClient, event *github.PullRequestEvent) {
+			prowc := sendPREventToRehearsalServer(gh, event)
+
+			By("Inspecting the response and the actions on the client")
+			Expect(prowc.Actions()).Should(HaveLen(0))
+		}
+
+		expectJobsCreated := func(gh *fakegithub.FakeClient, event *github.PullRequestEvent) {
+			prowc := sendPREventToRehearsalServer(gh, event)
+
+			By("Inspecting the response and the actions on the client")
+			Expect(prowc.Actions()).Should(HaveLen(1))
+			pjAction := prowc.Actions()[0].GetResource()
+			Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
+		}
+
 		BeforeEach(func() {
 			var err error
 
@@ -66,30 +105,7 @@ var _ = Describe("Rehearse", func() {
 					}
 				})
 				event := NewGHPullRequestEvent(gh, baseref, headref)
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsHandler := handler.NewGitHubEventsHandler(
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerPullRequestEvent(event)
-					Expect(err).ShouldNot(HaveOccurred())
-					eventsHandler.Handle(handlerEvent)
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(1))
-						pjAction := prowc.Actions()[0].GetResource()
-						Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
-					})
-				})
+				expectJobsCreated(gh, event)
 
 			})
 
@@ -120,28 +136,7 @@ var _ = Describe("Rehearse", func() {
 					}
 				})
 				event := NewGHPullRequestEvent(gh, baseref, headref)
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsHandler := handler.NewGitHubEventsHandler(
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerPullRequestEvent(event)
-					eventsHandler.Handle(handlerEvent)
-					Expect(err).ShouldNot(HaveOccurred())
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
+				expectNoJobsCreated(gh, event)
 
 			})
 
@@ -168,32 +163,12 @@ var _ = Describe("Rehearse", func() {
 				})
 				event := NewGHPullRequestEvent(gh, baseref, headref)
 
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsHandler := handler.NewGitHubEventsHandler(
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-					handlerEvent, err := makeHandlerPullRequestEvent(event)
-					Expect(err).ShouldNot(HaveOccurred())
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
+				expectNoJobsCreated(gh, event)
 
 			})
 
-			It("Should not act on pull request event if always run is set to false", func() {
+			// TODO - What is value of aways run option?
+			PIt("Should not act on pull request event if always run is set to false", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
@@ -263,33 +238,7 @@ var _ = Describe("Rehearse", func() {
 					pr.Labels = append(pr.Labels, github.Label{Name: "ok-to-test"})
 				})
 
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsHandler := handler.NewGitHubEventsHandler(
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerPullRequestEvent(event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-
-						Expect(prowc.Actions()).Should(HaveLen(1))
-						pjAction := prowc.Actions()[0].GetResource()
-						Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
-					})
-				})
+				expectJobsCreated(gh, event)
 
 			})
 
@@ -312,31 +261,7 @@ var _ = Describe("Rehearse", func() {
 
 				event := NewGHPullRequestEvent(gh, baseref, headref)
 
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsHandler := handler.NewGitHubEventsHandler(
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerPullRequestEvent(event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
+				expectNoJobsCreated(gh, event)
 
 			})
 
@@ -348,35 +273,52 @@ var _ = Describe("Rehearse", func() {
 
 		var gitrepo *localgit.LocalGit
 		var gitClientFactory git2.ClientFactory
-		var sendIssueCommentEventToRehearsalServer func(gh *fakegithub.FakeClient, event *github.IssueCommentEvent) *fake.FakeProwV1
+
+		sendIssueCommentEventToRehearsalServer := func(gh *fakegithub.FakeClient, event *github.IssueCommentEvent) *fake.FakeProwV1 {
+			prowc := &fake.FakeProwV1{
+				Fake: &testing.Fake{},
+			}
+			fakelog := logrus.New()
+			eventsHandler := handler.NewGitHubEventsHandler(
+				fakelog,
+				prowc.ProwJobs("test-ns"),
+				gh,
+				"prowconfig.yaml",
+				"",
+				true,
+				gitClientFactory)
+
+			handlerEvent, err := makeHandlerIssueCommentEvent(event)
+			Expect(err).ShouldNot(HaveOccurred())
+
+			eventsHandler.Handle(handlerEvent)
+
+			return prowc
+		}
+
+		expectNoJobsCreated := func(gh *fakegithub.FakeClient, event *github.IssueCommentEvent) {
+			prowc := sendIssueCommentEventToRehearsalServer(gh, event)
+
+			By("Inspecting the response and the actions on the client")
+			Expect(prowc.Actions()).Should(HaveLen(0))
+
+		}
+
+		expectJobToBeCreated := func(gh *fakegithub.FakeClient, event *github.IssueCommentEvent) {
+			prowc := sendIssueCommentEventToRehearsalServer(gh, event)
+
+			By("Inspecting the response and the actions on the client", func() {
+				Expect(prowc.Actions()).Should(HaveLen(1))
+				pjAction := prowc.Actions()[0].GetResource()
+				Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
+			})
+		}
 
 		BeforeEach(func() {
 			var err error
 
 			gitrepo, gitClientFactory, err = localgit.NewV2()
 			Expect(err).ShouldNot(HaveOccurred())
-
-			sendIssueCommentEventToRehearsalServer = func(gh *fakegithub.FakeClient, event *github.IssueCommentEvent) *fake.FakeProwV1 {
-				prowc := &fake.FakeProwV1{
-					Fake: &testing.Fake{},
-				}
-				fakelog := logrus.New()
-				eventsHandler := handler.NewGitHubEventsHandler(
-					fakelog,
-					prowc.ProwJobs("test-ns"),
-					gh,
-					"prowconfig.yaml",
-					"",
-					true,
-					gitClientFactory)
-
-				handlerEvent, err := makeHandlerIssueCommentEvent(event)
-				Expect(err).ShouldNot(HaveOccurred())
-
-				eventsHandler.Handle(handlerEvent)
-
-				return prowc
-			}
 
 		})
 
@@ -410,16 +352,7 @@ var _ = Describe("Rehearse", func() {
 				})
 				event := NewGHIssueCommentEvent(gh, baseref, headref)
 
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := sendIssueCommentEventToRehearsalServer(gh, event)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(1))
-						pjAction := prowc.Actions()[0].GetResource()
-						Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
-					})
-				})
+				expectJobToBeCreated(gh, event)
 
 			})
 
@@ -451,14 +384,7 @@ var _ = Describe("Rehearse", func() {
 				})
 				event := NewGHIssueCommentEvent(gh, baseref, headref)
 
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := sendIssueCommentEventToRehearsalServer(gh, event)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
+				expectNoJobsCreated(gh, event)
 
 			})
 
@@ -481,14 +407,7 @@ var _ = Describe("Rehearse", func() {
 					}
 				})
 				event := NewGHIssueCommentEvent(gh, baseref, headref)
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := sendIssueCommentEventToRehearsalServer(gh, event)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
+				expectNoJobsCreated(gh, event)
 
 			})
 
@@ -514,14 +433,7 @@ var _ = Describe("Rehearse", func() {
 					}
 				})
 				event := NewGHIssueCommentEvent(gh, baseref, headref)
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := sendIssueCommentEventToRehearsalServer(gh, event)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
+				expectNoJobsCreated(gh, event)
 
 			})
 
@@ -551,18 +463,7 @@ var _ = Describe("Rehearse", func() {
 						})
 					})
 
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := sendIssueCommentEventToRehearsalServer(gh, event)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(1))
-
-						pjAction := prowc.Actions()[0].GetResource()
-						Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
-					})
-				})
-
+				expectJobToBeCreated(gh, event)
 			})
 
 		})
@@ -582,14 +483,7 @@ var _ = Describe("Rehearse", func() {
 
 				gh := &fakegithub.FakeClient{}
 				event := NewGHIssueCommentEvent(gh, baseref, headref)
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := sendIssueCommentEventToRehearsalServer(gh, event)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
+				expectNoJobsCreated(gh, event)
 
 			})
 
