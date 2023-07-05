@@ -97,8 +97,7 @@ spec:
         - --query.replica-label=replica
         - --store=dnssrv+_grpc._tcp.thanos-store.monitoring.svc.cluster.local
         - --store=dnssrv+_grpc._tcp.thanos-sidecar.monitoring.svc.cluster.local
-        # FIXME: use here dns name when prow-workloads load balancer is in place
-        - --store=169.45.167.206:30901
+        - --store=dnssrv+_grpc._tcp.thanos-receive.monitoring.svc.cluster.local
         - --query.timeout=5m
         - --query.lookback-delta=15m
         - --query.auto-downsampling
@@ -615,10 +614,9 @@ data:
   hashrings.json: |
     [
       {
-        "hashring": "soft-tenants",
         "endpoints":
         [
-          "localhost:10901"
+          "thanos-receive.monitoring.svc.cluster.local:10901"
         ]
       }
     ]
@@ -660,8 +658,8 @@ spec:
         - --receive.replication-factor=1
         - --objstore.config=$(OBJSTORE_CONFIG)
         - --tsdb.path=/var/thanos/receive
-        - --tsdb.retention=15d
-        - --receive.local-endpoint=$(NAME).thanos-receive.$(NAMESPACE).svc.cluster.local:10901
+        - --tsdb.retention=7d
+        - --receive.local-endpoint=thanos-receive.monitoring.svc.cluster.local:10901
         - --label=replica="$(NAME)"
         - --label=receive="true"
         - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
@@ -714,11 +712,9 @@ spec:
           periodSeconds: 5
         resources:
           limits:
-            cpu: 0.42
-            memory: 420Mi
+            memory: 4Gi
           requests:
-            cpu: 0.123
-            memory: 123Mi
+            memory: 4Gi
         terminationMessagePolicy: FallbackToLogsOnError
         volumeMounts:
         - mountPath: /var/thanos/receive
