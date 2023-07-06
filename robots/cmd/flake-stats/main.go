@@ -17,7 +17,7 @@ import (
 //go:embed flake-stats.gohtml
 var htmlTemplate string
 
-var multipleSpacesRegex = regexp.MustCompile("[\\s]+")
+var multipleSpacesRegex = regexp.MustCompile(`\s+`)
 
 type TemplateData struct {
 	OverallFailures *TopXTest
