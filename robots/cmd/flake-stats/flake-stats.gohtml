@@ -199,13 +199,14 @@
 
         function updateRowsShown(rowsShown) {
             let rowsTotal = document.getElementById("report").getElementsByTagName("div").length;
-            document.getElementById("totalRowsShown").innerText = "Showing " + rowsShown + " of " + rowsTotal + "";
+            document.getElementById("totalRowsShown").innerText = "Showing " + rowsShown + " of " + rowsTotal + " flaky tests";
         }
     </script>
 </head>
 <body onload="initRowsShown();updateFilteredRows();enableFilterFields();">
 
-<h1>Flake stats for last {{ $.DaysInThePast }} days</h1>
+<h1>Flake stats for last {{ $.DaysInThePast }} days
+    &nbsp;<a style="text-decoration: none;" href="https://github.com/kubevirt/project-infra/blob/main/robots/cmd/flake-stats/README.md">&#9432;</a></h1>
 <div id="legend" class="legend">
     Share of overall failures:
     {{ range $index, $value := $.ShareCategories }}
@@ -229,9 +230,6 @@
                 <input type="text" id="filterByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..."
                        disabled>
             </td>
-            <td class="noborder filler">
-            </td>
-            <td class="noborder" colspan="3"/>
         </tr>
         <tr>
             <td class="noborder">
@@ -243,13 +241,12 @@
                 <input type="text" id="excludeByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..."
                        disabled>
             </td>
-            <td class="noborder filler">
-            </td>
-            <td class="noborder" colspan="3"/>
         </tr>
     </table>
 
-    <div id="totalRowsShown">Showing x of y</div>
+    <br/>
+    <div id="totalRowsShown">Showing x of y flaky tests</div>
+    <br/>
     {{ range $key, $value := $.TopXTests }}
         {{ template "failures" $value }}
     {{ end }}
