@@ -1645,6 +1645,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
+        - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+          value: "--usb 30M --usb 40M"
         image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
         name: ""
         resources:
@@ -1888,6 +1890,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
+        - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+          value: "--usb 30M --usb 40M"
         image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
         name: ""
         resources:
