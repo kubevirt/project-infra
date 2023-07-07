@@ -27,7 +27,7 @@ postsubmits:
             env:
               - name: REPO
                 value: quay.io/kubevirt
-              - name: IMAGE
+              - name: TARGET_NAME
                 value: csi-driver
               - name: TAG
                 value: latest
@@ -37,7 +37,7 @@ postsubmits:
               - "-c"
               - >
                 cat $QUAY_PASSWORD | docker login quay.io --username $(cat $QUAY_USER) --password-stdin=true &&
-                make push
+                make image-push
             securityContext:
               privileged: true
             resources:
