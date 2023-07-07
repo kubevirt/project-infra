@@ -6,6 +6,7 @@ go_library(
     importpath = "kubevirt.io/project-infra/robots/cmd/push-flakefinder-results",
     visibility = ["//visibility:private"],
     deps = [
+        "//robots/pkg/flakefinder:go_default_library",
         "@com_github_prometheus_client_golang//prometheus:go_default_library",
         "@com_github_prometheus_client_golang//prometheus/push:go_default_library",
     ],
