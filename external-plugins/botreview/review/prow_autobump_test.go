@@ -97,7 +97,6 @@ func TestProwAutobump_Review(t1 *testing.T) {
 					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_needs-rebase_deployment.yaml"],
 					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prow_controller_manager_deployment.yaml"],
 					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prowjob-crd_prowjob_customresourcedefinition.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prowjob-crd_prowjob_customresourcedefinition.yaml"],
 					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_sinker_deployment.yaml"],
 					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_statusreconciler_deployment.yaml"],
 					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_tide_deployment.yaml"],
