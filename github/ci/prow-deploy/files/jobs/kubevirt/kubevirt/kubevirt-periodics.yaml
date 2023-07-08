@@ -2102,6 +2102,6 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: "1.19"
-      image: quay.io/kubevirtci/golang:v20230502-bfaa042
+      image: quay.io/kubevirtci/golang:v20230626-e1b7af2
       name: ""
       resources: {}
