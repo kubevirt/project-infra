@@ -16,8 +16,9 @@ function main() {
             setns_sriov_pfs
             gen_result_config
             ;;
-        DELETE)
-            log "Received DELETE command."
+        DEL)
+            log "Received DEL command."
+            set_root_ns
             ip netns del "$CNI_CONTAINERID" ||:
             ;;
     esac
@@ -58,6 +59,13 @@ function setns_sriov_pfs() {
 
   log "FATAL: Could not allocate enough PFs"
   exit 1
+}
+
+function set_root_ns() {
+    sriov_pfs=($( ip netns exec $CNI_CONTAINERID ip -details address | grep "vf 0" -B 2 | grep -E 'UP|DOWN' | awk -F": " '{print $2}' ))
+    for pf in "${sriov_pfs[@]}"; do
+        ip netns exec $CNI_CONTAINERID ip link set $pf netns 1
+    done
 }
 
 function reserved_pf() {
