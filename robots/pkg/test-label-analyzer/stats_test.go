@@ -382,72 +382,126 @@ var _ = Describe("Extract git info", func() {
 		},
 		Entry("basic 1", "749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200  26) var _ = Describe(\"VM Console Proxy Operand\", func() {"),
 		Entry("basic 2", `a32051d928 tests/operator_test.go     (fossedihelm   2022-11-30 09:45:57 +0100  111) var _ = Describe("[Serial][sig-operator]Operator", Serial, decorators.SigOperator, func() {`),
+		Entry("special chars in name", `0df3f3c5129 (João Vilaça 2023-03-22 10:45:53 +0000 55) var _ = Describe("[Serial][sig-monitoring]VM Monitoring", Serial, decorators.SigMonitoring, func() {`),
 	)
 
-	Context("blame", func() {
+	Context("ExtractGitBlameInfo", func() {
 
-		var lines = []string{
-			`749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200  26) var _ = Describe("VM Console Proxy Operand", func() {`,
-			`749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 179) \tContext("Resource change", func() {`,
-			`749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 208) \t\tDescribeTable("should restore modified app labels", expectAppLabelsRestoreAfterUpdate,`,
-			`749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 213) \t\t\tEntry("[test_id:TODO] deployment", \u0026deploymentResource),`,
-		}
-		var expectedCommitID = "749cf0488"
-		var expectedAuthor = "Ben Oukhanov"
-		var expectedDate time.Time
-		var expectedLineNo = 26
-		var expectedLine = "var _ = Describe(\"VM Console Proxy Operand\", func() {"
+		DescribeTable("extracts info as expected",
 
-		BeforeEach(func() {
-			expectedDate, _ = time.Parse(gitDateLayout, "2023-02-15 18:24:49 +0200")
-		})
+			func(info *expectedInfo, line string) {
+				info.ExpectEquivalentTo(ExtractGitBlameInfo([]string{line})[0])
+			},
 
-		It("extracts info", func() {
-			Expect(ExtractGitBlameInfo(lines)).ToNot(BeNil())
-		})
+			Entry("basic case line 1",
+				newExpectedGitBlameInfo("749cf0488",
+					"Ben Oukhanov",
+					mustParse("2023-02-15 18:24:49 +0200"),
+					26,
+					`var _ = Describe("VM Console Proxy Operand", func() {`),
+				`749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200  26) var _ = Describe("VM Console Proxy Operand", func() {`),
+			Entry("basic case line 2",
+				newExpectedGitBlameInfo("749cf0488",
+					"Ben Oukhanov",
+					mustParse("2023-02-15 18:24:49 +0200"),
+					179,
+					`\tContext("Resource change", func() {`),
+				`749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 179) \tContext("Resource change", func() {`),
+			Entry("basic case line 3",
+				newExpectedGitBlameInfo("749cf0488",
+					"Ben Oukhanov",
+					mustParse("2023-02-15 18:24:49 +0200"),
+					208,
+					`\t\tDescribeTable("should restore modified app labels", expectAppLabelsRestoreAfterUpdate,`),
+				`749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 208) \t\tDescribeTable("should restore modified app labels", expectAppLabelsRestoreAfterUpdate,`),
+			Entry("basic case line 4",
+				newExpectedGitBlameInfo("749cf0488",
+					"Ben Oukhanov",
+					mustParse("2023-02-15 18:24:49 +0200"),
+					213,
+					`\t\t\tEntry("[test_id:TODO] deployment", \u0026deploymentResource),`),
+				`749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200 213) \t\t\tEntry("[test_id:TODO] deployment", \u0026deploymentResource),`),
 
-		It("fills fields", func() {
-			gitBlameInfo := ExtractGitBlameInfo(lines)[0]
-			Expect(gitBlameInfo.CommitID).To(BeEquivalentTo(expectedCommitID))
-			Expect(gitBlameInfo.Author).To(BeEquivalentTo(expectedAuthor))
-			Expect(gitBlameInfo.Date).To(BeEquivalentTo(expectedDate))
-			Expect(gitBlameInfo.LineNo).To(BeEquivalentTo(expectedLineNo))
-			Expect(gitBlameInfo.Line).To(BeEquivalentTo(expectedLine))
-		})
+			Entry("with changed filename line 1",
+				newExpectedGitBlameInfo("a32051d928",
+					"fossedihelm",
+					mustParse("2022-11-30 09:45:57 +0100"),
+					111,
+					`var _ = Describe("[Serial][sig-operator]Operator", Serial, decorators.SigOperator, func() {`),
+				`a32051d928 tests/operator_test.go     (fossedihelm   2022-11-30 09:45:57 +0100  111) var _ = Describe("[Serial][sig-operator]Operator", Serial, decorators.SigOperator, func() {`),
+			Entry("with changed filename line 2",
+				newExpectedGitBlameInfo("eb6dc428cd",
+					"Igor Bezukh",
+					mustParse("2022-03-15 18:18:47 +0200"),
+					2928,
+					`	Context("Obsolete ConfigMap", func() {`),
+				`eb6dc428cd tests/operator_test.go     (Igor Bezukh   2022-03-15 18:18:47 +0200 2928) 	Context("Obsolete ConfigMap", func() {`),
+			Entry("with changed filename line 3",
+				newExpectedGitBlameInfo("52e637192d",
+					"Daniel Hiller",
+					mustParse("2023-05-26 10:21:35 +0200"),
+					2942,
+					`		It("[QUARANTINE] should emit event if the obsolete kubevirt-config configMap still exists", func() {`),
+				`52e637192d tests/operator/operator.go (Daniel Hiller 2023-05-26 10:21:35 +0200 2942) 		It("[QUARANTINE] should emit event if the obsolete kubevirt-config configMap still exists", func() {`),
 
-		It("extracts from other lines", func() {
-			errLines := []string{
-				`a32051d928 tests/operator_test.go     (fossedihelm   2022-11-30 09:45:57 +0100  111) var _ = Describe("[Serial][sig-operator]Operator", Serial, decorators.SigOperator, func() {`,
-				`eb6dc428cd tests/operator_test.go     (Igor Bezukh   2022-03-15 18:18:47 +0200 2928) 	Context("Obsolete ConfigMap", func() {`,
-				`52e637192d tests/operator/operator.go (Daniel Hiller 2023-05-26 10:21:35 +0200 2942) 		It("[QUARANTINE] should emit event if the obsolete kubevirt-config configMap still exists", func() {`,
-			}
-			blameInfo := ExtractGitBlameInfo(errLines)
-			Expect(blameInfo).ToNot(BeNil())
-			gitBlameInfo := blameInfo[0]
-			Expect(gitBlameInfo.CommitID).To(BeEquivalentTo("a32051d928"))
-			Expect(gitBlameInfo.Author).To(BeEquivalentTo("fossedihelm"))
-			expectedDate2, _ := time.Parse(gitDateLayout, "2022-11-30 09:45:57 +0100")
-			Expect(gitBlameInfo.Date).To(BeEquivalentTo(expectedDate2))
-			Expect(gitBlameInfo.LineNo).To(BeEquivalentTo(111))
-			Expect(gitBlameInfo.Line).To(BeEquivalentTo(`var _ = Describe("[Serial][sig-operator]Operator", Serial, decorators.SigOperator, func() {`))
-		})
+			Entry("with non standard chars in author name line 1",
+				newExpectedGitBlameInfo("0df3f3c5129",
+					"João Vilaça",
+					mustParse("2023-03-22 10:45:53 +0000"),
+					55,
+					`var _ = Describe("[Serial][sig-monitoring]VM Monitoring", Serial, decorators.SigMonitoring, func() {`),
+				`0df3f3c5129 (João Vilaça 2023-03-22 10:45:53 +0000 55) var _ = Describe("[Serial][sig-monitoring]VM Monitoring", Serial, decorators.SigMonitoring, func() {`),
+			Entry("with non standard chars in author name line 2",
+				newExpectedGitBlameInfo("ba2fdf5f25a",
+					"João Vilaça",
+					mustParse("2023-05-11 10:45:18 +0100"),
+					63,
+					`	Context("Cluster VM metrics", func() {`),
+				`ba2fdf5f25a (João Vilaça 2023-05-11 10:45:18 +0100 63) 	Context("Cluster VM metrics", func() {`),
+			Entry("with non standard chars in author name line 3",
+				newExpectedGitBlameInfo("ba2fdf5f25a",
+					"João Vilaça",
+					mustParse("2023-05-11 10:45:18 +0100"),
+					64,
+					`		It("kubevirt_number_of_vms should reflect the number of VMs", func() {`),
+				`ba2fdf5f25a (João Vilaça 2023-05-11 10:45:18 +0100 64) 		It("kubevirt_number_of_vms should reflect the number of VMs", func() {`),
+		)
 
-		PIt("TODO:naming extracts from further lines", func() {
-			errLines := []string{
-				`0df3f3c5129 (João Vilaça 2023-03-22 10:45:53 +0000 55) var _ = Describe("[Serial][sig-monitoring]VM Monitoring", Serial, decorators.SigMonitoring, func() {`,
-				`ba2fdf5f25a (João Vilaça 2023-05-11 10:45:18 +0100 63) 	Context("Cluster VM metrics", func() {`,
-				`ba2fdf5f25a (João Vilaça 2023-05-11 10:45:18 +0100 64) 		It("kubevirt_number_of_vms should reflect the number of VMs", func() {`,
-				``,
-			}
-			blameInfo := ExtractGitBlameInfo(errLines)
-			Expect(blameInfo).ToNot(BeNil())
-			gitBlameInfo := blameInfo[0]
-			Expect(gitBlameInfo.CommitID).To(BeEquivalentTo("0df3f3c5129"))
-			Expect(gitBlameInfo.Author).To(BeEquivalentTo("João Vilaça"))
-			expectedDate2, _ := time.Parse(gitDateLayout, "2023-05-11 10:45:18 +0100")
-			Expect(gitBlameInfo.Date).To(BeEquivalentTo(expectedDate2))
-			Expect(gitBlameInfo.LineNo).To(BeEquivalentTo(111))
-			Expect(gitBlameInfo.Line).To(BeEquivalentTo(`var _ = Describe("[Serial][sig-monitoring]VM Monitoring", Serial, decorators.SigMonitoring, func() {`))
-		})
 	})
 })
+
+func newExpectedGitBlameInfo(expectedCommitID string,
+	expectedAuthor string,
+	expectedDate time.Time,
+	expectedLineNo int,
+	expectedLine string) *expectedInfo {
+	return &expectedInfo{
+		expectedCommitID: expectedCommitID,
+		expectedAuthor:   expectedAuthor,
+		expectedDate:     expectedDate,
+		expectedLineNo:   expectedLineNo,
+		expectedLine:     expectedLine,
+	}
+}
+
+type expectedInfo struct {
+	expectedCommitID string
+	expectedAuthor   string
+	expectedDate     time.Time
+	expectedLineNo   int
+	expectedLine     string
+}
+
+func (e expectedInfo) ExpectEquivalentTo(actual *GitBlameInfo) {
+	Expect(actual.CommitID).To(BeEquivalentTo(e.expectedCommitID))
+	Expect(actual.Author).To(BeEquivalentTo(e.expectedAuthor))
+	Expect(actual.Date).To(BeEquivalentTo(e.expectedDate))
+	Expect(actual.LineNo).To(BeEquivalentTo(e.expectedLineNo))
+	Expect(actual.Line).To(BeEquivalentTo(e.expectedLine))
+}
+
+func mustParse(gitDateValue string) time.Time {
+	expectedDate, err := time.Parse(gitDateLayout, gitDateValue)
+	Expect(err).ToNot(HaveOccurred())
+	return expectedDate
+}

@@ -100,7 +100,7 @@ func traverseNodesRecursively(stats *TestStats, config *Config, gingkoOutline []
 
 const gitDateLayout = "2006-01-02 15:04:05 -0700"
 
-var gitBlameRegex = regexp.MustCompile(`^([0-9a-f]+)(\s+\S+)?\s+\(([\w ]+)\s([0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}\s[-+][0-9]{4})\s+([0-9]+)\)\s(.*)$`)
+var gitBlameRegex = regexp.MustCompile(`^([0-9a-f]+)(\s+\S+)?\s+\(([\S ]+)\s([0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}\s[-+][0-9]{4})\s+([0-9]+)\)\s(.*)$`)
 
 type GitBlameInfo struct {
 	CommitID string    `json:"commit_id"`
