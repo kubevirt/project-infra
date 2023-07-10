@@ -431,5 +431,23 @@ var _ = Describe("Extract git info", func() {
 			Expect(gitBlameInfo.LineNo).To(BeEquivalentTo(111))
 			Expect(gitBlameInfo.Line).To(BeEquivalentTo(`var _ = Describe("[Serial][sig-operator]Operator", Serial, decorators.SigOperator, func() {`))
 		})
+
+		PIt("TODO:naming extracts from further lines", func() {
+			errLines := []string{
+				`0df3f3c5129 (João Vilaça 2023-03-22 10:45:53 +0000 55) var _ = Describe("[Serial][sig-monitoring]VM Monitoring", Serial, decorators.SigMonitoring, func() {`,
+				`ba2fdf5f25a (João Vilaça 2023-05-11 10:45:18 +0100 63) 	Context("Cluster VM metrics", func() {`,
+				`ba2fdf5f25a (João Vilaça 2023-05-11 10:45:18 +0100 64) 		It("kubevirt_number_of_vms should reflect the number of VMs", func() {`,
+				``,
+			}
+			blameInfo := ExtractGitBlameInfo(errLines)
+			Expect(blameInfo).ToNot(BeNil())
+			gitBlameInfo := blameInfo[0]
+			Expect(gitBlameInfo.CommitID).To(BeEquivalentTo("0df3f3c5129"))
+			Expect(gitBlameInfo.Author).To(BeEquivalentTo("João Vilaça"))
+			expectedDate2, _ := time.Parse(gitDateLayout, "2023-05-11 10:45:18 +0100")
+			Expect(gitBlameInfo.Date).To(BeEquivalentTo(expectedDate2))
+			Expect(gitBlameInfo.LineNo).To(BeEquivalentTo(111))
+			Expect(gitBlameInfo.Line).To(BeEquivalentTo(`var _ = Describe("[Serial][sig-monitoring]VM Monitoring", Serial, decorators.SigMonitoring, func() {`))
+		})
 	})
 })
