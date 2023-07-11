@@ -25,6 +25,8 @@ type TemplateData struct {
 	DaysInThePast   int
 	Date            time.Time
 	ShareCategories []ShareCategory
+	Org             string
+	Repo            string
 }
 
 type TopXTests []*TopXTest
@@ -164,17 +166,23 @@ type options struct {
 	daysInThePast       int
 	outputFile          string
 	overwriteOutputFile bool
+	org                 string
+	repo                string
 }
 
 var opts = options{}
 
 const defaultDaysInThePast = 14
+const defaultOrg = "kubevirt"
+const defaultRepo = "kubevirt"
 
 func main() {
 
 	flag.IntVar(&opts.daysInThePast, "days-in-the-past", defaultDaysInThePast, "determines how much days in the past till today are covered")
 	flag.StringVar(&opts.outputFile, "output-file", "", "outputfile to write to, default is a tempfile in folder")
 	flag.BoolVar(&opts.overwriteOutputFile, "overwrite-output-file", false, "whether outputfile is set to be overwritten if it exists")
+	flag.StringVar(&opts.org, "org", defaultOrg, "GitHub org to use for fetching report data from gcs dir")
+	flag.StringVar(&opts.repo, "repo", defaultRepo, "GitHub repo to use for fetching report data from gcs dir")
 	flag.Parse()
 
 	if opts.daysInThePast <= 0 {
@@ -198,7 +206,7 @@ func main() {
 	targetReportDate := previousDay(time.Now())
 	var recentFlakefinderReports []flakefinder.Params
 	for i := 0; i < opts.daysInThePast; i++ {
-		reportJSONURL, err := flakefinder.GenerateReportURL("kubevirt", "kubevirt", targetReportDate, flakefinder.DateRange24h, "json")
+		reportJSONURL, err := flakefinder.GenerateReportURL(opts.org, opts.repo, targetReportDate, flakefinder.DateRange24h, "json")
 		if err != nil {
 			log.Fatalf("failed to generate report url: %v", err)
 		}
@@ -300,6 +308,8 @@ func main() {
 		DaysInThePast:   opts.daysInThePast,
 		Date:            time.Now(),
 		ShareCategories: shareCategories,
+		Org:             opts.org,
+		Repo:            opts.repo,
 	}
 	err = flakefinder.WriteTemplateToOutput(htmlTemplate, templateData, htmlReportOutputWriter)
 	if err != nil {
