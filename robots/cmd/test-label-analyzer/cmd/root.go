@@ -23,7 +23,9 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
+	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
 	"os"
+	"regexp"
 )
 
 // configOptions contains the set of options that the stats command provides
@@ -36,6 +38,9 @@ type configOptions struct {
 
 	// configName is the name of the default configuration that resembles the test_label_analyzer.Config
 	configName string
+
+	// filterTestNamesFile holds the file path to a filter file like quarantined_tests.json
+	filterTestNamesFile string
 
 	// ginkgoOutlinePaths holds the paths to the files that contain the test outlines to analyze
 	ginkgoOutlinePaths []string
@@ -57,8 +62,8 @@ type configOptions struct {
 // validate checks the configuration options for validity and returns an error describing the first error encountered
 func (s *configOptions) validate() error {
 	if s.testNameLabelRE == "" {
-		if s.configFile == "" && s.configName == "" || s.configFile != "" && s.configName != "" {
-			return fmt.Errorf("one of configFile or configName is required")
+		if s.configFile == "" && s.configName == "" && s.filterTestNamesFile == "" {
+			return fmt.Errorf("one of configFile or configName or filterTestNamesFile is required")
 		}
 	}
 	if _, exists := configNamesToConfigs[s.configName]; s.configName != "" && !exists {
@@ -114,6 +119,24 @@ func (s *configOptions) getConfig() (*testlabelanalyzer.Config, error) {
 		err = json.Unmarshal(file, &config)
 		return config, err
 	}
+	if s.filterTestNamesFile != "" {
+		file, err := os.ReadFile(s.filterTestNamesFile)
+		if err != nil {
+			return nil, err
+		}
+		var filterFileNames []test_report.FilterTestRecord
+		err = json.Unmarshal(file, &filterFileNames)
+		config := &testlabelanalyzer.Config{}
+		for _, filterFileName := range filterFileNames {
+			testNameDefaultConfig := testlabelanalyzer.LabelCategory{
+				Name:            filterFileName.Reason,
+				TestNameLabelRE: testlabelanalyzer.NewRegexp(regexp.QuoteMeta(filterFileName.Id)),
+				GinkgoLabelRE:   nil,
+			}
+			config.Categories = append(config.Categories, testNameDefaultConfig)
+		}
+		return config, err
+	}
 	return nil, fmt.Errorf("no configuration found!")
 }
 
@@ -148,6 +171,7 @@ func init() {
 	}
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.configName, "config-name", "", fmt.Sprintf("config name defining categories of tests (possible values: %v)", configNames))
 	rootCmd.PersistentFlags().StringArrayVar(&rootConfigOpts.ginkgoOutlinePaths, "test-outline-filepath", nil, "path to test outline file to be analyzed")
+	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.filterTestNamesFile, "filter-test-names-file", "", "file path to filter file like quarantined_tests.json or dont_run_tests.json")
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testFilePath, "test-file-path", "", "path containing tests to be analyzed")
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.remoteURL, "remote-url", "", "remote path to tests to be analyzed")
 	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testNameLabelRE, "test-name-label-re", "", "regular expression for test names to match against")
