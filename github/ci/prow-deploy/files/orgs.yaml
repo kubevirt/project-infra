@@ -345,6 +345,9 @@ orgs:
         description: Holds all scripts to create packages and manifest file required for publishing the virtctl binary as a krew package for kubectl.
         default_branch: main
         has_projects: true
+      kubernetes.kubevirt:
+        description: Lean Ansible bindings for KubeVirt
+        has_projects: true
       kubernetes-device-plugins:
         archived: true
         description: 'Incubating: A number of Kubernetes device-plugins developed and useful for KubeVirt'
@@ -970,3 +973,11 @@ orgs:
           - vladikr
         repos:
           managed-tenant-quota: admin
+      kubernetes.kubevirt-maintainers:
+        description: Maintainers of kubernetes.kubevirt
+        privacy: closed
+        maintainers:
+          - 0xFelix
+          - lyarwood
+        repos:
+          kubernetes.kubevirt: admin
