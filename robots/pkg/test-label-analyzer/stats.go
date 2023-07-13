@@ -20,6 +20,7 @@
 package test_label_analyzer
 
 import (
+	"kubevirt.io/project-infra/robots/pkg/git"
 	"strings"
 )
 
@@ -54,7 +55,7 @@ type PathStats struct {
 	Lines []int `json:"lines"`
 
 	// GitBlameLines is the output of the blame command for each of the Lines
-	GitBlameLines []*GitBlameInfo `json:"git_blame_lines"`
+	GitBlameLines []*git.GitBlameInfo `json:"git_blame_lines"`
 
 	// Path denotes the path to the spec that has been found to match
 	Path []*GinkgoNode `json:"path"`
@@ -98,5 +99,3 @@ func traverseNodesRecursively(stats *TestStats, config *Config, gingkoOutline []
 		traverseNodesRecursively(stats, config, node.Nodes, parentsWithNode)
 	}
 }
-
-const gitDateLayout = "2006-01-02 15:04:05 -0700"

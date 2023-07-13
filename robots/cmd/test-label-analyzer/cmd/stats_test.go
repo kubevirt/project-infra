@@ -22,17 +22,18 @@ package cmd
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"kubevirt.io/project-infra/robots/pkg/git"
 	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"time"
 )
 
-var _ = Describe("cmd/stats", func() {
+var _ = Describe("stats", func() {
 
 	Context("getGinkgoOutlineFromFile", func() {
 
 		It("generates outline from file", func() {
 			outline, err := getGinkgoOutlineFromFile("testdata/simple_test.go_test")
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(outline).ToNot(BeNil())
 		})
 
@@ -52,7 +53,7 @@ var _ = Describe("cmd/stats", func() {
 						MatchingSpecPaths: []*test_label_analyzer.PathStats{
 							{
 								Lines: nil,
-								GitBlameLines: []*test_label_analyzer.GitBlameInfo{
+								GitBlameLines: []*git.GitBlameInfo{
 									{
 										CommitID: "1742",
 										Author:   "johndoe@wherever.net",
@@ -79,14 +80,14 @@ var _ = Describe("cmd/stats", func() {
 						MatchingSpecPaths: []*test_label_analyzer.PathStats{
 							{
 								Lines: nil,
-								GitBlameLines: []*test_label_analyzer.GitBlameInfo{
+								GitBlameLines: []*git.GitBlameInfo{
 									newGitBlameInfo(parseTime("2023-03-02T17:42:37Z"), "[QUARANTINE]"),
 								},
 								Path: nil,
 							},
 							{
 								Lines: nil,
-								GitBlameLines: []*test_label_analyzer.GitBlameInfo{
+								GitBlameLines: []*git.GitBlameInfo{
 									newGitBlameInfo(parseTime("2023-02-02T17:42:37Z"), "[QUARANTINE]"),
 								},
 								Path: nil,
@@ -101,7 +102,7 @@ var _ = Describe("cmd/stats", func() {
 						{
 							Config: simpleQuarantineConfig,
 							MatchingPath: &test_label_analyzer.PathStats{
-								GitBlameLines: []*test_label_analyzer.GitBlameInfo{
+								GitBlameLines: []*git.GitBlameInfo{
 									newGitBlameInfo(parseTime("2023-02-02T17:42:37Z"), "[QUARANTINE]"),
 								},
 							},
@@ -110,7 +111,7 @@ var _ = Describe("cmd/stats", func() {
 						{
 							Config: simpleQuarantineConfig,
 							MatchingPath: &test_label_analyzer.PathStats{
-								GitBlameLines: []*test_label_analyzer.GitBlameInfo{
+								GitBlameLines: []*git.GitBlameInfo{
 									newGitBlameInfo(parseTime("2023-03-02T17:42:37Z"), "[QUARANTINE]"),
 								},
 							},
@@ -124,8 +125,8 @@ var _ = Describe("cmd/stats", func() {
 
 })
 
-func newGitBlameInfo(t time.Time, line string) *test_label_analyzer.GitBlameInfo {
-	return &test_label_analyzer.GitBlameInfo{
+func newGitBlameInfo(t time.Time, line string) *git.GitBlameInfo {
+	return &git.GitBlameInfo{
 		CommitID: "1742",
 		Author:   "johndoe@wherever.net",
 		Date:     t,

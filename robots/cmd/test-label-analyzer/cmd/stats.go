@@ -25,6 +25,7 @@ import (
 	"github.com/spf13/cobra"
 	"html/template"
 	"io/fs"
+	"kubevirt.io/project-infra/robots/pkg/git"
 	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
 	"os/exec"
@@ -265,26 +266,11 @@ func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions configOption
 			}
 			matchingSpecPathes.Lines = lineNos
 
-			blameArgs := []string{"blame", filepath.Base(testFilePath)}
-			for _, blameLineNo := range lineNos {
-				blameArgs = append(blameArgs, fmt.Sprintf("-L %d,%d", blameLineNo, blameLineNo))
+			blameLines, err2 := git.GetGitBlameForFile(testFilePath, lineNos...)
+			if err2 != nil {
+				return nil, err2
 			}
-			command := exec.Command("git", blameArgs...)
-			command.Dir = filepath.Dir(testFilePath)
-			output, err := command.Output()
-			if err != nil {
-				switch err.(type) {
-				case *exec.ExitError:
-					e := err.(*exec.ExitError)
-					return nil, fmt.Errorf("exec %v failed: %v", command, e.Stderr)
-				case *exec.Error:
-					e := err.(*exec.Error)
-					return nil, fmt.Errorf("exec %v failed: %v", command, e)
-				default:
-					return nil, fmt.Errorf("exec %v failed: %v", command, err)
-				}
-			}
-			matchingSpecPathes.GitBlameLines = testlabelanalyzer.ExtractGitBlameInfo(strings.Split(string(output), "\n"))
+			matchingSpecPathes.GitBlameLines = git.ExtractGitBlameInfo(blameLines)
 			if len(matchingSpecPathes.GitBlameLines) == 0 {
 				return nil, fmt.Errorf("git blame lines extraction failed!")
 			}
@@ -341,12 +327,12 @@ func getGinkgoOutlineFromFile(path string) ([]*testlabelanalyzer.GinkgoNode, err
 			if strings.Contains(stdErr, "file does not import \"github.com/onsi/ginkgo/v2\"") {
 				return nil, nil
 			}
-			return nil, fmt.Errorf("exec %v failed: %v", ginkgoCommand, e.Stderr)
+			return nil, fmt.Errorf("exec %v failed: %s", ginkgoCommand, e.Stderr)
 		case *exec.Error:
 			e := err.(*exec.Error)
-			return nil, fmt.Errorf("exec %v failed: %v", ginkgoCommand, e)
+			return nil, fmt.Errorf(`exec "%v" failed: %s`, ginkgoCommand, e)
 		default:
-			return nil, fmt.Errorf("exec %v failed: %v", ginkgoCommand, err)
+			return nil, fmt.Errorf(`exec "%v" failed: %s`, ginkgoCommand, err)
 		}
 	}
 	testOutline, err := toOutline(output)

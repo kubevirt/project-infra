@@ -14,10 +14,9 @@
  * limitations under the License.
  *
  * Copyright 2023 Red Hat, Inc.
- *
  */
 
-package test_label_analyzer
+package git
 
 import (
 	. "github.com/onsi/ginkgo/v2"
