@@ -63,6 +63,38 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
+  - name: pull-cdi-verify-go-mod
+    skip_branches:
+      - release-v1.38
+      - release-v1.43
+      - release-v1.49
+    cluster: ibm-prow-jobs
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make deps-verify"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
   - name: pull-cdi-apidocs
     skip_branches:
       - release-v1.38
