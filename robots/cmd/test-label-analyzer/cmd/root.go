@@ -124,13 +124,13 @@ func (s *configOptions) getConfig() (*testlabelanalyzer.Config, error) {
 		if err != nil {
 			return nil, err
 		}
-		var filterFileNames []test_report.FilterTestRecord
-		err = json.Unmarshal(file, &filterFileNames)
+		var filterTestRecords []test_report.FilterTestRecord
+		err = json.Unmarshal(file, &filterTestRecords)
 		config := &testlabelanalyzer.Config{}
-		for _, filterFileName := range filterFileNames {
+		for _, filterTestRecord := range filterTestRecords {
 			testNameDefaultConfig := testlabelanalyzer.LabelCategory{
-				Name:            filterFileName.Reason,
-				TestNameLabelRE: testlabelanalyzer.NewRegexp(regexp.QuoteMeta(filterFileName.Id)),
+				Name:            filterTestRecord.Reason,
+				TestNameLabelRE: testlabelanalyzer.NewRegexp(regexp.QuoteMeta(filterTestRecord.Id)),
 				GinkgoLabelRE:   nil,
 			}
 			config.Categories = append(config.Categories, testNameDefaultConfig)

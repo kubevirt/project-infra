@@ -76,25 +76,33 @@ func (r *Regexp) MarshalText() ([]byte, error) {
 
 	return nil, nil
 }
+
+func NewQuarantineLabelCategory() LabelCategory {
+	return LabelCategory{
+		Name:            "Quarantine",
+		TestNameLabelRE: NewRegexp("\\[QUARANTINE\\]"),
+		GinkgoLabelRE:   NewRegexp("Quarantine"),
+	}
+}
 func NewQuarantineDefaultConfig() *Config {
 	return &Config{
 		Categories: []LabelCategory{
-			{
-				Name:            "Quarantine",
-				TestNameLabelRE: NewRegexp("\\[QUARANTINE\\]"),
-				GinkgoLabelRE:   NewRegexp("Quarantine"),
-			},
+			NewQuarantineLabelCategory(),
 		},
+	}
+}
+
+func NewPartialTestNameLabelCategory(partialTestName string) LabelCategory {
+	return LabelCategory{
+		Name:            "PartialTestNameCategory",
+		TestNameLabelRE: NewRegexp(partialTestName),
 	}
 }
 
 func NewTestNameDefaultConfig(partialTestName string) *Config {
 	return &Config{
 		Categories: []LabelCategory{
-			{
-				Name:            "PartialTestNameCategory",
-				TestNameLabelRE: NewRegexp(partialTestName),
-			},
+			NewPartialTestNameLabelCategory(partialTestName),
 		},
 	}
 }

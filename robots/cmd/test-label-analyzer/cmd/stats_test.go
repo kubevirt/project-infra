@@ -30,8 +30,8 @@ var _ = Describe("cmd/stats", func() {
 
 	Context("getGinkgoOutlineFromFile", func() {
 
-		PIt("generates outline from file", func() {
-			outline, err := getGinkgoOutlineFromFile("testdata/simple_test.go")
+		It("generates outline from file", func() {
+			outline, err := getGinkgoOutlineFromFile("testdata/simple_test.go_test")
 			Expect(err).To(BeNil())
 			Expect(outline).ToNot(BeNil())
 		})
@@ -100,15 +100,19 @@ var _ = Describe("cmd/stats", func() {
 					TestHTMLData: []*TestHTMLData{
 						{
 							Config: simpleQuarantineConfig,
-							GitBlameLines: []*test_label_analyzer.GitBlameInfo{
-								newGitBlameInfo(parseTime("2023-02-02T17:42:37Z"), "[QUARANTINE]"),
+							MatchingPath: &test_label_analyzer.PathStats{
+								GitBlameLines: []*test_label_analyzer.GitBlameInfo{
+									newGitBlameInfo(parseTime("2023-02-02T17:42:37Z"), "[QUARANTINE]"),
+								},
 							},
 							RemoteURL: remoteURL,
 						},
 						{
 							Config: simpleQuarantineConfig,
-							GitBlameLines: []*test_label_analyzer.GitBlameInfo{
-								newGitBlameInfo(parseTime("2023-03-02T17:42:37Z"), "[QUARANTINE]"),
+							MatchingPath: &test_label_analyzer.PathStats{
+								GitBlameLines: []*test_label_analyzer.GitBlameInfo{
+									newGitBlameInfo(parseTime("2023-03-02T17:42:37Z"), "[QUARANTINE]"),
+								},
 							},
 							RemoteURL: remoteURL,
 						},

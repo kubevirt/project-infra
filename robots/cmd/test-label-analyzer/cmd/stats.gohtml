@@ -51,8 +51,8 @@
         <tr>
             <td colspan="2"><a href="{{ $testHTMLDataElem.RemoteURL }}">{{ $testHTMLDataElem.RemoteURL }}</a></td>
         </tr>
-        {{- if $testHTMLDataElem.GitBlameLines }}
-            {{- range $index, $gitBlame := $testHTMLDataElem.GitBlameLines }}
+        {{- if $testHTMLDataElem.MatchingPath.GitBlameLines }}
+            {{- range $index, $gitBlame := $testHTMLDataElem.MatchingPath.GitBlameLines }}
                 <tr>
                     {{ if (index $testHTMLDataElem.ElementsMatchingConfig $index) -}}
                         <td class="date">

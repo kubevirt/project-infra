@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "config.go",
         "ginkgo.go",
+        "git.go",
         "stats.go",
         "time.go",
     ],
@@ -15,6 +16,7 @@ go_library(
 go_test(
     name = "go_default_test",
     srcs = [
+        "git_test.go",
         "stats_test.go",
         "test_suite_test.go",
         "time_test.go",

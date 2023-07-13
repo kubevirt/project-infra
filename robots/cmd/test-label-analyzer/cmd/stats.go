@@ -67,9 +67,6 @@ type TestHTMLData struct {
 	// containing a commit ID in order to exactly define the state of the file that was traversed
 	RemoteURL string `json:"path"`
 
-	// GitBlameLines is the output of the blame command for each of the Lines
-	GitBlameLines []*testlabelanalyzer.GitBlameInfo `json:"git_blame_lines"`
-
 	// ElementsMatchingConfig contains whether each of the GitBlameLines matches the *test_label_analyzer.Config
 	ElementsMatchingConfig []bool
 
@@ -86,7 +83,7 @@ func (t *TestHTMLData) initElementsMatchingConfig() {
 	if len(t.ElementsMatchingConfig) > 0 {
 		panic("t.ElementsMatchingConfig already initialized")
 	}
-	t.ElementsMatchingConfig = make([]bool, len(t.GitBlameLines))
+	t.ElementsMatchingConfig = make([]bool, len(t.MatchingPath.GitBlameLines))
 	wholeLine := ""
 	for index, node := range t.MatchingPath.Path {
 		wholeLine = strings.TrimSpace(wholeLine + " " + node.Text)
@@ -108,7 +105,7 @@ func (t *TestHTMLData) initPermalinks() {
 	if len(submatch) < 2 {
 		return
 	}
-	for _, gitLine := range t.GitBlameLines {
+	for _, gitLine := range t.MatchingPath.GitBlameLines {
 		permaLink := strings.ReplaceAll(t.RemoteURL, submatch[1], fmt.Sprintf("commit/%s", gitLine.CommitID))
 		t.Permalinks = append(t.Permalinks, permaLink)
 	}
@@ -119,7 +116,7 @@ func (t *TestHTMLData) initAge() {
 	if len(t.Age) > 0 {
 		panic("t.Age already initialized")
 	}
-	for _, gitLine := range t.GitBlameLines {
+	for _, gitLine := range t.MatchingPath.GitBlameLines {
 		t.Age = append(t.Age, testlabelanalyzer.Since(gitLine.Date))
 	}
 }
@@ -133,11 +130,11 @@ func (t *TestHTMLData) collectEarliestChangeDateFromGitLines() time.Time {
 		if !matches {
 			continue
 		}
-		if len(t.GitBlameLines) <= index {
+		if len(t.MatchingPath.GitBlameLines) <= index {
 			continue
 		}
-		if t.GitBlameLines[index].Date.Before(changeDate) {
-			changeDate = t.GitBlameLines[index].Date
+		if t.MatchingPath.GitBlameLines[index].Date.Before(changeDate) {
+			changeDate = t.MatchingPath.GitBlameLines[index].Date
 		}
 	}
 	return changeDate
@@ -179,10 +176,9 @@ func NewStatsHTMLData(stats []*testlabelanalyzer.FileStats) *StatsHTMLData {
 
 func newTestHTMLData(fileStats *testlabelanalyzer.FileStats, path *testlabelanalyzer.PathStats) *TestHTMLData {
 	testHTMLData := &TestHTMLData{
-		Config:        fileStats.Config,
-		MatchingPath:  path,
-		RemoteURL:     fileStats.RemoteURL,
-		GitBlameLines: path.GitBlameLines,
+		Config:       fileStats.Config,
+		MatchingPath: path,
+		RemoteURL:    fileStats.RemoteURL,
 	}
 	testHTMLData.initElementsMatchingConfig()
 	testHTMLData.initPermalinks()

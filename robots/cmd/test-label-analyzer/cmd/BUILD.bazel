@@ -12,6 +12,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//robots/pkg/test-label-analyzer:go_default_library",
+        "//robots/pkg/test-report:go_default_library",
         "@com_github_spf13_cobra//:go_default_library",
     ],
 )
@@ -19,9 +20,11 @@ go_library(
 go_test(
     name = "go_default_test",
     srcs = [
+        "root_test.go",
         "stats_test.go",
         "test_suite_test.go",
     ],
+    data = glob(["testdata/**"]),
     embed = [":go_default_library"],
     deps = [
         "//robots/pkg/test-label-analyzer:go_default_library",
