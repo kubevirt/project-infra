@@ -60,6 +60,9 @@ func init() {
 type TestHTMLData struct {
 	*testlabelanalyzer.Config `json:"config"`
 
+	// MatchingPath holds the test_label_analyzer.PathStats that matched the node
+	MatchingPath *testlabelanalyzer.PathStats
+
 	// RemoteURL is the absolute path to the file, most certainly an absolute URL inside a version control repository
 	// containing a commit ID in order to exactly define the state of the file that was traversed
 	RemoteURL string `json:"path"`
@@ -83,10 +86,13 @@ func (t *TestHTMLData) initElementsMatchingConfig() {
 	if len(t.ElementsMatchingConfig) > 0 {
 		panic("t.ElementsMatchingConfig already initialized")
 	}
-	for _, gitLine := range t.GitBlameLines {
-		for _, category := range t.Config.Categories {
-			matchString := category.TestNameLabelRE.MatchString(gitLine.Line)
-			t.ElementsMatchingConfig = append(t.ElementsMatchingConfig, matchString)
+	t.ElementsMatchingConfig = make([]bool, len(t.GitBlameLines))
+	wholeLine := ""
+	for index, node := range t.MatchingPath.Path {
+		wholeLine = strings.TrimSpace(wholeLine + " " + node.Text)
+		matchString := t.MatchingPath.MatchingCategory.TestNameLabelRE.MatchString(wholeLine)
+		if matchString {
+			t.ElementsMatchingConfig[index] = true
 		}
 	}
 }
@@ -125,6 +131,9 @@ func (t *TestHTMLData) collectEarliestChangeDateFromGitLines() time.Time {
 	changeDate := time.Now()
 	for index, matches := range t.ElementsMatchingConfig {
 		if !matches {
+			continue
+		}
+		if len(t.GitBlameLines) <= index {
 			continue
 		}
 		if t.GitBlameLines[index].Date.Before(changeDate) {
@@ -171,6 +180,7 @@ func NewStatsHTMLData(stats []*testlabelanalyzer.FileStats) *StatsHTMLData {
 func newTestHTMLData(fileStats *testlabelanalyzer.FileStats, path *testlabelanalyzer.PathStats) *TestHTMLData {
 	testHTMLData := &TestHTMLData{
 		Config:        fileStats.Config,
+		MatchingPath:  path,
 		RemoteURL:     fileStats.RemoteURL,
 		GitBlameLines: path.GitBlameLines,
 	}

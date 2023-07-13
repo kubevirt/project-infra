@@ -61,6 +61,9 @@ type PathStats struct {
 
 	// Path denotes the path to the spec that has been found to match
 	Path []*GinkgoNode `json:"path"`
+
+	// MatchingCategory holds the category that matched the path
+	MatchingCategory LabelCategory `json:"matchingCategory"`
 }
 
 func GetStatsFromGinkgoOutline(config *Config, gingkoOutline []*GinkgoNode) *TestStats {
@@ -89,7 +92,8 @@ func traverseNodesRecursively(stats *TestStats, config *Config, gingkoOutline []
 						path = append(path, pathNode.CloneWithoutNodes())
 					}
 					stats.MatchingSpecPaths = append(stats.MatchingSpecPaths, &PathStats{
-						Path: path,
+						Path:             path,
+						MatchingCategory: category,
 					})
 				}
 			}

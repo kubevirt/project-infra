@@ -48,7 +48,9 @@
 <div>Total: {{ $.TestHTMLData | len }} tests</div>
 <table>
     {{- range $testHTMLDataElem := $.TestHTMLData }}
-        <tr><td colspan="2"><a href="{{ $testHTMLDataElem.RemoteURL }}">{{ $testHTMLDataElem.RemoteURL }}</a></td></tr>
+        <tr>
+            <td colspan="2"><a href="{{ $testHTMLDataElem.RemoteURL }}">{{ $testHTMLDataElem.RemoteURL }}</a></td>
+        </tr>
         {{- if $testHTMLDataElem.GitBlameLines }}
             {{- range $index, $gitBlame := $testHTMLDataElem.GitBlameLines }}
                 <tr>
@@ -61,7 +63,8 @@
                     {{- else }}
                         <td></td>{{ end }}
                     <td
-                            {{- if (index $testHTMLDataElem.ElementsMatchingConfig $index) }} class="matchingLine"{{ end -}}
+                            {{- if (index $testHTMLDataElem.ElementsMatchingConfig $index) }} class="matchingLine"
+                            title="Matched: {{ $testHTMLDataElem.MatchingPath.MatchingCategory.TestNameLabelRE }} ({{ $testHTMLDataElem.MatchingPath.MatchingCategory.Name }})"{{ end -}}
                     ><a class="nounderline" href="{{ $testHTMLDataElem.RemoteURL }}#L{{ $gitBlame.LineNo }}"><span
                                     class="code">{{ $gitBlame.Line }}</span></a></td>
                 </tr>{{ end -}}
