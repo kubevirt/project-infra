@@ -40,7 +40,7 @@ type LabelCategory struct {
 	*git.BlameLine `json:"git_blame_info"`
 
 	// Hits holds the number of times this category has matched a node path
-	Hits int
+	Hits int `json:"hits"`
 }
 
 func (c *LabelCategory) String() string {

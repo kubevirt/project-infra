@@ -73,8 +73,27 @@ $ test-label-analyzer stats --output-html=true \
   --config-name quarantine \
   --test-file-path $(cd ../kubevirt && pwd)/tests \
   --remote-url 'https://github.com/kubevirt/kubevirt/tree/main/tests' > /tmp/test-output.html
+```
+
+#### Generating a json file with a rules input file
+
+```shell
+$ test-label-analyzer stats \
+    --filter-test-names-file ./quarantined_tests.json \
+    --test-file-path ../../kubevirt.io/kubevirt/tests/ \
+    --remote-url 'https://github.com/kubevirt/kubevirt/tree/main/tests/' \
+    > /tmp/ds-quarantined-tests.json
+$ # we are going to select the files that had matching tests here
+$ jq '.files_stats[] | select( .test_stats.matching_spec_paths != null ) | .path' /tmp/ds-quarantined-tests.json "https://github.com/kubevirt/kubevirt/tree/main/tests/vm_test.go"
+"https://github.com/kubevirt/kubevirt/tree/main/tests/migration_test.go"
+"https://github.com/kubevirt/kubevirt/tree/main/tests/virtctl/ssh.go"
+"https://github.com/kubevirt/kubevirt/tree/main/tests/network/port_forward.go"
+"https://github.com/kubevirt/kubevirt/tree/main/tests/network/vmi_multus.go"
+"https://github.com/kubevirt/kubevirt/tree/main/tests/operator/operator.go"
+"https://github.com/kubevirt/kubevirt/tree/main/tests/virtctl/scp.go"
 
 ```
+
 ## generate a string that can be used directly with [Ginkgo] `--filter` or `--skip` flags
 
 _**NOT YET IMPLEMENTED**_

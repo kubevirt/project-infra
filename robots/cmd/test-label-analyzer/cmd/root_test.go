@@ -99,7 +99,7 @@ var _ = Describe("root tests", func() {
 							TestNameLabelRE: test_label_analyzer.NewRegexp("test name 1"),
 							GinkgoLabelRE:   nil,
 							BlameLine: &git.BlameLine{
-								CommitID: "716b4b979",
+								CommitID: "981a5b7f3",
 								Author:   "Daniel Hiller",
 								Date:     mustParseDate("2023-07-12T17:12:11+02:00"),
 								LineNo:   3,
@@ -111,7 +111,7 @@ var _ = Describe("root tests", func() {
 							TestNameLabelRE: test_label_analyzer.NewRegexp("test name 2"),
 							GinkgoLabelRE:   nil,
 							BlameLine: &git.BlameLine{
-								CommitID: "716b4b979",
+								CommitID: "981a5b7f3",
 								Author:   "Daniel Hiller",
 								Date:     mustParseDate("2023-07-12T17:12:11+02:00"),
 								LineNo:   7,
@@ -123,7 +123,7 @@ var _ = Describe("root tests", func() {
 							TestNameLabelRE: test_label_analyzer.NewRegexp(regexp.QuoteMeta("[sig-compute]test name 3")),
 							GinkgoLabelRE:   nil,
 							BlameLine: &git.BlameLine{
-								CommitID: "716b4b979",
+								CommitID: "981a5b7f3",
 								Author:   "Daniel Hiller",
 								Date:     mustParseDate("2023-07-12T17:12:11+02:00"),
 								LineNo:   11,

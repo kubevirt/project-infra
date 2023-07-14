@@ -66,7 +66,7 @@ type PathStats struct {
 	Path []*GinkgoNode `json:"path"`
 
 	// MatchingCategory holds the category that matched the path
-	MatchingCategory *LabelCategory `json:"matchingCategory"`
+	MatchingCategory *LabelCategory `json:"matching_category"`
 }
 
 func GetStatsFromGinkgoOutline(config *Config, gingkoOutline []*GinkgoNode) *TestStats {
