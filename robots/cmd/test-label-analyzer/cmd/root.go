@@ -138,7 +138,7 @@ func (s *ConfigOptions) getConfig() (*testlabelanalyzer.Config, error) {
 		blameIndex := 0
 		for _, filterTestRecord := range filterTestRecords {
 			quotedId := regexp.QuoteMeta(filterTestRecord.Id)
-			testNameDefaultConfig := testlabelanalyzer.LabelCategory{
+			testNameDefaultConfig := &testlabelanalyzer.LabelCategory{
 				Name:            filterTestRecord.Reason,
 				TestNameLabelRE: testlabelanalyzer.NewRegexp(quotedId),
 				GinkgoLabelRE:   nil,

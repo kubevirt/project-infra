@@ -93,7 +93,7 @@ var _ = Describe("root tests", func() {
 					outputHTML:          false,
 				},
 				&test_label_analyzer.Config{
-					Categories: []test_label_analyzer.LabelCategory{
+					Categories: []*test_label_analyzer.LabelCategory{
 						{
 							Name:            "flaky",
 							TestNameLabelRE: test_label_analyzer.NewRegexp("test name 1"),

@@ -45,6 +45,7 @@ var _ = Describe("stats", func() {
 		var simpleQuarantineConfig = test_label_analyzer.NewTestNameDefaultConfig("[QUARANTINE]")
 
 		It("returns data from file stats", func() {
+			// t.MatchingPath.MatchingCategory
 			Expect(NewStatsHTMLData([]*test_label_analyzer.FileStats{
 				{
 					TestStats: &test_label_analyzer.TestStats{
@@ -61,7 +62,8 @@ var _ = Describe("stats", func() {
 										Line:     "[QUARANTINE]",
 									},
 								},
-								Path: nil,
+								Path:             nil,
+								MatchingCategory: &test_label_analyzer.LabelCategory{},
 							},
 						},
 					},

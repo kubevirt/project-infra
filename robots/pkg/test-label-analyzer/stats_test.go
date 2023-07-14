@@ -26,6 +26,12 @@ import (
 
 var _ = Describe("GetStatsFromGinkgoOutline", func() {
 
+	var quarantineLabelCategory *LabelCategory
+
+	BeforeEach(func() {
+		quarantineLabelCategory = NewQuarantineLabelCategory()
+	})
+
 	Context("w/o recursion", func() {
 
 		It("does not match any test since no spec", func() {
@@ -54,6 +60,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 		})
 
 		It("does match test text", func() {
+			quarantineLabelCategory.Hits = 1
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
 				[]*GinkgoNode{
@@ -72,7 +79,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 									Spec: true,
 								},
 							},
-							MatchingCategory: NewQuarantineLabelCategory(),
+							MatchingCategory: quarantineLabelCategory,
 						},
 					},
 				}))
@@ -100,6 +107,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 		})
 
 		It("has sub node which is a spec", func() {
+			quarantineLabelCategory.Hits = 1
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
 				[]*GinkgoNode{
@@ -123,13 +131,14 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 									Spec: true,
 								},
 							},
-							MatchingCategory: NewQuarantineLabelCategory(),
+							MatchingCategory: quarantineLabelCategory,
 						},
 					},
 				}))
 		})
 
 		It("collects the test names", func() {
+			quarantineLabelCategory.Hits = 1
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
 				[]*GinkgoNode{
@@ -166,12 +175,13 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 									Spec: true,
 								},
 							},
-							MatchingCategory: NewQuarantineLabelCategory(),
+							MatchingCategory: quarantineLabelCategory,
 						},
 					}}))
 		})
 
 		It("collects the test names if parent contains the matching label", func() {
+			quarantineLabelCategory.Hits = 1
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
 				[]*GinkgoNode{
@@ -208,12 +218,13 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 									Spec: true,
 								},
 							},
-							MatchingCategory: NewQuarantineLabelCategory(),
+							MatchingCategory: quarantineLabelCategory,
 						},
 					}}))
 		})
 
 		It("doesnt collect the test names twice if parent and child contain the matching label", func() {
+			quarantineLabelCategory.Hits = 1
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
 				[]*GinkgoNode{
@@ -250,12 +261,13 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 									Spec: true,
 								},
 							},
-							MatchingCategory: NewQuarantineLabelCategory(),
+							MatchingCategory: quarantineLabelCategory,
 						},
 					}}))
 		})
 
 		It("does collect the test nodes twice if parent contains the matching label", func() {
+			quarantineLabelCategory.Hits = 2
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
 				[]*GinkgoNode{
@@ -296,7 +308,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 									Spec: true,
 								},
 							},
-							MatchingCategory: NewQuarantineLabelCategory(),
+							MatchingCategory: quarantineLabelCategory,
 						},
 						{
 							Path: []*GinkgoNode{
@@ -312,12 +324,14 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 									Spec: true,
 								},
 							},
-							MatchingCategory: NewQuarantineLabelCategory(),
+							MatchingCategory: quarantineLabelCategory,
 						}},
 				}))
 		})
 
 		It("does collect the test node if the expression would match more than a single node", func() {
+			category := NewPartialTestNameLabelCategory("parent first child")
+			category.Hits = 2
 			Expect(GetStatsFromGinkgoOutline(
 				NewTestNameDefaultConfig("parent first child"),
 				[]*GinkgoNode{
@@ -357,7 +371,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 									Spec: true,
 								},
 							},
-							MatchingCategory: NewPartialTestNameLabelCategory("parent first child"),
+							MatchingCategory: category,
 						},
 						{
 							Path: []*GinkgoNode{
@@ -372,7 +386,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 									Spec: true,
 								},
 							},
-							MatchingCategory: NewPartialTestNameLabelCategory("parent first child"),
+							MatchingCategory: category,
 						},
 					}}))
 		})
