@@ -132,6 +132,7 @@ tide:
     kubevirt/test-benchmarks: merge
     kubevirt/vm-console-proxy: merge
     kubevirt/sig-release: merge
+    kubevirt/kubernetes.kubevirt: merge
 
   queries:
   - repos:
@@ -192,6 +193,7 @@ tide:
     - kubevirt/must-gather
     - kubevirt/csi-driver
     - kubevirt/vm-console-proxy
+    - kubevirt/kubernetes.kubevirt
     labels:
     - lgtm
     - approved
@@ -419,6 +421,10 @@ branch-protection:
             main:
               protect: true
         sig-release:
+          branches:
+            main:
+              protect: true
+        kubernetes.kubevirt:
           branches:
             main:
               protect: true
