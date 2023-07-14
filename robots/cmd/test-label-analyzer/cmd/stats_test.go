@@ -47,13 +47,12 @@ var _ = Describe("stats", func() {
 		It("returns data from file stats", func() {
 			Expect(NewStatsHTMLData([]*test_label_analyzer.FileStats{
 				{
-					Config: simpleQuarantineConfig,
 					TestStats: &test_label_analyzer.TestStats{
 						SpecsTotal: 2,
 						MatchingSpecPaths: []*test_label_analyzer.PathStats{
 							{
 								Lines: nil,
-								GitBlameLines: []*git.GitBlameInfo{
+								GitBlameLines: []*git.BlameLine{
 									{
 										CommitID: "1742",
 										Author:   "johndoe@wherever.net",
@@ -68,26 +67,25 @@ var _ = Describe("stats", func() {
 					},
 					RemoteURL: remoteURL,
 				},
-			}).TestHTMLData).ToNot(BeEmpty())
+			}, ConfigOptions{}).TestHTMLData).ToNot(BeEmpty())
 		})
 
 		PIt("sorts data by date for matching line", func() { // TODO: need to repair the comparison, seems the regexp has state that hinders it
 			Expect(NewStatsHTMLData([]*test_label_analyzer.FileStats{
 				{
-					Config: simpleQuarantineConfig,
 					TestStats: &test_label_analyzer.TestStats{
 						SpecsTotal: 2,
 						MatchingSpecPaths: []*test_label_analyzer.PathStats{
 							{
 								Lines: nil,
-								GitBlameLines: []*git.GitBlameInfo{
+								GitBlameLines: []*git.BlameLine{
 									newGitBlameInfo(parseTime("2023-03-02T17:42:37Z"), "[QUARANTINE]"),
 								},
 								Path: nil,
 							},
 							{
 								Lines: nil,
-								GitBlameLines: []*git.GitBlameInfo{
+								GitBlameLines: []*git.BlameLine{
 									newGitBlameInfo(parseTime("2023-02-02T17:42:37Z"), "[QUARANTINE]"),
 								},
 								Path: nil,
@@ -96,13 +94,13 @@ var _ = Describe("stats", func() {
 					},
 					RemoteURL: remoteURL,
 				},
-			}).TestHTMLData).To(BeEquivalentTo(
+			}, ConfigOptions{}).TestHTMLData).To(BeEquivalentTo(
 				&StatsHTMLData{
 					TestHTMLData: []*TestHTMLData{
 						{
 							Config: simpleQuarantineConfig,
 							MatchingPath: &test_label_analyzer.PathStats{
-								GitBlameLines: []*git.GitBlameInfo{
+								GitBlameLines: []*git.BlameLine{
 									newGitBlameInfo(parseTime("2023-02-02T17:42:37Z"), "[QUARANTINE]"),
 								},
 							},
@@ -111,7 +109,7 @@ var _ = Describe("stats", func() {
 						{
 							Config: simpleQuarantineConfig,
 							MatchingPath: &test_label_analyzer.PathStats{
-								GitBlameLines: []*git.GitBlameInfo{
+								GitBlameLines: []*git.BlameLine{
 									newGitBlameInfo(parseTime("2023-03-02T17:42:37Z"), "[QUARANTINE]"),
 								},
 							},
@@ -125,8 +123,8 @@ var _ = Describe("stats", func() {
 
 })
 
-func newGitBlameInfo(t time.Time, line string) *git.GitBlameInfo {
-	return &git.GitBlameInfo{
+func newGitBlameInfo(t time.Time, line string) *git.BlameLine {
+	return &git.BlameLine{
 		CommitID: "1742",
 		Author:   "johndoe@wherever.net",
 		Date:     t,

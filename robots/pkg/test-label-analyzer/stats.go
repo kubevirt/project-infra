@@ -24,10 +24,15 @@ import (
 	"strings"
 )
 
+type TestFilesStats struct {
+	FilesStats []*FileStats `json:"files_stats"`
+
+	*Config `json:"config"`
+}
+
 // FileStats contains the information of the file whose outline was traversed and the results of the
 // traversal.
 type FileStats struct {
-	*Config    `json:"config"`
 	*TestStats `json:"test_stats"`
 
 	// RemoteURL is the absolute path to the file, most certainly an absolute URL inside a version control repository
@@ -55,7 +60,7 @@ type PathStats struct {
 	Lines []int `json:"lines"`
 
 	// GitBlameLines is the output of the blame command for each of the Lines
-	GitBlameLines []*git.GitBlameInfo `json:"git_blame_lines"`
+	GitBlameLines []*git.BlameLine `json:"git_blame_lines"`
 
 	// Path denotes the path to the spec that has been found to match
 	Path []*GinkgoNode `json:"path"`

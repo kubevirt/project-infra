@@ -19,15 +19,25 @@
 package test_label_analyzer
 
 import (
+	"kubevirt.io/project-infra/robots/pkg/git"
 	"regexp"
 	"strings"
 )
 
 // A LabelCategory defines a category of tests that share a common label either in their test name or as a Ginkgo label
 type LabelCategory struct {
-	Name            string  `json:"name"`
+
+	// Name holds a descriptive name for the category
+	Name string `json:"name"`
+
+	// TestNameLabelRE holds the regular expression for test names that match this category
 	TestNameLabelRE *Regexp `json:"test_name_label_re"`
-	GinkgoLabelRE   *Regexp `json:"ginkgo_label_re"`
+
+	// GinkgoLabelRE holds the regular expression for test labels that match this category
+	GinkgoLabelRE *Regexp `json:"ginkgo_label_re"`
+
+	// BlameLine contains the git blame information in case this label category has been created from a filter test file
+	*git.BlameLine `json:"git_blame_info"`
 }
 
 func (c *LabelCategory) String() string {

@@ -44,7 +44,7 @@
     </style>
 </head>
 <body>
-<h1>Overview of {{ (index $.Config.Categories 0).Name }} tests</h1>
+<h1>Overview of tests filtered by {{ if $.ConfigurationOptions.ConfigName }}{{ $.ConfigurationOptions.ConfigName }}{{ else if $.ConfigurationOptions.ConfigFile }}{{ $.ConfigurationOptions.ConfigFile }}{{ else if $.ConfigurationOptions.FilterTestNamesFile }}{{ $.ConfigurationOptions.FilterTestNamesFile }}{{ end }}</h1>
 <div>Total: {{ $.TestHTMLData | len }} tests</div>
 <table>
     {{- range $testHTMLDataElem := $.TestHTMLData }}
@@ -57,7 +57,7 @@
                     {{ if (index $testHTMLDataElem.ElementsMatchingConfig $index) -}}
                         <td class="date">
                             {{- if (index $testHTMLDataElem.Permalinks $index) -}}
-                                <a class="nounderline" title="{{ $gitBlame.CommitID }} by {{ $gitBlame.Author }}"
+                                <a class="nounderline" title="{{ if $testHTMLDataElem.MatchingPath.MatchingCategory.BlameLine }}{{ $testHTMLDataElem.MatchingPath.MatchingCategory.BlameLine.Date }} by {{ $testHTMLDataElem.MatchingPath.MatchingCategory.BlameLine.Author }}{{ else }}{{ $gitBlame.CommitID }} by {{ $gitBlame.Author }}{{ end }}"
                                    href="{{ index $testHTMLDataElem.Permalinks $index }}">{{ index $testHTMLDataElem.Age $index }}</a>
                             {{- end }}</td>
                     {{- else }}

@@ -22,14 +22,18 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"kubevirt.io/project-infra/robots/pkg/git"
 	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"regexp"
+	"time"
 )
 
 var _ = Describe("root tests", func() {
+
 	Context("getConfig", func() {
+
 		DescribeTable("returns a config",
-			func(options *configOptions, expectedConfig *test_label_analyzer.Config, expectedErr error) {
+			func(options *ConfigOptions, expectedConfig *test_label_analyzer.Config, expectedErr error) {
 				config, err := options.getConfig()
 				if err != nil {
 					Expect(err).To(BeEquivalentTo(expectedErr))
@@ -39,9 +43,9 @@ var _ = Describe("root tests", func() {
 				}
 			},
 			Entry("returns err if no config selected",
-				&configOptions{
-					configFile:         "",
-					configName:         "",
+				&ConfigOptions{
+					ConfigFile:         "",
+					ConfigName:         "",
 					ginkgoOutlinePaths: nil,
 					testFilePath:       "",
 					remoteURL:          "",
@@ -52,9 +56,9 @@ var _ = Describe("root tests", func() {
 				fmt.Errorf("no configuration found!"),
 			),
 			Entry("for simple RE",
-				&configOptions{
-					configFile:         "",
-					configName:         "",
+				&ConfigOptions{
+					ConfigFile:         "",
+					ConfigName:         "",
 					ginkgoOutlinePaths: nil,
 					testFilePath:       "",
 					remoteURL:          "",
@@ -65,9 +69,9 @@ var _ = Describe("root tests", func() {
 				nil,
 			),
 			Entry("for quarantine config",
-				&configOptions{
-					configFile:         "",
-					configName:         "quarantine",
+				&ConfigOptions{
+					ConfigFile:         "",
+					ConfigName:         "quarantine",
 					ginkgoOutlinePaths: nil,
 					testFilePath:       "",
 					remoteURL:          "",
@@ -78,10 +82,10 @@ var _ = Describe("root tests", func() {
 				nil,
 			),
 			Entry("for file with test names",
-				&configOptions{
-					configFile:          "",
-					filterTestNamesFile: "testdata/filter-test-names.json",
-					configName:          "",
+				&ConfigOptions{
+					ConfigFile:          "",
+					FilterTestNamesFile: "testdata/filter-test-names.json",
+					ConfigName:          "",
 					ginkgoOutlinePaths:  nil,
 					testFilePath:        "",
 					remoteURL:           "",
@@ -94,16 +98,37 @@ var _ = Describe("root tests", func() {
 							Name:            "flaky",
 							TestNameLabelRE: test_label_analyzer.NewRegexp("test name 1"),
 							GinkgoLabelRE:   nil,
+							BlameLine: &git.BlameLine{
+								CommitID: "716b4b979",
+								Author:   "Daniel Hiller",
+								Date:     mustParseDate("2023-07-12T17:12:11+02:00"),
+								LineNo:   3,
+								Line:     `    "id": "test name 1",`,
+							},
 						},
 						{
 							Name:            "also flaky",
 							TestNameLabelRE: test_label_analyzer.NewRegexp("test name 2"),
 							GinkgoLabelRE:   nil,
+							BlameLine: &git.BlameLine{
+								CommitID: "716b4b979",
+								Author:   "Daniel Hiller",
+								Date:     mustParseDate("2023-07-12T17:12:11+02:00"),
+								LineNo:   7,
+								Line:     `    "id": "test name 2",`,
+							},
 						},
 						{
 							Name:            "also flaky",
 							TestNameLabelRE: test_label_analyzer.NewRegexp(regexp.QuoteMeta("[sig-compute]test name 3")),
 							GinkgoLabelRE:   nil,
+							BlameLine: &git.BlameLine{
+								CommitID: "716b4b979",
+								Author:   "Daniel Hiller",
+								Date:     mustParseDate("2023-07-12T17:12:11+02:00"),
+								LineNo:   11,
+								Line:     `    "id": "[sig-compute]test name 3",`,
+							},
 						},
 					},
 				},
@@ -112,3 +137,9 @@ var _ = Describe("root tests", func() {
 		)
 	})
 })
+
+func mustParseDate(date string) time.Time {
+	parse, err := time.Parse(time.RFC3339, date)
+	Expect(err).ToNot(HaveOccurred())
+	return parse
+}

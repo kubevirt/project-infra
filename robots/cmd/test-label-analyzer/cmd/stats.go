@@ -118,7 +118,11 @@ func (t *TestHTMLData) initAge() {
 		panic("t.Age already initialized")
 	}
 	for _, gitLine := range t.MatchingPath.GitBlameLines {
-		t.Age = append(t.Age, testlabelanalyzer.Since(gitLine.Date))
+		date := gitLine.Date
+		if t.MatchingPath.MatchingCategory.BlameLine != nil {
+			date = t.MatchingPath.MatchingCategory.BlameLine.Date
+		}
+		t.Age = append(t.Age, testlabelanalyzer.Since(date))
 	}
 }
 
@@ -142,9 +146,9 @@ func (t *TestHTMLData) collectEarliestChangeDateFromGitLines() time.Time {
 }
 
 type StatsHTMLData struct {
-	*testlabelanalyzer.Config
-	TestHTMLData []*TestHTMLData
-	Date         time.Time
+	TestHTMLData         []*TestHTMLData
+	Date                 time.Time
+	ConfigurationOptions ConfigOptions
 }
 
 func (s *StatsHTMLData) Len() int {
@@ -152,6 +156,9 @@ func (s *StatsHTMLData) Len() int {
 }
 
 func (s *StatsHTMLData) Less(i, k int) bool {
+	if s.TestHTMLData[i].MatchingPath.MatchingCategory.BlameLine != nil && s.TestHTMLData[k].MatchingPath.MatchingCategory.BlameLine != nil {
+		return s.TestHTMLData[i].MatchingPath.MatchingCategory.BlameLine.Date.Before(s.TestHTMLData[k].MatchingPath.MatchingCategory.BlameLine.Date)
+	}
 	return s.TestHTMLData[i].collectEarliestChangeDateFromGitLines().Before(s.TestHTMLData[k].collectEarliestChangeDateFromGitLines())
 }
 
@@ -159,14 +166,12 @@ func (s *StatsHTMLData) Swap(i, k int) {
 	s.TestHTMLData[i], s.TestHTMLData[k] = s.TestHTMLData[k], s.TestHTMLData[i]
 }
 
-func NewStatsHTMLData(stats []*testlabelanalyzer.FileStats) *StatsHTMLData {
+func NewStatsHTMLData(stats []*testlabelanalyzer.FileStats, configurationOptions ConfigOptions) *StatsHTMLData {
 	statsHTMLData := &StatsHTMLData{
-		Date: time.Now(),
+		Date:                 time.Now(),
+		ConfigurationOptions: configurationOptions,
 	}
-	for index, fileStats := range stats {
-		if index == 0 {
-			statsHTMLData.Config = fileStats.Config
-		}
+	for _, fileStats := range stats {
 		for _, path := range fileStats.TestStats.MatchingSpecPaths {
 			statsHTMLData.TestHTMLData = append(statsHTMLData.TestHTMLData, newTestHTMLData(fileStats, path))
 		}
@@ -177,7 +182,6 @@ func NewStatsHTMLData(stats []*testlabelanalyzer.FileStats) *StatsHTMLData {
 
 func newTestHTMLData(fileStats *testlabelanalyzer.FileStats, path *testlabelanalyzer.PathStats) *TestHTMLData {
 	testHTMLData := &TestHTMLData{
-		Config:       fileStats.Config,
 		MatchingPath: path,
 		RemoteURL:    fileStats.RemoteURL,
 	}
@@ -187,7 +191,7 @@ func newTestHTMLData(fileStats *testlabelanalyzer.FileStats, path *testlabelanal
 	return testHTMLData
 }
 
-func runStatsCommand(configurationOptions configOptions) error {
+func runStatsCommand(configurationOptions ConfigOptions) error {
 	err := configurationOptions.validate()
 	if err != nil {
 		return err
@@ -217,12 +221,16 @@ func runStatsCommand(configurationOptions configOptions) error {
 			return err
 		}
 
-		testFilesStats, err := generateStatsFromOutlinesWithGitBlameInfo(configurationOptions, testFileOutlines, config)
+		filesStats, err := generateStatsFromOutlinesWithGitBlameInfo(configurationOptions, testFileOutlines, config)
 		if err != nil {
 			return err
 		}
 
 		if !configurationOptions.outputHTML {
+			testFilesStats := testlabelanalyzer.TestFilesStats{
+				FilesStats: filesStats,
+				Config:     config,
+			}
 			data, err := json.Marshal(testFilesStats)
 			if err != nil {
 				return err
@@ -236,7 +244,7 @@ func runStatsCommand(configurationOptions configOptions) error {
 			return err
 		}
 
-		statsHTMLData := NewStatsHTMLData(testFilesStats)
+		statsHTMLData := NewStatsHTMLData(filesStats, configurationOptions)
 		err = htmlTemplate.Execute(os.Stdout, statsHTMLData)
 		return err
 	}
@@ -244,7 +252,7 @@ func runStatsCommand(configurationOptions configOptions) error {
 	return fmt.Errorf("not implemented")
 }
 
-func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions configOptions, testFileOutlines map[string][]*testlabelanalyzer.GinkgoNode, config *testlabelanalyzer.Config) ([]*testlabelanalyzer.FileStats, error) {
+func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions ConfigOptions, testFileOutlines map[string][]*testlabelanalyzer.GinkgoNode, config *testlabelanalyzer.Config) ([]*testlabelanalyzer.FileStats, error) {
 	var testFilesStats []*testlabelanalyzer.FileStats
 	for testFilePath, testFileOutline := range testFileOutlines {
 		testStatsForFile := testlabelanalyzer.GetStatsFromGinkgoOutline(config, testFileOutline)
@@ -266,25 +274,24 @@ func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions configOption
 			}
 			matchingSpecPathes.Lines = lineNos
 
-			blameLines, err2 := git.GetGitBlameForFile(testFilePath, lineNos...)
-			if err2 != nil {
-				return nil, err2
+			gitBlameInfo, err3 := git.GetBlameLinesForFile(testFilePath, lineNos...)
+			if err3 != nil {
+				return nil, err3
 			}
-			matchingSpecPathes.GitBlameLines = git.ExtractGitBlameInfo(blameLines)
+			matchingSpecPathes.GitBlameLines = gitBlameInfo
 			if len(matchingSpecPathes.GitBlameLines) == 0 {
 				return nil, fmt.Errorf("git blame lines extraction failed!")
 			}
 		}
 		testFilesStats = append(testFilesStats, &testlabelanalyzer.FileStats{
 			RemoteURL: fmt.Sprintf("%s/%s", strings.TrimSuffix(configurationOptions.remoteURL, "/"), strings.TrimPrefix(strings.TrimPrefix(testFilePath, configurationOptions.testFilePath), "/")),
-			Config:    config,
 			TestStats: testStatsForFile,
 		})
 	}
 	return testFilesStats, nil
 }
 
-func getTestFileOutlines(configurationOptions configOptions) (map[string][]*testlabelanalyzer.GinkgoNode, error) {
+func getTestFileOutlines(configurationOptions ConfigOptions) (map[string][]*testlabelanalyzer.GinkgoNode, error) {
 	testFileOutlines := map[string][]*testlabelanalyzer.GinkgoNode{}
 	err := filepath.Walk(configurationOptions.testFilePath, func(path string, info fs.FileInfo, err error) error {
 		if info.IsDir() {
@@ -342,7 +349,7 @@ func getGinkgoOutlineFromFile(path string) ([]*testlabelanalyzer.GinkgoNode, err
 	return testOutline, nil
 }
 
-func collectStatsFromGinkgoOutlines(configurationOptions configOptions) (string, error) {
+func collectStatsFromGinkgoOutlines(configurationOptions ConfigOptions) (string, error) {
 
 	// collect the test outline data from the files and merge it into one slice
 	var testOutlines []*testlabelanalyzer.GinkgoNode

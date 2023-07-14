@@ -37,12 +37,12 @@ var _ = Describe("Extract git info", func() {
 		Entry("special chars in name", `0df3f3c5129 (João Vilaça 2023-03-22 10:45:53 +0000 55) var _ = Describe("[Serial][sig-monitoring]VM Monitoring", Serial, decorators.SigMonitoring, func() {`),
 	)
 
-	Context("ExtractGitBlameInfo", func() {
+	Context("extractBlameInfo", func() {
 
 		DescribeTable("extracts info as expected",
 
 			func(info *expectedInfo, line string) {
-				info.ExpectEquivalentTo(ExtractGitBlameInfo([]string{line})[0])
+				info.ExpectEquivalentTo(extractBlameInfo([]string{line})[0])
 			},
 
 			Entry("basic case line 1",
@@ -144,7 +144,7 @@ type expectedInfo struct {
 	expectedLine     string
 }
 
-func (e expectedInfo) ExpectEquivalentTo(actual *GitBlameInfo) {
+func (e expectedInfo) ExpectEquivalentTo(actual *BlameLine) {
 	Expect(actual.CommitID).To(BeEquivalentTo(e.expectedCommitID))
 	Expect(actual.Author).To(BeEquivalentTo(e.expectedAuthor))
 	Expect(actual.Date).To(BeEquivalentTo(e.expectedDate))
@@ -153,7 +153,7 @@ func (e expectedInfo) ExpectEquivalentTo(actual *GitBlameInfo) {
 }
 
 func mustParse(gitDateValue string) time.Time {
-	expectedDate, err := time.Parse(gitDateLayout, gitDateValue)
+	expectedDate, err := time.Parse(BlameDateLayout, gitDateValue)
 	Expect(err).ToNot(HaveOccurred())
 	return expectedDate
 }
