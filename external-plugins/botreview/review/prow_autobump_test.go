@@ -104,10 +104,8 @@ func TestProwAutobump_Review(t1 *testing.T) {
 				},
 			},
 			want: &ProwAutobumpResult{
-				notMatchingHunks: []*diff.Hunk{
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prowjob-crd_prowjob_customresourcedefinition.yaml"].Hunks[0],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prowjob-crd_prowjob_customresourcedefinition.yaml"].Hunks[1],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prowjob-crd_prowjob_customresourcedefinition.yaml"].Hunks[2],
+				notMatchingHunks: map[string][]*diff.Hunk{
+					"github/ci/prow-deploy/kustom/base/manifests/test_infra/current/prowjob-crd/prowjob_customresourcedefinition.yaml": diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prowjob-crd_prowjob_customresourcedefinition.yaml"].Hunks,
 				},
 			},
 		},

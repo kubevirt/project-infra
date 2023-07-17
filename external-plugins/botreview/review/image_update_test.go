@@ -70,9 +70,7 @@ func TestProwJobImageUpdate_Review(t1 *testing.T) {
 				},
 			},
 			want: &ProwJobImageUpdateResult{
-				notMatchingHunks: []*diff.Hunk{
-					diffFilePathesToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks[0],
-				},
+				notMatchingHunks: map[string][]*diff.Hunk{"github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml": {diffFilePathesToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks[0]}},
 			},
 		},
 	}

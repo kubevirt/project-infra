@@ -30,7 +30,7 @@ const (
 	prowAutobumpApproveComment    = `:thumbsup: This looks like a simple prow autobump.`
 	prowAutobumpDisapproveComment = `:thumbsdown: This doesn't look like a simple prow autobump.
 
-These are the suspicious hunks I found:
+I found suspicious hunks:
 `
 )
 
@@ -41,7 +41,7 @@ func init() {
 }
 
 type ProwAutobumpResult struct {
-	notMatchingHunks []*diff.Hunk
+	notMatchingHunks map[string][]*diff.Hunk
 }
 
 func (r ProwAutobumpResult) String() string {
@@ -49,8 +49,11 @@ func (r ProwAutobumpResult) String() string {
 		return prowAutobumpApproveComment
 	} else {
 		comment := prowAutobumpDisapproveComment
-		for _, hunk := range r.notMatchingHunks {
-			comment += fmt.Sprintf("\n```\n%s\n```", string(hunk.Body))
+		for fileName, hunks := range r.notMatchingHunks {
+			comment += fmt.Sprintf("\n%s", fileName)
+			for _, hunk := range hunks {
+				comment += fmt.Sprintf("\n```\n%s\n```", string(hunk.Body))
+			}
 		}
 		return comment
 	}
@@ -62,6 +65,30 @@ func (r ProwAutobumpResult) IsApproved() bool {
 
 func (r ProwAutobumpResult) CanMerge() bool {
 	return false
+}
+
+func (r *ProwAutobumpResult) AddReviewFailure(fileName string, hunks ...*diff.Hunk) {
+	if r.notMatchingHunks == nil {
+		r.notMatchingHunks = make(map[string][]*diff.Hunk)
+	}
+	if _, exists := r.notMatchingHunks[fileName]; !exists {
+		r.notMatchingHunks[fileName] = hunks
+	} else {
+		r.notMatchingHunks[fileName] = append(r.notMatchingHunks[fileName], hunks...)
+	}
+}
+
+func (r ProwAutobumpResult) ShortString() string {
+	if r.IsApproved() {
+		return prowAutobumpApproveComment
+	} else {
+		comment := prowAutobumpDisapproveComment
+		comment += fmt.Sprintf("\nFiles:")
+		for fileName := range r.notMatchingHunks {
+			comment += fmt.Sprintf("\n* `%s`", fileName)
+		}
+		return comment
+	}
 }
 
 type ProwAutobump struct {
@@ -87,9 +114,11 @@ func (t *ProwAutobump) Review() BotReviewResult {
 	result := &ProwAutobumpResult{}
 
 	for _, fileDiff := range t.relevantFileDiffs {
+		fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
 		for _, hunk := range fileDiff.Hunks {
-			if !prowAutobumpHunkBodyMatcher.Match(hunk.Body) {
-				result.notMatchingHunks = append(result.notMatchingHunks, hunk)
+			match := prowAutobumpHunkBodyMatcher.Match(hunk.Body)
+			if !match {
+				result.AddReviewFailure(fileName, hunk)
 			}
 		}
 	}

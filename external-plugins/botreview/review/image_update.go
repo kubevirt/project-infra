@@ -30,31 +30,29 @@ const (
 	prowJobImageUpdateApproveComment    = `:thumbsup: This looks like a simple prow job image bump.`
 	prowJobImageUpdateDisapproveComment = `:thumbsdown: This doesn't look like a simple prow job image bump.
 
-These are the suspicious hunks I found:
+I found suspicious hunks:
 `
 )
 
 var (
-	prowJobImageUpdateHunkBodyMatcher   *regexp.Regexp
-	prowJobReleaseBranchFileNameMatcher *regexp.Regexp
+	prowJobImageUpdateHunkBodyMatcher   = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+image: [^\s]+$[\n]^\+[\s]+image: [^\s]+)$`)
+	prowJobReleaseBranchFileNameMatcher = regexp.MustCompile(`.*\/[\w-]+-[0-9-\.]+\.yaml`)
 )
 
-func init() {
-	prowJobImageUpdateHunkBodyMatcher = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+image: [^\s]+$[\n]^\+[\s]+image: [^\s]+)$`)
-	prowJobReleaseBranchFileNameMatcher = regexp.MustCompile(`.*\/[\w-]+-[0-9-\.]+\.yaml`)
-}
-
 type ProwJobImageUpdateResult struct {
-	notMatchingHunks []*diff.Hunk
+	notMatchingHunks map[string][]*diff.Hunk
 }
 
 func (r ProwJobImageUpdateResult) String() string {
-	if len(r.notMatchingHunks) == 0 {
+	if r.IsApproved() {
 		return prowJobImageUpdateApproveComment
 	} else {
 		comment := prowJobImageUpdateDisapproveComment
-		for _, hunk := range r.notMatchingHunks {
-			comment += fmt.Sprintf("\n```\n%s\n```", string(hunk.Body))
+		for fileName, hunks := range r.notMatchingHunks {
+			comment += fmt.Sprintf("\nFile: `%s`", fileName)
+			for _, hunk := range hunks {
+				comment += fmt.Sprintf("\n```\n%s\n```", string(hunk.Body))
+			}
 		}
 		return comment
 	}
@@ -66,6 +64,23 @@ func (r ProwJobImageUpdateResult) IsApproved() bool {
 
 func (r ProwJobImageUpdateResult) CanMerge() bool {
 	return true
+}
+
+func (r *ProwJobImageUpdateResult) AddReviewFailure(fileName string, hunks ...*diff.Hunk) {
+
+}
+
+func (r ProwJobImageUpdateResult) ShortString() string {
+	if r.IsApproved() {
+		return prowJobImageUpdateApproveComment
+	} else {
+		comment := prowJobImageUpdateDisapproveComment
+		comment += fmt.Sprintf("\nFiles:")
+		for fileName := range r.notMatchingHunks {
+			comment += fmt.Sprintf("\n* `%s`", fileName)
+		}
+		return comment
+	}
 }
 
 type ProwJobImageUpdate struct {
@@ -98,9 +113,10 @@ func (t *ProwJobImageUpdate) Review() BotReviewResult {
 	result := &ProwJobImageUpdateResult{}
 
 	for _, fileDiff := range t.relevantFileDiffs {
+		fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
 		for _, hunk := range fileDiff.Hunks {
 			if !prowJobImageUpdateHunkBodyMatcher.Match(hunk.Body) {
-				result.notMatchingHunks = append(result.notMatchingHunks, hunk)
+				result.AddReviewFailure(fileName, hunk)
 			}
 		}
 	}

@@ -42,6 +42,12 @@ type BotReviewResult interface {
 
 	// CanMerge states if the pull request can get merged without any further action
 	CanMerge() bool
+
+	// AddReviewFailure stores the data of a hunk of code that failed review
+	AddReviewFailure(fileName string, hunks ...*diff.Hunk)
+
+	// ShortString provides a short description of the review result
+	ShortString() string
 }
 
 func newPossibleReviewTypes() []KindOfChange {
@@ -82,6 +88,14 @@ func (n BasicResult) IsApproved() bool {
 
 func (n BasicResult) CanMerge() bool {
 	return false
+}
+
+func (n BasicResult) AddReviewFailure(fileName string, hunks ...*diff.Hunk) {
+	panic("not implemented")
+}
+
+func (n BasicResult) ShortString() string {
+	return n.String()
 }
 
 type Reviewer struct {
@@ -185,9 +199,11 @@ func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, gith
 	}
 	isApproved, canMerge := true, true
 	botReviewComments := make([]string, 0, len(botReviewResults))
+	shortBotReviewComments := make([]string, 0, len(botReviewResults))
 	for _, reviewResult := range botReviewResults {
 		isApproved, canMerge = isApproved && reviewResult.IsApproved(), canMerge && reviewResult.CanMerge()
 		botReviewComments = append(botReviewComments, fmt.Sprintf("%s", reviewResult))
+		shortBotReviewComments = append(shortBotReviewComments, fmt.Sprintf(reviewResult.ShortString()))
 	}
 	approveLabels := unapprovePRComment
 	if isApproved {
@@ -204,6 +220,15 @@ func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, gith
 		approveLabels,
 		holdComment,
 	)
+	if len(botReviewComment) > 2<<15 {
+		botReviewComment = fmt.Sprintf(
+			botReviewCommentPattern,
+			botUser.Login,
+			"* "+strings.Join(shortBotReviewComments, "\n* "),
+			approveLabels,
+			holdComment,
+		)
+	}
 	if !r.dryRun {
 		err = githubClient.CreateComment(r.org, r.repo, r.num, botReviewComment)
 		if err != nil {

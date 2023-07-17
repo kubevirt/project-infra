@@ -83,7 +83,7 @@ func TestBumpKubevirtCI_Review(t1 *testing.T) {
 				},
 			},
 			want: &BumpKubevirtCIResult{
-				notMatchingHunks: diffFilePathesToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks,
+				notMatchingHunks: map[string][]*diff.Hunk{"github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml": diffFilePathesToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks},
 			},
 		},
 	}
