@@ -31,7 +31,7 @@ import (
 // BlameDateLayout is the layout that is used to parse git blame dates
 const BlameDateLayout = "2006-01-02 15:04:05 -0700"
 
-var gitBlameRegex = regexp.MustCompile(`^([0-9a-f]+)(\s+\S+)?\s+\(([\S ]+)\s([0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}\s[-+][0-9]{4})\s+([0-9]+)\)\s(.*)$`)
+var gitBlameRegex = regexp.MustCompile(`^(\^?[0-9a-f]+)(\s+\S+)?\s+\(([\S ]+)\s([0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}\s[-+][0-9]{4})\s+([0-9]+)\)\s(.*)$`)
 
 // BlameLine holds the record of a line of data that the git blame command provides
 type BlameLine struct {
@@ -91,12 +91,12 @@ func getBlameForFile(testFilePath string, lineNos ...int) ([]string, error) {
 		switch err.(type) {
 		case *exec.ExitError:
 			e := err.(*exec.ExitError)
-			return nil, fmt.Errorf("exec %v failed: %v", command, e.Stderr)
+			return nil, fmt.Errorf("exec %s failed: %s", command, e.Stderr)
 		case *exec.Error:
 			e := err.(*exec.Error)
-			return nil, fmt.Errorf("exec %v failed: %v", command, e)
+			return nil, fmt.Errorf("exec %s failed: %s", command, e)
 		default:
-			return nil, fmt.Errorf("exec %v failed: %v", command, err)
+			return nil, fmt.Errorf("exec %s failed: %s", command, err)
 		}
 	}
 	blameLines := strings.Split(string(output), "\n")

@@ -35,6 +35,9 @@ var _ = Describe("Extract git info", func() {
 		Entry("basic 1", "749cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200  26) var _ = Describe(\"VM Console Proxy Operand\", func() {"),
 		Entry("basic 2", `a32051d928 tests/operator_test.go     (fossedihelm   2022-11-30 09:45:57 +0100  111) var _ = Describe("[Serial][sig-operator]Operator", Serial, decorators.SigOperator, func() {`),
 		Entry("special chars in name", `0df3f3c5129 (João Vilaça 2023-03-22 10:45:53 +0000 55) var _ = Describe("[Serial][sig-monitoring]VM Monitoring", Serial, decorators.SigMonitoring, func() {`),
+
+		// It may happen for shallow clones that boundary commits are encountered
+		Entry("git boundary commit containing caret", "^49cf0488 (Ben Oukhanov 2023-02-15 18:24:49 +0200  26) var _ = Describe(\"VM Console Proxy Operand\", func() {"),
 	)
 
 	Context("extractBlameInfo", func() {
