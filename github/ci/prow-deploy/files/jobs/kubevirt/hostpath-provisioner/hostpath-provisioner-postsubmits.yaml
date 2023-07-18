@@ -3,7 +3,7 @@ postsubmits:
   - name: push-release-hostpath-provisioner-images
     branches:
     - release-v\d+\.\d+
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-workloads
     always_run: true
     optional: false
     skip_report: true
@@ -11,8 +11,8 @@ postsubmits:
       testgrid-create-test-group: "false"
     decorate: true
     decoration_config:
-      timeout: 1h
-      grace_period: 5m
+      timeout: 3h
+      grace_period: 15m
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
@@ -45,7 +45,7 @@ postsubmits:
   - name: push-latest-hostpath-provisioner-images
     branches:
     - main
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-workloads
     always_run: true
     optional: false
     skip_report: true
@@ -53,8 +53,8 @@ postsubmits:
       testgrid-create-test-group: "false"
     decorate: true
     decoration_config:
-      timeout: 1h
-      grace_period: 5m
+      timeout: 3h
+      grace_period: 15m
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
