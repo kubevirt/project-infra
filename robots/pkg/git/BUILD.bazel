@@ -9,7 +9,10 @@ go_library(
 
 go_test(
     name = "go_default_test",
-    srcs = ["git_test.go"],
+    srcs = [
+        "git_test.go",
+        "test_suite_test.go",
+    ],
     embed = [":go_default_library"],
     deps = [
         "@com_github_onsi_ginkgo_v2//:go_default_library",
