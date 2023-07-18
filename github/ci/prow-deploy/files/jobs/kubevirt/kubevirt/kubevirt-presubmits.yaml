@@ -1600,8 +1600,6 @@ presubmits:
           value: k8s-1.26-centos9-sig-storage
         - name: KUBEVIRT_PSA
           value: "true"
-        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
         name: ""
         resources:
@@ -1844,8 +1842,6 @@ presubmits:
         - name: TARGET
           value: k8s-1.27-sig-storage
         - name: KUBEVIRT_PSA
-          value: "true"
-        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
         name: ""
