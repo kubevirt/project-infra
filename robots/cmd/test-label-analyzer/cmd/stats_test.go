@@ -32,7 +32,7 @@ var _ = Describe("stats", func() {
 	Context("getGinkgoOutlineFromFile", func() {
 
 		It("generates outline from file", func() {
-			outline, err := getGinkgoOutlineFromFile("testdata/simple_test.go_test")
+			outline, err := getGinkgoOutlineFromFile("testdata/simple_test.ginkgo")
 			Expect(err).ToNot(HaveOccurred())
 			Expect(outline).ToNot(BeNil())
 		})
