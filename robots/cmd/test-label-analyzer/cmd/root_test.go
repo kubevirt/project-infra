@@ -24,6 +24,8 @@ import (
 	. "github.com/onsi/gomega"
 	"kubevirt.io/project-infra/robots/pkg/git"
 	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
+	"os"
+	"path/filepath"
 	"regexp"
 	"time"
 )
@@ -81,60 +83,56 @@ var _ = Describe("root tests", func() {
 				test_label_analyzer.NewQuarantineDefaultConfig(),
 				nil,
 			),
-			Entry("for file with test names",
-				&ConfigOptions{
-					ConfigFile:          "",
-					FilterTestNamesFile: "testdata/filter-test-names.json",
-					ConfigName:          "",
-					ginkgoOutlinePaths:  nil,
-					testFilePath:        "",
-					remoteURL:           "",
-					testNameLabelRE:     "",
-					outputHTML:          false,
-				},
-				&test_label_analyzer.Config{
-					Categories: []*test_label_analyzer.LabelCategory{
-						{
-							Name:            "flaky",
-							TestNameLabelRE: test_label_analyzer.NewRegexp("test name 1"),
-							GinkgoLabelRE:   nil,
-							BlameLine: &git.BlameLine{
-								CommitID: "981a5b7f3",
-								Author:   "Daniel Hiller",
-								Date:     mustParseDate("2023-07-12T17:12:11+02:00"),
-								LineNo:   3,
-								Line:     `    "id": "test name 1",`,
-							},
-						},
-						{
-							Name:            "also flaky",
-							TestNameLabelRE: test_label_analyzer.NewRegexp("test name 2"),
-							GinkgoLabelRE:   nil,
-							BlameLine: &git.BlameLine{
-								CommitID: "981a5b7f3",
-								Author:   "Daniel Hiller",
-								Date:     mustParseDate("2023-07-12T17:12:11+02:00"),
-								LineNo:   7,
-								Line:     `    "id": "test name 2",`,
-							},
-						},
-						{
-							Name:            "also flaky",
-							TestNameLabelRE: test_label_analyzer.NewRegexp(regexp.QuoteMeta("[sig-compute]test name 3")),
-							GinkgoLabelRE:   nil,
-							BlameLine: &git.BlameLine{
-								CommitID: "981a5b7f3",
-								Author:   "Daniel Hiller",
-								Date:     mustParseDate("2023-07-12T17:12:11+02:00"),
-								LineNo:   11,
-								Line:     `    "id": "[sig-compute]test name 3",`,
-							},
-						},
+		)
+
+		It("loads for file with test names", func() {
+
+			const gitTestFileName = "testdata/filter-test-names.json"
+
+			var gitBlameLines []*git.BlameLine
+			var err error
+			workDir, err := os.Getwd()
+			Expect(err).ToNot(HaveOccurred())
+			gitBlameLines, err = git.GetBlameLinesForFile(filepath.Join(workDir, gitTestFileName))
+			Expect(err).ToNot(HaveOccurred())
+
+			options := &ConfigOptions{
+				ConfigFile:          "",
+				FilterTestNamesFile: gitTestFileName,
+				ConfigName:          "",
+				ginkgoOutlinePaths:  nil,
+				testFilePath:        "",
+				remoteURL:           "",
+				testNameLabelRE:     "",
+				outputHTML:          false,
+			}
+			expectedConfig := &test_label_analyzer.Config{
+				Categories: []*test_label_analyzer.LabelCategory{
+					{
+						Name:            "flaky",
+						TestNameLabelRE: test_label_analyzer.NewRegexp("test name 1"),
+						GinkgoLabelRE:   nil,
+						BlameLine:       gitBlameLines[2],
+					},
+					{
+						Name:            "also flaky",
+						TestNameLabelRE: test_label_analyzer.NewRegexp("test name 2"),
+						GinkgoLabelRE:   nil,
+						BlameLine:       gitBlameLines[6],
+					},
+					{
+						Name:            "also flaky",
+						TestNameLabelRE: test_label_analyzer.NewRegexp(regexp.QuoteMeta("[sig-compute]test name 3")),
+						GinkgoLabelRE:   nil,
+						BlameLine:       gitBlameLines[10],
 					},
 				},
-				nil,
-			),
-		)
+			}
+
+			config, err := options.getConfig()
+			Expect(config).To(BeEquivalentTo(expectedConfig))
+			Expect(err).ToNot(HaveOccurred())
+		})
 	})
 })
 
