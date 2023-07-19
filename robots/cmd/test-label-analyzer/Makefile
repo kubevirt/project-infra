@@ -9,3 +9,6 @@ test:
 
 build:
 	bazel build //robots/cmd/test-label-analyzer/...
+
+install-ginkgo:
+	go install github.com/onsi/ginkgo/v2/ginkgo

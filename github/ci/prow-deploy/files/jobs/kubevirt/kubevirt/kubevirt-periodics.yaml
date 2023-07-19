@@ -1963,7 +1963,7 @@ periodics:
       - /bin/bash
       - -ce
       - |
-        go install github.com/onsi/ginkgo/v2/ginkgo
+        make -C robots/cmd/test-label-analyzer install-ginkgo
         export PATH="$PATH:/root/go/bin"
         output_file_name="/tmp/index.html"
         git_commit=$(cd ../kubevirt && git --no-pager log -1 --format=%H | tr -d '\n')

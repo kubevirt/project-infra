@@ -28,13 +28,19 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
+      - image: quay.io/kubevirtci/golang:v20230626-e1b7af2
         command:
-          - "/bin/bash"
-          - "-c"
-          - |
-            make gazelle-update-repos
-            bazelisk test //robots/...
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        - |
+          make -C robots/cmd/test-label-analyzer install-ginkgo
+          export PATH="$PATH:/root/go/bin"
+          make gazelle-update-repos
+          bazelisk test //robots/...
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.19"
         resources:
           requests:
             memory: "8Gi"
