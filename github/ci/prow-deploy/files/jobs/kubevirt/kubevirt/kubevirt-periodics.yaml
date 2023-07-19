@@ -2093,10 +2093,12 @@ periodics:
       - -ce
       - |
         output_file=/tmp/flake-stats-14days.html
+        copy_file="flake-stats-14days-$(date +%Y-%m-%d).html"
         go run ./robots/cmd/flake-stats/main.go \
           --output-file ${output_file} \
           --overwrite-output-file=true
         gsutil cp ${output_file} gs://kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/
+        gsutil cp ${output_file} gs://kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/${copy_file}
       command:
       - /bin/sh
       env:
