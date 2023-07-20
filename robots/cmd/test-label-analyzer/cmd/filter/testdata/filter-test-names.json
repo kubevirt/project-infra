@@ -1,0 +1,14 @@
+[
+  {
+    "id": "should reach the vmi",
+    "reason": "flaky test - Tracked in https://github.com/kubevirt/kubevirt/issues/42"
+  },
+  {
+    "id": "with a dedicated migration network Should migrate over that network",
+    "reason": "flaky test - Tracked in https://github.com/kubevirt/kubevirt/issues/37"
+  },
+  {
+    "id": "should fail if flavor and VMI define CPU",
+    "reason": "flaky test - Tracked in https://github.com/kubevirt/kubevirt/issues/17"
+  }
+]
