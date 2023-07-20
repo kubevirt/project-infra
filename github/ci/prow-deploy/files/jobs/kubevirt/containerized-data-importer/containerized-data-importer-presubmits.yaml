@@ -305,6 +305,44 @@ presubmits:
           resources:
             requests:
               memory: "29Gi"
+  - name: pull-containerized-data-importer-e2e-ceph-wffc
+    skip_branches:
+      - release-v1.28
+      - release-v1.34
+      - release-v1.38
+      - release-v1.43
+      - release-v1.49
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 6h
+      grace_period: 10m
+    max_concurrency: 6
+    cluster: kubevirt-prow-workloads
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "automation/ceph-wffc.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-upg
     skip_branches:
       - release-v\d+\.\d+
