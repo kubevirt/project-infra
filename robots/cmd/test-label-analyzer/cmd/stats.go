@@ -55,7 +55,7 @@ Can either emit json or html format data about the targeted tests.
 var statsHTMLTemplate string
 
 func init() {
-	rootCmd.AddCommand(statsCmd)
+	RootCmd.AddCommand(statsCmd)
 }
 
 type TestHTMLData struct {

@@ -21,12 +21,14 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"regexp"
+
 	"github.com/spf13/cobra"
+	"kubevirt.io/project-infra/robots/cmd/test-label-analyzer/cmd/filter"
 	"kubevirt.io/project-infra/robots/pkg/git"
 	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
-	"os"
-	"regexp"
 )
 
 // ConfigOptions contains the set of options that the stats command provides
@@ -167,7 +169,7 @@ var configNamesToConfigs = map[string]*testlabelanalyzer.Config{
 
 const shortRootDescription = "Collects a set of tools for generating statistics and filter strings over sets of Ginkgo tests"
 
-var rootCmd = &cobra.Command{
+var RootCmd = &cobra.Command{
 	Use:   "test-label-analyzer",
 	Short: shortRootDescription,
 	Long: shortRootDescription + `
@@ -176,23 +178,25 @@ Supports predefined configuration profiles and custom configurations to define w
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.ConfigFile, "config-file", "", "config file defining categories of tests")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.ConfigFile, "config-file", "", "config file defining categories of tests")
 	configNames := []string{}
 	for configName := range configNamesToConfigs {
 		configNames = append(configNames, configName)
 	}
-	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.ConfigName, "config-name", "", fmt.Sprintf("config name defining categories of tests (possible values: %v)", configNames))
-	rootCmd.PersistentFlags().StringArrayVar(&rootConfigOpts.ginkgoOutlinePaths, "test-outline-filepath", nil, "path to test outline file to be analyzed")
-	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.FilterTestNamesFile, "filter-test-names-file", "", "file path to filter file like quarantined_tests.json or dont_run_tests.json")
-	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testFilePath, "test-file-path", "", "path containing tests to be analyzed")
-	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.remoteURL, "remote-url", "", "remote path to tests to be analyzed")
-	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testNameLabelRE, "test-name-label-re", "", "regular expression for test names to match against")
-	rootCmd.PersistentFlags().BoolVar(&rootConfigOpts.outputHTML, "output-html", false, "defines whether HTML output should be generated, default is JSON")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.ConfigName, "config-name", "", fmt.Sprintf("config name defining categories of tests (possible values: %v)", configNames))
+	RootCmd.PersistentFlags().StringArrayVar(&rootConfigOpts.ginkgoOutlinePaths, "test-outline-filepath", nil, "path to test outline file to be analyzed")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.FilterTestNamesFile, "filter-test-names-file", "", "file path to filter file like quarantined_tests.json or dont_run_tests.json")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.testFilePath, "test-file-path", "", "path containing tests to be analyzed")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.remoteURL, "remote-url", "", "remote path to tests to be analyzed")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.testNameLabelRE, "test-name-label-re", "", "regular expression for test names to match against")
+	RootCmd.PersistentFlags().BoolVar(&rootConfigOpts.outputHTML, "output-html", false, "defines whether HTML output should be generated, default is JSON")
+
+	RootCmd.AddCommand(filter.Command())
 }

@@ -29,7 +29,6 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
-	"time"
 )
 
 var _ = Describe("root tests", func() {
@@ -169,9 +168,3 @@ var _ = Describe("root tests", func() {
 		})
 	})
 })
-
-func mustParseDate(date string) time.Time {
-	parse, err := time.Parse(time.RFC3339, date)
-	Expect(err).ToNot(HaveOccurred())
-	return parse
-}

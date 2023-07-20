@@ -16,34 +16,35 @@
  * Copyright 2023 Red Hat, Inc.
  */
 
-package cmd
+package filter
 
 import (
 	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
-// filterCmd represents the filter command
-var filterCmd = &cobra.Command{
+// rootCmd represents the filter command
+var rootCmd = &cobra.Command{
 	Use:   "filter",
-	Short: "A brief description of your command", // TODO
-	Long:  `TODO`,                                // TODO
+	Short: "Filters the output of commands",
+	Long:  `TODO`, // TODO
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("filter called")
 	},
 }
 
-func init() {
-	rootCmd.AddCommand(filterCmd)
+func Command() *cobra.Command {
+	return rootCmd
+}
 
+func init() {
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// filterCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// rootCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// filterCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
