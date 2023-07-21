@@ -643,7 +643,7 @@ postsubmits:
       cluster: ibm-prow-jobs
       spec:
         containers:
-        - image: gcr.io/k8s-prow/configurator:v20230713-f0e2c76268
+        - image: gcr.io/k8s-prow/configurator:v20230718-0a86ec6744
           command:
           - /ko-app/configurator
           args:
