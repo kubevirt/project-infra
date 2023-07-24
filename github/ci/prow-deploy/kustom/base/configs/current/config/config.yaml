@@ -122,6 +122,7 @@ tide:
     kubevirt/kubevirt-ssp-operator: squash
     kubevirt/csi-driver: squash
     kubevirt/ssp-operator: merge
+    kubevirt/managed-tenant-quota: merge
     kubevirt/must-gather: squash
     kubevirt/user-guide: squash
     kubevirt/terraform-provider-kubevirt: merge
@@ -190,6 +191,7 @@ tide:
     - kubevirt/kubevirt-template-validator
     - kubevirt/kubevirt-ssp-operator
     - kubevirt/ssp-operator
+    - kubevirt/managed-tenant-quota
     - kubevirt/must-gather
     - kubevirt/csi-driver
     - kubevirt/vm-console-proxy
