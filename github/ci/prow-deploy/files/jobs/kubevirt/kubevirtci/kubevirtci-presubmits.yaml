@@ -237,13 +237,12 @@ presubmits:
         name: devices
   - always_run: false
     skip_report: false
-    cluster: kubevirt-prow-workloads
+    cluster: prow-arm64-workloads-2 
     decorate: true
     decoration_config:
       timeout: 4h
     run_if_changed: cluster-provision/images/vm-image-builder/.*\.sh$ | cluster-provision/images/vm-image-builder/fedora-with-test-tooling/.*
     labels:
-      preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-fedora-with-test-tooling
@@ -271,8 +270,6 @@ presubmits:
           readOnly: true
         - mountPath: /dev
           name: devices
-      nodeSelector:
-        type: bare-metal-external
       volumes:
       - hostPath:
           path: /lib/modules
