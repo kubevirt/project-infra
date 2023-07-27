@@ -1,0 +1,31 @@
+presubmits:
+  kubevirt/managed-tenant-quota:
+  - name: pull-mtq-unit-test
+    skip_branches:
+      - release-v1.1
+    cluster: ibm-prow-jobs
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
