@@ -2,7 +2,7 @@ presubmits:
   kubevirt/managed-tenant-quota:
   - name: pull-mtq-unit-test
     skip_branches:
-      - release-v1.1
+      - release-v\d+\.\d+
     cluster: ibm-prow-jobs
     annotations:
       fork-per-release: "true"
