@@ -684,9 +684,6 @@ func GenerateBaseCommit(gitrepo *localgit.LocalGit) string {
 					{
 						JobBase: config.JobBase{
 							Name: "modified-job",
-							Annotations: map[string]string{
-								"rehearsal.allowed": "true",
-							},
 							Spec: &v1.PodSpec{
 								Containers: []v1.Container{
 									{
@@ -699,9 +696,6 @@ func GenerateBaseCommit(gitrepo *localgit.LocalGit) string {
 					{
 						JobBase: config.JobBase{
 							Name: "existing-job",
-							Annotations: map[string]string{
-								"rehearsal.allowed": "true",
-							},
 							Spec: &v1.PodSpec{
 								Containers: []v1.Container{
 									{
@@ -758,9 +752,6 @@ func NewConfig(presubmits ...config.Presubmit) *config.Config {
 
 var existingJobBase = config.JobBase{
 	Name: "existing-job",
-	Annotations: map[string]string{
-		"rehearsal.allowed": "true",
-	},
 	Spec: &v1.PodSpec{
 		Containers: []v1.Container{
 			{
@@ -786,9 +777,6 @@ func BaseExistingJob() config.Presubmit {
 
 var modifiedJobBase = config.JobBase{
 	Name: "modified-job",
-	Annotations: map[string]string{
-		"rehearsal.allowed": "true",
-	},
 	Spec: &v1.PodSpec{
 		Containers: []v1.Container{
 			{
