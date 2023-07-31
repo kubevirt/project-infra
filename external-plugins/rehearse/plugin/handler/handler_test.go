@@ -34,7 +34,6 @@ var _ = Describe("Events", func() {
 				nil,
 				"prow-config.yaml",
 				"",
-				true,
 				gitClientFactory)
 		})
 

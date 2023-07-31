@@ -64,7 +64,6 @@ type GitHubEventsHandler struct {
 	gitClientFactory gitv2.ClientFactory
 	prowConfigPath   string
 	jobsConfigBase   string
-	alwaysRun        bool
 }
 
 // NewGitHubEventsHandler returns a new github events handler
@@ -74,7 +73,6 @@ func NewGitHubEventsHandler(
 	ghClient githubClientInterface,
 	prowConfigPath string,
 	jobsConfigBase string,
-	alwaysRun bool,
 	gitClientFactory gitv2.ClientFactory) *GitHubEventsHandler {
 
 	return &GitHubEventsHandler{
@@ -83,7 +81,6 @@ func NewGitHubEventsHandler(
 		ghClient:         ghClient,
 		prowConfigPath:   prowConfigPath,
 		jobsConfigBase:   jobsConfigBase,
-		alwaysRun:        alwaysRun,
 		gitClientFactory: gitClientFactory,
 	}
 }
@@ -183,10 +180,6 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 			h.logger.Warnf("Recovered during handling of a pull request event: %s", event.GUID)
 		}
 	}()
-
-	if !h.alwaysRun {
-		return
-	}
 
 	log.Infof("Handling updated pull request: %s [%d]", event.Repo.FullName, event.PullRequest.Number)
 

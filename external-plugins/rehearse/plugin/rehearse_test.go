@@ -42,7 +42,6 @@ var _ = Describe("Rehearse", func() {
 				gh,
 				"prowconfig.yaml",
 				"",
-				true,
 				gitClientFactory)
 
 			handlerEvent, err := makeHandlerPullRequestEvent(event)
@@ -255,56 +254,6 @@ var _ = Describe("Rehearse", func() {
 
 			})
 
-			// TODO - What is value of aways run option?
-			PIt("Should not act on pull request event if always run is set to false", func() {
-
-				makeRepoWithEmptyProwConfig(gitrepo)
-
-				baseref := GenerateBaseCommit(gitrepo)
-
-				By("Generating a head commit with a modified job")
-				headref := GenerateConfigCommit(gitrepo,
-					NewConfig(BaseExistingJob(), ModifiedJob()),
-				)
-
-				gh := &fakegithub.FakeClient{}
-
-				testuser := "testuser"
-				By("Registering a user to the fake github client", func() {
-					gh.OrgMembers = map[string][]string{
-						org: {
-							testuser,
-						},
-					}
-				})
-				event := NewGHPullRequestEvent(gh, baseref, headref)
-
-				By("Sending the event to the rehearsal server", func() {
-
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					fakelog := logrus.New()
-					eventsHandler := handler.NewGitHubEventsHandler(
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						false,
-						gitClientFactory)
-
-					handlerEvent, err := makeHandlerPullRequestEvent(event)
-					Expect(err).ShouldNot(HaveOccurred())
-					eventsHandler.Handle(handlerEvent)
-
-					By("Inspecting the response and the actions on the client", func() {
-						Expect(prowc.Actions()).Should(HaveLen(0))
-					})
-				})
-
-			})
-
 		})
 
 		Context("ok-to-test label is set", func() {
@@ -373,7 +322,6 @@ var _ = Describe("Rehearse", func() {
 				gh,
 				"prowconfig.yaml",
 				"",
-				true,
 				gitClientFactory)
 
 			handlerEvent, err := makeHandlerIssueCommentEvent(event)

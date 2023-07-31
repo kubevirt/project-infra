@@ -35,7 +35,6 @@ type options struct {
 	jobsConfigBase string
 	kubeconfig     string
 	jobsNs         string
-	alwaysRun      bool
 	cacheDir       string
 	github         prowflagutil.GitHubOptions
 }
@@ -102,10 +101,6 @@ func gatherOptions() *options {
 		"jobs-namespace",
 		"",
 		"The namespace in which Prow jobs should be created.")
-	fs.BoolVar(&o.alwaysRun,
-		"always-run",
-		false,
-		"If set to true, will act on new and updated PRs. Otherwise, act only on comments.")
 	fs.StringVar(&o.cacheDir,
 		"cache-dir",
 		"",
@@ -158,7 +153,6 @@ func main() {
 		githubClient,
 		opts.prowConfigPath,
 		opts.jobsConfigBase,
-		opts.alwaysRun,
 		gitClientFactory)
 
 	eventsServer := server.NewGitHubEventsServer(secret.GetTokenGenerator(opts.hmacSecretFile), eventsHandler)
