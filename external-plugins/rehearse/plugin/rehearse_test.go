@@ -447,17 +447,23 @@ var _ = Describe("Rehearse", func() {
 
 			})
 
-			//TODO - FIX me
-			PIt("Should not generate Prow jobs if a job is not permitted", func() {
+			It("Should not generate Prow jobs if a job is not permitted", func() {
 
 				makeRepoWithEmptyProwConfig(gitrepo)
 
 				baseref := GenerateBaseCommit(gitrepo)
 
 				By("Generating a head commit with a modified job")
-				// TODO FIX ME
+
 				headref := GenerateConfigCommit(gitrepo,
-					NewConfig(BaseExistingJob()),
+					NewConfig(ModifiedJob(func(jb *config.JobBase) {
+						if jb.Annotations == nil {
+							jb.Annotations = make(map[string]string)
+						}
+						jb.Annotations["rehearsal.restricted"] = "true"
+					}),
+						BaseExistingJob(),
+					),
 				)
 
 				gh := &fakegithub.FakeClient{}
@@ -811,8 +817,11 @@ func BaseModifiedJob() config.Presubmit {
 	}
 }
 
-func ModifiedJob() config.Presubmit {
+func ModifiedJob(options ...func(*config.JobBase)) config.Presubmit {
 	job := BaseModifiedJob()
 	job.Spec.Containers[0].Image = "modified"
+	for _, f := range options {
+		f(&job.JobBase)
+	}
 	return job
 }
