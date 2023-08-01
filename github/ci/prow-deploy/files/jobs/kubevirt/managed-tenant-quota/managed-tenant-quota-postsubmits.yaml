@@ -1,0 +1,196 @@
+postsubmits:
+  kubevirt/managed-tenant-quota:
+  - name: push-release-mtq-images
+    branches:
+    - release-v\d+\.\d+
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          # Only push images on tags
+          [ -z "$(git tag --points-at HEAD | head -1)" ] ||
+          DOCKER_TAG="$(git tag --points-at HEAD | head -1)" make push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: push-latest-mtq-images
+    branches:
+    - main
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          DOCKER_TAG="latest" make push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: push-mtq-tag
+    branches:
+    - release-v\d+\.\d+
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "false"
+      preset-github-credentials: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        - name: GH_CLI_VERSION
+          value: "1.5.0"
+        - name: GITHUB_TOKEN_PATH
+          value: /etc/github/oauth
+        - name: GITHUB_REPOSITORY
+          value: kubevirt/managed-tenant-quota
+        - name: GIT_USER_NAME
+          value: kubevirt-bot
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
+        - ./automation/release.sh
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: push-mtq-main
+    branches:
+    - main
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "false"
+      preset-github-credentials: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        - name: GH_CLI_VERSION
+          value: "1.5.0"
+        - name: GITHUB_TOKEN_PATH
+          value: /etc/github/oauth
+        - name: GITHUB_REPOSITORY
+          value: kubevirt/managed-tenant-quota
+        - name: GIT_USER_NAME
+          value: kubevirt-bot
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
+        - ./automation/postsubmit-main.sh
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: push-mtq-builder
+    branches:
+    - main
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-gcs-credentials: "true"
+      preset-github-credentials: "true"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-ce"
+          - |
+            cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+            MTQ_CONTAINER_BUILDCMD=buildah make builder-push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
