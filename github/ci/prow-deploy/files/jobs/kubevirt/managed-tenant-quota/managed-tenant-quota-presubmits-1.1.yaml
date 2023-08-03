@@ -1,11 +1,10 @@
 presubmits:
   kubevirt/managed-tenant-quota:
-  - name: pull-mtq-unit-test
-    skip_branches:
-      - release-v\d+\.\d+
+  - name: pull-mtq-unit-test-1.1
+    context: pull-mtq-unit-test
+    branches:
+      - release-v1.1
     cluster: ibm-prow-jobs
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: false
     decorate: true
@@ -29,12 +28,11 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-mtq-generate-verify
-    skip_branches:
-      - release-v\d+\.\d+
+  - name: pull-mtq-generate-verify-1.1
+    context: pull-mtq-generate-verify
+    branches:
+      - release-v1.1
     cluster: ibm-prow-jobs
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: true
     decorate: true
@@ -59,11 +57,10 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-mtq-functest-nightly-kubevirt
-    skip_branches:
-      - release-v\d+\.\d+
-    annotations:
-      fork-per-release: "true"
+  - name: pull-mtq-functest-nightly-kubevirt-1.1
+    context: pull-mtq-functest-nightly-kubevirt
+    branches:
+      - release-v1.1
     always_run: true
     optional: false
     decorate: true
@@ -92,11 +89,10 @@ presubmits:
           resources:
             requests:
               memory: "29Gi"
-  - name: pull-mtq-functest-latest-stable-kubevirt
-    skip_branches:
-      - release-v\d+\.\d+
-    annotations:
-      fork-per-release: "true"
+  - name: pull-mtq-functest-latest-stable-kubevirt-1.1
+    context: pull-mtq-functest-latest-stable-kubevirt
+    branches:
+      - release-v1.1
     always_run: true
     optional: false
     decorate: true
