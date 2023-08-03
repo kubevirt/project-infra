@@ -246,7 +246,7 @@ plugins:
     - lgtm
     - trigger
 
-  kubevirt/kubernetes.kubevirt:
+  kubevirt/kubevirt.core:
     plugins:
     - approve
     - lgtm
@@ -557,7 +557,7 @@ triggers:
   - kubevirt/secrets
   - kubevirt/test-benchmarks
   - kubevirt/vm-console-proxy
-  - kubevirt/kubernetes.kubevirt
+  - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
 - repos:
   - virtblocks/virtblocks
@@ -610,7 +610,7 @@ approve:
   - kubevirt/test-benchmarks
   - kubevirt/vm-console-proxy
   - kubevirt/sig-release
-  - kubevirt/kubernetes.kubevirt
+  - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
   require_self_approval: true
   lgtm_acts_as_approve: false
@@ -668,7 +668,7 @@ lgtm:
   - kubevirt/test-benchmarks
   - kubevirt/vm-console-proxy
   - kubevirt/sig-release
-  - kubevirt/kubernetes.kubevirt
+  - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
   review_acts_as_lgtm: true
 
