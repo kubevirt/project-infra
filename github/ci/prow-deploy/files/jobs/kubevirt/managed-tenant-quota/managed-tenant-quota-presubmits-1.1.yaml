@@ -12,11 +12,11 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -40,12 +40,12 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -70,14 +70,14 @@ presubmits:
     max_concurrency: 6
     cluster: kubevirt-prow-workloads
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -102,14 +102,14 @@ presubmits:
     max_concurrency: 6
     cluster: kubevirt-prow-workloads
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
+        - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
