@@ -61,8 +61,6 @@ presubmits:
     context: pull-mtq-functest-nightly-kubevirt
     branches:
       - release-v1.1
-    annotations:
-      testgrid-dashboards: kubevirt-managed-tenant-quota-presubmits
     always_run: true
     optional: false
     decorate: true
@@ -72,7 +70,7 @@ presubmits:
     max_concurrency: 6
     cluster: kubevirt-prow-workloads
     labels:
-      preset-podman-in-container-enabled: "true"
+      preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     spec:
@@ -95,8 +93,6 @@ presubmits:
     context: pull-mtq-functest-latest-stable-kubevirt
     branches:
       - release-v1.1
-    annotations:
-      testgrid-dashboards: kubevirt-managed-tenant-quota-presubmits
     always_run: true
     optional: false
     decorate: true
