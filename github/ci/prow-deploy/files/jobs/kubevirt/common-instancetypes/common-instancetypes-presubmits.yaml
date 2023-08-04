@@ -51,7 +51,7 @@ presubmits:
         env:
         - name: KUBEVIRT_MEMORY_SIZE
           value: "8192"
-        image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+        image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
         name: ""
         resources:
           requests:
