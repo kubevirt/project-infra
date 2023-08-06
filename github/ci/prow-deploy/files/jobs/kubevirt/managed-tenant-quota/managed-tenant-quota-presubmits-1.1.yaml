@@ -1,5 +1,39 @@
 presubmits:
   kubevirt/managed-tenant-quota:
+  - name: push-release-mtq-images
+    branches:
+      - release-v1.1
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+          env:
+            - name: DOCKER_PREFIX
+              value: quay.io/kubevirt
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - |
+              cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+              # Only push images on tags
+              DOCKER_TAG="v1.1.0" make push
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
   - name: pull-mtq-unit-test-1.1
     context: pull-mtq-unit-test
     branches:
