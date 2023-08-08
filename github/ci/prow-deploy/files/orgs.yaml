@@ -327,6 +327,12 @@ orgs:
         allow_rebase_merge: false
         description: Operator pattern for managing multi-operator products
         has_projects: true
+      k8s-seccomp-generator:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        description: Generates seccomp profile for kubernetes pods
+        has_projects: false
+        has_wiki: false
       k8s-start:
         allow_rebase_merge: false
         allow_squash_merge: false
@@ -594,6 +600,13 @@ orgs:
         repos:
           kubevirt-ansible: write
           qe-tools: write
+      k8s-seccomp-generator:
+        description: "team for k8s-seccomp-generator repo"
+        maintainers:
+          - alicefr
+        privacy: secret
+        repos:
+          k8s-seccomp-generator: admin
       kubectl-virt-plugin:
         description: ""
         maintainers:
@@ -604,7 +617,7 @@ orgs:
       kubesecondarydns:
         description: ""
         maintainers:
-        - AlonaKaplan
+          - AlonaKaplan
         privacy: secret
         repos:
           kubesecondarydns: admin
