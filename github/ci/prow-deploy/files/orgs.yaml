@@ -605,6 +605,8 @@ orgs:
         description: "team for k8s-seccomp-generator repo"
         maintainers:
           - alicefr
+          - sudo-NithishKarthik
+          - xpivarc
         privacy: secret
         repos:
           k8s-seccomp-generator: admin
