@@ -75,6 +75,10 @@ func (t TopXTests) Less(i, j int) bool {
 		(iAllFailures.Sum == jAllFailures.Sum && iAllFailures.Max == jAllFailures.Max && iAllFailures.Avg > jAllFailures.Avg)
 }
 
+func (t TopXTests) Swap(i, j int) {
+	t[i], t[j] = t[j], t[i]
+}
+
 func (t TopXTests) CalculateShareFromTotalFailures() *TopXTest {
 	overall := &TopXTest{
 		Name:            "Test failures overall",
@@ -109,10 +113,6 @@ func (t TopXTests) CalculateShareFromTotalFailures() *TopXTest {
 	}
 	overall.CalculateShareFromTotalFailures(overall.AllFailures.Sum)
 	return overall
-}
-
-func (t TopXTests) Swap(i, j int) {
-	t[i], t[j] = t[j], t[i]
 }
 
 type TopXTest struct {
