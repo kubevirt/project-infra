@@ -479,6 +479,10 @@ plugins:
     plugins:
     - dco
     - trigger
+  
+  kubevirt/ci-performance-benchmarks:
+    plugins:
+    - trigger
 
 
 external_plugins:
@@ -559,6 +563,7 @@ triggers:
   - kubevirt/vm-console-proxy
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
+  - kubevirt/ci-performance-benchmarks
 - repos:
   - virtblocks/virtblocks
 - repos:
