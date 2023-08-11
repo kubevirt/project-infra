@@ -22,7 +22,7 @@
 
 {{ define "failures" }}
     <div id="{{ .Name }}" {{ if .NoteHasBeenQuarantined }}class="noteHasBeenQuarantined"{{ end }}>
-        <span class="testName">{{ .Name }}</span><br/>
+        <span class="testName"><a class="anchor" href="#{{ .Name }}">#</a> {{ .Name }}</span><br/>
         <span class="failureBlock">
                 <span class="failureBlockHeader">All</span><br/>
                 {{ template "failure" .AllFailures }}
@@ -80,12 +80,16 @@
     <title>Flake stats for last {{ $.DaysInThePast }} days</title>
     <style>
         <!--
-        table {
+        table, th, td {
             border: 1px solid black;
         }
 
-        th, td {
-            border: 1px solid black;
+        .anchor {
+            text-decoration: none;
+        }
+
+        .no_border {
+            border: 0;
         }
 
         .testName {
@@ -109,8 +113,8 @@
 
         .legend {
             position: absolute;
-            top: 0px;
-            right: 0px;
+            top: 0;
+            right: 0;
         }
 
         .lightyellow {
@@ -150,8 +154,7 @@
         }
 
         function updateFilteredRows() {
-            let filterTerms, excludeTerms, reportDiv, divs, td, i, testName, filterByNotRunChecked, showDontRunChecked,
-                shouldShow, rowsShown;
+            let filterTerms, excludeTerms, reportDiv, divs, i, testName, shouldShow, rowsShown;
             filterTerms = document.getElementById("filterByName").value.toUpperCase().split("|");
             excludeTerms = document.getElementById("excludeByName").value.toUpperCase().split("|");
             reportDiv = document.getElementById("report");
@@ -163,7 +166,7 @@
                     shouldShow = true
                     testName = divs[i].id;
                     if (excludeTerms.length > 0 && excludeTerms[0] !== "") {
-                        for (k = 0; k < excludeTerms.length; k++) {
+                        for (let k = 0; k < excludeTerms.length; k++) {
                             if (testName.toUpperCase().indexOf(excludeTerms[k]) !== -1) {
                                 shouldShow = false
                                 break;
@@ -172,7 +175,7 @@
                     }
                     if (shouldShow === true && filterTerms.length > 0 && filterTerms[0] !== "") {
                         let found = false
-                        for (k = 0; k < filterTerms.length; k++) {
+                        for (let k = 0; k < filterTerms.length; k++) {
                             if (testName.toUpperCase().indexOf(filterTerms[k]) !== -1) {
                                 found = true
                                 break;
@@ -219,25 +222,21 @@
 <div id="report">
     <h1>Top most flaky tests</h1>
 
-    <table class="noborder">
+    <table>
         <tr>
-            <td class="noborder">
-            </td>
-            <td class="noborder">
+            <td class="no_border">
                 <label for="filterByName">Exclude tests that don't contain</label>
             </td>
-            <td class="noborder">
+            <td class="no_border">
                 <input type="text" id="filterByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..."
                        disabled>
             </td>
         </tr>
         <tr>
-            <td class="noborder">
-            </td>
-            <td class="noborder">
+            <td class="no_border">
                 <label for="excludeByName">Exclude tests that contain</label>
             </td>
-            <td class="noborder">
+            <td class="no_border">
                 <input type="text" id="excludeByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..."
                        disabled>
             </td>
