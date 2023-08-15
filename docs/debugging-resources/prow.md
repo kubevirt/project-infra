@@ -26,16 +26,19 @@ Configuration files are found in this folder: https://github.com/kubevirt/projec
 
 **Note: some of these need to be a symlink to the real files, please follow these and edit in target location.**
 
-| Type         | Holds configuration for                    |
-|--------------|--------------------------------------------|
-| orgs.yaml    | KubeVirt GitHub organization               |
-| config.yaml  | Prow components, prow job presets          |
-| plugins.yaml | Prow plugins                               |
-| labels.yaml  | GitHub labels for pull requests and issues |
-| mirror.yaml  | image mirror                               |
-| jobs         | job configurations per repository          |
+| Type         | Holds configuration for                |
+|--------------|----------------------------------------|
+| config.yaml  | Prow components, prow job presets      |
+| plugins.yaml | Prow plugins                           |
+| mirror.yaml  | image mirror                           |
+| jobs         | Prow job configurations per repository |
+| labels.yaml  | GitHub labels[^1]                      |
+| orgs.yaml    | GitHub organization settings[^2]       |
 
-
+[^1]: GitHub labels for pull requests and issues are updated periodically by the cron jobs [label-sync-kubevirt] and [label-sync-nmstate].
+  On changes the config is checked by presubmits [pull-prow-kubevirt-labels-update-precheck].
+[^2]: KubeVirt GitHub organization settings are enforced by [peribolos].
+  see [KubeVirt GitHub org automation] for more information.
 
 
 ## Prow and Prow Jobs
@@ -78,6 +81,11 @@ Each file in the artifacts folder has a numerical prefix. In this case we only s
 **If you don't know where to start looking, open the `overview.log`, then go to the `events.log`.**
 
 See also:
-* [KubeVirt Prow - periodic jobs](https://prow.ci.kubevirt.io?type=periodic&state=failure)
+* [KubeVirt Prow - periodic jobs](https://prow.ci.kubevirt.io?type=periodic)
 
 [KubeVirt Prow]: https://prow.ci.kubevirt.io
+[label-sync-kubevirt]: https://github.com/kubevirt/project-infra/blob/9d6d04e1c1c8c9cfe4976f660b0fef797db4f90d/github/ci/prow-deploy/kustom/base/manifests/local/label-sync-kubevirt.yaml
+[label-sync-nmstate]: https://github.com/kubevirt/project-infra/blob/9d6d04e1c1c8c9cfe4976f660b0fef797db4f90d/github/ci/prow-deploy/kustom/base/manifests/local/label-sync-nmstate.yaml
+[peribolos]: https://docs.prow.k8s.io/docs/components/cli-tools/peribolos/
+[KubeVirt GitHub org automation]: https://github.com/kubevirt/community/blob/f8b31a7563b8fe8fa3327fedf8db66869dbc2850/docs/automating-github-org-management.md
+[pull-prow-kubevirt-labels-update-precheck]: https://github.com/kubevirt/project-infra/blob/3d527f6a71df2a8369b223445a26c0e1ac3fe95d/github/ci/prow-deploy/files/jobs/kubevirt/project-infra/project-infra-presubmits.yaml#L695
