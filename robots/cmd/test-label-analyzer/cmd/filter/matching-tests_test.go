@@ -95,11 +95,11 @@ var _ = Describe("filter", func() {
 			temp, err := os.MkdirTemp("", "")
 			Expect(err).ToNot(HaveOccurred())
 
-			filterStatsOpts = &filterStatsOptions{
+			filterStatsMatchingTestsOpts = &filterStatsMatchingTestsOptions{
 				outputFilePath: filepath.Join(temp, "filtered-output.json"),
 			}
 
-			Expect(filterInputFile("testdata/stats-output.json", filterStatsOpts)).To(Succeed())
+			Expect(filterMatchingTestsFromInputFile("testdata/stats-output.json", filterStatsMatchingTestsOpts)).To(Succeed())
 		})
 	})
 })

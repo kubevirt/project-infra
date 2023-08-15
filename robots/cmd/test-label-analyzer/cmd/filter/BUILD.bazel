@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = [
+        "matching-tests.go",
         "root.go",
         "stats.go",
     ],
@@ -19,7 +20,7 @@ go_library(
 go_test(
     name = "go_default_test",
     srcs = [
-        "stats_test.go",
+        "matching-tests_test.go",
         "test_suite_test.go",
     ],
     data = glob(["testdata/**"]),
