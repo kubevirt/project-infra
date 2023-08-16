@@ -18,6 +18,8 @@ Basically you need to create a PR against `orgs.yaml`, where you add a new entry
 
 Here's the PR adding the `monitoring` repository as an example: https://github.com/kubevirt/project-infra/pull/990/files
 
+Consider looking into enabling [merge automation](https://github.com/kubevirt/community/blob/main/docs/add-merge-automation-to-your-repository.md) for the new repository.
+
 ## Pull request template
 
 Before you create the pull request, you should be notified with a pull request creation url similar to this one:
