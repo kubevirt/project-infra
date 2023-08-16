@@ -409,6 +409,11 @@ presubmits:
         - /bin/sh
         - -c
         - TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh
+        env:
+        - name: KUBEVIRT_E2E_PARALLEL
+          value: "true"
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 9216M
         image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
         name: ""
         resources:
@@ -2184,7 +2189,7 @@ presubmits:
         image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
         name: ""
         resources:
-            requests:
-              memory: 4Gi
+          requests:
+            memory: 4Gi
         securityContext:
           privileged: true
