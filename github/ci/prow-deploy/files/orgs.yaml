@@ -20,7 +20,6 @@ orgs:
     has_repository_projects: true
     location: ""
     members:
-      - jcanocan
       - 0xFelix
       - aburdenthehand
       - acardace
@@ -30,8 +29,8 @@ orgs:
       - akalenyu
       - akrejcir
       - alicefr
-      - AlonaKaplan
       - alaypatel07
+      - AlonaKaplan
       - alonsadan
       - alosadagrande
       - alromeros
@@ -41,7 +40,9 @@ orgs:
       - ArthurSens
       - assafad
       - ashleyschuett
+      - avlitman
       - awels
+      - Barakmor1
       - bardielle
       - beanh66
       - beekhof
@@ -88,7 +89,6 @@ orgs:
       - ifireball
       - igoihman
       - iholder101
-      - Barakmor1
       - ILpinto
       - InbarRose
       - iranzo
@@ -98,6 +98,7 @@ orgs:
       - j-griffith
       - jakub-dzon
       - jberkus
+      - jcanocan
       - jean-edouard
       - jelkosz
       - jhernand
