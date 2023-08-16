@@ -27,7 +27,7 @@ This PR adds the repository `repo_name` to the KubeVirt organization.
 
 - @
 
-**New gitHub team[^1] within KubeVirt org for new repository**:
+**New GitHub team[^1] within KubeVirt org for new repository**:
 
 <!--
     Add a `team` section in `orgs.yaml` to give the people access to the repo that need it.
