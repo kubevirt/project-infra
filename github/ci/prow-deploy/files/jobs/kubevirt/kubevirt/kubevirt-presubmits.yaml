@@ -1241,6 +1241,7 @@ presubmits:
   - always_run: false
     annotations:
       fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
     cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
