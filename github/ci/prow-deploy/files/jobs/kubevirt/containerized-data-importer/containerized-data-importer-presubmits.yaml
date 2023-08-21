@@ -339,11 +339,7 @@ presubmits:
               memory: "29Gi"
   - name: pull-containerized-data-importer-e2e-ceph-wffc
     skip_branches:
-      - release-v1.28
-      - release-v1.34
-      - release-v1.38
-      - release-v1.43
-      - release-v1.49
+      - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
