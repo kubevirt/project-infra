@@ -685,6 +685,7 @@ presubmits:
         - --fix-team-members=false
         - --fix-team-repos=false
         - --fix-repos=true
+        - --allow-repo-archival
         - --confirm=false
         resources:
           requests:

@@ -392,6 +392,7 @@ orgs:
         has_projects: true
       kubevirt-ssp-operator:
         has_projects: true
+        archived: true
       kubevirt-tekton-tasks:
         allow_rebase_merge: false
         allow_squash_merge: false
@@ -401,6 +402,7 @@ orgs:
       kubevirt-template-validator:
         description: validating webhook to check templates sent to the cluster.
         has_projects: true
+        archived: true
       kubevirt-tutorial:
         description: Demo that guides users through an end to end KubeVirt experience.
         has_projects: true
