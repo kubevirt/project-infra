@@ -36,6 +36,7 @@ var getCommand = &cobra.Command{
 func init() {
 	getCommand.AddCommand(GetPeriodicsCommand())
 	getCommand.AddCommand(GetPresubmitsCommand())
+	getCommand.AddCommand(getSupportMatrixCommand)
 }
 
 func GetCommand() *cobra.Command {
