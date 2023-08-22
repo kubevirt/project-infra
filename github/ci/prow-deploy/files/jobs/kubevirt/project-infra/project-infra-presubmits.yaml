@@ -674,17 +674,18 @@ presubmits:
         image: gcr.io/k8s-prow/peribolos:v20230817-a7555751ac
         command:
         - /ko-app/peribolos
+        # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
         args:
+        - --config-path=github/ci/prow-deploy/files/orgs.yaml
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
-        - --config-path=github/ci/prow-deploy/files/orgs.yaml
         - --github-token-path=/etc/github/oauth
         - --fix-org=true
         - --fix-org-members=true
-        - --fix-teams=false
-        - --fix-team-members=false
-        - --fix-team-repos=false
         - --fix-repos=true
+        - --fix-team-members=true
+        - --fix-team-repos=true
+        - --fix-teams=true
         - --allow-repo-archival
         - --confirm=false
         resources:
