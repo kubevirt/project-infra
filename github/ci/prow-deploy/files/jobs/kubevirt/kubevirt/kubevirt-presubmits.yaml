@@ -768,7 +768,6 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
-        - # FIXME: reenable this lane after missing dependency issue has been resolved
         image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
         name: ""
         resources:
@@ -1327,7 +1326,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1368,7 +1367,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1407,7 +1406,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1490,7 +1489,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1650,7 +1649,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
-          value: "--usb 30M --usb 40M"
+          value: --usb 30M --usb 40M
         image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
         name: ""
         resources:
@@ -1893,7 +1892,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
-          value: "--usb 30M --usb 40M"
+          value: --usb 30M --usb 40M
         image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
         name: ""
         resources:
@@ -1989,7 +1988,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2032,7 +2031,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2073,7 +2072,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2108,7 +2107,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
-          value: "--usb 30M --usb 40M"
+          value: --usb 30M --usb 40M
         image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
         name: ""
         resources:
@@ -2118,7 +2117,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2175,8 +2174,8 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 11
     name: pull-kubevirt-metrics-lint
-    run_if_changed: docs/metrics.md
     optional: true
+    run_if_changed: docs/metrics.md
     skip_branches:
     - release-\d+\.\d+
     spec:
