@@ -207,8 +207,8 @@ presubmits:
             - "-ce"
             - |
               cd images
-              ./publish_image.sh -b bootstrap-legacy quay.io kubevirtci
-              ./publish_image.sh -b golang-legacy quay.io kubevirtci
+              ./publish_multiarch_image.sh -a -b bootstrap-legacy quay.io kubevirtci
+              ./publish_multiarch_image.sh -a -b -l golang-legacy quay.io kubevirtci
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
