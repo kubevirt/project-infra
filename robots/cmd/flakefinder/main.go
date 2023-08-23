@@ -23,11 +23,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"k8s.io/test-infra/prow/config/secret"
 	"log"
 	"net/url"
 	"path/filepath"
 	"time"
+
+	"k8s.io/test-infra/prow/config/secret"
+	ghapi "kubevirt.io/project-infra/robots/pkg/flakefinder/github"
 
 	"cloud.google.com/go/storage"
 	"github.com/google/go-github/v28/github"
@@ -120,7 +122,7 @@ func main() {
 	reportBaseDataOptions.SetPeriodicJobDirRegex(o.periodicJobDirRegex)
 	reportBaseDataOptions.SetBatchJobDirRegex(o.batchJobDirRegex)
 
-	reportBaseData := flakefinder.GetReportBaseData(ctx, ghClient, storageClient, reportBaseDataOptions)
+	reportBaseData := flakefinder.GetReportBaseData(ctx, ghapi.NewQuery(ghClient, o.org, o.repo, o.prBaseBranch), storageClient, reportBaseDataOptions)
 
 	err = WriteReportToBucket(ctx, storageClient, o.merged, o.org, o.repo, o.isDryRun, reportBaseData)
 	if err != nil {

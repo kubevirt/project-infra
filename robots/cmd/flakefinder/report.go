@@ -30,7 +30,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 

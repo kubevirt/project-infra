@@ -3,8 +3,6 @@ package flakefinder
 import (
 	"context"
 	"fmt"
-	"github.com/google/go-github/v28/github"
-	"github.com/joshdk/go-junit"
 	"html/template"
 	"io"
 	"log"
@@ -14,8 +12,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"github.com/joshdk/go-junit"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/api/iterator"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder/api"
 )
 
 const (
@@ -25,7 +25,7 @@ const (
 	PreviewPath      = "preview"
 )
 
-//ListGcsObjects get the slice of gcs objects under a given path
+// ListGcsObjects get the slice of gcs objects under a given path
 func ListGcsObjects(ctx context.Context, client *storage.Client, bucketName, prefix, delim string) (
 	[]string, error) {
 
@@ -184,57 +184,26 @@ type ReportBaseData struct {
 	JobResults    []*JobResult
 }
 
-func GetReportBaseData(ctx context.Context, c *github.Client, client *storage.Client, o ReportBaseDataOptions) ReportBaseData {
+func GetReportBaseData(ctx context.Context, q api.Query, client *storage.Client, o ReportBaseDataOptions) ReportBaseData {
 
 	startOfReport, endOfReport := GetReportInterval(ReportIntervalOptions{o.today, o.merged, time.Now()})
-	logrus.Infof("Fetching Prs from %v till %v", startOfReport, endOfReport)
-
-	logrus.Infof("Filtering PRs for base branch %s", o.prBaseBranch)
-	var prs []*github.PullRequest
-	var prNumbers []int
-	for nextPage := 1; nextPage > 0; {
-		pullRequests, response, err := c.PullRequests.List(ctx, o.org, o.repo, &github.PullRequestListOptions{
-			Base:        o.prBaseBranch,
-			State:       "closed",
-			Sort:        "updated",
-			Direction:   "desc",
-			ListOptions: github.ListOptions{Page: nextPage},
-		})
-		if err != nil {
-			log.Fatalf("Failed to fetch PRs for page %d: %v.", nextPage, err)
-		}
-		nextPage = response.NextPage
-		for _, pr := range pullRequests {
-			if startOfReport.After(*pr.UpdatedAt) {
-				nextPage = 0
-				break
-			}
-			if pr.MergedAt == nil {
-				continue
-			}
-			if startOfReport.After(*pr.MergedAt) {
-				continue
-			}
-			if endOfReport.Before(*pr.MergedAt) {
-				continue
-			}
-			logrus.Infof("Adding PR %v '%v' (updated at %s)", *pr.Number, *pr.Title, pr.UpdatedAt.Format(time.RFC3339))
-			prs = append(prs, pr)
-			prNumbers = append(prNumbers, *pr.Number)
-		}
+	changes, err := q.Query(ctx, startOfReport, endOfReport)
+	if err != nil {
+		logrus.Fatal(err)
 	}
-	logrus.Infof("%d pull requests found.", len(prs))
 
 	var reports []*JobResult
-	for _, pr := range prs {
-		r, err := FindUnitTestFiles(ctx, client, BucketName, strings.Join([]string{o.org, o.repo}, "/"), pr, startOfReport, o.skipBeforeStartOfReport)
+	var changeNumbers []int
+	for _, change := range changes {
+		changeNumbers = append(changeNumbers, change.ID())
+		r, err := FindUnitTestFiles(ctx, client, BucketName, strings.Join([]string{o.org, o.repo}, "/"), change, startOfReport, o.skipBeforeStartOfReport)
 		if err != nil {
-			log.Printf("failed to load JUnit file for %v: %v", pr.Number, err)
+			log.Printf("failed to load JUnit file for %v: %v", change.ID(), err)
 		}
 		reports = append(reports, r...)
 	}
 
-	batchJobResults, err := FindUnitTestFilesForBatchJobs(ctx, client, BucketName, o.batchJobDirRegex, prs, startOfReport, endOfReport)
+	batchJobResults, err := FindUnitTestFilesForBatchJobs(ctx, client, BucketName, o.batchJobDirRegex, changes, startOfReport, endOfReport)
 	if err != nil {
 		log.Printf("failed to load JUnit file for batch jobs: %v", err)
 	}
@@ -259,5 +228,5 @@ func GetReportBaseData(ctx context.Context, c *github.Client, client *storage.Cl
 		}
 	}
 
-	return ReportBaseData{startOfReport, endOfReport, prNumbers, reports}
+	return ReportBaseData{startOfReport, endOfReport, changeNumbers, reports}
 }

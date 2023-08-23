@@ -23,7 +23,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/google/go-github/v28/github"
 	"io/ioutil"
 	"path"
 	"regexp"
@@ -31,6 +30,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"kubevirt.io/project-infra/robots/pkg/flakefinder/api"
 
 	"cloud.google.com/go/storage"
 	"github.com/joshdk/go-junit"
@@ -51,9 +52,9 @@ func init() {
 	testJobNameRegex = regexp.MustCompile(".*-(e2e(-[a-z\\d]+)?)$")
 }
 
-func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, pr *github.PullRequest, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*JobResult, error) {
+func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, change api.Change, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*JobResult, error) {
 
-	dirOfPrJobs := path.Join("pr-logs", "pull", strings.ReplaceAll(repo, "/", "_"), strconv.Itoa(*pr.Number))
+	dirOfPrJobs := path.Join("pr-logs", "pull", strings.ReplaceAll(repo, "/", "_"), strconv.Itoa(change.ID()))
 
 	prJobsDirs, err := ListGcsObjects(ctx, client, bucket, dirOfPrJobs+"/", "/")
 	if err != nil {
@@ -62,7 +63,7 @@ func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo
 
 	junits := []*JobResult{}
 	for _, job := range prJobsDirs {
-		junit, err := findUnitTestFileForJob(ctx, client, bucket, dirOfPrJobs, job, pr, startOfReport, skipBeforeStartOfReport)
+		junit, err := findUnitTestFileForJob(ctx, client, bucket, dirOfPrJobs, job, change, startOfReport, skipBeforeStartOfReport)
 		if err != nil {
 			return nil, err
 		}
@@ -73,7 +74,7 @@ func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo
 	return junits, err
 }
 
-func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket string, dirOfPrJobs string, job string, pr *github.PullRequest, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*JobResult, error) {
+func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket string, dirOfPrJobs string, job string, change api.Change, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*JobResult, error) {
 	dirOfJobs := path.Join(dirOfPrJobs, job)
 
 	prJobs, err := ListGcsObjects(ctx, client, bucket, dirOfJobs+"/", "/")
@@ -114,7 +115,7 @@ func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			if err != nil {
 				return nil, fmt.Errorf("Cannot read started.json (%s) in bucket '%s'", dirOfStartedJSON, bucket)
 			}
-			if !IsLatestCommit(startedJSON, pr) {
+			if !IsLatestCommit(startedJSON, change) {
 				continue
 			}
 			buildNumber = build
@@ -132,7 +133,7 @@ func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			if err != nil {
 				return nil, err
 			}
-			reports = append(reports, &JobResult{Job: job, JUnit: report, BuildNumber: buildNumber, PR: *pr.Number})
+			reports = append(reports, &JobResult{Job: job, JUnit: report, BuildNumber: buildNumber, PR: change.ID()})
 		}
 	}
 
@@ -222,11 +223,11 @@ func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client
 	return reports, nil
 }
 
-func FindUnitTestFilesForBatchJobs(ctx context.Context, client *storage.Client, bucket string, batchJobRegex *regexp.Regexp, prs []*github.PullRequest, startOfReport time.Time, endOfReport time.Time) ([]*JobResult, error) {
+func FindUnitTestFilesForBatchJobs(ctx context.Context, client *storage.Client, bucket string, batchJobRegex *regexp.Regexp, changes []api.Change, startOfReport time.Time, endOfReport time.Time) ([]*JobResult, error) {
 
-	prNumbers := map[int]struct{}{}
-	for _, pr := range prs {
-		prNumbers[pr.GetNumber()] = struct{}{}
+	changeNumbers := map[int]struct{}{}
+	for _, change := range changes {
+		changeNumbers[change.ID()] = struct{}{}
 	}
 
 	jobDirectorySegments := []string{
@@ -308,7 +309,7 @@ func FindUnitTestFilesForBatchJobs(ctx context.Context, client *storage.Client, 
 				anyNumberFound := false
 				for _, pull := range pj.Spec.Refs.Pulls {
 					batchPRs = append(batchPRs, pull.Number)
-					if _, exists := prNumbers[pull.Number]; exists {
+					if _, exists := changeNumbers[pull.Number]; exists {
 						anyNumberFound = true
 					}
 				}
@@ -369,21 +370,11 @@ func sortBuilds(strBuilds []string) []int {
 	return res
 }
 
-type StartedStatus struct {
-	Timestamp int
-	Repos     map[string]string
-}
-
-func IsLatestCommit(jsonText []byte, pr *github.PullRequest) bool {
-	var status StartedStatus
+func IsLatestCommit(jsonText []byte, change api.Change) bool {
+	var status api.StartedStatus
 	err := json.Unmarshal(jsonText, &status)
 	if err != nil {
 		return false
 	}
-	for _, v := range status.Repos {
-		if strings.Contains(v, fmt.Sprintf("%d:%s", *pr.Number, *pr.Head.SHA)) {
-			return true
-		}
-	}
-	return false
+	return change.Matches(&status)
 }

@@ -15,6 +15,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//robots/pkg/flakefinder:go_default_library",
+        "//robots/pkg/flakefinder/github:go_default_library",
         "@com_github_google_go_github_v28//github:go_default_library",
         "@com_google_cloud_go_storage//:go_default_library",
         "@io_k8s_test_infra//prow/config/secret:go_default_library",
