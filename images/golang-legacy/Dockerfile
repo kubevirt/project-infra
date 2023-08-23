@@ -1,4 +1,5 @@
-FROM bootstrap-legacy
+ARG ARCH=amd64
+FROM bootstrap-legacy-${ARCH}
 
 ENV GIMME_GO_VERSION=1.17.8
 
