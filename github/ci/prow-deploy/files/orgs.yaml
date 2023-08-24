@@ -143,7 +143,7 @@ orgs:
       - nelsonspbr
       - nertpinx
       - nirarg
-      - sudo-NithishKarthik
+      - humblenginr
       - nunnatsa
       - ohadlevy
       - omeryahud
@@ -608,7 +608,7 @@ orgs:
         description: "team for k8s-seccomp-generator repo"
         maintainers:
           - alicefr
-          - sudo-NithishKarthik
+          - humblenginr
           - xpivarc
         privacy: secret
         repos:
