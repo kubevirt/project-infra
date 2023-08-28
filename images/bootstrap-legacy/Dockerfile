@@ -94,9 +94,10 @@ RUN mkdir /docker-graph
 #
 
 # Cache the most commonly used bazel versions in the container
-RUN  curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.7.4/bazelisk-linux-amd64 && \
-     chmod +x ./bazelisk && mv ./bazelisk /usr/local/bin/bazelisk && \
-     cd /usr/local/bin && ln -s bazelisk bazel
+ARG ARCH=amd64
+RUN curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.17.0/bazelisk-linux-${ARCH} && \
+    chmod +x ./bazelisk && mv ./bazelisk /usr/local/bin/bazelisk && \
+    cd /usr/local/bin && ln -s bazelisk bazel
 
 # Cache the most commonly used bazel versions inside the image
 # and remove resulting cache directories to save a few hundred MB
