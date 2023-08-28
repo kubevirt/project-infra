@@ -246,3 +246,41 @@ postsubmits:
           resources:
             requests:
               memory: "8Gi"
+  - name: push-kubevirt-update-support-matrix
+    branches:
+    # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+    - ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+    cluster: ibm-prow-jobs
+    always_run: true
+    optional: false
+    skip_report: false
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    extra_refs:
+    - org: kubevirt
+      repo: project-infra
+      base_ref: main
+    - org: kubevirt
+      repo: sig-release
+      base_ref: main
+    labels:
+      preset-github-credentials: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20230801-94954c0
+        env:
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
+        - |
+          set -e
+          project_infra_dir=$(cd ../project-infra && pwd)
+          cd ${project_infra_dir}
+          sig_release_dir=$(cd ../sig-release && pwd)
+          ./hack/git-pr.sh -c "go run ./robots/cmd/kubevirt get support-matrix --output-file=${sig_release_dir}/releases/k8s-support-matrix.md --overwrite-output-file --job-config-path=${project_infra_dir}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt" -p ${sig_release_dir} -r sig-release -b update-support-matrix -T main
+        resources:
+          requests:
+            memory: "200Mi"
