@@ -13,6 +13,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     name: pull-kubernetes-sigs-cluster-api-provider-kubevirt-e2e
+    rerun_command: /test pull-kubernetes-sigs-cluster-api-provider-kubevirt-e2e
+    trigger: (?m)^/test( | .* )pull-kubernetes-sigs-cluster-api-provider-kubevirt-e2e,?($|\s.*)
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -33,6 +35,6 @@ presubmits:
           privileged: true
         env:
           - name: GIMME_GO_VERSION
-            value: "1.18"
+            value: "1.20"
       nodeSelector:
         type: bare-metal-external
