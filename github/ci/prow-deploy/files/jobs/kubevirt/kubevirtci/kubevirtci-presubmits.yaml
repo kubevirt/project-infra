@@ -235,7 +235,7 @@ presubmits:
           path: /dev
           type: Directory
         name: devices
-  - always_run: true
+  - always_run: false
     cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
