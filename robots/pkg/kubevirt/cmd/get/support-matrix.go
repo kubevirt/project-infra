@@ -63,15 +63,24 @@ var k6tVersionRegex = regexp.MustCompile(`^.*kubevirt-presubmits(-([0-9]+\.[0-9]
 var getSupportMatrixTemplate string
 
 type getSupportMatrixOptions struct {
-	OutputFile string
+	OutputFile             string
+	OverwriteOutputFile    bool
+	JobConfigDirectoryPath string
 }
 
 func (o *getSupportMatrixOptions) validateOptions() error {
 	if o.OutputFile != "" {
 		_, err := os.Stat(o.OutputFile)
-		if !errors.Is(err, fs.ErrNotExist) {
+		if !o.OverwriteOutputFile && !errors.Is(err, fs.ErrNotExist) {
 			return fmt.Errorf("output file %s might exist already: %v", o.OutputFile, err)
 		}
+	}
+	stat, err := os.Stat(o.JobConfigDirectoryPath)
+	if errors.Is(err, fs.ErrNotExist) {
+		return fmt.Errorf("job config directory %s does not exist", o.JobConfigDirectoryPath)
+	}
+	if !stat.IsDir() {
+		return fmt.Errorf("job config directory %s is not a directory", o.JobConfigDirectoryPath)
 	}
 	return nil
 }
@@ -79,7 +88,9 @@ func (o *getSupportMatrixOptions) validateOptions() error {
 var getSupportMatrixOpts = getSupportMatrixOptions{}
 
 func init() {
-	getSupportMatrixCommand.PersistentFlags().StringVar(&getSupportMatrixOpts.OutputFile, "output-file", "", "output file to write to,m otherwise standard out will be used")
+	getSupportMatrixCommand.PersistentFlags().StringVar(&getSupportMatrixOpts.OutputFile, "output-file", "", "output file to write to, otherwise standard out will be used")
+	getSupportMatrixCommand.PersistentFlags().BoolVar(&getSupportMatrixOpts.OverwriteOutputFile, "overwrite-output-file", false, "output file should be overwritten if it exists")
+	getSupportMatrixCommand.PersistentFlags().StringVar(&getSupportMatrixOpts.JobConfigDirectoryPath, "job-config-path", "", "path to kubevirt job configuration files")
 }
 
 func majorMinorString(i *querier.SemVer) string {
@@ -96,7 +107,11 @@ type SupportMatrixTemplateData struct {
 }
 
 func GetSupportMatrix(_ *cobra.Command, _ []string) error {
-	fileNames, err := getJobConfigFileNames()
+	if err := getSupportMatrixOpts.validateOptions(); err != nil {
+		return fmt.Errorf("failed to validate options: %v", err)
+	}
+
+	fileNames, err := getJobConfigFileNames(getSupportMatrixOpts.JobConfigDirectoryPath)
 	if err != nil {
 		return err
 	}
@@ -305,22 +320,17 @@ func parseMajorMinor(version string) (querier.SemVer, error) {
 	}, nil
 }
 
-func getJobConfigFileNames() ([]string, error) {
-	dir, err := os.Getwd()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get workdir: %v", err)
-	}
-	workDir := filepath.Join(dir, "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/")
+func getJobConfigFileNames(jobConfigPath string) ([]string, error) {
 	var fileNames []string
-	err = filepath.WalkDir(workDir, func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(jobConfigPath, func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() || !k6tVersionRegex.MatchString(d.Name()) {
 			return nil
 		}
-		fileNames = append(fileNames, filepath.Join(workDir, d.Name()))
+		fileNames = append(fileNames, filepath.Join(jobConfigPath, d.Name()))
 		return nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to walk dir %q: %v", workDir, err)
+		return nil, fmt.Errorf("failed to walk dir %q: %v", jobConfigPath, err)
 	}
 	return fileNames, nil
 }
