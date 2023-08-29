@@ -245,6 +245,16 @@ default:
       target: both
       prowPlugin: label
       addedBy: anyone
+    - name: sig/documentation
+      color: 69CCCF
+      target: both
+      prowPlugin: label
+      addedBy: anyone
+    - name: sig/testing
+      color: CF6AB6
+      target: both
+      prowPlugin: label
+      addedBy: anyone
     - color: e11d21
       description: Indicates the PR's author has not DCO signed all their commits.
       name: "dco-signoff: no"
