@@ -462,7 +462,6 @@ periodics:
       command:
       - /ko-app/peribolos
       args:
-      - --config-path=github/ci/prow-deploy/files/orgs.yaml
       - --github-endpoint=http://ghproxy
       - --github-endpoint=https://api.github.com
       - --config-path=github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml

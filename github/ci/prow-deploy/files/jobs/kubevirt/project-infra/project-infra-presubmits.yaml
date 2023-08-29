@@ -676,7 +676,6 @@ presubmits:
         - /ko-app/peribolos
         # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
         args:
-        - --config-path=github/ci/prow-deploy/files/orgs.yaml
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
         - --config-path=github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml
