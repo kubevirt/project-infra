@@ -159,6 +159,7 @@ postsubmits:
   - name: push-containerized-data-importer-builder
     branches:
     - main
+    - release-v\d+\.\d+
     cluster: ibm-prow-jobs
     always_run: true
     optional: false
