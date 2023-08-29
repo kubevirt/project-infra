@@ -127,7 +127,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-workloads
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -145,9 +145,9 @@ postsubmits:
               privileged: true
             resources:
               requests:
-                memory: "1Gi"
+                memory: "29Gi"
               limits:
-                memory: "1Gi"
+                memory: "29Gi"
     - name: publish-shared-images-controller-image
       always_run: false
       run_if_changed: "images/shared-images-controller/.*"
