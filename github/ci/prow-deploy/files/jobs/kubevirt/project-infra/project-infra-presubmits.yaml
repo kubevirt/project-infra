@@ -664,7 +664,7 @@ presubmits:
       preset-github-credentials: "true"
     decorate: true
     decoration_config:
-      timeout: 1h
+      timeout: 2h
       grace_period: 5m
     max_concurrency: 1
     cluster: ibm-prow-jobs
@@ -676,9 +676,9 @@ presubmits:
         - /ko-app/peribolos
         # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
         args:
-        - --config-path=github/ci/prow-deploy/files/orgs.yaml
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
+        - --config-path=github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml
         - --github-token-path=/etc/github/oauth
         - --fix-org=true
         - --fix-org-members=true
