@@ -437,6 +437,31 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
+  - name: build-fcos-image
+    always_run: false
+    run_if_changed: "images/fcos/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: ibm-prow-jobs
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b fcos quay.io kubevirtci"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+            limits:
+              memory: "4Gi"
   - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/.*"

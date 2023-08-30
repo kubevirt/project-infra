@@ -404,6 +404,36 @@ postsubmits:
                 memory: "29Gi"
               limits:
                 memory: "29Gi"
+    - name: publish-fcos-image
+      always_run: false
+      run_if_changed: "images/fcos/.*"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-kubevirtci-quay-credential: "true"
+      cluster: ibm-prow-jobs
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cd images
+                ./publish_image.sh fcos quay.io kubevirtci
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "4Gi"
+              limits:
+                memory: "4Gi"
     - name: post-project-infra-prow-control-plane-deployment
       always_run: false
       run_if_changed: "github/ci/prow-deploy/.*"
