@@ -1,0 +1,1 @@
+FROM quay.io/fedora/fedora-coreos@sha256:1100ec4cc0ec47e9846750137b43dedf4f20d9b56bafb99f5866ceff152f88d1
