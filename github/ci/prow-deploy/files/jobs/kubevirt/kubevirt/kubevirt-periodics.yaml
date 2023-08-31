@@ -208,7 +208,7 @@ periodics:
       - |
         set -e
         build_date="$(date +%Y%m%d)"
-        cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+        cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
         export DOCKER_TAG="${build_date}_$(git show -s --format=%h)"
         make
         counter=3
@@ -285,7 +285,7 @@ periodics:
       - |
         set -e
         build_date="$(date +%Y%m%d)"
-        cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+        cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
         export DOCKER_TAG="${build_date}_$(git show -s --format=%h)-arm64"
         make
         counter=3
@@ -650,7 +650,7 @@ periodics:
         extract_secret 'amdSEVClusterKey' /ssh-key && chmod 400 /ssh-key
 
         # login quay.io
-        cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+        cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
 
         # Set up tunnel
         sshuttle -v -r kubevirt@165.204.53.121 10.216.91.126/32 192.168.0.0/24 --ssh-cmd 'ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -i /ssh-key -p 30026' > /var/log/sshuttle.log 2>&1 & echo "${!}" > /var/run/sshuttle.pid
@@ -809,7 +809,7 @@ periodics:
         extract_secret 'kubeconfigPerf' /kubeconfig
 
         # login quay.io
-        cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+        cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
 
         # run test
         ./automation/perfscale-test.sh
@@ -889,7 +889,7 @@ periodics:
         extract_secret 'kubeconfigPerf' /kubeconfig
 
         # login quay.io
-        cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+        cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
 
         # run test 200
         PERFSCALE_WORKLOAD=$PERFSCALE_WORKLOAD_TWO_HUNDRED ./automation/perfscale-test.sh

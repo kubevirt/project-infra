@@ -154,7 +154,6 @@ presubmits:
             - "/bin/bash"
             - "-ce"
             - "cd images && ./publish_image.sh -b kubevirt-infra-bootstrap quay.io kubevirtci"
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
@@ -182,7 +181,6 @@ presubmits:
               cd images
               ./publish_multiarch_image.sh -a -b bootstrap quay.io kubevirtci
               ./publish_multiarch_image.sh -a -b -l golang quay.io kubevirtci
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
@@ -209,7 +207,6 @@ presubmits:
               cd images
               ./publish_multiarch_image.sh -a -b bootstrap-legacy quay.io kubevirtci
               ./publish_multiarch_image.sh -a -b -l golang-legacy quay.io kubevirtci
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
@@ -235,7 +232,6 @@ presubmits:
             - |
               cd images
               ./publish_image.sh -b shared-images-controller quay.io kubevirtci
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
@@ -262,7 +258,6 @@ presubmits:
             - |
               cd images
               ./publish_image.sh -b kubekins-e2e quay.io kubevirtci
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
@@ -294,7 +289,6 @@ presubmits:
               cd images
               cp -r ../../kubevirt.github.io/_config kubevirt-kubevirt.github.io
               ./publish_image.sh -b kubevirt-kubevirt.github.io quay.io kubevirtci
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
@@ -321,7 +315,6 @@ presubmits:
             - |
               cd images
               ./publish_image.sh -b kubevirt-user-guide quay.io kubevirtci
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
@@ -348,7 +341,6 @@ presubmits:
             - |
               cd images
               ./publish_image.sh -b prow-deploy quay.io kubevirtci
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
@@ -375,7 +367,6 @@ presubmits:
             - |
               cd images
               ./publish_image.sh -b autoowners quay.io kubevirtci
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
@@ -402,7 +393,6 @@ presubmits:
             - |
               cd images
               ./publish_image.sh -b pr-creator quay.io kubevirtci
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
@@ -429,7 +419,6 @@ presubmits:
             - "/bin/bash"
             - "-ce"
             - "cd images && ./publish_multiarch_image.sh -a -b vm-image-builder quay.io kubevirtci"
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
@@ -460,7 +449,6 @@ presubmits:
             - "/bin/bash"
             - "-ce"
             - "github/ci/prow-deploy/hack/test.sh"
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
           resources:
@@ -509,7 +497,6 @@ presubmits:
               ./github/ci/services/cert-manager/hack/deploy.sh testing
 
               bazelisk test //github/ci/services/cert-manager/e2e:go_default_test --test_output=all --test_arg=-test.v
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
             runAsUser: 0
@@ -546,7 +533,6 @@ presubmits:
               ./github/ci/services/ci-search/hack/deploy.sh testing
 
               bazelisk test //github/ci/services/ci-search/e2e:go_default_test --test_output=all --test_arg=-test.v
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
             runAsUser: 0
@@ -583,7 +569,6 @@ presubmits:
               ./github/ci/services/loki/hack/deploy.sh testing
 
               bazelisk test //github/ci/services/loki/e2e:go_default_test --test_output=all --test_arg=-test.v
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
             runAsUser: 0
@@ -620,7 +605,6 @@ presubmits:
               ./github/ci/services/prometheus-stack/hack/deploy.sh testing
 
               bazelisk test //github/ci/services/prometheus-stack/e2e:go_default_test --test_output=all --test_arg=-test.v
-          # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
             runAsUser: 0
