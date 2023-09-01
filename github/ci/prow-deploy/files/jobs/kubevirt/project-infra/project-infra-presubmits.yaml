@@ -448,7 +448,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20230105-1dbefc0
+        - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
