@@ -734,6 +734,36 @@ postsubmits:
                 memory: "8Gi"
               limits:
                 memory: "8Gi"
+    - name: publish-test-label-analyzer-image
+      always_run: false
+      run_if_changed: "images/test-label-analyzer/.*|robots/.*/test-label-analyzer/.*"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      cluster: ibm-prow-jobs
+      max_concurrency: 1
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-kubevirtci-quay-credential: "true"
+        preset-bazel-cache: "true"
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cd images
+                ./publish_image.sh test-label-analyzer quay.io kubevirtci
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "1Gi"
+              limits:
+                memory: "1Gi"
     - name: post-project-infra-mirror-images-from-docker-hub
       always_run: false
       run_if_changed: "hack/mirror-images.sh|hack/images_to_mirror.csv"
