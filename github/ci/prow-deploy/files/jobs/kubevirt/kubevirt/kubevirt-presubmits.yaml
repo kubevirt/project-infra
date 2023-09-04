@@ -1494,7 +1494,7 @@ presubmits:
           extract_secret 'amdSEVClusterKey' /ssh-key && chmod 400 /ssh-key
 
           # login quay.io
-          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+          cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
 
           # Set up tunnel
           sshuttle -v -r kubevirt@165.204.53.121 10.216.91.126/32 192.168.0.0/24 --ssh-cmd 'ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -i /ssh-key -p 30026' > /var/log/sshuttle.log 2>&1 & echo "${!}" > /var/run/sshuttle.pid

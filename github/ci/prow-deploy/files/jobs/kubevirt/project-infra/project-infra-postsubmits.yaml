@@ -19,7 +19,7 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 make -C external-plugins/rehearse push
             resources:
               requests:
@@ -45,7 +45,7 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 bazelisk run //external-plugins/release-blocker:push
             resources:
               requests:
@@ -72,10 +72,9 @@ postsubmits:
               - "/bin/bash"
               - "-ce"
               - |
-                  cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io
+                  cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io
                   cd images
                   ./publish_image.sh kubevirt-infra-bootstrap quay.io kubevirtci
-            # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
@@ -105,11 +104,10 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
                 ./publish_multiarch_image.sh  bootstrap quay.io kubevirtci
                 ./publish_multiarch_image.sh -l golang quay.io kubevirtci
-            # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
@@ -139,11 +137,10 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
                 ./publish_multiarch_image.sh bootstrap-legacy quay.io kubevirtci
                 ./publish_multiarch_image.sh -l golang-legacy quay.io kubevirtci
-            # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
@@ -170,10 +167,9 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
                 ./publish_image.sh shared-images-controller quay.io kubevirtci
-            # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
@@ -201,10 +197,9 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
                 ./publish_image.sh kubekins-e2e quay.io kubevirtci
-            # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
@@ -236,11 +231,10 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
                 cp -r ../../kubevirt.github.io/_config kubevirt-kubevirt.github.io
                 ./publish_image.sh kubevirt-kubevirt.github.io quay.io kubevirtci
-            # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
@@ -268,10 +262,9 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
                 ./publish_image.sh kubevirt-user-guide quay.io kubevirtci
-            # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
@@ -298,10 +291,9 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
                 ./publish_image.sh prow-deploy quay.io kubevirtci
-            # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
@@ -328,10 +320,9 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
                 ./publish_image.sh autoowners quay.io kubevirtci
-            # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
@@ -358,10 +349,9 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
                 ./publish_image.sh pr-creator quay.io kubevirtci
-            # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
@@ -393,10 +383,9 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
                 ./publish_multiarch_image.sh vm-image-builder quay.io kubevirtci
-            # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
@@ -709,7 +698,7 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 bazelisk run //robots/cmd/ci-usage-exporter:push
             resources:
               requests:
@@ -736,9 +725,8 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 make -C ./robots/cmd/test-report push
-            # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
             resources:
@@ -765,7 +753,7 @@ postsubmits:
           - |
             set -e
 
-            cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+            cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
             hack/mirror-images.sh
           resources:
             requests:
