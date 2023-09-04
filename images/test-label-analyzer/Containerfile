@@ -7,9 +7,8 @@ RUN set -x && \
     mv /root/go/bin/ginkgo /usr/local/bin/
 
 RUN set -x && \
-    git clone https://github.com/dhiller/project-infra && \
+    git clone https://github.com/kubevirt/project-infra && \
     cd ./project-infra && \
-    git checkout add-consume-filter-test-file && \
     /usr/local/bin/runner.sh /bin/sh -ce 'go install ./robots/cmd/test-label-analyzer' && \
     mv /root/go/bin/test-label-analyzer /usr/local/bin/ && \
     /usr/local/bin/runner.sh /bin/sh -ce 'go clean -cache -modcache' && \
