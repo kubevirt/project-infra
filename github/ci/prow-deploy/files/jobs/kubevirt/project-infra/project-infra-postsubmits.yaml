@@ -393,9 +393,9 @@ postsubmits:
                 memory: "29Gi"
               limits:
                 memory: "29Gi"
-    - name: publish-fcos-image
+    - name: publish-fedora-coreos-kubevirt-image
       always_run: false
-      run_if_changed: "images/fcos/.*"
+      run_if_changed: "images/fedora-coreos-kubevirt/.*"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -414,7 +414,7 @@ postsubmits:
               - |
                 cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
-                ./publish_image.sh fcos quay.io kubevirtci
+                ./publish_image.sh fedora-coreos-kubevirt quay.io kubevirtci
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true

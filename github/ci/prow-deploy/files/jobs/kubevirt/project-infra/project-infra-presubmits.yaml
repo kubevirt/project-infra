@@ -426,9 +426,9 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
-  - name: build-fcos-image
+  - name: build-fedora-coreos-kubevirt-image
     always_run: false
-    run_if_changed: "images/fcos/.*"
+    run_if_changed: "images/fedora-coreos-kubevirt/.*"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
@@ -442,7 +442,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-ce"
-            - "cd images && ./publish_image.sh -b fcos quay.io kubevirtci"
+            - "cd images && ./publish_image.sh -b fedora-coreos-kubevirt quay.io kubevirtci"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true

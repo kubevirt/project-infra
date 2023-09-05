@@ -1,0 +1,1 @@
+FROM quay.io/fedora/fedora-coreos-kubevirt@sha256:5bc92e9bc89601851b8d2b06628de07c967fbdc328264cf059d26ea403863aeb
