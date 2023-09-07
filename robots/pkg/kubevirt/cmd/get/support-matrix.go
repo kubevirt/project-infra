@@ -53,7 +53,7 @@ var getSupportMatrixCommand = &cobra.Command{
 It reads the job configurations for kubevirt/kubevirt e2e presubmit jobs, extracts information and creates a table in 
 html format, matching supported k8s versions towards k6t versions.
 `,
-	RunE: GetSupportMatrix,
+	RunE: GenerateMarkdownForSupportMatrix,
 }
 
 var jobNameRegex = regexp.MustCompile(`^pull-kubevirt-e2e-k8s-([0-9]+\.[0-9]+)-sig-compute$`)
@@ -66,6 +66,7 @@ type getSupportMatrixOptions struct {
 	OutputFile             string
 	OverwriteOutputFile    bool
 	JobConfigDirectoryPath string
+	KubeVirtVersion        string
 }
 
 func (o *getSupportMatrixOptions) validateOptions() error {
@@ -91,6 +92,7 @@ func init() {
 	getSupportMatrixCommand.PersistentFlags().StringVar(&getSupportMatrixOpts.OutputFile, "output-file", "", "output file to write to, otherwise standard out will be used")
 	getSupportMatrixCommand.PersistentFlags().BoolVar(&getSupportMatrixOpts.OverwriteOutputFile, "overwrite-output-file", false, "output file should be overwritten if it exists")
 	getSupportMatrixCommand.PersistentFlags().StringVar(&getSupportMatrixOpts.JobConfigDirectoryPath, "job-config-path", "", "path to kubevirt job configuration files")
+	getSupportMatrixCommand.PersistentFlags().StringVar(&getSupportMatrixOpts.KubeVirtVersion, "kubevirt-version", "", "version of kubevirt to generate matrix for, default is empty string, which means all recent versions")
 }
 
 func majorMinorString(i *querier.SemVer) string {
@@ -106,7 +108,7 @@ type SupportMatrixTemplateData struct {
 	MapK6tToK8sVersions  map[string]map[string]bool
 }
 
-func GetSupportMatrix(_ *cobra.Command, _ []string) error {
+func GenerateMarkdownForSupportMatrix(_ *cobra.Command, _ []string) error {
 	if err := getSupportMatrixOpts.validateOptions(); err != nil {
 		return fmt.Errorf("failed to validate options: %v", err)
 	}
@@ -134,6 +136,9 @@ func GetSupportMatrix(_ *cobra.Command, _ []string) error {
 		if k6tVersion == "" {
 			continue
 		} else {
+			if getSupportMatrixOpts.KubeVirtVersion != "" && k6tVersion != getSupportMatrixOpts.KubeVirtVersion {
+				continue
+			}
 			k6tVersionsSet[k6tVersion] = struct{}{}
 		}
 		jobConfig, readConfigErr := config.ReadJobConfig(file)
