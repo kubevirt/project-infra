@@ -75,7 +75,7 @@ func (s *ConfigOptions) validate() error {
 	if s.ConfigFile != "" {
 		stat, err := os.Stat(s.ConfigFile)
 		if os.IsNotExist(err) {
-			return fmt.Errorf("config-file not set correctly, %q is not a file, %v", s.ConfigFile, err)
+			return fmt.Errorf("config-file not set correctly, %q is not a file, %w", s.ConfigFile, err)
 		}
 		if stat.IsDir() {
 			return fmt.Errorf("config-file not set correctly, %q is not a file", s.ConfigFile)
@@ -84,7 +84,7 @@ func (s *ConfigOptions) validate() error {
 	for _, ginkgoOutlinePath := range s.ginkgoOutlinePaths {
 		stat, err := os.Stat(ginkgoOutlinePath)
 		if os.IsNotExist(err) {
-			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file, %v", s.ginkgoOutlinePaths, err)
+			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file, %w", s.ginkgoOutlinePaths, err)
 		}
 		if stat.IsDir() {
 			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file", s.ginkgoOutlinePaths)
@@ -93,7 +93,7 @@ func (s *ConfigOptions) validate() error {
 	if s.testFilePath != "" {
 		stat, err := os.Stat(s.testFilePath)
 		if os.IsNotExist(err) {
-			return fmt.Errorf("test-file-path not set correctly, %q is not a directory, %v", s.testFilePath, err)
+			return fmt.Errorf("test-file-path not set correctly, %q is not a directory, %w", s.testFilePath, err)
 		}
 		if !stat.IsDir() {
 			return fmt.Errorf("test-file-path not set correctly, %q is not a directory", s.testFilePath)
@@ -107,58 +107,86 @@ func (s *ConfigOptions) validate() error {
 
 // getConfig returns a configuration with which the matching tests are being retrieved or an error in case the configuration is wrong
 func (s *ConfigOptions) getConfig() (*testlabelanalyzer.Config, error) {
-	if s.testNameLabelRE != "" {
+	switch {
+
+	case s.testNameLabelRE != "":
 		return testlabelanalyzer.NewTestNameDefaultConfig(s.testNameLabelRE), nil
-	}
-	if s.ConfigName != "" {
-		return configNamesToConfigs[s.ConfigName], nil
-	}
-	if s.ConfigFile != "" {
-		file, err := os.ReadFile(s.ConfigFile)
-		if err != nil {
-			return nil, err
+
+	case s.ConfigName != "":
+		config, exists := configNamesToConfigs[s.ConfigName]
+		if !exists {
+			return nil, fmt.Errorf("config %q does not exist", s.ConfigName)
 		}
-		var config *testlabelanalyzer.Config
-		err = json.Unmarshal(file, &config)
+		return config, nil
+
+	case s.ConfigFile != "":
+		config, err := unmarshallConfigFile(s)
 		return config, err
-	}
-	if s.FilterTestNamesFile != "" {
-		file, err := os.ReadFile(s.FilterTestNamesFile)
+
+	case s.FilterTestNamesFile != "":
+		filterTestRecords, err := unmarshallFilterTestRecords(s)
 		if err != nil {
 			return nil, err
 		}
-		var filterTestRecords []test_report.FilterTestRecord
-		err = json.Unmarshal(file, &filterTestRecords)
-		if err != nil {
-			return nil, err
-		}
-		config := &testlabelanalyzer.Config{}
 		blameLines, err := git.GetBlameLinesForFile(s.FilterTestNamesFile)
 		if err != nil {
 			return nil, err
 		}
-		blameIndex := 0
-		for _, filterTestRecord := range filterTestRecords {
-			quotedId := regexp.QuoteMeta(filterTestRecord.Id)
-			testNameDefaultConfig := &testlabelanalyzer.LabelCategory{
-				Name:            filterTestRecord.Reason,
-				TestNameLabelRE: testlabelanalyzer.NewRegexp(quotedId),
-				GinkgoLabelRE:   nil,
-			}
-			matchIdRegex := regexp.MustCompile(fmt.Sprintf(`"id":\s*"%s"`, quotedId))
-			for index := blameIndex; index < len(blameLines); index++ {
-				if !matchIdRegex.MatchString(blameLines[index].Line) {
-					continue
-				}
-				testNameDefaultConfig.BlameLine = blameLines[index]
-				blameIndex = index + 1
-				break
-			}
-			config.Categories = append(config.Categories, testNameDefaultConfig)
-		}
-		return config, err
+		return generateConfigWithCategoriesFromFilterTestRecords(filterTestRecords, blameLines), nil
+
+	default:
+		return nil, fmt.Errorf("no configuration found")
 	}
-	return nil, fmt.Errorf("no configuration found!")
+}
+
+func generateConfigWithCategoriesFromFilterTestRecords(filterTestRecords []test_report.FilterTestRecord, blameLines []*git.BlameLine) *testlabelanalyzer.Config {
+	config := &testlabelanalyzer.Config{}
+	blameIndex := 0
+	for _, filterTestRecord := range filterTestRecords {
+		quotedId := regexp.QuoteMeta(filterTestRecord.Id)
+		testNameDefaultConfig := &testlabelanalyzer.LabelCategory{
+			Name:            filterTestRecord.Reason,
+			TestNameLabelRE: testlabelanalyzer.NewRegexp(quotedId),
+			GinkgoLabelRE:   nil,
+		}
+		matchIdRegex := regexp.MustCompile(fmt.Sprintf(`"id":\s*"%s"`, quotedId))
+		for index := blameIndex; index < len(blameLines); index++ {
+			if !matchIdRegex.MatchString(blameLines[index].Line) {
+				continue
+			}
+			testNameDefaultConfig.BlameLine = blameLines[index]
+			blameIndex = index + 1
+			break
+		}
+		config.Categories = append(config.Categories, testNameDefaultConfig)
+	}
+	return config
+}
+
+func unmarshallFilterTestRecords(s *ConfigOptions) ([]test_report.FilterTestRecord, error) {
+	file, err := os.ReadFile(s.FilterTestNamesFile)
+	if err != nil {
+		return nil, err
+	}
+	var filterTestRecords []test_report.FilterTestRecord
+	err = json.Unmarshal(file, &filterTestRecords)
+	if err != nil {
+		return nil, err
+	}
+	return filterTestRecords, nil
+}
+
+func unmarshallConfigFile(s *ConfigOptions) (*testlabelanalyzer.Config, error) {
+	file, err := os.ReadFile(s.ConfigFile)
+	if err != nil {
+		return nil, err
+	}
+	var config *testlabelanalyzer.Config
+	err = json.Unmarshal(file, &config)
+	if err != nil {
+		return nil, err
+	}
+	return config, nil
 }
 
 var rootConfigOpts = ConfigOptions{}

@@ -210,7 +210,7 @@ func runStatsCommand(configurationOptions ConfigOptions) error {
 
 		testFileOutlines, err := getTestFileOutlines(configurationOptions)
 		if err != nil {
-			return fmt.Errorf("failed to walk test file path %q: %v", configurationOptions.testFilePath, err)
+			return fmt.Errorf("failed to walk test file path %q: %w", configurationOptions.testFilePath, err)
 		}
 		if len(testFileOutlines) == 0 {
 			return fmt.Errorf("could not derive an outline, tests are likely not Ginkgo V2 based")
@@ -344,7 +344,7 @@ func getGinkgoOutlineFromFile(path string) ([]*testlabelanalyzer.GinkgoNode, err
 	}
 	testOutline, err := toOutline(output)
 	if err != nil {
-		return nil, fmt.Errorf("toOutline failed on %s: %v", path, err)
+		return nil, fmt.Errorf("toOutline failed on %s: %w", path, err)
 	}
 	return testOutline, nil
 }
@@ -356,7 +356,7 @@ func collectStatsFromGinkgoOutlines(configurationOptions ConfigOptions) (string,
 	for _, path := range configurationOptions.ginkgoOutlinePaths {
 		fileData, err := os.ReadFile(path)
 		if err != nil {
-			return "", fmt.Errorf("failed to read file %q: %v", path, err)
+			return "", fmt.Errorf("failed to read file %q: %w", path, err)
 		}
 		testOutline, err2 := toOutline(fileData)
 		if err2 != nil {

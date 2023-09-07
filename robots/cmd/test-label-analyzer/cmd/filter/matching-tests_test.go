@@ -34,7 +34,7 @@ var _ = Describe("filter", func() {
 			func(input testlabelanalyzer.TestFilesStats, expected matchingTests) {
 				Expect(filterMatchingTests(input, "")).To(BeEquivalentTo(expected))
 			},
-			Entry("empty input", testlabelanalyzer.TestFilesStats{}, matchingTests{}),
+			Entry("empty input", testlabelanalyzer.TestFilesStats{}, nil),
 			Entry("simple input",
 				testlabelanalyzer.TestFilesStats{
 					FilesStats: []*testlabelanalyzer.FileStats{

@@ -29,6 +29,8 @@ import (
 	"strings"
 )
 
+const FILEMODE_UGO_READ_WRITE = 0666
+
 type filterStatsMatchingTestsOptions struct {
 	outputFilePath string
 
@@ -46,7 +48,7 @@ func (o *filterStatsMatchingTestsOptions) validate() error {
 	}
 	o.outputFile, err = os.Create(o.outputFilePath)
 	if err != nil {
-		return fmt.Errorf("could not create output file %q: %v", o.outputFilePath, err)
+		return fmt.Errorf("could not create output file %q: %w", o.outputFilePath, err)
 	}
 	return nil
 }
@@ -75,19 +77,19 @@ func filterMatchingTestsFromInputFile(inputFile string, opts *filterStatsMatchin
 	if errors.IsNotFound(err) {
 		return fmt.Errorf("input file %q does not exist", inputFile)
 	} else if err != nil {
-		return fmt.Errorf("input file %q created an error: %v", inputFile, err)
+		return fmt.Errorf("input file %q created an error: %w", inputFile, err)
 	}
 	var input testlabelanalyzer.TestFilesStats
 	err = json.Unmarshal(fileContent, &input)
 	if err != nil {
-		return fmt.Errorf("input file %q created an error: %v", inputFile, err)
+		return fmt.Errorf("input file %q created an error: %w", inputFile, err)
 	}
 	filtered := filterMatchingTests(input, opts.inputVersion)
 	marshal, err := json.Marshal(filtered)
 	if err != nil {
-		return fmt.Errorf("failed marshalling data: %v", err)
+		return fmt.Errorf("failed marshalling data: %w", err)
 	}
-	err = os.WriteFile(opts.outputFilePath, marshal, 0666)
+	err = os.WriteFile(opts.outputFilePath, marshal, FILEMODE_UGO_READ_WRITE)
 	return err
 }
 
@@ -112,7 +114,7 @@ type matchingTest struct {
 }
 
 func filterMatchingTests(input testlabelanalyzer.TestFilesStats, inputVersion string) matchingTests {
-	result := make(matchingTests, 0, 0)
+	var result matchingTests
 	for _, fileStats := range input.FilesStats {
 		for _, matchingSpecPath := range fileStats.MatchingSpecPaths {
 			var name string

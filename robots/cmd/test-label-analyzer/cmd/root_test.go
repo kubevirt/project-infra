@@ -38,7 +38,7 @@ var _ = Describe("root tests", func() {
 		DescribeTable("returns a config",
 			func(options *ConfigOptions, expectedConfig *test_label_analyzer.Config, expectedErr error) {
 				config, err := options.getConfig()
-				if err != nil {
+				if expectedErr != nil {
 					Expect(err).To(BeEquivalentTo(expectedErr))
 				} else {
 					Expect(config).To(BeEquivalentTo(expectedConfig))
@@ -56,7 +56,7 @@ var _ = Describe("root tests", func() {
 					outputHTML:         false,
 				},
 				nil,
-				fmt.Errorf("no configuration found!"),
+				fmt.Errorf("no configuration found"),
 			),
 			Entry("for simple RE",
 				&ConfigOptions{
@@ -83,6 +83,19 @@ var _ = Describe("root tests", func() {
 				},
 				test_label_analyzer.NewQuarantineDefaultConfig(),
 				nil,
+			),
+			Entry("for config name that doesn't exist",
+				&ConfigOptions{
+					ConfigFile:         "",
+					ConfigName:         "ihavenoclue",
+					ginkgoOutlinePaths: nil,
+					testFilePath:       "",
+					remoteURL:          "",
+					testNameLabelRE:    "",
+					outputHTML:         false,
+				},
+				nil,
+				fmt.Errorf("config \"ihavenoclue\" does not exist"),
 			),
 		)
 
