@@ -15,7 +15,7 @@ postsubmits:
         repo: project-infra
         base_ref: main
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
@@ -43,7 +43,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang-legacy:v20220810-a8f2e6c
+        - image: quay.io/kubevirtci/golang:v20230801-94954c0
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
