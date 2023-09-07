@@ -25,9 +25,9 @@
           - "--exclude=.git"
           - "--exclude=venv"
 
-    - name: Launch Docker in Docker
+    - name: Launch Podman in Container
       shell: |
-        /usr/local/bin/start_dind.sh
+        /usr/local/bin/start_pinc.sh
       changed_when: false
 
     - name: Create cluster
@@ -52,12 +52,11 @@
                   nodeRegistration:
                     name: '{{ node_name }}'
                     kubeletExtraArgs:
-                      system-reserved: memory=16Gi
                       node-labels: "ingress-ready=true"
         - name: Launch cluster
           shell: |
             kind delete cluster
-            kind create cluster --config {{ kind.cluster_config }} --image quay.io/kubevirtci/kind:{{ kind.image_tag }} --retain
+            kind create cluster --config '{{ kind.cluster_config }}' --image quay.io/kubevirtci/kind:{{ kind.image_tag }} --retain
           changed_when: false
           when: "'kubevirtci' in deploy_environment"
       rescue:
