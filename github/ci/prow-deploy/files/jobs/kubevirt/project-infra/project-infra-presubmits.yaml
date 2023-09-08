@@ -6,7 +6,7 @@ presubmits:
     cluster: ibm-prow-jobs
     spec:
       containers:
-      - image: gcr.io/k8s-prow/checkconfig:v20230830-eba6df1fa1
+      - image: gcr.io/k8s-prow/checkconfig:v20230907-a192709c2d
         args:
         - "/ko-app/checkconfig"
         - "--config-path"
@@ -680,7 +680,7 @@ presubmits:
     spec:
       containers:
       - name: peribolos
-        image: gcr.io/k8s-prow/peribolos:v20230830-eba6df1fa1
+        image: gcr.io/k8s-prow/peribolos:v20230907-a192709c2d
         command:
         - /ko-app/peribolos
         # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
@@ -715,7 +715,7 @@ presubmits:
     spec:
       containers:
       - name: label-sync
-        image: gcr.io/k8s-prow/label_sync:v20230830-eba6df1fa1
+        image: gcr.io/k8s-prow/label_sync:v20230907-a192709c2d
         command: [ "/ko-app/label_sync" ]
         args:
         - --config=github/ci/prow-deploy/files/labels.yaml
@@ -738,7 +738,7 @@ presubmits:
     spec:
       containers:
       - name: label-sync
-        image: gcr.io/k8s-prow/label_sync:v20230830-eba6df1fa1
+        image: gcr.io/k8s-prow/label_sync:v20230907-a192709c2d
         command: [ "/ko-app/label_sync" ]
         args:
         - --config=github/ci/prow-deploy/files/labels.yaml
