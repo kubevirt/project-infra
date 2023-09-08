@@ -11,7 +11,7 @@ printf '=%.0s' {1..80}; echo\n\
                 -t 0 \
                 unix://${PODMAN_SOCKET} \
                 >/var/log/podman.log 2>&1 & \
-        echo "${!}" > /var/run/podman.pid \n\
+    echo "${!}" > /var/run/podman.pid \n\
     ln -s ${PODMAN_SOCKET} /var/run/docker.sock \n\
     sed -i 's/short-name-mode="enforcing"/short-name-mode="permissive"/g' /etc/containers/registries.conf \n\
 )\n\

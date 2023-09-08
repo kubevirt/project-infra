@@ -1,8 +1,8 @@
-ansible == 4.2.0
-kubernetes == 11.0.0
-kubernetes-validate == 1.19.0
-molecule == 3.5.1
-molecule-docker == 1.0.2
-openshift == 0.11.2
-selinux == 0.2.1
-pyyaml == 5.3.1
+ansible == 8.3.0
+kubernetes == 26.1.0
+kubernetes-validate == 1.27.0
+molecule == 6.0.2
+molecule-docker == 2.1.0
+openshift == 0.13.2
+selinux == 0.3.0
+pyyaml == 6.0.1
