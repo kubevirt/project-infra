@@ -7,7 +7,7 @@
     kubectl wait --namespace ingress-nginx \
           --for=condition=ready pod \
           --selector=app.kubernetes.io/component=controller \
-          --timeout=300s
+          --timeout=600s
   changed_when: false
   environment:
     KUBECONFIG: '{{ kubeconfig_path }}'

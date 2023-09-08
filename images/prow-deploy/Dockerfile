@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20221222-8f66e7e as builder
+FROM quay.io/kubevirtci/golang:v20230502-bfaa042 as builder
 
 RUN git clone https://github.com/kubernetes/test-infra.git && \
   cd test-infra && \
@@ -23,7 +23,7 @@ RUN curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_lin
   chmod a+x ./yq && \
   mv ./yq /usr/local/bin
 
-RUN curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.11.1/kind-linux-amd64 && \
+RUN curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.20.0/kind-linux-amd64 && \
   chmod a+x ./kind && \
   mv ./kind /usr/local/bin
 
@@ -36,4 +36,4 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-RUN dnf install -y which
+RUN dnf install -y which openssl
