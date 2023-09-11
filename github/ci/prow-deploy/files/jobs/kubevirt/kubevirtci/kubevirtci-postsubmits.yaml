@@ -15,7 +15,7 @@ postsubmits:
         repo: project-infra
         base_ref: main
       labels:
-        preset-podman-in-container-enabled: "true"
+        preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
@@ -43,7 +43,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20230801-94954c0
+        - image: quay.io/kubevirtci/golang-legacy:v20220810-a8f2e6c
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
@@ -54,6 +54,9 @@ postsubmits:
             echo "$(git tag --points-at HEAD | head -1)" > latest &&
             gsutil cp ./latest gs://kubevirt-prow/release/kubevirt/kubevirtci/latest
           # docker-in-docker needs privileged mode
+          env:
+          - name: GIMME_GO_VERSION
+            value: "1.19.9"
           securityContext:
             privileged: true
           volumeMounts:
