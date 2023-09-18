@@ -11,3 +11,8 @@
     name: storage
     persistentVolumeClaim:
       claimName: docker-mirror-proxy
+- op: add
+  path: /spec/template/spec/securityContext
+  value:
+      runAsUser: 0
+      runAsGroup: 0

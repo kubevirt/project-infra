@@ -1,0 +1,16 @@
+testinfra_dir: /tmp/test-infra
+kubectl_exec: kubectl
+bootstrap_full_config: false
+reconcile_github_webhooks: false
+rescale_pushgateway_deployment: false
+project_infra_root: /home/prow/go/src/github.com/kubevirt/project-infra
+secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/kubevirt-prow-control-plane/secrets/'
+components_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/components'
+kubeconfig_path: '{{ secrets_dir }}/kubeconfig'
+
+shell_environment:
+  KUBECONFIG: "{{ kubeconfig_path }}"
+
+remote_cluster_prow_jobs_context: kubevirt-prow-control-plane
+ansible_python_interpreter: /usr/bin/python3
+delete_priority_classes: false
