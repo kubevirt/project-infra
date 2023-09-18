@@ -3,7 +3,7 @@ postsubmits:
   - name: push-release-containerized-data-importer-images
     branches:
     - release-v\d+\.\d+
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true
@@ -41,7 +41,7 @@ postsubmits:
   - name: push-latest-containerized-data-importer-images
     branches:
     - main
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true
@@ -77,7 +77,7 @@ postsubmits:
   - name: push-release-containerized-data-importer-tag
     branches:
     - release-v\d+\.\d+
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true
@@ -118,7 +118,7 @@ postsubmits:
   - name: push-containerized-data-importer-main
     branches:
     - main
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true
@@ -160,7 +160,7 @@ postsubmits:
     branches:
     - main
     - release-v\d+\.\d+
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true

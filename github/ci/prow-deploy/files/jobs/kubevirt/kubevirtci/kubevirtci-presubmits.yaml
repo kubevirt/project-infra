@@ -314,7 +314,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       timeout: 0h5m0s

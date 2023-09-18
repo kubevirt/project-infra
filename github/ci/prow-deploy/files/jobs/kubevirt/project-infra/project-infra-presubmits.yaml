@@ -3,7 +3,7 @@ presubmits:
   - name: check-prow-config
     always_run: true
     decorate: true
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
       - image: gcr.io/k8s-prow/checkconfig:v20230908-12387e8f71
@@ -23,7 +23,7 @@ presubmits:
     run_if_changed: "robots/.*|WORKSPACE|go_third_party.bzl|go.mod"
     optional: false
     decorate: true
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     labels:
       preset-bazel-cache: "true"
     spec:
@@ -44,7 +44,7 @@ presubmits:
     run_if_changed: "releng/.*|WORKSPACE|go_third_party.bzl|go.mod"
     optional: false
     decorate: true
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     labels:
       preset-bazel-cache: "true"
     spec:
@@ -63,7 +63,7 @@ presubmits:
             memory: "4Gi"
   - name: pull-project-infra-test-external-plugins
     run_if_changed: "external-plugins/.*|WORKSPACE|go_third_party.bzl|go.mod"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     optional: false
     decorate: true
     labels:
@@ -89,7 +89,7 @@ presubmits:
     run_if_changed: "github/ci/services/.*|WORKSPACE|go_third_party.bzl|go.mod"
     optional: false
     decorate: true
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     labels:
       preset-bazel-cache: "true"
     spec:
@@ -112,7 +112,7 @@ presubmits:
   - name: pull-project-infra-test-bazel-config
     run_if_changed: "github/ci/services/.*|external-plugins/.*|releng/.*|robots/.*|go.mod"
     decorate: true
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     labels:
       preset-bazel-cache: "true"
     spec:
@@ -145,7 +145,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -169,7 +169,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -195,7 +195,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -221,7 +221,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -247,7 +247,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -273,7 +273,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     extra_refs:
     - org: kubevirt
       repo: kubevirt.github.io
@@ -304,7 +304,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -330,7 +330,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -410,7 +410,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -434,7 +434,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -460,7 +460,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-pgp-bot-key: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       securityContext:
         runAsUser: 0
@@ -645,7 +645,7 @@ presubmits:
       preset-bazel-cache: "true"
     annotations:
       testgrid-create-test-group: "false"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     extra_refs:
     - org: kubernetes
       repo: test-infra
@@ -676,7 +676,7 @@ presubmits:
       timeout: 2h
       grace_period: 5m
     max_concurrency: 1
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
       - name: peribolos
@@ -711,7 +711,7 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     max_concurrency: 1
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
       - name: label-sync
@@ -733,7 +733,7 @@ presubmits:
     decoration_config:
       timeout: 1h
       grace_period: 5m
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     max_concurrency: 1
     spec:
       containers:
@@ -748,7 +748,7 @@ presubmits:
       restartPolicy: Never
   - annotations:
       testgrid-create-test-group: "false"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       timeout: 1h

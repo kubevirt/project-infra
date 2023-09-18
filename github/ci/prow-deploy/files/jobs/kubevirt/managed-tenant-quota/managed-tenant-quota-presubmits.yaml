@@ -3,7 +3,7 @@ presubmits:
   - name: pull-mtq-unit-test
     skip_branches:
       - release-v\d+\.\d+
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -32,7 +32,7 @@ presubmits:
   - name: pull-mtq-generate-verify
     skip_branches:
       - release-v\d+\.\d+
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     annotations:
       fork-per-release: "true"
     always_run: true

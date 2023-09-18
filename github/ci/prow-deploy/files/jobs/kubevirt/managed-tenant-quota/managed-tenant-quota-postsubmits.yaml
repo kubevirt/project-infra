@@ -3,7 +3,7 @@ postsubmits:
   - name: push-release-mtq-images
     branches:
     - release-v\d+\.\d+
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true
@@ -41,7 +41,7 @@ postsubmits:
   - name: push-latest-mtq-images
     branches:
     - main
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true
@@ -77,7 +77,7 @@ postsubmits:
   - name: push-mtq-tag
     branches:
     - release-v\d+\.\d+
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true
@@ -118,7 +118,7 @@ postsubmits:
   - name: push-mtq-main
     branches:
     - main
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true
@@ -159,7 +159,7 @@ postsubmits:
   - name: push-mtq-builder
     branches:
     - main
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true

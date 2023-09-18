@@ -94,7 +94,7 @@ presubmits:
     context: pull-cdi-generate-verify
     branches:
       - release-v1.38
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: true
     decorate: true
@@ -123,7 +123,7 @@ presubmits:
     context: pull-cdi-apidocs
     branches:
       - release-v1.38
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: true
     decorate: true
@@ -152,7 +152,7 @@ presubmits:
     context: pull-cdi-linter
     branches:
       - release-v1.38
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: true
     decorate: true

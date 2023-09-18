@@ -15,7 +15,7 @@ presubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror: "false"
         preset-shared-images: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         containers:
           - image: gcr.io/k8s-testimages/bootstrap:v20190516-c6832d9
@@ -90,7 +90,7 @@ presubmits:
               - "export NMSTATE_PARALLEL_ROLLOUT=true && automation/check-patch.e2e-k8s.sh"
 
     - name: pull-kubernetes-nmstate-docs-0.37
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       branches:
         - release-0.37
       always_run: true

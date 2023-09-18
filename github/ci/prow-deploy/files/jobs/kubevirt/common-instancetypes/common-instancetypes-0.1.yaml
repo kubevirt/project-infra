@@ -11,7 +11,7 @@ presubmits:
     max_concurrency: 5
     labels:
       preset-docker-mirror: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
       - image: quay.io/kubevirtci/common-instancetypes-builder:v20221104-3adec0b

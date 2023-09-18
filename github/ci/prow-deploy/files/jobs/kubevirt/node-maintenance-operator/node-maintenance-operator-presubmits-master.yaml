@@ -1,7 +1,7 @@
 presubmits:
   kubevirt/node-maintenance-operator:
   - name: pull-node-maintenance-operator-check
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     skip_branches:
       - release-\d+\.\d+
       - release-v\d+\.\d+\.\d+
@@ -32,7 +32,7 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-node-maintenance-operator-build
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     skip_branches:
       - release-\d+\.\d+
       - release-v\d+\.\d+\.\d+

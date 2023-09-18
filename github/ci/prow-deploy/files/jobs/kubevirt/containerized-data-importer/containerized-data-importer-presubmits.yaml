@@ -36,7 +36,7 @@ presubmits:
       - release-v1.38
       - release-v1.43
       - release-v1.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -68,7 +68,7 @@ presubmits:
       - release-v1.38
       - release-v1.43
       - release-v1.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -100,7 +100,7 @@ presubmits:
       - release-v1.38
       - release-v1.43
       - release-v1.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -132,7 +132,7 @@ presubmits:
       - release-v1.38
       - release-v1.43
       - release-v1.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -446,7 +446,7 @@ presubmits:
     optional: false
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s

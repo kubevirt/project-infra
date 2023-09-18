@@ -1,7 +1,7 @@
 presubmits:
   kubevirt/csi-driver:
     - name: pull-csi-driver-unit-test
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       skip_branches:
         - release-\d+\.\d+
       annotations:
@@ -37,7 +37,7 @@ presubmits:
               requests:
                 memory: "4Gi"
     - name: pull-csi-driver-linter
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       skip_branches:
         - release-\d+\.\d+
       annotations:
@@ -73,7 +73,7 @@ presubmits:
               requests:
                 memory: "4Gi"
     - name: pull-csi-driver-sanity-test
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       skip_branches:
         - release-\d+\.\d+
       annotations:
@@ -214,7 +214,7 @@ presubmits:
               requests:
                 memory: "29Gi"
     - name: pull-csi-driver-goveralls
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       skip_branches:
         - release-\d+\.\d+
       annotations:

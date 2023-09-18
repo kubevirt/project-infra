@@ -4,7 +4,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -338,7 +338,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -367,7 +367,7 @@ presubmits:
   - always_run: false
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -398,7 +398,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -428,7 +428,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       rehearsal.allowed: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -488,7 +488,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-planee
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -517,7 +517,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -550,7 +550,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -579,7 +579,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 10m0s
@@ -619,7 +619,7 @@ presubmits:
         secret:
           secretName: kubevirtci-coveralls-token
   - always_run: true
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 10m0s
@@ -659,7 +659,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -688,7 +688,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -717,7 +717,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -747,7 +747,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -776,7 +776,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1073,7 +1073,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1454,7 +1454,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1911,7 +1911,7 @@ presubmits:
   - always_run: false
     annotations:
       fork-per-release: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s

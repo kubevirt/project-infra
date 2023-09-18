@@ -3,7 +3,7 @@ presubmits:
   - name: pull-qe-tools-make-test
     always_run: true
     decorate: true
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
       - command:

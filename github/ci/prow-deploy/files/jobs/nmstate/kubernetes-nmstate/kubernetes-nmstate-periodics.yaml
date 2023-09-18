@@ -4,7 +4,7 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598
@@ -39,7 +39,7 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598
@@ -74,7 +74,7 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   decorate: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598

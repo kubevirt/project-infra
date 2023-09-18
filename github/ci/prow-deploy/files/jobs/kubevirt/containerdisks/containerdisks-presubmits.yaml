@@ -4,7 +4,7 @@ presubmits:
     optional: false
     annotations:
       testgrid-create-test-group: "false"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -30,7 +30,7 @@ presubmits:
     optional: false
     annotations:
       testgrid-create-test-group: "false"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 5m0s

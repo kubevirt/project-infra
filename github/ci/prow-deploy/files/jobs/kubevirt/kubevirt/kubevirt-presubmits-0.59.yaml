@@ -987,7 +987,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.59
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-unit-test
     decorate: true
     decoration_config:
@@ -1162,7 +1162,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.59
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-check-unassigned-tests
     decorate: true
     decoration_config:

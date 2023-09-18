@@ -816,7 +816,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-generate
     decorate: true
     decoration_config:
@@ -843,7 +843,7 @@ presubmits:
   - always_run: false
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-verify-rpms
     decorate: true
     decoration_config:
@@ -872,7 +872,7 @@ presubmits:
   - always_run: false
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-verify-go-mod
     decorate: true
     decoration_config:
@@ -903,7 +903,7 @@ presubmits:
       rehearsal.allowed: "true"
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-gosec
     decorate: true
     decoration_config:
@@ -932,7 +932,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-build
     decorate: true
     decoration_config:
@@ -959,7 +959,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-build-arm64
     decorate: true
     decoration_config:
@@ -989,7 +989,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-unit-test
     decorate: true
     decoration_config:
@@ -1016,7 +1016,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-goveralls
     decorate: true
     decoration_config:
@@ -1056,7 +1056,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-apidocs
     decorate: true
     decoration_config:
@@ -1083,7 +1083,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-client-python
     decorate: true
     decoration_config:
@@ -1110,7 +1110,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-manifests
     decorate: true
     decoration_config:
@@ -1138,7 +1138,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-prom-rules-verify
     decorate: true
     decoration_config:
@@ -1165,7 +1165,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.49
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-check-unassigned-tests
     decorate: true
     decoration_config:

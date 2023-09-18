@@ -14,7 +14,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-github-credentials: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
