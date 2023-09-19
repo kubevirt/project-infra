@@ -4,7 +4,7 @@ presubmits:
     decorate: true
     always_run: true
     skip_report: false
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
       - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20220825-9d7149f
@@ -20,7 +20,7 @@ presubmits:
       preset-github-credentials: "true"
     decorate: true
     always_run: true
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       securityContext:
         runAsUser: 0

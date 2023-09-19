@@ -475,11 +475,18 @@ presets:
   - name: PODMAN_IN_CONTAINER_ENABLED
     value: "true"
   volumes:
+  - name: modules
+    hostPath:
+      path: /lib/modules
+      type: Directory
   - name: podman-data
     emptyDir: {}
   volumeMounts:
   - name: podman-data
     mountPath: /var/lib/containers
+  - name: modules
+    mountPath: /lib/modules
+    readOnly: true
 - labels:
     preset-podman-shared-images: "true"
   volumes:

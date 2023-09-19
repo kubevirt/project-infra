@@ -7,7 +7,7 @@ periodics:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   decorate: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598
@@ -28,7 +28,7 @@ periodics:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   decorate: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598
@@ -49,7 +49,7 @@ periodics:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   decorate: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598

@@ -34,7 +34,7 @@ presubmits:
           requests:
             memory: "29Gi"
   - name: pull-node-maintenance-operator-check
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     branches:
       - release-0.8
     annotations:
@@ -63,7 +63,7 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-node-maintenance-operator-build
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     branches:
       - release-0.8
     annotations:

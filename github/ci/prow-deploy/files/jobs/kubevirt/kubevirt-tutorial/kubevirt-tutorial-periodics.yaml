@@ -12,7 +12,7 @@ periodics:
         repo: kubevirt-tutorial
         base_ref: main
         path_alias: kubevirt-tutorial
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0

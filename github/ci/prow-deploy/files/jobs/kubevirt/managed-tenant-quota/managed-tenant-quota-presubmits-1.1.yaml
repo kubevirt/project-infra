@@ -4,7 +4,7 @@ presubmits:
     context: pull-mtq-unit-test
     branches:
       - release-v1.1
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     decorate: true
@@ -32,7 +32,7 @@ presubmits:
     context: pull-mtq-generate-verify
     branches:
       - release-v1.1
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: true
     decorate: true

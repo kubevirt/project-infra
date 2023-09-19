@@ -3,7 +3,7 @@ postsubmits:
   - name: push-latest-node-maintenance-operator
     branches:
     - master
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true
@@ -37,7 +37,7 @@ postsubmits:
     branches:
     # branches also handle tags
     - ^v\d+\.\d+\.\d+$
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true

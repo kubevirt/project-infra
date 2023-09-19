@@ -85,7 +85,7 @@ postsubmits:
   - name: push-release-hostpath-provisioner-tag
     branches:
     - release-v\d+\.\d+
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
     skip_report: true

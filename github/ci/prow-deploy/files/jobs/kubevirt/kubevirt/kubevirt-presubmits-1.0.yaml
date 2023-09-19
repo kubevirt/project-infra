@@ -45,7 +45,7 @@ presubmits:
   - always_run: false
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirtci-bump-kubevirt
     decorate: true
     decoration_config:
@@ -261,9 +261,6 @@ presubmits:
         securityContext:
           privileged: true
         volumeMounts:
-        - mountPath: /lib/modules
-          name: modules
-          readOnly: true
         - mountPath: /sys/fs/cgroup
           name: cgroup
         - mountPath: /dev/vfio/
@@ -274,10 +271,6 @@ presubmits:
         hardwareSupport: gpu
       priorityClassName: vgpu
       volumes:
-      - hostPath:
-          path: /lib/modules
-          type: Directory
-        name: modules
       - hostPath:
           path: /sys/fs/cgroup
           type: Directory
@@ -404,7 +397,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-generate
     decorate: true
     decoration_config:
@@ -432,7 +425,7 @@ presubmits:
   - always_run: false
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-verify-rpms
     decorate: true
     decoration_config:
@@ -462,7 +455,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-verify-go-mod
     decorate: true
     decoration_config:
@@ -492,7 +485,7 @@ presubmits:
       rehearsal.allowed: "true"
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-gosec
     decorate: true
     decoration_config:
@@ -549,7 +542,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-build
     decorate: true
     decoration_config:
@@ -577,7 +570,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-build-arm64
     decorate: true
     decoration_config:
@@ -608,7 +601,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-unit-test
     decorate: true
     decoration_config:
@@ -636,7 +629,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-goveralls
     decorate: true
     decoration_config:
@@ -676,7 +669,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-apidocs
     decorate: true
     decoration_config:
@@ -705,7 +698,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-client-python
     decorate: true
     decoration_config:
@@ -733,7 +726,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-manifests
     decorate: true
     decoration_config:
@@ -761,7 +754,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-prom-rules-verify
     decorate: true
     decoration_config:
@@ -789,7 +782,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-check-unassigned-tests
     decorate: true
     decoration_config:
@@ -1014,18 +1007,11 @@ presubmits:
         securityContext:
           privileged: true
         volumeMounts:
-        - mountPath: /lib/modules
-          name: modules
-          readOnly: true
         - mountPath: /sys/fs/cgroup
           name: cgroup
         - mountPath: /var/log/audit
           name: audit
       volumes:
-      - hostPath:
-          path: /lib/modules
-          type: Directory
-        name: modules
       - hostPath:
           path: /sys/fs/cgroup
           type: Directory
@@ -1068,7 +1054,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-code-lint
     decorate: true
     decoration_config:
@@ -1569,7 +1555,7 @@ presubmits:
   - always_run: false
     branches:
     - release-1.0
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-e2e-k8s-1.26-sev
     decorate: true
     decoration_config:

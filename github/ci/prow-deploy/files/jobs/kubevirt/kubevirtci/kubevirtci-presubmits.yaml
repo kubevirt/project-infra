@@ -219,18 +219,11 @@ presubmits:
         securityContext:
           privileged: true
         volumeMounts:
-        - mountPath: /lib/modules
-          name: modules
-          readOnly: true
         - mountPath: /dev
           name: devices
       nodeSelector:
         type: bare-metal-external
       volumes:
-      - hostPath:
-          path: /lib/modules
-          type: Directory
-        name: modules
       - hostPath:
           path: /dev
           type: Directory
@@ -314,7 +307,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       timeout: 0h5m0s

@@ -10,7 +10,7 @@ presubmits:
       decoration_config:
         timeout: 3h
         grace_period: 5m
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       max_concurrency: 4
       labels:
         preset-dind-enabled: "true"

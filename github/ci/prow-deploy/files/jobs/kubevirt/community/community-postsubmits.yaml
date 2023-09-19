@@ -3,7 +3,7 @@ postsubmits:
     - name: postsubmit-community-update-kubevirt-devstats-repo-sql
       branches:
         - main
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       always_run: false
       run_if_changed: "sigs.yaml"
       extra_refs:

@@ -6,7 +6,7 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
         preset-bazel-cache: "true"
@@ -32,7 +32,7 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
         preset-bazel-cache: "true"
@@ -63,7 +63,7 @@ postsubmits:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -158,7 +158,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -188,7 +188,7 @@ postsubmits:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -218,7 +218,7 @@ postsubmits:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       extra_refs:
       - org: kubevirt
         repo: kubevirt.github.io
@@ -253,7 +253,7 @@ postsubmits:
         preset-dind-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -282,7 +282,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -403,7 +403,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -437,7 +437,7 @@ postsubmits:
         preset-github-credentials: "true"
         preset-pgp-bot-key: "true"
       skip_report: false
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         securityContext:
           runAsUser: 0
@@ -470,7 +470,7 @@ postsubmits:
         preset-github-credentials: "true"
         preset-pgp-bot-key: "true"
       skip_report: false
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         securityContext:
           runAsUser: 0
@@ -501,7 +501,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
         preset-pgp-bot-key: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         securityContext:
           runAsUser: 0
@@ -539,7 +539,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
         preset-pgp-bot-key: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         securityContext:
           runAsUser: 0
@@ -577,7 +577,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
         preset-pgp-bot-key: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         securityContext:
           runAsUser: 0
@@ -615,7 +615,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
         preset-pgp-bot-key: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         securityContext:
           runAsUser: 0
@@ -662,7 +662,7 @@ postsubmits:
       labels:
         preset-gcs-credentials: "true"
       decorate: true
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         containers:
         - image: gcr.io/k8s-prow/configurator:v20230908-12387e8f71
@@ -685,7 +685,7 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
         preset-kubevirtci-quay-credential: "true"
@@ -711,7 +711,7 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -740,7 +740,7 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       labels:
         preset-kubevirtci-quay-credential: "true"
         preset-docker-mirror-proxy: "true"
@@ -766,7 +766,7 @@ postsubmits:
       always_run: false
       annotations:
         testgrid-create-test-group: "false"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       decorate: true
       decoration_config:
         grace_period: 5m

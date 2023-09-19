@@ -8,7 +8,7 @@ presubmits:
       labels:
         preset-dind-enabled: "true"
         preset-docker-mirror: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         containers:
           - image: gcr.io/k8s-testimages/bootstrap:v20191001-e584f29

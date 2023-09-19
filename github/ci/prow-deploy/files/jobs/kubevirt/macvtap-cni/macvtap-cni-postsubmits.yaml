@@ -12,7 +12,7 @@ postsubmits:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -38,7 +38,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0

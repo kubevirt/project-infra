@@ -2,7 +2,7 @@ periodics:
   - name: periodic-publish-kubemacpool-flakefinder-weekly-report
     cron: "50 0 * * *"
     decorate: true
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     annotations:
       testgrid-create-test-group: "false"
     spec:
@@ -36,7 +36,7 @@ periodics:
             secretName: gcs
   - name: periodic-publish-kubemacpool-flakefinder-daily-report
     cron: "30 0 * * *"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
@@ -74,7 +74,7 @@ periodics:
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598

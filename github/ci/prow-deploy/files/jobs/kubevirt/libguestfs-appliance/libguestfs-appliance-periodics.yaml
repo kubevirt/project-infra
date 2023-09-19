@@ -22,7 +22,7 @@ periodics:
      repo: libguestfs-appliance
      base_ref: main
      work_dir: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0

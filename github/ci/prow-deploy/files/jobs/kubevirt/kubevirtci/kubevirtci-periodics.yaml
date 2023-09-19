@@ -59,7 +59,7 @@ periodics:
     preset-docker-mirror: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101

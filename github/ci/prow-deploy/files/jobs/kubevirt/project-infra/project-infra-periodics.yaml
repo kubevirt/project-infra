@@ -4,7 +4,7 @@ periodics:
   decorate: true
   annotations:
     testgrid-create-test-group: "false"
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: gcr.io/k8s-prow/commenter:v20230908-12387e8f71
@@ -49,7 +49,7 @@ periodics:
   labels:
     preset-github-credentials: "true"
   decorate: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: gcr.io/k8s-prow/commenter:v20230908-12387e8f71
@@ -78,7 +78,7 @@ periodics:
   labels:
     preset-github-credentials: "true"
   decorate: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: gcr.io/k8s-prow/commenter:v20230908-12387e8f71
@@ -106,7 +106,7 @@ periodics:
   labels:
     preset-github-credentials: "true"
   decorate: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: gcr.io/k8s-prow/commenter:v20230908-12387e8f71
@@ -138,7 +138,7 @@ periodics:
   labels:
     preset-github-credentials: "true"
   decorate: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: gcr.io/k8s-prow/commenter:v20230908-12387e8f71
@@ -175,7 +175,7 @@ periodics:
     repo: project-infra
     base_ref: main
     work_dir: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - image: quay.io/kubevirtci/autoowners:v20220817-6d185c5
@@ -203,7 +203,7 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
   decorate: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
       - image: quay.io/kubevirtci/indexpagecreator:v20230102-5ed6f7d7
@@ -234,7 +234,7 @@ periodics:
   - org: kubevirt
     repo: containerized-data-importer
     base_ref: main
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
       runAsUser: 0
@@ -272,7 +272,7 @@ periodics:
   - org: kubevirt
     repo: kubevirtci
     base_ref: main
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
       runAsUser: 0
@@ -308,7 +308,7 @@ periodics:
   - org: kubevirt
     repo: kubevirtci
     base_ref: main
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
       runAsUser: 0
@@ -340,7 +340,7 @@ periodics:
   - org: kubevirt
     repo: kubevirtci
     base_ref: main
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
       runAsUser: 0
@@ -382,7 +382,7 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
       runAsUser: 0
@@ -412,7 +412,7 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
       runAsUser: 0
@@ -454,7 +454,7 @@ periodics:
     workdir: true
   interval: 2h
   max_concurrency: 1
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
     - name: peribolos
@@ -496,7 +496,7 @@ periodics:
   - org: kubernetes
     repo: test-infra
     base_ref: master
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
       runAsUser: 0
@@ -525,7 +525,7 @@ periodics:
       repo: project-infra
       base_ref: main
       workdir: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
       runAsUser: 0
@@ -554,7 +554,7 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
       runAsUser: 0
@@ -585,7 +585,7 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
       runAsUser: 0
@@ -616,7 +616,7 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
       runAsUser: 0
@@ -648,7 +648,7 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-shared-images: "true"
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     containers:
       - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
@@ -680,7 +680,7 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
       runAsUser: 0
@@ -700,7 +700,7 @@ periodics:
           memory: "200Mi"
 - annotations:
     testgrid-create-test-group: "false"
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   decorate: true
   decoration_config:
     timeout: 1h
@@ -744,7 +744,7 @@ periodics:
           memory: "1Gi"
 - annotations:
     testgrid-create-test-group: "false"
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   decorate: true
   decoration_config:
     timeout: 1h
@@ -774,7 +774,7 @@ periodics:
           memory: "1Gi"
 - annotations:
     testgrid-create-test-group: "false"
-  cluster: ibm-prow-jobs
+  cluster: kubevirt-prow-control-plane
   decorate: true
   decoration_config:
     timeout: 1h

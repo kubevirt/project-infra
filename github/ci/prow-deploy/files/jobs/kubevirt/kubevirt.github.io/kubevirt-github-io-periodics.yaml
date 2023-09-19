@@ -9,7 +9,7 @@ periodics:
         repo: kubevirt.github.io
         base_ref: main
         path_alias: kubevirt.github.io
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20220825-9d7149f

@@ -12,7 +12,7 @@ postsubmits:
     - org: kubevirt
       repo: project-infra
       base_ref: main
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       securityContext:
         runAsUser: 0

@@ -81,7 +81,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     spec:
       containers:
         - image: quay.io/kubevirtci/golang:v20230801-94954c0
@@ -130,7 +130,7 @@ presubmits:
             requests:
               memory: "29Gi"
   - name: pull-hpp-unit-test
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-control-plane
     skip_branches:
       - release-\d+\.\d+
     annotations:
