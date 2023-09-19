@@ -455,9 +455,6 @@ periodics:
       securityContext:
         privileged: true
       volumeMounts:
-      - mountPath: /lib/modules
-        name: modules
-        readOnly: true
       - mountPath: /sys/fs/cgroup
         name: cgroup
       - mountPath: /dev/vfio/
@@ -468,10 +465,6 @@ periodics:
       hardwareSupport: gpu
     priorityClassName: vgpu
     volumes:
-    - hostPath:
-        path: /lib/modules
-        type: Directory
-      name: modules
     - hostPath:
         path: /sys/fs/cgroup
         type: Directory

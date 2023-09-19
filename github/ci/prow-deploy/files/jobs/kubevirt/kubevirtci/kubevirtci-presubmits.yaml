@@ -219,18 +219,11 @@ presubmits:
         securityContext:
           privileged: true
         volumeMounts:
-        - mountPath: /lib/modules
-          name: modules
-          readOnly: true
         - mountPath: /dev
           name: devices
       nodeSelector:
         type: bare-metal-external
       volumes:
-      - hostPath:
-          path: /lib/modules
-          type: Directory
-        name: modules
       - hostPath:
           path: /dev
           type: Directory
