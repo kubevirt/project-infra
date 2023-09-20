@@ -18,6 +18,6 @@ load("@com_adobe_rules_gitops//gitops:defs.bzl", "k8s_deploy")
     )
     for NAME, CLUSTER, USER in [
         ("testing", "kind-kind", "kind-kind"),
-        ("production", "ibm-cluster", "ibm-prow-jobs-automation"),
+        ("production", "kubevirt-control-plane-cluster", "admin/cjmudnpd085ficevj8k0"),
     ]
 ]
