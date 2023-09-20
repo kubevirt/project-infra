@@ -21,21 +21,29 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/cobra"
-	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
+	"regexp"
+
+	"github.com/spf13/cobra"
+	"kubevirt.io/project-infra/robots/cmd/test-label-analyzer/cmd/filter"
+	"kubevirt.io/project-infra/robots/pkg/git"
+	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
+	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
 )
 
-// configOptions contains the set of options that the stats command provides
+// ConfigOptions contains the set of options that the stats command provides
 //
-// one of configFile or configName is required
-type configOptions struct {
+// one of ConfigFile or ConfigName is required
+type ConfigOptions struct {
 
-	// configFile is the path to the configuration file that resembles the test_label_analyzer.Config
-	configFile string
+	// ConfigFile is the path to the configuration file that resembles the test_label_analyzer.Config
+	ConfigFile string
 
-	// configName is the name of the default configuration that resembles the test_label_analyzer.Config
-	configName string
+	// ConfigName is the name of the default configuration that resembles the test_label_analyzer.Config
+	ConfigName string
+
+	// FilterTestNamesFile holds the file path to a filter file like quarantined_tests.json
+	FilterTestNamesFile string
 
 	// ginkgoOutlinePaths holds the paths to the files that contain the test outlines to analyze
 	ginkgoOutlinePaths []string
@@ -55,28 +63,28 @@ type configOptions struct {
 }
 
 // validate checks the configuration options for validity and returns an error describing the first error encountered
-func (s *configOptions) validate() error {
+func (s *ConfigOptions) validate() error {
 	if s.testNameLabelRE == "" {
-		if s.configFile == "" && s.configName == "" || s.configFile != "" && s.configName != "" {
-			return fmt.Errorf("one of configFile or configName is required")
+		if s.ConfigFile == "" && s.ConfigName == "" && s.FilterTestNamesFile == "" {
+			return fmt.Errorf("one of ConfigFile or ConfigName or FilterTestNamesFile is required")
 		}
 	}
-	if _, exists := configNamesToConfigs[s.configName]; s.configName != "" && !exists {
-		return fmt.Errorf("configName %s is invalid", s.configName)
+	if _, exists := configNamesToConfigs[s.ConfigName]; s.ConfigName != "" && !exists {
+		return fmt.Errorf("ConfigName %s is invalid", s.ConfigName)
 	}
-	if s.configFile != "" {
-		stat, err := os.Stat(s.configFile)
+	if s.ConfigFile != "" {
+		stat, err := os.Stat(s.ConfigFile)
 		if os.IsNotExist(err) {
-			return fmt.Errorf("config-file not set correctly, %q is not a file, %v", s.configFile, err)
+			return fmt.Errorf("config-file not set correctly, %q is not a file, %w", s.ConfigFile, err)
 		}
 		if stat.IsDir() {
-			return fmt.Errorf("config-file not set correctly, %q is not a file", s.configFile)
+			return fmt.Errorf("config-file not set correctly, %q is not a file", s.ConfigFile)
 		}
 	}
 	for _, ginkgoOutlinePath := range s.ginkgoOutlinePaths {
 		stat, err := os.Stat(ginkgoOutlinePath)
 		if os.IsNotExist(err) {
-			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file, %v", s.ginkgoOutlinePaths, err)
+			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file, %w", s.ginkgoOutlinePaths, err)
 		}
 		if stat.IsDir() {
 			return fmt.Errorf("test-outline-filepath not set correctly, %q is not a file", s.ginkgoOutlinePaths)
@@ -85,7 +93,7 @@ func (s *configOptions) validate() error {
 	if s.testFilePath != "" {
 		stat, err := os.Stat(s.testFilePath)
 		if os.IsNotExist(err) {
-			return fmt.Errorf("test-file-path not set correctly, %q is not a directory, %v", s.testFilePath, err)
+			return fmt.Errorf("test-file-path not set correctly, %q is not a directory, %w", s.testFilePath, err)
 		}
 		if !stat.IsDir() {
 			return fmt.Errorf("test-file-path not set correctly, %q is not a directory", s.testFilePath)
@@ -98,26 +106,90 @@ func (s *configOptions) validate() error {
 }
 
 // getConfig returns a configuration with which the matching tests are being retrieved or an error in case the configuration is wrong
-func (s *configOptions) getConfig() (*testlabelanalyzer.Config, error) {
-	if s.testNameLabelRE != "" {
+func (s *ConfigOptions) getConfig() (*testlabelanalyzer.Config, error) {
+	switch {
+
+	case s.testNameLabelRE != "":
 		return testlabelanalyzer.NewTestNameDefaultConfig(s.testNameLabelRE), nil
-	}
-	if s.configName != "" {
-		return configNamesToConfigs[s.configName], nil
-	}
-	if s.configFile != "" {
-		file, err := os.ReadFile(s.configFile)
+
+	case s.ConfigName != "":
+		config, exists := configNamesToConfigs[s.ConfigName]
+		if !exists {
+			return nil, fmt.Errorf("config %q does not exist", s.ConfigName)
+		}
+		return config, nil
+
+	case s.ConfigFile != "":
+		config, err := unmarshallConfigFile(s)
+		return config, err
+
+	case s.FilterTestNamesFile != "":
+		filterTestRecords, err := unmarshallFilterTestRecords(s)
 		if err != nil {
 			return nil, err
 		}
-		var config *testlabelanalyzer.Config
-		err = json.Unmarshal(file, &config)
-		return config, err
+		blameLines, err := git.GetBlameLinesForFile(s.FilterTestNamesFile)
+		if err != nil {
+			return nil, err
+		}
+		return generateConfigWithCategoriesFromFilterTestRecords(filterTestRecords, blameLines), nil
+
+	default:
+		return nil, fmt.Errorf("no configuration found")
 	}
-	return nil, fmt.Errorf("no configuration found!")
 }
 
-var rootConfigOpts = configOptions{}
+func generateConfigWithCategoriesFromFilterTestRecords(filterTestRecords []test_report.FilterTestRecord, blameLines []*git.BlameLine) *testlabelanalyzer.Config {
+	config := &testlabelanalyzer.Config{}
+	blameIndex := 0
+	for _, filterTestRecord := range filterTestRecords {
+		quotedId := regexp.QuoteMeta(filterTestRecord.Id)
+		testNameDefaultConfig := &testlabelanalyzer.LabelCategory{
+			Name:            filterTestRecord.Reason,
+			TestNameLabelRE: testlabelanalyzer.NewRegexp(quotedId),
+			GinkgoLabelRE:   nil,
+		}
+		matchIdRegex := regexp.MustCompile(fmt.Sprintf(`"id":\s*"%s"`, quotedId))
+		for index := blameIndex; index < len(blameLines); index++ {
+			if !matchIdRegex.MatchString(blameLines[index].Line) {
+				continue
+			}
+			testNameDefaultConfig.BlameLine = blameLines[index]
+			blameIndex = index + 1
+			break
+		}
+		config.Categories = append(config.Categories, testNameDefaultConfig)
+	}
+	return config
+}
+
+func unmarshallFilterTestRecords(s *ConfigOptions) ([]test_report.FilterTestRecord, error) {
+	file, err := os.ReadFile(s.FilterTestNamesFile)
+	if err != nil {
+		return nil, err
+	}
+	var filterTestRecords []test_report.FilterTestRecord
+	err = json.Unmarshal(file, &filterTestRecords)
+	if err != nil {
+		return nil, err
+	}
+	return filterTestRecords, nil
+}
+
+func unmarshallConfigFile(s *ConfigOptions) (*testlabelanalyzer.Config, error) {
+	file, err := os.ReadFile(s.ConfigFile)
+	if err != nil {
+		return nil, err
+	}
+	var config *testlabelanalyzer.Config
+	err = json.Unmarshal(file, &config)
+	if err != nil {
+		return nil, err
+	}
+	return config, nil
+}
+
+var rootConfigOpts = ConfigOptions{}
 
 var configNamesToConfigs = map[string]*testlabelanalyzer.Config{
 	"quarantine": testlabelanalyzer.NewQuarantineDefaultConfig(),
@@ -125,7 +197,7 @@ var configNamesToConfigs = map[string]*testlabelanalyzer.Config{
 
 const shortRootDescription = "Collects a set of tools for generating statistics and filter strings over sets of Ginkgo tests"
 
-var rootCmd = &cobra.Command{
+var RootCmd = &cobra.Command{
 	Use:   "test-label-analyzer",
 	Short: shortRootDescription,
 	Long: shortRootDescription + `
@@ -134,22 +206,25 @@ Supports predefined configuration profiles and custom configurations to define w
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.configFile, "config-file", "", "config file defining categories of tests")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.ConfigFile, "config-file", "", "config file defining categories of tests")
 	configNames := []string{}
 	for configName := range configNamesToConfigs {
 		configNames = append(configNames, configName)
 	}
-	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.configName, "config-name", "", fmt.Sprintf("config name defining categories of tests (possible values: %v)", configNames))
-	rootCmd.PersistentFlags().StringArrayVar(&rootConfigOpts.ginkgoOutlinePaths, "test-outline-filepath", nil, "path to test outline file to be analyzed")
-	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testFilePath, "test-file-path", "", "path containing tests to be analyzed")
-	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.remoteURL, "remote-url", "", "remote path to tests to be analyzed")
-	rootCmd.PersistentFlags().StringVar(&rootConfigOpts.testNameLabelRE, "test-name-label-re", "", "regular expression for test names to match against")
-	rootCmd.PersistentFlags().BoolVar(&rootConfigOpts.outputHTML, "output-html", false, "defines whether HTML output should be generated, default is JSON")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.ConfigName, "config-name", "", fmt.Sprintf("config name defining categories of tests (possible values: %v)", configNames))
+	RootCmd.PersistentFlags().StringArrayVar(&rootConfigOpts.ginkgoOutlinePaths, "test-outline-filepath", nil, "path to test outline file to be analyzed")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.FilterTestNamesFile, "filter-test-names-file", "", "file path to filter file like quarantined_tests.json or dont_run_tests.json")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.testFilePath, "test-file-path", "", "path containing tests to be analyzed")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.remoteURL, "remote-url", "", "remote path to tests to be analyzed")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.testNameLabelRE, "test-name-label-re", "", "regular expression for test names to match against")
+	RootCmd.PersistentFlags().BoolVar(&rootConfigOpts.outputHTML, "output-html", false, "defines whether HTML output should be generated, default is JSON")
+
+	RootCmd.AddCommand(filter.Command())
 }

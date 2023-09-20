@@ -20,16 +20,19 @@
 package test_label_analyzer
 
 import (
-	"regexp"
-	"strconv"
+	"kubevirt.io/project-infra/robots/pkg/git"
 	"strings"
-	"time"
 )
+
+type TestFilesStats struct {
+	FilesStats []*FileStats `json:"files_stats"`
+
+	*Config `json:"config"`
+}
 
 // FileStats contains the information of the file whose outline was traversed and the results of the
 // traversal.
 type FileStats struct {
-	*Config    `json:"config"`
 	*TestStats `json:"test_stats"`
 
 	// RemoteURL is the absolute path to the file, most certainly an absolute URL inside a version control repository
@@ -57,10 +60,13 @@ type PathStats struct {
 	Lines []int `json:"lines"`
 
 	// GitBlameLines is the output of the blame command for each of the Lines
-	GitBlameLines []*GitBlameInfo `json:"git_blame_lines"`
+	GitBlameLines []*git.BlameLine `json:"git_blame_lines"`
 
 	// Path denotes the path to the spec that has been found to match
 	Path []*GinkgoNode `json:"path"`
+
+	// MatchingCategory holds the category that matched the path
+	MatchingCategory *LabelCategory `json:"matching_category"`
 }
 
 func GetStatsFromGinkgoOutline(config *Config, gingkoOutline []*GinkgoNode) *TestStats {
@@ -89,49 +95,13 @@ func traverseNodesRecursively(stats *TestStats, config *Config, gingkoOutline []
 						path = append(path, pathNode.CloneWithoutNodes())
 					}
 					stats.MatchingSpecPaths = append(stats.MatchingSpecPaths, &PathStats{
-						Path: path,
+						Path:             path,
+						MatchingCategory: category,
 					})
+					category.Hits++
 				}
 			}
 		}
 		traverseNodesRecursively(stats, config, node.Nodes, parentsWithNode)
 	}
-}
-
-const gitDateLayout = "2006-01-02 15:04:05 -0700"
-
-var gitBlameRegex = regexp.MustCompile(`^([0-9a-f]+)(\s+\S+)?\s+\(([\S ]+)\s([0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}\s[-+][0-9]{4})\s+([0-9]+)\)\s(.*)$`)
-
-type GitBlameInfo struct {
-	CommitID string    `json:"commit_id"`
-	Author   string    `json:"author"`
-	Date     time.Time `json:"date"`
-	LineNo   int       `json:"line_no"`
-	Line     string    `json:"line"`
-}
-
-func ExtractGitBlameInfo(lines []string) []*GitBlameInfo {
-	var info []*GitBlameInfo
-	for _, line := range lines {
-		if !gitBlameRegex.MatchString(line) {
-			continue
-		}
-		submatches := gitBlameRegex.FindAllStringSubmatch(line, -1)
-		date, err := time.Parse(gitDateLayout, submatches[0][4])
-		if err != nil {
-			panic(err)
-		}
-		lineNo, err := strconv.Atoi(submatches[0][5])
-		if err != nil {
-			panic(err)
-		}
-		info = append(info, &GitBlameInfo{
-			CommitID: submatches[0][1],
-			Author:   strings.TrimSpace(submatches[0][3]),
-			Date:     date,
-			LineNo:   lineNo,
-			Line:     submatches[0][6],
-		})
-	}
-	return info
 }

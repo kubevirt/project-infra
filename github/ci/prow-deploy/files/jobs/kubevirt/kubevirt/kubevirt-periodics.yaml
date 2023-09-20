@@ -1956,11 +1956,9 @@ periodics:
       - /bin/bash
       - -ce
       - |
-        go install github.com/onsi/ginkgo/v2/ginkgo
-        export PATH="$PATH:/root/go/bin"
         output_file_name="/tmp/index.html"
         git_commit=$(cd ../kubevirt && git --no-pager log -1 --format=%H | tr -d '\n')
-        go run ./robots/cmd/test-label-analyzer/... stats \
+        test-label-analyzer stats \
           --output-html=true \
           --config-name quarantine \
           --test-file-path $(cd ../kubevirt && pwd)/tests \
@@ -1970,9 +1968,7 @@ periodics:
       command:
       - /bin/sh
       env:
-      - name: GIMME_GO_VERSION
-        value: "1.19"
-      image: quay.io/kubevirtci/golang:v20230801-94954c0
+      image: quay.io/kubevirtci/test-label-analyzer:v20230904-34e7ab5
       name: ""
       resources: {}
 - annotations:

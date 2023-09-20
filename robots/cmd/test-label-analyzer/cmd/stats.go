@@ -25,6 +25,7 @@ import (
 	"github.com/spf13/cobra"
 	"html/template"
 	"io/fs"
+	"kubevirt.io/project-infra/robots/pkg/git"
 	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
 	"os/exec"
@@ -54,18 +55,18 @@ Can either emit json or html format data about the targeted tests.
 var statsHTMLTemplate string
 
 func init() {
-	rootCmd.AddCommand(statsCmd)
+	RootCmd.AddCommand(statsCmd)
 }
 
 type TestHTMLData struct {
 	*testlabelanalyzer.Config `json:"config"`
 
+	// MatchingPath holds the test_label_analyzer.PathStats that matched the node
+	MatchingPath *testlabelanalyzer.PathStats
+
 	// RemoteURL is the absolute path to the file, most certainly an absolute URL inside a version control repository
 	// containing a commit ID in order to exactly define the state of the file that was traversed
 	RemoteURL string `json:"path"`
-
-	// GitBlameLines is the output of the blame command for each of the Lines
-	GitBlameLines []*testlabelanalyzer.GitBlameInfo `json:"git_blame_lines"`
 
 	// ElementsMatchingConfig contains whether each of the GitBlameLines matches the *test_label_analyzer.Config
 	ElementsMatchingConfig []bool
@@ -83,10 +84,13 @@ func (t *TestHTMLData) initElementsMatchingConfig() {
 	if len(t.ElementsMatchingConfig) > 0 {
 		panic("t.ElementsMatchingConfig already initialized")
 	}
-	for _, gitLine := range t.GitBlameLines {
-		for _, category := range t.Config.Categories {
-			matchString := category.TestNameLabelRE.MatchString(gitLine.Line)
-			t.ElementsMatchingConfig = append(t.ElementsMatchingConfig, matchString)
+	t.ElementsMatchingConfig = make([]bool, len(t.MatchingPath.GitBlameLines))
+	wholeLine := ""
+	for index, node := range t.MatchingPath.Path {
+		wholeLine = strings.TrimSpace(wholeLine + " " + node.Text)
+		matchString := t.MatchingPath.MatchingCategory.TestNameLabelRE.MatchString(wholeLine)
+		if matchString {
+			t.ElementsMatchingConfig[index] = true
 		}
 	}
 }
@@ -102,7 +106,7 @@ func (t *TestHTMLData) initPermalinks() {
 	if len(submatch) < 2 {
 		return
 	}
-	for _, gitLine := range t.GitBlameLines {
+	for _, gitLine := range t.MatchingPath.GitBlameLines {
 		permaLink := strings.ReplaceAll(t.RemoteURL, submatch[1], fmt.Sprintf("commit/%s", gitLine.CommitID))
 		t.Permalinks = append(t.Permalinks, permaLink)
 	}
@@ -113,8 +117,12 @@ func (t *TestHTMLData) initAge() {
 	if len(t.Age) > 0 {
 		panic("t.Age already initialized")
 	}
-	for _, gitLine := range t.GitBlameLines {
-		t.Age = append(t.Age, testlabelanalyzer.Since(gitLine.Date))
+	for _, gitLine := range t.MatchingPath.GitBlameLines {
+		date := gitLine.Date
+		if t.MatchingPath.MatchingCategory.BlameLine != nil {
+			date = t.MatchingPath.MatchingCategory.BlameLine.Date
+		}
+		t.Age = append(t.Age, testlabelanalyzer.Since(date))
 	}
 }
 
@@ -127,17 +135,20 @@ func (t *TestHTMLData) collectEarliestChangeDateFromGitLines() time.Time {
 		if !matches {
 			continue
 		}
-		if t.GitBlameLines[index].Date.Before(changeDate) {
-			changeDate = t.GitBlameLines[index].Date
+		if len(t.MatchingPath.GitBlameLines) <= index {
+			continue
+		}
+		if t.MatchingPath.GitBlameLines[index].Date.Before(changeDate) {
+			changeDate = t.MatchingPath.GitBlameLines[index].Date
 		}
 	}
 	return changeDate
 }
 
 type StatsHTMLData struct {
-	*testlabelanalyzer.Config
-	TestHTMLData []*TestHTMLData
-	Date         time.Time
+	TestHTMLData         []*TestHTMLData
+	Date                 time.Time
+	ConfigurationOptions ConfigOptions
 }
 
 func (s *StatsHTMLData) Len() int {
@@ -145,6 +156,9 @@ func (s *StatsHTMLData) Len() int {
 }
 
 func (s *StatsHTMLData) Less(i, k int) bool {
+	if s.TestHTMLData[i].MatchingPath.MatchingCategory.BlameLine != nil && s.TestHTMLData[k].MatchingPath.MatchingCategory.BlameLine != nil {
+		return s.TestHTMLData[i].MatchingPath.MatchingCategory.BlameLine.Date.Before(s.TestHTMLData[k].MatchingPath.MatchingCategory.BlameLine.Date)
+	}
 	return s.TestHTMLData[i].collectEarliestChangeDateFromGitLines().Before(s.TestHTMLData[k].collectEarliestChangeDateFromGitLines())
 }
 
@@ -152,14 +166,12 @@ func (s *StatsHTMLData) Swap(i, k int) {
 	s.TestHTMLData[i], s.TestHTMLData[k] = s.TestHTMLData[k], s.TestHTMLData[i]
 }
 
-func NewStatsHTMLData(stats []*testlabelanalyzer.FileStats) *StatsHTMLData {
+func NewStatsHTMLData(stats []*testlabelanalyzer.FileStats, configurationOptions ConfigOptions) *StatsHTMLData {
 	statsHTMLData := &StatsHTMLData{
-		Date: time.Now(),
+		Date:                 time.Now(),
+		ConfigurationOptions: configurationOptions,
 	}
-	for index, fileStats := range stats {
-		if index == 0 {
-			statsHTMLData.Config = fileStats.Config
-		}
+	for _, fileStats := range stats {
 		for _, path := range fileStats.TestStats.MatchingSpecPaths {
 			statsHTMLData.TestHTMLData = append(statsHTMLData.TestHTMLData, newTestHTMLData(fileStats, path))
 		}
@@ -170,9 +182,8 @@ func NewStatsHTMLData(stats []*testlabelanalyzer.FileStats) *StatsHTMLData {
 
 func newTestHTMLData(fileStats *testlabelanalyzer.FileStats, path *testlabelanalyzer.PathStats) *TestHTMLData {
 	testHTMLData := &TestHTMLData{
-		Config:        fileStats.Config,
-		RemoteURL:     fileStats.RemoteURL,
-		GitBlameLines: path.GitBlameLines,
+		MatchingPath: path,
+		RemoteURL:    fileStats.RemoteURL,
 	}
 	testHTMLData.initElementsMatchingConfig()
 	testHTMLData.initPermalinks()
@@ -180,7 +191,7 @@ func newTestHTMLData(fileStats *testlabelanalyzer.FileStats, path *testlabelanal
 	return testHTMLData
 }
 
-func runStatsCommand(configurationOptions configOptions) error {
+func runStatsCommand(configurationOptions ConfigOptions) error {
 	err := configurationOptions.validate()
 	if err != nil {
 		return err
@@ -199,7 +210,7 @@ func runStatsCommand(configurationOptions configOptions) error {
 
 		testFileOutlines, err := getTestFileOutlines(configurationOptions)
 		if err != nil {
-			return fmt.Errorf("failed to walk test file path %q: %v", configurationOptions.testFilePath, err)
+			return fmt.Errorf("failed to walk test file path %q: %w", configurationOptions.testFilePath, err)
 		}
 		if len(testFileOutlines) == 0 {
 			return fmt.Errorf("could not derive an outline, tests are likely not Ginkgo V2 based")
@@ -210,12 +221,16 @@ func runStatsCommand(configurationOptions configOptions) error {
 			return err
 		}
 
-		testFilesStats, err := generateStatsFromOutlinesWithGitBlameInfo(configurationOptions, testFileOutlines, config)
+		filesStats, err := generateStatsFromOutlinesWithGitBlameInfo(configurationOptions, testFileOutlines, config)
 		if err != nil {
 			return err
 		}
 
 		if !configurationOptions.outputHTML {
+			testFilesStats := testlabelanalyzer.TestFilesStats{
+				FilesStats: filesStats,
+				Config:     config,
+			}
 			data, err := json.Marshal(testFilesStats)
 			if err != nil {
 				return err
@@ -229,7 +244,7 @@ func runStatsCommand(configurationOptions configOptions) error {
 			return err
 		}
 
-		statsHTMLData := NewStatsHTMLData(testFilesStats)
+		statsHTMLData := NewStatsHTMLData(filesStats, configurationOptions)
 		err = htmlTemplate.Execute(os.Stdout, statsHTMLData)
 		return err
 	}
@@ -237,7 +252,7 @@ func runStatsCommand(configurationOptions configOptions) error {
 	return fmt.Errorf("not implemented")
 }
 
-func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions configOptions, testFileOutlines map[string][]*testlabelanalyzer.GinkgoNode, config *testlabelanalyzer.Config) ([]*testlabelanalyzer.FileStats, error) {
+func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions ConfigOptions, testFileOutlines map[string][]*testlabelanalyzer.GinkgoNode, config *testlabelanalyzer.Config) ([]*testlabelanalyzer.FileStats, error) {
 	var testFilesStats []*testlabelanalyzer.FileStats
 	for testFilePath, testFileOutline := range testFileOutlines {
 		testStatsForFile := testlabelanalyzer.GetStatsFromGinkgoOutline(config, testFileOutline)
@@ -259,40 +274,24 @@ func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions configOption
 			}
 			matchingSpecPathes.Lines = lineNos
 
-			blameArgs := []string{"blame", filepath.Base(testFilePath)}
-			for _, blameLineNo := range lineNos {
-				blameArgs = append(blameArgs, fmt.Sprintf("-L %d,%d", blameLineNo, blameLineNo))
+			gitBlameInfo, err3 := git.GetBlameLinesForFile(testFilePath, lineNos...)
+			if err3 != nil {
+				return nil, err3
 			}
-			command := exec.Command("git", blameArgs...)
-			command.Dir = filepath.Dir(testFilePath)
-			output, err := command.Output()
-			if err != nil {
-				switch err.(type) {
-				case *exec.ExitError:
-					e := err.(*exec.ExitError)
-					return nil, fmt.Errorf("exec %v failed: %v", command, e.Stderr)
-				case *exec.Error:
-					e := err.(*exec.Error)
-					return nil, fmt.Errorf("exec %v failed: %v", command, e)
-				default:
-					return nil, fmt.Errorf("exec %v failed: %v", command, err)
-				}
-			}
-			matchingSpecPathes.GitBlameLines = testlabelanalyzer.ExtractGitBlameInfo(strings.Split(string(output), "\n"))
+			matchingSpecPathes.GitBlameLines = gitBlameInfo
 			if len(matchingSpecPathes.GitBlameLines) == 0 {
 				return nil, fmt.Errorf("git blame lines extraction failed!")
 			}
 		}
 		testFilesStats = append(testFilesStats, &testlabelanalyzer.FileStats{
 			RemoteURL: fmt.Sprintf("%s/%s", strings.TrimSuffix(configurationOptions.remoteURL, "/"), strings.TrimPrefix(strings.TrimPrefix(testFilePath, configurationOptions.testFilePath), "/")),
-			Config:    config,
 			TestStats: testStatsForFile,
 		})
 	}
 	return testFilesStats, nil
 }
 
-func getTestFileOutlines(configurationOptions configOptions) (map[string][]*testlabelanalyzer.GinkgoNode, error) {
+func getTestFileOutlines(configurationOptions ConfigOptions) (map[string][]*testlabelanalyzer.GinkgoNode, error) {
 	testFileOutlines := map[string][]*testlabelanalyzer.GinkgoNode{}
 	err := filepath.Walk(configurationOptions.testFilePath, func(path string, info fs.FileInfo, err error) error {
 		if info.IsDir() {
@@ -335,29 +334,29 @@ func getGinkgoOutlineFromFile(path string) ([]*testlabelanalyzer.GinkgoNode, err
 			if strings.Contains(stdErr, "file does not import \"github.com/onsi/ginkgo/v2\"") {
 				return nil, nil
 			}
-			return nil, fmt.Errorf("exec %v failed: %v", ginkgoCommand, e.Stderr)
+			return nil, fmt.Errorf("exec %v failed: %s", ginkgoCommand, e.Stderr)
 		case *exec.Error:
 			e := err.(*exec.Error)
-			return nil, fmt.Errorf("exec %v failed: %v", ginkgoCommand, e)
+			return nil, fmt.Errorf(`exec "%v" failed: %s`, ginkgoCommand, e)
 		default:
-			return nil, fmt.Errorf("exec %v failed: %v", ginkgoCommand, err)
+			return nil, fmt.Errorf(`exec "%v" failed: %s`, ginkgoCommand, err)
 		}
 	}
 	testOutline, err := toOutline(output)
 	if err != nil {
-		return nil, fmt.Errorf("toOutline failed on %s: %v", path, err)
+		return nil, fmt.Errorf("toOutline failed on %s: %w", path, err)
 	}
 	return testOutline, nil
 }
 
-func collectStatsFromGinkgoOutlines(configurationOptions configOptions) (string, error) {
+func collectStatsFromGinkgoOutlines(configurationOptions ConfigOptions) (string, error) {
 
 	// collect the test outline data from the files and merge it into one slice
 	var testOutlines []*testlabelanalyzer.GinkgoNode
 	for _, path := range configurationOptions.ginkgoOutlinePaths {
 		fileData, err := os.ReadFile(path)
 		if err != nil {
-			return "", fmt.Errorf("failed to read file %q: %v", path, err)
+			return "", fmt.Errorf("failed to read file %q: %w", path, err)
 		}
 		testOutline, err2 := toOutline(fileData)
 		if err2 != nil {

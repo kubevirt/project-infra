@@ -28,13 +28,17 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
+      - image: quay.io/kubevirtci/test-label-analyzer:v20230904-34e7ab5
         command:
-          - "/bin/bash"
-          - "-c"
-          - |
-            make gazelle-update-repos
-            bazelisk test //robots/...
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        - |
+          make gazelle-update-repos
+          bazelisk test //robots/...
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.19"
         resources:
           requests:
             memory: "8Gi"
@@ -451,6 +455,30 @@ presubmits:
               memory: "4Gi"
             limits:
               memory: "4Gi"
+  - name: build-test-label-analyzer-image
+    always_run: false
+    run_if_changed: "images/test-label-analyzer/.*|robots/.*/test-label-analyzer/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: ibm-prow-jobs
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b test-label-analyzer quay.io kubevirtci"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
   - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/.*"

@@ -22,17 +22,18 @@ package cmd
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"kubevirt.io/project-infra/robots/pkg/git"
 	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"time"
 )
 
-var _ = Describe("cmd/stats", func() {
+var _ = Describe("stats", func() {
 
 	Context("getGinkgoOutlineFromFile", func() {
 
-		PIt("generates outline from file", func() {
-			outline, err := getGinkgoOutlineFromFile("testdata/simple_test.go")
-			Expect(err).To(BeNil())
+		It("generates outline from file", func() {
+			outline, err := getGinkgoOutlineFromFile("testdata/simple_test.ginkgo")
+			Expect(err).ToNot(HaveOccurred())
 			Expect(outline).ToNot(BeNil())
 		})
 
@@ -44,15 +45,15 @@ var _ = Describe("cmd/stats", func() {
 		var simpleQuarantineConfig = test_label_analyzer.NewTestNameDefaultConfig("[QUARANTINE]")
 
 		It("returns data from file stats", func() {
+			// t.MatchingPath.MatchingCategory
 			Expect(NewStatsHTMLData([]*test_label_analyzer.FileStats{
 				{
-					Config: simpleQuarantineConfig,
 					TestStats: &test_label_analyzer.TestStats{
 						SpecsTotal: 2,
 						MatchingSpecPaths: []*test_label_analyzer.PathStats{
 							{
 								Lines: nil,
-								GitBlameLines: []*test_label_analyzer.GitBlameInfo{
+								GitBlameLines: []*git.BlameLine{
 									{
 										CommitID: "1742",
 										Author:   "johndoe@wherever.net",
@@ -61,32 +62,32 @@ var _ = Describe("cmd/stats", func() {
 										Line:     "[QUARANTINE]",
 									},
 								},
-								Path: nil,
+								Path:             nil,
+								MatchingCategory: &test_label_analyzer.LabelCategory{},
 							},
 						},
 					},
 					RemoteURL: remoteURL,
 				},
-			}).TestHTMLData).ToNot(BeEmpty())
+			}, ConfigOptions{}).TestHTMLData).ToNot(BeEmpty())
 		})
 
 		PIt("sorts data by date for matching line", func() { // TODO: need to repair the comparison, seems the regexp has state that hinders it
 			Expect(NewStatsHTMLData([]*test_label_analyzer.FileStats{
 				{
-					Config: simpleQuarantineConfig,
 					TestStats: &test_label_analyzer.TestStats{
 						SpecsTotal: 2,
 						MatchingSpecPaths: []*test_label_analyzer.PathStats{
 							{
 								Lines: nil,
-								GitBlameLines: []*test_label_analyzer.GitBlameInfo{
+								GitBlameLines: []*git.BlameLine{
 									newGitBlameInfo(parseTime("2023-03-02T17:42:37Z"), "[QUARANTINE]"),
 								},
 								Path: nil,
 							},
 							{
 								Lines: nil,
-								GitBlameLines: []*test_label_analyzer.GitBlameInfo{
+								GitBlameLines: []*git.BlameLine{
 									newGitBlameInfo(parseTime("2023-02-02T17:42:37Z"), "[QUARANTINE]"),
 								},
 								Path: nil,
@@ -95,20 +96,24 @@ var _ = Describe("cmd/stats", func() {
 					},
 					RemoteURL: remoteURL,
 				},
-			}).TestHTMLData).To(BeEquivalentTo(
+			}, ConfigOptions{}).TestHTMLData).To(BeEquivalentTo(
 				&StatsHTMLData{
 					TestHTMLData: []*TestHTMLData{
 						{
 							Config: simpleQuarantineConfig,
-							GitBlameLines: []*test_label_analyzer.GitBlameInfo{
-								newGitBlameInfo(parseTime("2023-02-02T17:42:37Z"), "[QUARANTINE]"),
+							MatchingPath: &test_label_analyzer.PathStats{
+								GitBlameLines: []*git.BlameLine{
+									newGitBlameInfo(parseTime("2023-02-02T17:42:37Z"), "[QUARANTINE]"),
+								},
 							},
 							RemoteURL: remoteURL,
 						},
 						{
 							Config: simpleQuarantineConfig,
-							GitBlameLines: []*test_label_analyzer.GitBlameInfo{
-								newGitBlameInfo(parseTime("2023-03-02T17:42:37Z"), "[QUARANTINE]"),
+							MatchingPath: &test_label_analyzer.PathStats{
+								GitBlameLines: []*git.BlameLine{
+									newGitBlameInfo(parseTime("2023-03-02T17:42:37Z"), "[QUARANTINE]"),
+								},
 							},
 							RemoteURL: remoteURL,
 						},
@@ -120,8 +125,8 @@ var _ = Describe("cmd/stats", func() {
 
 })
 
-func newGitBlameInfo(t time.Time, line string) *test_label_analyzer.GitBlameInfo {
-	return &test_label_analyzer.GitBlameInfo{
+func newGitBlameInfo(t time.Time, line string) *git.BlameLine {
+	return &git.BlameLine{
 		CommitID: "1742",
 		Author:   "johndoe@wherever.net",
 		Date:     t,

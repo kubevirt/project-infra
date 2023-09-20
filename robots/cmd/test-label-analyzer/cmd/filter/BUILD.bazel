@@ -3,26 +3,24 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = [
+        "matching-tests.go",
         "root.go",
         "stats.go",
     ],
-    embedsrcs = ["stats.gohtml"],
-    importpath = "kubevirt.io/project-infra/robots/cmd/test-label-analyzer/cmd",
+    importpath = "kubevirt.io/project-infra/robots/cmd/test-label-analyzer/cmd/filter",
     visibility = ["//visibility:public"],
     deps = [
-        "//robots/cmd/test-label-analyzer/cmd/filter:go_default_library",
         "//robots/pkg/git:go_default_library",
         "//robots/pkg/test-label-analyzer:go_default_library",
-        "//robots/pkg/test-report:go_default_library",
         "@com_github_spf13_cobra//:go_default_library",
+        "@io_k8s_apimachinery//pkg/api/errors:go_default_library",
     ],
 )
 
 go_test(
     name = "go_default_test",
     srcs = [
-        "root_test.go",
-        "stats_test.go",
+        "matching-tests_test.go",
         "test_suite_test.go",
     ],
     data = glob(["testdata/**"]),
