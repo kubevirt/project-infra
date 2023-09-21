@@ -488,7 +488,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-pgp-bot-key: "true"
-    cluster: kubevirt-prow-control-plane
+    cluster: ibm-prow-jobs
     spec:
       securityContext:
         runAsUser: 0
