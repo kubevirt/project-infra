@@ -28,6 +28,9 @@ presubmits:
         - "/bin/sh"
         - "-c"
         - "export TARGET=k8s-1.26-centos9 && automation/test.sh"
+        env:
+          - name: GIMME_GO_VERSION
+            value: "1.21.1"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
@@ -62,6 +65,9 @@ presubmits:
         - "/bin/sh"
         - "-c"
         - "export TARGET=k8s-1.27 && automation/test.sh"
+        env:
+          - name: GIMME_GO_VERSION
+            value: "1.21.1"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
