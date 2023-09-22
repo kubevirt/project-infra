@@ -68,6 +68,10 @@ overview.
 		if len(args) < 1 {
 			return fmt.Errorf("no input file provided as argument")
 		}
+		err := filterStatsMatchingTestsOpts.validate()
+		if err != nil {
+			return fmt.Errorf("failed to validate flags: %w", err)
+		}
 		return filterMatchingTestsFromInputFile(args[0], filterStatsMatchingTestsOpts)
 	},
 }
