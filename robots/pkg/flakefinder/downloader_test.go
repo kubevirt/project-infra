@@ -3,9 +3,8 @@ package flakefinder_test
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	"github.com/google/go-github/v28/github"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	ghapi "kubevirt.io/project-infra/robots/pkg/flakefinder/github"
 )
 
 var _ = Describe("downloader.go", func() {
@@ -29,20 +28,20 @@ var _ = Describe("downloader.go", func() {
 		secondHeadSHA := "8c33c116def661c69b4a8eb08fac9ca07dfbf03d"
 
 		It("finds a commit", func() {
-			pullRequest := github.PullRequest{Number: &prNumber, Head: &github.PullRequestBranch{SHA: &headSHA}}
-			isLatestCommit := flakefinder.IsLatestCommit([]byte(singleRepoJsonText), &pullRequest)
+			pullRequest := &ghapi.PullRequest{Number: prNumber, SHA: headSHA}
+			isLatestCommit := flakefinder.IsLatestCommit([]byte(singleRepoJsonText), pullRequest)
 			Expect(isLatestCommit).To(BeTrue())
 		})
 
 		It("does not find a commit if pr number wrong", func() {
-			pullRequest := github.PullRequest{Number: &oneOffPrNumber, Head: &github.PullRequestBranch{SHA: &headSHA}}
-			isLatestCommit := flakefinder.IsLatestCommit([]byte(singleRepoJsonText), &pullRequest)
+			pullRequest := &ghapi.PullRequest{Number: oneOffPrNumber, SHA: headSHA}
+			isLatestCommit := flakefinder.IsLatestCommit([]byte(singleRepoJsonText), pullRequest)
 			Expect(isLatestCommit).To(BeFalse())
 		})
 
 		It("does not find a commit if sha wrong", func() {
-			pullRequest := github.PullRequest{Number: &prNumber, Head: &github.PullRequestBranch{SHA: &secondHeadSHA}}
-			isLatestCommit := flakefinder.IsLatestCommit([]byte(singleRepoJsonText), &pullRequest)
+			pullRequest := &ghapi.PullRequest{Number: prNumber, SHA: secondHeadSHA}
+			isLatestCommit := flakefinder.IsLatestCommit([]byte(singleRepoJsonText), pullRequest)
 			Expect(isLatestCommit).To(BeFalse())
 		})
 
@@ -57,8 +56,8 @@ var _ = Describe("downloader.go", func() {
 		"kubevirt/kubevirt2":"release-0.11:577e95c340e1b21ff431cbba25ad33c891554e38,2474:8c33c116def661c69b4a8eb08fac9ca07dfbf03c"
 	}
 }`
-			pullRequest := github.PullRequest{Number: &oneOffPrNumber, Head: &github.PullRequestBranch{SHA: &headSHA}}
-			isLatestCommit := flakefinder.IsLatestCommit([]byte(jsonTextWithTwoRepos), &pullRequest)
+			pullRequest := &ghapi.PullRequest{Number: oneOffPrNumber, SHA: headSHA}
+			isLatestCommit := flakefinder.IsLatestCommit([]byte(jsonTextWithTwoRepos), pullRequest)
 			Expect(isLatestCommit).To(BeTrue())
 		})
 
