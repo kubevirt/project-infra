@@ -96,9 +96,8 @@ func (t TopXTests) CalculateShareFromTotalFailures() *TopXTest {
 			if !failuresPerDayExists {
 				date := formatFromSourceToTargetFormat(day, time.RFC3339, rfc3339Date)
 				overall.FailuresPerDay[day] = &FailureCounter{
-					Name:    failuresPerDay.Name,
-					ShowURL: true,
-					URL:     fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html", date),
+					Name: failuresPerDay.Name,
+					URL:  fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html", date),
 				}
 			}
 			overall.FailuresPerDay[day].add(failuresPerDay.Sum)
@@ -109,9 +108,8 @@ func (t TopXTests) CalculateShareFromTotalFailures() *TopXTest {
 			_, failuresPerLaneExists := overall.FailuresPerLane[lane]
 			if !failuresPerLaneExists {
 				overall.FailuresPerLane[lane] = &FailureCounter{
-					Name:    lane,
-					ShowURL: true,
-					URL:     fmt.Sprintf("https://testgrid.k8s.io/kubevirt-presubmits#%s&width=20", lane),
+					Name: lane,
+					URL:  fmt.Sprintf("https://testgrid.k8s.io/kubevirt-presubmits#%s&width=20", lane),
 				}
 			}
 			overall.FailuresPerLane[lane].add(failuresPerLane.Sum)
@@ -151,7 +149,6 @@ type FailureCounter struct {
 	Max           int
 	SharePercent  float64
 	ShareCategory ShareCategory
-	ShowURL       bool
 	URL           string
 }
 
@@ -285,9 +282,8 @@ func main() {
 				if !failuresPerDayExists {
 					date := formatFromSourceToTargetFormat(reportData.StartOfReport, time.RFC3339, rfc3339Date)
 					currentTopXTest.FailuresPerDay[reportData.StartOfReport] = &FailureCounter{
-						Name:    formatToDay(reportData.StartOfReport),
-						ShowURL: true,
-						URL:     fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html", date),
+						Name: formatToDay(reportData.StartOfReport),
+						URL:  fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html", date),
 					}
 				}
 				currentTopXTest.FailuresPerDay[reportData.StartOfReport].add(jobFailures.Failed)
@@ -296,9 +292,8 @@ func main() {
 				_, failuresPerLaneExists := currentTopXTest.FailuresPerLane[jobName]
 				if !failuresPerLaneExists {
 					currentTopXTest.FailuresPerLane[jobName] = &FailureCounter{
-						Name:    jobName,
-						ShowURL: true,
-						URL:     fmt.Sprintf("https://testgrid.k8s.io/kubevirt-presubmits#%s&width=20", jobName),
+						Name: jobName,
+						URL:  fmt.Sprintf("https://testgrid.k8s.io/kubevirt-presubmits#%s&width=20", jobName),
 					}
 				}
 				currentTopXTest.FailuresPerLane[jobName].add(jobFailures.Failed)

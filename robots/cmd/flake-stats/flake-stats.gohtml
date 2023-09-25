@@ -47,11 +47,7 @@
     <table class="failureBlock {{ .ShareCategory.CSSClassName }}">
         <tr>
             <td colspan="2" class="failureHeader">
-                {{ if .ShowURL }}
-                    <a href="{{ .URL }}">{{ .Name }}</a>
-                {{ else }}
-                    {{ .Name }}
-                {{ end }}
+                {{ if .URL }}<a href="{{ .URL }}">{{ end }}{{ .Name }}{{ if .URL }}</a>{{ end }}
             </td>
         </tr>
         <tr>
