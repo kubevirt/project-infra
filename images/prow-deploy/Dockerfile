@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20230502-bfaa042 as builder
+FROM quay.io/kubevirtci/golang:v20230801-94954c0 as builder
 
 RUN git clone https://github.com/kubernetes/test-infra.git && \
   cd test-infra && \
@@ -10,7 +10,7 @@ RUN git clone https://github.com/kubernetes/test-infra.git && \
   /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/hmac ./prow/cmd/hmac' && \
   hmac --help
 
-FROM quay.io/kubevirtci/bootstrap:v20230502-bfaa042
+FROM quay.io/kubevirtci/bootstrap:v20230801-94954c0
 
 COPY --from=builder /usr/local/bin/config-bootstrapper /usr/local/bin/phony /usr/local/bin/hmac /usr/local/bin/
 
@@ -23,7 +23,7 @@ RUN curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_lin
   chmod a+x ./yq && \
   mv ./yq /usr/local/bin
 
-RUN curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.20.0/kind-linux-amd64 && \
+RUN curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.15.0/kind-linux-amd64 && \
   chmod a+x ./kind && \
   mv ./kind /usr/local/bin
 

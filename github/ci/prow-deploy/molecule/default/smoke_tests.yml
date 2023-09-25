@@ -17,6 +17,7 @@
     url: "https://{{ gcswebUrl }}/healthz"
     validate_certs: no
     return_content: yes
+    timeout: 60
   register: gcs_response
 
 - name: verify GCS interface response is healthy
@@ -33,6 +34,7 @@
     method: GET
     validate_certs: no
     return_content: yes
+    timeout: 60
   register: deck_response
 
 - name: verify Deck response is healthy

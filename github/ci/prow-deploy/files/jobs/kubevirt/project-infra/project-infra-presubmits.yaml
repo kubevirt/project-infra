@@ -488,12 +488,12 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-pgp-bot-key: "true"
-    cluster: ibm-prow-jobs
+    cluster: kubevirt-prow-workloads
     spec:
       securityContext:
         runAsUser: 0
       containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20231103-20ce73e
+        - image: quay.io/kubevirtci/prow-deploy:v20231109-df048fe
           env:
           - name: GITHUB_TOKEN
             value: "/etc/github/oauth"
@@ -504,13 +504,10 @@ presubmits:
             - "github/ci/prow-deploy/hack/test.sh"
           securityContext:
             privileged: true
+            runAsUser: 0
           resources:
             requests:
-              cpu: "2"
-              memory: "8Gi"
-            limits:
-              cpu: "2"
-              memory: "8Gi"
+              memory: "29Gi"
           volumeMounts:
           - name: molecule-docker
             mountPath: /tmp/prow-deploy-molecule
