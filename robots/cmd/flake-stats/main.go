@@ -94,10 +94,12 @@ func (t TopXTests) CalculateShareFromTotalFailures() *TopXTest {
 		for day, failuresPerDay := range test.FailuresPerDay {
 			_, failuresPerDayExists := overall.FailuresPerDay[day]
 			if !failuresPerDayExists {
-				date := formatFromSourceToTargetFormat(day, time.RFC3339, rfc3339Date)
 				overall.FailuresPerDay[day] = &FailureCounter{
 					Name: failuresPerDay.Name,
-					URL:  fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html", date),
+					URL: fmt.Sprintf(
+						"https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html",
+						formatFromRFC3339ToRFCDate(day),
+					),
 				}
 			}
 			overall.FailuresPerDay[day].add(failuresPerDay.Sum)
@@ -280,9 +282,9 @@ func main() {
 				// aggregate failures per test per day
 				_, failuresPerDayExists := currentTopXTest.FailuresPerDay[reportData.StartOfReport]
 				if !failuresPerDayExists {
-					date := formatFromSourceToTargetFormat(reportData.StartOfReport, time.RFC3339, rfc3339Date)
+					date := formatFromRFC3339ToRFCDate(reportData.StartOfReport)
 					currentTopXTest.FailuresPerDay[reportData.StartOfReport] = &FailureCounter{
-						Name: formatToDay(reportData.StartOfReport),
+						Name: formatFromSourceToTargetFormat(reportData.StartOfReport, time.RFC3339, dayFormat),
 						URL:  fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html", date),
 					}
 				}
@@ -335,8 +337,8 @@ func main() {
 
 }
 
-func formatToDay(dayDate string) string {
-	return formatFromSourceToTargetFormat(dayDate, time.RFC3339, dayFormat)
+func formatFromRFC3339ToRFCDate(date string) string {
+	return formatFromSourceToTargetFormat(date, time.RFC3339, rfc3339Date)
 }
 
 func formatFromSourceToTargetFormat(dayDate, sourceFormat, targetFormat string) string {
