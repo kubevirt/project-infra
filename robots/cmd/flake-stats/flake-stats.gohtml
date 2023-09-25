@@ -48,7 +48,7 @@
         <tr>
             <td colspan="2" class="failureHeader">
                 {{ if .ShowURL }}
-                    <a href="https://testgrid.k8s.io/kubevirt-presubmits#{{ .Name }}&width=20">{{ .Name }}</a>
+                    <a href="{{ .URL }}">{{ .Name }}</a>
                 {{ else }}
                     {{ .Name }}
                 {{ end }}
