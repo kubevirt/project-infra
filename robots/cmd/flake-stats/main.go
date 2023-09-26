@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"log"
 	"net/http"
@@ -93,7 +94,13 @@ func (t TopXTests) CalculateShareFromTotalFailures() *TopXTest {
 		for day, failuresPerDay := range test.FailuresPerDay {
 			_, failuresPerDayExists := overall.FailuresPerDay[day]
 			if !failuresPerDayExists {
-				overall.FailuresPerDay[day] = &FailureCounter{Name: failuresPerDay.Name}
+				overall.FailuresPerDay[day] = &FailureCounter{
+					Name: failuresPerDay.Name,
+					URL: fmt.Sprintf(
+						"https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html",
+						formatFromRFC3339ToRFCDate(day),
+					),
+				}
 			}
 			overall.FailuresPerDay[day].add(failuresPerDay.Sum)
 		}
@@ -102,7 +109,10 @@ func (t TopXTests) CalculateShareFromTotalFailures() *TopXTest {
 		for lane, failuresPerLane := range test.FailuresPerLane {
 			_, failuresPerLaneExists := overall.FailuresPerLane[lane]
 			if !failuresPerLaneExists {
-				overall.FailuresPerLane[lane] = &FailureCounter{Name: lane, ShowURL: true}
+				overall.FailuresPerLane[lane] = &FailureCounter{
+					Name: lane,
+					URL:  fmt.Sprintf("https://testgrid.k8s.io/kubevirt-presubmits#%s&width=20", lane),
+				}
 			}
 			overall.FailuresPerLane[lane].add(failuresPerLane.Sum)
 		}
@@ -141,7 +151,7 @@ type FailureCounter struct {
 	Max           int
 	SharePercent  float64
 	ShareCategory ShareCategory
-	ShowURL       bool
+	URL           string
 }
 
 func (c *FailureCounter) add(value int) {
@@ -175,6 +185,8 @@ var opts = options{}
 const defaultDaysInThePast = 14
 const defaultOrg = "kubevirt"
 const defaultRepo = "kubevirt"
+const dayFormat = "Mon, 02 Jan 2006"
+const rfc3339Date = "2006-01-02"
 
 func main() {
 
@@ -270,14 +282,21 @@ func main() {
 				// aggregate failures per test per day
 				_, failuresPerDayExists := currentTopXTest.FailuresPerDay[reportData.StartOfReport]
 				if !failuresPerDayExists {
-					currentTopXTest.FailuresPerDay[reportData.StartOfReport] = &FailureCounter{Name: formatToDay(reportData.StartOfReport)}
+					date := formatFromRFC3339ToRFCDate(reportData.StartOfReport)
+					currentTopXTest.FailuresPerDay[reportData.StartOfReport] = &FailureCounter{
+						Name: formatFromSourceToTargetFormat(reportData.StartOfReport, time.RFC3339, dayFormat),
+						URL:  fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html", date),
+					}
 				}
 				currentTopXTest.FailuresPerDay[reportData.StartOfReport].add(jobFailures.Failed)
 
 				// aggregate failures per test per lane
 				_, failuresPerLaneExists := currentTopXTest.FailuresPerLane[jobName]
 				if !failuresPerLaneExists {
-					currentTopXTest.FailuresPerLane[jobName] = &FailureCounter{Name: jobName, ShowURL: true}
+					currentTopXTest.FailuresPerLane[jobName] = &FailureCounter{
+						Name: jobName,
+						URL:  fmt.Sprintf("https://testgrid.k8s.io/kubevirt-presubmits#%s&width=20", jobName),
+					}
 				}
 				currentTopXTest.FailuresPerLane[jobName].add(jobFailures.Failed)
 			}
@@ -318,12 +337,16 @@ func main() {
 
 }
 
-func formatToDay(dayDate string) string {
-	date, err := time.Parse(time.RFC3339, dayDate)
+func formatFromRFC3339ToRFCDate(date string) string {
+	return formatFromSourceToTargetFormat(date, time.RFC3339, rfc3339Date)
+}
+
+func formatFromSourceToTargetFormat(dayDate, sourceFormat, targetFormat string) string {
+	date, err := time.Parse(sourceFormat, dayDate)
 	if err != nil {
 		panic(err)
 	}
-	return date.Format("Mon, 02 Jan 2006")
+	return date.Format(targetFormat)
 }
 
 func isQuarantineLabelPresent(testName string) bool {
