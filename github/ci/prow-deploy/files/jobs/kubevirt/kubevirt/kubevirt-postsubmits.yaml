@@ -264,16 +264,14 @@ postsubmits:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20230801-94954c0
+      - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
         env:
-        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        command: [ "/bin/sh", "-ce" ]
         args:
         - |
-          set -e
           project_infra_dir=$(cd ../project-infra && pwd)
-          cd ${project_infra_dir}
           sig_release_dir=$(cd ../sig-release && pwd)
-          ./hack/git-pr.sh -c "go run ./robots/cmd/kubevirt get support-matrix --output-file=${sig_release_dir}/releases/k8s-support-matrix.md --overwrite-output-file --job-config-path=${project_infra_dir}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt" -p ${sig_release_dir} -r sig-release -b update-support-matrix -T main
+          git-pr.sh -c "cd ../project-infra && bazelisk run //robots/cmd/kubevirt -- get support-matrix --output-file=${sig_release_dir}/releases/k8s-support-matrix.md --overwrite-output-file --job-config-path=${project_infra_dir}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt" -p ${sig_release_dir} -s 'Automated run of //robots/cmd/kubevirt get support-matrix' -r sig-release -b update-support-matrix -T main
         resources:
           requests:
             memory: "200Mi"
