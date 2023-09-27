@@ -69,11 +69,45 @@ func (t TopXTests) Len() int {
 }
 
 func (t TopXTests) Less(i, j int) bool {
+
+	// go through the FailuresPerDay from most recent to last
+	// the one which has more recent failures is less than the other
+	for day := 0; day < opts.daysInThePast; day++ {
+		dayForFailure := time.Now().Add(time.Duration(-1*day*24) * time.Hour)
+		dateKeyForFailure := dayForFailure.Format(rfc3339Date) + "T00:00:00Z"
+		_, iExists := t[i].FailuresPerDay[dateKeyForFailure]
+		_, jExists := t[j].FailuresPerDay[dateKeyForFailure]
+		if !iExists && !jExists {
+			continue
+		}
+		if !jExists {
+			return true
+		}
+		if !iExists {
+			return false
+		}
+	}
+
+	// continue comparing the remaining values
 	iAllFailures := t[i].AllFailures
 	jAllFailures := t[j].AllFailures
 	return iAllFailures.Sum > jAllFailures.Sum ||
 		(iAllFailures.Sum == jAllFailures.Sum && iAllFailures.Max > jAllFailures.Max) ||
 		(iAllFailures.Sum == jAllFailures.Sum && iAllFailures.Max == jAllFailures.Max && iAllFailures.Avg > jAllFailures.Avg)
+}
+
+func (t TopXTests) calculateWeightedDatedFailureSums(i int, firstDayOfReport time.Time) int {
+	tiFailuresPerDay := t[i].FailuresPerDay
+	iWeightedDatedFailureSums := 0
+	for iDate, iFailuresPerDay := range tiFailuresPerDay {
+		parse, err := time.Parse(time.RFC3339, iDate)
+		if err != nil {
+			panic(err)
+		}
+		daysAfterStart := int(parse.Sub(firstDayOfReport).Hours()) / 24
+		iWeightedDatedFailureSums += daysAfterStart * daysAfterStart * iFailuresPerDay.Sum
+	}
+	return iWeightedDatedFailureSums
 }
 
 func (t TopXTests) Swap(i, j int) {
