@@ -819,6 +819,7 @@ periodics:
           scrape_dir=$(mktemp -d)
           ci_perf_repo_dir=$(cd ../ci-performance-benchmarks && pwd)
           ./robots/cmd/perf-report-creator/scrape.sh $GOOGLE_APPLICATION_CREDENTIALS $ci_perf_repo_dir $scrape_dir
+          ./robots/cmd/perf-report-creator/graph.sh $ci_perf_repo_dir
           cd $ci_perf_repo_dir
           git add -A results weekly
           current_date=$(date --iso-8601=date)
