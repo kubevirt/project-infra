@@ -1,0 +1,16 @@
+apiVersion: v1
+metadata:
+  name: deck
+  namespace: test-pods
+kind: Role
+rules:
+  - apiGroups:
+      - "prow.k8s.io"
+    resources:
+      - prowjobs
+    verbs:
+      - get
+      - list
+      - watch
+      # Required when deck runs with `--rerun-creates-job=true`
+      - create

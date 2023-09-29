@@ -7,7 +7,6 @@ metadata:
   name: deck
   namespace: default
 spec:
-  ingressClassName: public-iks-k8s-nginx
   tls:
   - hosts:
     - prow.ci.kubevirt.io
