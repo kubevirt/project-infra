@@ -145,8 +145,8 @@ presubmits:
     cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
-      grace_period: 30m0s
-      timeout: 4h0m0s
+      grace_period: 1m0s
+      timeout: 0h1m0s
     labels:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
@@ -169,13 +169,22 @@ presubmits:
                   - "true"
               topologyKey: kubernetes.io/hostname
             weight: 100
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: phase
+                operator: In
+                values:
+                - sig-network
       containers:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/bash
         - -ce
         - |
-          automation/test.sh
+          automation/test.sh && echo bla
         env:
         - name: TARGET
           value: kind-1.27-vgpu
