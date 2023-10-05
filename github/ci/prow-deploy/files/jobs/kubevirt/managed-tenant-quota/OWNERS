@@ -8,6 +8,7 @@ filters:
   .*:
     approvers:
     - barakmor1
+    - vladikr
     reviewers:
     - barakmor1
 options: {}
