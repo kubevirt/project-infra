@@ -59,39 +59,6 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-mtq-functest-nightly-kubevirt
-    skip_branches:
-      - release-v\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 5h
-      grace_period: 5m
-    max_concurrency: 6
-    cluster: kubevirt-prow-workloads
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-shared-images: "true"
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/sh"
-            - "-c"
-            - "automation/test.sh"
-          # docker-in-docker needs privileged mode
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "29Gi"
   - name: pull-mtq-functest-latest-stable-kubevirt
     skip_branches:
       - release-v\d+\.\d+
