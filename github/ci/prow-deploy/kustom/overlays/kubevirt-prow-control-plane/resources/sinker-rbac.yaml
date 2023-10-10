@@ -1,0 +1,56 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: kubevirt-prow-jobs
+  name: "sinker"
+rules:
+  - apiGroups:
+    - "prow.k8s.io"
+    resources:
+    - prowjobs
+    verbs:
+    - delete
+    - list
+    - watch
+    - get
+  - apiGroups:
+    - coordination.k8s.io
+    resources:
+    - leases
+    resourceNames:
+    - prow-sinker-leaderlock
+    verbs:
+    - get
+    - update
+  - apiGroups:
+    - coordination.k8s.io
+    resources:
+    - leases
+    verbs:
+    - create
+  - apiGroups:
+    - ""
+    resources:
+    - configmaps
+    resourceNames:
+    - prow-sinker-leaderlock
+    verbs:
+    - get
+    - update
+  - apiGroups:
+    - ""
+    resources:
+    - configmaps
+    - events
+    verbs:
+    - create
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - delete
+      - list
+      - watch
+      - get
+      - patch
