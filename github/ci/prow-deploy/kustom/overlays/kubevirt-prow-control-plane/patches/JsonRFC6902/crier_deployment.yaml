@@ -14,7 +14,7 @@
 - op: remove
   path: /spec/template/spec/containers/0/env/1
 
-# removes volume and moint for aws-iam-token
+# removes volume and mount for aws-iam-token
 - op: remove
   path: /spec/template/spec/containers/0/volumeMounts/10
 - op: remove
