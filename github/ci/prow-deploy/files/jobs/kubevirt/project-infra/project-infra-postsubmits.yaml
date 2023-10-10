@@ -437,7 +437,7 @@ postsubmits:
         preset-github-credentials: "true"
         preset-pgp-bot-key: "true"
       skip_report: false
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       spec:
         securityContext:
           runAsUser: 0
@@ -740,7 +740,7 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
