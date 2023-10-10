@@ -16,7 +16,13 @@
 
 # removes volume and moint for aws-iam-token
 - op: remove
-  path: /spec/template/spec/containers/0/volumeMounts/9
+  path: /spec/template/spec/containers/0/volumeMounts/10
+- op: remove
+  path: /spec/template/spec/volumes/10
+
+  # removes kubeconfig-k8s-infra-kops-prow-build mount and volume
+- op: remove
+  path: /spec/template/spec/containers/0/volumeMounts/5
 - op: remove
   path: /spec/template/spec/volumes/9
 
