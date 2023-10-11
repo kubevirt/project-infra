@@ -639,9 +639,9 @@ orgs:
       kubevirt-velero-plugin-maintainers:
         description: ""
         maintainers:
-          - tomob
           - aglitke
-          - brybacki
+          - awels
+          - mhenriks
           - shellyka13
         repos:
           kubevirt-velero-plugin: admin
