@@ -44,7 +44,7 @@ bump_utility_images(){
 bump_exporter(){
     local latest_prow_tag=$1
 
-    sed -i "s!image: gcr.io/k8s-prow/exporter:.*!image: gcr.io/k8s-prow/exporter:${latest_prow_tag}!" ${PROJECT_INFRA_ROOT}/github/ci/prow-deploy/kustom/overlays/ibmcloud-production/resources/prow-exporter-deployment.yaml
+    sed -i "s!image: gcr.io/k8s-prow/exporter:.*!image: gcr.io/k8s-prow/exporter:${latest_prow_tag}!" ${PROJECT_INFRA_ROOT}/github/ci/prow-deploy/kustom/overlays/kubevirt-prow-control-plane/resources/prow-exporter-deployment.yaml
 }
 
 bump_base_manifests_local_images(){

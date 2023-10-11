@@ -1,4 +1,4 @@
-# REmoves hisotry-uri and status-path which point to a
+# Removes history-uri and status-path which point to a
 # remote google storage location
 - op: remove
   path: /spec/template/spec/containers/0/args/7

@@ -104,7 +104,7 @@
 
     - name: copy production kustomize files
       synchronize:
-        src: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/ibmcloud-production/{{ item }}'
+        src: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/kubevirt-prow-control-plane/{{ item }}'
         dest: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}'
       delegate_to: '{{ inventory_hostname }}'
       loop:
