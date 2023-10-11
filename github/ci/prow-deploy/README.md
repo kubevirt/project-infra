@@ -1,7 +1,8 @@
 # Kubevirt Prow deployment
 
 This directory contains code to test and deploy Prow and related components
-in our clusters.
+in our clusters. The cluster requires the cert-manager operator installed
+in order to get valid TLS certificates for the deck and gcsweb ingresses.
 
 ## Continuous Delivery of Prow
 
@@ -13,7 +14,7 @@ environment with the same code used for production and executes integration test
 This job is triggered when files under `github/ci/prow-deploy` directory are
 changed on a PR.
 
-* `post-project-infra-prow-control-plane-deployment`: postsubmit that deploys
+* `post-project-infra-kubevirt-prow-control-plane-deployment`: postsubmit that deploys
 Prow and related components when changes to files under `github/ci/prow-deploy`
 are merged.
 
@@ -25,7 +26,7 @@ Besides additional changes proposed by collaborators, the normal workflow for
 updating Prow consists of `periodic-project-infra-prow-bump` proposing a PR with
 changes to update to the latest Prow version. This triggers `pull-project-infra-prow-deploy-test`
 and the integration tests are executed. After a review by collaborators the
-changes are merged, which triggers `post-project-infra-prow-control-plane-deployment`
+changes are merged, which triggers `post-project-infra-kubevirt-prow-control-plane-deployment`
 to deploy them to production.
 
 ## How deployment works
