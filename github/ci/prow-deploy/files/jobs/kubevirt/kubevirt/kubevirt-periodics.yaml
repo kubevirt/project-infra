@@ -1076,7 +1076,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.27-sig-compute-migrations
+  name: periodic-kubevirt-e2e-k8s-1.28-sig-compute-migrations
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1093,7 +1093,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.27-sig-compute-migrations
+        value: k8s-1.28-sig-compute-migrations
       - name: KUBEVIRT_NUM_NODES
         value: "3"
       - name: KUBEVIRT_STORAGE
