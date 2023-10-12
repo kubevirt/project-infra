@@ -190,6 +190,156 @@ var _ = Describe("main", func() {
 			},
 			true,
 		),
+
+		Entry("recency: Sum i == j and i failures same recency as j failures and latest_failure(i) > latest_failure(j) => i !Less j",
+			TopXTests{
+				NewTopXTestWithOptions(
+					"i",
+					WithAllFailuresSum(6),
+					WithDatedFailuresSum(time.Now(), 4),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 2),
+				),
+				NewTopXTestWithOptions(
+					"j",
+					WithAllFailuresSum(6),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 3),
+				),
+			},
+			false,
+		),
+
+		Entry("recency: Sum i == j and i failures same recency as j failures and latest_failure(i) < latest_failure(j) but second_latest_failure > j => i !Less j",
+			TopXTests{
+				NewTopXTestWithOptions(
+					"i",
+					WithAllFailuresSum(6),
+					WithDatedFailuresSum(time.Now(), 2),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 4),
+				),
+				NewTopXTestWithOptions(
+					"j",
+					WithAllFailuresSum(6),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 3),
+				),
+			},
+			false,
+		),
+
+		Entry("recency: Sum i == j and i failures same recency as j failures and latest_failure(i) > latest_failure(j) but second_latest_failure < j => i !Less j",
+			TopXTests{
+				NewTopXTestWithOptions(
+					"i",
+					WithAllFailuresSum(6),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 3),
+				),
+				NewTopXTestWithOptions(
+					"j",
+					WithAllFailuresSum(6),
+					WithDatedFailuresSum(time.Now(), 2),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 4),
+				),
+			},
+			false,
+		),
+
+		Entry("recency: Sum i > j and i failures same recency as j failures and sum_latest_failures(i) > sum_latest_failures(j) => i Less j",
+			TopXTests{
+				NewTopXTestWithOptions(
+					"i",
+					WithAllFailuresSum(7),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 4),
+				),
+				NewTopXTestWithOptions(
+					"j",
+					WithAllFailuresSum(6),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 3),
+				),
+			},
+			true,
+		),
+
+		Entry("recency: Sum i < j and i failures same recency as j failures and sum_latest_failures(i) < sum_latest_failures(j) => i !Less j",
+			TopXTests{
+				NewTopXTestWithOptions(
+					"i",
+					WithAllFailuresSum(6),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 3),
+				),
+				NewTopXTestWithOptions(
+					"j",
+					WithAllFailuresSum(7),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 4),
+				),
+			},
+			false,
+		),
+
+		Entry("recency: Sum i > j and i failures same recency as j failures and latest_failure(i) == latest_failure(j) but sum_latest_failures(i) > sum_latest_failures(j) => i Less j",
+			TopXTests{
+				NewTopXTestWithOptions(
+					"i",
+					WithAllFailuresSum(10),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 4),
+					WithDatedFailuresSum(time.Now().Add(-48*time.Hour), 3),
+				),
+				NewTopXTestWithOptions(
+					"j",
+					WithAllFailuresSum(9),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 3),
+					WithDatedFailuresSum(time.Now().Add(-48*time.Hour), 3),
+				),
+			},
+			true,
+		),
+
+		Entry("recency: Sum i == j and i failures more recent than j failures and sum_latest_failures(i) == sum_latest_failures(j) => i Less j",
+			TopXTests{
+				NewTopXTestWithOptions(
+					"i",
+					WithAllFailuresSum(9),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 3),
+					WithDatedFailuresSum(time.Now().Add(-48*time.Hour), 3),
+				),
+				NewTopXTestWithOptions(
+					"j",
+					WithAllFailuresSum(9),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 3),
+					WithDatedFailuresSum(time.Now().Add(-72*time.Hour), 3),
+				),
+			},
+			true,
+		),
+
+		Entry("recency: Sum i == j and i failures less recent than j failures and sum_latest_failures(i) == sum_latest_failures(j) => i !Less j",
+			TopXTests{
+				NewTopXTestWithOptions(
+					"i",
+					WithAllFailuresSum(9),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 3),
+					WithDatedFailuresSum(time.Now().Add(-72*time.Hour), 3),
+				),
+				NewTopXTestWithOptions(
+					"j",
+					WithAllFailuresSum(9),
+					WithDatedFailuresSum(time.Now(), 3),
+					WithDatedFailuresSum(time.Now().Add(-24*time.Hour), 3),
+					WithDatedFailuresSum(time.Now().Add(-48*time.Hour), 3),
+				),
+			},
+			false,
+		),
 	)
 
 })

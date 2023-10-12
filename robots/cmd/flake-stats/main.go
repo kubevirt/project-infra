@@ -72,12 +72,22 @@ func (t TopXTests) Less(i, j int) bool {
 
 	// go through the FailuresPerDay from most recent to last
 	// the one which has more recent failures is less than the other
+	// where "more recent failures" means per i,j that
+	// 1) mostRecentSetOfFailures := most recent complete set
+	//    of directly adjacent failures per each day
+	//    i.e. assuming today is Wed
+	//         thus [Wed, Tue, Mon] is more recent than [Tue, Mon, Sun]
+	// 2) sum(mostRecentSetOfFailures(i)) > sum(mostRecentSetOfFailures(j))
+	tIFailuresPerDaySum, tJFailuresPerDaySum := 0, 0
 	for day := 0; day < opts.daysInThePast; day++ {
 		dayForFailure := time.Now().Add(time.Duration(-1*day*24) * time.Hour)
 		dateKeyForFailure := dayForFailure.Format(rfc3339Date) + "T00:00:00Z"
-		_, iExists := t[i].FailuresPerDay[dateKeyForFailure]
-		_, jExists := t[j].FailuresPerDay[dateKeyForFailure]
+		tIFailuresPerDay, iExists := t[i].FailuresPerDay[dateKeyForFailure]
+		tJFailuresPerDay, jExists := t[j].FailuresPerDay[dateKeyForFailure]
 		if !iExists && !jExists {
+			if tIFailuresPerDaySum > tJFailuresPerDaySum {
+				return true
+			}
 			continue
 		}
 		if !jExists {
@@ -86,6 +96,8 @@ func (t TopXTests) Less(i, j int) bool {
 		if !iExists {
 			return false
 		}
+		tIFailuresPerDaySum += tIFailuresPerDay.Sum
+		tJFailuresPerDaySum += tJFailuresPerDay.Sum
 	}
 
 	// continue comparing the remaining values
