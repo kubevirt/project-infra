@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"net/url"
 	"time"
 )
 
@@ -339,6 +341,27 @@ var _ = Describe("main", func() {
 				),
 			},
 			false,
+		),
+	)
+
+	DescribeTable("generate TestGrid URL",
+		func(jobName string, expectedFragments []string) {
+			urlForJob := generateTestGridURLForJob(jobName)
+			_, err := url.Parse(urlForJob)
+			if err != nil {
+				Fail(fmt.Sprintf("failed to parse url %q: %v", urlForJob, err))
+			}
+			for _, fragmentExpected := range expectedFragments {
+				Expect(urlForJob).To(ContainSubstring(fragmentExpected))
+			}
+		},
+		Entry("presubmit",
+			"pull-kubevirt-e2e-k8s-1.28-sig-storage",
+			[]string{"testgrid", "kubevirt-presubmits"},
+		),
+		Entry("periodic",
+			"periodic-kubevirt-e2e-k8s-1.28-sig-compute",
+			[]string{"testgrid", "kubevirt-periodics"},
 		),
 	)
 

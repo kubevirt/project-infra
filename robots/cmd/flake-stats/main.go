@@ -157,7 +157,7 @@ func (t TopXTests) CalculateShareFromTotalFailures() *TopXTest {
 			if !failuresPerLaneExists {
 				overall.FailuresPerLane[lane] = &FailureCounter{
 					Name: lane,
-					URL:  fmt.Sprintf("https://testgrid.k8s.io/kubevirt-presubmits#%s&width=20", lane),
+					URL:  generateTestGridURLForJob(lane),
 				}
 			}
 			overall.FailuresPerLane[lane].add(failuresPerLane.Sum)
@@ -226,6 +226,27 @@ type options struct {
 	repo                string
 }
 
+func (o options) validate() error {
+	if opts.daysInThePast <= 0 {
+		return fmt.Errorf("invalid value for daysInThePast %d", opts.daysInThePast)
+	}
+	if opts.outputFile == "" {
+		file, err := os.CreateTemp("", "flake-stats-*.html")
+		if err != nil {
+			return fmt.Errorf("failed to generate temp file: %v", err)
+		}
+		opts.outputFile = file.Name()
+	} else {
+		if !opts.overwriteOutputFile {
+			stats, err := os.Stat(opts.outputFile)
+			if stats != nil || !os.IsNotExist(err) {
+				return fmt.Errorf("file %q exists or error occurred: %v", opts.outputFile, err)
+			}
+		}
+	}
+	return nil
+}
+
 var opts = options{}
 
 const defaultDaysInThePast = 14
@@ -243,60 +264,68 @@ func main() {
 	flag.StringVar(&opts.repo, "repo", defaultRepo, "GitHub repo to use for fetching report data from gcs dir")
 	flag.Parse()
 
-	if opts.daysInThePast <= 0 {
-		log.Fatalf("invalid value for daysInThePast %d", opts.daysInThePast)
-	}
-	if opts.outputFile == "" {
-		file, err := os.CreateTemp("", "flake-stats-*.html")
-		if err != nil {
-			log.Fatalf("failed to generate temp file: %v", err)
-		}
-		opts.outputFile = file.Name()
-	} else {
-		if !opts.overwriteOutputFile {
-			stats, err := os.Stat(opts.outputFile)
-			if stats != nil || !os.IsNotExist(err) {
-				log.Fatalf("file exists: %v", err)
-			}
-		}
+	err := opts.validate()
+	if err != nil {
+		log.Fatalf("failed to validate flags: %v", err)
 	}
 
+	recentFlakeFinderReports := fetchFlakeFinder24hReportsForRecentDays()
+	allTests := aggregateTopXTests(recentFlakeFinderReports)
+	overallFailures := allTests.CalculateShareFromTotalFailures()
+	err = writeReport(overallFailures, allTests)
+	if err != nil {
+		log.Fatalf("failed writing report: %v", err)
+	}
+
+}
+
+func fetchFlakeFinder24hReportsForRecentDays() []*flakefinder.Params {
+	var recentFlakeFinderReports []*flakefinder.Params
 	targetReportDate := previousDay(time.Now())
-	var recentFlakefinderReports []flakefinder.Params
 	for i := 0; i < opts.daysInThePast; i++ {
-		reportJSONURL, err := flakefinder.GenerateReportURL(opts.org, opts.repo, targetReportDate, flakefinder.DateRange24h, "json")
+		flakeFinderReportData, err := fetchFlakeFinder24hReportData(targetReportDate)
 		if err != nil {
-			log.Fatalf("failed to generate report url: %v", err)
+			log.Fatalf("failed to retrieve flakefinder report data for %v: %v", targetReportDate, err)
 		}
-		log.Printf("fetching report %q", reportJSONURL)
-		response, err := http.DefaultClient.Get(reportJSONURL)
-		if err != nil {
-			log.Fatalf("error fetching report %q", reportJSONURL)
-		}
-		if response.StatusCode != http.StatusOK {
-			log.Fatalf("error %s fetching report %q", response.Status, reportJSONURL)
-		}
-		defer response.Body.Close()
-
-		var flakefinderReportData flakefinder.Params
-		err = json.NewDecoder(response.Body).Decode(&flakefinderReportData)
-		if err != nil {
-			log.Fatalf("failed to decode flakefinder json from %s: %v", reportJSONURL, err)
-		}
-		recentFlakefinderReports = append(recentFlakefinderReports, flakefinderReportData)
+		recentFlakeFinderReports = append(recentFlakeFinderReports, flakeFinderReportData)
 
 		targetReportDate = previousDay(targetReportDate)
 	}
+	return recentFlakeFinderReports
+}
+
+func fetchFlakeFinder24hReportData(targetReportDate time.Time) (*flakefinder.Params, error) {
+	reportJSONURL, err := flakefinder.GenerateReportURL(opts.org, opts.repo, targetReportDate, flakefinder.DateRange24h, "json")
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate report url: %v", err)
+	}
+	log.Printf("fetching report %q", reportJSONURL)
+	response, err := http.DefaultClient.Get(reportJSONURL)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching report %q", reportJSONURL)
+	}
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error %s fetching report %q", response.Status, reportJSONURL)
+	}
+	defer response.Body.Close()
+
+	var flakefinderReportData flakefinder.Params
+	err = json.NewDecoder(response.Body).Decode(&flakefinderReportData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode flakefinder json from %s: %v", reportJSONURL, err)
+	}
+	return &flakefinderReportData, nil
+}
+
+func aggregateTopXTests(recentFlakeFinderReports []*flakefinder.Params) TopXTests {
 
 	// store test names for quarantined tests to later on mark the displayed results
 	// since we want to aggregate over a test that has a changing quarantine status during the period
 	quarantinedTestNames := map[string]struct{}{}
+
 	testNamesByTopXTests := map[string]*TopXTest{}
-	for _, reportData := range recentFlakefinderReports {
+	for _, reportData := range recentFlakeFinderReports {
 		for i := 0; i < len(reportData.Tests); i++ {
-			if isQuarantineLabelPresent(reportData.Tests[i]) {
-				quarantinedTestNames[normalizeTestName(reportData.Tests[i])] = struct{}{}
-			}
 
 			// the original test name is used to retrieve the test data from the flakefinder report
 			// i.e. all access to `reportData`
@@ -306,59 +335,97 @@ func main() {
 			// i.e. `testNamesByTopXTests`
 			normalizedTestName := normalizeTestName(originalTestName)
 
-			for jobName, jobFailures := range reportData.Data[originalTestName] {
-
-				if jobFailures.Failed == 0 {
-					continue
-				}
-
-				currentTopXTest, topXTestsExists := testNamesByTopXTests[normalizedTestName]
-				if !topXTestsExists {
-					testNamesByTopXTests[normalizedTestName] = NewTopXTest(normalizedTestName)
-				}
-				currentTopXTest = testNamesByTopXTests[normalizedTestName]
-
-				// aggregate all failures per test
-				currentTopXTest.AllFailures.add(jobFailures.Failed)
-
-				// aggregate failures per test per day
-				_, failuresPerDayExists := currentTopXTest.FailuresPerDay[reportData.StartOfReport]
-				if !failuresPerDayExists {
-					date := formatFromRFC3339ToRFCDate(reportData.StartOfReport)
-					currentTopXTest.FailuresPerDay[reportData.StartOfReport] = &FailureCounter{
-						Name: formatFromSourceToTargetFormat(reportData.StartOfReport, time.RFC3339, dayFormat),
-						URL:  fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html", date),
-					}
-				}
-				currentTopXTest.FailuresPerDay[reportData.StartOfReport].add(jobFailures.Failed)
-
-				// aggregate failures per test per lane
-				_, failuresPerLaneExists := currentTopXTest.FailuresPerLane[jobName]
-				if !failuresPerLaneExists {
-					currentTopXTest.FailuresPerLane[jobName] = &FailureCounter{
-						Name: jobName,
-						URL:  fmt.Sprintf("https://testgrid.k8s.io/kubevirt-presubmits#%s&width=20", jobName),
-					}
-				}
-				currentTopXTest.FailuresPerLane[jobName].add(jobFailures.Failed)
+			if isQuarantineLabelPresent(originalTestName) {
+				quarantinedTestNames[normalizedTestName] = struct{}{}
 			}
+
+			aggregateFailuresPerJob(reportData, originalTestName, testNamesByTopXTests, normalizedTestName)
 		}
 	}
 
-	var allTests TopXTests
+	markQuarantinedTests(testNamesByTopXTests, quarantinedTestNames)
+
+	return generateSortedAllTests(testNamesByTopXTests)
+}
+
+func aggregateFailuresPerJob(reportData *flakefinder.Params, originalTestName string, testNamesByTopXTests map[string]*TopXTest, normalizedTestName string) {
+	for jobName, jobFailures := range reportData.Data[originalTestName] {
+
+		if jobFailures.Failed == 0 {
+			continue
+		}
+
+		currentTopXTest, topXTestsExists := testNamesByTopXTests[normalizedTestName]
+		if !topXTestsExists {
+			testNamesByTopXTests[normalizedTestName] = NewTopXTest(normalizedTestName)
+		}
+		currentTopXTest = testNamesByTopXTests[normalizedTestName]
+
+		aggregateAllFailuresPerTest(currentTopXTest, jobFailures)
+		aggregateFailuresPerTestPerDay(currentTopXTest, reportData, jobFailures)
+		aggregateFailuresPerTestPerLane(currentTopXTest, jobName, jobFailures)
+	}
+}
+
+func aggregateAllFailuresPerTest(currentTopXTest *TopXTest, jobFailures *flakefinder.Details) {
+	currentTopXTest.AllFailures.add(jobFailures.Failed)
+}
+
+func aggregateFailuresPerTestPerDay(currentTopXTest *TopXTest, reportData *flakefinder.Params, jobFailures *flakefinder.Details) {
+	_, failuresPerDayExists := currentTopXTest.FailuresPerDay[reportData.StartOfReport]
+	if !failuresPerDayExists {
+		date := formatFromRFC3339ToRFCDate(reportData.StartOfReport)
+		currentTopXTest.FailuresPerDay[reportData.StartOfReport] = &FailureCounter{
+			Name: formatFromSourceToTargetFormat(reportData.StartOfReport, time.RFC3339, dayFormat),
+			URL:  fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html", date),
+		}
+	}
+	currentTopXTest.FailuresPerDay[reportData.StartOfReport].add(jobFailures.Failed)
+}
+
+func aggregateFailuresPerTestPerLane(currentTopXTest *TopXTest, jobName string, jobFailures *flakefinder.Details) {
+	_, failuresPerLaneExists := currentTopXTest.FailuresPerLane[jobName]
+	if !failuresPerLaneExists {
+		currentTopXTest.FailuresPerLane[jobName] = &FailureCounter{
+			Name: jobName,
+			URL:  generateTestGridURLForJob(jobName),
+		}
+	}
+	currentTopXTest.FailuresPerLane[jobName].add(jobFailures.Failed)
+}
+
+func generateTestGridURLForJob(jobName string) string {
+	switch {
+	case strings.HasPrefix(jobName, "pull"):
+		return fmt.Sprintf("https://testgrid.k8s.io/kubevirt-presubmits#%s&width=20", jobName)
+	case strings.HasPrefix(jobName, "periodic"):
+		return fmt.Sprintf("https://testgrid.k8s.io/kubevirt-periodics#%s&width=20", jobName)
+	default:
+		panic(fmt.Errorf("no case for jobName %q", jobName))
+	}
+}
+
+func markQuarantinedTests(testNamesByTopXTests map[string]*TopXTest, quarantinedTestNames map[string]struct{}) {
 	for _, test := range testNamesByTopXTests {
 		if _, wasQuarantinedDuringReportRange := quarantinedTestNames[test.Name]; wasQuarantinedDuringReportRange {
 			test.NoteHasBeenQuarantined = true
 		}
+	}
+}
+
+func generateSortedAllTests(testNamesByTopXTests map[string]*TopXTest) TopXTests {
+	var allTests TopXTests
+	for _, test := range testNamesByTopXTests {
 		allTests = append(allTests, test)
 	}
 	sort.Sort(allTests)
+	return allTests
+}
 
-	overallFailures := allTests.CalculateShareFromTotalFailures()
-
+func writeReport(overallFailures *TopXTest, allTests TopXTests) error {
 	htmlReportOutputWriter, err := os.Create(opts.outputFile)
 	if err != nil {
-		log.Fatalf("failed to write report %q: %v", opts.outputFile, err)
+		return fmt.Errorf("failed to create file %q: %w", opts.outputFile, err)
 	}
 	log.Printf("Writing html to %q", opts.outputFile)
 	defer htmlReportOutputWriter.Close()
@@ -374,9 +441,9 @@ func main() {
 	}
 	err = flakefinder.WriteTemplateToOutput(htmlTemplate, templateData, htmlReportOutputWriter)
 	if err != nil {
-		log.Fatalf("Writing html to %q: %v", opts.outputFile, err)
+		return fmt.Errorf("failed to write to file %q: %w", opts.outputFile, err)
 	}
-
+	return nil
 }
 
 func formatFromRFC3339ToRFCDate(date string) string {
