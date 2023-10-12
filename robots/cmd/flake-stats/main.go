@@ -296,10 +296,6 @@ func main() {
 
 			for jobName, jobFailures := range reportData.Data[originalTestName] {
 
-				if strings.Index(jobName, "periodic") == 0 {
-					continue
-				}
-
 				if jobFailures.Failed == 0 {
 					continue
 				}
