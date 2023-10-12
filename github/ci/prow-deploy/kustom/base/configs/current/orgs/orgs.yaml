@@ -11,6 +11,7 @@ orgs:
       - rmohr
       - stoniko
       - thelinuxfoundation
+      - kubevirt-snyk
     billing_email: fdeutsch@redhat.com
     company: ""
     default_repository_permission: read
