@@ -522,42 +522,6 @@ presubmits:
       - name: unprivileged-token
         secret:
           secretName: unprivileged-oauth-token
-  - name: pull-project-infra-cert-manager-deploy-test
-    optional: false
-    run_if_changed: "github/ci/services/cert-manager/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
-    decorate: true
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-    cluster: kubevirt-prow-workloads
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/bash"
-            - "-c"
-            - |
-              # install kind
-              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
-              chmod +x ./kind && mv ./kind /usr/local/bin/kind
-
-              # create test cluster
-              kind create cluster --image quay.io/kubevirtci/kind:v1.21.1
-
-              ./github/ci/services/cert-manager/hack/deploy.sh testing
-
-              bazelisk test //github/ci/services/cert-manager/e2e:go_default_test --test_output=all --test_arg=-test.v
-          securityContext:
-            privileged: true
-            runAsUser: 0
-          resources:
-            requests:
-              memory: "16Gi"
-            limits:
-              memory: "16Gi"
   - name: pull-project-infra-ci-search-deploy-test
     optional: false
     run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
