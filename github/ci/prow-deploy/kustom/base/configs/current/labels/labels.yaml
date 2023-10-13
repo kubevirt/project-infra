@@ -96,6 +96,12 @@ default:
       target: both
       addedBy: anyone
       prowPlugin: label
+    - name: kind/flake
+      color: f7c5c7
+      target: both
+      addedBy: anyone
+      prowPlugin: label
+      description: Categorizes issue or PR as related to a flaky test.
     - name: kind/proposal
       color: bfd4f2
       target: both
