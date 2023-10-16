@@ -38,7 +38,7 @@ presubmits:
           bazelisk test //robots/...
         env:
         - name: GIMME_GO_VERSION
-          value: "1.19"
+          value: "1.20"
         resources:
           requests:
             memory: "8Gi"
@@ -656,7 +656,7 @@ presubmits:
             memory: "8Gi"
         env:
         - name: GIMME_GO_VERSION
-          value: "1.19"
+          value: "1.20"
   - name: pull-kubevirt-org-github-config-updater
     run_if_changed: '^github/ci/prow-deploy/files/orgs\.yaml$'
     annotations:
@@ -752,7 +752,7 @@ presubmits:
       - image: quay.io/kubevirtci/golang:v20230801-94954c0
         env:
         - name: GIMME_GO_VERSION
-          value: "1.19"
+          value: "1.20"
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"

@@ -168,4 +168,4 @@ replace (
 	sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.14.6
 )
 
-go 1.19
+go 1.20
