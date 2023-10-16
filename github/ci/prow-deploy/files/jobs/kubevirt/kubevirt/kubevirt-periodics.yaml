@@ -984,7 +984,7 @@ periodics:
       resources:
         requests:
           cpu: "12"
-          memory: 56Gi
+          memory: 70Gi
       securityContext:
         privileged: true
     nodeSelector:
