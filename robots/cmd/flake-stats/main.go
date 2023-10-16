@@ -219,11 +219,12 @@ func (f *FailureCounter) setShare(totalFailures int) {
 }
 
 type options struct {
-	daysInThePast       int
-	outputFile          string
-	overwriteOutputFile bool
-	org                 string
-	repo                string
+	daysInThePast               int
+	outputFile                  string
+	overwriteOutputFile         bool
+	org                         string
+	repo                        string
+	filterPeriodicJobRunResults bool
 }
 
 func (o options) validate() error {
@@ -262,6 +263,7 @@ func main() {
 	flag.BoolVar(&opts.overwriteOutputFile, "overwrite-output-file", false, "whether outputfile is set to be overwritten if it exists")
 	flag.StringVar(&opts.org, "org", defaultOrg, "GitHub org to use for fetching report data from gcs dir")
 	flag.StringVar(&opts.repo, "repo", defaultRepo, "GitHub repo to use for fetching report data from gcs dir")
+	flag.BoolVar(&opts.filterPeriodicJobRunResults, "filter-periodic-job-run-results", false, "whether results of periodic jobs should be filtered out of the report")
 	flag.Parse()
 
 	err := opts.validate()
@@ -350,6 +352,10 @@ func aggregateTopXTests(recentFlakeFinderReports []*flakefinder.Params) TopXTest
 
 func aggregateFailuresPerJob(reportData *flakefinder.Params, originalTestName string, testNamesByTopXTests map[string]*TopXTest, normalizedTestName string) {
 	for jobName, jobFailures := range reportData.Data[originalTestName] {
+
+		if opts.filterPeriodicJobRunResults && strings.Index(jobName, "periodic") == 0 {
+			continue
+		}
 
 		if jobFailures.Failed == 0 {
 			continue
