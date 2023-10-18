@@ -1,0 +1,24 @@
+# Bazel GitOps Rules is an alternative to rules_k8s: https://github.com/adobe/rules_gitops
+load("@com_adobe_rules_gitops//gitops:defs.bzl", "k8s_deploy")
+
+TEST_CLUSTER = "kind-kind"
+
+TEST_USER = "kind-kind"
+
+[
+    k8s_deploy(
+        name = NAME,
+        cluster = CLUSTER,
+        manifests = glob([
+            "manifests/grafana.yaml",
+        ]),
+        namespace = "monitoring",
+        secrets_srcs = glob([
+            "secrets/%s/**/*" % NAME,
+        ]),
+        user = USER,
+    )
+    for NAME, CLUSTER, USER in [
+        ("testing", TEST_CLUSTER, TEST_USER),
+    ]
+]

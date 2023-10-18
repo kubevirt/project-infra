@@ -558,6 +558,37 @@ presubmits:
               memory: "16Gi"
             limits:
               memory: "16Gi"
+  - name: pull-project-infra-grafana-deploy-test
+    optional: false
+    run_if_changed: "github/ci/services/grafana/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    cluster: kubevirt-prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - |
+              dnf install -y helm 
+              # install kind
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.15.0/kind-linux-amd64
+              chmod +x ./kind && mv ./kind /usr/local/bin/kind
+              ./github/ci/services/grafana/hack/test.sh
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          resources:
+            requests:
+              memory: "16Gi"
+            limits:
+              memory: "16Gi"
   - name: pull-project-infra-loki-deploy-test
     optional: false
     run_if_changed: "github/ci/services/loki/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
