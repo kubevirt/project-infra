@@ -2,7 +2,6 @@ filters:
   ".*":
     reviewers:
       - ci-maintainers
-      - acardace
       - aglitke
       - davidvossel
       - phoracek
@@ -11,7 +10,6 @@ filters:
       - vladikr
     approvers:
       - ci-maintainers
-      - acardace
       - aglitke
       - davidvossel
       - phoracek
