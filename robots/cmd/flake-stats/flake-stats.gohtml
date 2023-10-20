@@ -44,7 +44,7 @@
 {{ end }}
 
 {{ define "failure" }}
-    <table class="failureBlock {{ .ShareCategory.CSSClassName }}">
+    <table class="failureBlock {{ .ShareCategory.CSSClassName }}" title="Share: {{ printf "%.2f" .SharePercent }} %">
         <tr>
             <td colspan="2" class="failureHeader">
                 {{ if .URL }}<a href="{{ .URL }}">{{ end }}{{ .Name }}{{ if .URL }}</a>{{ end }}
@@ -54,16 +54,8 @@
             <td>
                 Failures
             </td>
-            <td>
+            <td class="failureValue">
                 {{ .Sum }}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Share
-            </td>
-            <td>
-                {{ printf "%.2f" .SharePercent }} %
             </td>
         </tr>
     </table>
@@ -94,6 +86,10 @@
         }
 
         .failureHeader {
+            font-weight: bold;
+        }
+
+        .failureValue {
             font-weight: bold;
         }
 
