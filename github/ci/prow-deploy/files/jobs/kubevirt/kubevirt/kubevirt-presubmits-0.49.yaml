@@ -1298,7 +1298,7 @@ presubmits:
   - always_run: true
     branches:
     - release-0.49
-    cluster: ikubevirt-prow-workloads
+    cluster: kubevirt-prow-workloads
     context: pull-kubevirt-e2e-k8s-1.22-sig-compute
     decorate: true
     decoration_config:
