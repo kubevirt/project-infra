@@ -9,8 +9,7 @@ main() {
 
 	bazelisk run //github/ci/services/common/k8s/cmd/wait -- -namespace monitoring -selector grafana-deployment -kind deployment
 
-	# Allow some time for the grafana operator to create the required pods & services
-	sleep 10
+	kubectl wait --timeout 60s --for=jsonpath='{.status.stage}'=complete -n monitoring grafana grafana
 
 	kubectl apply -n monitoring -f ./github/ci/services/grafana/manifests/ingress.yaml
 

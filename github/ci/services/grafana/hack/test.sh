@@ -32,9 +32,6 @@ kubectl create ns monitoring
 # Install ingress
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 
-# Allow time for ingress controller to start
-sleep 20
-
 helm upgrade --namespace monitoring -i grafana-operator oci://ghcr.io/grafana-operator/helm-charts/grafana-operator --version v5.4.1
 
 ./github/ci/services/grafana/hack/deploy.sh testing
