@@ -442,7 +442,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20230908-02ce73e
+        - image: quay.io/kubevirtci/prow-deploy:v20231102-02ce73e
           env:
           - name: DEPLOY_ENVIRONMENT
             value: kubevirt-prow-control-plane
@@ -475,7 +475,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20230908-02ce73e
+        - image: quay.io/kubevirtci/prow-deploy:v20231102-02ce73e
           env:
           - name: DEPLOY_ENVIRONMENT
             value: kubevirt-prow-workloads
