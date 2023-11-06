@@ -31,7 +31,7 @@ postsubmits:
             - name: GITHUB_EMAIL
               value: kubevirtbot@redhat.com
             - name: GIMME_GO_VERSION
-              value: "1.16"
+              value: "1.17"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -75,7 +75,7 @@ postsubmits:
             - name: GITHUB_EMAIL
               value: kubevirtbot@redhat.com
             - name: GIMME_GO_VERSION
-              value: "1.16"
+              value: "1.17"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
