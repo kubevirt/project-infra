@@ -242,7 +242,7 @@ presubmits:
                 memory: "29Gi"
             env:
               - name: GIMME_GO_VERSION
-                value: "1.16"
+                value: "1.17"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
