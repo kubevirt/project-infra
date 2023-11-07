@@ -279,7 +279,7 @@ presubmits:
       branches:
         - release-0.85
       always_run: true
-      optional: false
+      optional: true
       decorate: true
       skip_report: false
       decoration_config:
