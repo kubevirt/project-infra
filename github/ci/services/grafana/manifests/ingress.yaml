@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: grafana
   namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
 spec:
   rules:
   - host: grafana.ci.kubevirt.io
@@ -15,3 +17,7 @@ spec:
             name: grafana-service
             port:
               number: 3000
+  tls:
+  - hosts:
+    - grafana.ci.kubevirt.io
+    secretName: grafana-tls

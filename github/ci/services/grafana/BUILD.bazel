@@ -5,6 +5,10 @@ TEST_CLUSTER = "kind-kind"
 
 TEST_USER = "kind-kind"
 
+PRODUCTION_CLUSTER_CONTROL_PLANE = "kubevirt-control-plane-cluster"
+
+PRODUCTION_USER_CONTROL_PLANE = "admin/cjmudnpd085ficevj8k0"
+
 [
     k8s_deploy(
         name = NAME,
@@ -20,5 +24,6 @@ TEST_USER = "kind-kind"
     )
     for NAME, CLUSTER, USER in [
         ("testing", TEST_CLUSTER, TEST_USER),
+        ("kubevirt-prow-control-plane", PRODUCTION_CLUSTER_CONTROL_PLANE, PRODUCTION_USER_CONTROL_PLANE),
     ]
 ]
