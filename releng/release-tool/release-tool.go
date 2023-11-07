@@ -336,7 +336,7 @@ func (r *releaseData) makeTag(branch string) error {
 		return err
 	}
 
-	_, err = gitCommand("-C", r.repoDir, "tag", "-s", r.tag, "-F", r.releaseNotesFile)
+	_, err = gitCommand("-C", r.repoDir, "tag", "-s", "-m", fmt.Sprintf("%s %s", r.name, r.tag), r.tag)
 	if err != nil {
 		return err
 	}
