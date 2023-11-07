@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 	"sort"
 	"strconv"
@@ -94,7 +95,13 @@ Additional Resources
 
 	tagUrl := fmt.Sprintf("https://github.com/%s/%s/releases/tag/%s", r.org, r.repo, r.tag)
 
-	r.releaseNotesFile = fmt.Sprintf("%s/%s-release-notes.txt", r.repoDir, r.tag)
+	releaseNotesDir := path.Join(r.repoDir, "CHANGELOG")
+	r.releaseNotesFile = path.Join(releaseNotesDir, fmt.Sprintf("CHANGELOG-%s.md", r.tag))
+
+	err := os.Mkdir(releaseNotesDir, 0755)
+	if err != nil && !os.IsExist(err) {
+		return err
+	}
 
 	f, err := os.Create(r.releaseNotesFile)
 	if err != nil {
