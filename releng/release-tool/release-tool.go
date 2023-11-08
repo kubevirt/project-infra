@@ -313,9 +313,15 @@ func (r *releaseData) makeTag(branch string) error {
 		}
 	}
 
-	r.generateReleaseNotes()
+	err := r.generateReleaseNotes()
+	if err != nil {
+		return err
+	}
 
-	_, err := gitCommand("-C", r.repoDir, "tag", "-s", r.tag, "-F", r.releaseNotesFile)
+	_, err = gitCommand("-C", r.repoDir, "tag", "-s", r.tag, "-F", r.releaseNotesFile)
+	if err != nil {
+		return err
+	}
 
 	if !r.dryRun {
 		_, err = gitCommand("-C", r.repoDir, "push", r.repoUrl, r.tag)
@@ -1107,7 +1113,10 @@ func (r *releaseData) cutNewTag() error {
 		return err
 	}
 
-	r.makeTag(r.tagBranch)
+	err = r.makeTag(r.tagBranch)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
