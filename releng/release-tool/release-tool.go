@@ -79,18 +79,13 @@ func _gitCommand(arg ...string) (string, error) {
 
 func (r *releaseData) generateReleaseNotes() error {
 	additionalResources := fmt.Sprintf(`
-Additional Resources
---------------------
-- Mailing list: <https://groups.google.com/forum/#!forum/kubevirt-dev>
-- Slack: <https://kubernetes.slack.com/messages/virtualization>
-- An easy to use demo: <https://github.com/%s/demo>
-- [How to contribute][contributing]
-- [License][license]
+## Additional Resources
 
-
-[contributing]: https://github.com/%s/%s/blob/main/CONTRIBUTING.md
-[license]: https://github.com/%s/%s/blob/main/LICENSE
----
+- Mailing list: https://groups.google.com/forum/#!forum/kubevirt-dev
+- Slack: https://kubernetes.slack.com/messages/virtualization
+- An easy to use demo: https://github.com/%s/demo
+- How to contribute: https://github.com/%s/%s/blob/main/CONTRIBUTING.md
+- License: https://github.com/%s/%s/blob/main/LICENSE
 `, r.org, r.org, r.repo, r.org, r.repo)
 
 	tagUrl := fmt.Sprintf("https://github.com/%s/%s/releases/tag/%s", r.org, r.repo, r.tag)
@@ -180,21 +175,24 @@ Additional Resources
 	numContributors := len(contributorList)
 	typeOfChanges = strings.TrimSpace(typeOfChanges)
 
-	f.WriteString(fmt.Sprintf("This release follows %s and consists of %d changes, contributed by %d people, leading to %s.\n", r.previousTag, numChanges, numContributors, typeOfChanges))
+	f.WriteString(fmt.Sprintf("# %s %s\n", r.name, r.tag))
+	f.WriteString("\n")
+	f.WriteString(fmt.Sprintf("This release follows %s and consists of %d changes, leading to %s.", r.previousTag, numChanges, typeOfChanges))
 	if r.promoteRC != "" {
-		f.WriteString(fmt.Sprintf("%s is a promotion of release candidate %s which was originally published %s", r.tag, r.promoteRC, r.promoteRCTime.Format("2006-01-02")))
+		f.WriteString("  \n")
+		f.WriteString(fmt.Sprintf("%s is a promotion of release candidate %s, which was originally published on %s.", r.tag, r.promoteRC, r.promoteRCTime.Format("2006-01-02")))
 	}
 	f.WriteString("\n")
-	f.WriteString(fmt.Sprintf("The source code and selected binaries are available for download at: %s.\n", tagUrl))
 	f.WriteString("\n")
-	f.WriteString(fmt.Sprintf("The primary release artifact of %s is the git tree. The release tag is\n", r.name))
+	f.WriteString(fmt.Sprintf("The primary release artifact of %s is the git tree. The release tag is ", r.name))
 	f.WriteString(fmt.Sprintf("signed and can be verified using `git tag -v %s`.\n", r.tag))
 	f.WriteString("\n")
-	f.WriteString(fmt.Sprintf("Pre-built containers are published on Quay and can be viewed at: <https://quay.io/%s/>.\n", r.org))
+	f.WriteString(fmt.Sprintf("The source code and selected binaries are available for download at: %s  \n", tagUrl))
+	f.WriteString(fmt.Sprintf("Pre-built containers are published on Quay and can be viewed at: https://quay.io/%s/\n", r.org))
 	f.WriteString("\n")
 
 	if len(releaseNotes) > 0 {
-		f.WriteString("Notable changes\n---------------\n")
+		f.WriteString("## Notable changes\n")
 		f.WriteString("\n")
 		for _, note := range releaseNotes {
 			f.WriteString(fmt.Sprintf("- %s\n", note))
@@ -202,12 +200,16 @@ Additional Resources
 	}
 
 	f.WriteString("\n")
-	f.WriteString("Contributors\n------------\n")
-	f.WriteString(fmt.Sprintf("%d people contributed to this release:\n\n", numContributors))
+	f.WriteString("## Contributors\n")
+	f.WriteString("\n")
+	f.WriteString(fmt.Sprintf("%d people contributed to this release:\n", numContributors))
+	f.WriteString("\n")
 
+	f.WriteString("```\n")
 	for _, contributor := range contributorList {
 		f.WriteString(fmt.Sprintf("%s\n", strings.TrimSpace(contributor)))
 	}
+	f.WriteString("```\n")
 
 	f.WriteString(additionalResources)
 	return nil
@@ -408,7 +410,7 @@ func (r *releaseData) getReleaseNote(number int) (string, error) {
 				note = strings.TrimPrefix(note, "-")
 				// best effort at catching "none" if the label didn't catch it
 				if note != "" && !strings.Contains(note, "NONE") && strings.ToLower(note) != "none" && strings.ToLower(note) != "n/a" {
-					note = fmt.Sprintf("[PR #%d][%s] %s", number, *pr.User.Login, note)
+					note = fmt.Sprintf("[#%d](https://github.com/%s/%s/pull/%d) ([@%s](https://github.com/%s)) %s", number, r.org, r.repo, number, *pr.User.Login, *pr.User.Login, note)
 					return note, nil
 				}
 			}
