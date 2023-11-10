@@ -37,13 +37,14 @@ type releaseData struct {
 	name      string
 	newBranch string
 
-	tagBranch        string
-	tag              string
-	promoteRC        string
-	promoteRCTime    time.Time
-	previousTag      string
-	releaseNotesFile string
-	skipReleaseNotes bool
+	tagBranch          string
+	tag                string
+	promoteRC          string
+	promoteRCTime      time.Time
+	previousTag        string
+	releaseNotesFile   string
+	releaseNotesReadme string
+	skipReleaseNotes   bool
 
 	force bool
 
@@ -92,6 +93,7 @@ func (r *releaseData) generateReleaseNotes() error {
 
 	releaseNotesDir := path.Join(r.repoDir, "CHANGELOG")
 	r.releaseNotesFile = path.Join(releaseNotesDir, fmt.Sprintf("CHANGELOG-%s.md", r.tag))
+	r.releaseNotesReadme = path.Join(releaseNotesDir, "README.md")
 
 	err := os.Mkdir(releaseNotesDir, 0755)
 	if err != nil && !os.IsExist(err) {
@@ -212,6 +214,19 @@ func (r *releaseData) generateReleaseNotes() error {
 	f.WriteString("```\n")
 
 	f.WriteString(additionalResources)
+
+	g, err := os.Create(r.releaseNotesReadme)
+	if err != nil {
+		return err
+	}
+	defer g.Close()
+
+	g.WriteString(fmt.Sprintf("# %s release notes\n", r.name))
+	g.WriteString("\n")
+	g.WriteString(fmt.Sprintf("The most recent release is [%s](CHANGELOG-%s.md).\n", r.tag, r.tag))
+
+	// TODO list past releases too
+
 	return nil
 }
 
@@ -329,6 +344,11 @@ func (r *releaseData) makeTag(branch string) error {
 	}
 
 	_, err = gitCommand("-C", r.repoDir, "add", r.releaseNotesFile)
+	if err != nil {
+		return err
+	}
+
+	_, err = gitCommand("-C", r.repoDir, "add", r.releaseNotesReadme)
 	if err != nil {
 		return err
 	}

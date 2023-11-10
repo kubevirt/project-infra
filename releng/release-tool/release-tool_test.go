@@ -439,6 +439,7 @@ func TestNewTag(t *testing.T) {
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo checkout release-0.2]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo pull origin release-0.2]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo add %s/fake-org/https-fake-repo/CHANGELOG/CHANGELOG-v0.2.0.md]", r.cacheDir, r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo add %s/fake-org/https-fake-repo/CHANGELOG/README.md]", r.cacheDir, r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo commit -s -m CHANGELOG: Add release notes for v0.2.0]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo tag -s -m FakeName v0.2.0 v0.2.0]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo push https://fake-token@github.com/fake-org/fake-repo.git v0.2.0]", r.cacheDir))
