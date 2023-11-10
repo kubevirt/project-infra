@@ -33,6 +33,7 @@ type releaseData struct {
 	infraUrl  string
 	repo      string
 	org       string
+	name      string
 	newBranch string
 
 	tagBranch        string
@@ -179,7 +180,7 @@ Additional Resources
 	f.WriteString("\n")
 	f.WriteString(fmt.Sprintf("The source code and selected binaries are available for download at: %s.\n", tagUrl))
 	f.WriteString("\n")
-	f.WriteString("The primary release artifact of KubeVirt is the git tree. The release tag is\n")
+	f.WriteString(fmt.Sprintf("The primary release artifact of %s is the git tree. The release tag is\n", r.name))
 	f.WriteString(fmt.Sprintf("signed and can be verified using `git tag -v %s`.\n", r.tag))
 	f.WriteString("\n")
 	f.WriteString(fmt.Sprintf("Pre-built containers are published on Quay and can be viewed at: <https://quay.io/%s/>.\n", r.org))
@@ -1135,6 +1136,7 @@ func (r *releaseData) printData() {
 	log.Printf("\texistingBranch: %s", r.tagBranch)
 	log.Printf("\torg: %s", r.org)
 	log.Printf("\trepo: %s", r.repo)
+	log.Printf("\tname: %s", r.name)
 	log.Printf("\tforce: %t", r.force)
 	log.Printf("\tgitUser: %s", r.gitUser)
 	log.Printf("\tgitEmail: %s", r.gitEmail)
@@ -1147,6 +1149,7 @@ func main() {
 	releaseTag := flag.String("new-release", "", "New release tag. Must be a valid semver. The branch is automatically detected from the major and minor release")
 	org := flag.String("org", "", "The project org")
 	repo := flag.String("repo", "", "The project repo")
+	name := flag.String("name", "", "The project name (user-facing version, including proper capitalization)")
 	dryRun := flag.Bool("dry-run", true, "Should this be a dry run")
 	cacheDir := flag.String("cache-dir", "/tmp/release-tool", "The base directory used to cache git repos in")
 	cleanCacheDir := flag.Bool("clean-cache", true, "Clean the cache dir before executing")
@@ -1174,6 +1177,17 @@ func main() {
 		log.Fatal("--git-email is required")
 	} else if *githubTokenFile == "" {
 		log.Fatal("--github-token-file is a required argument")
+	}
+
+	if *name == "" {
+		// Automatically fill in the name for the main repository, to
+		// preserve existing usage. Other projects will have to
+		// provide the information on the command line
+		if *org == "kubevirt" && *repo == "kubevirt" {
+			*name = "KubeVirt"
+		} else {
+			log.Fatal("--name is a required argument")
+		}
 	}
 
 	tokenBytes, err := ioutil.ReadFile(*githubTokenFile)
@@ -1207,6 +1221,7 @@ func main() {
 		infraUrl:         infraUrl,
 		repo:             *repo,
 		org:              *org,
+		name:             *name,
 		newBranch:        *newBranch,
 		tag:              *releaseTag,
 		tagBranch:        *existingBranch,

@@ -17,6 +17,7 @@ func standardCleanup(r *releaseData) {
 func standardSetup() releaseData {
 	repo := "fake-repo"
 	org := "fake-org"
+	name := "FakeName"
 	token := "fake-token"
 	cacheDir, err := ioutil.TempDir("/tmp", "release-tool-unit-test")
 	if err != nil {
@@ -71,6 +72,7 @@ func standardSetup() releaseData {
 	r := releaseData{
 		org:              org,
 		repo:             repo,
+		name:             name,
 		allReleases:      releases,
 		allBranches:      branches,
 		blockerListCache: blockerListCache,
