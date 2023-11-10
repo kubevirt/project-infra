@@ -1127,6 +1127,8 @@ func (r *releaseData) printData() {
 	log.Printf("\torg: %s", r.org)
 	log.Printf("\trepo: %s", r.repo)
 	log.Printf("\tforce: %t", r.force)
+	log.Printf("\tgitUser: %s", r.gitUser)
+	log.Printf("\tgitEmail: %s", r.gitEmail)
 	log.Printf("\tgithubTokenFile: %s", r.githubTokenPath)
 }
 
