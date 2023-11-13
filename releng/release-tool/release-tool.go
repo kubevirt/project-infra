@@ -76,7 +76,8 @@ func _gitCommand(arg ...string) (string, error) {
 }
 
 func (r *releaseData) generateReleaseNotes() error {
-	additionalResources := fmt.Sprintf(`Additional Resources
+	additionalResources := fmt.Sprintf(`
+Additional Resources
 --------------------
 - Mailing list: <https://groups.google.com/forum/#!forum/kubevirt-dev>
 - Slack: <https://kubernetes.slack.com/messages/virtualization>
@@ -150,7 +151,17 @@ func (r *releaseData) generateReleaseNotes() error {
 		return err
 	}
 
-	contributorList := strings.Split(contributorStr, "\n")
+	contributorList := []string{}
+	for _, line := range strings.Split(contributorStr, "\n") {
+		if line == "" {
+			continue
+		}
+		if strings.Contains(line, "kubevirt-bot") {
+			// skip the bot
+			continue
+		}
+		contributorList = append(contributorList, line)
+	}
 
 	typeOfChanges, err := gitCommand("-C", r.repoDir, "diff", "--shortstat", span)
 	if err != nil {
@@ -187,10 +198,6 @@ func (r *releaseData) generateReleaseNotes() error {
 	f.WriteString(fmt.Sprintf("%d people contributed to this release:\n\n", numContributors))
 
 	for _, contributor := range contributorList {
-		if strings.Contains(contributor, "kubevirt-bot") {
-			// skip the bot
-			continue
-		}
 		f.WriteString(fmt.Sprintf("%s\n", strings.TrimSpace(contributor)))
 	}
 
