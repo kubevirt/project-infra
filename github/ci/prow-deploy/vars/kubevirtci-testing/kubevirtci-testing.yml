@@ -1,0 +1,12 @@
+# Test provisioning
+testinfra_dir: /tmp/test-infra
+
+secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/kubevirtci-testing/secrets/'
+components_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/components'
+
+node_name: node01
+
+ansible_python_interpreter: /usr/bin/python3
+
+githubUnprivileged:
+  token: "test"

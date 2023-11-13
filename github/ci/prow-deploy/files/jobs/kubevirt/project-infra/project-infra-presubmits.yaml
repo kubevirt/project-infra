@@ -488,7 +488,12 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-pgp-bot-key: "true"
-    cluster: ibm-prow-jobs
+      preset-podman-shared-images: "true"
+    cluster: kubevirt-prow-workloads
+    extra_refs:
+    - org: kubevirt
+      repo: kubevirt
+      base_ref: main
     spec:
       securityContext:
         runAsUser: 0
@@ -497,6 +502,8 @@ presubmits:
           env:
           - name: GITHUB_TOKEN
             value: "/etc/github/oauth"
+          - name: DEPLOY_ENVIRONMENT
+            value: "kubevirtci-testing"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -506,11 +513,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              cpu: "2"
-              memory: "8Gi"
-            limits:
-              cpu: "2"
-              memory: "8Gi"
+              memory: "29Gi"
           volumeMounts:
           - name: molecule-docker
             mountPath: /tmp/prow-deploy-molecule
