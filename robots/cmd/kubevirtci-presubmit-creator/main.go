@@ -179,6 +179,8 @@ func AddNewPresubmitIfNotExists(jobConfig config.JobConfig, latestReleaseSemver 
 
 func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 	yes := true
+	golangImage := "quay.io/kubevirtci/golang:v20230801-94954c0"
+	cluster := "kubevirt-prow-workloads"
 	res := config.Presubmit{
 		AlwaysRun: false,
 		Optional:  true,
@@ -186,7 +188,7 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 			UtilityConfig: config.UtilityConfig{
 				Decorate: &yes,
 				DecorationConfig: &prowapi.DecorationConfig{
-					Timeout: &prowjobs.Duration{3 * time.Hour},
+					Timeout: &prowjobs.Duration{Duration: 3 * time.Hour},
 				},
 			},
 			Name:           fmt.Sprintf("check-provision-k8s-%s.%s", semver.Major, semver.Minor),
@@ -195,19 +197,19 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 				"preset-docker-mirror-proxy":         "true",
 				"preset-podman-in-container-enabled": "true",
 			},
-			Cluster: "prow-workloads",
+			Cluster: cluster,
 			Spec: &v1.PodSpec{
 				NodeSelector: map[string]string{
 					"type": "bare-metal-external",
 				},
 				Containers: []v1.Container{
 					{
-						Image: "quay.io/kubevirtci/golang:v20221116-f8c83d3",
+						Image: golangImage,
 						Command: []string{
 							"/usr/local/bin/runner.sh",
 							"/bin/sh",
 							"-c",
-							fmt.Sprintf("cd cluster-provision/k8s/%s.%s && ../provision.sh", semver.Major, semver.Minor),
+							fmt.Sprintf("cd cluster-provision/k8s/%s.%s && KUBEVIRT_PSA='true' ../provision.sh", semver.Major, semver.Minor),
 						},
 						SecurityContext: &v1.SecurityContext{
 							Privileged: &yes,
