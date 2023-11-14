@@ -31,7 +31,7 @@ func BumpMinorReleaseOfProvider(providerDir string, minors []*github.RepositoryR
 }
 
 func bumpRelease(providerDir string, release *github.RepositoryRelease) error {
-	r := querier.ParseRelease(release)
+	r := querier.ParseReleaseFull(release)
 	dirEntries, err := os.ReadDir(providerDir)
 	if err != nil {
 		logrus.Infof("Failed to get contents of %s", providerDir)
@@ -40,11 +40,12 @@ func bumpRelease(providerDir string, release *github.RepositoryRelease) error {
 	for _, entry := range dirEntries {
 		if (isProviderDirectory(entry)) && (strings.Contains(entry.Name(), k8sVersion)) {
 			dir := filepath.Join(providerDir, entry.Name())
-			err = os.WriteFile(filepath.Join(dir, "version"), []byte(strings.TrimPrefix(*release.TagName, "v")), os.ModePerm)
+			fullVersion := strings.TrimPrefix(*release.TagName, "v")
+			err = os.WriteFile(filepath.Join(dir, "version"), []byte(fullVersion), os.ModePerm)
 			if err != nil {
 				return fmt.Errorf("Failed to bump the version file '%s': %v", filepath.Join(dir, "version"), err)
 			}
-			logrus.Infof("Minor version %s.%s updated to %v", r.Major, r.Minor, r)
+			logrus.Infof("Version %s.%s updated to %v", r.Major, r.Minor, fullVersion)
 		}
 	}
 	return nil
@@ -107,7 +108,7 @@ func EnsureProviderExists(providerDir string, clusterUpDir string, release *gith
 	if err != nil {
 		return err
 	}
-	semver := *querier.ParseRelease(release)
+	semver := *querier.ParseReleaseFull(release)
 
 	for _, rel := range existing {
 		cmp := rel.CompareMajorMinor(&semver)

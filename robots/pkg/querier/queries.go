@@ -10,7 +10,8 @@ import (
 	"github.com/google/go-github/github"
 )
 
-var SemVerRegex = regexp.MustCompile(`^v([0-9]+)\.([0-9]+)\.([0-9]+)(-(alpha|beta|rc)\.[0-9]+)?$`)
+var SemVerRegex = regexp.MustCompile(`^v([0-9]+)\.([0-9]+)\.([0-9]+)$`)
+var SemVerRegexFull = regexp.MustCompile(`^v([0-9]+)\.([0-9]+)\.([0-9]+)(-(alpha|beta|rc)\.[0-9]+)?$`)
 var SemVerMajorRegex = regexp.MustCompile(`^[v]?([0-9]+)$`)
 var SemVerMinorRegex = regexp.MustCompile(`^[v]?([0-9]+)\.([0-9]+)$`)
 
@@ -165,6 +166,15 @@ func (i *SemVer) String() string {
 
 func ParseRelease(release *github.RepositoryRelease) *SemVer {
 	matches := SemVerRegex.FindStringSubmatch(*release.TagName)
+	return &SemVer{
+		Major: matches[1],
+		Minor: matches[2],
+		Patch: matches[3],
+	}
+}
+
+func ParseReleaseFull(release *github.RepositoryRelease) *SemVer {
+	matches := SemVerRegexFull.FindStringSubmatch(*release.TagName)
 	return &SemVer{
 		Major: matches[1],
 		Minor: matches[2],
