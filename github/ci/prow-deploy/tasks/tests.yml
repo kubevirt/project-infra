@@ -1,3 +1,24 @@
+---
+- name: wait for prow pods to be ready
+  shell: |
+    kubectl wait --namespace kubevirt-prow \
+          --for=condition=ready pod \
+          --selector=app={{ item }} \
+          --timeout=700s
+  changed_when: false
+  environment:
+    KUBECONFIG: '{{ kubeconfig_path }}'
+  loop:
+    - greenhouse
+    - deck
+    - docker-mirror-proxy
+    - hook
+    - sinker
+    - tide
+    - crier
+    - prow-controller-manager
+    - horologium
+
 - name: deploy ingress controller
   shell: |
     kubectl apply -f '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/resources/ingress-nginx-controller.yaml'
@@ -49,7 +70,7 @@
 # to port https while testing.
 - name: verify Prow hook is responding
   shell: |
-    /usr/local/bin/phony \
+    phony \
       --address="http://{{ deckUrl }}/hook" \
       --hmac {{ prowHmac }}
   changed_when: false

@@ -74,6 +74,10 @@
 - name: create config files
   include_tasks: configs.yml
 
+- name: patch test resources
+  include_tasks: patch_test_resources.yml
+  when: deploy_environment == "kubevirtci-testing"
+
 - name: create templated resources
   include_tasks: resources.yml
 
@@ -95,6 +99,10 @@
 - name: Launch deployment
   when: "'deploy' in main_actions"
   include_tasks: deploy.yml
+
+- name: Run tests when in test environment
+  include_tasks: tests.yml
+  when: deploy_environment == "kubevirtci-testing"
 
 - name: Launch cleanup
   include_tasks: cleanup.yml
