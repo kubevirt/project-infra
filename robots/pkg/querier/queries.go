@@ -10,7 +10,7 @@ import (
 	"github.com/google/go-github/github"
 )
 
-var SemVerRegex = regexp.MustCompile(`^v([0-9]+)\.([0-9]+)\.([0-9]+)$`)
+var SemVerRegex = regexp.MustCompile(`^v([0-9]+)\.([0-9]+)\.([0-9]+)(-(alpha|beta|rc)\.[0-9]+)?$`)
 var SemVerMajorRegex = regexp.MustCompile(`^[v]?([0-9]+)$`)
 var SemVerMinorRegex = regexp.MustCompile(`^[v]?([0-9]+)\.([0-9]+)$`)
 

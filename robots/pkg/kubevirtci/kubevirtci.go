@@ -40,7 +40,7 @@ func bumpRelease(providerDir string, release *github.RepositoryRelease) error {
 	for _, entry := range dirEntries {
 		if (isProviderDirectory(entry)) && (strings.Contains(entry.Name(), k8sVersion)) {
 			dir := filepath.Join(providerDir, entry.Name())
-			err = ioutil.WriteFile(filepath.Join(dir, "version"), []byte(r.String()), os.ModePerm)
+			err = os.WriteFile(filepath.Join(dir, "version"), []byte(strings.TrimPrefix(*release.TagName, "v")), os.ModePerm)
 			if err != nil {
 				return fmt.Errorf("Failed to bump the version file '%s': %v", filepath.Join(dir, "version"), err)
 			}

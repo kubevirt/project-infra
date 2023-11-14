@@ -38,6 +38,8 @@ type options struct {
 	TokenPath              string
 	endpoint               string
 	ensureLatest           bool
+	forceTargetMajorMinor  string
+	preReleaseVersion      string
 	ensureLatestThreeMinor string
 	ensureOnlyLatestThree  bool
 	major                  int
@@ -49,6 +51,9 @@ func (o *options) Validate() error {
 	tasks := 0
 	if o.ensureLatest {
 		tasks++
+		if o.forceTargetMajorMinor != "" && !querier.SemVerMinorRegex.MatchString(o.forceTargetMajorMinor) {
+			return fmt.Errorf("Invalid format given to -force-target-major-minor")
+		}
 	}
 	if o.ensureLatestThreeMinor != "" {
 		tasks++
@@ -77,6 +82,8 @@ func gatherOptions() options {
 	fs.StringVar(&o.TokenPath, "github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
 	fs.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
 	fs.BoolVar(&o.ensureLatest, "ensure-latest", false, "Ensure that we have a provider for the latest k8s release")
+	fs.StringVar(&o.forceTargetMajorMinor, "force-target-major-minor", "", `when using ensure-latest, override latest k8s release to use given target major.minor (i.e. "1.28"`)
+	fs.StringVar(&o.preReleaseVersion, "pre-release-version", "", `when using ensure-latest, add k8s pre release suffix (i.e. add alpha0 as in "1.28.0-alpha0"`)
 	fs.StringVar(&o.ensureLatestThreeMinor, "ensure-last-three-minor-of", "", "Ensure that the last three minor releases of the given major release are up to date (e.g. v1 or 2)")
 	fs.BoolVar(&o.ensureOnlyLatestThree, "ensure-only-latest-three", false, "Ensure that only the latest three minor releases of the given major release exist (aka remove older providers)")
 	fs.StringVar(&o.providerDir, "k8s-provider-dir", "", "The directory of the k8s providers")
@@ -140,7 +147,17 @@ func main() {
 	}
 
 	if o.ensureLatest {
-		err := kubevirtci.EnsureProviderExists(o.providerDir, o.clusterUpDir, releases[0])
+		targetRelease := releases[0]
+		if o.forceTargetMajorMinor != "" {
+			tagName := fmt.Sprintf("v%s.0", o.forceTargetMajorMinor)
+			if o.preReleaseVersion != "" {
+				tagName += "-" + o.preReleaseVersion
+			}
+			targetRelease = &github.RepositoryRelease{
+				TagName: &tagName,
+			}
+		}
+		err := kubevirtci.EnsureProviderExists(o.providerDir, o.clusterUpDir, targetRelease)
 		if err != nil {
 			log.WithError(err).Info("Failed to ensure that a provider for the given release exists.")
 		}
