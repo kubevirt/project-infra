@@ -14,7 +14,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/common-instancetypes-builder:v20221104-3adec0b
+      - image: quay.io/kubevirtci/common-instancetypes-builder:v20231115-ab8759b
         command:
         - "/bin/bash"
         - "-c"
@@ -60,3 +60,36 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - name: pull-build-common-instancetypes-builder
+    always_run: false
+    run_if_changed: "image/.*"
+    branches:
+      - main
+    decorate: true
+    decoration_config:
+      timeout: 1h
+    max_concurrency: 1
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror: "true"
+    annotations:
+      testgrid-create-test-group: "false"
+    cluster: kubevirt-prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20230801-94954c0
+          env:
+            - name: COMMON_INSTANCETYPES_CRI
+              value: podman
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - "make build_image"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"

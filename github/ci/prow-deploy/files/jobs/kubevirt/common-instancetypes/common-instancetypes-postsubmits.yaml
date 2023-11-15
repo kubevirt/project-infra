@@ -6,12 +6,12 @@ postsubmits:
       branches:
         - main
       decorate: true
+      decoration_config:
+        timeout: 1h
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror: "true"
-        preset-gcs-credentials: "true"
-        preset-github-credentials: "true"
         preset-kubevirtci-quay-credential: "true"
       annotations:
         testgrid-create-test-group: "false"
