@@ -1,8 +1,6 @@
 ansible == 8.3.0
 kubernetes == 26.1.0
 kubernetes-validate == 1.27.0
-molecule == 6.0.2
-molecule-docker == 2.1.0
 openshift == 0.13.2
 selinux == 0.3.0
 pyyaml == 6.0.1

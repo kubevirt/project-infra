@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20230502-bfaa042 as builder
+FROM quay.io/kubevirtci/golang:v20231115-51a244f as builder
 
 RUN git clone https://github.com/kubernetes/test-infra.git && \
   cd test-infra && \
@@ -10,7 +10,7 @@ RUN git clone https://github.com/kubernetes/test-infra.git && \
   /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/hmac ./prow/cmd/hmac' && \
   hmac --help
 
-FROM quay.io/kubevirtci/bootstrap:v20230502-bfaa042
+FROM quay.io/kubevirtci/bootstrap:v20231115-51a244f
 
 COPY --from=builder /usr/local/bin/config-bootstrapper /usr/local/bin/phony /usr/local/bin/hmac /usr/local/bin/
 
@@ -22,10 +22,6 @@ RUN curl -Lo ./kustomize.tar.gz https://github.com/kubernetes-sigs/kustomize/rel
 RUN curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64 && \
   chmod a+x ./yq && \
   mv ./yq /usr/local/bin
-
-RUN curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.20.0/kind-linux-amd64 && \
-  chmod a+x ./kind && \
-  mv ./kind /usr/local/bin
 
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
   chmod a+x ./kubectl && \
