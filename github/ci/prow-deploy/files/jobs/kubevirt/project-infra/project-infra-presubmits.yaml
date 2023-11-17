@@ -498,7 +498,7 @@ presubmits:
       securityContext:
         runAsUser: 0
       containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20231109-df048fe
+        - image: quay.io/kubevirtci/prow-deploy:v20231116-40070ee
           env:
           - name: GITHUB_TOKEN
             value: "/etc/github/oauth"
