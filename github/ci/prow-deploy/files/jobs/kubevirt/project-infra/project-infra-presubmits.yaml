@@ -6,7 +6,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: gcr.io/k8s-prow/checkconfig:v20231107-c87e01249e
+      - image: gcr.io/k8s-prow/checkconfig:v20231114-3897be59f6
         args:
         - "/ko-app/checkconfig"
         - "--config-path"
@@ -498,7 +498,7 @@ presubmits:
       securityContext:
         runAsUser: 0
       containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20231109-df048fe
+        - image: quay.io/kubevirtci/prow-deploy:v20231116-40070ee
           env:
           - name: GITHUB_TOKEN
             value: "/etc/github/oauth"
@@ -692,7 +692,7 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: "1.20"
   - name: pull-kubevirt-org-github-config-updater
-    run_if_changed: '^github/ci/prow-deploy/files/orgs\.yaml$'
+    run_if_changed: '^github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs\.yaml$'
     annotations:
       testgrid-create-test-group: "false"
     labels:
@@ -706,7 +706,7 @@ presubmits:
     spec:
       containers:
       - name: peribolos
-        image: gcr.io/k8s-prow/peribolos:v20231107-c87e01249e
+        image: gcr.io/k8s-prow/peribolos:v20231114-3897be59f6
         command:
         - /ko-app/peribolos
         # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
@@ -741,7 +741,7 @@ presubmits:
     spec:
       containers:
       - name: label-sync
-        image: gcr.io/k8s-prow/label_sync:v20231107-c87e01249e
+        image: gcr.io/k8s-prow/label_sync:v20231114-3897be59f6
         command: [ "/ko-app/label_sync" ]
         args:
         - --config=github/ci/prow-deploy/files/labels.yaml
@@ -764,7 +764,7 @@ presubmits:
     spec:
       containers:
       - name: label-sync
-        image: gcr.io/k8s-prow/label_sync:v20231107-c87e01249e
+        image: gcr.io/k8s-prow/label_sync:v20231114-3897be59f6
         command: [ "/ko-app/label_sync" ]
         args:
         - --config=github/ci/prow-deploy/files/labels.yaml

@@ -442,7 +442,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20231109-df048fe
+        - image: quay.io/kubevirtci/prow-deploy:v20231116-40070ee
           env:
           - name: DEPLOY_ENVIRONMENT
             value: kubevirt-prow-control-plane
@@ -475,7 +475,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20231109-df048fe
+        - image: quay.io/kubevirtci/prow-deploy:v20231116-40070ee
           env:
           - name: DEPLOY_ENVIRONMENT
             value: kubevirt-prow-workloads
@@ -667,7 +667,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-        - image: gcr.io/k8s-prow/configurator:v20231107-c87e01249e
+        - image: gcr.io/k8s-prow/configurator:v20231114-3897be59f6
           command:
           - /ko-app/configurator
           args:
