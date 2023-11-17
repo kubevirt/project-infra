@@ -67,7 +67,14 @@ func (r ProwJobImageUpdateResult) CanMerge() bool {
 }
 
 func (r *ProwJobImageUpdateResult) AddReviewFailure(fileName string, hunks ...*diff.Hunk) {
-
+	if r.notMatchingHunks == nil {
+		r.notMatchingHunks = make(map[string][]*diff.Hunk)
+	}
+	if _, exists := r.notMatchingHunks[fileName]; !exists {
+		r.notMatchingHunks[fileName] = hunks
+	} else {
+		r.notMatchingHunks[fileName] = append(r.notMatchingHunks[fileName], hunks...)
+	}
 }
 
 func (r ProwJobImageUpdateResult) ShortString() string {
