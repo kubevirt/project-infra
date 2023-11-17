@@ -214,6 +214,8 @@ orgs:
     members_can_create_repositories: false
     name: KubeVirt
     repos:
+      .github:
+        description: Default Community health files.
       ansible-kubevirt-modules:
         allow_merge_commit: false
         allow_rebase_merge: false
@@ -659,6 +661,13 @@ orgs:
           - aglitke
         repos:
           containerized-data-importer-api: admin
+      community-health-files:
+        description: Default Community health files.
+        maintainers:
+          - dhiller
+          - brianmcarey
+        repos:
+          .github: admin
       api:
         description: ""
         maintainers:
