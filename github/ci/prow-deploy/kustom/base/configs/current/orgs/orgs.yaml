@@ -661,11 +661,12 @@ orgs:
           - aglitke
         repos:
           containerized-data-importer-api: admin
-      community-health-files:
+      community-health-files-maintainers:
         description: Default Community health files.
         maintainers:
           - dhiller
           - brianmcarey
+          - aburdenthehand
         repos:
           .github: admin
       api:
