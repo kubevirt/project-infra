@@ -692,7 +692,7 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: "1.20"
   - name: pull-kubevirt-org-github-config-updater
-    run_if_changed: '^github/ci/prow-deploy/files/orgs\.yaml$'
+    run_if_changed: '^github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs\.yaml$'
     annotations:
       testgrid-create-test-group: "false"
     labels:
