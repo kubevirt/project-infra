@@ -48,11 +48,14 @@ presubmits:
         - "/bin/sh"
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
+        env:
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 16G
         image: quay.io/kubevirtci/bootstrap:v20230607-07930d7
         name: ""
         resources:
           requests:
-            memory: 16Gi
+            memory: 20Gi
         securityContext:
           privileged: true
       nodeSelector:
