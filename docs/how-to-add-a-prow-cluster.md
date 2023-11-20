@@ -19,37 +19,86 @@ allows to spin up a remote test cluster using the environment variables
 `KUBEVIRT_PROVIDER` set to `external` and `KUBECONFIG` set to the path of a
 kubeconfig file with admin access to the remote cluster.
 
-# How can we add a new cluster to run CI jobs
+# How to add new clusters to run CI jobs
 
-For each kind of external clusters the process is different:
+For each kind of external clusters the process is different.
 
-* Prow build clusters:
+## Prow federated build cluster
 
-  * Obtain a kubeconfig for your cluster that refers to an user with admin
-  permissions on the namespace where Prow is configured to create jobs (currently
-  `kubevirt-prow-jobs`).
+### Cluster administrator: provide a `kubeconfig`
 
-  * Update Prow's kubeconfig secret:
+Obtain a `kubeconfig` for your cluster that refers to a user with admin permissions on the namespace where Prow is configured to create jobs (currently `kubevirt-prow-jobs`).
 
-    * If you are not a Kubevirt CI maintainer you need to create an
-    [issue on project-infra] with title `Add Prow build cluster <name>`, being
-    `<name>` the name you want to use to schedule jobs in the new cluster, and
-    with the [kubeconfig encrypted as described here] attached to the issue.
-    * If you are a CI maintainer you should:
+If you are not a Kubevirt CI maintainer you need to create an
+[issue on project-infra] with title `Add Prow build cluster <name>`, being
+`<name>` the name you want to use to schedule jobs in the new cluster, and
+with the [kubeconfig encrypted as described here] attached to the issue.
 
-      * Decrypt the kubeconfig file attached to the issue.
-      * Decrypt the secrets in https://github.com/kubevirt/secrets and add the
-      user and cluster in the new kubeconfig to a new context named `<name>` in
-      the `kubeconfig` entry of the secrets.
-      * Encrypt the secrets and create a PR to https://github.com/kubevirt/secrets
-      with the changed file.
-      * Once the PR is merged write a comment on the original issue saying that
-      all is done and close it.
+### CI maintainer: integrate kubeconfig into prow main kubeconfig entry
+* Decrypt the `kubeconfig` file attached to the issue
+* Use it to check whether you can connect to the cluster
+* Check whether there's a service account created that you can use for the users section inside the kubeconfig
+* If there's no service account present, generate it like this (replace names accordingly:
+```bash
+# create a serviceaccount for prow
+kubectl create serviceaccount prow-workloads-cluster-automation
+# optional: make serviceaccount cluster-admin
+kubectl create clusterrolebinding prow-workloads-cluster-automation \
+    --clusterrole=cluster-admin \
+    --serviceaccount=default:prow-workloads-cluster-automation
+# create token for serviceaccount to use as a user token later
+kubectl create -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: prow-workloads-cluster-automation
+  namespace: default
+  annotations:
+    kubernetes.io/service-account.name: prow-workloads-cluster-automation
+type: kubernetes.io/service-account-token
+# export secret token data to add to user later on
+kubectl get secret prow-workloads-cluster-automation \
+    -n "default" -o yaml | \
+    yq -r '.data.token' | \
+    base64 -d
+EOF
+```
+> [!WARNING]
+> It is advised to reduce the access for the service account to admin permissions for the namespace where Prow needs to create jobs (see [above](#cluster-administrator-provide-a-kubeconfig))
 
-  * Create Prow jobs that have the `cluster` field set to the name you provided in
-  the issue above.
+* For a new cluster generate new sections inside `kubeconfig` for the new cluster:
+```yaml
+apiVersion: v1
+clusters:
+...
+- cluster:
+    certificate-authority-data: {kubeconfig-cert-auth-data}
+    server: {kubeconfig-server}
+  name: {cluster-name}
+...
+contexts:
+...
+- context:
+    cluster: {cluster-name}
+    user: {serviceaccount-name}
+  name: {context-name}
+users:
+...
+- name: {serviceaccount-name}
+  user:
+    token: {serviceaccount-secret-data}
+```
+* Decrypt the secrets in https://github.com/kubevirt/secrets and add the
+  user and cluster in the new kubeconfig to a new context named `<name>` in
+  the `kubeconfig` entry of the secrets.
+* Encrypt the secrets and create a PR to https://github.com/kubevirt/secrets
+   with the changed file.
+* Once the PR is merged write a comment on the original issue saying that
+all is done and close it.
 
-* KubevirtCI external provider:
+Now we can create Prow jobs that have the `cluster` field set to the name we provided above.
+
+## KubevirtCI external provider
 
   * Obtain a kubeconfig for your cluster that refers to an user with admin
   permissions.
