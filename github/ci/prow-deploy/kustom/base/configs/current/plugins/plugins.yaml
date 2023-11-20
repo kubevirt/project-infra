@@ -408,6 +408,15 @@ plugins:
     - trigger
     - help
 
+  kubevirt/applications-aware-quota:
+    plugins:
+      - approve
+      - lgtm
+      - owners-label
+      - release-note
+      - trigger
+      - help
+
   kubevirt/terraform-provider-kubevirt:
     plugins:
     - approve
@@ -559,6 +568,7 @@ triggers:
   - kubevirt/vm-console-proxy
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
+  - kubevirt/applications-aware-quota
 - repos:
   - virtblocks/virtblocks
 - repos:
@@ -612,6 +622,7 @@ approve:
   - kubevirt/sig-release
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
+  - kubevirt/applications-aware-quota
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -670,6 +681,7 @@ lgtm:
   - kubevirt/sig-release
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
+  - kubevirt/applications-aware-quota
   review_acts_as_lgtm: true
 
 override:

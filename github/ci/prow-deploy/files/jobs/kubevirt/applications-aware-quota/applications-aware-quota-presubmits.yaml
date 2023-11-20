@@ -59,7 +59,7 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-aaq-functest-latest-stable-kubevirt
+  - name: pull-aaq-functest
     skip_branches:
       - release-v\d+\.\d+
     annotations:
