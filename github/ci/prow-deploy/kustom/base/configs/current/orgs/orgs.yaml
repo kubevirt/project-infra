@@ -954,6 +954,7 @@ orgs:
         description: "Maintainers of common-instancetypes"
         privacy: closed
         maintainers:
+          - 0xFelix
           - lyarwood
           - ksimon1
         repos:
