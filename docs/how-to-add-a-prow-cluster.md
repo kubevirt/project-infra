@@ -79,13 +79,13 @@ For each kind of external clusters the process is different:
 
 First you need to import the public part of the key we use on our automation:
 
-```
-$ gpg --recv-key 0xF0C379576ACC7D14
+```bash
+gpg --recv-keys 99F7C0D2E1BB8025
 ```
 Then, assuming you saved your kubeconfig in `/path/to/my-kubeconfig.yaml`, you can
 encrypt it for our automation key with:
-```
-$ gpg --output my-kubeconfig.gpg --encrypt --recipient 0xF0C379576ACC7D14 /path/to/my-kubeconfig.yaml
+```bash
+gpg --output my-kubeconfig.gpg --encrypt --recipient 99F7C0D2E1BB8025 /path/to/my-kubeconfig.yaml
 ```
 The encrypted file will be available in `my-kubeconfig.gpg` in the current
 directory.
