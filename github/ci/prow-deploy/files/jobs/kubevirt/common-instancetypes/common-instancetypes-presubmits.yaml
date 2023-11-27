@@ -18,7 +18,7 @@ presubmits:
         command:
         - "/bin/bash"
         - "-c"
-        - "make"
+        - "make && cp _build/* /logs/artifacts"
         resources:
           requests:
             memory: "1Gi"
