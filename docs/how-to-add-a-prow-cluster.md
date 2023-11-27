@@ -42,7 +42,10 @@ kubectl create namespace kubevirt-prow-jobs
 
 #### Create service account for kubevirt prow
 
-Generate it like this (replace names accordingly if required):
+> ![IMPORTANT]
+> The service account name needs to be unique inside the federated `KUBECONFIG`, so be descriptive when choosing a name for the account
+
+Generate a service account that will be used by the automation. replace `prow-workloads-cluster-automation` accordingly:
 
 ```bash
 # create a serviceaccount for prow
@@ -60,7 +63,7 @@ type: kubernetes.io/service-account-token
 EOF
 # export secret token data to add to user later on
 kubectl get secret prow-workloads-cluster-automation \
-    -n "default" -o yaml | \
+    -n kubevirt-prow-jobs -o yaml | \
     yq -r '.data.token' | \
     base64 -d
 ```
@@ -69,13 +72,26 @@ kubectl get secret prow-workloads-cluster-automation \
 
 > [!WARNING]
 > It is advised to reduce the access for the service account to minimum permissions for the namespace where Prow needs to create jobs.
-> Making the serviceaccount admin is a compromise, so that we can create secrets and other changes if required 
+> Making the serviceaccount admin in namespace is a compromise, so that we can create secrets and other changes if required
 
 ```bash
+# create admin role inside namespace
+kubectl create - f - <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kubevirt-prow-jobs-admin
+  namespace: kubevirt-prow-jobs
+rules:
+- apiGroups: [""]
+  resources: ["*"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+EOF
 # make serviceaccount admin on namespace
 kubectl create rolebinding kubevirt-prow-workloads-admin \
-    --role=admin \
-    --serviceaccount=kubevirt-prow-jobs:prow-workloads-cluster-automation
+    --role=kubevirt-prow-jobs-admin \
+    --serviceaccount=kubevirt-prow-jobs:prow-workloads-cluster-automation \
+    --namespace kubevirt-prow-jobs
 ```
 
 #### Provide a `kubeconfig`
@@ -133,7 +149,7 @@ Now we can create Prow job configurations that have the `cluster` field set to t
 
 ## KubevirtCI external provider
 
-  * Obtain a kubeconfig for your cluster that refers to an user with admin
+  * Obtain a kubeconfig for your cluster that refers to a user with admin
   permissions.
 
   * Include your kubeconfig in our automation secrets:
