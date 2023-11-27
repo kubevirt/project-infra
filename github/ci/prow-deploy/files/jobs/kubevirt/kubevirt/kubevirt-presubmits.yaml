@@ -997,7 +997,7 @@ presubmits:
           automation/test.sh
         env:
         - name: TARGET
-          value: kind-1.27
+          value: kind-1.28
         - name: KUBEVIRT_NUM_NODES
           value: "1"
         - name: KUBEVIRT_E2E_FOCUS
