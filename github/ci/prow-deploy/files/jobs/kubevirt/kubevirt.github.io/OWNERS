@@ -7,18 +7,18 @@
 filters:
   .*:
     approvers:
+    - aburdenthehand
     - cwilkers
     - davidvossel
     - dhiller
     - fabiand
     - jberkus
-    - mazzystr
     - phoracek
     - stu-gott
     reviewers:
+    - aburdenthehand
     - cwilkers
     - jobbler
-    - mazzystr
   ^_(data|layouts|sass|css|js)/.*:
     labels:
     - kind/website
