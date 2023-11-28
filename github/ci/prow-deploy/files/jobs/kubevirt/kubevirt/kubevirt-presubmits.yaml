@@ -1023,6 +1023,75 @@ presubmits:
           path: /var/log/audit
           type: Directory
         name: audit
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-arm64-workloads-2
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-unnested: "false"
+      preset-dind-enabled: "true"
+    max_concurrency: 4
+    name: pull-kubevirt-conformance-arm64
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    skip_report: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          automation/conformance.sh
+        env:
+        - name: TARGET
+          value: kind-1.28
+        - name: KUBEVIRT_PROVIDER
+          value: kind-1.28
+        - name: KUBEVIRT_NUM_NODES
+          value: "3"
+        - name: IPFAMILY
+          value: dual
+        - name: RUN_ON_ARM64_INFRA
+          value: "true"
+        image: quay.io/kubevirtci/bootstrap-legacy:v20230829-f2e4ded
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+        - mountPath: /var/log/audit
+          name: audit
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+      - hostPath:
+          path: /var/log/audit
+          type: Directory
+        name: audit
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - 8.8.8.8
   - always_run: false
     annotations:
       fork-per-release: "true"
