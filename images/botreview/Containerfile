@@ -1,0 +1,16 @@
+FROM docker.io/library/golang:1.20 as builder
+
+WORKDIR /go/src/github.com/kubevirt/project-infra/
+RUN mkdir -p /go/src/kubevirt/ && \
+    cd /go/src/kubevirt/ && \
+    git clone https://github.com/dhiller/project-infra.git && \
+    cd project-infra/ && \
+    git checkout botreview && \
+    go mod vendor && \
+    env GOPROXY=off GOFLAGS=-mod=vendor CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/botreview ./external-plugins/botreview/main.go
+
+FROM gcr.io/k8s-prow/git:v20220523-6026203ca9
+
+COPY --from=builder /go/bin/botreview /usr/bin/botreview
+
+ENTRYPOINT ["/usr/bin/botreview"]
