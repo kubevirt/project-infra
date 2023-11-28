@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Copyright 2022 Red Hat, Inc.
- *
+ * Copyright the KubeVirt Authors.
  */
 
 package main
@@ -107,8 +106,11 @@ func main() {
 		TokenGenerator: secret.GetTokenGenerator(o.webhookSecretFile),
 		BotName:        botUserData.Name,
 
-		Ghc: githubClient,
-		Log: log,
+		GitClient: gitClient,
+		Ghc:       githubClient,
+		Log:       log,
+
+		DryRun: o.dryRun,
 	}
 
 	mux := http.NewServeMux()

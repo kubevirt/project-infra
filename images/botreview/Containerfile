@@ -1,11 +1,12 @@
 FROM docker.io/library/golang:1.20 as builder
 
 WORKDIR /go/src/github.com/kubevirt/project-infra/
+# FIXME: switch to https://github.com/kubevirt/project-infra.git when creating postsubmit for image creation
 RUN mkdir -p /go/src/kubevirt/ && \
     cd /go/src/kubevirt/ && \
     git clone https://github.com/dhiller/project-infra.git && \
     cd project-infra/ && \
-    git checkout botreview && \
+    git checkout d0387efd4297294de17a2a84a3cc1a5155e12ba3 && \
     go mod vendor && \
     env GOPROXY=off GOFLAGS=-mod=vendor CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/botreview ./external-plugins/botreview/main.go
 

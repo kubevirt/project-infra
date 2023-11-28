@@ -39,9 +39,7 @@ func init() {
 }
 
 type options struct {
-	pullRequestNumber int
-	org               string
-	repo              string
+	review.PRReviewOptions
 
 	dryRun bool
 	github prowflagutil.GitHubOptions
@@ -55,7 +53,7 @@ func (o *options) Validate() error {
 		}
 	}
 
-	if o.org == "" || o.repo == "" || o.pullRequestNumber == 0 {
+	if o.Org == "" || o.Repo == "" || o.PullRequestNumber == 0 {
 		return fmt.Errorf("org, repo and pr-number are required")
 	}
 
@@ -66,9 +64,9 @@ func gatherOptions() options {
 	o := options{}
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	fs.BoolVar(&o.dryRun, "dry-run", true, "Dry run for testing. Uses API tokens but does not mutate.")
-	fs.StringVar(&o.org, "org", "kubevirt", "Pull request github org.")
-	fs.StringVar(&o.repo, "repo", "", "Pull request github repo.")
-	fs.IntVar(&o.pullRequestNumber, "pr-number", 0, "Pull request to review.")
+	fs.StringVar(&o.Org, "org", "kubevirt", "Pull request github org.")
+	fs.StringVar(&o.Repo, "repo", "", "Pull request github repo.")
+	fs.IntVar(&o.PullRequestNumber, "pr-number", 0, "Pull request to review.")
 	for _, group := range []flagutil.OptionGroup{&o.github} {
 		group.AddFlags(fs)
 	}
@@ -93,33 +91,27 @@ func main() {
 	if err != nil {
 		logrus.WithError(err).Fatal("error getting Git client")
 	}
-	user, err := githubClient.BotUser()
-	if err != nil {
-		logrus.WithError(err).Fatal("error getting bot user")
-	}
 
-	// checkout repo to a temporary directory to have it reviewed
-	clone, err := gitClient.Clone(o.org, o.repo)
-	if err != nil {
-		logrus.WithError(err).Fatal("error cloning repo")
+	prReviewOptions := review.PRReviewOptions{
+		PullRequestNumber: o.PullRequestNumber,
+		Org:               o.Org,
+		Repo:              o.Repo,
 	}
-
-	// checkout PR head commit, change dir
-	pullRequest, err := githubClient.GetPullRequest(o.org, o.repo, o.pullRequestNumber)
+	pullRequest, cloneDirectory, err := review.PreparePullRequestReview(gitClient, prReviewOptions, githubClient)
 	if err != nil {
-		logrus.WithError(err).Fatal("error fetching PR")
+		logrus.WithError(err).Fatal("error preparing pull request for review")
 	}
-	err = clone.Checkout(pullRequest.Head.SHA)
-	if err != nil {
-		logrus.WithError(err).Fatal("error checking out PR head commit")
-	}
-	err = os.Chdir(clone.Directory())
+	err = os.Chdir(cloneDirectory)
 	if err != nil {
 		logrus.WithError(err).Fatal("error changing to directory")
 	}
 
 	// Perform review
-	reviewer := review.NewReviewer(log, github.PullRequestActionEdited, o.org, o.repo, o.pullRequestNumber, user.Login, o.dryRun)
+	user, err := githubClient.BotUser()
+	if err != nil {
+		logrus.WithError(err).Fatal("error getting bot user")
+	}
+	reviewer := review.NewReviewer(log, github.PullRequestActionEdited, o.Org, o.Repo, o.PullRequestNumber, user.Login, o.dryRun)
 	reviewer.BaseSHA = pullRequest.Base.SHA
 	botReviewResults, err := reviewer.ReviewLocalCode()
 	if err != nil {

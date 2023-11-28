@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Copyright 2022 Red Hat, Inc.
+ * Copyright the KubeVirt authors.
  *
  */
 
@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/sourcegraph/go-diff/diff"
+	"k8s.io/test-infra/prow/git"
 	"k8s.io/test-infra/prow/github"
 	"os/exec"
 	"strings"
@@ -238,4 +239,29 @@ func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, gith
 		r.l.Info(fmt.Sprintf("dry-run: %s/%s#%d <- %s", r.org, r.repo, r.num, botReviewComment))
 	}
 	return nil
+}
+
+type PRReviewOptions struct {
+	PullRequestNumber int
+	Org               string
+	Repo              string
+}
+
+func PreparePullRequestReview(gitClient *git.Client, prReviewOptions PRReviewOptions, githubClient github.Client) (*github.PullRequest, string, error) {
+	// checkout repo to a temporary directory to have it reviewed
+	clone, err := gitClient.Clone(prReviewOptions.Org, prReviewOptions.Repo)
+	if err != nil {
+		logrus.WithError(err).Fatal("error cloning repo")
+	}
+
+	// checkout PR head commit, change dir
+	pullRequest, err := githubClient.GetPullRequest(prReviewOptions.Org, prReviewOptions.Repo, prReviewOptions.PullRequestNumber)
+	if err != nil {
+		logrus.WithError(err).Fatal("error fetching PR")
+	}
+	err = clone.Checkout(pullRequest.Head.SHA)
+	if err != nil {
+		logrus.WithError(err).Fatal("error checking out PR head commit")
+	}
+	return pullRequest, clone.Directory(), err
 }

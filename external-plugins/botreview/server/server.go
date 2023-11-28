@@ -1,13 +1,33 @@
+/*
+ * This file is part of the KubeVirt project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Copyright the KubeVirt Authors.
+ */
+
 package server
 
 import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"k8s.io/test-infra/prow/config"
+	"k8s.io/test-infra/prow/git"
 	"k8s.io/test-infra/prow/github"
 	"k8s.io/test-infra/prow/pluginhelp"
 	"kubevirt.io/project-infra/external-plugins/botreview/review"
 	"net/http"
+	"os"
 )
 
 const pluginName = "botreview"
@@ -32,10 +52,10 @@ func HelpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	}
 	pluginHelp.AddCommand(pluginhelp.Command{
 		Usage:       "/botreview",
-		Description: "Mark a PR or issue as a release blocker.",
+		Description: "Trigger review of a PR.",
 		Featured:    true,
 		WhoCanUse:   "Project members",
-		Examples:    []string{"/release-blocker release-3.9", "/release-blocker release-1.15"},
+		Examples:    []string{"/botreview"},
 	})
 	return pluginHelp, nil
 }
@@ -46,9 +66,13 @@ type Server struct {
 	TokenGenerator func() []byte
 	BotName        string
 
-	// Used for unit testing
-	Ghc githubClient
+	GitClient *git.Client
+	Ghc       github.Client
+
 	Log *logrus.Entry
+
+	// Whether to create comments on PRs or to just write them to the log
+	DryRun bool
 }
 
 // ServeHTTP validates an incoming webhook and puts it into the event channel.
@@ -109,18 +133,30 @@ func (s *Server) handlePullRequest(l *logrus.Entry, action github.PullRequestEve
 		l.Info("skipping review")
 		return nil
 	}
+	prReviewOptions := review.PRReviewOptions{
+		PullRequestNumber: num,
+		Org:               org,
+		Repo:              repo,
+	}
+	pullRequest, cloneDirectory, err := review.PreparePullRequestReview(s.GitClient, prReviewOptions, s.Ghc)
+	if err != nil {
+		logrus.WithError(err).Fatal("error preparing pull request for review")
+	}
+	err = os.Chdir(cloneDirectory)
+	if err != nil {
+		logrus.WithError(err).Fatal("error changing to directory")
+	}
 
-	// TODO: make dryRun configurable
-	reviewer := review.NewReviewer(l, action, org, repo, num, user, true)
+	reviewer := review.NewReviewer(l, action, org, repo, num, user, s.DryRun)
+	reviewer.BaseSHA = pullRequest.Base.SHA
 	botReviewResults, err := reviewer.ReviewLocalCode()
 	if err != nil {
 		return err
 	}
-
-	// TODO: casting will NOT work here
-	err = reviewer.AttachReviewComments(botReviewResults, s.Ghc.(github.Client))
-	if err != nil {
-		return err
+	logrus.Infof("bot review results: %v", botReviewResults)
+	if len(botReviewResults) == 0 {
+		return nil
 	}
-	return nil
+
+	return reviewer.AttachReviewComments(botReviewResults, s.Ghc)
 }

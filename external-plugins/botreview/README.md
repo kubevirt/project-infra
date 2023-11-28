@@ -10,12 +10,4 @@ Updates in these PRs are mostly tedious to review for a human, since they contai
 
 What `botreview` can at least do is automate what a human would do anyway, like applying an expected change pattern to the changes. And this is what botreview does.
 
-`botreview` has of course room for improval, i.e. it might generate a list of the images and check whether these are pullable, or even perform further checks on the images. **Note: the latter is not implemented (yet)**
-
-TODOs
------
-
-* [ ] create image 
-* [ ] create deployment
-* [ ] create service
-* [ ] add secret
+`botreview` has of course room for improval, i.e. it might generate a list of the images and check whether these are pull-able, or even perform further checks on the images. **Note: the latter is not implemented (yet)**
