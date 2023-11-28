@@ -82,6 +82,12 @@ patches:
       name: pushgateway
     path: patches/JsonRFC6902/pushgateway_deployment.yaml
   - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: pushgateway-proxy
+    path: patches/JsonRFC6902/pushgateway_proxy_deployment.yaml
+  - target:
       group: rbac.authorization.k8s.io
       version: v1
       kind: Role
