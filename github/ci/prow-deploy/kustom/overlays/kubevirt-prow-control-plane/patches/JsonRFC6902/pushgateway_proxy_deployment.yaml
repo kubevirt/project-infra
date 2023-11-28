@@ -1,0 +1,6 @@
+# sets securityContext on pushgate-proxy deployment
+- op: add
+  path: /spec/template/spec/securityContext
+  value:
+      runAsUser: 0
+      runAsGroup: 0
