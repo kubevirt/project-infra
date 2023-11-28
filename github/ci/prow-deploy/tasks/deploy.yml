@@ -77,3 +77,13 @@
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   when: rescale_pushgateway_deployment
+
+# See https://github.com/kubevirt/project-infra/issues/3085
+- name: Rescale deck deployment
+  shell: |
+    kubectl scale deployment --replicas=0 -n kubevirt-prow deck
+    kubectl wait --for=delete pod/$(kubectl get pods -l=app=deck -n kubevirt-prow --no-headers | awk '{ print $1 }') -n kubevirt-prow
+    kubectl scale deployment --replicas=3 -n kubevirt-prow deck
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  when: rescale_deck_deployment
