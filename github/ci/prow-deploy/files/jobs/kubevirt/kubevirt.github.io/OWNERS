@@ -18,7 +18,7 @@ filters:
     reviewers:
     - aburdenthehand
     - cwilkers
-    - jobbler
+    - jean-edouard
   ^_(data|layouts|sass|css|js)/.*:
     labels:
     - kind/website
