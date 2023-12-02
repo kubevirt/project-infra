@@ -17,6 +17,7 @@ filters:
     - stu-gott
     reviewers:
     - aburdenthehand
+    - brianmcarey
     - cwilkers
     - jean-edouard
   ^_(data|layouts|sass|css|js)/.*:
