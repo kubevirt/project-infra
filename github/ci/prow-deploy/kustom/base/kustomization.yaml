@@ -14,6 +14,8 @@ resources:
   - manifests/local/prow-rehearse-rbac.yaml
   - manifests/local/prow-rehearse-deployment.yaml
   - manifests/local/prow-rehearse-service.yaml
+  - manifests/local/prow-phased-deployment.yaml
+  - manifests/local/prow-phased-service.yaml
   - manifests/local/release-blocker_deployment.yaml
   - manifests/local/release-blocker_service.yaml
   - manifests/local/tide_rbac_prowjob.yaml
