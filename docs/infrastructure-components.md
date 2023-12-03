@@ -45,7 +45,7 @@ kubevirt-prow-control-plane
 
 * Prow control plane: all the Prow components, including the main microservices
 (crier, deck, hook, horologium, prow-controller-manager, tide, sink), several
-external plugins (bot-review, rehearse, release-blocker) and secondary components
+external plugins (bot-review, rehearse, release-blocker, specify) and secondary components
 (cherrypicker, gcsweb, ghproxy, label-sync, needs-rebase, prow-exporter,
 pushgateway, statusreconciler).
 
