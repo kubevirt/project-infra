@@ -19,6 +19,9 @@ resources:
   - manifests/local/referee-deployment.yaml
   - manifests/local/referee-service.yaml
   - manifests/local/referee-servicemonitor.yaml
+  - manifests/local/test-subset-rbac.yaml
+  - manifests/local/test-subset-deployment.yaml
+  - manifests/local/test-subset-service.yaml
   - manifests/local/release-blocker_deployment.yaml
   - manifests/local/release-blocker_service.yaml
   - manifests/local/statusreconciler_rbac.yaml
