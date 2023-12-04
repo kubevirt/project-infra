@@ -13,4 +13,4 @@ test:
 	$(bazelbin) test //external-plugins/botreview/...
 
 push:
-	podman build -f ./images/botreview/Containerfile -t quay.io/kubevirtci/botreview:latest && podman push quay.io/kubevirtci/botreview:latest
+	podman build -f ../../images/botreview/Containerfile -t quay.io/kubevirtci/botreview:latest && podman push quay.io/kubevirtci/botreview:latest
