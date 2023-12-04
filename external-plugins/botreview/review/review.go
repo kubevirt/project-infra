@@ -75,30 +75,6 @@ func GuessReviewTypes(fileDiffs []*diff.FileDiff) []KindOfChange {
 	return result
 }
 
-type BasicResult struct {
-	message string
-}
-
-func (n BasicResult) String() string {
-	return n.message
-}
-
-func (n BasicResult) IsApproved() bool {
-	return false
-}
-
-func (n BasicResult) CanMerge() bool {
-	return false
-}
-
-func (n BasicResult) AddReviewFailure(fileName string, hunks ...*diff.Hunk) {
-	panic("not implemented")
-}
-
-func (n BasicResult) ShortString() string {
-	return n.String()
-}
-
 type Reviewer struct {
 	l       *logrus.Entry
 	org     string

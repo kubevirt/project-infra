@@ -86,13 +86,6 @@ container_pull(
     tag = "v20210120-b86882c9314933ba1a0c77965ed9d54a747f7957",
 )
 
-container_pull(
-    name = "botreview-base",
-    registry = "index.docker.io",
-    repository = "alpine/git",
-    tag = "v2.40.1",
-)
-
 load(
     "@io_bazel_rules_docker//go:image.bzl",
     _go_image_repos = "repositories",

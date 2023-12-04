@@ -58,11 +58,12 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
-      cluster: ibm-prow-jobs
+      cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
         preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
+        preset-podman-in-container-enabled: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
@@ -71,7 +72,7 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 make -C ./external-plugins/botreview push
             resources:
               requests:

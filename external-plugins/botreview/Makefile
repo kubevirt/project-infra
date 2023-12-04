@@ -13,5 +13,4 @@ test:
 	$(bazelbin) test //external-plugins/botreview/...
 
 push:
-	$(bazelbin) run --stamp --workspace_status_command="./hack/print-workspace-status-no-git-tag.sh" //external-plugins/botreview:push
-	bash -x ../../hack/update-deployments-with-latest-image.sh quay.io/kubevirtci/botreview
+	podman build -f ./images/botreview/Containerfile -t quay.io/kubevirtci/botreview:latest && podman push quay.io/kubevirtci/botreview:latest

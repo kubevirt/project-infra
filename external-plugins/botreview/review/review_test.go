@@ -26,23 +26,23 @@ import (
 )
 
 func TestGuessReviewTypes(t *testing.T) {
-	diffFilePathes := []string{
+	diffFilePaths := []string{
 		"testdata/simple_bump-prow-job-images_sh.patch0",
 		"testdata/simple_bump-prow-job-images_sh.patch1",
 		"testdata/move_prometheus_stack.patch0",
 		"testdata/move_prometheus_stack.patch1",
 	}
-	diffFilePathesToDiffs := map[string]*diff.FileDiff{}
-	for _, diffFile := range diffFilePathes {
-		bump_images_diff_file, err := os.ReadFile(diffFile)
+	diffFilePathsToDiffs := map[string]*diff.FileDiff{}
+	for _, diffFile := range diffFilePaths {
+		bumpImagesDiffFile, err := os.ReadFile(diffFile)
 		if err != nil {
 			t.Errorf("failed to read diff: %v", err)
 		}
-		bump_file_diffs, err := diff.ParseFileDiff(bump_images_diff_file)
+		bumpFileDiffs, err := diff.ParseFileDiff(bumpImagesDiffFile)
 		if err != nil {
 			t.Errorf("failed to read diff: %v", err)
 		}
-		diffFilePathesToDiffs[diffFile] = bump_file_diffs
+		diffFilePathsToDiffs[diffFile] = bumpFileDiffs
 	}
 	type args struct {
 		fileDiffs []*diff.FileDiff
@@ -56,15 +56,15 @@ func TestGuessReviewTypes(t *testing.T) {
 			name: "simple image bump should yield a change",
 			args: args{
 				fileDiffs: []*diff.FileDiff{
-					diffFilePathesToDiffs["testdata/simple_bump-prow-job-images_sh.patch0"],
-					diffFilePathesToDiffs["testdata/simple_bump-prow-job-images_sh.patch1"],
+					diffFilePathsToDiffs["testdata/simple_bump-prow-job-images_sh.patch0"],
+					diffFilePathsToDiffs["testdata/simple_bump-prow-job-images_sh.patch1"],
 				},
 			},
 			want: []KindOfChange{
 				&ProwJobImageUpdate{
 					relevantFileDiffs: []*diff.FileDiff{
-						diffFilePathesToDiffs["testdata/simple_bump-prow-job-images_sh.patch0"],
-						diffFilePathesToDiffs["testdata/simple_bump-prow-job-images_sh.patch1"],
+						diffFilePathsToDiffs["testdata/simple_bump-prow-job-images_sh.patch0"],
+						diffFilePathsToDiffs["testdata/simple_bump-prow-job-images_sh.patch1"],
 					},
 				},
 			},
@@ -73,14 +73,14 @@ func TestGuessReviewTypes(t *testing.T) {
 			name: "mixed with image bump should yield a partial change",
 			args: args{
 				fileDiffs: []*diff.FileDiff{
-					diffFilePathesToDiffs["testdata/simple_bump-prow-job-images_sh.patch0"],
-					diffFilePathesToDiffs["testdata/move_prometheus_stack.patch0"],
+					diffFilePathsToDiffs["testdata/simple_bump-prow-job-images_sh.patch0"],
+					diffFilePathsToDiffs["testdata/move_prometheus_stack.patch0"],
 				},
 			},
 			want: []KindOfChange{
 				&ProwJobImageUpdate{
 					relevantFileDiffs: []*diff.FileDiff{
-						diffFilePathesToDiffs["testdata/simple_bump-prow-job-images_sh.patch0"],
+						diffFilePathsToDiffs["testdata/simple_bump-prow-job-images_sh.patch0"],
 					},
 				},
 			},
@@ -89,8 +89,8 @@ func TestGuessReviewTypes(t *testing.T) {
 			name: "non image bump should not yield a change",
 			args: args{
 				fileDiffs: []*diff.FileDiff{
-					diffFilePathesToDiffs["testdata/move_prometheus_stack.patch0"],
-					diffFilePathesToDiffs["testdata/move_prometheus_stack.patch1"],
+					diffFilePathsToDiffs["testdata/move_prometheus_stack.patch0"],
+					diffFilePathsToDiffs["testdata/move_prometheus_stack.patch1"],
 				},
 			},
 			want: []KindOfChange{},

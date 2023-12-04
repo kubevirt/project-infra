@@ -27,22 +27,22 @@ import (
 )
 
 func TestProwJobImageUpdate_Review(t1 *testing.T) {
-	diffFilePathes := []string{
+	diffFilePaths := []string{
 		"testdata/simple_bump-prow-job-images_sh.patch0",
 		"testdata/simple_bump-prow-job-images_sh.patch1",
 		"testdata/mixed_bump_prow_job.patch0",
 	}
-	diffFilePathesToDiffs := map[string]*diff.FileDiff{}
-	for _, diffFile := range diffFilePathes {
-		bump_images_diff_file, err := os.ReadFile(diffFile)
+	diffFilePathsToDiffs := map[string]*diff.FileDiff{}
+	for _, diffFile := range diffFilePaths {
+		bumpImagesDiffFile, err := os.ReadFile(diffFile)
 		if err != nil {
 			t1.Errorf("failed to read diff: %v", err)
 		}
-		bump_file_diffs, err := diff.ParseFileDiff(bump_images_diff_file)
+		bumpFileDiffs, err := diff.ParseFileDiff(bumpImagesDiffFile)
 		if err != nil {
 			t1.Errorf("failed to read diff: %v", err)
 		}
-		diffFilePathesToDiffs[diffFile] = bump_file_diffs
+		diffFilePathsToDiffs[diffFile] = bumpFileDiffs
 	}
 	type fields struct {
 		relevantFileDiffs []*diff.FileDiff
@@ -56,8 +56,8 @@ func TestProwJobImageUpdate_Review(t1 *testing.T) {
 			name: "simple image bump",
 			fields: fields{
 				relevantFileDiffs: []*diff.FileDiff{
-					diffFilePathesToDiffs["testdata/simple_bump-prow-job-images_sh.patch0"],
-					diffFilePathesToDiffs["testdata/simple_bump-prow-job-images_sh.patch1"],
+					diffFilePathsToDiffs["testdata/simple_bump-prow-job-images_sh.patch0"],
+					diffFilePathsToDiffs["testdata/simple_bump-prow-job-images_sh.patch1"],
 				},
 			},
 			want: &ProwJobImageUpdateResult{},
@@ -66,11 +66,11 @@ func TestProwJobImageUpdate_Review(t1 *testing.T) {
 			name: "mixed image bump",
 			fields: fields{
 				relevantFileDiffs: []*diff.FileDiff{
-					diffFilePathesToDiffs["testdata/mixed_bump_prow_job.patch0"],
+					diffFilePathsToDiffs["testdata/mixed_bump_prow_job.patch0"],
 				},
 			},
 			want: &ProwJobImageUpdateResult{
-				notMatchingHunks: map[string][]*diff.Hunk{"github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml": {diffFilePathesToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks[0]}},
+				notMatchingHunks: map[string][]*diff.Hunk{"github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml": {diffFilePathsToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks[0]}},
 			},
 		},
 	}

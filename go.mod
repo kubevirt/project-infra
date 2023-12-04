@@ -37,8 +37,6 @@ require (
 	sigs.k8s.io/yaml v1.3.0
 )
 
-require github.com/r3labs/diff/v3 v3.0.1
-
 require (
 	cloud.google.com/go v0.110.0 // indirect
 	cloud.google.com/go/compute v1.19.0 // indirect

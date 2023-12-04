@@ -28,25 +28,25 @@ import (
 )
 
 func TestProwAutobump_Review(t1 *testing.T) {
-	diffFilePathes := []string{}
+	diffFilePaths := []string{}
 	entries, err := os.ReadDir("testdata/prow-autobump")
 	if err != nil {
 		t1.Errorf("failed to read files: %v", err)
 	}
 	for _, entry := range entries {
-		diffFilePathes = append(diffFilePathes, filepath.Join("testdata/prow-autobump", entry.Name()))
+		diffFilePaths = append(diffFilePaths, filepath.Join("testdata/prow-autobump", entry.Name()))
 	}
-	diffFilePathesToDiffs := map[string]*diff.FileDiff{}
-	for _, diffFile := range diffFilePathes {
-		bump_images_diff_file, err := os.ReadFile(diffFile)
+	diffFilePathsToDiffs := map[string]*diff.FileDiff{}
+	for _, diffFile := range diffFilePaths {
+		bumpImagesDiffFile, err := os.ReadFile(diffFile)
 		if err != nil {
 			t1.Errorf("failed to read diff: %v", err)
 		}
-		bump_file_diffs, err := diff.ParseFileDiff(bump_images_diff_file)
+		bumpFileDiffs, err := diff.ParseFileDiff(bumpImagesDiffFile)
 		if err != nil {
 			t1.Errorf("failed to read diff: %v", err)
 		}
-		diffFilePathesToDiffs[diffFile] = bump_file_diffs
+		diffFilePathsToDiffs[diffFile] = bumpFileDiffs
 	}
 	type fields struct {
 		relevantFileDiffs []*diff.FileDiff
@@ -60,22 +60,22 @@ func TestProwAutobump_Review(t1 *testing.T) {
 			name: "simple prow autobump",
 			fields: fields{
 				relevantFileDiffs: []*diff.FileDiff{
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_configs_current_config_config.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_branch-protector.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_cherrypicker_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_label-sync-kubevirt.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_label-sync-nmstate.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_crier_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_deck_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_ghproxy.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_hook_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_horologium_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_needs-rebase_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prow_controller_manager_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_sinker_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_statusreconciler_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_tide_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_overlays_ibmcloud-production_resources_prow-exporter-deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_configs_current_config_config.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_branch-protector.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_cherrypicker_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_label-sync-kubevirt.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_label-sync-nmstate.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_crier_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_deck_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_ghproxy.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_hook_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_horologium_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_needs-rebase_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prow_controller_manager_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_sinker_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_statusreconciler_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_tide_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_overlays_ibmcloud-production_resources_prow-exporter-deployment.yaml"],
 				},
 			},
 			want: &ProwAutobumpResult{},
@@ -84,28 +84,28 @@ func TestProwAutobump_Review(t1 *testing.T) {
 			name: "prow autobump with crd update",
 			fields: fields{
 				relevantFileDiffs: []*diff.FileDiff{
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_configs_current_config_config.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_branch-protector.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_cherrypicker_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_label-sync-kubevirt.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_label-sync-nmstate.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_crier_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_deck_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_ghproxy.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_hook_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_horologium_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_needs-rebase_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prow_controller_manager_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prowjob-crd_prowjob_customresourcedefinition.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_sinker_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_statusreconciler_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_tide_deployment.yaml"],
-					diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_overlays_ibmcloud-production_resources_prow-exporter-deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_configs_current_config_config.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_branch-protector.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_cherrypicker_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_label-sync-kubevirt.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_local_label-sync-nmstate.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_crier_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_deck_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_ghproxy.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_hook_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_horologium_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_needs-rebase_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prow_controller_manager_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prowjob-crd_prowjob_customresourcedefinition.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_sinker_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_statusreconciler_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_tide_deployment.yaml"],
+					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_overlays_ibmcloud-production_resources_prow-exporter-deployment.yaml"],
 				},
 			},
 			want: &ProwAutobumpResult{
 				notMatchingHunks: map[string][]*diff.Hunk{
-					"github/ci/prow-deploy/kustom/base/manifests/test_infra/current/prowjob-crd/prowjob_customresourcedefinition.yaml": diffFilePathesToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prowjob-crd_prowjob_customresourcedefinition.yaml"].Hunks,
+					"github/ci/prow-deploy/kustom/base/manifests/test_infra/current/prowjob-crd/prowjob_customresourcedefinition.yaml": diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prowjob-crd_prowjob_customresourcedefinition.yaml"].Hunks,
 				},
 			},
 		},
