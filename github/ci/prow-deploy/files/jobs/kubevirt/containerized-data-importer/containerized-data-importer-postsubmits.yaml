@@ -29,9 +29,10 @@ postsubmits:
         - "-c"
         - |
           cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
-          # Only push images on tags
+          # Only push images on tags, for amd64 and aarch64 (crossbuild, since we have no aarch64 builder)
           [ -z "$(git tag --points-at HEAD | head -1)" ] ||
-          DOCKER_TAG="$(git tag --points-at HEAD | head -1)" make bazel-push-images
+          DOCKER_TAG="$(git tag --points-at HEAD | head -1)-amd64" make bazel-push-images ||
+          DOCKER_TAG="$(git tag --points-at HEAD | head -1)-arm64" BUILD_ARCH="crossbuild-aarch64" make bazel-push-images
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
