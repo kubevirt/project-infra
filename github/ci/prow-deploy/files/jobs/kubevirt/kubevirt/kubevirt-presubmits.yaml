@@ -798,7 +798,7 @@ presubmits:
             memory: 4Gi
         securityContext:
           privileged: true
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
