@@ -26,7 +26,7 @@ presubmits:
     branches:
       - main
     always_run: false
-    run_if_changed: "instancetypes/.*|preferences/.*|scripts/functest.sh"
+    run_if_changed: "instancetypes/.*|preferences/.*|scripts/.*|tests/.*"
     cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
@@ -51,7 +51,7 @@ presubmits:
         env:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
-        image: quay.io/kubevirtci/bootstrap:v20231115-51a244f
+        image: quay.io/kubevirtci/golang:v20231115-51a244f
         name: ""
         resources:
           requests:
