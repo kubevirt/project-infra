@@ -214,7 +214,7 @@ orgs:
     members_can_create_repositories: false
     name: KubeVirt
     repos:
-      .github:
+      ".github":
         description: Default Community health files.
       ansible-kubevirt-modules:
         allow_merge_commit: false
@@ -675,7 +675,7 @@ orgs:
           - brianmcarey
           - aburdenthehand
         repos:
-          .github: admin
+          ".github": admin
       cloud-provider-kubevirt-maintainers:
         maintainers:
           - nirarg
