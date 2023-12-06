@@ -267,7 +267,7 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -286,7 +286,7 @@ presubmits:
           value: NonRootExperimental
         - name: KUBEVIRT_NONROOT
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
+        image: quay.io/kubevirtci/bootstrap:v20230502-bfaa042
         name: ""
         resources:
           requests:
