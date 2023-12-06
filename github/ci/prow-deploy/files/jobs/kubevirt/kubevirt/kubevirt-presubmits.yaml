@@ -315,6 +315,8 @@ presubmits:
         - -c
         - TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh
         env:
+        - name: KUBEVIRT_PSA
+          value: "true"
         - name: KUBEVIRT_E2E_PARALLEL
           value: "true"
         - name: KUBEVIRT_MEMORY_SIZE
@@ -1446,6 +1448,8 @@ presubmits:
         - -c
         - automation/test.sh
         env:
+        - name: KUBEVIRT_PSA
+          value: "true"
         - name: TARGET
           value: k8s-1.26-centos9-sig-storage
         - name: FEATURE_GATES
