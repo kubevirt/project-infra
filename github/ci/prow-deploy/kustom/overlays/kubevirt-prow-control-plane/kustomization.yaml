@@ -359,7 +359,7 @@ secretGenerator:
       - oauth=secrets/commenter-oauth-token
     type: Opaque
   - name: botreview-oauth-token
-    namespace: kubevirt-prow-jobs
+    namespace: kubevirt-prow
     # githubBotreviewToken
     files:
     - oauth=secrets/botreview-oauth-token
