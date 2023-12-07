@@ -49,7 +49,7 @@ spec:
           secretName: hmac-token
       - name: oauth
         secret:
-          secretName: oauth-token
+          secretName: botreview-oauth-token
       - name: plugins
         configMap:
           name: plugins
