@@ -524,6 +524,10 @@ external_plugins:
     events:
       - pull_request
       - issue_comment
+  - name: botreview
+    endpoint: http://botreview:9900
+    events:
+      - pull_request
 
 triggers:
 - repos:

@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: botreview
+  labels:
+    app: botreview
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: botreview
+  template:
+    metadata:
+      labels:
+        app: botreview
+    spec:
+      terminationGracePeriodSeconds: 180
+      containers:
+      - name: botreview
+        # FIXME: change tag to proper version after initial testing is done and there's a postsubmit that updates botreview images
+        image: quay.io/kubevirtci/botreview:latest
+        args:
+        # FIXME: stay with dry run for now
+        - --dry-run=true
+        - --port=9900
+        - --github-token-path=/etc/github/oauth
+        - --github-endpoint=http://ghproxy
+        - --github-endpoint=https://api.github.com
+        ports:
+        - name: http
+          containerPort: 9900
+        volumeMounts:
+        - name: hmac
+          mountPath: /etc/webhook
+          readOnly: true
+        - name: oauth
+          mountPath: /etc/github
+          readOnly: true
+        - name: plugins
+          mountPath: /etc/plugins
+          readOnly: true
+        - name: cache
+          mountPath: /var/run/cache
+          readOnly: false
+      volumes:
+      - name: hmac
+        secret:
+          secretName: hmac-token
+      - name: oauth
+        secret:
+          secretName: botreview-oauth-token
+      - name: plugins
+        configMap:
+          name: plugins
+      - name: cache
+        emptyDir: {}

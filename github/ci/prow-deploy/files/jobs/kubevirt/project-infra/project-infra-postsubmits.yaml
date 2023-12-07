@@ -52,6 +52,33 @@ postsubmits:
                 memory: "8Gi"
               limits:
                 memory: "8Gi"
+    - name: publish-botreview-image
+      always_run: false
+      run_if_changed: "external-plugins/botreview/.*"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      cluster: kubevirt-prow-control-plane
+      max_concurrency: 1
+      labels:
+        preset-bazel-cache: "true"
+        preset-kubevirtci-quay-credential: "true"
+        preset-podman-in-container-enabled: "true"
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                make -C ./external-plugins/botreview push
+            resources:
+              requests:
+                memory: "8Gi"
+              limits:
+                memory: "8Gi"
     - name: publish-kubevirt-infra-bootstrap-image
       always_run: false
       run_if_changed: "images/kubevirt-infra-bootstrap/.*"
