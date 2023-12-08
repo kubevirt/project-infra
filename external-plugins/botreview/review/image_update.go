@@ -35,8 +35,9 @@ I found suspicious hunks:
 )
 
 var (
-	prowJobImageUpdateHunkBodyMatcher   = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+image: [^\s]+$[\n]^\+[\s]+image: [^\s]+)$`)
-	prowJobReleaseBranchFileNameMatcher = regexp.MustCompile(`.*\/[\w-]+-[0-9-\.]+\.yaml`)
+	prowJobImageUpdateLineMatcher       = regexp.MustCompile(`(?m)^\+\s+- image: \S+$`)
+	prowJobImageUpdateHunkBodyMatcher   = regexp.MustCompile(`(?m)^(-\s+- image: \S+$\n^\+\s+- image: \S+|-\s+image: \S+$\n^\+\s+image: \S+)$`)
+	prowJobReleaseBranchFileNameMatcher = regexp.MustCompile(`.*/[\w-]+-[0-9-.]+\.yaml`)
 )
 
 type ProwJobImageUpdateResult struct {
@@ -106,10 +107,24 @@ func (t *ProwJobImageUpdate) AddIfRelevant(fileDiff *diff.FileDiff) {
 	//	* where the path is not beyond the jobconfig path
 	//	* where the name changed and
 	//  * who are not yaml
+	//  * who match the release branch file name pattern
 	if strings.TrimPrefix(fileDiff.OrigName, "a/") != fileName ||
 		!strings.HasSuffix(fileName, ".yaml") ||
 		!strings.HasPrefix(fileName, "github/ci/prow-deploy/files/jobs") ||
 		prowJobReleaseBranchFileNameMatcher.MatchString(fileName) {
+		return
+	}
+
+	// do a quick scan for image changes in hunks
+	foundImageUpdate := false
+	for _, hunk := range fileDiff.Hunks {
+		if prowJobImageUpdateLineMatcher.Match(hunk.Body) {
+			foundImageUpdate = true
+			break
+		}
+	}
+	// skip diff if none found
+	if !foundImageUpdate {
 		return
 	}
 

@@ -156,7 +156,7 @@ const botReviewCommentPattern = `@%s's review-bot says:
 
 %s
 
-**Note: botreview (kubevirt/project-infra#2448) is a Work In Progress!**
+**Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**
 `
 const holdPRComment = `Holding this PR for further manual action to occur.
 
