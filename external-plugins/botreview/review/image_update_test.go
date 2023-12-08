@@ -60,11 +60,7 @@ func TestProwJobImageUpdate_Review(t1 *testing.T) {
 					diffFilePathsToDiffs["testdata/simple_bump-prow-job-images_sh.patch1"],
 				},
 			},
-			want: &BasicReviewResult{
-				approveComment:    prowJobImageUpdateApproveComment,
-				disapproveComment: prowJobImageUpdateDisapproveComment,
-				canMerge:          true,
-			},
+			want: NewCanMergeReviewResult(prowJobImageUpdateApproveComment, prowJobImageUpdateDisapproveComment),
 		},
 		{
 			name: "mixed image bump",
@@ -73,7 +69,7 @@ func TestProwJobImageUpdate_Review(t1 *testing.T) {
 					diffFilePathsToDiffs["testdata/mixed_bump_prow_job.patch0"],
 				},
 			},
-			want: newReviewResultWithData(prowJobImageUpdateApproveComment, prowJobImageUpdateDisapproveComment, map[string][]*diff.Hunk{"github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml": {diffFilePathsToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks[0]}}, true, ""),
+			want: newReviewResultWithData(prowJobImageUpdateApproveComment, prowJobImageUpdateDisapproveComment, map[string][]*diff.Hunk{"github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml": {diffFilePathsToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks[0]}}, ""),
 		},
 	}
 	for _, tt := range tests {

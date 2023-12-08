@@ -30,9 +30,6 @@ type BotReviewResult interface {
 	// IsApproved states if the review has only expected changes
 	IsApproved() bool
 
-	// CanMerge states if the pull request can get merged without any further action
-	CanMerge() bool
-
 	// ShouldNotMergeReason returns the reason why the pull request should not get merged without a human review, if any
 	ShouldNotMergeReason() string
 
@@ -43,13 +40,10 @@ type BotReviewResult interface {
 	ShortString() string
 }
 
-type ShouldNotMergeReason string
-
 func NewCanMergeReviewResult(approveComment string, disapproveComment string) BotReviewResult {
 	return &BasicReviewResult{
 		approveComment:    approveComment,
 		disapproveComment: disapproveComment,
-		canMerge:          true,
 	}
 }
 
@@ -57,17 +51,15 @@ func NewShouldNotMergeReviewResult(approveComment string, disapproveComment stri
 	return &BasicReviewResult{
 		approveComment:       approveComment,
 		disapproveComment:    disapproveComment,
-		canMerge:             false,
 		shouldNotMergeReason: reason,
 	}
 }
 
-func newReviewResultWithData(approveComment string, disapproveComment string, notMatchingHunks map[string][]*diff.Hunk, canMerge bool, shouldNotMergeReason string) BotReviewResult {
+func newReviewResultWithData(approveComment string, disapproveComment string, notMatchingHunks map[string][]*diff.Hunk, shouldNotMergeReason string) BotReviewResult {
 	return &BasicReviewResult{
 		approveComment:       approveComment,
 		disapproveComment:    disapproveComment,
 		notMatchingHunks:     notMatchingHunks,
-		canMerge:             canMerge,
 		shouldNotMergeReason: shouldNotMergeReason,
 	}
 }
@@ -77,7 +69,6 @@ type BasicReviewResult struct {
 	approveComment       string
 	disapproveComment    string
 	notMatchingHunks     map[string][]*diff.Hunk
-	canMerge             bool
 	shouldNotMergeReason string
 }
 
@@ -98,10 +89,6 @@ func (r *BasicReviewResult) String() string {
 
 func (r *BasicReviewResult) IsApproved() bool {
 	return len(r.notMatchingHunks) == 0
-}
-
-func (r *BasicReviewResult) CanMerge() bool {
-	return r.canMerge
 }
 
 func (r *BasicReviewResult) ShouldNotMergeReason() string {

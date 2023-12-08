@@ -160,11 +160,11 @@ func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, gith
 		return fmt.Errorf("error while fetching user data: %v", err)
 	}
 	shouldNotMergeReasons := []string{}
-	isApproved, canMerge := true, true
+	isApproved := true
 	botReviewComments := make([]string, 0, len(botReviewResults))
 	shortBotReviewComments := make([]string, 0, len(botReviewResults))
 	for _, reviewResult := range botReviewResults {
-		isApproved, canMerge = isApproved && reviewResult.IsApproved(), canMerge && reviewResult.CanMerge()
+		isApproved = isApproved && reviewResult.IsApproved()
 		shouldNotMergeReasons = append(shouldNotMergeReasons, reviewResult.ShouldNotMergeReason())
 		botReviewComments = append(botReviewComments, fmt.Sprintf("%s", reviewResult))
 		shortBotReviewComments = append(shortBotReviewComments, fmt.Sprintf(reviewResult.ShortString()))

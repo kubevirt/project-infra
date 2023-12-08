@@ -78,7 +78,7 @@ func TestProwAutobump_Review(t1 *testing.T) {
 					diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_overlays_ibmcloud-production_resources_prow-exporter-deployment.yaml"],
 				},
 			},
-			want: newReviewResultWithData(prowAutobumpApproveComment, prowAutobumpDisapproveComment, nil, false, prowAutoBumpShouldNotMergeReason),
+			want: NewShouldNotMergeReviewResult(prowAutobumpApproveComment, prowAutobumpDisapproveComment, prowAutoBumpShouldNotMergeReason),
 		},
 		{
 			name: "prow autobump with crd update",
@@ -105,7 +105,7 @@ func TestProwAutobump_Review(t1 *testing.T) {
 			},
 			want: newReviewResultWithData(prowAutobumpApproveComment, prowAutobumpDisapproveComment, map[string][]*diff.Hunk{
 				"github/ci/prow-deploy/kustom/base/manifests/test_infra/current/prowjob-crd/prowjob_customresourcedefinition.yaml": diffFilePathsToDiffs["testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_prowjob-crd_prowjob_customresourcedefinition.yaml"].Hunks,
-			}, false, prowAutoBumpShouldNotMergeReason),
+			}, prowAutoBumpShouldNotMergeReason),
 		},
 	}
 	for _, tt := range tests {
