@@ -165,7 +165,9 @@ func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, gith
 	shortBotReviewComments := make([]string, 0, len(botReviewResults))
 	for _, reviewResult := range botReviewResults {
 		isApproved = isApproved && reviewResult.IsApproved()
-		shouldNotMergeReasons = append(shouldNotMergeReasons, reviewResult.ShouldNotMergeReason())
+		if reviewResult.ShouldNotMergeReason() != "" {
+			shouldNotMergeReasons = append(shouldNotMergeReasons, reviewResult.ShouldNotMergeReason())
+		}
 		botReviewComments = append(botReviewComments, fmt.Sprintf("%s", reviewResult))
 		shortBotReviewComments = append(shortBotReviewComments, fmt.Sprintf(reviewResult.ShortString()))
 	}
