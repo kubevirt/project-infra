@@ -44,57 +44,6 @@ func init() {
 	bumpKubevirtCIClusterUpVersionMatcher = regexp.MustCompile(`(?m)^-[0-9]+-[a-z0-9]+$[\n]^\+[0-9]+-[a-z0-9]+$`)
 }
 
-type BumpKubevirtCIResult struct {
-	notMatchingHunks map[string][]*diff.Hunk
-}
-
-func (r BumpKubevirtCIResult) IsApproved() bool {
-	return len(r.notMatchingHunks) == 0
-}
-
-func (r BumpKubevirtCIResult) CanMerge() bool {
-	return true
-}
-
-func (r BumpKubevirtCIResult) String() string {
-	if r.IsApproved() {
-		return bumpKubevirtCIApproveComment
-	} else {
-		comment := bumpKubevirtCIDisapproveComment
-		for fileName, hunks := range r.notMatchingHunks {
-			comment += fmt.Sprintf("\nFile: `%s`", fileName)
-			for _, hunk := range hunks {
-				comment += fmt.Sprintf("\n```\n%s\n```", string(hunk.Body))
-			}
-		}
-		return comment
-	}
-}
-
-func (r *BumpKubevirtCIResult) AddReviewFailure(fileName string, hunks ...*diff.Hunk) {
-	if r.notMatchingHunks == nil {
-		r.notMatchingHunks = make(map[string][]*diff.Hunk)
-	}
-	if _, exists := r.notMatchingHunks[fileName]; !exists {
-		r.notMatchingHunks[fileName] = hunks
-	} else {
-		r.notMatchingHunks[fileName] = append(r.notMatchingHunks[fileName], hunks...)
-	}
-}
-
-func (r BumpKubevirtCIResult) ShortString() string {
-	if r.IsApproved() {
-		return bumpKubevirtCIApproveComment
-	} else {
-		comment := bumpKubevirtCIDisapproveComment
-		comment += fmt.Sprintf("\nFiles:")
-		for fileName := range r.notMatchingHunks {
-			comment += fmt.Sprintf("\n* `%s`", fileName)
-		}
-		return comment
-	}
-}
-
 type BumpKubevirtCI struct {
 	relevantFileDiffs []*diff.FileDiff
 	unwantedFiles     map[string][]*diff.Hunk
@@ -129,7 +78,7 @@ func (t *BumpKubevirtCI) AddIfRelevant(fileDiff *diff.FileDiff) {
 }
 
 func (t *BumpKubevirtCI) Review() BotReviewResult {
-	result := &BumpKubevirtCIResult{}
+	result := NewCanMergeReviewResult(bumpKubevirtCIApproveComment, bumpKubevirtCIDisapproveComment)
 
 	for _, fileDiff := range t.relevantFileDiffs {
 		fileName := strings.TrimPrefix(fileDiff.NewName, "b/")

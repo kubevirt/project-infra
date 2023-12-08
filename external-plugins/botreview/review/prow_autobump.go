@@ -32,63 +32,13 @@ const (
 
 I found suspicious hunks:
 `
+	prowAutoBumpShouldNotMergeReason = "prow update should be merged at a point in time where it doesn't interfere with normal CI usage"
 )
 
 var prowAutobumpHunkBodyMatcher *regexp.Regexp
 
 func init() {
 	prowAutobumpHunkBodyMatcher = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+(image|clonerefs|initupload|entrypoint|sidecar): [^\s]+$[\n]^\+[\s]+(image|clonerefs|initupload|entrypoint|sidecar): [^\s]+)$`)
-}
-
-type ProwAutobumpResult struct {
-	notMatchingHunks map[string][]*diff.Hunk
-}
-
-func (r ProwAutobumpResult) String() string {
-	if len(r.notMatchingHunks) == 0 {
-		return prowAutobumpApproveComment
-	} else {
-		comment := prowAutobumpDisapproveComment
-		for fileName, hunks := range r.notMatchingHunks {
-			comment += fmt.Sprintf("\n%s", fileName)
-			for _, hunk := range hunks {
-				comment += fmt.Sprintf("\n```\n%s\n```", string(hunk.Body))
-			}
-		}
-		return comment
-	}
-}
-
-func (r ProwAutobumpResult) IsApproved() bool {
-	return len(r.notMatchingHunks) == 0
-}
-
-func (r ProwAutobumpResult) CanMerge() bool {
-	return false
-}
-
-func (r *ProwAutobumpResult) AddReviewFailure(fileName string, hunks ...*diff.Hunk) {
-	if r.notMatchingHunks == nil {
-		r.notMatchingHunks = make(map[string][]*diff.Hunk)
-	}
-	if _, exists := r.notMatchingHunks[fileName]; !exists {
-		r.notMatchingHunks[fileName] = hunks
-	} else {
-		r.notMatchingHunks[fileName] = append(r.notMatchingHunks[fileName], hunks...)
-	}
-}
-
-func (r ProwAutobumpResult) ShortString() string {
-	if r.IsApproved() {
-		return prowAutobumpApproveComment
-	} else {
-		comment := prowAutobumpDisapproveComment
-		comment += fmt.Sprintf("\nFiles:")
-		for fileName := range r.notMatchingHunks {
-			comment += fmt.Sprintf("\n* `%s`", fileName)
-		}
-		return comment
-	}
 }
 
 type ProwAutobump struct {
@@ -111,7 +61,7 @@ func (t *ProwAutobump) AddIfRelevant(fileDiff *diff.FileDiff) {
 }
 
 func (t *ProwAutobump) Review() BotReviewResult {
-	result := &ProwAutobumpResult{}
+	result := NewShouldNotMergeReviewResult(prowAutobumpApproveComment, prowAutobumpDisapproveComment, prowAutoBumpShouldNotMergeReason)
 
 	for _, fileDiff := range t.relevantFileDiffs {
 		fileName := strings.TrimPrefix(fileDiff.NewName, "b/")

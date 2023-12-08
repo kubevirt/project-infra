@@ -35,22 +35,6 @@ type KindOfChange interface {
 	IsRelevant() bool
 }
 
-type BotReviewResult interface {
-	String() string
-
-	// IsApproved states if the review has only expected changes
-	IsApproved() bool
-
-	// CanMerge states if the pull request can get merged without any further action
-	CanMerge() bool
-
-	// AddReviewFailure stores the data of a hunk of code that failed review
-	AddReviewFailure(fileName string, hunks ...*diff.Hunk)
-
-	// ShortString provides a short description of the review result
-	ShortString() string
-}
-
 func newPossibleReviewTypes() []KindOfChange {
 	return []KindOfChange{
 		&ProwJobImageUpdate{},
@@ -158,10 +142,11 @@ const botReviewCommentPattern = `@%s's review-bot says:
 
 **Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**
 `
-const holdPRComment = `Holding this PR for further manual action to occur.
+const holdPRComment = `Holding this PR because:
+%s
 
 /hold`
-const unholdPRComment = "This PR does not require further manual action."
+const canMergePRComment = "This PR does not require further manual action."
 
 const approvePRComment = `This PR satisfies all automated review criteria.
 
@@ -174,11 +159,13 @@ func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, gith
 	if err != nil {
 		return fmt.Errorf("error while fetching user data: %v", err)
 	}
+	shouldNotMergeReasons := []string{}
 	isApproved, canMerge := true, true
 	botReviewComments := make([]string, 0, len(botReviewResults))
 	shortBotReviewComments := make([]string, 0, len(botReviewResults))
 	for _, reviewResult := range botReviewResults {
 		isApproved, canMerge = isApproved && reviewResult.IsApproved(), canMerge && reviewResult.CanMerge()
+		shouldNotMergeReasons = append(shouldNotMergeReasons, reviewResult.ShouldNotMergeReason())
 		botReviewComments = append(botReviewComments, fmt.Sprintf("%s", reviewResult))
 		shortBotReviewComments = append(shortBotReviewComments, fmt.Sprintf(reviewResult.ShortString()))
 	}
@@ -186,14 +173,14 @@ func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, gith
 	if isApproved {
 		approveLabels = approvePRComment
 	}
-	holdComment := holdPRComment
-	if canMerge {
-		holdComment = unholdPRComment
+	holdComment := canMergePRComment
+	if len(shouldNotMergeReasons) > 0 {
+		holdComment = fmt.Sprintf(holdPRComment, newBulletList(shouldNotMergeReasons))
 	}
 	botReviewComment := fmt.Sprintf(
 		botReviewCommentPattern,
 		botUser.Login,
-		"* "+strings.Join(botReviewComments, "\n* "),
+		newBulletList(botReviewComments),
 		approveLabels,
 		holdComment,
 	)
@@ -201,7 +188,7 @@ func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, gith
 		botReviewComment = fmt.Sprintf(
 			botReviewCommentPattern,
 			botUser.Login,
-			"* "+strings.Join(shortBotReviewComments, "\n* "),
+			newBulletList(shortBotReviewComments),
 			approveLabels,
 			holdComment,
 		)
@@ -215,6 +202,10 @@ func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, gith
 		r.l.Info(fmt.Sprintf("dry-run: %s/%s#%d <- %s", r.org, r.repo, r.num, botReviewComment))
 	}
 	return nil
+}
+
+func newBulletList(shouldNotMergeReasons []string) string {
+	return "* " + strings.Join(shouldNotMergeReasons, "\n* ")
 }
 
 type PRReviewOptions struct {

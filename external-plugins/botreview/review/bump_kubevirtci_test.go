@@ -55,7 +55,7 @@ func TestBumpKubevirtCI_Review(t1 *testing.T) {
 	tests := []struct {
 		name   string
 		fields fields
-		want   *BumpKubevirtCIResult
+		want   BotReviewResult
 	}{
 		{
 			name: "simple prow autobump",
@@ -71,7 +71,7 @@ func TestBumpKubevirtCI_Review(t1 *testing.T) {
 					diffFilePathsToDiffs["testdata/kubevirtci-bump/hack_config-default.sh"],
 				},
 			},
-			want: &BumpKubevirtCIResult{},
+			want: newReviewResultWithData(bumpKubevirtCIApproveComment, bumpKubevirtCIDisapproveComment, nil, true, ""),
 		},
 		{
 			name: "mixed image bump",
@@ -82,9 +82,7 @@ func TestBumpKubevirtCI_Review(t1 *testing.T) {
 					diffFilePathsToDiffs["testdata/mixed_bump_prow_job.patch0"],
 				},
 			},
-			want: &BumpKubevirtCIResult{
-				notMatchingHunks: map[string][]*diff.Hunk{"github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml": diffFilePathsToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks},
-			},
+			want: newReviewResultWithData(bumpKubevirtCIApproveComment, bumpKubevirtCIDisapproveComment, map[string][]*diff.Hunk{"github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml": diffFilePathsToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks}, true, ""),
 		},
 	}
 	for _, tt := range tests {
