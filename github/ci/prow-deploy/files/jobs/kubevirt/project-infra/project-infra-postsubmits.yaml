@@ -79,6 +79,8 @@ postsubmits:
                 memory: "8Gi"
               limits:
                 memory: "8Gi"
+            securityContext:
+              privileged: true
     - name: publish-kubevirt-infra-bootstrap-image
       always_run: false
       run_if_changed: "images/kubevirt-infra-bootstrap/.*"
