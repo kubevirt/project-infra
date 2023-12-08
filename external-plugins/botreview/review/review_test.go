@@ -31,6 +31,7 @@ func TestGuessReviewTypes(t *testing.T) {
 		"testdata/simple_bump-prow-job-images_sh.patch1",
 		"testdata/move_prometheus_stack.patch0",
 		"testdata/move_prometheus_stack.patch1",
+		"testdata/cdi_arm_release.patch0",
 	}
 	diffFilePathsToDiffs := map[string]*diff.FileDiff{}
 	for _, diffFile := range diffFilePaths {
@@ -91,6 +92,15 @@ func TestGuessReviewTypes(t *testing.T) {
 				fileDiffs: []*diff.FileDiff{
 					diffFilePathsToDiffs["testdata/move_prometheus_stack.patch0"],
 					diffFilePathsToDiffs["testdata/move_prometheus_stack.patch1"],
+				},
+			},
+			want: []KindOfChange{},
+		},
+		{
+			name: "non image bump should not yield a change 2",
+			args: args{
+				fileDiffs: []*diff.FileDiff{
+					diffFilePathsToDiffs["testdata/cdi_arm_release.patch0"],
 				},
 			},
 			want: []KindOfChange{},

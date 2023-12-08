@@ -130,7 +130,9 @@ func TestProwJobImageUpdate_AddIfRelevant(t1 *testing.T) {
 					NewName:  "b/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml",
 					NewTime:  nil,
 					Extended: nil,
-					Hunks:    nil,
+					Hunks: []*diff.Hunk{
+						{Body: []byte("+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5")},
+					},
 				},
 			},
 			expectedRelevantFileDiffs: []*diff.FileDiff{
@@ -140,7 +142,9 @@ func TestProwJobImageUpdate_AddIfRelevant(t1 *testing.T) {
 					NewName:  "b/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml",
 					NewTime:  nil,
 					Extended: nil,
-					Hunks:    nil,
+					Hunks: []*diff.Hunk{
+						{Body: []byte("+          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5")},
+					},
 				},
 			},
 		},
