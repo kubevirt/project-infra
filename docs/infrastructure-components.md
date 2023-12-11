@@ -39,18 +39,17 @@ about the worker nodes. It runs the main components of the infrastructure and
 several non-e2e Prow jobs.
 
 #### Context
-ibm-prow-jobs
+kubevirt-prow-control-plane
 
 #### Components
 
 * Prow control plane: all the Prow components, including the main microservices
 (crier, deck, hook, horologium, prow-controller-manager, tide, sink), several
-external plugins (rehearse, release-blocker) and secondary components
+external plugins (bot-review, rehearse, release-blocker) and secondary components
 (cherrypicker, gcsweb, ghproxy, label-sync, needs-rebase, prow-exporter,
 pushgateway, statusreconciler).
 
-* Monitoring stack: prometheus with thanos sidecar, node-exporter, grafana and
-thanos (query-frontend, query, store and compact).
+* Grafana: Dashboards for cluster and prow job monitoring 
 
 * Bazel cache ([greenhouse]) speeds up the builds that use bazel.
 
@@ -96,7 +95,7 @@ This is a self managed cluster with bare metals as workers. It runs the e2e jobs
 
 #### Context
 
-prow-workloads
+kubevirt-prow-workloads
 
 #### Components
 
