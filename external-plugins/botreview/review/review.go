@@ -154,7 +154,12 @@ const approvePRComment = `This PR satisfies all automated review criteria.
 /approve`
 const unapprovePRComment = "This PR does not satisfy at least one automated review criteria."
 
-func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, githubClient github.Client) error {
+type gitHubReviewClient interface {
+	CreateComment(org, repo string, number int, comment string) error
+	BotUser() (*github.UserData, error)
+}
+
+func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, githubClient gitHubReviewClient) error {
 	botUser, err := githubClient.BotUser()
 	if err != nil {
 		return fmt.Errorf("error while fetching user data: %v", err)

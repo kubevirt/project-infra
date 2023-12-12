@@ -19,7 +19,10 @@
 package review
 
 import (
+	"encoding/json"
+	"github.com/sirupsen/logrus"
 	"github.com/sourcegraph/go-diff/diff"
+	"k8s.io/test-infra/prow/github"
 	"os"
 	"reflect"
 	"testing"
@@ -173,4 +176,182 @@ func TestGuessReviewTypes(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestReviewer_AttachReviewComments(t *testing.T) {
+	type fields struct {
+		l       *logrus.Entry
+		org     string
+		repo    string
+		num     int
+		user    string
+		action  github.PullRequestEventAction
+		dryRun  bool
+		BaseSHA string
+	}
+	type args struct {
+		botReviewResults []BotReviewResult
+		githubClient     FakeGHReviewClient
+	}
+	tests := []struct {
+		name               string
+		fields             fields
+		args               args
+		wantErr            bool
+		wantReviewComments []*FakeComment
+	}{
+		{
+			name: "basic comment",
+			fields: fields{
+				l:       newEntry(),
+				org:     "",
+				repo:    "",
+				num:     0,
+				user:    "",
+				action:  "",
+				dryRun:  false,
+				BaseSHA: "",
+			},
+			args: args{
+				githubClient:     newGHReviewClient(),
+				botReviewResults: []BotReviewResult{},
+			},
+			wantErr: false,
+			wantReviewComments: []*FakeComment{
+				{
+					Org:     "",
+					Repo:    "",
+					Number:  0,
+					Comment: "@pr-reviewer's review-bot says:\n\n* \n\nThis PR satisfies all automated review criteria.\n\n/lgtm\n/approve\n\nThis PR does not require further manual action.\n\n**Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**\n",
+				},
+			},
+		},
+		{
+			name: "review approved",
+			fields: fields{
+				l:       newEntry(),
+				org:     "",
+				repo:    "",
+				num:     0,
+				user:    "",
+				action:  "",
+				dryRun:  false,
+				BaseSHA: "",
+			},
+			args: args{
+				githubClient: newGHReviewClient(),
+				botReviewResults: []BotReviewResult{
+					NewShouldNotMergeReviewResult("approved", "disapproved", "should not get merged at all reason"),
+				},
+			},
+			wantErr: false,
+			wantReviewComments: []*FakeComment{
+				{
+					Org:     "",
+					Repo:    "",
+					Number:  0,
+					Comment: "@pr-reviewer's review-bot says:\n\n* approved\n\nThis PR satisfies all automated review criteria.\n\n/lgtm\n/approve\n\nHolding this PR because:\n* should not get merged at all reason\n\n/hold\n\n**Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**\n",
+				},
+			},
+		},
+		{
+			name: "review not approved",
+			fields: fields{
+				l:       newEntry(),
+				org:     "",
+				repo:    "",
+				num:     0,
+				user:    "",
+				action:  "",
+				dryRun:  false,
+				BaseSHA: "",
+			},
+			args: args{
+				githubClient: newGHReviewClient(),
+				botReviewResults: []BotReviewResult{
+					newReviewResultWithData(
+						"approved",
+						"disapproved",
+						map[string][]*diff.Hunk{
+							"test": {
+								{
+									Body: []byte("nil"),
+								},
+							},
+						},
+						"should not get merged at all reason",
+					),
+				},
+			},
+			wantErr: false,
+			wantReviewComments: []*FakeComment{
+				{
+					Org:     "",
+					Repo:    "",
+					Number:  0,
+					Comment: "@pr-reviewer's review-bot says:\n\n* disapproved\nFile: `test`\n```\nnil\n```\n\nThis PR does not satisfy at least one automated review criteria.\n\nHolding this PR because:\n* should not get merged at all reason\n\n/hold\n\n**Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**\n",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &Reviewer{
+				l:       tt.fields.l,
+				org:     tt.fields.org,
+				repo:    tt.fields.repo,
+				num:     tt.fields.num,
+				user:    tt.fields.user,
+				action:  tt.fields.action,
+				dryRun:  tt.fields.dryRun,
+				BaseSHA: tt.fields.BaseSHA,
+			}
+			if err := r.AttachReviewComments(tt.args.botReviewResults, &tt.args.githubClient); (err != nil) != tt.wantErr {
+				t.Errorf("AttachReviewComments() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if !reflect.DeepEqual(tt.args.githubClient.FakeComments, tt.wantReviewComments) {
+				t.Errorf("AttachReviewComments() reviewComments = %v, wantReviewComments %v", tt.args.githubClient.FakeComments, tt.wantReviewComments)
+			}
+		})
+	}
+}
+
+func newEntry() *logrus.Entry {
+	return logrus.NewEntry(logrus.StandardLogger())
+}
+
+type FakeComment struct {
+	Org     string `json:"org,omitempty"`
+	Repo    string `json:"repo,omitempty"`
+	Number  int    `json:"number,omitempty"`
+	Comment string `json:"comment,omitempty"`
+}
+
+func (f FakeComment) String() string {
+	marshal, _ := json.Marshal(f)
+	return string(marshal)
+}
+
+type FakeGHReviewClient struct {
+	FakeComments []*FakeComment
+}
+
+func (f *FakeGHReviewClient) CreateComment(org, repo string, number int, comment string) error {
+	f.FakeComments = append(f.FakeComments, &FakeComment{
+		Org:     org,
+		Repo:    repo,
+		Number:  number,
+		Comment: comment,
+	})
+	return nil
+}
+
+func (f *FakeGHReviewClient) BotUser() (*github.UserData, error) {
+	return &github.UserData{
+		Login: "pr-reviewer",
+	}, nil
+}
+
+func newGHReviewClient() FakeGHReviewClient {
+	return FakeGHReviewClient{}
 }
