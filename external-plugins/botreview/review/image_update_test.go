@@ -50,7 +50,7 @@ func TestProwJobImageUpdate_Review(t1 *testing.T) {
 	tests := []struct {
 		name   string
 		fields fields
-		want   *ProwJobImageUpdateResult
+		want   BotReviewResult
 	}{
 		{
 			name: "simple image bump",
@@ -60,7 +60,7 @@ func TestProwJobImageUpdate_Review(t1 *testing.T) {
 					diffFilePathsToDiffs["testdata/simple_bump-prow-job-images_sh.patch1"],
 				},
 			},
-			want: &ProwJobImageUpdateResult{},
+			want: NewCanMergeReviewResult(prowJobImageUpdateApproveComment, prowJobImageUpdateDisapproveComment),
 		},
 		{
 			name: "mixed image bump",
@@ -69,14 +69,13 @@ func TestProwJobImageUpdate_Review(t1 *testing.T) {
 					diffFilePathsToDiffs["testdata/mixed_bump_prow_job.patch0"],
 				},
 			},
-			want: &ProwJobImageUpdateResult{
-				notMatchingHunks: map[string][]*diff.Hunk{"github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml": {diffFilePathsToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks[0]}},
-			},
+			want: newReviewResultWithData(prowJobImageUpdateApproveComment, prowJobImageUpdateDisapproveComment, map[string][]*diff.Hunk{"github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml": {diffFilePathsToDiffs["testdata/mixed_bump_prow_job.patch0"].Hunks[0]}}, ""),
 		},
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
 			t := &ProwJobImageUpdate{
+
 				relevantFileDiffs: tt.fields.relevantFileDiffs,
 			}
 			if got := t.Review(); !reflect.DeepEqual(got, tt.want) {

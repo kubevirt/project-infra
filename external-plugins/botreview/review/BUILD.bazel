@@ -6,6 +6,7 @@ go_library(
         "bump_kubevirtci.go",
         "image_update.go",
         "prow_autobump.go",
+        "result.go",
         "review.go",
     ],
     importpath = "kubevirt.io/project-infra/external-plugins/botreview/review",

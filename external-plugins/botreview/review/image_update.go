@@ -40,57 +40,6 @@ var (
 	prowJobReleaseBranchFileNameMatcher = regexp.MustCompile(`.*/[\w-]+-[0-9-.]+\.yaml`)
 )
 
-type ProwJobImageUpdateResult struct {
-	notMatchingHunks map[string][]*diff.Hunk
-}
-
-func (r ProwJobImageUpdateResult) String() string {
-	if r.IsApproved() {
-		return prowJobImageUpdateApproveComment
-	} else {
-		comment := prowJobImageUpdateDisapproveComment
-		for fileName, hunks := range r.notMatchingHunks {
-			comment += fmt.Sprintf("\nFile: `%s`", fileName)
-			for _, hunk := range hunks {
-				comment += fmt.Sprintf("\n```\n%s\n```", string(hunk.Body))
-			}
-		}
-		return comment
-	}
-}
-
-func (r ProwJobImageUpdateResult) IsApproved() bool {
-	return len(r.notMatchingHunks) == 0
-}
-
-func (r ProwJobImageUpdateResult) CanMerge() bool {
-	return true
-}
-
-func (r *ProwJobImageUpdateResult) AddReviewFailure(fileName string, hunks ...*diff.Hunk) {
-	if r.notMatchingHunks == nil {
-		r.notMatchingHunks = make(map[string][]*diff.Hunk)
-	}
-	if _, exists := r.notMatchingHunks[fileName]; !exists {
-		r.notMatchingHunks[fileName] = hunks
-	} else {
-		r.notMatchingHunks[fileName] = append(r.notMatchingHunks[fileName], hunks...)
-	}
-}
-
-func (r ProwJobImageUpdateResult) ShortString() string {
-	if r.IsApproved() {
-		return prowJobImageUpdateApproveComment
-	} else {
-		comment := prowJobImageUpdateDisapproveComment
-		comment += fmt.Sprintf("\nFiles:")
-		for fileName := range r.notMatchingHunks {
-			comment += fmt.Sprintf("\n* `%s`", fileName)
-		}
-		return comment
-	}
-}
-
 type ProwJobImageUpdate struct {
 	relevantFileDiffs []*diff.FileDiff
 	notMatchingHunks  []*diff.Hunk
@@ -132,7 +81,7 @@ func (t *ProwJobImageUpdate) AddIfRelevant(fileDiff *diff.FileDiff) {
 }
 
 func (t *ProwJobImageUpdate) Review() BotReviewResult {
-	result := &ProwJobImageUpdateResult{}
+	result := NewCanMergeReviewResult(prowJobImageUpdateApproveComment, prowJobImageUpdateDisapproveComment)
 
 	for _, fileDiff := range t.relevantFileDiffs {
 		fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
