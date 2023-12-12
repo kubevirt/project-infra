@@ -32,6 +32,28 @@ func TestGuessReviewTypes(t *testing.T) {
 		"testdata/move_prometheus_stack.patch0",
 		"testdata/move_prometheus_stack.patch1",
 		"testdata/cdi_arm_release.patch0",
+		"testdata/kubevirt/eviction-strategy-doc/eviction-strategy-doc.patch0",
+		"testdata/kubevirt/eviction-strategy-doc/eviction-strategy-doc.patch1",
+		"testdata/kubevirt/eviction-strategy-doc/eviction-strategy-doc.patch2",
+		"testdata/kubevirt/eviction-strategy-doc/eviction-strategy-doc.patch3",
+		"testdata/kubevirt/eviction-strategy-doc/eviction-strategy-doc.patch4",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch00",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch01",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch02",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch03",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch04",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch05",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch06",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch07",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch08",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch09",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch10",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch11",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch12",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch13",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch14",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch15",
+		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch16",
 	}
 	diffFilePathsToDiffs := map[string]*diff.FileDiff{}
 	for _, diffFile := range diffFilePaths {
@@ -87,23 +109,61 @@ func TestGuessReviewTypes(t *testing.T) {
 			},
 		},
 		{
-			name: "non image bump should not yield a change",
+			name: "non image bump (move_prometheus_stack) should not yield a change",
 			args: args{
 				fileDiffs: []*diff.FileDiff{
 					diffFilePathsToDiffs["testdata/move_prometheus_stack.patch0"],
 					diffFilePathsToDiffs["testdata/move_prometheus_stack.patch1"],
 				},
 			},
-			want: []KindOfChange{},
+			want: nil,
 		},
 		{
-			name: "non image bump should not yield a change 2",
+			name: "non image bump (cdi_arm_release) should not yield a change 2",
 			args: args{
 				fileDiffs: []*diff.FileDiff{
 					diffFilePathsToDiffs["testdata/cdi_arm_release.patch0"],
 				},
 			},
-			want: []KindOfChange{},
+			want: nil,
+		},
+		{
+			name: "non kubevirtci bump (eviction-strategy-doc) should not yield a change",
+			args: args{
+				fileDiffs: []*diff.FileDiff{
+					diffFilePathsToDiffs["testdata/kubevirt/eviction-strategy-doc/eviction-strategy-doc.patch0"],
+					diffFilePathsToDiffs["testdata/kubevirt/eviction-strategy-doc/eviction-strategy-doc.patch1"],
+					diffFilePathsToDiffs["testdata/kubevirt/eviction-strategy-doc/eviction-strategy-doc.patch2"],
+					diffFilePathsToDiffs["testdata/kubevirt/eviction-strategy-doc/eviction-strategy-doc.patch3"],
+					diffFilePathsToDiffs["testdata/kubevirt/eviction-strategy-doc/eviction-strategy-doc.patch4"],
+				},
+			},
+			want: nil,
+		},
+		{
+			name: "non kubevirtci bump (fix-containerdisks-migration) should not yield a change",
+			args: args{
+				fileDiffs: []*diff.FileDiff{
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch00"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch01"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch02"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch03"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch04"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch05"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch06"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch07"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch08"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch09"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch10"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch11"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch12"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch13"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch14"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch15"],
+					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch16"],
+				},
+			},
+			want: nil,
 		},
 	}
 	for _, tt := range tests {

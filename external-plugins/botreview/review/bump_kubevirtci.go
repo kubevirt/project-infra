@@ -46,7 +46,7 @@ func init() {
 
 type BumpKubevirtCI struct {
 	relevantFileDiffs []*diff.FileDiff
-	unwantedFiles     map[string][]*diff.Hunk
+	unwantedFiles     map[string]struct{}
 }
 
 func (t *BumpKubevirtCI) IsRelevant() bool {
@@ -56,25 +56,17 @@ func (t *BumpKubevirtCI) IsRelevant() bool {
 func (t *BumpKubevirtCI) AddIfRelevant(fileDiff *diff.FileDiff) {
 	fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
 
-	// store all hunks for unwanted files
-	if fileName != "cluster-up-sha.txt" &&
-		fileName != "hack/config-default.sh" &&
-		!strings.HasPrefix(fileName, "cluster-up/") {
-		for _, hunk := range fileDiff.Hunks {
-			if t.unwantedFiles == nil {
-				t.unwantedFiles = make(map[string][]*diff.Hunk, 0)
-			}
-			_, exists := t.unwantedFiles[fileName]
-			if !exists {
-				t.unwantedFiles[fileName] = []*diff.Hunk{hunk}
-			} else {
-				t.unwantedFiles[fileName] = append(t.unwantedFiles[fileName], hunk)
-			}
-		}
+	if fileName == "cluster-up-sha.txt" ||
+		fileName == "hack/config-default.sh" ||
+		strings.HasPrefix(fileName, "cluster-up/") {
+		t.relevantFileDiffs = append(t.relevantFileDiffs, fileDiff)
 		return
 	}
 
-	t.relevantFileDiffs = append(t.relevantFileDiffs, fileDiff)
+	if t.unwantedFiles == nil {
+		t.unwantedFiles = make(map[string]struct{})
+	}
+	t.unwantedFiles[fileName] = struct{}{}
 }
 
 func (t *BumpKubevirtCI) Review() BotReviewResult {
@@ -103,8 +95,8 @@ func (t *BumpKubevirtCI) Review() BotReviewResult {
 		}
 	}
 
-	for fileName, unwantedFiles := range t.unwantedFiles {
-		result.AddReviewFailure(fileName, unwantedFiles...)
+	for fileName := range t.unwantedFiles {
+		result.AddReviewFailure(fileName)
 	}
 
 	return result
