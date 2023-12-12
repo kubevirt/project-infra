@@ -50,7 +50,7 @@ func GuessReviewTypes(fileDiffs []*diff.FileDiff) []KindOfChange {
 			kindOfChange.AddIfRelevant(fileDiff)
 		}
 	}
-	result := []KindOfChange{}
+	var result []KindOfChange
 	for _, t := range possibleReviewTypes {
 		if t.IsRelevant() {
 			result = append(result, t)
