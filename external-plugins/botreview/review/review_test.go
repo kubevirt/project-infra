@@ -20,6 +20,7 @@ package review
 
 import (
 	"encoding/json"
+	testdiff "github.com/andreyvit/diff"
 	"github.com/sirupsen/logrus"
 	"github.com/sourcegraph/go-diff/diff"
 	"k8s.io/test-infra/prow/github"
@@ -178,17 +179,31 @@ func TestGuessReviewTypes(t *testing.T) {
 	}
 }
 
-func TestReviewer_AttachReviewComments(t *testing.T) {
-	type fields struct {
-		l       *logrus.Entry
-		org     string
-		repo    string
-		num     int
-		user    string
-		action  github.PullRequestEventAction
-		dryRun  bool
-		BaseSHA string
+type fields struct {
+	l       *logrus.Entry
+	org     string
+	repo    string
+	num     int
+	user    string
+	action  github.PullRequestEventAction
+	dryRun  bool
+	BaseSHA string
+}
+
+func newFields() fields {
+	return fields{
+		l:       newEntry(),
+		org:     "",
+		repo:    "",
+		num:     0,
+		user:    "",
+		action:  "",
+		dryRun:  false,
+		BaseSHA: "",
 	}
+}
+func TestReviewer_AttachReviewComments(t *testing.T) {
+
 	type args struct {
 		botReviewResults []BotReviewResult
 		githubClient     FakeGHReviewClient
@@ -201,17 +216,8 @@ func TestReviewer_AttachReviewComments(t *testing.T) {
 		wantReviewComments []*FakeComment
 	}{
 		{
-			name: "basic comment",
-			fields: fields{
-				l:       newEntry(),
-				org:     "",
-				repo:    "",
-				num:     0,
-				user:    "",
-				action:  "",
-				dryRun:  false,
-				BaseSHA: "",
-			},
+			name:   "basic comment",
+			fields: newFields(),
 			args: args{
 				githubClient:     newGHReviewClient(),
 				botReviewResults: []BotReviewResult{},
@@ -227,17 +233,8 @@ func TestReviewer_AttachReviewComments(t *testing.T) {
 			},
 		},
 		{
-			name: "review approved",
-			fields: fields{
-				l:       newEntry(),
-				org:     "",
-				repo:    "",
-				num:     0,
-				user:    "",
-				action:  "",
-				dryRun:  false,
-				BaseSHA: "",
-			},
+			name:   "review approved",
+			fields: newFields(),
 			args: args{
 				githubClient: newGHReviewClient(),
 				botReviewResults: []BotReviewResult{
@@ -255,30 +252,15 @@ func TestReviewer_AttachReviewComments(t *testing.T) {
 			},
 		},
 		{
-			name: "review not approved",
-			fields: fields{
-				l:       newEntry(),
-				org:     "",
-				repo:    "",
-				num:     0,
-				user:    "",
-				action:  "",
-				dryRun:  false,
-				BaseSHA: "",
-			},
+			name:   "one review not approved",
+			fields: newFields(),
 			args: args{
 				githubClient: newGHReviewClient(),
 				botReviewResults: []BotReviewResult{
 					newReviewResultWithData(
 						"approved",
 						"disapproved",
-						map[string][]*diff.Hunk{
-							"test": {
-								{
-									Body: []byte("nil"),
-								},
-							},
-						},
+						map[string][]*diff.Hunk{"test": {{Body: []byte("nil")}}},
 						"should not get merged at all reason",
 					),
 				},
@@ -286,10 +268,84 @@ func TestReviewer_AttachReviewComments(t *testing.T) {
 			wantErr: false,
 			wantReviewComments: []*FakeComment{
 				{
-					Org:     "",
-					Repo:    "",
-					Number:  0,
-					Comment: "@pr-reviewer's review-bot says:\n\n* disapproved\nFile: `test`\n```\nnil\n```\n\nThis PR does not satisfy at least one automated review criteria.\n\nHolding this PR because:\n* should not get merged at all reason\n\n/hold\n\n**Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**\n",
+					Org:    "",
+					Repo:   "",
+					Number: 0,
+					Comment: `@pr-reviewer's review-bot says:
+
+* disapproved
+  <details>
+  ` + "`test`" + `
+  ` + "```diff" + `
+  nil
+  ` + "```" + `
+  </details>
+
+This PR does not satisfy at least one automated review criteria.
+
+Holding this PR because:
+* should not get merged at all reason
+
+/hold
+
+**Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**
+`,
+				},
+			},
+		},
+		{
+			name:   "two reviews not approved",
+			fields: newFields(),
+			args: args{
+				githubClient: newGHReviewClient(),
+				botReviewResults: []BotReviewResult{
+					newReviewResultWithData(
+						"approved",
+						"can't approve moo",
+						map[string][]*diff.Hunk{"mehFile": {{Body: []byte("moo")}}},
+						"should not get merged at all",
+					),
+					newReviewResultWithData(
+						"approved",
+						"will not approve meh",
+						map[string][]*diff.Hunk{"mooFile": {{Body: []byte("meh")}}},
+						"should not get merged in any case",
+					),
+				},
+			},
+			wantErr: false,
+			wantReviewComments: []*FakeComment{
+				{
+					Org:    "",
+					Repo:   "",
+					Number: 0,
+					Comment: `@pr-reviewer's review-bot says:
+
+* can't approve moo
+  <details>
+  ` + "`mehFile`" + `
+  ` + "```diff" + `
+  moo
+  ` + "```" + `
+  </details>
+* will not approve meh
+  <details>
+  ` + "`mooFile`" + `
+  ` + "```diff" + `
+  meh
+  ` + "```" + `
+  </details>
+
+This PR does not satisfy at least one automated review criteria.
+
+Holding this PR because:
+* should not get merged at all
+* should not get merged in any case
+
+/hold
+
+**Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**
+`,
 				},
 			},
 		},
@@ -311,6 +367,13 @@ func TestReviewer_AttachReviewComments(t *testing.T) {
 			}
 			if !reflect.DeepEqual(tt.args.githubClient.FakeComments, tt.wantReviewComments) {
 				t.Errorf("AttachReviewComments() reviewComments = %v, wantReviewComments %v", tt.args.githubClient.FakeComments, tt.wantReviewComments)
+				for i, comment := range tt.wantReviewComments {
+					if len(tt.args.githubClient.FakeComments) <= i {
+						t.Errorf("no comment on %d found", i)
+						continue
+					}
+					t.Errorf("diff:\n%s", testdiff.LineDiff(tt.args.githubClient.FakeComments[i].Comment, comment.Comment))
+				}
 			}
 		})
 	}

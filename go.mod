@@ -5,6 +5,7 @@ require (
 	cloud.google.com/go/storage v1.35.1
 	github.com/Masterminds/semver v1.5.0
 	github.com/MetalBlueberry/go-plotly v0.4.0
+	github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/bazelbuild/buildtools v0.0.0-20200922170545-10384511ce98
 	github.com/bndr/gojenkins v1.1.0
