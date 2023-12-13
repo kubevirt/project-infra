@@ -8,6 +8,7 @@ go_library(
     deps = [
         "@com_github_google_go_github_v32//github:go_default_library",
         "@com_github_masterminds_semver//:go_default_library",
+        "@io_k8s_sigs_yaml//:go_default_library",
         "@org_golang_x_oauth2//:go_default_library",
     ],
 )
@@ -49,5 +50,8 @@ go_test(
     name = "go_default_test",
     srcs = ["release-tool_test.go"],
     embed = [":go_default_library"],
-    deps = ["@com_github_google_go_github_v32//github:go_default_library"],
+    deps = [
+        "@com_github_google_go_github_v32//github:go_default_library",
+        "@io_k8s_sigs_yaml//:go_default_library",
+    ],
 )

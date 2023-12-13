@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"reflect"
 	"testing"
 	"time"
 
 	"github.com/google/go-github/v32/github"
+	"sigs.k8s.io/yaml"
 )
 
 func standardCleanup(r *releaseData) {
@@ -456,4 +459,94 @@ func TestNewTag(t *testing.T) {
 			t.Errorf("expected command %s and got %s", expectedGitCommands[i], entry)
 		}
 	}
+}
+
+func TestUpdatePhase2Jobs(t *testing.T) {
+	var (
+		orgRepo        = "kubevirt/kubevirt"
+		jobConfig      string
+		originalConfig map[string]interface{}
+	)
+
+	originalConfig = map[string]interface{}{
+		"presubmits": map[string]interface{}{
+			orgRepo: []interface{}{
+				map[string]interface{}{
+					"name":       "phase1",
+					"always_run": true,
+				},
+				map[string]interface{}{
+					"name":       "phase2",
+					"always_run": false,
+				},
+				map[string]interface{}{
+					"name":       "optional_job",
+					"always_run": false,
+					"optional":   true,
+				},
+			},
+		},
+	}
+
+	jobConfig = filepath.Join(os.TempDir(), "job-config.yaml")
+	err := writeYAMLToFile(originalConfig, jobConfig)
+	if err != nil {
+		t.Errorf("writeYAMLToFile failed %s", err)
+	}
+
+	defer os.Remove(jobConfig)
+
+	updatedJobConfig, err := updatePhase2Jobs(orgRepo, jobConfig)
+	if err != nil {
+		t.Errorf("updatePhase2Jobs failed %s", err)
+	}
+
+	updatedContent, err := ioutil.ReadFile(updatedJobConfig)
+	if err != nil {
+		t.Errorf("updatedContent failed %s", err)
+	}
+
+	var updatedData map[string]interface{}
+	err = yaml.Unmarshal(updatedContent, &updatedData)
+	if err != nil {
+		t.Errorf("Unmarshal updatedContent failed %s", err)
+	}
+
+	expectedUpdatedData := map[string]interface{}{
+		"presubmits": map[string]interface{}{
+			orgRepo: []interface{}{
+				map[string]interface{}{
+					"name":       "phase1",
+					"always_run": true,
+				},
+				map[string]interface{}{
+					"name":       "phase2",
+					"always_run": true,
+				},
+				map[string]interface{}{
+					"name":       "optional_job",
+					"always_run": false,
+					"optional":   true,
+				},
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(expectedUpdatedData, updatedData) {
+		t.Errorf("updatedData doesn't equal expectedUpdatedData")
+	}
+}
+
+func writeYAMLToFile(data map[string]interface{}, fileName string) error {
+	yamlContent, err := yaml.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(fileName, yamlContent, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
