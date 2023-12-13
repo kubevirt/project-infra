@@ -113,10 +113,11 @@ func (r *BasicReviewResult) ShortString() string {
 		return r.approveComment
 	} else {
 		comment := r.disapproveComment
-		comment += fmt.Sprintf("\nFiles:")
+		comment += fmt.Sprintf("\n  <details>")
 		for fileName := range r.notMatchingHunks {
-			comment += fmt.Sprintf("\n* `%s`", fileName)
+			comment += fmt.Sprintf("\n  * `%s`", fileName)
 		}
+		comment += fmt.Sprintf("\n  </details>")
 		return comment
 	}
 }
