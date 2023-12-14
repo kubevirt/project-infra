@@ -28,10 +28,7 @@ import (
 
 const (
 	prowJobImageUpdateApproveComment    = `:thumbsup: This looks like a simple prow job image bump.`
-	prowJobImageUpdateDisapproveComment = `:thumbsdown: This doesn't look like a simple prow job image bump.
-
-I found suspicious hunks:
-`
+	prowJobImageUpdateDisapproveComment = `:thumbsdown: This doesn't look like a simple prow job image bump.`
 )
 
 var (

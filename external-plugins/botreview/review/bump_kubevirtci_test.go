@@ -20,6 +20,7 @@
 package review
 
 import (
+	"fmt"
 	"github.com/sourcegraph/go-diff/diff"
 	"os"
 	"path/filepath"
@@ -46,6 +47,12 @@ func TestBumpKubevirtCI_Review(t1 *testing.T) {
 		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch14",
 		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch15",
 		"testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch16",
+		"testdata/kubevirt/ci-bump-remove-provider-local/bump-kci.patch00",
+		"testdata/kubevirt/ci-bump-remove-provider-local/bump-kci.patch01",
+		"testdata/kubevirt/ci-bump-remove-provider-local/bump-kci.patch02",
+		"testdata/kubevirt/ci-bump-remove-provider-local/bump-kci.patch03",
+		"testdata/kubevirt/ci-bump-remove-provider-local/bump-kci.patch04",
+		"testdata/kubevirt/ci-bump-remove-provider-local/bump-kci.patch05",
 	}
 	entries, err := os.ReadDir("testdata/kubevirtci-bump")
 	if err != nil {
@@ -64,6 +71,9 @@ func TestBumpKubevirtCI_Review(t1 *testing.T) {
 		bumpFileDiffs, err := diff.ParseFileDiff(bumpImagesDiffFile)
 		if err != nil {
 			t1.Errorf("failed to read diff: %v", err)
+		}
+		if bumpFileDiffs == nil {
+			panic(fmt.Sprintf("file diff %q empty", diffFile))
 		}
 		diffFilePathsToDiffs[diffFile] = bumpFileDiffs
 	}
@@ -144,6 +154,20 @@ func TestBumpKubevirtCI_Review(t1 *testing.T) {
 				"pkg/virt-handler/vm_test.go":                                             nil,
 				"pkg/container-disk/container-disk.go":                                    nil,
 			}, ""),
+		},
+		{
+			name: "kubevirtci-bump with deleted files",
+			fields: fields{
+				relevantFileDiffs: []*diff.FileDiff{
+					diffFilePathsToDiffs["testdata/kubevirt/ci-bump-remove-provider-local/bump-kci.patch00"],
+					diffFilePathsToDiffs["testdata/kubevirt/ci-bump-remove-provider-local/bump-kci.patch01"],
+					diffFilePathsToDiffs["testdata/kubevirt/ci-bump-remove-provider-local/bump-kci.patch02"],
+					diffFilePathsToDiffs["testdata/kubevirt/ci-bump-remove-provider-local/bump-kci.patch03"],
+					diffFilePathsToDiffs["testdata/kubevirt/ci-bump-remove-provider-local/bump-kci.patch04"],
+					diffFilePathsToDiffs["testdata/kubevirt/ci-bump-remove-provider-local/bump-kci.patch05"],
+				},
+			},
+			want: newReviewResultWithData(bumpKubevirtCIApproveComment, bumpKubevirtCIDisapproveComment, nil, ""),
 		},
 	}
 	for _, tt := range tests {

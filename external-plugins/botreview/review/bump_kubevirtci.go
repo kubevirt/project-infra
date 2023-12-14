@@ -28,10 +28,7 @@ import (
 
 const (
 	bumpKubevirtCIApproveComment    = `:thumbsup: This looks like a simple kubevirtci bump.`
-	bumpKubevirtCIDisapproveComment = `:thumbsdown: This doesn't look like a simple kubevirtci bump.
-
-I found suspicious hunks:
-`
+	bumpKubevirtCIDisapproveComment = `:thumbsdown: This doesn't look like a simple kubevirtci bump.`
 )
 
 var bumpKubevirtCIHackConfigDefaultMatcher *regexp.Regexp
@@ -55,6 +52,12 @@ func (t *BumpKubevirtCI) IsRelevant() bool {
 
 func (t *BumpKubevirtCI) AddIfRelevant(fileDiff *diff.FileDiff) {
 	fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
+
+	// handle deleted files
+	wasDeleted := fileName == "/dev/null"
+	if wasDeleted {
+		fileName = strings.TrimPrefix(fileDiff.OrigName, "a/")
+	}
 
 	if fileName == "cluster-up-sha.txt" ||
 		fileName == "hack/config-default.sh" ||
