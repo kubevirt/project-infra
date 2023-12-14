@@ -688,6 +688,26 @@ lgtm:
   - kubevirt/applications-aware-quota
   review_acts_as_lgtm: true
 
+cherry_pick_approved:
+- org: kubevirt
+  repo: kubevirt
+  approvers: # List taken from: https://github.com/kubevirt/kubevirt/blob/6cb2d3606e2de4d3d1e2579c939d3da1d7075b90/OWNERS_ALIASES#L3-L17
+  - davidvossel
+  - vladikr
+  - rmohr
+  - stu-gott
+  - fabiand
+  - AlonaKaplan
+  - dhiller
+  - jean-edouard
+  - mhenriks
+  - enp0s3
+  - xpivarc
+  - vasiliy-ul
+  - acardace
+  - alicefr
+  - iholder101
+
 override:
   allow_top_level_owners: true
 
