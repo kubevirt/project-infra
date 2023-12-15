@@ -25,6 +25,7 @@ go_test(
         "bump_kubevirtci_test.go",
         "image_update_test.go",
         "prow_autobump_test.go",
+        "result_test.go",
         "review_test.go",
     ],
     data = glob(["testdata/**"]),
