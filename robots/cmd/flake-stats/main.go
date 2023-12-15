@@ -225,6 +225,7 @@ type options struct {
 	org                         string
 	repo                        string
 	filterPeriodicJobRunResults bool
+	filterLaneRegexString       string
 }
 
 func (o options) validate() error {
@@ -234,21 +235,31 @@ func (o options) validate() error {
 	if opts.outputFile == "" {
 		file, err := os.CreateTemp("", "flake-stats-*.html")
 		if err != nil {
-			return fmt.Errorf("failed to generate temp file: %v", err)
+			return fmt.Errorf("failed to generate temp file: %w", err)
 		}
 		opts.outputFile = file.Name()
 	} else {
 		if !opts.overwriteOutputFile {
 			stats, err := os.Stat(opts.outputFile)
 			if stats != nil || !os.IsNotExist(err) {
-				return fmt.Errorf("file %q exists or error occurred: %v", opts.outputFile, err)
+				return fmt.Errorf("file %q exists or error occurred: %w", opts.outputFile, err)
 			}
+		}
+	}
+	if opts.filterLaneRegexString != "" {
+		var err error
+		filterLaneRegex, err = regexp.Compile(opts.filterLaneRegexString)
+		if err != nil {
+			return fmt.Errorf("failed to compile regex %q for filtering lane: %w", opts.filterLaneRegexString, err)
 		}
 	}
 	return nil
 }
 
-var opts = options{}
+var (
+	opts            = options{}
+	filterLaneRegex *regexp.Regexp
+)
 
 const defaultDaysInThePast = 14
 const defaultOrg = "kubevirt"
@@ -264,6 +275,7 @@ func main() {
 	flag.StringVar(&opts.org, "org", defaultOrg, "GitHub org to use for fetching report data from gcs dir")
 	flag.StringVar(&opts.repo, "repo", defaultRepo, "GitHub repo to use for fetching report data from gcs dir")
 	flag.BoolVar(&opts.filterPeriodicJobRunResults, "filter-periodic-job-run-results", false, "whether results of periodic jobs should be filtered out of the report")
+	flag.StringVar(&opts.filterLaneRegexString, "filter-lane-regex", "", "regex defining jobs to be filtered out of the report")
 	flag.Parse()
 
 	err := opts.validate()
@@ -352,6 +364,10 @@ func aggregateTopXTests(recentFlakeFinderReports []*flakefinder.Params) TopXTest
 
 func aggregateFailuresPerJob(reportData *flakefinder.Params, originalTestName string, testNamesByTopXTests map[string]*TopXTest, normalizedTestName string) {
 	for jobName, jobFailures := range reportData.Data[originalTestName] {
+
+		if filterLaneRegex != nil && filterLaneRegex.MatchString(jobName) {
+			continue
+		}
 
 		if opts.filterPeriodicJobRunResults && strings.Index(jobName, "periodic") == 0 {
 			continue
