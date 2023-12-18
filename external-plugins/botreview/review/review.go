@@ -40,6 +40,7 @@ func newPossibleReviewTypes() []KindOfChange {
 		&ProwJobImageUpdate{},
 		&BumpKubevirtCI{},
 		&ProwAutobump{},
+		&KubeVirtUploader{},
 	}
 }
 
