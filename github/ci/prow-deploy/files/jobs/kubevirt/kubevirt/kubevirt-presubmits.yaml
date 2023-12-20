@@ -319,6 +319,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 9216M
+        - name: KUBEVIRT_PSA
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20231115-51a244f
         name: ""
         resources:
