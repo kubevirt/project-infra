@@ -78,12 +78,12 @@ func (r *BasicReviewResult) String() string {
 	} else {
 		comment := r.disapproveComment
 		for fileName, hunks := range r.notMatchingHunks {
-			comment += fmt.Sprintf("\n  <details>")
-			comment += fmt.Sprintf("\n  `%s`", fileName)
+			comment += fmt.Sprintf("\n\n<details>")
+			comment += fmt.Sprintf("\n\n_%s_", fileName)
 			for _, hunk := range hunks {
-				comment += fmt.Sprintf("\n  ```diff\n  %s\n  ```", string(hunk.Body))
+				comment += fmt.Sprintf("\n\n~~~diff\n%s\n~~~", string(hunk.Body))
 			}
-			comment += fmt.Sprintf("\n  </details>")
+			comment += fmt.Sprintf("\n\n</details>\n")
 		}
 		return comment
 	}

@@ -225,10 +225,22 @@ func TestReviewer_AttachReviewComments(t *testing.T) {
 			wantErr: false,
 			wantReviewComments: []*FakeComment{
 				{
-					Org:     "",
-					Repo:    "",
-					Number:  0,
-					Comment: "@pr-reviewer's review-bot says:\n\n* \n\nThis PR satisfies all automated review criteria.\n\n/lgtm\n/approve\n\nThis PR does not require further manual action.\n\n**Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**\n",
+					Org:    "",
+					Repo:   "",
+					Number: 0,
+					Comment: `@pr-reviewer's review-bot says:
+
+
+
+This PR satisfies all automated review criteria.
+
+/lgtm
+/approve
+
+This PR does not require further manual action.
+
+**Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**
+`,
 				},
 			},
 		},
@@ -244,10 +256,25 @@ func TestReviewer_AttachReviewComments(t *testing.T) {
 			wantErr: false,
 			wantReviewComments: []*FakeComment{
 				{
-					Org:     "",
-					Repo:    "",
-					Number:  0,
-					Comment: "@pr-reviewer's review-bot says:\n\n* approved\n\nThis PR satisfies all automated review criteria.\n\n/lgtm\n/approve\n\nHolding this PR because:\n* should not get merged at all reason\n\n/hold\n\n**Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**\n",
+					Org:    "",
+					Repo:   "",
+					Number: 0,
+					Comment: `@pr-reviewer's review-bot says:
+
+approved
+
+This PR satisfies all automated review criteria.
+
+/lgtm
+/approve
+
+Holding this PR because:
+* should not get merged at all reason
+
+/hold
+
+**Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**
+`,
 				},
 			},
 		},
@@ -273,13 +300,18 @@ func TestReviewer_AttachReviewComments(t *testing.T) {
 					Number: 0,
 					Comment: `@pr-reviewer's review-bot says:
 
-* disapproved
-  <details>
-  ` + "`test`" + `
-  ` + "```diff" + `
-  nil
-  ` + "```" + `
-  </details>
+disapproved
+
+<details>
+
+_test_
+
+~~~diff
+nil
+~~~
+
+</details>
+
 
 This PR does not satisfy at least one automated review criteria.
 
@@ -321,20 +353,30 @@ Holding this PR because:
 					Number: 0,
 					Comment: `@pr-reviewer's review-bot says:
 
-* can't approve moo
-  <details>
-  ` + "`mehFile`" + `
-  ` + "```diff" + `
-  moo
-  ` + "```" + `
-  </details>
-* will not approve meh
-  <details>
-  ` + "`mooFile`" + `
-  ` + "```diff" + `
-  meh
-  ` + "```" + `
-  </details>
+can't approve moo
+
+<details>
+
+_mehFile_
+
+~~~diff
+moo
+~~~
+
+</details>
+
+will not approve meh
+
+<details>
+
+_mooFile_
+
+~~~diff
+meh
+~~~
+
+</details>
+
 
 This PR does not satisfy at least one automated review criteria.
 

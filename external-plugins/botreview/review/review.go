@@ -187,7 +187,7 @@ func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, gith
 	botReviewComment := fmt.Sprintf(
 		botReviewCommentPattern,
 		botUser.Login,
-		newBulletList(botReviewComments),
+		strings.Join(botReviewComments, "\n"),
 		approveLabels,
 		holdComment,
 	)
