@@ -2202,3 +2202,39 @@ periodics:
         privileged: true
     nodeSelector:
       type: bare-metal-external
+- annotations:
+    testgrid-create-test-group: "false"
+  cluster: kubevirt-prow-control-plane
+  cron: 45 1 * * *
+  name: periodic-kubevirt-update-upcoming-changes
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    workdir: true
+  - org: kubevirt
+    repo: kubevirt
+    base_ref: main
+  - org: kubevirt
+    repo: sig-release
+    base_ref: main
+  labels:
+    preset-github-credentials: "true"
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
+      env:
+      command: [ "/bin/sh", "-ce" ]
+      args:
+      - |
+        project_infra_dir=$(cd ../project-infra && pwd)
+        kubevirt_dir=$(cd ../kubevirt && pwd)
+        sig_release_dir=$(cd ../sig-release && pwd)
+        git-pr.sh -c "cd ../project-infra && bazelisk run //releng/feature-announce -- --V=5 --output-file=${sig_release_dir}/upcoming-changes.md --org kubevirt --repo kubevirt --path-to-repository $kubevirt_dir --github-token-file /etc/github/oauth" -p ${sig_release_dir} -s 'Automated run of //releng/feature-announce' -r sig-release -b update-support-matrix -T main
+      resources:
+        requests:
+          memory: "200Mi"
