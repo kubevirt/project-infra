@@ -3589,7 +3589,6 @@ def go_deps():
         sum = "h1:fLjPD/aNc3UIOA6tDi6QXUemppXK3P9BI7mr2hd6gx8=",
         version = "v0.0.0-20180116203802-5d049714c4a6",
     )
-
     go_repository(
         name = "com_github_streadway_amqp",
         build_file_proto_mode = "disable",
