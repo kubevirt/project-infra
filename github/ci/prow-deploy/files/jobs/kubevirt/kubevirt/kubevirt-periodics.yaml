@@ -1294,8 +1294,6 @@ periodics:
         value: "true"
       - name: KUBEVIRT_QUARANTINE
         value: "true"
-      - name: KUBEVIRT_PSA
-        value: "true"
       - name: TARGET
         value: k8s-1.26-centos9-sig-storage
       - name: FEATURE_GATES

@@ -315,12 +315,12 @@ presubmits:
         - -c
         - TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh
         env:
-        - name: KUBEVIRT_PSA
-          value: "true"
         - name: KUBEVIRT_E2E_PARALLEL
           value: "true"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 9216M
+        - name: KUBEVIRT_PSA
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20231115-51a244f
         name: ""
         resources:
@@ -1448,8 +1448,6 @@ presubmits:
         - -c
         - automation/test.sh
         env:
-        - name: KUBEVIRT_PSA
-          value: "true"
         - name: TARGET
           value: k8s-1.26-centos9-sig-storage
         - name: FEATURE_GATES
