@@ -65,20 +65,16 @@ func (t *KubeVirtUploader) Review() BotReviewResult {
 
 	for _, fileDiff := range t.relevantFileDiffs {
 		fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
-		var matcher *regexp.Regexp
 		switch fileName {
 		case "WORKSPACE":
-			matcher = kubevirtUploaderMatcher
-		default:
-			// no checks since we can't do anything reasonable here
-			continue
-		}
-		if matcher != nil {
 			for _, hunk := range fileDiff.Hunks {
-				if !matcher.Match(hunk.Body) {
+				if !kubevirtUploaderMatcher.Match(hunk.Body) {
 					result.AddReviewFailure(fileDiff.NewName, hunk)
 				}
 			}
+		default:
+			// no checks since we can't do anything reasonable here
+			continue
 		}
 	}
 

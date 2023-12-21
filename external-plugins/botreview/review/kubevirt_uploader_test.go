@@ -92,13 +92,11 @@ func TestKubeVirtUploader_Review(t1 *testing.T) {
 				relevantFileDiffs: []*diff.FileDiff{
 					diffFilePathsToDiffs["testdata/kubevirt/uploader/uploader-autoupdate.patch00"],
 					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch00"],
-					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch01"],
-					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch02"],
-					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch03"],
-					diffFilePathsToDiffs["testdata/kubevirt/fix-containerdisks-migration/fix-containerdisks-migrations.patch04"],
 				},
 			},
-			want: newReviewResultWithData(kubevirtUploaderApproveComment, kubevirtUploaderDisapproveComment, map[string][]*diff.Hunk{}, ""),
+			want: newReviewResultWithData(kubevirtUploaderApproveComment, kubevirtUploaderDisapproveComment, map[string][]*diff.Hunk{
+				"api/openapi-spec/swagger.json": nil,
+			}, ""),
 		},
 		{
 			name: "non kubevirt upload",
