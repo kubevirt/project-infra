@@ -326,6 +326,53 @@ Holding this PR because:
 			},
 		},
 		{
+			name:   "one review without hunks, not approved",
+			fields: newFields(),
+			args: args{
+				githubClient: newGHReviewClient(),
+				botReviewResults: []BotReviewResult{
+					newReviewResultWithData(
+						"approved",
+						"disapproved",
+						map[string][]*diff.Hunk{
+							"test": nil,
+							"blah": nil,
+						},
+						"should not get merged at all reason",
+					),
+				},
+			},
+			wantErr: false,
+			wantReviewComments: []*FakeComment{
+				{
+					Org:    "",
+					Repo:   "",
+					Number: 0,
+					Comment: `@pr-reviewer's review-bot says:
+
+disapproved
+
+<details>
+
+_test_
+_blah_
+
+</details>
+
+
+This PR does not satisfy at least one automated review criteria.
+
+Holding this PR because:
+* should not get merged at all reason
+
+/hold
+
+**Note: botreview (kubevirt/project-infra#3100) is a Work In Progress!**
+`,
+				},
+			},
+		},
+		{
 			name:   "two reviews not approved",
 			fields: newFields(),
 			args: args{
