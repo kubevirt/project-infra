@@ -157,3 +157,38 @@ func TestKubeVirtUploader_Review(t1 *testing.T) {
 		})
 	}
 }
+
+func Test_matchesKubeVirtUploaderPattern(t *testing.T) {
+	type args struct {
+		hunk *diff.Hunk
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "builddeps 1",
+			args: args{
+				hunk: &diff.Hunk{
+					Body: []byte(`     urls = [
+         "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.42.0/rules_go-v0.42.0.zip",
+         "https://github.com/bazelbuild/rules_go/releases/download/v0.42.0/rules_go-v0.42.0.zip",
++        "https://storage.googleapis.com/builddeps/91585017debb61982f7054c9688857a2ad1fd823fc3f9cb05048b0025c47d023",
+     ],
+ )
+ 
+`),
+				},
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := matchesKubeVirtUploaderPattern(tt.args.hunk); got != tt.want {
+				t.Errorf("matchesKubeVirtUploaderPattern() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

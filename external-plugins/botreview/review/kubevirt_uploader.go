@@ -34,7 +34,7 @@ const (
 var kubevirtUploaderMatcher *regexp.Regexp
 
 func init() {
-	kubevirtUploaderMatcher = regexp.MustCompile(`(?m)^\s+"http:\S+$\n^\+\s+"https://storage.googleapis.com/builddeps\S+$`)
+	kubevirtUploaderMatcher = regexp.MustCompile(`(?m)^\+\s+"https://storage.googleapis.com/builddeps/\S+$`)
 }
 
 type KubeVirtUploader struct {
@@ -68,7 +68,7 @@ func (t *KubeVirtUploader) Review() BotReviewResult {
 		switch fileName {
 		case "WORKSPACE":
 			for _, hunk := range fileDiff.Hunks {
-				if !kubevirtUploaderMatcher.Match(hunk.Body) {
+				if !matchesKubeVirtUploaderPattern(hunk) {
 					result.AddReviewFailure(fileDiff.NewName, hunk)
 				}
 			}
@@ -83,6 +83,10 @@ func (t *KubeVirtUploader) Review() BotReviewResult {
 	}
 
 	return result
+}
+
+func matchesKubeVirtUploaderPattern(hunk *diff.Hunk) bool {
+	return kubevirtUploaderMatcher.Match(hunk.Body)
 }
 
 func (t *KubeVirtUploader) String() string {
