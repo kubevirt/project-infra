@@ -596,56 +596,6 @@ postsubmits:
               memory: "8Gi"
             limits:
               memory: "8Gi"
-    - name: post-project-infra-prometheus-stack-deployment
-      always_run: false
-      annotations:
-        testgrid-create-test-group: "false"
-      decorate: true
-      run_if_changed: "github/ci/services/prometheus-stack.*"
-      branches:
-      - ^main$
-      labels:
-        preset-docker-mirror-proxy: "true"
-        preset-github-credentials: "true"
-        preset-pgp-bot-key: "true"
-      cluster: kubevirt-prow-control-plane
-      spec:
-        securityContext:
-          runAsUser: 0
-        containers:
-        - image: quay.io/kubevirtci/bootstrap:v20231115-51a244f
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/bash"
-            - "-c"
-            - |
-              # install yq
-              curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
-              chmod +x ./yq && mv ./yq /usr/local/bin/yq
-
-              source ./hack/manage-secrets.sh
-              decrypt_secrets
-
-              extract_secret 'kubeconfig' ~/.kube/config
-              extract_secret 'grafanaUser' ./github/ci/services/prometheus-stack/secrets/production-control-plane/grafana/admin-user
-              extract_secret 'grafanaPassword' ./github/ci/services/prometheus-stack/secrets/production-control-plane/grafana/admin-password
-              extract_secret 'grafanaLDAPTOML' ./github/ci/services/prometheus-stack/secrets/production-control-plane/grafana/ldap-toml
-              extract_secret 'thanosObjstoreConfig' ./github/ci/services/prometheus-stack/secrets/production-control-plane/thanos-objstore-config/thanos.yaml
-              extract_secret 'thanosObjstoreConfig' ./github/ci/services/prometheus-stack/secrets/production-e2e-workloads/thanos-objstore-config/thanos.yaml
-              extract_secret 'alertmanager.slack.apiURL' ./github/ci/services/prometheus-stack/secrets/production-control-plane/slack-config/apiURL
-              extract_secret 'alertmanager.slack.apiURL' ./github/ci/services/prometheus-stack/secrets/production-e2e-workloads/slack-config/apiURL
-
-              ./github/ci/services/prometheus-stack/hack/deploy.sh production-control-plane
-
-              extract_secret 'kubeconfigPerf' ~/.kube/config
-              extract_secret 'grafanaUserPerf' ./github/ci/services/prometheus-stack/secrets/production-performance-workloads/grafana/admin-user
-              extract_secret 'grafanaPasswordPerf' ./github/ci/services/prometheus-stack/secrets/production-performance-workloads/grafana/admin-password
-              ./github/ci/services/prometheus-stack/hack/deploy.sh production-performance-workloads
-          resources:
-            requests:
-              memory: "8Gi"
-            limits:
-              memory: "8Gi"
     - name: post-project-infra-update-testgrid-config
       run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$|^github/ci/testgrid/gen-config\.yaml$|^github/ci/testgrid/default\.yaml$'
       branches:
