@@ -376,9 +376,7 @@ branch-protection:
             main:
               protect: true
         common-instancetypes:
-          branches:
-            main:
-              protect: true
+          protect: true
         common-templates:
           branches:
             master:
