@@ -90,7 +90,7 @@ presubmits:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
-          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with Fedora"'
+          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Fedora"'
         image: quay.io/kubevirtci/golang:v20231115-51a244f
         name: ""
         resources:
@@ -129,7 +129,7 @@ presubmits:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
-          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with CentOS 7"'
+          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS 7"'
         image: quay.io/kubevirtci/golang:v20231115-51a244f
         name: ""
         resources:
@@ -168,7 +168,7 @@ presubmits:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
-          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with CentOS Stream 8"'
+          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS Stream 8"'
         image: quay.io/kubevirtci/golang:v20231115-51a244f
         name: ""
         resources:
@@ -207,7 +207,7 @@ presubmits:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
-          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with CentOS Stream 9"'
+          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS Stream 9"'
         image: quay.io/kubevirtci/golang:v20231115-51a244f
         name: ""
         resources:
@@ -246,7 +246,7 @@ presubmits:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
-          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with Ubuntu"'
+          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Ubuntu"'
         image: quay.io/kubevirtci/golang:v20231115-51a244f
         name: ""
         resources:
@@ -288,7 +288,7 @@ presubmits:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
-          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Windows guest with Validation OS"'
+          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Windows guest with .*Validation OS"'
         image: quay.io/kubevirtci/golang:v20231115-51a244f
         name: ""
         resources:
