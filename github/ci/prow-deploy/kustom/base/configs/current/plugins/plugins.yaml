@@ -701,3 +701,7 @@ label:
     - allowed_teams:
       - kubevirtkubevirt-label
       label: good-first-issue
+    'kubevirt/project-infra':
+    - allowed_teams:
+      - kubevirtproject-infra-label
+      label: good-first-issue
