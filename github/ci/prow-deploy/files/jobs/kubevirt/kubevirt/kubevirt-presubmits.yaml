@@ -1361,8 +1361,11 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - automation/test.sh
+        - |
+          automation/test.sh
         env:
+        - name: KUBEVIRT_E2E_FOCUS
+          value: test_id:4134
         - name: TARGET
           value: k8s-1.26-centos9-sig-network
         - name: KUBEVIRT_PSA
