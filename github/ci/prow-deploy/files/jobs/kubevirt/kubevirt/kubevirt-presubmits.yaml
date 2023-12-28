@@ -1362,10 +1362,13 @@ presubmits:
         - /bin/sh
         - -c
         - |
+          curl -L https://github.com/kubevirt/kubevirt/pull/10928.patch | git apply
           automation/test.sh
         env:
-        - name: KUBEVIRT_E2E_FOCUS
-          value: test_id:4134
+        #- name: KUBEVIRT_E2E_FOCUS
+        #  value: test_id:4134
+        - name: KUBEVIRT_LABEL_FILTER
+          value: (test_cid:1234)
         - name: TARGET
           value: k8s-1.26-centos9-sig-network
         - name: KUBEVIRT_PSA
