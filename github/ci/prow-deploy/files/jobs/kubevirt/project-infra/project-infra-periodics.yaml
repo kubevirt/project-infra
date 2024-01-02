@@ -321,6 +321,35 @@ periodics:
         resources:
           requests:
             memory: "200Mi"
+- name: periodic-bump-crio-mirror-versions
+  interval: 24h
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    workdir: true
+  cluster: kubevirt-prow-control-plane
+  spec:
+    securityContext:
+      runAsUser: 0
+    containers:
+      - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - git-pr.sh -c "./hack/bump-crio-mirror-versions.sh" -p ./ -r project-infra -b crio-version-bump -T main
+        resources:
+          requests:
+            memory: "200Mi"
 - name: periodic-kubevirtci-cluster-unsupported-version-remover
   cron: "30 3 * * *"
   max_concurrency: 1
