@@ -24,7 +24,6 @@ periodics:
           label:lgtm label:approved
           status:failure
           -label:needs-rebase
-          -label:needs-ok-to-test
           repo:kubevirt/kubevirt
           repo:kubevirt/kubevirtci
       - --token=/etc/github/oauth
