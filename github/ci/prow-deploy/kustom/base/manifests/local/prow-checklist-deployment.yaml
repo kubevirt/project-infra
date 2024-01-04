@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checklist
+  labels:
+    app: checklist
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prow-checklist
+  template:
+    metadata:
+      labels:
+        app: prow-checklist
+    spec:
+      terminationGracePeriodSeconds: 180
+      containers:
+        - name: checklist
+          image: quay.io/kubevirtci/checklist:v20240104-c6defacb
+          imagePullPolicy: IfNotPresent
+          args:
+            - --github-token-path=/etc/github/oauth
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
+          ports:
+            - name: http
+              containerPort: 9900
+          volumeMounts:
+            - name: hmac
+              mountPath: /etc/webhook
+              readOnly: true
+            - name: oauth
+              mountPath: /etc/github
+              readOnly: true
+            - name: plugins
+              mountPath: /etc/plugins
+              readOnly: true
+            - name: cache
+              mountPath: /var/run/cache
+              readOnly: false
+      volumes:
+        - name: hmac
+          secret:
+            secretName: hmac-token
+        - name: oauth
+          secret:
+            secretName: oauth-token
+        - name: plugins
+          configMap:
+            name: plugins
+        - name: cache
+          emptyDir: {}

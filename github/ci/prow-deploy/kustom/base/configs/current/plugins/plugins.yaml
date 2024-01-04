@@ -528,6 +528,10 @@ external_plugins:
     endpoint: http://botreview:9900
     events:
       - pull_request
+  - name: checklist
+    endpoint: http://prow-checklist:9900
+    events:
+      - pull_request
 
 triggers:
 - repos:
