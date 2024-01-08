@@ -1,9 +1,9 @@
 presubmits:
   kubevirt/managed-tenant-quota:
-  - name: pull-mtq-unit-test-1.1
+  - name: pull-mtq-unit-test-1.2
     context: pull-mtq-unit-test
     branches:
-      - release-v1.1
+      - release-v1.2
     cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
@@ -16,7 +16,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+        - image: quay.io/kubevirtci/bootstrap:v20231219-bf5e580
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -28,10 +28,10 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-mtq-generate-verify-1.1
+  - name: pull-mtq-generate-verify-1.2
     context: pull-mtq-generate-verify
     branches:
-      - release-v1.1
+      - release-v1.2
     cluster: kubevirt-prow-control-plane
     always_run: true
     optional: true
@@ -45,7 +45,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+        - image: quay.io/kubevirtci/bootstrap:v20231219-bf5e580
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -57,10 +57,10 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-mtq-functest-latest-stable-kubevirt-1.1
+  - name: pull-mtq-functest-latest-stable-kubevirt-1.2
     context: pull-mtq-functest-latest-stable-kubevirt
     branches:
-      - release-v1.1
+      - release-v1.2
     always_run: true
     optional: false
     decorate: true
@@ -77,7 +77,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20230626-e1b7af2
+        - image: quay.io/kubevirtci/bootstrap:v20231219-bf5e580
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -85,7 +85,7 @@ presubmits:
             - "automation/test.sh"
           env:
             - name: KUBEVIRT_RELEASE
-              value: v1.0.1
+              value: v1.1.1
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
