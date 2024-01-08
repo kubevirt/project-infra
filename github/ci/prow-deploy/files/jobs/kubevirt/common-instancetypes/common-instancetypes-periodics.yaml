@@ -1,5 +1,5 @@
 periodics:
-  - name: update-common-instancetypes-bundles
+  - name: periodic-update-common-instancetypes-bundles
     cron: 0 2 * * *
     annotations:
       testgrid-create-test-group: "false"
@@ -7,7 +7,7 @@ periodics:
     decoration_config:
       timeout: 1h
     max_concurrency: 1
-    cluster: kubevirt-prow-workloads
+    cluster: kubevirt-prow-control-plane
     extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -25,8 +25,6 @@ periodics:
         args:
         - |
           kv_dir=$(cd ../kubevirt && pwd)
-          kv_it_path="${kv_dir}/pkg/virt-operator/resource/generate/components/data/common-clusterinstancetypes-bundle.yaml"
-          kv_pref_path="${kv_dir}/pkg/virt-operator/resource/generate/components/data/common-clusterpreferences-bundle.yaml"
 
           ssp_dir=$(cd ../ssp-operator && pwd)
           ssp_it_path="${ssp_dir}/data/common-instancetypes-bundle/common-clusterinstancetypes-bundle.yaml"
@@ -39,7 +37,7 @@ periodics:
 
           export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
           description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
-          git-pr.sh -c "curl -L ${it_url} -o ${kv_it_path} && curl -L ${pref_url} -o ${kv_pref_path}" -p "${kv_dir}" -d "echo -e \"${description}\"" -r kubevirt -b update-common-instancetypes -T main
+          git-pr.sh -c "cd ${kv_dir} && hack/bump-common-instancetypes.sh" -d "echo -e \"${description}\"" -r kubevirt -b update-common-instancetypes -T main
           git-pr.sh -c "curl -L ${it_url} -o ${ssp_it_path} && curl -L ${pref_url} -o ${ssp_pref_path}" -p "${ssp_dir}" -d "echo -e \"${description}\"" -r ssp-operator -b update-common-instancetypes -T main
         resources:
           requests:
