@@ -28,15 +28,12 @@ import (
 
 const (
 	prowJobImageUpdateApproveComment    = `:thumbsup: This looks like a simple prow job image bump.`
-	prowJobImageUpdateDisapproveComment = `:thumbsdown: This doesn't look like a simple prow job image bump.
-
-I found suspicious hunks:
-`
+	prowJobImageUpdateDisapproveComment = `:thumbsdown: This doesn't look like a simple prow job image bump.`
 )
 
 var (
 	prowJobImageUpdateLineMatcher       = regexp.MustCompile(`(?m)^\+\s+- image: \S+$`)
-	prowJobImageUpdateHunkBodyMatcher   = regexp.MustCompile(`(?m)^(-\s+- image: \S+$\n^\+\s+- image: \S+|-\s+image: \S+$\n^\+\s+image: \S+)$`)
+	prowJobImageUpdateHunkBodyMatcher   = regexp.MustCompile(`(?m)^(-\s+- image:\s+\S+$\n^\+\s+- image:\s+\S+|-\s+image:\s+\S+$\n^\+\s+image:\s+\S+)$`)
 	prowJobReleaseBranchFileNameMatcher = regexp.MustCompile(`.*/[\w-]+-[0-9-.]+\.yaml`)
 )
 
@@ -86,13 +83,17 @@ func (t *ProwJobImageUpdate) Review() BotReviewResult {
 	for _, fileDiff := range t.relevantFileDiffs {
 		fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
 		for _, hunk := range fileDiff.Hunks {
-			if !prowJobImageUpdateHunkBodyMatcher.Match(hunk.Body) {
+			if !t.hunkMatches(hunk) {
 				result.AddReviewFailure(fileName, hunk)
 			}
 		}
 	}
 
 	return result
+}
+
+func (t *ProwJobImageUpdate) hunkMatches(hunk *diff.Hunk) bool {
+	return prowJobImageUpdateHunkBodyMatcher.Match(hunk.Body)
 }
 
 func (t *ProwJobImageUpdate) String() string {

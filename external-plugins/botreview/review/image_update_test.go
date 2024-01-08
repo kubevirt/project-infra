@@ -161,3 +161,105 @@ func TestProwJobImageUpdate_AddIfRelevant(t1 *testing.T) {
 		})
 	}
 }
+
+func TestProwJobImageUpdate_hunkMatches(t1 *testing.T) {
+	type fields struct {
+		relevantFileDiffs []*diff.FileDiff
+		notMatchingHunks  []*diff.Hunk
+	}
+	type args struct {
+		hunk *diff.Hunk
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   bool
+	}{
+		{
+			name:   "image update 1",
+			fields: fields{},
+			args: args{
+				hunk: &diff.Hunk{
+					Body: []byte(`       nodeSelector:
+         type: bare-metal-external
+       containers:
+-        - image:  quay.io/kubevirtci/bootstrap:v20231115-51a244f
++        - image:  quay.io/kubevirtci/bootstrap:v20231219-bf5e580
+           command:
+             - "/usr/local/bin/runner.sh"
+             - "/bin/sh"
+`),
+				},
+			},
+			want: true,
+		},
+		{
+			name:   "image update 2",
+			fields: fields{},
+			args: args{
+				hunk: &diff.Hunk{
+					Body: []byte(`       cluster: prow-workloads
+       spec:
+         containers:
+-          - image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
++          - image: quay.io/kubevirtci/bootstrap:v20220110-c066ff5
+             command:
+               - "/usr/local/bin/runner.sh"
+               - "/bin/bash"
+`),
+				},
+			},
+			want: true,
+		},
+		{
+			name:   "image update 3",
+			fields: fields{},
+			args: args{
+				hunk: &diff.Hunk{
+					Body: []byte(`         nodeSelector:
+           type: bare-metal-external
+         containers:
+-          - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
++          - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20210419-444033d
+             securityContext:
+               privileged: true
+             resources:
+`),
+				},
+			},
+			want: true,
+		},
+		{
+			name:   "mixed update 1",
+			fields: fields{},
+			args: args{
+				hunk: &diff.Hunk{
+					Body: []byte(`         - automation/test.sh
+         env:
+         - name: TARGET
+-          value: k8s-1.21-sig-network
+-        image: quay.io/kubevirtci/bootstrap:v20220602-ac34bf7
++          value: k8s-1.21-sig-storage
++        image: quay.io/kubevirtci/bootstrap:v20999999-eeff777
+         name: ""
+         resources:
+           requests:
+`),
+				},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t1.Run(tt.name, func(t1 *testing.T) {
+			t := &ProwJobImageUpdate{
+				relevantFileDiffs: tt.fields.relevantFileDiffs,
+				notMatchingHunks:  tt.fields.notMatchingHunks,
+			}
+			if got := t.hunkMatches(tt.args.hunk); got != tt.want {
+				t1.Errorf("hunkMatches() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -27,11 +27,8 @@ import (
 )
 
 const (
-	prowAutobumpApproveComment    = `:thumbsup: This looks like a simple prow autobump.`
-	prowAutobumpDisapproveComment = `:thumbsdown: This doesn't look like a simple prow autobump.
-
-I found suspicious hunks:
-`
+	prowAutobumpApproveComment       = `:thumbsup: This looks like a simple prow autobump.`
+	prowAutobumpDisapproveComment    = `:thumbsdown: This doesn't look like a simple prow autobump.`
 	prowAutoBumpShouldNotMergeReason = "prow update should be merged at a point in time where it doesn't interfere with normal CI usage"
 )
 

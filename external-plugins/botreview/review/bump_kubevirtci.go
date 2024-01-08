@@ -28,10 +28,7 @@ import (
 
 const (
 	bumpKubevirtCIApproveComment    = `:thumbsup: This looks like a simple kubevirtci bump.`
-	bumpKubevirtCIDisapproveComment = `:thumbsdown: This doesn't look like a simple kubevirtci bump.
-
-I found suspicious hunks:
-`
+	bumpKubevirtCIDisapproveComment = `:thumbsdown: This doesn't look like a simple kubevirtci bump.`
 )
 
 var bumpKubevirtCIHackConfigDefaultMatcher *regexp.Regexp
@@ -46,7 +43,7 @@ func init() {
 
 type BumpKubevirtCI struct {
 	relevantFileDiffs []*diff.FileDiff
-	unwantedFiles     map[string][]*diff.Hunk
+	unwantedFiles     map[string]struct{}
 }
 
 func (t *BumpKubevirtCI) IsRelevant() bool {
@@ -56,25 +53,23 @@ func (t *BumpKubevirtCI) IsRelevant() bool {
 func (t *BumpKubevirtCI) AddIfRelevant(fileDiff *diff.FileDiff) {
 	fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
 
-	// store all hunks for unwanted files
-	if fileName != "cluster-up-sha.txt" &&
-		fileName != "hack/config-default.sh" &&
-		!strings.HasPrefix(fileName, "cluster-up/") {
-		for _, hunk := range fileDiff.Hunks {
-			if t.unwantedFiles == nil {
-				t.unwantedFiles = make(map[string][]*diff.Hunk, 0)
-			}
-			_, exists := t.unwantedFiles[fileName]
-			if !exists {
-				t.unwantedFiles[fileName] = []*diff.Hunk{hunk}
-			} else {
-				t.unwantedFiles[fileName] = append(t.unwantedFiles[fileName], hunk)
-			}
-		}
+	// handle deleted files
+	wasDeleted := fileName == "/dev/null"
+	if wasDeleted {
+		fileName = strings.TrimPrefix(fileDiff.OrigName, "a/")
+	}
+
+	if fileName == "cluster-up-sha.txt" ||
+		fileName == "hack/config-default.sh" ||
+		strings.HasPrefix(fileName, "cluster-up/") {
+		t.relevantFileDiffs = append(t.relevantFileDiffs, fileDiff)
 		return
 	}
 
-	t.relevantFileDiffs = append(t.relevantFileDiffs, fileDiff)
+	if t.unwantedFiles == nil {
+		t.unwantedFiles = make(map[string]struct{})
+	}
+	t.unwantedFiles[fileName] = struct{}{}
 }
 
 func (t *BumpKubevirtCI) Review() BotReviewResult {
@@ -103,8 +98,8 @@ func (t *BumpKubevirtCI) Review() BotReviewResult {
 		}
 	}
 
-	for fileName, unwantedFiles := range t.unwantedFiles {
-		result.AddReviewFailure(fileName, unwantedFiles...)
+	for fileName := range t.unwantedFiles {
+		result.AddReviewFailure(fileName)
 	}
 
 	return result
