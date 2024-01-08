@@ -1,5 +1,5 @@
 periodics:
-  - name: update-common-instancetypes-bundles
+  - name: periodic-update-common-instancetypes-bundles
     cron: 0 2 * * *
     annotations:
       testgrid-create-test-group: "false"
@@ -7,7 +7,7 @@ periodics:
     decoration_config:
       timeout: 1h
     max_concurrency: 1
-    cluster: kubevirt-prow-workloads
+    cluster: kubevirt-prow-control-plane
     extra_refs:
     - org: kubevirt
       repo: kubevirt
