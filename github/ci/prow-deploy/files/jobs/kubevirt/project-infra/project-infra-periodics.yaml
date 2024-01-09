@@ -562,7 +562,8 @@ periodics:
         command: [ "/bin/sh" , "-c" ]
         args:
           - |
-            git-pr.sh -c "bazel run //robots/cmd/kubevirt require presubmits -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b require-kubevirt-presubmits -T main
+            git-pr.sh -c "bazel run //robots/cmd/kubevirt require presubmits -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false && bazel run //robots/cmd/kubevirt remove always_run -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b require-kubevirt-presubmits -T main -s 'Enable e2e lanes for latest kubernetes version' -B $'Enable lanes for latest kubernetes version and disable lanes with unsupported version\n\n/cc @kubevirt/prow-job-taskforce'
+            
         resources:
           requests:
             memory: "200Mi"
