@@ -44,6 +44,7 @@ RUN dnf install -y \
     make \
     mercurial \
     patch \
+    procps-ng \
     protobuf-compiler \
     python3-devel \
     python-unversioned-command \
