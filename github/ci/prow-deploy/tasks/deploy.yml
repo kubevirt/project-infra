@@ -56,7 +56,7 @@
       --config-path=$PROW_CONFIG_PATH \
       --github-token-path=$GITHUB_TOKEN_PATH \
       --kubeconfig=$KUBECONFIG \
-      --kubeconfig-context=ibm-prow-jobs \
+      --kubeconfig-context=kubevirt-prow-control-plane \
       --hmac-token-secret-namespace={{ prowNamespace }} \
       --hmac-token-secret-name=hmac-token \
       --hmac-token-key=hmac \
