@@ -629,37 +629,6 @@ periodics:
         requests:
           memory: "200Mi"
 
-- name: periodic-kubevirt-job-always-run-disabler
-  cron: "45 0 * * *"
-  max_concurrency: 1
-  annotations:
-    testgrid-create-test-group: "false"
-  labels:
-    preset-github-credentials: "true"
-  decorate: true
-  decoration_config:
-    timeout: 1h
-    grace_period: 5m
-  extra_refs:
-  - org: kubevirt
-    repo: project-infra
-    base_ref: main
-    workdir: true
-  cluster: kubevirt-prow-control-plane
-  spec:
-    securityContext:
-      runAsUser: 0
-    containers:
-    - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
-      env:
-      command: [ "/bin/sh" , "-c" ]
-      args:
-      - |
-        git-pr.sh -c "bazel run //robots/cmd/kubevirt remove always_run -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b disable-kubevirt-jobs -T main
-      resources:
-        requests:
-          memory: "200Mi"
-
 - name: periodic-project-infra-mirror-istioctl
   cron: "25 1 * * 1"
   decorate: true
