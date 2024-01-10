@@ -21,7 +21,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.19"
-        image: quay.io/kubevirtci/golang:v20231219-bf5e580
+        image: quay.io/kubevirtci/golang:v20240109-6e61e3b
         name: ""
         resources:
           requests:
@@ -47,7 +47,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.19"
-        image: quay.io/kubevirtci/golang:v20231219-bf5e580
+        image: quay.io/kubevirtci/golang:v20240109-6e61e3b
         name: ""
         resources:
           requests:
@@ -78,7 +78,7 @@ presubmits:
           value: "1.19"
         - name: FOCUS
           value: "cirros:*"
-        image: quay.io/kubevirtci/golang:v20231219-bf5e580
+        image: quay.io/kubevirtci/golang:v20240109-6e61e3b
         name: ""
         resources:
           requests:
@@ -113,7 +113,7 @@ presubmits:
           value: "1.19"
         - name: FOCUS
           value: "centos:*"
-        image: quay.io/kubevirtci/golang:v20231219-bf5e580
+        image: quay.io/kubevirtci/golang:v20240109-6e61e3b
         name: ""
         resources:
           requests:
@@ -148,7 +148,7 @@ presubmits:
           value: "1.19"
         - name: FOCUS
           value: "centos-stream:*"
-        image: quay.io/kubevirtci/golang:v20231219-bf5e580
+        image: quay.io/kubevirtci/golang:v20240109-6e61e3b
         name: ""
         resources:
           requests:
@@ -183,7 +183,7 @@ presubmits:
           value: "1.19"
         - name: FOCUS
           value: "fedora:*"
-        image: quay.io/kubevirtci/golang:v20231219-bf5e580
+        image: quay.io/kubevirtci/golang:v20240109-6e61e3b
         name: ""
         resources:
           requests:
@@ -218,7 +218,7 @@ presubmits:
           value: "1.19"
         - name: FOCUS
           value: "rhcos:*"
-        image: quay.io/kubevirtci/golang:v20231219-bf5e580
+        image: quay.io/kubevirtci/golang:v20240109-6e61e3b
         name: ""
         resources:
           requests:
@@ -253,7 +253,7 @@ presubmits:
           value: "1.19"
         - name: FOCUS
           value: "ubuntu:*"
-        image: quay.io/kubevirtci/golang:v20231219-bf5e580
+        image: quay.io/kubevirtci/golang:v20240109-6e61e3b
         name: ""
         resources:
           requests:
