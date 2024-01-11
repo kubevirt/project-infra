@@ -95,3 +95,29 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
+- name: periodic-kubevirtci-bump-centos-version
+  cron: "50 1 * * 0"
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+  max_concurrency: 1
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirtci
+    base_ref: main
+    workdir: true
+  labels:
+    preset-docker-mirror: "true"
+    preset-github-credentials: "true"
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
+      command: ["/bin/sh", "-c"]
+      args:
+      - GIT_ASKPASS=/usr/local/bin/git-askpass.sh git-pr.sh -c "./hack/bump-centos-version.sh" -r kubevirtci -b bump-centos-version -T main -p $(pwd)
+      resources:
+        requests:
+          memory: "200Mi"
