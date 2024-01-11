@@ -998,6 +998,13 @@ orgs:
          - vasiliy-ul
          - acardace
          - alicefr
+      kubevirtproject-infra-label:
+        description: "Users who can apply restricted labels to any issue inside the kubevirt/project-infra repo"
+        members:
+         - dhiller
+         - brianmcarey
+         - enp0s3
+         - xpivarc
       sig-scale:
         description: members of the scale and performance group
         members:
