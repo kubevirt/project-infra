@@ -2202,3 +2202,45 @@ periodics:
         privileged: true
     nodeSelector:
       type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+  cluster: kubevirt-prow-workloads
+  cron: 25 1,7,13,19 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 8h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-docker-mirror-proxy: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  max_concurrency: 2
+  name: periodic-kubevirt-check-tests-for-flakes
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/sharded_repeated_test.sh
+      env:
+      - name: KUBEVIRT_E2E_PARALLEL
+        value: "true"
+      - name: KUBEVIRT_MEMORY_SIZE
+        value: 9216M
+      - name: KUBEVIRT_PSA
+        value: "true"
+      image: quay.io/kubevirtci/bootstrap:v20231219-bf5e580
+      name: ""
+      resources:
+        requests:
+          memory: 29Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
