@@ -73,7 +73,7 @@ func (o *options) Validate() error {
 
 func gatherOptions() options {
 	o := options{}
-	flag.IntVar(&o.logLevel, "V", int(log.WarnLevel), "log level from logrus")
+	flag.IntVar(&o.logLevel, "log-level", int(log.WarnLevel), "log level from logrus, see https://pkg.go.dev/github.com/sirupsen/logrus@v1.8.1#WarnLevel")
 	flag.StringVar(&o.org, "org", "", "The project org")
 	flag.StringVar(&o.repo, "repo", "", "The project repo")
 	flag.BoolVar(&o.dryRun, "dry-run", true, "Should this be a dry run")
@@ -90,13 +90,14 @@ func main() {
 		log.Fatalf("Invalid options: %v", err)
 	}
 
-	log.SetFormatter(&log.JSONFormatter{})
-	log.SetLevel(log.Level(o.logLevel))
+	logger := log.New()
+	logger.SetFormatter(&log.JSONFormatter{})
+	logger.SetLevel(log.Level(o.logLevel))
 
-	logger := log.StandardLogger().WithField("app", "feature-announce")
+	logEntry := logger.WithField("app", "feature-announce")
 
 	if err := secret.Add(o.githubTokenFile); err != nil {
-		logger.WithError(err).Fatal("error starting secrets agent")
+		logEntry.WithError(err).Fatal("error starting secrets agent")
 	}
 
 	ctx := context.Background()
@@ -108,18 +109,18 @@ func main() {
 
 	gitCli := gitCommandLine{
 		directory: o.repositoryPath,
-		logger:    logger,
+		logger:    logEntry,
 	}
 	announcer := featureAnnouncer{
 		githubClient: githubClient,
 		gitCli:       gitCli,
 		options:      o,
-		logger:       logger,
+		logger:       logEntry,
 	}
 
 	err := announcer.generateUpcomingChangesAnnouncement()
 	if err != nil {
-		logger.WithError(err).Fatalf("failed to create announcement")
+		logEntry.WithError(err).Fatalf("failed to create announcement")
 	}
 }
 
