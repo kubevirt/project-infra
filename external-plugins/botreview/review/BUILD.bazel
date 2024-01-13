@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "bump_kubevirtci.go",
         "image_update.go",
+        "kubevirt_uploader.go",
         "prow_autobump.go",
         "result.go",
         "review.go",
@@ -24,6 +25,7 @@ go_test(
     srcs = [
         "bump_kubevirtci_test.go",
         "image_update_test.go",
+        "kubevirt_uploader_test.go",
         "prow_autobump_test.go",
         "result_test.go",
         "review_test.go",
