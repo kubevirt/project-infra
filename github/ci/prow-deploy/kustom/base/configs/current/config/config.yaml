@@ -270,6 +270,8 @@ branch-protection:
         kubevirt:
           protect: true
           branches:
+            main:
+              require_manually_triggered_jobs: true
             release-0.33:
               required_status_checks:
                 contexts:

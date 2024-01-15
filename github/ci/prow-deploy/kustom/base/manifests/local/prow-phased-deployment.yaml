@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phased
+  labels:
+    app: phased
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prow-phased
+  template:
+    metadata:
+      labels:
+        app: prow-phased
+    spec:
+      terminationGracePeriodSeconds: 180
+      containers:
+        - name: phased
+          image: quay.io/kubevirtci/phased:v20240115-b04789a7
+          imagePullPolicy: IfNotPresent
+          args:
+            - --github-token-path=/etc/github/oauth
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
+            - --cache-dir=/var/run/cache
+            - --jobs-config-base=github/ci/prow-deploy/files/jobs
+            - --prow-config-path=github/ci/prow-deploy/kustom/base/configs/current/config/config.yaml
+            - --prow-location=https://raw.githubusercontent.com/kubevirt/project-infra/main
+          ports:
+            - name: http
+              containerPort: 9900
+          volumeMounts:
+            - name: hmac
+              mountPath: /etc/webhook
+              readOnly: true
+            - name: oauth
+              mountPath: /etc/github
+              readOnly: true
+            - name: plugins
+              mountPath: /etc/plugins
+              readOnly: true
+            - name: cache
+              mountPath: /var/run/cache
+              readOnly: false
+      volumes:
+        - name: hmac
+          secret:
+            secretName: hmac-token
+        - name: oauth
+          secret:
+            secretName: oauth-token
+        - name: plugins
+          configMap:
+            name: plugins
+        - name: cache
+          emptyDir: {}
