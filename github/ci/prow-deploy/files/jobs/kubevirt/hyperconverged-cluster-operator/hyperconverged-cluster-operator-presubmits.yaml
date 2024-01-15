@@ -1,42 +1,5 @@
 presubmits:
   kubevirt/hyperconverged-cluster-operator:
-  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.26-centos9
-    skip_branches:
-    - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
-    always_run: true
-    optional: false
-    decorate: true
-    decoration_config:
-      timeout: 7h
-      grace_period: 5m
-    max_concurrency: 6
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-podman-shared-images: "true"
-    cluster: kubevirt-prow-workloads
-    spec:
-      nodeSelector:
-        type: bare-metal-external
-      containers:
-      - image: quay.io/kubevirtci/golang:v20240109-6e61e3b
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-c"
-        - "export TARGET=k8s-1.26-centos9 && automation/test.sh"
-        env:
-          - name: GIMME_GO_VERSION
-            value: "1.21.1"
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "29Gi"
   - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.27
     skip_branches:
     - release-\d+\.\d+
@@ -67,13 +30,50 @@ presubmits:
         - "export TARGET=k8s-1.27 && automation/test.sh"
         env:
           - name: GIMME_GO_VERSION
-            value: "1.21.1"
+            value: "1.21.6"
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
         resources:
           requests:
             memory: "29Gi"
+  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.28
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 7h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-shared-images: "true"
+    cluster: kubevirt-prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20240109-6e61e3b
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "export TARGET=k8s-1.28 && automation/test.sh"
+          env:
+            - name: GIMME_GO_VERSION
+              value: "1.21.6"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "29Gi"
   - name: build-hco-test-utils-image
     always_run: false
     run_if_changed: "tests/build/.*"
