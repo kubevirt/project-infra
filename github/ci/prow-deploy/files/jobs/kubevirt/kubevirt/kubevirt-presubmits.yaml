@@ -1356,6 +1356,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.26-sig-network
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1399,6 +1400,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.26-sig-storage
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1482,6 +1484,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.26-sig-compute
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1573,6 +1576,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.26-sig-operator
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
