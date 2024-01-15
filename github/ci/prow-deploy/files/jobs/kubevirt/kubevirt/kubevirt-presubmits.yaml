@@ -903,7 +903,7 @@ presubmits:
       preset-shared-images: "true"
       rehearsal.allowed: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.26-sig-network-multus-v4
+    name: pull-kubevirt-e2e-k8s-1.29-sig-network-multus-v4
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -916,7 +916,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.26-centos9-sig-network
+          value: k8s-1.29-sig-network
         - name: KUBEVIRT_WITH_MULTUS_V3
           value: "false"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY

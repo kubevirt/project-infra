@@ -1127,7 +1127,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.26-sig-network-multus-v4
+  name: periodic-kubevirt-e2e-k8s-1.29-sig-network-multus-v4
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1150,7 +1150,7 @@ periodics:
       - name: KUBEVIRT_PSA
         value: "true"
       - name: TARGET
-        value: k8s-1.26-centos9-sig-network
+        value: k8s-1.29-sig-network
       image: quay.io/kubevirtci/bootstrap:v20240109-6e61e3b
       name: ""
       resources:
