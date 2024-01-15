@@ -528,6 +528,10 @@ external_plugins:
     endpoint: http://botreview:9900
     events:
       - pull_request
+  - name: specify
+    endpoint: http://prow-specify:9900
+    events:
+      - issue_comment
 
 triggers:
 - repos:
