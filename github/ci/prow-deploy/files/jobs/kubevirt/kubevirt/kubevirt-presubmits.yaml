@@ -128,6 +128,8 @@ presubmits:
         env:
         - name: TARGET
           value: windows2016
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20240109-6e61e3b
         name: ""
         resources:
