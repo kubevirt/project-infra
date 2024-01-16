@@ -9,9 +9,6 @@ roleRef:
 subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: User
-    name: rmohr@redhat.com
-  - apiGroup: rbac.authorization.k8s.io
-    kind: User
     name: dhiller@redhat.com
   - apiGroup: rbac.authorization.k8s.io
     kind: User
