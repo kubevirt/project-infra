@@ -75,8 +75,8 @@ load(
 container_pull(
     name = "infra-base",
     registry = "gcr.io",
-    repository = "k8s-testimages/bootstrap",
-    tag = "v20210913-fc7c4e8",
+    repository = "k8s-staging-test-infra/bootstrap",
+    tag = "v20240110-cc03552828",
 )
 
 container_pull(
