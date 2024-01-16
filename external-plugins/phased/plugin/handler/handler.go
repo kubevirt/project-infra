@@ -18,6 +18,8 @@ import (
 
 var log *logrus.Logger
 
+const Intro = "Required labels detected, running phase 2 presubmits:\n"
+
 func init() {
 	log = logrus.New()
 	log.SetOutput(os.Stdout)
@@ -276,6 +278,7 @@ func testRequested(ghClient githubClientInterface, pr github.PullRequest, reques
 	}
 
 	if result != "" {
+		result = Intro + result
 		if err := ghClient.CreateComment(org, repo, pr.Number, result); err != nil {
 			log.WithError(err).Errorf("CreateComment failed PR %d", pr.Number)
 			return err
