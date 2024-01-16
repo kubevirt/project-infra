@@ -40,7 +40,7 @@ postsubmits:
         preset-podman-in-container-enabled: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20231115-51a244f
+          - image: quay.io/kubevirtci/bootstrap:v20240109-6e61e3b
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
