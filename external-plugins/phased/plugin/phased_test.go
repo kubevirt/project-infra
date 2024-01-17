@@ -165,7 +165,9 @@ var _ = Describe("Phased", func() {
 
 					if tc.ExpectComment {
 						Expect(len(gh.IssueCommentsAdded)).To(Equal(1), "Expected github comment to be added")
-						Expect(gh.IssueCommentsAdded[0]).To(Equal(fmt.Sprintf("%s#%d:/test job_always_run_false\n", orgRepo, prNumber)))
+						Expect(gh.IssueCommentsAdded[0]).To(Equal(
+							fmt.Sprintf("%s#%d:%s/test job_always_run_false\n", orgRepo, prNumber,
+								handler.Intro)))
 					} else {
 						Expect(len(gh.IssueCommentsAdded)).To(Equal(0), "Expect no github comment to be added")
 					}
