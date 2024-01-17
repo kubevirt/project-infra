@@ -801,6 +801,7 @@ presubmits:
         securityContext:
           privileged: true
   - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
