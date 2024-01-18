@@ -1,0 +1,37 @@
+{{- /*
+
+    This file is part of the KubeVirt project
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+    Copyright the KubeVirt Authors.
+
+*/ -}}
+{{- /* gotype: kubevirt.io/project-infra/releng/feature-announce.UpcomingChangesAnnouncementData */ -}}
+---
+title: Noteworthy changes for the next KubeVirt release
+---
+
+# Noteworthy changes for the next KubeVirt release
+
+This list contains the noteworthy changes made after the latest KubeVirt release. The community expects these changes to be included in the next Kubevirt release.
+
+> [!WARNING]
+> **Please be aware that any of these might be excluded from the next release.**
+
+| Upcoming changes | PR                                                                   | Author                                          |
+|------------------|----------------------------------------------------------------------|-------------------------------------------------|
+{{ range $codeChange := $.UpcomingChanges }}| {{ $codeChange.ReleaseNote }}  | [#{{ $codeChange.PullRequestNumber }}](https://github.com/kubevirt/kubevirt/pull/{{ $codeChange.PullRequestNumber }}) | [{{ $codeChange.GitHubHandle }}](https://github.com/{{ $codeChange.GitHubHandle }}) |
+{{ end }}
+
+_This page is updated daily._
