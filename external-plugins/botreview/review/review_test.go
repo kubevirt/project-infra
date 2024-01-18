@@ -335,7 +335,6 @@ Holding this PR because:
 						"approved",
 						"disapproved",
 						map[string][]*diff.Hunk{
-							"test": nil,
 							"blah": nil,
 						},
 						"should not get merged at all reason",
@@ -354,7 +353,6 @@ disapproved
 
 <details>
 
-_test_
 _blah_
 
 </details>
