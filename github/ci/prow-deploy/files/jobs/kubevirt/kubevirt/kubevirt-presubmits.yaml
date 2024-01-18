@@ -544,6 +544,39 @@ presubmits:
             memory: 4Gi
         securityContext:
           privileged: true
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+    cluster: kubevirt-prow-control-plane
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    name: pull-kubevirt-build-s390x
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
+        env:
+        - name: BUILD_ARCH
+          value: crossbuild-s390x
+        image: quay.io/kubevirtci/bootstrap:v20240109-6e61e3b
+        name: ""
+        resources:
+          requests:
+            memory: 4Gi
+        securityContext:
+          privileged: true
   - always_run: true
     annotations:
       fork-per-release: "true"
