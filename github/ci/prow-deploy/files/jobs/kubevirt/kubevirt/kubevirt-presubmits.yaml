@@ -1,7 +1,6 @@
 presubmits:
   kubevirt/kubevirt:
   - always_run: false
-    optional: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -17,6 +16,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: pull-kubevirtci-bump-kubevirt
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -801,7 +801,6 @@ presubmits:
         securityContext:
           privileged: true
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1804,7 +1803,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    optional: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1822,6 +1820,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.27-sig-compute-realtime
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2113,7 +2112,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-network
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2157,7 +2155,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-storage
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2199,7 +2196,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-compute
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2245,7 +2241,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-operator
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
