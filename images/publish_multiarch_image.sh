@@ -1,5 +1,5 @@
 #!/bin/bash -xe
-archs=(amd64 arm64)
+archs=(amd64 arm64 s390x)
 
 main() {
     local build_only local_base_image

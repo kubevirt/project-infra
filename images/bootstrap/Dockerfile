@@ -24,6 +24,7 @@ ENV WORKSPACE=/workspace \
 # add env we can debug with the image name:tag
 ARG IMAGE_ARG
 ENV IMAGE=${IMAGE_ARG}
+ARG ARCH
 
 # Install packages
 RUN dnf install -y \
@@ -60,20 +61,33 @@ RUN dnf install -y \
     python3-jinja2 &&\
   dnf -y clean all
 
-# Install gcloud
-ENV PATH=/google-cloud-sdk/bin:/workspace:${PATH} \
-    CLOUDSDK_CORE_DISABLE_PROMPTS=1
 
-RUN wget -q https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz && \
-    tar xzf google-cloud-sdk.tar.gz -C / && \
-    rm google-cloud-sdk.tar.gz && \
-    /google-cloud-sdk/install.sh \
-        --disable-installation-options \
-        --bash-completion=false \
-        --path-update=false \
-        --usage-reporting=false && \
-    gcloud components install alpha beta kubectl && \
-    gcloud info | tee /workspace/gcloud-info.txt
+RUN if test "${ARCH}" != s390x; then \
+        export PATH=/google-cloud-sdk/bin:/workspace:${PATH} && \
+        export CLOUDSDK_CORE_DISABLE_PROMPTS=1 && \
+        wget -q https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz && \
+        tar xzf google-cloud-sdk.tar.gz -C / && \
+        rm google-cloud-sdk.tar.gz && \
+        /google-cloud-sdk/install.sh \
+            --disable-installation-options \
+            --bash-completion=false \
+            --path-update=false \
+            --usage-reporting=false && \
+        gcloud components install alpha beta kubectl && \
+        gcloud info | tee /workspace/gcloud-info.txt; \
+        # Cache the most commonly used bazel versions in the container
+        curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.17.0/bazelisk-linux-${ARCH} && \
+        chmod +x ./bazelisk && mv ./bazelisk /usr/local/bin/bazelisk && \
+        cd /usr/local/bin && ln -s bazelisk bazel; \
+
+        # Cache the most commonly used bazel versions inside the image
+        # and remove resulting cache directories to save a few hundred MB
+        USE_BAZEL_VERSION=4.1.0 bazel version && \
+        USE_BAZEL_VERSION=4.2.1 bazel version && \
+        USE_BAZEL_VERSION=5.3.1 bazel version && \
+        USE_BAZEL_VERSION=5.4.1 bazel version && \
+        rm -rf /root/.cache/bazel; \
+        fi
 
 #
 # BEGIN: PODMAN IN CONTAINER SETUP
@@ -100,19 +114,6 @@ ENV _CONTAINERS_USERNS_CONFIGURED=""
 # END: PODMAN IN CONTAINER SETUP
 #
 
-# Cache the most commonly used bazel versions in the container
-ARG ARCH
-RUN  curl -Lo ./bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.17.0/bazelisk-linux-${ARCH} && \
-     chmod +x ./bazelisk && mv ./bazelisk /usr/local/bin/bazelisk && \
-     cd /usr/local/bin && ln -s bazelisk bazel
-
-# Cache the most commonly used bazel versions inside the image
-# and remove resulting cache directories to save a few hundred MB
-RUN USE_BAZEL_VERSION=4.1.0 bazel version && \
-    USE_BAZEL_VERSION=4.2.1 bazel version && \
-    USE_BAZEL_VERSION=5.3.1 bazel version && \
-    USE_BAZEL_VERSION=5.4.1 bazel version && \
-    rm -rf /root/.cache/bazel
 
 # create mixin directories
 RUN mkdir -p /etc/setup.mixin.d/ && mkdir -p /etc/teardown.mixin.d/
