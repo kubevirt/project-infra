@@ -132,6 +132,9 @@ func main() {
 		)
 		for _, suite := range suites {
 			for _, test := range suite.Tests {
+				if test.Status == junit.StatusSkipped {
+					continue
+				}
 				ciTestsExecutionSummary.Observe(test.Duration.Seconds())
 				labels := prometheus.Labels{
 					"job_name":    jobName,
