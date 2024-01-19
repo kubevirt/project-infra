@@ -18,6 +18,7 @@ resources:
   - manifests/local/prow-phased-service.yaml
   - manifests/local/release-blocker_deployment.yaml
   - manifests/local/release-blocker_service.yaml
+  - manifests/local/statusreconciler_rbac.yaml
   - manifests/local/tide_rbac_prowjob.yaml
 
   - manifests/test_infra/current/crier_deployment.yaml
