@@ -175,7 +175,8 @@ presubmits:
           path: /var/log/audit
           type: Directory
         name: audit
-  - always_run: true
+  - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
