@@ -322,7 +322,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: false
@@ -353,7 +353,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: true
@@ -382,7 +382,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: false
@@ -414,7 +414,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: true
@@ -472,7 +472,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: true
@@ -504,7 +504,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: false
@@ -537,7 +537,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: true
@@ -567,7 +567,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: true
@@ -639,7 +639,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
         volumeMounts:
@@ -676,7 +676,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: true
@@ -705,7 +705,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: true
@@ -735,7 +735,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: true
@@ -764,7 +764,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: true
@@ -793,7 +793,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: false
@@ -1156,7 +1156,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 4Gi
+            memory: 8Gi
         securityContext:
           privileged: true
   - always_run: false
