@@ -21,12 +21,14 @@ package review
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"github.com/sourcegraph/go-diff/diff"
-	"k8s.io/test-infra/prow/git"
-	"k8s.io/test-infra/prow/github"
 	"os/exec"
 	"strings"
+
+	"k8s.io/test-infra/prow/git/v2"
+
+	"github.com/sirupsen/logrus"
+	"github.com/sourcegraph/go-diff/diff"
+	"k8s.io/test-infra/prow/github"
 )
 
 type KindOfChange interface {
@@ -222,9 +224,9 @@ type PRReviewOptions struct {
 	Repo              string
 }
 
-func PreparePullRequestReview(gitClient *git.Client, prReviewOptions PRReviewOptions, githubClient github.Client) (*github.PullRequest, string, error) {
+func PreparePullRequestReview(gitClient git.ClientFactory, prReviewOptions PRReviewOptions, githubClient github.Client) (*github.PullRequest, string, error) {
 	// checkout repo to a temporary directory to have it reviewed
-	clone, err := gitClient.Clone(prReviewOptions.Org, prReviewOptions.Repo)
+	clone, err := gitClient.ClientFor(prReviewOptions.Org, prReviewOptions.Repo)
 	if err != nil {
 		logrus.WithError(err).Fatal("error cloning repo")
 	}

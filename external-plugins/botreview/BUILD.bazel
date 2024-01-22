@@ -11,6 +11,7 @@ go_library(
         "@io_k8s_test_infra//pkg/flagutil:go_default_library",
         "@io_k8s_test_infra//prow/config/secret:go_default_library",
         "@io_k8s_test_infra//prow/flagutil:go_default_library",
+        "@io_k8s_test_infra//prow/git/v2:go_default_library",
         "@io_k8s_test_infra//prow/interrupts:go_default_library",
         "@io_k8s_test_infra//prow/pluginhelp/externalplugins:go_default_library",
     ],

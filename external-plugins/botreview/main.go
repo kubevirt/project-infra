@@ -21,17 +21,19 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"k8s.io/test-infra/pkg/flagutil"
-	"k8s.io/test-infra/prow/config/secret"
-	prowflagutil "k8s.io/test-infra/prow/flagutil"
-	"k8s.io/test-infra/prow/interrupts"
-	"k8s.io/test-infra/prow/pluginhelp/externalplugins"
-	"kubevirt.io/project-infra/external-plugins/botreview/server"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/sirupsen/logrus"
+	"k8s.io/test-infra/pkg/flagutil"
+	"k8s.io/test-infra/prow/config/secret"
+	prowflagutil "k8s.io/test-infra/prow/flagutil"
+	"k8s.io/test-infra/prow/git/v2"
+	"k8s.io/test-infra/prow/interrupts"
+	"k8s.io/test-infra/prow/pluginhelp/externalplugins"
+	"kubevirt.io/project-infra/external-plugins/botreview/server"
 )
 
 const pluginName = "botreview"
@@ -102,13 +104,13 @@ func main() {
 		logrus.WithError(err).Fatal("Error getting bot name.")
 	}
 
+	gitClientFactory, err := git.NewClientFactory(clientFactoryCacheDirOpt("/var/run/cache"))
 	pluginServer := &server.Server{
-		TokenGenerator: secret.GetTokenGenerator(o.webhookSecretFile),
-		BotName:        botUserData.Name,
-
-		GitClient: gitClient,
-		Ghc:       githubClient,
-		Log:       log,
+		TokenGenerator:   secret.GetTokenGenerator(o.webhookSecretFile),
+		BotName:          botUserData.Name,
+		GitClientFactory: gitClientFactory,
+		Ghc:              githubClient,
+		Log:              log,
 
 		DryRun: o.dryRun,
 	}
@@ -120,4 +122,10 @@ func main() {
 	defer interrupts.WaitForGracefulShutdown()
 	interrupts.ListenAndServe(httpServer, 5*time.Second)
 
+}
+
+func clientFactoryCacheDirOpt(cacheDir string) func(opts *git.ClientFactoryOpts) {
+	return func(cfo *git.ClientFactoryOpts) {
+		cfo.CacheDirBase = &cacheDir
+	}
 }

@@ -20,14 +20,15 @@ package server
 
 import (
 	"encoding/json"
+	"net/http"
+	"os"
+
 	"github.com/sirupsen/logrus"
 	"k8s.io/test-infra/prow/config"
-	"k8s.io/test-infra/prow/git"
+	gitv2 "k8s.io/test-infra/prow/git/v2"
 	"k8s.io/test-infra/prow/github"
 	"k8s.io/test-infra/prow/pluginhelp"
 	"kubevirt.io/project-infra/external-plugins/botreview/review"
-	"net/http"
-	"os"
 )
 
 const pluginName = "botreview"
@@ -66,8 +67,8 @@ type Server struct {
 	TokenGenerator func() []byte
 	BotName        string
 
-	GitClient *git.Client
-	Ghc       github.Client
+	GitClientFactory gitv2.ClientFactory
+	Ghc              github.Client
 
 	Log *logrus.Entry
 
@@ -138,7 +139,7 @@ func (s *Server) handlePullRequest(l *logrus.Entry, action github.PullRequestEve
 		Org:               org,
 		Repo:              repo,
 	}
-	pullRequest, cloneDirectory, err := review.PreparePullRequestReview(s.GitClient, prReviewOptions, s.Ghc)
+	pullRequest, cloneDirectory, err := review.PreparePullRequestReview(s.GitClientFactory, prReviewOptions, s.Ghc)
 	if err != nil {
 		logrus.WithError(err).Fatal("error preparing pull request for review")
 	}
