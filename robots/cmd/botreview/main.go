@@ -22,13 +22,15 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+
 	"github.com/sirupsen/logrus"
 	"k8s.io/test-infra/pkg/flagutil"
 	"k8s.io/test-infra/prow/config/secret"
 	prowflagutil "k8s.io/test-infra/prow/flagutil"
+	"k8s.io/test-infra/prow/git/v2"
 	"k8s.io/test-infra/prow/github"
 	"kubevirt.io/project-infra/external-plugins/botreview/review"
-	"os"
 )
 
 const robotName = "botreview"
@@ -87,17 +89,14 @@ func main() {
 	}
 
 	githubClient := o.github.GitHubClientWithAccessToken(string(secret.GetSecret(o.github.TokenPath)))
-	gitClient, err := o.github.GitClient(o.dryRun)
-	if err != nil {
-		logrus.WithError(err).Fatal("error getting Git client")
-	}
+	gitClientFactory, err := git.NewClientFactory(clientFactoryCacheDirOpt("/var/run/cache"))
 
 	prReviewOptions := review.PRReviewOptions{
 		PullRequestNumber: o.PullRequestNumber,
 		Org:               o.Org,
 		Repo:              o.Repo,
 	}
-	pullRequest, cloneDirectory, err := review.PreparePullRequestReview(gitClient, prReviewOptions, githubClient)
+	pullRequest, cloneDirectory, err := review.PreparePullRequestReview(gitClientFactory, prReviewOptions, githubClient)
 	if err != nil {
 		logrus.WithError(err).Fatal("error preparing pull request for review")
 	}
@@ -124,5 +123,11 @@ func main() {
 	err = reviewer.AttachReviewComments(botReviewResults, githubClient)
 	if err != nil {
 		log.Errorf("error while attaching review comments: %v", err)
+	}
+}
+
+func clientFactoryCacheDirOpt(cacheDir string) func(opts *git.ClientFactoryOpts) {
+	return func(cfo *git.ClientFactoryOpts) {
+		cfo.CacheDirBase = &cacheDir
 	}
 }
