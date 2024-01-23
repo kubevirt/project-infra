@@ -1,6 +1,6 @@
 presubmits:
   kubevirt/common-instancetypes:
-  - name: pull-common-instancetypes
+  - name: pull-common-instancetypes-0.4
     branches:
       - release-0.4
     always_run: true
@@ -22,7 +22,7 @@ presubmits:
         resources:
           requests:
             memory: "1Gi"
-  - name: pull-common-instancetypes-cluster-functest
+  - name: pull-common-instancetypes-cluster-functest-0.4
     branches:
       - release-0.4
     always_run: false
@@ -59,7 +59,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-cluster-functest-fedora
+  - name: pull-common-instancetypes-cluster-functest-fedora-0.4
     branches:
       - release-0.4
     always_run: false
@@ -96,7 +96,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-cluster-functest-centos-7
+  - name: pull-common-instancetypes-cluster-functest-centos-7-0.4
     branches:
       - release-0.4
     always_run: false
@@ -133,7 +133,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-cluster-functest-centos-stream-8
+  - name: pull-common-instancetypes-cluster-functest-centos-stream-8-0.4
     branches:
       - release-0.4
     always_run: false
@@ -170,7 +170,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-cluster-functest-centos-stream-9
+  - name: pull-common-instancetypes-cluster-functest-centos-stream-9-0.4
     branches:
       - release-0.4
     always_run: false
@@ -207,7 +207,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-cluster-functest-ubuntu
+  - name: pull-common-instancetypes-cluster-functest-ubuntu-0.4
     branches:
       - release-0.4
     always_run: false
@@ -244,7 +244,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-cluster-functest-validation-os
+  - name: pull-common-instancetypes-cluster-functest-validation-os-0.4
     branches:
       - release-0.4
     always_run: false
