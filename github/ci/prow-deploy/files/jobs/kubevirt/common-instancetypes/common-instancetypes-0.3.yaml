@@ -1,6 +1,6 @@
 presubmits:
   kubevirt/common-instancetypes:
-  - name: pull-common-instancetypes
+  - name: pull-common-instancetypes-0.3
     branches:
       - release-0.3
     always_run: true
@@ -22,7 +22,7 @@ presubmits:
         resources:
           requests:
             memory: "1Gi"
-  - name: pull-common-instancetypes-kubevirt-functest
+  - name: pull-common-instancetypes-kubevirt-functest-0.3
     branches:
       - release-0.3
     always_run: false
