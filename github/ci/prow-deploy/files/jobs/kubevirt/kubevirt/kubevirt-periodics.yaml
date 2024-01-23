@@ -2247,7 +2247,7 @@ periodics:
         sig_release_dir=$(cd ../sig-release && pwd)
         cd ${project_infra_dir}
         bazelisk run //releng/feature-announce -- \
-            --V=5 \
+            --log-level=5 \
             --output-file=${sig_release_dir}/upcoming-changes.md \
             --org kubevirt \
             --repo kubevirt \
