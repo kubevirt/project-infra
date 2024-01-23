@@ -175,7 +175,8 @@ presubmits:
           path: /var/log/audit
           type: Directory
         name: audit
-  - always_run: true
+  - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
@@ -944,7 +945,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.28-sig-compute-migrations
+    name: pull-kubevirt-e2e-k8s-1.29-sig-compute-migrations
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -956,7 +957,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.28-sig-compute-migrations
+          value: k8s-1.29-sig-compute-migrations
         - name: KUBEVIRT_NUM_NODES
           value: "3"
         - name: KUBEVIRT_STORAGE
@@ -1683,7 +1684,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1772,7 +1774,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1858,7 +1861,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1899,7 +1903,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1944,7 +1949,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2020,7 +2026,8 @@ presubmits:
             memory: 4Gi
         securityContext:
           privileged: true
-  - always_run: true
+  - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2063,7 +2070,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2104,7 +2112,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
