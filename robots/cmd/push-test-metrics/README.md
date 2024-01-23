@@ -11,8 +11,3 @@ Then Histogram `ci_test_runtime_seconds_total` (so we have buckets of test runti
 ![test_time.png](test_time.png)
 
 ![heatmap.png](heatmap.png)
-
-## TODOs
-
-* [ ] Create periodic job
-* [ ] Decide whether we want to look at all major sig job runtimes 

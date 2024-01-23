@@ -7795,32 +7795,7 @@ data:
               },
               "unit": "s"
             },
-            "overrides": [
-              {
-                "__systemRef": "hideSeriesFrom",
-                "matcher": {
-                  "id": "byNames",
-                  "options": {
-                    "mode": "exclude",
-                    "names": [
-                      "[passed]  (periodic-kubevirt-e2e-k8s-1.29-sig-compute): [sig-compute]Guest console log [level:component] Guest console log container fetch logs it should rotate the internal log files"
-                    ],
-                    "prefix": "All except:",
-                    "readOnly": true
-                  }
-                },
-                "properties": [
-                  {
-                    "id": "custom.hideFrom",
-                    "value": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": true
-                    }
-                  }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "gridPos": {
             "h": 28,
@@ -7897,7 +7872,7 @@ data:
             "y": 0
           },
           "id": 9,
-          "interval": "5m",
+          "interval": "1m",
           "maxDataPoints": 25,
           "options": {
             "calculate": false,
@@ -8159,9 +8134,9 @@ data:
       "templating": {
         "list": [
           {
-            "allValue": ".*",
+            "allValue": "(sig-(compute|storage|network|operator))",
             "current": {
-              "selected": true,
+              "selected": false,
               "text": "All",
               "value": "$__all"
             },
@@ -8204,14 +8179,14 @@ data:
         ]
       },
       "time": {
-        "from": "now-15m",
+        "from": "now-1h",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "",
-      "title": "kubevirt/kubevirt e2e runtimes (preview)",
+      "title": "kubevirt/kubevirt e2e test runtimes",
       "uid": "gY4hNc5Iz",
-      "version": 13,
+      "version": 16,
       "weekStart": ""
     }
 ---

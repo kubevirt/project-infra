@@ -118,7 +118,7 @@ periodics:
       - -ce
       env:
       - name: GIMME_GO_VERSION
-        value: "1.20"
+        value: "1.21"
       image: quay.io/kubevirtci/golang:v20240109-6e61e3b
       name: ""
       resources: {}
