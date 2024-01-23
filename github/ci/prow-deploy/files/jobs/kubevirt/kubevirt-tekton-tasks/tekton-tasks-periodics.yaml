@@ -1,0 +1,34 @@
+periodics:
+  - name: periodic-update-libguestfs-container-version
+    cron: 0 2 * * 1
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+    max_concurrency: 1
+    cluster: kubevirt-prow-control-plane
+    extra_refs:
+    - org: kubevirt
+      repo: kubevirt-tekton-tasks
+      base_ref: main
+    labels:
+      preset-github-credentials: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
+        env:
+        command: [ "/bin/bash", "-ce" ]
+        args:
+        - |
+          tt_dir=$(cd ../kubevirt-tekton-tasks && pwd)
+          # Fetch kubevirt version
+          KUBEVIRT_VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | \
+            jq -r '[.[]|select(.prerelease==false) | .tag_name] | sort | last')
+
+          sed -i "s/FROM quay.io\/kubevirt\/libguestfs-tools:.*/FROM quay.io\/kubevirt\/libguestfs-tools:${KUBEVIRT_VERSION}/g" build/Containerfile.DiskVirt
+          description="Automated update of libguestfs container version to ${KUBEVIRT_VERSION}\n\n\\\`\\\`\\\`release-note\nUpdated libguestfs container to ${KUBEVIRT_VERSION}\n\\\`\\\`\\\`"
+          git-pr.sh -p "${tt_dir}" -d "echo -e \"${description}\"" -r kubevirt-tekton-tasks -b update-libguestfs-container -T main
+        resources:
+          requests:
+            memory: "200Mi"
