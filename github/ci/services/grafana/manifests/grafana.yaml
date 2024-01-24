@@ -4532,7 +4532,10 @@ data:
         "list": [
           {
             "builtIn": 1,
-            "datasource": "-- Grafana --",
+            "datasource": {
+              "type": "datasource",
+              "uid": "grafana"
+            },
             "enable": true,
             "hide": true,
             "iconColor": "rgba(0, 211, 255, 1)",
@@ -4550,82 +4553,10 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 28,
-      "iteration": 1649259478352,
+      "id": 10,
       "links": [],
       "liveNow": false,
       "panels": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "Wq7NJYPGk"
-          },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "decimals": 0,
-              "mappings": [],
-              "max": 100,
-              "min": 0,
-              "thresholds": {
-                "mode": "percentage",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 2,
-            "x": 0,
-            "y": 0
-          },
-          "id": 8,
-          "links": [
-            {
-              "title": "CI Infrastructure Utilization Dashboard",
-              "url": "https://grafana.ci.kubevirt.io/d/qFDyvVinx/ci-infrastructure-utilization?orgId=1"
-            }
-          ],
-          "options": {
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showThresholdLabels": false,
-            "showThresholdMarkers": true,
-            "text": {}
-          },
-          "pluginVersion": "8.4.0",
-          "targets": [
-            {
-              "expr": "(sum (((job_name_repo_type:kubevirt_ci_job_memory_bytes_all:sum * on(job_name) group_left job_name:prow_job_runtime_seconds_sum:increase3h) > 0) / ( 3600 * 1024 * 1024 * 1024)) / (3 * 10 * 225)) * 100",
-              "format": "table",
-              "instant": true,
-              "interval": "",
-              "legendFormat": "",
-              "refId": "A"
-            }
-          ],
-          "title": "Average utilization in the last 3h",
-          "type": "gauge"
-        },
         {
           "alert": {
             "alertRuleTags": {
@@ -4669,16 +4600,18 @@ data:
           "bars": false,
           "dashLength": 10,
           "dashes": false,
+          "datasource": {},
           "fill": 2,
           "fillGradient": 0,
           "gridPos": {
-            "h": 5,
-            "w": 22,
-            "x": 2,
+            "h": 7,
+            "w": 24,
+            "x": 0,
             "y": 0
           },
           "hiddenSeries": false,
           "id": 3,
+          "interval": "1h",
           "legend": {
             "avg": false,
             "current": false,
@@ -4702,7 +4635,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "8.4.0",
+          "pluginVersion": "9.1.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -4714,13 +4647,15 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "Wq7NJYPGk"
+                "uid": "promethues"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (type) (clamp_min(prowjobs{state=~\"triggered\", job_name=~\"${job_name}\"},0))",
+              "expr": "sum by (type) (clamp_min(last_over_time(prowjobs{state=\"triggered\", job_name=~\"${job_name}\"}[1h]),0))",
               "hide": false,
               "interval": "",
-              "legendFormat": "",
+              "legendFormat": "{{type}}s - ${job_name}",
+              "range": true,
               "refId": "C"
             }
           ],
@@ -4762,74 +4697,6 @@ data:
           "yaxis": {
             "align": false
           }
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "T1tqjA6Gk"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "min": 0,
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "#EAB839",
-                    "value": 50
-                  },
-                  {
-                    "color": "red",
-                    "value": 100
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 2,
-            "x": 0,
-            "y": 4
-          },
-          "id": 13,
-          "options": {
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showThresholdLabels": false,
-            "showThresholdMarkers": true,
-            "text": {}
-          },
-          "pluginVersion": "8.4.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "T1tqjA6Gk"
-              },
-              "exemplar": true,
-              "expr": "sum (prowjobs{state=\"triggered\", job_name=~\"${job_name}\"})",
-              "interval": "",
-              "legendFormat": "",
-              "refId": "A"
-            }
-          ],
-          "title": "prowjobs in queue",
-          "type": "gauge"
         },
         {
           "alert": {
@@ -4874,16 +4741,18 @@ data:
           "bars": false,
           "dashLength": 10,
           "dashes": false,
+          "datasource": {},
           "fill": 0,
           "fillGradient": 0,
           "gridPos": {
-            "h": 6,
-            "w": 22,
-            "x": 2,
-            "y": 5
+            "h": 7,
+            "w": 24,
+            "x": 0,
+            "y": 7
           },
           "hiddenSeries": false,
           "id": 2,
+          "interval": "1h",
           "legend": {
             "avg": false,
             "current": false,
@@ -4907,7 +4776,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "8.4.0",
+          "pluginVersion": "9.1.6",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -4921,11 +4790,13 @@ data:
                 "type": "prometheus",
                 "uid": "Wq7NJYPGk"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (type) (prowjobs{state=~\"pending\", job_name=~\"${job_name}\"})",
+              "expr": "sum by (type) (last_over_time(prowjobs{state=\"pending\", job_name=~\"${job_name}\"}[1h]))",
               "hide": false,
               "interval": "",
-              "legendFormat": "",
+              "legendFormat": "{{type}}s - ${job_name}",
+              "range": true,
               "refId": "C"
             }
           ],
@@ -4971,28 +4842,54 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "T1tqjA6Gk"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
               "color": {
-                "mode": "thresholds"
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
               },
               "mappings": [],
-              "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
-                  },
-                  {
-                    "color": "#EAB839",
-                    "value": 200
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
-                    "value": 250
+                    "value": 80
                   }
                 ]
               }
@@ -5000,254 +4897,45 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 4,
-            "w": 2,
+            "h": 7,
+            "w": 24,
             "x": 0,
-            "y": 8
+            "y": 14
           },
-          "id": 11,
+          "id": 16,
+          "interval": "1h",
           "options": {
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
             },
-            "showThresholdLabels": false,
-            "showThresholdMarkers": true,
-            "text": {}
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
           },
-          "pluginVersion": "8.4.0",
           "targets": [
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "T1tqjA6Gk"
+                "uid": "prometheus"
               },
               "exemplar": true,
-              "expr": "sum (prowjobs{state=\"pending\", job_name=~\"${job_name}\"})",
+              "expr": "sum (last_over_time(kube_pod_status_phase{namespace=\"kubevirt-prow-jobs\", phase=~\"Pending|Running\"}[1h])) by (cluster, phase)",
+              "hide": false,
               "interval": "",
-              "legendFormat": "",
+              "legendFormat": "{{cluster}} - {{phase}}",
               "refId": "A"
             }
           ],
-          "title": "prowjobs running",
-          "type": "gauge"
-        },
-        {
-          "alert": {
-            "alertRuleTags": {
-              "severity": "warning"
-            },
-            "conditions": [
-              {
-                "evaluator": {
-                  "params": [
-                    30
-                  ],
-                  "type": "gt"
-                },
-                "operator": {
-                  "type": "and"
-                },
-                "query": {
-                  "params": [
-                    "B",
-                    "5m",
-                    "now"
-                  ]
-                },
-                "reducer": {
-                  "params": [],
-                  "type": "avg"
-                },
-                "type": "query"
-              }
-            ],
-            "executionErrorState": "alerting",
-            "for": "5m",
-            "frequency": "1m",
-            "handler": 1,
-            "name": "new failed jobs / 15m alert",
-            "noDataState": "no_data",
-            "notifications": []
-          },
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "fill": 0,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 5,
-            "w": 22,
-            "x": 2,
-            "y": 11
-          },
-          "hiddenSeries": false,
-          "id": 9,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [
-            {
-              "targetBlank": false,
-              "title": "Failed jobs",
-              "url": "https://prow.ci.kubevirt.io/?state=failure"
-            }
-          ],
-          "nullPointMode": "null",
-          "options": {
-            "alertThreshold": true
-          },
-          "percentage": false,
-          "pluginVersion": "8.4.0",
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "Wq7NJYPGk"
-              },
-              "exemplar": true,
-              "expr": "sum by (type) (clamp_min(delta(prowjobs{state=~\"failure\", job_name=~\"${job_name}\"}[15m]),0))",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{type}}",
-              "refId": "B"
-            }
-          ],
-          "thresholds": [
-            {
-              "colorMode": "critical",
-              "fill": true,
-              "line": true,
-              "op": "gt",
-              "value": 30,
-              "visible": true
-            }
-          ],
-          "timeRegions": [],
-          "title": "new failed jobs / 15m",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "mode": "time",
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "short",
-              "logBase": 1,
-              "show": true
-            },
-            {
-              "format": "short",
-              "logBase": 1,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false
-          }
-        },
-        {
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "max": 100,
-              "min": 0,
-              "thresholds": {
-                "mode": "percentage",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "#EAB839",
-                    "value": 25
-                  },
-                  {
-                    "color": "red",
-                    "value": 50
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 2,
-            "x": 0,
-            "y": 12
-          },
-          "id": 12,
-          "links": [
-            {
-              "targetBlank": false,
-              "title": "Failed jobs",
-              "url": "https://prow.ci.kubevirt.io/?state=failure"
-            }
-          ],
-          "options": {
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showThresholdLabels": false,
-            "showThresholdMarkers": true,
-            "text": {}
-          },
-          "pluginVersion": "8.4.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "Wq7NJYPGk"
-              },
-              "exemplar": true,
-              "expr": "100 * (sum (prowjobs{state=~\"failure\", job_name=~\"${job_name}\"})) / \n(sum (prowjobs{state=\"failure\", job_name=~\"${job_name}\"}) + sum (prowjobs{state=\"success\", job_name=~\"${job_name}\"}))",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "",
-              "refId": "B"
-            }
-          ],
-          "title": "failed jobs %",
-          "type": "gauge"
+          "title": "ALL Pods Pending vs. Running",
+          "type": "timeseries"
         }
       ],
-      "refresh": "1m",
-      "schemaVersion": 35,
+      "refresh": "1d",
+      "schemaVersion": 37,
       "style": "dark",
       "tags": [
         "prow",
@@ -5257,7 +4945,7 @@ data:
         "list": [
           {
             "current": {
-              "selected": true,
+              "selected": false,
               "text": ".*",
               "value": ".*"
             },
@@ -5277,7 +4965,7 @@ data:
         ]
       },
       "time": {
-        "from": "now-3h",
+        "from": "now-7d",
         "to": "now"
       },
       "timepicker": {
@@ -5290,9 +4978,9 @@ data:
         ]
       },
       "timezone": "",
-      "title": "Prow job load",
-      "uid": "acSjBD17z",
-      "version": 32,
+      "title": "Prow job load - 1h resolution",
+      "uid": "asdfare79we8r",
+      "version": 2,
       "weekStart": ""
     }
   flaky-tests-kubevirt.json: |
