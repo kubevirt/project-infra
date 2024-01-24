@@ -61,7 +61,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -104,7 +105,8 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       priorityClassName: windows
-  - always_run: true
+  - always_run: false
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
