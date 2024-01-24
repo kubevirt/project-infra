@@ -870,8 +870,6 @@ orgs:
         maintainers:
           - dhiller
           - dominikholler
-        members:
-          - omeryahud
         privacy: closed
         repos:
           kubevirt-ssp-operator: read
