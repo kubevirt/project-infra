@@ -105,6 +105,8 @@ periodics:
   - base_ref: main
     org: kubevirt
     repo: project-infra
+  labels:
+    preset-gcs-credentials: "true"
   name: periodic-kubevirt-push-test-metrics
   spec:
     containers:
@@ -118,7 +120,7 @@ periodics:
       - -ce
       env:
       - name: GIMME_GO_VERSION
-        value: "1.21"
+        value: "1.21.6"
       image: quay.io/kubevirtci/golang:v20240109-6e61e3b
       name: ""
       resources: {}
