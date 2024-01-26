@@ -1,9 +1,9 @@
 # Bazel GitOps Rules is an alternative to rules_k8s: https://github.com/adobe/rules_gitops
 load("@com_adobe_rules_gitops//gitops:defs.bzl", "k8s_deploy")
 
-TEST_CLUSTER = "kind-kind"
+TEST_CLUSTER = "kubernetes"
 
-TEST_USER = "kind-kind"
+TEST_USER = "kubernetes-admin"
 
 PRODUCTION_CLUSTER_CONTROL_PLANE = "kubevirt-control-plane-cluster"
 
