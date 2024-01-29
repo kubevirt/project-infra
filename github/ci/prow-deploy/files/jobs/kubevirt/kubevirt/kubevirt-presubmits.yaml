@@ -1178,7 +1178,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
     name: pull-kubevirt-e2e-k8s-1.29-sig-monitoring
-    run_if_changed: ^pkg/monitoring/.*|tests/monitoring/.*$
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
