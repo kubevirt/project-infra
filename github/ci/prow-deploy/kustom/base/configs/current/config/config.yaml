@@ -219,6 +219,10 @@ tide:
           dashboard:
             skip-unknown-contexts: true
             from-branch-protection: true
+          kubevirt:
+            branches:
+              main:
+                from-branch-protection: true
       nmstate:
         repos:
           kubernetes-nmstate:
