@@ -2,14 +2,11 @@ orgs:
   kubevirt:
     admins:
       - brianmcarey
-      - caniszczyk
-      - codificat
       - davidvossel
       - dhiller
       - fabiand
       - kubevirt-bot
       - rmohr
-      - stoniko
       - thelinuxfoundation
       - kubevirt-snyk
     billing_email: fdeutsch@redhat.com
@@ -188,6 +185,7 @@ orgs:
       - sradco
       - sreichar
       - stbenjam
+      - stoniko
       - stu-gott
       - suomiy
       - tareqalayan
