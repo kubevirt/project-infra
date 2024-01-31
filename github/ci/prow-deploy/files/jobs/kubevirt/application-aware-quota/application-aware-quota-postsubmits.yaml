@@ -1,5 +1,5 @@
 postsubmits:
-  kubevirt/applications-aware-quota:
+  kubevirt/application-aware-quota:
   - name: push-release-aaq-images
     branches:
     - release-v\d+\.\d+
@@ -99,7 +99,7 @@ postsubmits:
         - name: GITHUB_TOKEN_PATH
           value: /etc/github/oauth
         - name: GITHUB_REPOSITORY
-          value: kubevirt/applications-aware-quota
+          value: kubevirt/application-aware-quota
         - name: GIT_USER_NAME
           value: kubevirt-bot
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
@@ -138,7 +138,7 @@ postsubmits:
         - name: GITHUB_TOKEN_PATH
           value: /etc/github/oauth
         - name: GITHUB_REPOSITORY
-          value: kubevirt/applications-aware-quota
+          value: kubevirt/application-aware-quota
         - name: GIT_USER_NAME
           value: kubevirt-bot
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]

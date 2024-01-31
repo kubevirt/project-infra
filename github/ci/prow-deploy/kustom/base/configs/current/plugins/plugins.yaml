@@ -408,7 +408,7 @@ plugins:
     - trigger
     - help
 
-  kubevirt/applications-aware-quota:
+  kubevirt/application-aware-quota:
     plugins:
       - approve
       - lgtm
@@ -577,7 +577,7 @@ triggers:
   - kubevirt/vm-console-proxy
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
-  - kubevirt/applications-aware-quota
+  - kubevirt/application-aware-quota
 - repos:
   - virtblocks/virtblocks
 - repos:
@@ -631,7 +631,7 @@ approve:
   - kubevirt/sig-release
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
-  - kubevirt/applications-aware-quota
+  - kubevirt/application-aware-quota
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -690,7 +690,7 @@ lgtm:
   - kubevirt/sig-release
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
-  - kubevirt/applications-aware-quota
+  - kubevirt/application-aware-quota
   review_acts_as_lgtm: true
 
 override:

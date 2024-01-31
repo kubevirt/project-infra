@@ -580,7 +580,7 @@ orgs:
         has_projects: true
         has_wiki: true
         has_issues: true
-      applications-aware-quota:
+      application-aware-quota:
         default_branch: main
         has_projects: true
         has_wiki: true
@@ -1016,13 +1016,13 @@ orgs:
           - vladikr
         repos:
           managed-tenant-quota: admin
-      applications-aware-quota:
-        description: members of the applications-aware-quota group
+      application-aware-quota:
+        description: members of the application-aware-quota group
         members:
           - Barakmor1
           - vladikr
         repos:
-          applications-aware-quota: admin
+          application-aware-quota: admin
       kubevirt.core-maintainers:
         description: Maintainers of kubevirt.core
         privacy: closed
