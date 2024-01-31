@@ -40,4 +40,9 @@ filters:
     - vasiliy-ul
     - vladikr
     - xpivarc
+  BUILD.bazel|WORKSPACE:
+    approvers:
+    - dhiller
+    reviewers:
+    - brianmcarey
 options: {}
