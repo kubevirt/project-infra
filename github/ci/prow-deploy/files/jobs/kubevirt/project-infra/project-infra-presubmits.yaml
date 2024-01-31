@@ -568,10 +568,13 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-podman-shared-images: "true"
     cluster: kubevirt-prow-workloads
+    extra_refs:
+    - org: kubevirt
+      repo: kubevirt
+      base_ref: main
     spec:
-      nodeSelector:
-        type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20240118-315742b
           command:
@@ -580,18 +583,15 @@ presubmits:
             - "-c"
             - |
               dnf install -y helm 
-              # install kind
-              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.15.0/kind-linux-amd64
-              chmod +x ./kind && mv ./kind /usr/local/bin/kind
               ./github/ci/services/grafana/hack/test.sh
           securityContext:
             privileged: true
             runAsUser: 0
           resources:
             requests:
-              memory: "16Gi"
+              memory: "29Gi"
             limits:
-              memory: "16Gi"
+              memory: "29Gi"
   - name: pull-project-infra-check-testgrid-config
     run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$|^github/ci/testgrid/gen-config\.yaml$|^github/ci/testgrid/default\.yaml$'
     decorate: true

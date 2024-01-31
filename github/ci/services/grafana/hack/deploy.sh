@@ -10,8 +10,10 @@ main() {
 	bazelisk run //github/ci/services/common/k8s/cmd/wait -- -namespace monitoring -selector grafana-deployment -kind deployment
 
 	kubectl wait --timeout 60s --for=jsonpath='{.status.stage}'=complete -n monitoring grafana grafana
-
-	kubectl apply -n monitoring -f ./github/ci/services/grafana/manifests/ingress.yaml
+	
+	if [ "$environment" != "testing" ]; then
+		kubectl apply -n monitoring -f ./github/ci/services/grafana/manifests/ingress.yaml
+	fi
 
 }
 

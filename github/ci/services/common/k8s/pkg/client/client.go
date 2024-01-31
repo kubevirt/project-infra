@@ -1,6 +1,7 @@
 package client
 
 import (
+	"os"
 	"os/user"
 	"path"
 
@@ -45,5 +46,8 @@ func GetConfig() (*restclient.Config, error) {
 	}
 
 	kubeconfig := path.Join(usr.HomeDir, ".kube", "config")
+	if os.Getenv("KUBECONFIG") != "" {
+		kubeconfig = os.Getenv("KUBECONFIG")
+	}
 	return clientcmd.BuildConfigFromFlags("", kubeconfig)
 }
