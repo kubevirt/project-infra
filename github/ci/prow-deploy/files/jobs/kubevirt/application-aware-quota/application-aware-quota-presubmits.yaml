@@ -1,5 +1,5 @@
 presubmits:
-  kubevirt/applications-aware-quota:
+  kubevirt/application-aware-quota:
   - name: pull-aaq-unit-test
     skip_branches:
       - release-v\d+\.\d+
