@@ -38,6 +38,7 @@ filters:
     - mhenriks
     - stu-gott
     - vasiliy-ul
+    - victortoso
     - vladikr
     - xpivarc
   BUILD.bazel|WORKSPACE:
