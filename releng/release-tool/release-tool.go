@@ -1020,6 +1020,7 @@ func (r *releaseData) verifyTag() error {
 		re := []*regexp.Regexp{
 			regexp.MustCompile(`^v\d*\.\d*.\d*-rc.\d*$`),
 			regexp.MustCompile(`^v\d*\.\d*.\d*-alpha.\d*$`),
+			regexp.MustCompile(`^v\d*\.\d*.\d*-beta.\d*$`),
 		}
 
 		match := ""
