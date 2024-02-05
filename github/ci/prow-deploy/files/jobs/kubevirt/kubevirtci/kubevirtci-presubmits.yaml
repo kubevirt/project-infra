@@ -14,7 +14,7 @@ presubmits:
       rehearsal.allowed: "true"
       sriov-pod: "true"
     max_concurrency: 1
-    name: check-up-kind-1.27-sriov
+    name: check-up-kind-sriov
     spec:
       affinity:
         podAntiAffinity:
@@ -44,7 +44,7 @@ presubmits:
           ./cluster-up/cluster/kind/check-cluster-up.sh
         env:
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.27-sriov
+          value: kind-sriov
         - name: KUBEVIRT_NUM_NODES
           value: "3"
         - name: RUN_KUBEVIRT_CONFORMANCE
