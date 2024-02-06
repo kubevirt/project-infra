@@ -10,10 +10,10 @@
   path: /spec/template/spec/containers/0/resources
   value:
     limits:
-      cpu: 300m
+      cpu: 500m
       memory: 2Gi
     requests:
-      cpu: 300m
+      cpu: 500m
       memory: 2Gi
 
 # resets KUBECONFIG entry to simple value
