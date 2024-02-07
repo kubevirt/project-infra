@@ -1102,7 +1102,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 11
     name: pull-kubevirt-code-lint
-    optional: true
+    optional: false
     skip_branches:
     - release-\d+\.\d+
     spec:
