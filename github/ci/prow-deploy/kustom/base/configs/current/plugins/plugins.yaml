@@ -702,11 +702,20 @@ label:
     - allowed_teams:
       - kubevirtorg-label
       label: good-first-issue
+    - allowed_teams:
+      - kubevirtorg-label
+      label: help-wanted
     'kubevirt/kubevirt':
     - allowed_teams:
       - kubevirtkubevirt-label
       label: good-first-issue
+    - allowed_teams:
+      - kubevirtkubevirt-label
+      label: help-wanted
     'kubevirt/project-infra':
     - allowed_teams:
       - kubevirtproject-infra-label
       label: good-first-issue
+    - allowed_teams:
+      - kubevirtproject-infra-label
+      label: help-wanted
