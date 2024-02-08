@@ -299,9 +299,17 @@ default:
       addedBy: prow
     - name: good-first-issue
       color: 128A0C
+      description: Denotes an issue ready for a new contributor.
       target: issues
       previously:
       - name: good first issue
+        color: 128A0C
+    - name: help-wanted
+      color: 128A0C
+      description: Denotes an issue that needs help from a contributor.
+      target: issues
+      previously:
+      - name: help wanted
         color: 128A0C
 repos:
   kubevirt/kubevirt:
@@ -330,12 +338,6 @@ repos:
       - name: for/users
         color: fef2c0
         target: both
-      - name: help-wanted
-        color: 128A0C
-        target: issues
-        previously:
-        - name: help wanted
-          color: 128A0C
       - name: distro/kubernetes
         color: fcb3ad
         target: both
