@@ -171,12 +171,25 @@ func (h *GitHubEventsHandler) shouldActOnIssueComment(event *github.IssueComment
 }
 
 func (h *GitHubEventsHandler) canUserRehearse(err error, org string, userName string, pr *github.PullRequest) bool {
-	isMember, err := h.ghClient.IsMember(org, userName)
+	isAuthorMember, err := h.ghClient.IsMember(org, pr.User.Login)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate PR author with the repo org")
 		return false
 	}
-	return isMember || github.HasLabel("ok-to-test", pr.Labels)
+	if !isAuthorMember {
+		log.Warnln("Pr author is not a member of the repo org")
+		return false
+	}
+	isUserMember, err := h.ghClient.IsMember(org, userName)
+	if err != nil {
+		log.WithError(err).Errorln("Could not validate user with the repo org")
+		return false
+	}
+	if !isUserMember {
+		log.Warnln("User is not a member of the repo org")
+		return false
+	}
+	return isUserMember
 }
 
 func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, event *github.PullRequestEvent) {
