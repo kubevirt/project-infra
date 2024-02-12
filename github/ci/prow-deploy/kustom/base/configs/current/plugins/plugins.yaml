@@ -578,12 +578,16 @@ triggers:
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
   - kubevirt/application-aware-quota
+  ignore_ok_to_test: true
 - repos:
   - virtblocks/virtblocks
+  ignore_ok_to_test: true
 - repos:
   - nmstate/kubernetes-nmstate
+  ignore_ok_to_test: true
 - repos:
   - k8snetworkplumbingwg/kubemacpool
+  ignore_ok_to_test: true
 
 approve:
 - repos:
