@@ -11,9 +11,10 @@ postsubmits:
       labels:
         preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
+        preset-podman-in-container-enabled: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap-legacy:v20221205-e30b34a
+          - image: quay.io/kubevirtci/bootstrap:v20240118-315742b
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -26,6 +27,8 @@ postsubmits:
                 memory: "8Gi"
               limits:
                 memory: "8Gi"
+            securityContext:
+              privileged: true
     - name: publish-phased-plugin-image
       always_run: false
       run_if_changed: "external-plugins/phased/.*"
