@@ -176,4 +176,4 @@ directory.
 [this Prow document]: https://github.com/kubernetes/test-infra/blob/master/prow/getting_started_deploy.md#Run-test-pods-in-different-clusters
 [issue on project-infra]: https://github.com/kubevirt/project-infra/issues/new
 [kubeconfig encrypted as described here]: #encrypt
-[an example of a job configured with KubeVirtCI external provider]: https://github.com/kubevirt/project-infra/blob/main/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml#L1206
+[an example of a job configured with KubeVirtCI external provider]: https://github.com/kubevirt/project-infra/blob/bab947fa42f89f78238160d487bf047f4dea5c9f/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml#L650
