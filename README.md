@@ -15,9 +15,6 @@ is available)
   * `github/ci/prow-deploy`: Ansible code for testing and deploying Prow components,
   includes Prow configuration under github/ci/prow-deploy/files
 
-  * `github/ci/prow-workloads`: Ansible code for bootstrapping prow-workloads cluster
-  with Kubespray
-
   * `github/ci/services`: Code to manage additional CI services
 
   * `github/ci/testgrid`: Code to manage the configuration for our
@@ -32,11 +29,17 @@ depending on billing alerts. See [README](limiter/README.md)
 
 * `robots`: Automation tools
 
+  * `robots/cmd/botreview`: Tool to automate reviews of repetitive PRs that are created through automation
+
   * `robots/cmd/ci-usage-exporter`: Prometheus exporter to expose CI infrastructure
   information
 
+  * `robots/cmd/dependabot`: Tool to create PRs to resolve Github dependabot alerts in kubevirt org repositories
+
   * `robots/cmd/flakefinder`: Tool to create statistics from failed tests of PRs.
   See [README](robots/cmd/flakefinder/README.md)
+
+  * `robots/cmd/flake-stats`: Provides a more condensed view on where flakes are causing the most impact. See [README](robots/cmd/flake-stats/README.md)
 
   * `robots/cmd/indexpagecreator`: Creates flakefinder index page
 
