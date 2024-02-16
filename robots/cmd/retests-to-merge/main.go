@@ -54,7 +54,7 @@ func main() {
 	org := "kubevirt"
 	repo := "kubevirt"
 
-	numberOfRetestCommentsForLatestCommit, err := ghgraphql.FetchNumberOfRetestCommentsForLatestCommit(gitHubClient, org, repo, prNumber)
+	numberOfRetestCommentsForLatestCommit, err := ghgraphql.NewClient(gitHubClient).FetchNumberOfRetestCommentsForLatestCommit(org, repo, prNumber)
 	if err != nil {
 		logrus.Fatalf("failed to fetch number of retest comments for pr %s/%s#%d: %v", org, repo, prNumber, err)
 	}

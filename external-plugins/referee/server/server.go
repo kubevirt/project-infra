@@ -22,10 +22,10 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"github.com/shurcooL/githubv4"
 	"github.com/sirupsen/logrus"
 	"k8s.io/test-infra/prow/config"
 	"k8s.io/test-infra/prow/github"
+	"k8s.io/test-infra/prow/pjutil"
 	"k8s.io/test-infra/prow/pluginhelp"
 	"kubevirt.io/project-infra/external-plugins/referee/ghgraphql"
 	"net/http"
@@ -51,6 +51,10 @@ func HelpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	return pluginHelp, nil
 }
 
+type githubClient interface {
+	CreateComment(org, repo string, number int, comment string) error
+}
+
 // Server implements http.Handler. It validates incoming GitHub webhooks and
 // then dispatches them to the appropriate plugins.
 type Server struct {
@@ -59,8 +63,8 @@ type Server struct {
 
 	Log *logrus.Entry
 
-	GithubClient    github.Client
-	GHGraphQLClient *githubv4.Client
+	GithubClient    githubClient
+	GHGraphQLClient ghgraphql.GitHubGraphQLClient
 
 	// Whether to create comments on PRs or to just write them to the log
 	DryRun bool
@@ -94,7 +98,7 @@ func (s *Server) handleEvent(eventType, eventGUID string, payload []byte) error 
 		}
 		go func() {
 			if err := s.handlePullRequestComment(ic); err != nil {
-				s.Log.WithError(err).WithFields(l.Data).Infof("%s failed.", PluginName)
+				s.Log.WithError(err).WithFields(l.Data).Errorf("%s failed.", PluginName)
 			}
 		}()
 	default:
@@ -107,14 +111,8 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 	org := ic.Repo.Owner.Login
 	repo := ic.Repo.Name
 	num := ic.Issue.Number
-
-	if !ic.Issue.IsPullRequest() {
-		s.Log.Debugf("skipping referee since %s/%s#%d is not a pull request", org, repo, num)
-		return nil
-	}
-
-	user := ic.Comment.User.Login
 	action := ic.Action
+	user := ic.Comment.User.Login
 
 	switch action {
 	case github.IssueCommentActionCreated:
@@ -122,7 +120,20 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 		s.Log.Debugf("skipping referee for action %s on pull request %s/%s#%d by %s", action, org, repo, num, user)
 		return nil
 	}
-	numberOfRetestCommentsForLatestCommit, err := ghgraphql.FetchNumberOfRetestCommentsForLatestCommit(s.GHGraphQLClient, org, repo, num)
+
+	if !ic.Issue.IsPullRequest() {
+		s.Log.Debugf("skipping referee since %s/%s#%d is not a pull request", org, repo, num)
+		return nil
+	}
+
+	if !pjutil.RetestRe.MatchString(ic.Comment.Body) &&
+		!pjutil.RetestRequiredRe.MatchString(ic.Comment.Body) &&
+		!pjutil.TestAllRe.MatchString(ic.Comment.Body) {
+		s.Log.Debugf("skipping referee since  %s/%s#%d comment didn't contain command triggering tests", org, repo, num)
+		return nil
+	}
+
+	numberOfRetestCommentsForLatestCommit, err := s.GHGraphQLClient.FetchNumberOfRetestCommentsForLatestCommit(org, repo, num)
 	if err != nil {
 		s.Log.Fatalf("failed to fetch number of retest comments for pr %s/%s#%d: %v", org, repo, num, err)
 	}

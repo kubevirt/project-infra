@@ -28,9 +28,21 @@ import (
 	"time"
 )
 
-// FetchNumberOfRetestCommentsForLatestCommit returns the number of /retest or /test comments a PR received
-// after the last commit or force push.
-func FetchNumberOfRetestCommentsForLatestCommit(gitHubClient *githubv4.Client, org string, repo string, prNumber int) (int, error) {
+type GitHubGraphQLClient interface {
+	// FetchNumberOfRetestCommentsForLatestCommit returns the number of /retest or /test comments a PR received
+	// after the last commit or force push.
+	FetchNumberOfRetestCommentsForLatestCommit(org string, repo string, prNumber int) (int, error)
+}
+
+type gitHubGraphQLClient struct {
+	gitHubClient *githubv4.Client
+}
+
+func NewClient(gitHubClient *githubv4.Client) GitHubGraphQLClient {
+	return gitHubGraphQLClient{gitHubClient: gitHubClient}
+}
+
+func (g gitHubGraphQLClient) FetchNumberOfRetestCommentsForLatestCommit(org string, repo string, prNumber int) (int, error) {
 	var query struct {
 		Repository struct {
 			PullRequest struct {
@@ -44,7 +56,7 @@ func FetchNumberOfRetestCommentsForLatestCommit(gitHubClient *githubv4.Client, o
 		"repo":     githubv4.String(repo),
 	}
 
-	err := gitHubClient.Query(context.Background(), &query, variables)
+	err := g.gitHubClient.Query(context.Background(), &query, variables)
 	if err != nil {
 		return 0, fmt.Errorf("failed to use github query %+v with variables %v: %w", query, variables, err)
 	}

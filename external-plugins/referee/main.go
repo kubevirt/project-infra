@@ -30,6 +30,7 @@ import (
 	prowflagutil "k8s.io/test-infra/prow/flagutil"
 	"k8s.io/test-infra/prow/interrupts"
 	"k8s.io/test-infra/prow/pluginhelp/externalplugins"
+	"kubevirt.io/project-infra/external-plugins/referee/ghgraphql"
 	"kubevirt.io/project-infra/external-plugins/referee/server"
 	"net/http"
 	"os"
@@ -104,15 +105,14 @@ func main() {
 	)
 	httpClient := oauth2.NewClient(context.Background(), src)
 
-	var ghGraphQLClient *githubv4.Client
-	ghGraphQLClient = githubv4.NewClient(httpClient)
+	gitHubGQLCLient := ghgraphql.NewClient(githubv4.NewClient(httpClient))
 
 	pluginServer := &server.Server{
 		TokenGenerator: secret.GetTokenGenerator(o.webhookSecretFile),
 		BotName:        botUserData.Name,
 
 		GithubClient:    githubClient,
-		GHGraphQLClient: ghGraphQLClient,
+		GHGraphQLClient: gitHubGQLCLient,
 		Log:             log,
 
 		DryRun: o.dryRun,

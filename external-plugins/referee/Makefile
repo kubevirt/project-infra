@@ -1,10 +1,13 @@
 
-.PHONY: all format push
+.PHONY: all build test format push
 all: format push
 bazelbin := bazelisk
 
 build:
 	$(bazelbin) build //external-plugins/referee/...
+
+test:
+	$(bazelbin) test //external-plugins/referee/...
 
 format:
 	gofmt -w .
