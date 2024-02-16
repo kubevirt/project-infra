@@ -95,3 +95,40 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
+- name: periodic-kubevirtci-bump-centos-base
+  cron: "0 4 * * 2"
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 2h
+  max_concurrency: 1
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirtci
+    base_ref: main
+    workdir: true
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+  labels:
+    preset-docker-mirror: "true"
+    preset-github-credentials: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-kubevirtci-quay-credential: "true"
+  cluster: kubevirt-prow-workloads
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
+      command:
+      - "/usr/local/bin/runner.sh"
+      - "/bin/bash"
+      - "-c"
+      - >
+        cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
+        GIT_ASKPASS=../project-infra/hack/git-askpass.sh ../project-infra/hack/git-pr.sh -c "PHASES=linux BYPASS_PMAN_CHANGE_CHECK=true ./publish.sh" -r kubevirtci -b bump-centos-stream -T main -p $(pwd) -s "Automatic bump of CentOS Stream to latest"
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "29Gi"

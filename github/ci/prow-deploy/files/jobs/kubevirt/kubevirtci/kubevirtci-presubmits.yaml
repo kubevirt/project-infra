@@ -242,7 +242,14 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cd cluster-provision/k8s/1.27 && KUBEVIRT_PSA='true' ../provision.sh
+        - cd cluster-provision/k8s/1.27 && ../provision.sh
+        env:
+        - name: KUBEVIRT_PSA
+          value: "true"
+        - name: PHASES
+          value: "k8s"
+        - name: CHECK_CLUSTER
+          value: "true"
         image: quay.io/kubevirtci/golang:v20240229-74549d5
         name: ""
         resources:
@@ -268,7 +275,14 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cd cluster-provision/k8s/1.28 && KUBEVIRT_PSA='true' ../provision.sh
+        - cd cluster-provision/k8s/1.28 && ../provision.sh
+        env:
+        - name: KUBEVIRT_PSA
+          value: "true"
+        - name: PHASES
+          value: "k8s"
+        - name: CHECK_CLUSTER
+          value: "true"
         image: quay.io/kubevirtci/golang:v20240229-74549d5
         name: ""
         resources:
@@ -320,7 +334,14 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cd cluster-provision/k8s/1.29 && KUBEVIRT_PSA='true' ../provision.sh
+        - cd cluster-provision/k8s/1.29 && ../provision.sh
+        env:
+        - name: KUBEVIRT_PSA
+          value: "true"
+        - name: PHASES
+          value: "k8s"
+        - name: CHECK_CLUSTER
+          value: "true"
         image: quay.io/kubevirtci/golang:v20240229-74549d5
         name: ""
         resources:
@@ -347,7 +368,14 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cd cluster-provision/k8s/1.30 && KUBEVIRT_PSA='true' ../provision.sh
+        - cd cluster-provision/k8s/1.30 && ../provision.sh
+        env:
+        - name: KUBEVIRT_PSA
+          value: "true"
+        - name: PHASES
+          value: "k8s"
+        - name: CHECK_CLUSTER
+          value: "true"
         image: quay.io/kubevirtci/golang:v20240229-74549d5
         name: ""
         resources:
