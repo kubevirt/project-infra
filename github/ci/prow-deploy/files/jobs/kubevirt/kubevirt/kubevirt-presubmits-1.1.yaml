@@ -12,7 +12,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -71,7 +70,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
@@ -295,7 +293,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-generate-1.1
@@ -323,7 +320,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-verify-rpms-1.1
@@ -353,7 +349,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-verify-go-mod-1.1
@@ -383,7 +378,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-gosec-1.1
@@ -440,7 +434,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-build-1.1
@@ -468,7 +461,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-build-arm64-1.1
@@ -499,7 +491,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-unit-test-1.1
@@ -527,7 +518,6 @@ presubmits:
       grace_period: 10m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-goveralls-1.1
@@ -567,7 +557,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-apidocs-1.1
@@ -595,7 +584,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-client-python-1.1
@@ -623,7 +611,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-manifests-1.1
@@ -651,7 +638,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-prom-rules-verify-1.1
@@ -679,7 +665,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-check-unassigned-tests-1.1
@@ -707,7 +692,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -748,7 +732,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -788,7 +771,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -831,7 +813,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -925,7 +906,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -956,7 +936,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 11
@@ -987,7 +966,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1030,7 +1008,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1067,7 +1044,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1115,7 +1091,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1155,7 +1130,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1196,7 +1170,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1235,7 +1208,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1275,7 +1247,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1318,7 +1289,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1362,7 +1332,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1403,7 +1372,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1444,7 +1412,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1483,7 +1450,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1526,7 +1492,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1567,7 +1532,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1608,7 +1572,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1649,7 +1612,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1688,7 +1650,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1731,7 +1692,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1772,7 +1732,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 11
