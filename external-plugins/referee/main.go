@@ -52,6 +52,7 @@ type options struct {
 	labels prowflagutil.Strings
 
 	webhookSecretFile string
+	team              string
 }
 
 func (o *options) Validate() error {
@@ -70,6 +71,7 @@ func gatherOptions() options {
 	fs.IntVar(&o.port, "port", 8888, "Port to listen on.")
 	fs.BoolVar(&o.dryRun, "dry-run", true, "Dry run for testing. Uses API tokens but does not mutate.")
 	fs.StringVar(&o.webhookSecretFile, "hmac-secret-file", "/etc/webhook/hmac", "Path to the file containing the GitHub HMAC secret.")
+	fs.StringVar(&o.team, "team", "sig-buildsystem", "Name of the GitHub team that should be pinged.")
 	for _, group := range []flagutil.OptionGroup{&o.github} {
 		group.AddFlags(fs)
 	}
@@ -110,6 +112,7 @@ func main() {
 	pluginServer := &server.Server{
 		TokenGenerator: secret.GetTokenGenerator(o.webhookSecretFile),
 		BotName:        botUserData.Name,
+		Team:           o.team,
 
 		GithubClient:    githubClient,
 		GHGraphQLClient: gitHubGQLCLient,

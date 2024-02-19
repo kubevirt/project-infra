@@ -1001,6 +1001,13 @@ orgs:
          - brianmcarey
          - enp0s3
          - xpivarc
+      sig-buildsystem:
+        description: "Users who are responsible for when things go wrong wrt CI."
+        members:
+        - dhiller
+        - brianmcarey
+        - enp0s3
+        - xpivarc
       sig-scale:
         description: members of the scale and performance group
         members:

@@ -1,0 +1,43 @@
+{{- /*
+This file is part of the KubeVirt project
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Copyright the KubeVirt authors.
+*/ -}}
+{{- /* gotype: kubevirt.io/project-infra/external-plugins/referee/server.TooManyRequestsData */ -}}
+✋🧢
+
+/hold
+
+Dear @{{ $.Author }}
+
+⚠️ this pull request exceeds the number of retests that are allowed per individual commit.
+
+🔎 Please check that the changes you committed are fine and that there are no infrastructure issues present!
+
+👌 After all issues have been resolved, you can remove the hold on this pull request by commenting `/unhold` on it.
+
+🙇 Thank you, your friendly referee automation, on behalf of the @{{ $.Team }} and the KubeVirt community!
+
+<details>
+Checklist:
+
+✅ your changes compile
+✅ no linting errors
+✅ no unit test errors
+✅ no recurring e2e test errors, i.e. in the check-tests-for-flakes lane
+✅ no infrastructure issues, i.e. [GitHub Status](https://www.githubstatus.com/)
+
+💬 How we calculate the number of retests: The number of retest comments are the number of `/test` or `/retest` comments _after_ the latest commit only. Note that Phase2 comments are excluded from this number.
+</details>

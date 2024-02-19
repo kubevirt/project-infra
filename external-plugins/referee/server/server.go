@@ -19,10 +19,12 @@
 package server
 
 import (
+	"bytes"
 	_ "embed"
 	"encoding/json"
 	"fmt"
 	"github.com/sirupsen/logrus"
+	"html/template"
 	"k8s.io/test-infra/prow/config"
 	"k8s.io/test-infra/prow/github"
 	"k8s.io/test-infra/prow/pjutil"
@@ -33,8 +35,22 @@ import (
 
 const PluginName = "referee"
 
-//go:embed tooManyRetestsComment.md
-var tooManyRetestsComment string
+type TooManyRequestsData struct {
+	Author string
+	Team   string
+}
+
+//go:embed tooManyRetestsComment.gomd
+var tooManyRetestsCommentTemplateBase string
+var tooManyRetestsCommentTemplate *template.Template
+
+func init() {
+	var err error
+	tooManyRetestsCommentTemplate, err = template.New("TooManyRequestsCommentTemplate").Parse(tooManyRetestsCommentTemplateBase)
+	if err != nil {
+		panic(fmt.Errorf("couldn't parse tooManyRetestsComment.gomd: %w", err))
+	}
+}
 
 // HelpProvider construct the pluginhelp.PluginHelp for this plugin.
 func HelpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
@@ -66,8 +82,11 @@ type Server struct {
 	GithubClient    githubClient
 	GHGraphQLClient ghgraphql.GitHubGraphQLClient
 
-	// Whether to create comments on PRs or to just write them to the log
+	// DryRun says whether to create comments on PRs or to just write them to the log
 	DryRun bool
+
+	// Team is the name of the GitHub team that should be pinged
+	Team string
 }
 
 // ServeHTTP validates an incoming webhook and puts it into the event channel.
@@ -144,7 +163,15 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 	}
 
 	if !s.DryRun {
-		err = s.GithubClient.CreateComment(org, repo, num, tooManyRetestsComment)
+		var output bytes.Buffer
+		err := tooManyRetestsCommentTemplate.Execute(&output, TooManyRequestsData{
+			Author: user,
+			Team:   s.Team,
+		})
+		if err != nil {
+			return fmt.Errorf("error while rendering comment template: %v", err)
+		}
+		err = s.GithubClient.CreateComment(org, repo, num, output.String())
 		if err != nil {
 			return fmt.Errorf("error while creating review comment: %v", err)
 		}
