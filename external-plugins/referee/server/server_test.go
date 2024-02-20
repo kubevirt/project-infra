@@ -62,6 +62,16 @@ func (_m *fakeGitHubGraphQLClient) FetchPRTimeLineForLastCommit(org string, repo
 	return arguments.Get(0).(ghgraphql.PRTimelineForLastCommit), arguments.Error(1)
 }
 
+func (_m *fakeGitHubGraphQLClient) FetchPRLabels(org string, repo string, prNumber int) (ghgraphql.PRLabels, error) {
+	arguments := _m.Called(org, repo, prNumber)
+	return arguments.Get(0).(ghgraphql.PRLabels), arguments.Error(1)
+}
+
+func (_m *fakeGitHubGraphQLClient) FetchOpenApprovedAndLGTMedPRs(org string, repo string) (ghgraphql.PullRequests, error) {
+	arguments := _m.Called(org, repo, prNumber)
+	return arguments.Get(0).(ghgraphql.PullRequests), arguments.Error(1)
+}
+
 var _ = Describe("", func() {
 	Context("handlePullRequestComment", func() {
 		var server Server
@@ -164,6 +174,7 @@ var _ = Describe("", func() {
 		It("fetches number of retests on test-all comment, then posts comment", func() {
 			mockGitHubGraphQLClient.On(
 				"FetchPRTimeLineForLastCommit", org, repo, prNumber).Return(ghgraphql.PRTimelineForLastCommit{NumberOfRetestComments: 5}, nil)
+			mockGitHubGraphQLClient.On("FetchPRLabels", org, repo, prNumber).Return(ghgraphql.PRLabels{}, nil)
 			mockGitHubClient.On("CreateComment", org, repo, prNumber, mock.Anything).Return(nil)
 			Expect(server.handlePullRequestComment(github.IssueCommentEvent{
 				Action: github.IssueCommentActionCreated,
@@ -190,6 +201,7 @@ var _ = Describe("", func() {
 		It("fetches number of retests on retest-required comment, then posts comment", func() {
 			mockGitHubGraphQLClient.On(
 				"FetchPRTimeLineForLastCommit", org, repo, prNumber).Return(ghgraphql.PRTimelineForLastCommit{NumberOfRetestComments: 5}, nil)
+			mockGitHubGraphQLClient.On("FetchPRLabels", org, repo, prNumber).Return(ghgraphql.PRLabels{}, nil)
 			mockGitHubClient.On("CreateComment", org, repo, prNumber, mock.Anything).Return(nil)
 			Expect(server.handlePullRequestComment(github.IssueCommentEvent{
 				Action: github.IssueCommentActionCreated,
@@ -213,11 +225,132 @@ var _ = Describe("", func() {
 			mockGitHubGraphQLClient.AssertExpectations(GinkgoT())
 			mockGitHubClient.AssertExpectations(GinkgoT())
 		})
-		It("fetches number of retests on retest-required comment, but doesn't post comment if hold present", func() {
+		It("fetches number of retests on retest-required comment, but doesn't post comment if previous hold from botuser present", func() {
 			mockGitHubGraphQLClient.On(
 				"FetchPRTimeLineForLastCommit", org, repo, prNumber,
 			).Return(
-				ghgraphql.PRTimelineForLastCommit{NumberOfRetestComments: 5, WasHeld: true}, nil,
+				ghgraphql.PRTimelineForLastCommit{
+					NumberOfRetestComments: 5,
+					WasHeld:                true,
+					PRTimeLineItems: []ghgraphql.PRTimeLineItem{
+						{
+							ItemType: ghgraphql.HoldComment,
+							Item: ghgraphql.TimelineItem{
+								IssueCommentFragment: ghgraphql.IssueCommentFragment{
+									Author: ghgraphql.Author{
+										Login: botuser,
+									},
+								},
+							},
+						},
+					},
+				}, nil,
+			)
+			mockGitHubGraphQLClient.On("FetchPRLabels", org, repo, prNumber).Return(ghgraphql.PRLabels{
+				IsHoldPresent: false,
+			}, nil)
+			Expect(server.handlePullRequestComment(github.IssueCommentEvent{
+				Action: github.IssueCommentActionCreated,
+				Issue: github.Issue{
+					Number:      prNumber,
+					PullRequest: &struct{}{},
+				},
+				Comment: github.IssueComment{
+					User: github.User{Login: user},
+					Body: `This is a comment triggering a test on a pull request
+
+/retest-required
+`,
+				},
+				Repo: github.Repo{
+					Owner: github.User{Login: org},
+					Name:  repo,
+				},
+				GUID: "",
+			})).ShouldNot(HaveOccurred())
+			mockGitHubGraphQLClient.AssertExpectations(GinkgoT())
+			mockGitHubClient.AssertExpectations(GinkgoT())
+		})
+		It("fetches number of retests on retest-required comment and posts comment if previous hold from other user but no hold currently present", func() {
+			mockGitHubGraphQLClient.On(
+				"FetchPRTimeLineForLastCommit", org, repo, prNumber,
+			).Return(
+				ghgraphql.PRTimelineForLastCommit{
+					NumberOfRetestComments: 5,
+					WasHeld:                true,
+					PRTimeLineItems: []ghgraphql.PRTimeLineItem{
+						{
+							ItemType: ghgraphql.HoldComment,
+							Item: ghgraphql.TimelineItem{
+								IssueCommentFragment: ghgraphql.IssueCommentFragment{
+									Author: ghgraphql.Author{
+										Login: user,
+									},
+								},
+							},
+						},
+					},
+				}, nil,
+			)
+			mockGitHubGraphQLClient.On(
+				"FetchPRLabels", org, repo, prNumber,
+			).Return(
+				ghgraphql.PRLabels{
+					IsHoldPresent: false,
+				},
+				nil,
+			)
+			mockGitHubClient.On("CreateComment", org, repo, prNumber, mock.Anything).Return(nil)
+			Expect(server.handlePullRequestComment(github.IssueCommentEvent{
+				Action: github.IssueCommentActionCreated,
+				Issue: github.Issue{
+					Number:      prNumber,
+					PullRequest: &struct{}{},
+				},
+				Comment: github.IssueComment{
+					User: github.User{Login: user},
+					Body: `This is a comment triggering a test on a pull request
+
+/retest-required
+`,
+				},
+				Repo: github.Repo{
+					Owner: github.User{Login: org},
+					Name:  repo,
+				},
+				GUID: "",
+			})).ShouldNot(HaveOccurred())
+			mockGitHubGraphQLClient.AssertExpectations(GinkgoT())
+			mockGitHubClient.AssertExpectations(GinkgoT())
+		})
+		It("fetches number of retests on retest-required comment and does not post comment if a hold is currently present", func() {
+			mockGitHubGraphQLClient.On(
+				"FetchPRTimeLineForLastCommit", org, repo, prNumber,
+			).Return(
+				ghgraphql.PRTimelineForLastCommit{
+					NumberOfRetestComments: 5,
+					WasHeld:                true,
+					PRTimeLineItems: []ghgraphql.PRTimeLineItem{
+						{
+							ItemType: ghgraphql.HoldComment,
+							Item: ghgraphql.TimelineItem{
+								IssueCommentFragment: ghgraphql.IssueCommentFragment{
+									Author: ghgraphql.Author{
+										Login: user,
+									},
+								},
+							},
+						},
+					},
+				}, nil,
+			)
+			mockGitHubGraphQLClient.On(
+				"FetchPRLabels", org, repo, prNumber,
+			).Return(
+				ghgraphql.PRLabels{
+					IsHoldPresent: true,
+				},
+				nil,
 			)
 			Expect(server.handlePullRequestComment(github.IssueCommentEvent{
 				Action: github.IssueCommentActionCreated,
@@ -244,6 +377,7 @@ var _ = Describe("", func() {
 		It("handles test-all comment if the bot user is the commenter", func() {
 			mockGitHubGraphQLClient.On(
 				"FetchPRTimeLineForLastCommit", org, repo, prNumber).Return(ghgraphql.PRTimelineForLastCommit{NumberOfRetestComments: 5}, nil)
+			mockGitHubGraphQLClient.On("FetchPRLabels", org, repo, prNumber).Return(ghgraphql.PRLabels{}, nil)
 			mockGitHubClient.On("CreateComment", org, repo, prNumber, mock.Anything).Return(nil)
 			Expect(server.handlePullRequestComment(github.IssueCommentEvent{
 				Action: github.IssueCommentActionCreated,

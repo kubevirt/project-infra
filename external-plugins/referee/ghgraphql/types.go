@@ -23,9 +23,58 @@ import (
 	"time"
 )
 
+// PRTimelineForLastCommit represents the specific events a PR has received
+type PRTimelineForLastCommit struct {
+
+	// NumberOfRetestComments is the number of `/(re)test` comments that triggered a testing on the PR
+	NumberOfRetestComments int
+
+	// WasHeld determines whether the PR did receive a `/hold` comment
+	WasHeld bool
+
+	// WasHoldCanceled determines whether the PR did receive an `/unhold` or `/hold cancel` comment
+	WasHoldCanceled bool
+
+	// PRTimeLineItems holds all specific events and their data in order of appearance
+	PRTimeLineItems []PRTimeLineItem
+}
+
+type PRTimeLineItemType string
+
+const (
+	RetestComment    PRTimeLineItemType = "retest_comment"
+	HoldComment      PRTimeLineItemType = "hold_comment"
+	UnholdComment    PRTimeLineItemType = "unhold_comment"
+	HoldLabelAdded   PRTimeLineItemType = "hold_label_added"
+	HoldLabelRemoved PRTimeLineItemType = "hold_label_removed"
+)
+
+type PRTimeLineItem struct {
+	ItemType PRTimeLineItemType
+	Item     TimelineItem
+}
+
+type PRLabels struct {
+	IsHoldPresent bool
+	Labels        []Label
+}
+
+type PullRequests struct {
+	PRs []PullRequest
+}
+
+type PullRequest struct {
+	Number int
+	Title  string
+}
+
+type Author struct {
+	Login string
+}
 type IssueCommentFragment struct {
 	CreatedAt time.Time
 	BodyText  string
+	Author    Author
 }
 
 type Commit struct {
@@ -48,6 +97,14 @@ type BaseRefForcePushFragment struct {
 type HeadRefForcePushFragment struct {
 	Actor     Actor
 	CreatedAt time.Time
+}
+
+type Label struct {
+	Name string
+}
+
+type Labels struct {
+	Nodes []Label
 }
 
 type TimelineItem struct {

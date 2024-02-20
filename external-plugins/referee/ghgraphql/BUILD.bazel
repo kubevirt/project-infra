@@ -3,7 +3,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = [
-        "retests.go",
+        "client.go",
+        "labels.go",
+        "pullrequests.go",
+        "timeline.go",
         "types.go",
     ],
     importpath = "kubevirt.io/project-infra/external-plugins/referee/ghgraphql",

@@ -34,6 +34,7 @@ import (
 )
 
 const PluginName = "referee"
+const defaultMaximumNumberOfAllowedRetestComments = 5
 
 type TooManyRequestsData struct {
 	Author string
@@ -133,38 +134,61 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 	action := ic.Action
 	user := ic.Comment.User.Login
 
+	pullRequestURL := fmt.Sprintf("https://github.com/%s/%s/pull/%d", org, repo, num)
+	log := s.Log.WithField("pull_request_url", pullRequestURL)
+
 	switch action {
 	case github.IssueCommentActionCreated:
 	default:
-		s.Log.Debugf("skipping referee for action %s on pull request %s/%s#%d by %s", action, org, repo, num, user)
+		log.Debugf("skipping for action %s by %s", action, user)
 		return nil
 	}
 
 	if !ic.Issue.IsPullRequest() {
-		s.Log.Debugf("skipping referee since %s/%s#%d is not a pull request", org, repo, num)
+		log.Debugf("skipping since not a pull request")
 		return nil
 	}
 
 	if !pjutil.RetestRe.MatchString(ic.Comment.Body) &&
 		!pjutil.RetestRequiredRe.MatchString(ic.Comment.Body) &&
 		!pjutil.TestAllRe.MatchString(ic.Comment.Body) {
-		s.Log.Debugf("skipping referee since %s/%s#%d comment didn't contain command triggering tests", org, repo, num)
+		log.Debugf("skipping since comment didn't contain command triggering tests")
 		return nil
 	}
 
 	prTimeLineForLastCommit, err := s.GHGraphQLClient.FetchPRTimeLineForLastCommit(org, repo, num)
 	if err != nil {
-		s.Log.Fatalf("failed to fetch number of retest comments for pr %s/%s#%d: %v", org, repo, num, err)
+		return fmt.Errorf("%s - failed to fetch number of retest comments: %w", pullRequestURL, err)
 	}
 
-	if prTimeLineForLastCommit.NumberOfRetestComments < 5 {
-		s.Log.Debugf("skipping referee due to less number of retest comments for pr %s/%s#%d: %v", org, repo, num, prTimeLineForLastCommit)
+	if prTimeLineForLastCommit.NumberOfRetestComments < defaultMaximumNumberOfAllowedRetestComments {
+		log.Debugf("skipping due to number of retest comments (%d) less than max allowed (%d)", prTimeLineForLastCommit.NumberOfRetestComments, defaultMaximumNumberOfAllowedRetestComments)
+		return nil
+	}
+
+	log.Warnf("excessive number of retest comments: %d", prTimeLineForLastCommit.NumberOfRetestComments)
+
+	labels, err := s.GHGraphQLClient.FetchPRLabels(org, repo, num)
+	if err != nil {
+		return fmt.Errorf("%s - failed to fetch labels: %w", pullRequestURL, err)
+	}
+	if labels.IsHoldPresent {
+		log.Infof("skipping due to hold present")
 		return nil
 	}
 
 	if prTimeLineForLastCommit.WasHeld {
-		s.Log.Debugf("skipping referee due to hold present for pr %s/%s#%d: %v", org, repo, num, prTimeLineForLastCommit)
-		return nil
+		for _, item := range prTimeLineForLastCommit.PRTimeLineItems {
+			switch item.ItemType {
+			case ghgraphql.HoldComment:
+				if item.Item.Author.Login == s.BotName {
+					log.Infof("skipping due to previous hold set by user %s", item.Item.Author.Login)
+					return nil
+				}
+			default:
+				continue
+			}
+		}
 	}
 
 	if !s.DryRun {
@@ -180,8 +204,6 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 		if err != nil {
 			return fmt.Errorf("error while creating review comment: %v", err)
 		}
-	} else {
-		s.Log.Warnf("excessive number of retest comments for pr %s/%s#%d: %v", org, repo, num, prTimeLineForLastCommit)
 	}
 	return nil
 }

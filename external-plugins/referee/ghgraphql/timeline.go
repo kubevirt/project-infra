@@ -29,33 +29,6 @@ import (
 	"time"
 )
 
-type GitHubGraphQLClient interface {
-	// FetchPRTimeLineForLastCommit returns specific events a PR has received
-	// after the last commit or force push.
-	FetchPRTimeLineForLastCommit(org string, repo string, prNumber int) (PRTimelineForLastCommit, error)
-}
-
-type gitHubGraphQLClient struct {
-	gitHubClient *githubv4.Client
-}
-
-func NewClient(gitHubClient *githubv4.Client) GitHubGraphQLClient {
-	return gitHubGraphQLClient{gitHubClient: gitHubClient}
-}
-
-// PRTimelineForLastCommit represents the specific events a PR has received
-type PRTimelineForLastCommit struct {
-
-	// NumberOfRetestComments is the number of `/(re)test` comments that triggered a testing on the PR
-	NumberOfRetestComments int
-
-	// WasHeld determines whether the PR did receive a `/hold` comment
-	WasHeld bool
-
-	// WasHoldCanceled determines whether the PR did receive an `/unhold` or `/hold cancel` comment
-	WasHoldCanceled bool
-}
-
 var (
 	cmdHoldRegex   = regexp.MustCompile(`(?mi)^/hold(\s.*)?$`)
 	cmdUnholdRegex = regexp.MustCompile(`(?mi)^/(remove-hold|hold\s+cancel|unhold)\s*$`)
@@ -100,14 +73,16 @@ func fetchPRTimeLineItemsFromGraphQuery(timelineItems TimelineItems) PRTimelineF
 		if strings.Contains(timelineItem.BodyText, phase2Intro) {
 			continue
 		}
-		if isRetestCommentAfterLastPush(timelineItem, lastPush) {
+		switch {
+		case isRetestCommentAfterLastPush(timelineItem, lastPush):
 			result.NumberOfRetestComments += 1
-		}
-		if isHoldCommentAfterLastPush(timelineItem, lastPush) {
+			result.PRTimeLineItems = append(result.PRTimeLineItems, PRTimeLineItem{ItemType: RetestComment, Item: timelineItem})
+		case isHoldCommentAfterLastPush(timelineItem, lastPush):
 			result.WasHeld = true
-		}
-		if isUnholdCommentAfterLastPush(timelineItem, lastPush) {
+			result.PRTimeLineItems = append(result.PRTimeLineItems, PRTimeLineItem{ItemType: HoldComment, Item: timelineItem})
+		case isUnholdCommentAfterLastPush(timelineItem, lastPush):
 			result.WasHoldCanceled = true
+			result.PRTimeLineItems = append(result.PRTimeLineItems, PRTimeLineItem{ItemType: UnholdComment, Item: timelineItem})
 		}
 	}
 	return result
@@ -120,16 +95,16 @@ func determineLastPush(timelineItems TimelineItems) time.Time {
 	for _, timelineItem := range timelineItems.Nodes {
 		if isCommit(timelineItem) {
 			itemDate = timelineItem.PullRequestCommitFragment.Commit.CommittedDate
-			logrus.Infof("commit found: %+v", timelineItem.PullRequestCommitFragment)
+			logrus.Debugf("commit found: %+v", timelineItem.PullRequestCommitFragment)
 		} else if isHeadRefForcePush(timelineItem) {
 			itemDate = timelineItem.HeadRefForcePushFragment.CreatedAt
-			logrus.Infof("head ref force push found: %+v", timelineItem.HeadRefForcePushFragment)
+			logrus.Debugf("head ref force push found: %+v", timelineItem.HeadRefForcePushFragment)
 		} else if isBaseRefForcePush(timelineItem) {
 			itemDate = timelineItem.BaseRefForcePushFragment.CreatedAt
-			logrus.Infof("base ref force push found: %+v", timelineItem.BaseRefForcePushFragment)
+			logrus.Debugf("base ref force push found: %+v", timelineItem.BaseRefForcePushFragment)
 		}
 		if itemDate.After(lastPush) {
-			logrus.Infof("updating last push: %+v", lastPush)
+			logrus.Debugf("updating last push: %+v", lastPush)
 			lastPush = itemDate
 		}
 	}
