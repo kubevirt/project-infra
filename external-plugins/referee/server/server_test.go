@@ -25,6 +25,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/mock"
 	"k8s.io/test-infra/prow/github"
+	"kubevirt.io/project-infra/external-plugins/referee/ghgraphql"
 )
 
 const (
@@ -56,9 +57,9 @@ func newFakeGitHubGraphQLClient() *fakeGitHubGraphQLClient {
 	return &fakeGitHubGraphQLClient{}
 }
 
-func (_m *fakeGitHubGraphQLClient) FetchNumberOfRetestCommentsForLatestCommit(org string, repo string, prNumber int) (int, error) {
+func (_m *fakeGitHubGraphQLClient) FetchPRTimeLineForLastCommit(org string, repo string, prNumber int) (ghgraphql.PRTimelineForLastCommit, error) {
 	arguments := _m.Called(org, repo, prNumber)
-	return arguments.Int(0), arguments.Error(1)
+	return arguments.Get(0).(ghgraphql.PRTimelineForLastCommit), arguments.Error(1)
 }
 
 var _ = Describe("", func() {
@@ -134,7 +135,10 @@ var _ = Describe("", func() {
 		})
 		It("fetches number of retests on test all comment, but doesn't place comment since not enough retest comments found", func() {
 			mockGitHubGraphQLClient.On(
-				"FetchNumberOfRetestCommentsForLatestCommit", org, repo, prNumber).Return(4, nil)
+				"FetchPRTimeLineForLastCommit", org, repo, prNumber,
+			).Return(
+				ghgraphql.PRTimelineForLastCommit{NumberOfRetestComments: 4}, nil,
+			)
 			Expect(server.handlePullRequestComment(github.IssueCommentEvent{
 				Action: github.IssueCommentActionCreated,
 				Issue: github.Issue{
@@ -159,7 +163,7 @@ var _ = Describe("", func() {
 		})
 		It("fetches number of retests on test-all comment, then places comment", func() {
 			mockGitHubGraphQLClient.On(
-				"FetchNumberOfRetestCommentsForLatestCommit", org, repo, prNumber).Return(5, nil)
+				"FetchPRTimeLineForLastCommit", org, repo, prNumber).Return(ghgraphql.PRTimelineForLastCommit{NumberOfRetestComments: 5}, nil)
 			mockGitHubClient.On("CreateComment", org, repo, prNumber, mock.Anything).Return(nil)
 			Expect(server.handlePullRequestComment(github.IssueCommentEvent{
 				Action: github.IssueCommentActionCreated,
@@ -185,8 +189,36 @@ var _ = Describe("", func() {
 		})
 		It("fetches number of retests on retest-required comment, then places comment", func() {
 			mockGitHubGraphQLClient.On(
-				"FetchNumberOfRetestCommentsForLatestCommit", org, repo, prNumber).Return(5, nil)
+				"FetchPRTimeLineForLastCommit", org, repo, prNumber).Return(ghgraphql.PRTimelineForLastCommit{NumberOfRetestComments: 5}, nil)
 			mockGitHubClient.On("CreateComment", org, repo, prNumber, mock.Anything).Return(nil)
+			Expect(server.handlePullRequestComment(github.IssueCommentEvent{
+				Action: github.IssueCommentActionCreated,
+				Issue: github.Issue{
+					Number:      prNumber,
+					PullRequest: &struct{}{},
+				},
+				Comment: github.IssueComment{
+					User: github.User{Login: user},
+					Body: `This is a comment triggering a test on a pull request
+
+/retest-required
+`,
+				},
+				Repo: github.Repo{
+					Owner: github.User{Login: org},
+					Name:  repo,
+				},
+				GUID: "",
+			})).ShouldNot(HaveOccurred())
+			mockGitHubGraphQLClient.AssertExpectations(GinkgoT())
+			mockGitHubClient.AssertExpectations(GinkgoT())
+		})
+		It("fetches number of retests on retest-required comment, but doesn't place comment if hold present", func() {
+			mockGitHubGraphQLClient.On(
+				"FetchPRTimeLineForLastCommit", org, repo, prNumber,
+			).Return(
+				ghgraphql.PRTimelineForLastCommit{NumberOfRetestComments: 5, WasHeld: true}, nil,
+			)
 			Expect(server.handlePullRequestComment(github.IssueCommentEvent{
 				Action: github.IssueCommentActionCreated,
 				Issue: github.Issue{
@@ -211,7 +243,7 @@ var _ = Describe("", func() {
 		})
 		It("handles test-all comment if the bot user is the commenter", func() {
 			mockGitHubGraphQLClient.On(
-				"FetchNumberOfRetestCommentsForLatestCommit", org, repo, prNumber).Return(5, nil)
+				"FetchPRTimeLineForLastCommit", org, repo, prNumber).Return(ghgraphql.PRTimelineForLastCommit{NumberOfRetestComments: 5}, nil)
 			mockGitHubClient.On("CreateComment", org, repo, prNumber, mock.Anything).Return(nil)
 			Expect(server.handlePullRequestComment(github.IssueCommentEvent{
 				Action: github.IssueCommentActionCreated,

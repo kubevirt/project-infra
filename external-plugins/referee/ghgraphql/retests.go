@@ -24,14 +24,15 @@ import (
 	"fmt"
 	"github.com/shurcooL/githubv4"
 	"github.com/sirupsen/logrus"
+	"regexp"
 	"strings"
 	"time"
 )
 
 type GitHubGraphQLClient interface {
-	// FetchNumberOfRetestCommentsForLatestCommit returns the number of /retest or /test comments a PR received
+	// FetchPRTimeLineForLastCommit returns specific events a PR has received
 	// after the last commit or force push.
-	FetchNumberOfRetestCommentsForLatestCommit(org string, repo string, prNumber int) (int, error)
+	FetchPRTimeLineForLastCommit(org string, repo string, prNumber int) (PRTimelineForLastCommit, error)
 }
 
 type gitHubGraphQLClient struct {
@@ -42,7 +43,33 @@ func NewClient(gitHubClient *githubv4.Client) GitHubGraphQLClient {
 	return gitHubGraphQLClient{gitHubClient: gitHubClient}
 }
 
-func (g gitHubGraphQLClient) FetchNumberOfRetestCommentsForLatestCommit(org string, repo string, prNumber int) (int, error) {
+// PRTimelineForLastCommit represents the specific events a PR has received
+type PRTimelineForLastCommit struct {
+
+	// NumberOfRetestComments is the number of `/(re)test` comments that triggered a testing on the PR
+	NumberOfRetestComments int
+
+	// WasHeld determines whether the PR did receive a `/hold` comment
+	WasHeld bool
+
+	// WasHoldCanceled determines whether the PR did receive an `/unhold` or `/hold cancel` comment
+	WasHoldCanceled bool
+}
+
+var (
+	cmdHoldRegex   = regexp.MustCompile(`(?mi)^/hold(\s.*)?$`)
+	cmdUnholdRegex = regexp.MustCompile(`(?mi)^/(remove-hold|hold\s+cancel|unhold)\s*$`)
+)
+
+func (g gitHubGraphQLClient) FetchPRTimeLineForLastCommit(org string, repo string, prNumber int) (PRTimelineForLastCommit, error) {
+	timelineItems, err := g.fetchTimelineItemsFromPR(org, repo, prNumber)
+	if err != nil {
+		return PRTimelineForLastCommit{}, err
+	}
+	return fetchPRTimeLineItemsFromGraphQuery(timelineItems), nil
+}
+
+func (g gitHubGraphQLClient) fetchTimelineItemsFromPR(org string, repo string, prNumber int) (TimelineItems, error) {
 	var query struct {
 		Repository struct {
 			PullRequest struct {
@@ -58,27 +85,32 @@ func (g gitHubGraphQLClient) FetchNumberOfRetestCommentsForLatestCommit(org stri
 
 	err := g.gitHubClient.Query(context.Background(), &query, variables)
 	if err != nil {
-		return 0, fmt.Errorf("failed to use github query %+v with variables %v: %w", query, variables, err)
+		return TimelineItems{}, fmt.Errorf("failed to use github query %+v with variables %v: %w", query, variables, err)
 	}
-	numberOfRetestCommentsForLatestCommit := fetchRetestCommentsFromGraphQuery(query.Repository.PullRequest.TimelineItems)
-	return numberOfRetestCommentsForLatestCommit, nil
+	return query.Repository.PullRequest.TimelineItems, nil
 }
 
-func fetchRetestCommentsFromGraphQuery(timelineItems TimelineItems) int {
-	var total int
+func fetchPRTimeLineItemsFromGraphQuery(timelineItems TimelineItems) PRTimelineForLastCommit {
 	const phase2Intro = "Required labels detected, running phase 2 presubmits:"
 
 	lastPush := determineLastPush(timelineItems)
 
+	result := PRTimelineForLastCommit{}
 	for _, timelineItem := range timelineItems.Nodes {
 		if strings.Contains(timelineItem.BodyText, phase2Intro) {
 			continue
 		}
 		if isRetestCommentAfterLastPush(timelineItem, lastPush) {
-			total += 1
+			result.NumberOfRetestComments += 1
+		}
+		if isHoldCommentAfterLastPush(timelineItem, lastPush) {
+			result.WasHeld = true
+		}
+		if isUnholdCommentAfterLastPush(timelineItem, lastPush) {
+			result.WasHoldCanceled = true
 		}
 	}
-	return total
+	return result
 }
 
 func determineLastPush(timelineItems TimelineItems) time.Time {
@@ -118,8 +150,22 @@ func isBaseRefForcePush(timelineItem TimelineItem) bool {
 }
 
 func isRetestCommentAfterLastPush(timelineItem TimelineItem, lastPush time.Time) bool {
-	return timelineItem.IssueCommentFragment != IssueCommentFragment{} &&
-		timelineItem.IssueCommentFragment.CreatedAt.After(lastPush) &&
+	return isIssueCommentAfterLastPush(timelineItem, lastPush) &&
 		(strings.HasPrefix(timelineItem.IssueCommentFragment.BodyText, "/retest") ||
 			strings.HasPrefix(timelineItem.IssueCommentFragment.BodyText, "/test"))
+}
+
+func isHoldCommentAfterLastPush(timelineItem TimelineItem, lastPush time.Time) bool {
+	return isIssueCommentAfterLastPush(timelineItem, lastPush) &&
+		cmdHoldRegex.MatchString(timelineItem.IssueCommentFragment.BodyText)
+}
+
+func isUnholdCommentAfterLastPush(timelineItem TimelineItem, lastPush time.Time) bool {
+	return isIssueCommentAfterLastPush(timelineItem, lastPush) &&
+		cmdUnholdRegex.MatchString(timelineItem.IssueCommentFragment.BodyText)
+}
+
+func isIssueCommentAfterLastPush(timelineItem TimelineItem, lastPush time.Time) bool {
+	return timelineItem.IssueCommentFragment != IssueCommentFragment{} &&
+		timelineItem.IssueCommentFragment.CreatedAt.After(lastPush)
 }

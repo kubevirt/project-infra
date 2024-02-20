@@ -148,17 +148,22 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 	if !pjutil.RetestRe.MatchString(ic.Comment.Body) &&
 		!pjutil.RetestRequiredRe.MatchString(ic.Comment.Body) &&
 		!pjutil.TestAllRe.MatchString(ic.Comment.Body) {
-		s.Log.Debugf("skipping referee since  %s/%s#%d comment didn't contain command triggering tests", org, repo, num)
+		s.Log.Debugf("skipping referee since %s/%s#%d comment didn't contain command triggering tests", org, repo, num)
 		return nil
 	}
 
-	numberOfRetestCommentsForLatestCommit, err := s.GHGraphQLClient.FetchNumberOfRetestCommentsForLatestCommit(org, repo, num)
+	prTimeLineForLastCommit, err := s.GHGraphQLClient.FetchPRTimeLineForLastCommit(org, repo, num)
 	if err != nil {
 		s.Log.Fatalf("failed to fetch number of retest comments for pr %s/%s#%d: %v", org, repo, num, err)
 	}
 
-	if numberOfRetestCommentsForLatestCommit < 5 {
-		s.Log.Debugf("number of retest comments for pr %s/%s#%d: %d", org, repo, num, numberOfRetestCommentsForLatestCommit)
+	if prTimeLineForLastCommit.NumberOfRetestComments < 5 {
+		s.Log.Debugf("skipping referee due to less number of retest comments for pr %s/%s#%d: %v", org, repo, num, prTimeLineForLastCommit)
+		return nil
+	}
+
+	if prTimeLineForLastCommit.WasHeld {
+		s.Log.Debugf("skipping referee due to hold present for pr %s/%s#%d: %v", org, repo, num, prTimeLineForLastCommit)
 		return nil
 	}
 
@@ -176,7 +181,7 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 			return fmt.Errorf("error while creating review comment: %v", err)
 		}
 	} else {
-		s.Log.Warnf("excessive number of retest comments for pr %s/%s#%d: %d", org, repo, num, numberOfRetestCommentsForLatestCommit)
+		s.Log.Warnf("excessive number of retest comments for pr %s/%s#%d: %v", org, repo, num, prTimeLineForLastCommit)
 	}
 	return nil
 }
