@@ -133,7 +133,7 @@ var _ = Describe("", func() {
 			mockGitHubGraphQLClient.AssertExpectations(GinkgoT())
 			mockGitHubClient.AssertExpectations(GinkgoT())
 		})
-		It("fetches number of retests on test all comment, but doesn't place comment since not enough retest comments found", func() {
+		It("fetches number of retests on test-all comment, but doesn't post comment since not enough retest comments found", func() {
 			mockGitHubGraphQLClient.On(
 				"FetchPRTimeLineForLastCommit", org, repo, prNumber,
 			).Return(
@@ -161,7 +161,7 @@ var _ = Describe("", func() {
 			mockGitHubGraphQLClient.AssertExpectations(GinkgoT())
 			mockGitHubClient.AssertExpectations(GinkgoT())
 		})
-		It("fetches number of retests on test-all comment, then places comment", func() {
+		It("fetches number of retests on test-all comment, then posts comment", func() {
 			mockGitHubGraphQLClient.On(
 				"FetchPRTimeLineForLastCommit", org, repo, prNumber).Return(ghgraphql.PRTimelineForLastCommit{NumberOfRetestComments: 5}, nil)
 			mockGitHubClient.On("CreateComment", org, repo, prNumber, mock.Anything).Return(nil)
@@ -187,7 +187,7 @@ var _ = Describe("", func() {
 			mockGitHubGraphQLClient.AssertExpectations(GinkgoT())
 			mockGitHubClient.AssertExpectations(GinkgoT())
 		})
-		It("fetches number of retests on retest-required comment, then places comment", func() {
+		It("fetches number of retests on retest-required comment, then posts comment", func() {
 			mockGitHubGraphQLClient.On(
 				"FetchPRTimeLineForLastCommit", org, repo, prNumber).Return(ghgraphql.PRTimelineForLastCommit{NumberOfRetestComments: 5}, nil)
 			mockGitHubClient.On("CreateComment", org, repo, prNumber, mock.Anything).Return(nil)
@@ -213,7 +213,7 @@ var _ = Describe("", func() {
 			mockGitHubGraphQLClient.AssertExpectations(GinkgoT())
 			mockGitHubClient.AssertExpectations(GinkgoT())
 		})
-		It("fetches number of retests on retest-required comment, but doesn't place comment if hold present", func() {
+		It("fetches number of retests on retest-required comment, but doesn't post comment if hold present", func() {
 			mockGitHubGraphQLClient.On(
 				"FetchPRTimeLineForLastCommit", org, repo, prNumber,
 			).Return(

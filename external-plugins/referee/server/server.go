@@ -109,7 +109,7 @@ func (s *Server) handleEvent(eventType, eventGUID string, payload []byte) error 
 		},
 	)
 	switch eventType {
-	//https://docs.github.com/de/webhooks/webhook-events-and-payloads#issue_comment
+	//https://docs.github.com/webhooks/webhook-events-and-payloads#issue_comment
 	case "issue_comment":
 		var ic github.IssueCommentEvent
 		if err := json.Unmarshal(payload, &ic); err != nil {
