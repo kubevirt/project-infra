@@ -621,6 +621,8 @@ postsubmits:
               extract_secret 'grafanaUser' github/ci/services/grafana/secrets/kubevirt-prow-control-plane/grafana/admin-user
               extract_secret 'grafanaPassword' github/ci/services/grafana/secrets/kubevirt-prow-control-plane/grafana/admin-password
               extract_secret 'grafanaPromToken' github/ci/services/grafana/secrets/kubevirt-prow-control-plane/grafana/prom_bearer_token
+              extract_secret 'grafanaClientID' github/ci/services/grafana/secrets/kubevirt-prow-control-plane/grafana/client-id
+              extract_secret 'grafanaClientSecret' github/ci/services/grafana/secrets/kubevirt-prow-control-plane/grafana/client-secret
 
               ./github/ci/services/grafana/hack/deploy.sh kubevirt-prow-control-plane
           resources:

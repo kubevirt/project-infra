@@ -30,6 +30,22 @@ spec:
                 secretKeyRef:
                   name: grafana
                   key: admin-password
+            - name: GF_AUTH_GITHUB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: grafana
+                  key: client-id
+            - name: GF_AUTH_GITHUB_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: grafana
+                  key: client-secret
+            - name: GF_AUTH_GITHUB_ENABLED
+              value: "true"
+            - name: GF_AUTH_GITHUB_ALLOWED_ORGANIZATIONS
+              value: "kubevirt"
+            - name: GF_AUTH_GITHUB_ROLE_ATTRIBUTE_PATH
+              value: "'Viewer'"
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDatasource
