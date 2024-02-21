@@ -40,9 +40,13 @@ filters:
     - victortoso
     - vladikr
     - xpivarc
-  BUILD.bazel|WORKSPACE:
+  BUILD.bazel|WORKSPACE|.bazel.*|.fossa.yml|cluster-up-sha.txt:
     approvers:
     - dhiller
+    labels:
+    - sig/buildsystem
     reviewers:
     - brianmcarey
+    - enp0s3
+    - xpivarc
 options: {}
