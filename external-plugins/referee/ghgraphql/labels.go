@@ -30,15 +30,7 @@ func (g gitHubGraphQLClient) FetchPRLabels(org string, repo string, prNumber int
 	if err != nil {
 		return PRLabels{}, err
 	}
-	prLabels := PRLabels{
-		Labels: labels,
-	}
-	for _, label := range labels {
-		if label.Name == "do-not-merge/hold" {
-			prLabels.IsHoldPresent = true
-		}
-	}
-	return prLabels, nil
+	return NewPRLabels(labels), nil
 }
 
 func (g gitHubGraphQLClient) fetchLabelsForPR(org string, repo string, prNumber int) ([]Label, error) {
@@ -60,4 +52,16 @@ func (g gitHubGraphQLClient) fetchLabelsForPR(org string, repo string, prNumber 
 		return []Label{}, fmt.Errorf("failed to use github query %+v with variables %v: %w", query, variables, err)
 	}
 	return query.Repository.PullRequest.Labels.Nodes, nil
+}
+
+func NewPRLabels(labels []Label) PRLabels {
+	prLabels := PRLabels{
+		Labels: labels,
+	}
+	for _, label := range labels {
+		if label.Name == "do-not-merge/hold" {
+			prLabels.IsHoldPresent = true
+		}
+	}
+	return prLabels
 }
