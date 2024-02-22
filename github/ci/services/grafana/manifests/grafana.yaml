@@ -87,6 +87,8 @@ metadata:
   namespace: monitoring
   labels:
     dashboard-provider: default
+  annotations:
+    grafana_folder: "monitoring"
 data:
   tide.json: |
     {
@@ -7438,7 +7440,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 12,
+      "id": 10,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -7890,7 +7892,7 @@ data:
       "timezone": "",
       "title": "kubevirt/kubevirt e2e test runtimes",
       "uid": "gY4hNc5Iz",
-      "version": 16,
+      "version": 1,
       "weekStart": ""
     }
 ---
@@ -7988,3 +7990,15 @@ spec:
       dashboards: "grafana"
   grafanaCom:
     id: 1860
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: e2e-test-metrics-dashboard
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  configMapRef:
+    name: grafana-dashboards-default
+    key: e2e-test-metrics.json
