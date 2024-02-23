@@ -40,6 +40,19 @@ filters:
     - victortoso
     - vladikr
     - xpivarc
+  .*_test.go:
+    approvers:
+    - acardace
+    - alonakaplan
+    - dhiller
+    - enp0s3
+    - kbidarkar
+    - phoracek
+    - xpivarc
+    labels:
+    - sig/test
+    reviewers:
+    - kbidarkar
   BUILD.bazel|WORKSPACE|.bazel.*|.fossa.yml|cluster-up-sha.txt:
     approvers:
     - dhiller
