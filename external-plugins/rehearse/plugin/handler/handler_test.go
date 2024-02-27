@@ -172,6 +172,12 @@ var _ = Describe("Events", func() {
 			Expect(headBranchName).To(Equal("base"))
 		})
 
+		It("Should discover HEAD commit from main remote branch", func() {
+			headBranchName, err := discoverHeadCommitFromRemote("kubevirt", "kubevirt", "main")
+			Expect(err).ToNot(HaveOccurred())
+			Expect(headBranchName).To(MatchRegexp("[a-z0-9]{40}"))
+		})
+
 	})
 
 })
@@ -275,10 +281,23 @@ var _ = Describe("PR filtering", func() {
 
 		It("generates a prowjob for branch if context changes", func() {
 			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Cluster = "new-cluster"
-			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Branches = []string{"release-42"}
+			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Branches = []string{"release-1.2"}
 			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
 			Expect(presubmits).ToNot(BeEmpty())
-			Expect(presubmits[0].Spec.ExtraRefs[0].BaseRef).To(BeEquivalentTo("release-42"))
+			Expect(presubmits[0].Spec.ExtraRefs).To(BeEmpty())
+		})
+
+		It("generates a prowjob with kubevirt refs if context changes", func() {
+			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Cluster = "new-cluster"
+			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Branches = []string{"release-1.2"}
+			headCommit, err := discoverHeadCommitFromRemote("kubevirt", "kubevirt", "release-1.2")
+			Expect(err).ToNot(HaveOccurred())
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			Expect(presubmits).ToNot(BeEmpty())
+			Expect(presubmits[0].Spec.Refs.Org).To(BeEquivalentTo("kubevirt"))
+			Expect(presubmits[0].Spec.Refs.Repo).To(BeEquivalentTo("kubevirt"))
+			Expect(presubmits[0].Spec.Refs.BaseSHA).To(BeEquivalentTo(headCommit))
+			Expect(presubmits[0].Spec.Refs.BaseRef).To(BeEquivalentTo("release-1.2"))
 		})
 	})
 
