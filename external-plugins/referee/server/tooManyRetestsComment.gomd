@@ -26,18 +26,23 @@ Dear @{{ $.Author }}
 
 🔎 Please check that the changes you committed are fine and that there are no infrastructure issues present!
 
-👌 After all issues have been resolved, you can remove the hold on this pull request by commenting `/unhold` on it.
-
-🙇 Thank you, your friendly referee automation, on behalf of the @{{ $.Team }} and the KubeVirt community!
-
 <details>
 Checklist:
 
-✅ your changes compile
-✅ no linting errors
-✅ no unit test errors
-✅ no recurring e2e test errors, i.e. in the check-tests-for-flakes lane
-✅ no infrastructure issues, i.e. [GitHub Status](https://www.githubstatus.com/)
+* [ ] your changes compile
+* [ ] your tests succeed **locally**, i.e. for [k/kubevirt](https://github.com/kubevirt/kubevirt) see
+  * [getting-started - testing](https://github.com/kubevirt/kubevirt/blob/main/docs/getting-started.md#testing) and
+  * [CONTRIBUTING.md - testing](https://github.com/kubevirt/kubevirt/blob/main/CONTRIBUTING.md#testing)
+* [ ] no linting errors
+* [ ] no recurring e2e test errors, i.e. in the `pull-kubevirt-check-tests-for-flakes` lane
+* [ ] no infrastructure issues, i.e.
+  * [GitHub Status](https://www.githubstatus.com/),
+  * quay.io status at [status.redhat.com](https://status.redhat.com/) or
+  * [KubeVirt prow status](https://prow.ci.kubevirt.io/)
 
 💬 How we calculate the number of retests: The number of retest comments are the number of `/test` or `/retest` comments _after_ the latest commit only.
 </details>
+
+👌 After all issues have been resolved, you can remove the hold on this pull request by commenting `/unhold` on it.
+
+🙇 Thank you, your friendly referee automation, on behalf of the @{{ $.Team }} and the KubeVirt community!
