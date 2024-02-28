@@ -534,6 +534,10 @@ external_plugins:
     endpoint: http://prow-phased:9900
     events:
       - pull_request
+  - name: referee
+    endpoint: http://referee:9900
+    events:
+      - issue_comment
 
 triggers:
 - repos:

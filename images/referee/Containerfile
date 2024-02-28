@@ -1,0 +1,12 @@
+FROM docker.io/library/golang:1.21 as builder
+WORKDIR /go/src/github.com/kubevirt/project-infra/
+RUN mkdir -p /go/src/kubevirt/ && \
+    cd /go/src/kubevirt/ && \
+    git clone -b retests-to-merge-bot https://github.com/dhiller/project-infra.git && \
+    cd project-infra/ && \
+    go mod vendor && \
+    env GOPROXY=off GOFLAGS=-mod=vendor CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/referee ./external-plugins/referee/main.go
+
+FROM gcr.io/k8s-prow/git:v20231107-c87e01249e
+COPY --from=builder /go/bin/referee /usr/bin/referee
+ENTRYPOINT ["/usr/bin/referee"]

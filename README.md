@@ -55,8 +55,11 @@ depending on billing alerts. See [README](limiter/README.md)
 
   * `robots/cmd/labels-checker`: Checks whether a PR has certain labels
 
+  * `robots/cmd/retests-to-merge`: Tool to check recent approved PRs for retest comments. See
+  [README](robots/cmd/retests-to-merge/README.md)
+
   * `robots/cmd/uploader`: Tool to mirror bazel dependencies on GCS. See
-  [README](plugins/cmd/uploader/README.md)
+  [README](robots/cmd/uploader/README.md)
 
 ## Contributing
 

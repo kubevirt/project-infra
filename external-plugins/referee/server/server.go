@@ -1,0 +1,209 @@
+/*
+ * This file is part of the KubeVirt project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Copyright the KubeVirt Authors.
+ */
+
+package server
+
+import (
+	"bytes"
+	_ "embed"
+	"encoding/json"
+	"fmt"
+	"github.com/sirupsen/logrus"
+	"html/template"
+	"k8s.io/test-infra/prow/config"
+	"k8s.io/test-infra/prow/github"
+	"k8s.io/test-infra/prow/pjutil"
+	"k8s.io/test-infra/prow/pluginhelp"
+	"kubevirt.io/project-infra/external-plugins/referee/ghgraphql"
+	"net/http"
+)
+
+const PluginName = "referee"
+const defaultMaximumNumberOfAllowedRetestComments = 5
+
+type TooManyRequestsData struct {
+	Author string
+	Team   string
+}
+
+//go:embed tooManyRetestsComment.gomd
+var tooManyRetestsCommentTemplateBase string
+var tooManyRetestsCommentTemplate *template.Template
+
+func init() {
+	var err error
+	tooManyRetestsCommentTemplate, err = template.New("TooManyRequestsCommentTemplate").Parse(tooManyRetestsCommentTemplateBase)
+	if err != nil {
+		panic(fmt.Errorf("couldn't parse tooManyRetestsComment.gomd: %w", err))
+	}
+}
+
+// HelpProvider construct the pluginhelp.PluginHelp for this plugin.
+func HelpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
+	pluginHelp := &pluginhelp.PluginHelp{
+		Description: `The referee plugin ensures users follow the rules of ci. It looks for rule violations and gives out warnings and penalties.`,
+	}
+	pluginHelp.AddCommand(pluginhelp.Command{
+		Usage:       "/referee",
+		Description: "Trigger referee review of a PR.",
+		Featured:    true,
+		WhoCanUse:   "Anyone",
+		Examples:    []string{"/referee"},
+	})
+	return pluginHelp, nil
+}
+
+type githubClient interface {
+	CreateComment(org, repo string, number int, comment string) error
+}
+
+// Server implements http.Handler. It validates incoming GitHub webhooks and
+// then dispatches them to the appropriate plugins.
+type Server struct {
+	TokenGenerator func() []byte
+	BotName        string
+
+	Log *logrus.Entry
+
+	GithubClient    githubClient
+	GHGraphQLClient ghgraphql.GitHubGraphQLClient
+
+	// DryRun says whether to create comments on PRs or to just write them to the log
+	DryRun bool
+
+	// Team is the name of the GitHub team that should be pinged
+	Team string
+}
+
+// ServeHTTP validates an incoming webhook and puts it into the event channel.
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	eventType, eventGUID, payload, ok, _ := github.ValidateWebhook(w, r, s.TokenGenerator)
+	if !ok {
+		return
+	}
+
+	if err := s.handleEvent(eventType, eventGUID, payload); err != nil {
+		s.Log.WithError(err).Error("Error parsing event.")
+	}
+}
+
+func (s *Server) handleEvent(eventType, eventGUID string, payload []byte) error {
+	l := logrus.WithFields(
+		logrus.Fields{
+			"event-type":     eventType,
+			github.EventGUID: eventGUID,
+		},
+	)
+	switch eventType {
+	//https://docs.github.com/webhooks/webhook-events-and-payloads#issue_comment
+	case "issue_comment":
+		var ic github.IssueCommentEvent
+		if err := json.Unmarshal(payload, &ic); err != nil {
+			return err
+		}
+		go func() {
+			if err := s.handlePullRequestComment(ic); err != nil {
+				s.Log.WithError(err).WithFields(l.Data).Errorf("%s failed.", PluginName)
+			}
+		}()
+	default:
+		s.Log.WithFields(l.Data).Debugf("skipping event of type %q", eventType)
+	}
+	return nil
+}
+
+func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
+	org := ic.Repo.Owner.Login
+	repo := ic.Repo.Name
+	num := ic.Issue.Number
+	action := ic.Action
+	user := ic.Comment.User.Login
+
+	pullRequestURL := fmt.Sprintf("https://github.com/%s/%s/pull/%d", org, repo, num)
+	log := s.Log.WithField("pull_request_url", pullRequestURL)
+
+	switch action {
+	case github.IssueCommentActionCreated:
+	default:
+		log.Debugf("skipping for action %s by %s", action, user)
+		return nil
+	}
+
+	if !ic.Issue.IsPullRequest() {
+		log.Debugf("skipping since not a pull request")
+		return nil
+	}
+
+	if !pjutil.RetestRe.MatchString(ic.Comment.Body) &&
+		!pjutil.RetestRequiredRe.MatchString(ic.Comment.Body) &&
+		!pjutil.TestAllRe.MatchString(ic.Comment.Body) {
+		log.Debugf("skipping since comment didn't contain command triggering tests")
+		return nil
+	}
+
+	prTimeLineForLastCommit, err := s.GHGraphQLClient.FetchPRTimeLineForLastCommit(org, repo, num)
+	if err != nil {
+		return fmt.Errorf("%s - failed to fetch number of retest comments: %w", pullRequestURL, err)
+	}
+
+	if prTimeLineForLastCommit.NumberOfRetestComments < defaultMaximumNumberOfAllowedRetestComments {
+		log.Debugf("skipping due to number of retest comments (%d) less than max allowed (%d)", prTimeLineForLastCommit.NumberOfRetestComments, defaultMaximumNumberOfAllowedRetestComments)
+		return nil
+	}
+
+	log.Warnf("excessive number of retest comments: %d", prTimeLineForLastCommit.NumberOfRetestComments)
+
+	labels, err := s.GHGraphQLClient.FetchPRLabels(org, repo, num)
+	if err != nil {
+		return fmt.Errorf("%s - failed to fetch labels: %w", pullRequestURL, err)
+	}
+	if labels.IsHoldPresent {
+		log.Infof("skipping due to hold present")
+		return nil
+	}
+
+	if prTimeLineForLastCommit.WasHeld {
+		for _, item := range prTimeLineForLastCommit.PRTimeLineItems {
+			switch item.ItemType {
+			case ghgraphql.HoldComment:
+				if item.Item.Author.Login == s.BotName {
+					log.Infof("skipping due to previous hold set by user %s", item.Item.Author.Login)
+					return nil
+				}
+			default:
+				continue
+			}
+		}
+	}
+
+	if !s.DryRun {
+		var output bytes.Buffer
+		err := tooManyRetestsCommentTemplate.Execute(&output, TooManyRequestsData{
+			Author: user,
+			Team:   s.Team,
+		})
+		if err != nil {
+			return fmt.Errorf("error while rendering comment template: %v", err)
+		}
+		err = s.GithubClient.CreateComment(org, repo, num, output.String())
+		if err != nil {
+			return fmt.Errorf("error while creating review comment: %v", err)
+		}
+	}
+	return nil
+}

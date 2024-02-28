@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: referee
+  labels:
+    app: referee
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: referee
+  template:
+    metadata:
+      labels:
+        app: referee
+    spec:
+      terminationGracePeriodSeconds: 180
+      containers:
+      - name: referee
+        # FIXME: change tag to proper version
+        image: quay.io/kubevirtci/referee:latest
+        args:
+        # FIXME: stay with dry run for now
+        - --dry-run=true
+        - --port=9900
+        - --github-token-path=/etc/github/oauth
+        - --github-endpoint=http://ghproxy
+        - --github-endpoint=https://api.github.com
+        ports:
+        - name: http
+          containerPort: 9900
+        volumeMounts:
+        - name: hmac
+          mountPath: /etc/webhook
+          readOnly: true
+        - name: oauth
+          mountPath: /etc/github
+          readOnly: true
+        - name: plugins
+          mountPath: /etc/plugins
+          readOnly: true
+        - name: cache
+          mountPath: /var/run/cache
+          readOnly: false
+      volumes:
+      - name: hmac
+        secret:
+          secretName: hmac-token
+      - name: oauth
+        secret:
+          secretName: commenter-oauth-token
+      - name: plugins
+        configMap:
+          name: plugins
+      - name: cache
+        emptyDir: {}
