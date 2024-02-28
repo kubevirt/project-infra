@@ -10,7 +10,6 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-installer-pull-token: "true"
       rehearsal.allowed: "true"
       sriov-pod: "true"
     max_concurrency: 1
@@ -90,7 +89,6 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-installer-pull-token: "true"
       rehearsal.allowed: "true"
       vgpu: "true"
     max_concurrency: 1
