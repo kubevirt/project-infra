@@ -33,6 +33,7 @@ RUN dnf install -y \
     gcc \
     gcc-c++ \
     gettext \
+    gh \
     git \
     glibc-devel \
     glibc-static \
