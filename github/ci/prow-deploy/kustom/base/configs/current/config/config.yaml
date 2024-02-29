@@ -650,6 +650,19 @@ presets:
     - name: github-token
       mountPath: /etc/github
 - labels:
+    preset-unprivileged-github-credentials: "true"
+  env:
+  - name: GITHUB_TOKEN
+    value: /etc/github/oauth
+  volumes:
+  - name: unprivileged-oauth-token
+    secret:
+      secretName: unprivileged-oauth-token
+      defaultMode: 0400
+  volumeMounts:
+    - name: unprivileged-oauth-token
+      mountPath: /etc/github
+- labels:
     preset-gcs-credentials: "true"
   env:
   - name: GOOGLE_APPLICATION_CREDENTIALS
