@@ -19,7 +19,7 @@ periodics:
   cluster: kubevirt-prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20240118-315742b
+      - image: quay.io/kubevirtci/bootstrap:v20240229-74549d5
         env:
           - name: BUCKET_DIR
             value: kubevirtci-crio-mirror
