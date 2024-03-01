@@ -638,7 +638,7 @@ presets:
 - labels:
     preset-unprivileged-github-credentials: "true"
   env:
-  - name: GITHUB_TOKEN
+  - name: UNPRIV_TOKEN
     value: /etc/github/oauth
   volumes:
   - name: unprivileged-oauth-token
