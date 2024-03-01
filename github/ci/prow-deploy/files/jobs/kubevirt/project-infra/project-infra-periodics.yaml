@@ -649,7 +649,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20240118-315742b
+      - image: quay.io/kubevirtci/bootstrap:v20240229-74549d5
         env:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
@@ -718,7 +718,7 @@ periodics:
   name: periodic-project-infra-check-prow-jobconfigs
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20240118-315742b
+    - image: quay.io/kubevirtci/golang:v20240229-74549d5
       env:
       - name: GIMME_GO_VERSION
         value: "1.20"
@@ -791,7 +791,7 @@ periodics:
   name: periodic-project-infra-perf-report-creator
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20240118-315742b
+    - image: quay.io/kubevirtci/golang:v20240229-74549d5
       env:
         - name: GIMME_GO_VERSION
           value: "1.20"
