@@ -301,7 +301,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-generate-1.2
     spec:
       containers:
@@ -329,7 +328,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-verify-rpms-1.2
     optional: true
     run_if_changed: WORKSPACE
@@ -359,7 +357,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-verify-go-mod-1.2
     spec:
       containers:
@@ -389,7 +386,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-gosec-1.2
     optional: true
     skip_report: true
@@ -565,7 +561,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-goveralls-1.2
     optional: true
     spec:
@@ -606,7 +601,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-apidocs-1.2
     spec:
       containers:
@@ -634,7 +628,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-client-python-1.2
     spec:
       containers:
@@ -662,7 +655,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-manifests-1.2
     spec:
       containers:
@@ -691,7 +683,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-prom-rules-verify-1.2
     spec:
       containers:
@@ -1635,7 +1626,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     max_concurrency: 11
     name: pull-kubevirt-metrics-lint-1.2
     optional: true

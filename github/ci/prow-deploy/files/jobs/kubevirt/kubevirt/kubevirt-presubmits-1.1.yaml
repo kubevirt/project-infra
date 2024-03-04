@@ -294,7 +294,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-generate-1.1
     spec:
       containers:
@@ -321,7 +320,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-verify-rpms-1.1
     optional: true
     run_if_changed: WORKSPACE
@@ -350,7 +348,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-verify-go-mod-1.1
     spec:
       containers:
@@ -379,7 +376,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-gosec-1.1
     optional: true
     skip_report: true
@@ -519,7 +515,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-goveralls-1.1
     optional: true
     spec:
@@ -558,7 +553,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-apidocs-1.1
     spec:
       containers:
@@ -585,7 +579,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-client-python-1.1
     spec:
       containers:
@@ -612,7 +605,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-manifests-1.1
     spec:
       containers:
@@ -639,7 +631,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-prom-rules-verify-1.1
     spec:
       containers:
@@ -937,7 +928,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     max_concurrency: 11
     name: pull-kubevirt-code-lint-1.1
     optional: true
@@ -1733,7 +1723,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     max_concurrency: 11
     name: pull-kubevirt-metrics-lint-1.1
     optional: true
