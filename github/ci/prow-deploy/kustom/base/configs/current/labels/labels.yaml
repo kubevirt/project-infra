@@ -261,6 +261,23 @@ default:
       target: both
       prowPlugin: label
       addedBy: anyone
+    - name: sig/scale
+      color: aefcf3
+      target: both
+      prowPlugin: label
+      addedBy: anyone
+    - name: sig/buildsystem
+      color: 73efeb
+      description: Denotes an issue or PR that relates to changes in the build system, touching either components or configuration of it.
+      target: both
+      prowPlugin: label
+      addedBy: anyone
+    - name: sig/api
+      color: fcaebb
+      description: Denotes an issue or PR that relates to changes in api.
+      target: both
+      prowPlugin: label
+      addedBy: anyone
     - color: e11d21
       description: Indicates the PR's author has not DCO signed all their commits.
       name: "dco-signoff: no"
