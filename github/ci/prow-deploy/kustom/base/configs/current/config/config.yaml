@@ -607,6 +607,15 @@ presets:
     mountPath: /etc/kubevirtci-cred
     readOnly: true
 - labels:
+    preset-kubevirtci-check-provision-env: "true"
+  env:
+  - name: KUBEVIRT_PSA
+    value: "true"
+  - name: PHASES
+    value: "k8s"
+  - name: CHECK_CLUSTER
+    value: "true"
+- labels:
     preset-project-infra-kubevirtci-docker-credential: "true"
   env:
   - name: DOCKER_USER

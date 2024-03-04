@@ -233,6 +233,7 @@ presubmits:
       timeout: 3h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-check-provision-env: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.27
@@ -242,7 +243,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cd cluster-provision/k8s/1.27 && KUBEVIRT_PSA='true' ../provision.sh
+        - cd cluster-provision/k8s/1.27 && ../provision.sh
         image: quay.io/kubevirtci/golang:v20240229-74549d5
         name: ""
         resources:
@@ -259,6 +260,7 @@ presubmits:
       timeout: 3h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-check-provision-env: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.28
@@ -268,7 +270,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cd cluster-provision/k8s/1.28 && KUBEVIRT_PSA='true' ../provision.sh
+        - cd cluster-provision/k8s/1.28 && ../provision.sh
         image: quay.io/kubevirtci/golang:v20240229-74549d5
         name: ""
         resources:
@@ -311,6 +313,7 @@ presubmits:
       timeout: 3h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-check-provision-env: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.29
@@ -320,7 +323,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cd cluster-provision/k8s/1.29 && KUBEVIRT_PSA='true' ../provision.sh
+        - cd cluster-provision/k8s/1.29 && ../provision.sh
         image: quay.io/kubevirtci/golang:v20240229-74549d5
         name: ""
         resources:
@@ -337,6 +340,7 @@ presubmits:
       timeout: 3h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-check-provision-env: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.30
@@ -347,7 +351,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cd cluster-provision/k8s/1.30 && KUBEVIRT_PSA='true' ../provision.sh
+        - cd cluster-provision/k8s/1.30 && ../provision.sh
         image: quay.io/kubevirtci/golang:v20240229-74549d5
         name: ""
         resources:
