@@ -1,6 +1,6 @@
-FROM quay.io/kubevirtci/golang:v20221222-8f66e7e
+FROM quay.io/kubevirtci/golang:v20240229-74549d5
 
-ENV GIMME_GO_VERSION=1.18
+ENV GIMME_GO_VERSION=1.21.6
 
 RUN set -x && \
     git clone https://github.com/kubernetes/test-infra.git && \
