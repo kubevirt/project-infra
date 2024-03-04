@@ -79,7 +79,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-windows2016
     skip_branches:
@@ -120,7 +119,6 @@ presubmits:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
-      preset-unprivileged-github-credentials: "true"
       vgpu: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.27-vgpu
@@ -195,7 +193,6 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
       rehearsal.allowed: "true"
       sriov-pod: "true"
     max_concurrency: 10
@@ -819,7 +816,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-ipv6-sig-network
     skip_branches:
@@ -863,7 +859,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
       rehearsal.allowed: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-network-multus-v4
@@ -909,7 +904,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-compute-migrations
     skip_branches:
@@ -1142,7 +1136,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-swap-enabled
     optional: true
@@ -1186,7 +1179,6 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     name: pull-kubevirt-e2e-k8s-1.29-sig-monitoring
     optional: true
     skip_branches:
@@ -1228,7 +1220,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-single-node
     optional: true
@@ -1279,7 +1270,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-storage-root
     optional: true
@@ -1322,7 +1312,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-compute-root
     optional: true
@@ -1370,7 +1359,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.27-sig-network
     skip_branches:
@@ -1415,7 +1403,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.27-sig-storage
     skip_branches:
@@ -1458,7 +1445,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.27-sig-compute
     skip_branches:
@@ -1505,7 +1491,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-compute-realtime
     skip_branches:
@@ -1550,7 +1535,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.27-sig-operator
     skip_branches:
@@ -1595,7 +1579,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.28-sig-network
     skip_branches:
@@ -1640,7 +1623,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.28-sig-storage
     skip_branches:
@@ -1683,7 +1665,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.28-sig-compute
     skip_branches:
@@ -1730,7 +1711,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.28-sig-operator
     skip_branches:
@@ -1807,7 +1787,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-network
     skip_branches:
@@ -1851,7 +1830,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-storage
     skip_branches:
@@ -1893,7 +1871,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-compute
     skip_branches:
@@ -1939,7 +1916,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.29-sig-operator
     skip_branches:
@@ -1983,7 +1959,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.30-sig-network
     optional: true
@@ -2028,7 +2003,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.30-sig-storage
     optional: true
@@ -2071,7 +2045,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.30-sig-compute
     optional: true
@@ -2118,7 +2091,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-unprivileged-github-credentials: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.30-sig-operator
     optional: true
