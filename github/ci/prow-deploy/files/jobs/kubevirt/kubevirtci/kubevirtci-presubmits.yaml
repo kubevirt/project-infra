@@ -233,6 +233,7 @@ presubmits:
       timeout: 3h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-check-provision-env: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.27
@@ -243,13 +244,6 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.27 && ../provision.sh
-        env:
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: PHASES
-          value: "k8s"
-        - name: CHECK_CLUSTER
-          value: "true"
         image: quay.io/kubevirtci/golang:v20240229-74549d5
         name: ""
         resources:
@@ -266,6 +260,7 @@ presubmits:
       timeout: 3h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-check-provision-env: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.28
@@ -276,13 +271,6 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.28 && ../provision.sh
-        env:
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: PHASES
-          value: "k8s"
-        - name: CHECK_CLUSTER
-          value: "true"
         image: quay.io/kubevirtci/golang:v20240229-74549d5
         name: ""
         resources:
@@ -325,6 +313,7 @@ presubmits:
       timeout: 3h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-check-provision-env: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.29
@@ -335,13 +324,6 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.29 && ../provision.sh
-        env:
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: PHASES
-          value: "k8s"
-        - name: CHECK_CLUSTER
-          value: "true"
         image: quay.io/kubevirtci/golang:v20240229-74549d5
         name: ""
         resources:
@@ -358,6 +340,7 @@ presubmits:
       timeout: 3h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-check-provision-env: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.30
@@ -369,13 +352,6 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.30 && ../provision.sh
-        env:
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: PHASES
-          value: "k8s"
-        - name: CHECK_CLUSTER
-          value: "true"
         image: quay.io/kubevirtci/golang:v20240229-74549d5
         name: ""
         resources:
