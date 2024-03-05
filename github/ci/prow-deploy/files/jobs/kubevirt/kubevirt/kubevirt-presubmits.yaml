@@ -310,7 +310,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-generate
     skip_branches:
     - release-\d+\.\d+
@@ -339,7 +338,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-verify-rpms
     optional: true
     run_if_changed: WORKSPACE
@@ -370,7 +368,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-verify-go-mod
     skip_branches:
     - release-\d+\.\d+
@@ -400,7 +397,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-gosec
     optional: true
     skip_branches:
@@ -584,7 +580,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-goveralls
     optional: true
     skip_branches:
@@ -624,7 +619,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-fossa
     skip_branches:
     - release-\d+\.\d+
@@ -664,7 +658,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-apidocs
     skip_branches:
     - release-\d+\.\d+
@@ -693,7 +686,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-client-python
     skip_branches:
     - release-\d+\.\d+
@@ -722,7 +714,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-manifests
     skip_branches:
     - release-\d+\.\d+
@@ -752,7 +743,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-prom-rules-verify
     skip_branches:
     - release-\d+\.\d+
@@ -1748,7 +1738,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     max_concurrency: 11
     name: pull-kubevirt-metrics-lint
     optional: true
