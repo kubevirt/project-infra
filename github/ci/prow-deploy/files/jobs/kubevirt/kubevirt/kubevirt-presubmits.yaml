@@ -1088,7 +1088,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
     max_concurrency: 11
     name: pull-kubevirt-code-lint
     optional: false
