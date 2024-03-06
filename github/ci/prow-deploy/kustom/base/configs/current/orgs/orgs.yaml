@@ -978,6 +978,7 @@ orgs:
       kubevirtkubevirt-label:
         description: "Users who can apply restricted labels to any issue inside the kubevirt/kubevirt repo"
         members:
+         - 0xFelix
          - iholder101
          - davidvossel
          - vladikr
