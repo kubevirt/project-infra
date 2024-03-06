@@ -82,12 +82,10 @@ RUN if test "${ARCH}" != s390x; then \
 
         # Cache the most commonly used bazel versions inside the image
         # and remove resulting cache directories to save a few hundred MB
-        USE_BAZEL_VERSION=4.1.0 bazel version && \
-        USE_BAZEL_VERSION=4.2.1 bazel version && \
         USE_BAZEL_VERSION=5.3.1 bazel version && \
         USE_BAZEL_VERSION=5.4.1 bazel version && \
         rm -rf /root/.cache/bazel; \
-        fi
+    fi
 
 #
 # BEGIN: PODMAN IN CONTAINER SETUP
