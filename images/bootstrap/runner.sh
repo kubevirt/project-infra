@@ -58,12 +58,6 @@ early_exit_handler() {
 # setup certificates before anything gets started
 setup_ca
 
-if [[ -n "$CONTAINER_HTTP_PROXY" && -n "$CONTAINER_HTTPS_PROXY" ]]; then
-    # enable docker-mirror-proxy
-    export HTTP_PROXY=${CONTAINER_HTTP_PROXY}
-    export HTTPS_PROXY=${CONTAINER_HTTPS_PROXY}
-fi
-
 # optionally enable ipv6
 export PODMAN_IN_CONTAINER_IPV6_ENABLED=${PODMAN_IN_CONTAINER_IPV6_ENABLED:-true}
 if [[ "${PODMAN_IN_CONTAINER_IPV6_ENABLED}" == "true" ]]; then
@@ -79,6 +73,8 @@ if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
     PODMAN_SOCKET_PATH=/run/podman
     PODMAN_SOCKET=${PODMAN_SOCKET_PATH}/podman.sock
     (
+        export HTTP_PROXY=${CONTAINER_HTTP_PROXY}
+        export HTTPS_PROXY=${CONTAINER_HTTPS_PROXY}
         export KIND_EXPERIMENTAL_PROVIDER="podman"
 
         mkdir -p ${PODMAN_SOCKET_PATH}
