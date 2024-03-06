@@ -1090,7 +1090,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
     name: pull-kubevirt-e2e-k8s-1.29-sig-monitoring-1.2
-    optional: true
+    run_if_changed: ^pkg/monitoring/.*|^tests/monitoring/.*|^tests/libmonitoring/.*|^vendor/github.com/machadovilaca/operator-observability/.*
     spec:
       containers:
       - command:
