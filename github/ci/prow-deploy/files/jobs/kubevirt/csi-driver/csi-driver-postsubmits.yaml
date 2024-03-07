@@ -23,7 +23,7 @@ postsubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20240304-95c0a0e
+          - image: quay.io/kubevirtci/golang:v20240306-cfcbc5c
             env:
               - name: REPO
                 value: quay.io/kubevirt
