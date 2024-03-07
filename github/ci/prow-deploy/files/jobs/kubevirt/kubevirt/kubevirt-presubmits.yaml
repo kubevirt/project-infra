@@ -431,6 +431,7 @@ presubmits:
     optional: true
     skip_branches:
     - release-\d+\.\d+
+    skip_report: true
     spec:
       containers:
       - command:
@@ -438,7 +439,7 @@ presubmits:
         - /bin/sh
         - -c
         - make go-test
-        image: quay.io/kubevirtci/bootstrap:v20240306-cfcbc5c
+        image: quay.io/kubevirtci/golang:v20240306-cfcbc5c
         name: ""
         resources:
           requests:
