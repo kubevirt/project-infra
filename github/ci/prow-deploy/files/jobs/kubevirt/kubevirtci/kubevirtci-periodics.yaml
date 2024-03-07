@@ -19,7 +19,7 @@ periodics:
   cluster: kubevirt-prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20240306-cfcbc5c
+      - image: quay.io/kubevirtci/bootstrap:v20240304-95c0a0e
         env:
           - name: BUCKET_DIR
             value: kubevirtci-crio-mirror
@@ -56,7 +56,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+    - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
       command: ["/bin/sh", "-c"]
       args:
       - |
@@ -88,7 +88,7 @@ periodics:
   cluster: kubevirt-prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+    - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
       command: ["/bin/sh", "-c"]
       args:
       - GIT_ASKPASS=/usr/local/bin/git-askpass.sh git-pr.sh -c "./hack/bump-cdi.sh" -r kubevirtci -b bump-cdi -T main -p $(pwd)
