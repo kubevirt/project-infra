@@ -15,7 +15,7 @@ postsubmits:
         repo: project-infra
         base_ref: main
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
@@ -35,21 +35,17 @@ postsubmits:
           type: bare-metal-external
         volumes:
         - hostPath:
-            path: /lib/modules
-            type: Directory
-          name: modules
-        - hostPath:
             path: /dev
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang-legacy:v20220810-a8f2e6c
+        - image: quay.io/kubevirtci/golang:v20240306-cfcbc5c
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
           - "-c"
           - >
-            cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io &&
+            cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
             ./publish.sh &&
             echo "$(git tag --points-at HEAD | head -1)" > latest &&
             gsutil cp ./latest gs://kubevirt-prow/release/kubevirt/kubevirtci/latest
@@ -60,9 +56,6 @@ postsubmits:
           securityContext:
             privileged: true
           volumeMounts:
-          - mountPath: /lib/modules
-            name: modules
-            readOnly: true
           - mountPath: /dev
             name: devices
           resources:
