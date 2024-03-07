@@ -114,22 +114,19 @@ periodics:
   labels:
     preset-docker-mirror: "true"
     preset-github-credentials: "true"
-    preset-dind-enabled: "true"
+    preset-podman-in-container-enabled: "true"
     preset-kubevirtci-quay-credential: "true"
   cluster: kubevirt-prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang-legacy:v20220810-a8f2e6c
+    - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
       - "-c"
       - >
-        cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io && PHASES=linux BYPASS_PMAN_CHANGE_CHECK=true ./publish.sh &&
-        docker run -v $(pwd):/kubevirtci -v /etc/github:/etc/github -v $(pwd)/../project-infra:/project-infra -e GIT_ASKPASS=/project-infra/hack/git-askpass.sh quay.io/kubevirtci/pr-creator:v20240305-cb764ec
-      env:
-      - name: GIMME_GO_VERSION
-        value: "1.19.9"
+        cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
+        GIT_ASKPASS=../project-infra/hack/git-askpass.sh ../project-infra/hack/git-pr.sh -c "PHASES=linux BYPASS_PMAN_CHANGE_CHECK=true ./publish.sh" -r kubevirtci -b bump-centos-stream -T main -p $(pwd) -s "Automatic bump of CentOS Stream to latest"
       securityContext:
         privileged: true
       resources:
