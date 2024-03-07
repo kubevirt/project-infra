@@ -312,7 +312,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+      - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
         command: ["/bin/sh"]
         args:
           - "-c"
@@ -341,7 +341,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+      - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
         command: ["/bin/sh"]
         args:
           - "-c"
@@ -373,7 +373,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+      - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
         command: ["/bin/sh"]
         args:
           - "-ce"
@@ -415,7 +415,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+      - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
         env:
         command: ["/bin/sh"]
         args:
@@ -445,7 +445,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+      - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
         command: ["/bin/sh"]
         args:
           - "-ce"
@@ -529,7 +529,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+      - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
         command: ["/bin/sh"]
         args:
           - "-c"
@@ -558,7 +558,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+      - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
         command: [ "/bin/sh" , "-c" ]
         args:
           - |
@@ -588,7 +588,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+    - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
       env:
       command: [ "/bin/sh" , "-c" ]
       args:
@@ -619,7 +619,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+    - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
       env:
       command: [ "/bin/sh" , "-c" ]
       args:
@@ -649,7 +649,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20240306-cfcbc5c
+      - image: quay.io/kubevirtci/bootstrap:v20240304-95c0a0e
         env:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
@@ -683,7 +683,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+    - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
       command:
       - /usr/local/bin/runner.sh
       - /bin/sh
@@ -718,7 +718,7 @@ periodics:
   name: periodic-project-infra-check-prow-jobconfigs
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20240306-cfcbc5c
+    - image: quay.io/kubevirtci/golang:v20240304-95c0a0e
       env:
       - name: GIMME_GO_VERSION
         value: "1.20"
@@ -760,7 +760,7 @@ periodics:
   name: periodic-project-infra-dependabot-update
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+    - image: quay.io/kubevirtci/pr-creator:v20230103-9f4e101
       env:
       command: ["/bin/sh"]
       args:
@@ -791,7 +791,7 @@ periodics:
   name: periodic-project-infra-perf-report-creator
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20240306-cfcbc5c
+    - image: quay.io/kubevirtci/golang:v20240304-95c0a0e
       env:
         - name: GIMME_GO_VERSION
           value: "1.20"
