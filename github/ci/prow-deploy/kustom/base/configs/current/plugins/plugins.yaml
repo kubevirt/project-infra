@@ -309,6 +309,7 @@ plugins:
     - approve
     - lgtm
     - trigger
+    - help
 
   kubevirt/kvm-info-nfd-plugin:
     plugins:
@@ -369,6 +370,7 @@ plugins:
     - config-updater
     - lgtm
     - trigger
+    - help
 
   kubevirt/qe-tools:
     plugins:
@@ -719,3 +721,18 @@ label:
     - allowed_teams:
       - kubevirtproject-infra-label
       label: good-first-issue
+
+help:
+  help_guidelines_url: "https://www.github.com/kubevirt/community/tree/main/contributors/help-wanted.md"
+  help_guidelines_summary: |
+    - **No Barrier to Entry**
+    - **Clear Task**
+    - **Solution Explained**
+    - **Provides Context**
+    - **Identifies Relevant Code**
+    - **Gives Examples**
+    - **Ready to Test**    
+    - **Goldilocks priority**
+    - **Up-To-Date**
+
+    

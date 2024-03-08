@@ -317,9 +317,12 @@ default:
     - name: good-first-issue
       color: 128A0C
       target: issues
-      previously:
-      - name: good first issue
-        color: 128A0C
+    - name: good first issue
+      color: 128A0C
+      target: issues
+    - name: help wanted
+      color: 128A0C
+      target: issues
 repos:
   kubevirt/kubevirt:
     labels:
