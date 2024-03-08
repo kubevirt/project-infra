@@ -268,7 +268,7 @@ default:
       addedBy: anyone
     - name: sig/buildsystem
       color: 73efeb
-      description: Denotes an issue or PR that relates to changes in the build system, touching either components or configuration of it.
+      description: Denotes an issue or PR that relates to changes in the build system.
       target: both
       prowPlugin: label
       addedBy: anyone
@@ -353,9 +353,6 @@ repos:
       - name: help-wanted
         color: 128A0C
         target: issues
-        previously:
-        - name: help wanted
-          color: 128A0C
       - name: distro/kubernetes
         color: fcb3ad
         target: both
@@ -550,9 +547,3 @@ repos:
       - name: invalid
         color: ffffff
         target: both
-      - name: good first issue
-        color: 128A0C
-        target: issues
-      - name: help wanted
-        color: 128A0C
-        target: issues
