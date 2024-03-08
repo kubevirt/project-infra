@@ -21,8 +21,7 @@ spec:
         # FIXME: change tag to proper version after initial testing is done and there's a postsubmit that updates botreview images
         image: quay.io/kubevirtci/botreview:latest
         args:
-        # FIXME: stay with dry run for now
-        - --dry-run=true
+        - --dry-run=false
         - --port=9900
         - --github-token-path=/etc/github/oauth
         - --github-endpoint=http://ghproxy
