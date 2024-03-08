@@ -655,7 +655,7 @@ presubmits:
           requests:
             memory: "200Mi"
   - name: pull-prow-kubevirt-labels-update-precheck
-    run_if_changed: '^github/ci/prow-deploy/files/labels\.yaml$'
+    run_if_changed: '^github/ci/prow-deploy/kustom/base/configs/current/labels/labels\.yaml$'
     annotations:
       testgrid-create-test-group: "false"
     labels:
@@ -672,13 +672,13 @@ presubmits:
         image: gcr.io/k8s-prow/label_sync:v20240306-0b904de3b3
         command: [ "/ko-app/label_sync" ]
         args:
-        - --config=github/ci/prow-deploy/files/labels.yaml
+        - --config=github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml
         - --confirm=false
         - --orgs=kubevirt
         - --token=/etc/github/oauth
       restartPolicy: Never
   - name: pull-prow-nmstate-labels-update-precheck
-    run_if_changed: '^github/ci/prow-deploy/files/labels\.yaml$'
+    run_if_changed: '^github/ci/prow-deploy/kustom/base/configs/current/labels/labels\.yaml$'
     annotations:
       testgrid-create-test-group: "false"
     labels:
@@ -695,7 +695,7 @@ presubmits:
         image: gcr.io/k8s-prow/label_sync:v20240306-0b904de3b3
         command: [ "/ko-app/label_sync" ]
         args:
-        - --config=github/ci/prow-deploy/files/labels.yaml
+        - --config=github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml
         - --confirm=false
         - --only=nmstate/kubernetes-nmstate
         - --token=/etc/github/oauth
