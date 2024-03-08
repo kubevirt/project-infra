@@ -671,7 +671,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-        - image: gcr.io/k8s-prow/configurator:v20240228-d64ece9e05
+        - image: gcr.io/k8s-prow/configurator:v20240306-0b904de3b3
           command:
           - /ko-app/configurator
           args:
