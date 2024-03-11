@@ -796,7 +796,7 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
-    preset-bazel-unnested: "false"
+    preset-bazel-unnested: "true"
   max_concurrency: 10
   name: periodic-kubevirt-unit-test-s390x
   reporter_config:

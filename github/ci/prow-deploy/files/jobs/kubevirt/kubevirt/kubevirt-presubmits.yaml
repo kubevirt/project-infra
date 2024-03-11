@@ -426,7 +426,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     labels:
-      preset-bazel-unnested: "false"
+      preset-bazel-unnested: "true"
     name: pull-kubevirt-unit-test-s390x
     optional: true
     skip_branches:
