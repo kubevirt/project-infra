@@ -21,8 +21,7 @@ spec:
         # FIXME: change tag to proper version
         image: quay.io/kubevirtci/referee:latest
         args:
-        # FIXME: stay with dry run for now
-        - --dry-run=true
+        - --dry-run=false
         - --port=9900
         - --github-token-path=/etc/github/oauth
         - --github-endpoint=http://ghproxy
