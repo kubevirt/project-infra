@@ -21,130 +21,46 @@ orgs:
       - 0xFelix
       - aburdenthehand
       - acardace
-      - AdamJ
-      - adityaramteke
       - aglitke
       - akalenyu
       - akrejcir
       - alicefr
       - alaypatel07
       - AlonaKaplan
-      - alonsadan
-      - alosadagrande
       - alromeros
       - andreabolognani
-      - andreyod
       - arnongilboa
-      - ArthurSens
       - assafad
-      - ashleyschuett
       - avlitman
       - awels
       - Barakmor1
-      - bardielle
-      - beanh66
-      - beekhof
-      - booxter
-      - borod108
-      - brybacki
       - codingben
-      - crobinso
       - cwilkers
-      - cynepco3hahue
-      - danielBelenky
-      - danielerez
       - dankenigsberg
-      - dcritch
-      - djzager
       - dollierp
       - dominikholler
-      - doron-fediuck
-      - dshchedr
-      - dteplits
-      - duyanyan
-      - e-minguez
       - EdDev
-      - eedri
       - enp0s3
-      - erkanerol
-      - ezrasilvera
-      - fabiendupont
-      - fedepaol
-      - fgimenez
       - fossedihelm
-      - gabrielecerami
-      - gbenhaim
       - geetikakay
       - germag
-      - gonzolino
       - gouyang
-      - gsr-shanks
-      - guy9050
-      - hritvi
-      - hroyrh
-      - ibesso-rh
-      - idanshaby
-      - ifireball
-      - igoihman
       - iholder101
-      - ILpinto
-      - InbarRose
-      - iranzo
-      - irosenzw
-      - isaacdorfman
-      - itamarh
-      - j-griffith
-      - jakub-dzon
       - jberkus
       - jcanocan
       - jean-edouard
-      - jelkosz
-      - jhernand
-      - JinjunXiong
-      - jniederm
       - jobbler
-      - jordigilh
-      - jparrill
-      - jtomasek
       - kbidarkar
-      - krsacme
       - ksimon1
       - kubevirt-commenter-bot
       - kvaps
-      - kwiesmueller
-      - lukas-bednar
-      - lveyde
       - lyarwood
-      - machacekondra
       - machadovilaca
       - maiqueb
-      - mansam
-      - marceloamaral
-      - mareklibra
-      - MarSik
-      - masayag
-      - matosatti
-      - matthewcarleton
-      - maya-r
-      - mazzystr
       - mfranczy
       - mhenriks
-      - michalskrivanek
-      - mlsorensen
-      - mmazur
-      - mmirecki
       - mrnold
-      - mshitrit
-      - myakove
-      - n1r1
-      - nellyc
-      - nelsonspbr
-      - nertpinx
-      - nirarg
-      - humblenginr
       - nunnatsa
-      - ohadlevy
-      - omeryahud
       - openshift-ci-robot
       - openshift-merge-robot
       - opokornyy
@@ -152,62 +68,20 @@ orgs:
       - orenc1
       - ormergi
       - oshoval
-      - pcbailey
-      - petrkotas
       - phoracek
-      - pkliczewski
-      - ptrnull
       - qinqon
-      - qwang1
       - RamLavi
-      - ravidbro
-      - rawagner
-      - razo7
-      - rgolangh
-      - rhrazdil
-      - rnetser
-      - rollandf
-      - ronensdeor
       - rthallisey
-      - sandrobonazzola
-      - sarahbx
-      - SchSeba
-      - scollier
-      - screeley44
-      - serenamarie125
-      - sgarbour
       - shellyka13
-      - shiywang
-      - shwetaap
-      - simon3z
-      - slintes
       - sradco
-      - sreichar
-      - stbenjam
-      - stoniko
       - stu-gott
-      - suomiy
-      - tareqalayan
-      - thetechnick
       - tiraboschi
-      - tomob
-      - usrbinkat
       - vasiliy-ul
-      - vatsalparekh
       - victortoso
       - VirrageS
       - vladikr
-      - vojtechszocs
-      - xphyr
       - xpivarc
-      - yanirq
-      - yossisegev
-      - yuhaohaoyu
-      - yuvalif
-      - yuvalturg
-      - zcahana
       - zhlhahaha
-      - zvikorn
     members_can_create_repositories: false
     name: KubeVirt
     repos:
@@ -588,22 +462,9 @@ orgs:
       QE:
         description: ""
         maintainers:
-          - nellyc
         members:
           - kbidarkar
-          - myakove
           - gouyang
-          - gsr-shanks
-          - lukas-bednar
-          - tareqalayan
-          - duyanyan
-          - InbarRose
-          - shiywang
-          - vatsalparekh
-          - ILpinto
-          - adityaramteke
-          - yossisegev
-          - dshchedr
           - dollierp
         privacy: closed
         repos:
@@ -613,7 +474,6 @@ orgs:
         description: "team for k8s-seccomp-generator repo"
         maintainers:
           - alicefr
-          - humblenginr
           - xpivarc
         privacy: secret
         repos:
@@ -675,11 +535,9 @@ orgs:
           ".github": admin
       cloud-provider-kubevirt-maintainers:
         maintainers:
-          - nirarg
           - davidvossel
           - rmohr
           - mfranczy
-          - rhrazdil
           - qinqon
         repos:
           cloud-provider-kubevirt: admin
@@ -692,10 +550,7 @@ orgs:
           - kubevirt-bot
         members:
           - vladikr
-          - slintes
-          - cynepco3hahue
           - stu-gott
-          - nellyc
           - kubevirt-commenter-bot
         privacy: closed
         repos:
@@ -735,15 +590,7 @@ orgs:
         maintainers:
           - rmohr
         members:
-          - booxter
-          - MarSik
-          - masayag
-          - j-griffith
-          - eedri
-          - slintes
-          - gonzolino
           - phoracek
-          - SchSeba
           - awels
           - aburdenthehand
           - acardace
@@ -768,8 +615,6 @@ orgs:
         maintainers:
           - rmohr
         members:
-          - pkliczewski
-          - mmirecki
           - nunnatsa
           - tiraboschi
         privacy: closed
@@ -781,8 +626,6 @@ orgs:
           - davidvossel
         members:
           - phoracek
-          - SchSeba
-          - mmirecki
         privacy: closed
         repos:
           bridge-marker: write
@@ -835,8 +678,6 @@ orgs:
           secrets: admin
       terraform-provider-kubevirt-maintainers:
         maintainers:
-          - nirarg
-          - isaacdorfman
         repos:
           terraform-provider-kubevirt: admin
       release-team:
@@ -860,7 +701,6 @@ orgs:
         description: ""
         maintainers:
           - fabiand
-          - stoniko
         privacy: closed
       ssp-maintainers:
         description: ""
@@ -887,8 +727,6 @@ orgs:
         maintainers:
           - fabiand
         members:
-          - serenamarie125
-          - beanh66
         privacy: closed
       tekton-tasks-operator-admin:
         description: "Administration group to maintain settings in tekton operator repo"
@@ -924,14 +762,6 @@ orgs:
         maintainers:
           - fabiand
         members:
-          - vojtechszocs
-          - jelkosz
-          - jtomasek
-          - rawagner
-          - suomiy
-          - jniederm
-          - pcbailey
-          - mareklibra
         privacy: closed
         repos:
           origin-web-console: admin
