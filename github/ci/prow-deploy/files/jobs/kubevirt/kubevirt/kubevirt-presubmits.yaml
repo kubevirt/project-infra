@@ -190,7 +190,7 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-unnested: "true"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
       rehearsal.allowed: "true"
@@ -226,7 +226,7 @@ presubmits:
         env:
         - name: TARGET
           value: kind-sriov
-        image: quay.io/kubevirtci/bootstrap-legacy:v20220810-a8f2e6c
+        image: quay.io/kubevirtci/bootstrap:v20240308-8fac017
         name: ""
         resources:
           requests:
@@ -234,21 +234,16 @@ presubmits:
         securityContext:
           privileged: true
         volumeMounts:
-        - mountPath: /lib/modules
-          name: modules
-          readOnly: true
         - mountPath: /sys/fs/cgroup
           name: cgroup
         - mountPath: /dev/vfio/
           name: vfio
+        - mountPath: /var/log/audit
+          name: audit
       nodeSelector:
         hardwareSupport: sriov-nic
       priorityClassName: sriov
       volumes:
-      - hostPath:
-          path: /lib/modules
-          type: Directory
-        name: modules
       - hostPath:
           path: /sys/fs/cgroup
           type: Directory
@@ -257,6 +252,8 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+      - emptydir: {}
+        name: audit
   - always_run: true
     annotations:
       fork-per-release: "true"
