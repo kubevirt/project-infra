@@ -9,15 +9,11 @@ filters:
     approvers:
     - aglitke
     - awels
-    - brybacki
     - davidvossel
     - mhenriks
-    - rgolangh
     reviewers:
     - aglitke
     - awels
-    - brybacki
     - davidvossel
     - mhenriks
-    - rgolangh
 options: {}

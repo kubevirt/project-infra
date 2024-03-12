@@ -13,6 +13,5 @@ filters:
     reviewers:
     - aglitke
     - awels
-    - maya-r
     - mhenriks
 options: {}
