@@ -5,16 +5,5 @@
 # See the OWNERS docs: https://git.k8s.io/community/contributors/guide/owners.md
 
 filters:
-  .*:
-    approvers:
-    - beekhof
-    - mshitrit
-    - n1r1
-    - slintes
-    reviewers:
-    - beekhof
-    - mshitrit
-    - n1r1
-    - razo7
-    - slintes
+  .*: {}
 options: {}

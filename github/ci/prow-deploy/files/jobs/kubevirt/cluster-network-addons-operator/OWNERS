@@ -11,9 +11,7 @@ approvers:
 - ramlavi
 options: {}
 reviewers:
-- alonsadan
 - oshoval
 - phoracek
 - qinqon
 - ramlavi
-- rhrazdil

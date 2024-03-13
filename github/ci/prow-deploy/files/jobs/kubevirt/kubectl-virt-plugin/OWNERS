@@ -8,12 +8,10 @@ filters:
   .*:
     approvers:
     - dhiller
-    - fgimenez
     - rmohr
     - stu-gott
     reviewers:
     - dhiller
-    - fgimenez
     - rmohr
     - stu-gott
 options: {}
