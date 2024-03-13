@@ -21,7 +21,8 @@ spec:
         # FIXME: change tag to proper version
         image: quay.io/kubevirtci/referee:latest
         args:
-        - --dry-run=false
+        # FIXME: enable after bot going nuts is fixed
+        - --dry-run=true
         - --port=9900
         - --github-token-path=/etc/github/oauth
         - --github-endpoint=http://ghproxy
