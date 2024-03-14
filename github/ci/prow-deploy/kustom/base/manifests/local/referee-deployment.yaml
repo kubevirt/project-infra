@@ -18,8 +18,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
       - name: referee
-        # FIXME: change tag to proper version
-        image: quay.io/kubevirtci/referee:latest
+        image: quay.io/kubevirtci/referee:v20240314-a50057b8
         args:
         # FIXME: enable after bot going nuts is fixed
         - --dry-run=true
