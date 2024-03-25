@@ -868,3 +868,11 @@ orgs:
           - lyarwood
         repos:
           kubevirt.core: admin
+      containerdisks-maintainers:
+        description: Maintainers of containerdisks
+        privacy: closed
+        maintainers:
+          - 0xFelix
+          - lyarwood
+        repos:
+          containerdisks: admin
