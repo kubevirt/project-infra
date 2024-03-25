@@ -437,6 +437,9 @@ orgs:
         description: Containerized Data Importer API definitions
         default_branch: main
         has_projects: true
+      application-aware-quota-api:
+        description: Application Aware Quota API definition
+        default_branch: main
       api:
         description: KubeVirt API definition
         default_branch: main
@@ -525,6 +528,13 @@ orgs:
           - rmohr
         repos:
           api: admin
+      application-aware-quota-api:
+        description: ""
+        maintainers:
+          - Barakmor1
+          - vladikr
+        repos:
+          application-aware-quota-api: admin
       community-health-files-maintainers:
         description: Default Community health files.
         maintainers:
