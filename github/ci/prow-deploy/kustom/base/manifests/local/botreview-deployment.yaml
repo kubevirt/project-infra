@@ -18,8 +18,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
       - name: botreview
-        # FIXME: change tag to proper version after initial testing is done and there's a postsubmit that updates botreview images
-        image: quay.io/kubevirtci/botreview:latest
+        image: quay.io/kubevirtci/botreview:v20240325-bfd7ddbd
         args:
         # FIXME: stay with dry run for now
         - --dry-run=true
