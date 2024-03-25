@@ -973,7 +973,7 @@ periodics:
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.27-sig-performance
+  name: periodic-kubevirt-e2e-k8s-1.29-sig-performance
   reporter_config:
     slack:
       job_states_to_report: []
@@ -996,7 +996,7 @@ periodics:
         FUNC_TEST_ARGS="--no-color --seed=42" make perftest
       env:
       - name: KUBEVIRT_PROVIDER
-        value: k8s-1.27
+        value: k8s-1.29
       - name: KUBEVIRT_STORAGE
         value: hpp
       - name: KUBEVIRT_MEMORY_SIZE
@@ -1037,7 +1037,7 @@ periodics:
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.27-sig-performance-realtime
+  name: periodic-kubevirt-e2e-k8s-1.29-sig-performance-realtime
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1057,7 +1057,7 @@ periodics:
         FUNC_TEST_ARGS="--no-color --seed=42" make realtime-perftest
       env:
       - name: KUBEVIRT_PROVIDER
-        value: k8s-1.27
+        value: k8s-1.29
       - name: KUBEVIRT_STORAGE
         value: rook-ceph-default
       - name: KUBEVIRT_MEMORY_SIZE
