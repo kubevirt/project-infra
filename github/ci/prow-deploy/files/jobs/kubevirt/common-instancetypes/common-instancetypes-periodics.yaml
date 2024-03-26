@@ -23,6 +23,7 @@ periodics:
         command: [ "/bin/bash", "-ce" ]
         args:
         - |
+          export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
           latest_version=$(curl --fail -s "https://api.github.com/repos/kubevirt/common-instancetypes/releases/latest" | jq -r '.tag_name')
           description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
 
@@ -62,6 +63,7 @@ periodics:
         command: [ "/bin/bash", "-ce" ]
         args:
         - |
+          export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
           latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
           description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
 
@@ -101,6 +103,7 @@ periodics:
         command: [ "/bin/bash", "-ce" ]
         args:
         - |
+          export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
           latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
           description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
 
