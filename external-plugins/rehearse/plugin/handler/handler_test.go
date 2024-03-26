@@ -11,6 +11,7 @@ import (
 	"k8s.io/test-infra/prow/git/localgit"
 	gitv2 "k8s.io/test-infra/prow/git/v2"
 	"k8s.io/test-infra/prow/github"
+	"k8s.io/test-infra/prow/github/fakegithub"
 )
 
 var _ = Describe("Events", func() {
@@ -403,6 +404,61 @@ Gna meh whatever
 			Expect(handler.filterProwJobsByJobNames(prowJobs, []string{"prowJob1", "prowJob3"})).To(BeEquivalentTo(expected))
 		})
 
+	})
+
+	Context("canUserRehearse", func() {
+		var testable *GitHubEventsHandler
+		var fakeGHC *fakegithub.FakeClient
+		var pr *github.PullRequest
+		BeforeEach(func() {
+			fakeGHC = &fakegithub.FakeClient{}
+			fakeGHC.OrgMembers = map[string][]string{
+				"testorg": {
+					"testauthor",
+					"testuser",
+				},
+			}
+			testable = &GitHubEventsHandler{
+				ghClient: fakeGHC,
+			}
+			pr = &github.PullRequest{
+				User: github.User{Login: "testauthor"},
+			}
+		})
+		DescribeTable("org",
+			func(
+				orgMembers map[string][]string,
+				expectedCanUserRehearse bool,
+			) {
+				fakeGHC.OrgMembers = orgMembers
+				Expect(testable.canUserRehearse("testorg", pr, "testuser")).To(BeEquivalentTo(expectedCanUserRehearse))
+			},
+			Entry("user and author in org",
+				map[string][]string{
+					"testorg": {
+						"testauthor",
+						"testuser",
+					},
+				},
+				true,
+			),
+			Entry("only user in org",
+				map[string][]string{
+					"testorg": {
+						"testuser",
+					},
+				},
+				false,
+			),
+			Entry("only author in org",
+				map[string][]string{
+					"testorg": {
+						"testauthor",
+					},
+				},
+				false,
+			),
+		)
 	})
 
 })
