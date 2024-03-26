@@ -973,6 +973,9 @@ periodics:
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
+  # note: when the provider is updated, the `robots/cmd/perf-report-creator/graph.sh` and
+  #       `robots/cmd/perf-report-creator/scrape.sh` needs to be updated as well, refer to this
+  #       https://github.com/kubevirt/project-infra/pull/3032 for the needed changes
   name: periodic-kubevirt-e2e-k8s-1.29-sig-performance
   reporter_config:
     slack:
