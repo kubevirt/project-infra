@@ -146,7 +146,7 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 	if err != nil {
 		log.WithError(err).Errorf("Could not get PR number %d", event.Issue.Number)
 	}
-	if !h.canUserRehearse(err, org, event.Comment.User.Login, pr) {
+	if !h.canUserRehearse(org, pr, event.Comment.User.Login) {
 		log.Infoln("Skipping event - user validation failed")
 		return
 	}
@@ -170,7 +170,7 @@ func (h *GitHubEventsHandler) shouldActOnIssueComment(event *github.IssueComment
 	return false
 }
 
-func (h *GitHubEventsHandler) canUserRehearse(err error, org string, userName string, pr *github.PullRequest) bool {
+func (h *GitHubEventsHandler) canUserRehearse(org string, pr *github.PullRequest, userName string) bool {
 	isAuthorMember, err := h.ghClient.IsMember(org, pr.User.Login)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate PR author with the repo org")
@@ -218,7 +218,7 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 	if err != nil {
 		log.WithError(err).Errorf("Could not get PR number %d", event.PullRequest.Number)
 	}
-	if !h.canUserRehearse(err, org, event.Sender.Login, pr) {
+	if !h.canUserRehearse(org, pr, event.Sender.Login) {
 		log.Infoln("Skipping event. User is not authorized.")
 		return
 	}
