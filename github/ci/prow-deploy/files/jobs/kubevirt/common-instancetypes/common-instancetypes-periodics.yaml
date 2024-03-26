@@ -20,15 +20,22 @@ periodics:
     spec:
       containers:
       - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+        env:
+        - name: COMMON_INSTANCETYPES_BRANCH
+          value: "main"
+        - name: KUBEVIRT_BRANCH
+          value: "main"
+        - name: SSP_BRANCH
+          value: "main"
         command: [ "/bin/bash", "-ce" ]
         args:
         - |
           export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
-          latest_version=$(curl --fail -s "https://api.github.com/repos/kubevirt/common-instancetypes/releases/latest" | jq -r '.tag_name')
+          latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
           description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
 
-          git-pr.sh -c "cd ../kubevirt && hack/bump-common-instancetypes.sh" -d "echo -e \"${description}\"" -r kubevirt -b update-common-instancetypes-main -T main
-          git-pr.sh -c "cd ../ssp-operator && hack/bump-common-instancetypes.sh" -d "echo -e \"${description}\"" -r ssp-operator -b update-common-instancetypes-main -T main
+          git-pr.sh -c "cd ../kubevirt && hack/bump-common-instancetypes.sh" -d "echo -e \"${description}\"" -r kubevirt -b update-common-instancetypes-main -T ${KUBEVIRT_BRANCH}
+          git-pr.sh -c "cd ../ssp-operator && hack/bump-common-instancetypes.sh" -d "echo -e \"${description}\"" -r ssp-operator -b update-common-instancetypes-main -T ${SSP_BRANCH}
         resources:
           requests:
             memory: "200Mi"
