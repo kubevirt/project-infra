@@ -3,11 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"k8s.io/test-infra/prow/plugins/ownersconfig"
+	"k8s.io/test-infra/prow/repoowners"
 	"net/http"
 	"os"
 	"time"
 
-	"k8s.io/test-infra/prow/config"
+	prowconfig "k8s.io/test-infra/prow/config"
 	"k8s.io/test-infra/prow/pluginhelp"
 
 	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/handler"
@@ -154,15 +156,15 @@ func main() {
 
 	eventsChan := make(chan *handler.GitHubEvent)
 
-	eventsHandler := handler.NewGitHubEventsHandler(
-		eventsChan,
-		logger,
-		prowClient.ProwJobs(opts.jobsNs),
-		githubClient,
-		opts.prowConfigPath,
-		opts.jobsConfigBase,
-		opts.alwaysRun,
-		gitClientFactory)
+	mdYAMLEnabled := func(org, repo string) bool { return true }
+	skipCollaborators := func(org, repo string) bool { return false }
+	ownersDirDenylist := func() *prowconfig.OwnersDirDenylist {
+		return &prowconfig.OwnersDirDenylist{}
+	}
+
+	ownersClient := repoowners.NewClient(gitClientFactory, githubClient, mdYAMLEnabled, skipCollaborators, ownersDirDenylist, ownersconfig.FakeResolver)
+
+	eventsHandler := handler.NewGitHubEventsHandler(eventsChan, logger, prowClient.ProwJobs(opts.jobsNs), githubClient, opts.prowConfigPath, opts.jobsConfigBase, opts.alwaysRun, gitClientFactory, ownersClient)
 
 	eventsServer := server.NewGitHubEventsServer(secret.GetTokenGenerator(opts.hmacSecretFile), eventsHandler)
 
@@ -176,7 +178,7 @@ func main() {
 	logger.Println("Rehearse server was gracefully shut down")
 }
 
-func helpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
+func helpProvider(_ []prowconfig.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	pluginHelp := &pluginhelp.PluginHelp{
 		Description: `The rehearse plugin is used to test modifications of Prow jobs to provide pre-merge feedback.`,
 	}

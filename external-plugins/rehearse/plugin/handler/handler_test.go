@@ -6,12 +6,14 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/util/sets"
 	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
 	"k8s.io/test-infra/prow/config"
 	"k8s.io/test-infra/prow/git/localgit"
 	gitv2 "k8s.io/test-infra/prow/git/v2"
 	"k8s.io/test-infra/prow/github"
 	"k8s.io/test-infra/prow/github/fakegithub"
+	"kubevirt.io/project-infra/external-plugins/testutils"
 )
 
 var _ = Describe("Events", func() {
@@ -28,15 +30,13 @@ var _ = Describe("Events", func() {
 			gitrepo, gitClientFactory, err = localgit.NewV2()
 			Expect(err).ShouldNot(HaveOccurred(), "Could not create local git repo and client factory")
 			dummyLog = logrus.New()
-			eventsServer = NewGitHubEventsHandler(
-				nil,
-				dummyLog,
-				nil,
-				nil,
-				"prow-config.yaml",
-				"",
-				true,
-				gitClientFactory)
+			foc := &testutils.FakeOwnersClient{
+				ExistingTopLevelApprovers: sets.NewString("testuser"),
+			}
+			froc := &testutils.FakeRepoownersClient{
+				Foc: foc,
+			}
+			eventsServer = NewGitHubEventsHandler(nil, dummyLog, nil, nil, "prow-config.yaml", "", true, gitClientFactory, froc)
 		})
 
 		AfterEach(func() {
@@ -410,6 +410,7 @@ Gna meh whatever
 		var testable *GitHubEventsHandler
 		var fakeGHC *fakegithub.FakeClient
 		var pr *github.PullRequest
+		var fakeOwnersClient *testutils.FakeOwnersClient
 		BeforeEach(func() {
 			fakeGHC = &fakegithub.FakeClient{}
 			fakeGHC.OrgMembers = map[string][]string{
@@ -418,20 +419,25 @@ Gna meh whatever
 					"testuser",
 				},
 			}
+			fakeOwnersClient = &testutils.FakeOwnersClient{}
+			fakeRepoownersClient := &testutils.FakeRepoownersClient{
+				Foc: fakeOwnersClient,
+			}
 			testable = &GitHubEventsHandler{
-				ghClient: fakeGHC,
+				ghClient:     fakeGHC,
+				ownersClient: fakeRepoownersClient,
 			}
 			pr = &github.PullRequest{
 				User: github.User{Login: "testauthor"},
 			}
 		})
-		DescribeTable("org",
+		DescribeTable("org and user",
 			func(
 				orgMembers map[string][]string,
 				expectedCanUserRehearse bool,
 			) {
 				fakeGHC.OrgMembers = orgMembers
-				Expect(testable.canUserRehearse("testorg", pr, "testuser")).To(BeEquivalentTo(expectedCanUserRehearse))
+				Expect(testable.canUserRehearse("testorg", pr, "testuser", []string{})).To(BeEquivalentTo(expectedCanUserRehearse))
 			},
 			Entry("user and author in org",
 				map[string][]string{
