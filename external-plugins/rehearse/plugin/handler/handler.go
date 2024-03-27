@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/r3labs/diff/v3"
 	"io/ioutil"
+	"k8s.io/test-infra/prow/repoowners"
 	"os"
 	"os/exec"
 	"path"
@@ -62,21 +63,14 @@ type GitHubEventsHandler struct {
 	prowClient       v1.ProwJobInterface
 	ghClient         githubClientInterface
 	gitClientFactory gitv2.ClientFactory
+	ownersClient     repoOwnersClient
 	prowConfigPath   string
 	jobsConfigBase   string
 	alwaysRun        bool
 }
 
 // NewGitHubEventsHandler returns a new github events handler
-func NewGitHubEventsHandler(
-	eventsChan <-chan *GitHubEvent,
-	logger *logrus.Logger,
-	prowClient v1.ProwJobInterface,
-	ghClient githubClientInterface,
-	prowConfigPath string,
-	jobsConfigBase string,
-	alwaysRun bool,
-	gitClientFactory gitv2.ClientFactory) *GitHubEventsHandler {
+func NewGitHubEventsHandler(eventsChan <-chan *GitHubEvent, logger *logrus.Logger, prowClient v1.ProwJobInterface, ghClient githubClientInterface, prowConfigPath string, jobsConfigBase string, alwaysRun bool, gitClientFactory gitv2.ClientFactory, ownersClient repoOwnersClient) *GitHubEventsHandler {
 
 	return &GitHubEventsHandler{
 		eventsChan:       eventsChan,
@@ -87,6 +81,7 @@ func NewGitHubEventsHandler(
 		jobsConfigBase:   jobsConfigBase,
 		alwaysRun:        alwaysRun,
 		gitClientFactory: gitClientFactory,
+		ownersClient:     ownersClient,
 	}
 }
 
@@ -94,6 +89,10 @@ type githubClientInterface interface {
 	IsMember(string, string) (bool, error)
 	GetPullRequest(string, string, int) (*github.PullRequest, error)
 	CreateComment(org, repo string, number int, comment string) error
+}
+
+type repoOwnersClient interface {
+	LoadRepoOwners(org, repo, base string) (repoowners.RepoOwner, error)
 }
 
 func (h *GitHubEventsHandler) Handle(incomingEvent *GitHubEvent) {
@@ -146,7 +145,18 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 	if err != nil {
 		log.WithError(err).Errorf("Could not get PR number %d", event.Issue.Number)
 	}
-	if !h.canUserRehearse(org, pr, event.Comment.User.Login) {
+	repoClient, err := h.getRebasedRepoClient(log, pr, err, org, repo)
+	if err != nil {
+		log.WithError(err).Error("could not get repo client")
+		return
+	}
+	log.Infoln("Getting diff")
+	changedFiles, err := repoClient.Diff(pr.Base.SHA, "HEAD")
+	if err != nil {
+		log.WithError(err).Error("Could not calculate diff for PR.")
+		return
+	}
+	if !h.canUserRehearse(org, pr, event.Comment.User.Login, changedFiles) {
 		log.Infoln("Skipping event - user validation failed")
 		return
 	}
@@ -170,7 +180,7 @@ func (h *GitHubEventsHandler) shouldActOnIssueComment(event *github.IssueComment
 	return false
 }
 
-func (h *GitHubEventsHandler) canUserRehearse(org string, pr *github.PullRequest, userName string) bool {
+func (h *GitHubEventsHandler) canUserRehearse(org string, pr *github.PullRequest, userName string, changedFiles []string) bool {
 	isAuthorMember, err := h.ghClient.IsMember(org, pr.User.Login)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate PR author with the repo org")
@@ -218,7 +228,18 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 	if err != nil {
 		log.WithError(err).Errorf("Could not get PR number %d", event.PullRequest.Number)
 	}
-	if !h.canUserRehearse(org, pr, event.Sender.Login) {
+	repoClient, err := h.getRebasedRepoClient(log, pr, err, org, repo)
+	if err != nil {
+		log.WithError(err).Error("could not get repo client")
+		return
+	}
+	log.Infoln("Getting diff")
+	changedFiles, err := repoClient.Diff(pr.Base.SHA, "HEAD")
+	if err != nil {
+		log.WithError(err).Error("Could not calculate diff for PR.")
+		return
+	}
+	if !h.canUserRehearse(org, pr, event.Sender.Login, changedFiles) {
 		log.Infoln("Skipping event. User is not authorized.")
 		return
 	}
@@ -232,21 +253,13 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Base.Repo.FullName)
 		return
 	}
-	log.Infoln("Generating git client")
-	git, err := h.gitClientFactory.ClientFor(org, repo)
+	repoClient, err := h.getRebasedRepoClient(log, pr, err, org, repo)
 	if err != nil {
-		return
-	}
-	log.Infoln("Rebasing the PR on the target branch")
-	git.Config("user.email", "kubevirtbot@redhat.com")
-	git.Config("user.name", "Kubevirt Bot")
-	err = git.MergeAndCheckout(pr.Base.SHA, string(github.MergeSquash), pr.Head.SHA)
-	if err != nil {
-		log.WithError(err).Error("Could not rebase the PR on the target branch.")
+		log.WithError(err).Error("could not get repo client")
 		return
 	}
 	log.Infoln("Getting diff")
-	changedFiles, err := git.Diff(pr.Base.SHA, "HEAD")
+	changedFiles, err := repoClient.Diff(pr.Base.SHA, "HEAD")
 	if err != nil {
 		log.WithError(err).Error("Could not calculate diff for PR.")
 		return
@@ -258,13 +271,13 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		return
 	}
 	log.Infoln("Changed job configs:", changedJobConfigs)
-	headConfigs, err := h.loadConfigsAtRef(changedJobConfigs, git, "HEAD")
+	headConfigs, err := h.loadConfigsAtRef(changedJobConfigs, repoClient, "HEAD")
 	if err != nil {
 		log.WithError(err).Errorf(
 			"Could not load job configs from head ref: %s", "HEAD")
 	}
 
-	baseConfigs, err := h.loadConfigsAtRef(changedJobConfigs, git, pr.Base.SHA)
+	baseConfigs, err := h.loadConfigsAtRef(changedJobConfigs, repoClient, pr.Base.SHA)
 	if err != nil {
 		log.WithError(err).Errorf(
 			"Could not load job configs from base ref: %s", pr.Base.SHA)
@@ -339,6 +352,28 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 			log.WithError(err).Errorf("Failed to create comment on %s/%s PR: %d", org, repo, pr.Number)
 		}
 	}
+}
+
+func (h *GitHubEventsHandler) getRebasedRepoClient(log *logrus.Entry, pr *github.PullRequest, err error, org string, repo string) (gitv2.RepoClient, error) {
+	log.Debugln("Generating git client")
+	rebasedRepoClient, err := h.gitClientFactory.ClientFor(org, repo)
+	if err != nil {
+		return nil, fmt.Errorf("could not generate repo client: %w", err)
+	}
+	log.Debugln("Rebasing the PR on the target branch")
+	err = rebasedRepoClient.Config("user.email", "kubevirtbot@redhat.com")
+	if err != nil {
+		return nil, fmt.Errorf("could not change repo config: %w", err)
+	}
+	err = rebasedRepoClient.Config("user.name", "Kubevirt Bot")
+	if err != nil {
+		return nil, fmt.Errorf("could not change repo config: %w", err)
+	}
+	err = rebasedRepoClient.MergeAndCheckout(pr.Base.SHA, string(github.MergeSquash), pr.Head.SHA)
+	if err != nil {
+		return nil, fmt.Errorf("could not rebase the PR on the target branch: %w", err)
+	}
+	return rebasedRepoClient, nil
 }
 
 func (h *GitHubEventsHandler) extractJobNamesFromComment(body string) []string {
