@@ -14,10 +14,10 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/oauth2"
-
 	"github.com/Masterminds/semver"
 	"github.com/google/go-github/v32/github"
+	"golang.org/x/oauth2"
+	"sigs.k8s.io/yaml"
 )
 
 type blockerListCacheEntry struct {
@@ -414,8 +414,14 @@ func (r *releaseData) forkProwJobs() error {
 
 	// create new prow configs if they don't already exist
 	if _, err := os.Stat(fullOutputConfig); err != nil && os.IsNotExist(err) {
+		updateJobConfig, err := updatePhase2Jobs(r.org+"/"+r.repo, fullJobConfig)
+		if err != nil {
+			return err
+		}
+		defer os.Remove(updateJobConfig)
+
 		log.Printf("Creating new prow yaml at path %s", fullOutputConfig)
-		cmd := exec.Command("/usr/bin/config-forker", "--job-config", fullJobConfig, "--version", version, "--output", fullOutputConfig)
+		cmd := exec.Command("/usr/bin/config-forker", "--job-config", updateJobConfig, "--version", version, "--output", fullOutputConfig)
 		bytes, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Printf("ERROR: config-forker command output: %s : %s ", string(bytes), err)
@@ -1270,4 +1276,71 @@ func main() {
 			log.Fatalf("ERROR Creating Tag: %s ", err)
 		}
 	}
+}
+
+func updatePhase2Jobs(orgRepo, fullJobConfig string) (string, error) {
+	fileContent, err := ioutil.ReadFile(fullJobConfig)
+	if err != nil {
+		return "", fmt.Errorf("Error reading yaml file: %v", err)
+	}
+
+	var data map[string]interface{}
+	if err := yaml.Unmarshal(fileContent, &data); err != nil {
+		return "", fmt.Errorf("Error unmarshalling yaml: %v", err)
+	}
+
+	err = updatePresubmits(orgRepo, data)
+	if err != nil {
+		return "", err
+	}
+
+	updatedContent, err := yaml.Marshal(data)
+	if err != nil {
+		return "", fmt.Errorf("Error marshalling yaml: %v", err)
+	}
+
+	updateJobConfig := os.TempDir() + "/job-config.yaml"
+	if err := ioutil.WriteFile(updateJobConfig, updatedContent, 0644); err != nil {
+		return "", fmt.Errorf("Error writing updated yaml to file: %v", err)
+	}
+
+	return updateJobConfig, nil
+}
+
+func updatePresubmits(orgRepo string, data map[string]interface{}) error {
+	presubmits, ok := data["presubmits"].(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("Missing or invalid 'presubmits' section in yaml")
+	}
+
+	repo, ok := presubmits[orgRepo].([]interface{})
+	if !ok {
+		return fmt.Errorf("Missing or invalid section for repository '%s' in yaml", orgRepo)
+	}
+
+	for i, job := range repo {
+		jobMap, ok := job.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("Invalid job format in yaml")
+		}
+
+		if shouldUpdateJob(jobMap) {
+			jobMap["always_run"] = true
+			presubmits[orgRepo].([]interface{})[i] = jobMap
+		}
+	}
+
+	return nil
+}
+
+func shouldUpdateJob(jobMap map[string]interface{}) bool {
+	optional, optionalOk := jobMap["optional"].(bool)
+	alwaysRun, alwaysRunOk := jobMap["always_run"].(bool)
+	runIfChanged, runIfChangedOk := jobMap["run_if_changed"].(string)
+	skipIfOnlyChanged, skipIfOnlyChangedOk := jobMap["skip_if_only_changed"].(string)
+
+	return (!alwaysRunOk || !alwaysRun) &&
+		(!optionalOk || !optional) &&
+		(!runIfChangedOk || runIfChanged == "") &&
+		(!skipIfOnlyChangedOk || skipIfOnlyChanged == "")
 }
