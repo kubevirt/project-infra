@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 	"sort"
 	"strconv"
@@ -33,15 +34,17 @@ type releaseData struct {
 	infraUrl  string
 	repo      string
 	org       string
+	name      string
 	newBranch string
 
-	tagBranch        string
-	tag              string
-	promoteRC        string
-	promoteRCTime    time.Time
-	previousTag      string
-	releaseNotesFile string
-	skipReleaseNotes bool
+	tagBranch          string
+	tag                string
+	promoteRC          string
+	promoteRCTime      time.Time
+	previousTag        string
+	releaseNotesFile   string
+	releaseNotesReadme string
+	skipReleaseNotes   bool
 
 	force bool
 
@@ -76,23 +79,26 @@ func _gitCommand(arg ...string) (string, error) {
 }
 
 func (r *releaseData) generateReleaseNotes() error {
-	additionalResources := fmt.Sprintf(`Additional Resources
---------------------
-- Mailing list: <https://groups.google.com/forum/#!forum/kubevirt-dev>
-- Slack: <https://kubernetes.slack.com/messages/virtualization>
-- An easy to use demo: <https://github.com/%s/demo>
-- [How to contribute][contributing]
-- [License][license]
+	additionalResources := fmt.Sprintf(`
+## Additional Resources
 
-
-[contributing]: https://github.com/%s/%s/blob/main/CONTRIBUTING.md
-[license]: https://github.com/%s/%s/blob/main/LICENSE
----
+- Mailing list: https://groups.google.com/forum/#!forum/kubevirt-dev
+- Slack: https://kubernetes.slack.com/messages/virtualization
+- An easy to use demo: https://github.com/%s/demo
+- How to contribute: https://github.com/%s/%s/blob/main/CONTRIBUTING.md
+- License: https://github.com/%s/%s/blob/main/LICENSE
 `, r.org, r.org, r.repo, r.org, r.repo)
 
 	tagUrl := fmt.Sprintf("https://github.com/%s/%s/releases/tag/%s", r.org, r.repo, r.tag)
 
-	r.releaseNotesFile = fmt.Sprintf("%s/%s-release-notes.txt", r.repoDir, r.tag)
+	releaseNotesDir := path.Join(r.repoDir, "CHANGELOG")
+	r.releaseNotesFile = path.Join(releaseNotesDir, fmt.Sprintf("CHANGELOG-%s.md", r.tag))
+	r.releaseNotesReadme = path.Join(releaseNotesDir, "README.md")
+
+	err := os.Mkdir(releaseNotesDir, 0755)
+	if err != nil && !os.IsExist(err) {
+		return err
+	}
 
 	f, err := os.Create(r.releaseNotesFile)
 	if err != nil {
@@ -150,7 +156,17 @@ func (r *releaseData) generateReleaseNotes() error {
 		return err
 	}
 
-	contributorList := strings.Split(contributorStr, "\n")
+	contributorList := []string{}
+	for _, line := range strings.Split(contributorStr, "\n") {
+		if line == "" {
+			continue
+		}
+		if strings.Contains(line, "kubevirt-bot") {
+			// skip the bot
+			continue
+		}
+		contributorList = append(contributorList, line)
+	}
 
 	typeOfChanges, err := gitCommand("-C", r.repoDir, "diff", "--shortstat", span)
 	if err != nil {
@@ -161,21 +177,24 @@ func (r *releaseData) generateReleaseNotes() error {
 	numContributors := len(contributorList)
 	typeOfChanges = strings.TrimSpace(typeOfChanges)
 
-	f.WriteString(fmt.Sprintf("This release follows %s and consists of %d changes, contributed by %d people, leading to %s.\n", r.previousTag, numChanges, numContributors, typeOfChanges))
+	f.WriteString(fmt.Sprintf("# %s %s\n", r.name, r.tag))
+	f.WriteString("\n")
+	f.WriteString(fmt.Sprintf("This release follows %s and consists of %d changes, leading to %s.", r.previousTag, numChanges, typeOfChanges))
 	if r.promoteRC != "" {
-		f.WriteString(fmt.Sprintf("%s is a promotion of release candidate %s which was originally published %s", r.tag, r.promoteRC, r.promoteRCTime.Format("2006-01-02")))
+		f.WriteString("  \n")
+		f.WriteString(fmt.Sprintf("%s is a promotion of release candidate %s, which was originally published on %s.", r.tag, r.promoteRC, r.promoteRCTime.Format("2006-01-02")))
 	}
 	f.WriteString("\n")
-	f.WriteString(fmt.Sprintf("The source code and selected binaries are available for download at: %s.\n", tagUrl))
 	f.WriteString("\n")
-	f.WriteString("The primary release artifact of KubeVirt is the git tree. The release tag is\n")
+	f.WriteString(fmt.Sprintf("The primary release artifact of %s is the git tree. The release tag is ", r.name))
 	f.WriteString(fmt.Sprintf("signed and can be verified using `git tag -v %s`.\n", r.tag))
 	f.WriteString("\n")
-	f.WriteString(fmt.Sprintf("Pre-built containers are published on Quay and can be viewed at: <https://quay.io/%s/>.\n", r.org))
+	f.WriteString(fmt.Sprintf("The source code and selected binaries are available for download at: %s  \n", tagUrl))
+	f.WriteString(fmt.Sprintf("Pre-built containers are published on Quay and can be viewed at: https://quay.io/%s/\n", r.org))
 	f.WriteString("\n")
 
 	if len(releaseNotes) > 0 {
-		f.WriteString("Notable changes\n---------------\n")
+		f.WriteString("## Notable changes\n")
 		f.WriteString("\n")
 		for _, note := range releaseNotes {
 			f.WriteString(fmt.Sprintf("- %s\n", note))
@@ -183,18 +202,31 @@ func (r *releaseData) generateReleaseNotes() error {
 	}
 
 	f.WriteString("\n")
-	f.WriteString("Contributors\n------------\n")
-	f.WriteString(fmt.Sprintf("%d people contributed to this release:\n\n", numContributors))
+	f.WriteString("## Contributors\n")
+	f.WriteString("\n")
+	f.WriteString(fmt.Sprintf("%d people contributed to this release:\n", numContributors))
+	f.WriteString("\n")
 
+	f.WriteString("```\n")
 	for _, contributor := range contributorList {
-		if strings.Contains(contributor, "kubevirt-bot") {
-			// skip the bot
-			continue
-		}
 		f.WriteString(fmt.Sprintf("%s\n", strings.TrimSpace(contributor)))
 	}
+	f.WriteString("```\n")
 
 	f.WriteString(additionalResources)
+
+	g, err := os.Create(r.releaseNotesReadme)
+	if err != nil {
+		return err
+	}
+	defer g.Close()
+
+	g.WriteString(fmt.Sprintf("# %s release notes\n", r.name))
+	g.WriteString("\n")
+	g.WriteString(fmt.Sprintf("The most recent release is [%s](CHANGELOG-%s.md).\n", r.tag, r.tag))
+
+	// TODO list past releases too
+
 	return nil
 }
 
@@ -306,9 +338,30 @@ func (r *releaseData) makeTag(branch string) error {
 		}
 	}
 
-	r.generateReleaseNotes()
+	err := r.generateReleaseNotes()
+	if err != nil {
+		return err
+	}
 
-	_, err := gitCommand("-C", r.repoDir, "tag", "-s", r.tag, "-F", r.releaseNotesFile)
+	_, err = gitCommand("-C", r.repoDir, "add", r.releaseNotesFile)
+	if err != nil {
+		return err
+	}
+
+	_, err = gitCommand("-C", r.repoDir, "add", r.releaseNotesReadme)
+	if err != nil {
+		return err
+	}
+
+	_, err = gitCommand("-C", r.repoDir, "commit", "-s", "-m", fmt.Sprintf("CHANGELOG: Add release notes for %s", r.tag))
+	if err != nil {
+		return err
+	}
+
+	_, err = gitCommand("-C", r.repoDir, "tag", "-s", "-m", fmt.Sprintf("%s %s", r.name, r.tag), r.tag)
+	if err != nil {
+		return err
+	}
 
 	if !r.dryRun {
 		_, err = gitCommand("-C", r.repoDir, "push", r.repoUrl, r.tag)
@@ -376,8 +429,8 @@ func (r *releaseData) getReleaseNote(number int) (string, error) {
 				note = strings.TrimPrefix(note, "- ")
 				note = strings.TrimPrefix(note, "-")
 				// best effort at catching "none" if the label didn't catch it
-				if !strings.Contains(note, "NONE") && strings.ToLower(note) != "none" {
-					note = fmt.Sprintf("[PR #%d][%s] %s", number, *pr.User.Login, note)
+				if note != "" && !strings.Contains(note, "NONE") && strings.ToLower(note) != "none" && strings.ToLower(note) != "n/a" {
+					note = fmt.Sprintf("[#%d](https://github.com/%s/%s/pull/%d) ([@%s](https://github.com/%s)) %s", number, r.org, r.repo, number, *pr.User.Login, *pr.User.Login, note)
 					return note, nil
 				}
 			}
@@ -1100,7 +1153,10 @@ func (r *releaseData) cutNewTag() error {
 		return err
 	}
 
-	r.makeTag(r.tagBranch)
+	err = r.makeTag(r.tagBranch)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -1119,7 +1175,10 @@ func (r *releaseData) printData() {
 	log.Printf("\texistingBranch: %s", r.tagBranch)
 	log.Printf("\torg: %s", r.org)
 	log.Printf("\trepo: %s", r.repo)
+	log.Printf("\tname: %s", r.name)
 	log.Printf("\tforce: %t", r.force)
+	log.Printf("\tgitUser: %s", r.gitUser)
+	log.Printf("\tgitEmail: %s", r.gitEmail)
 	log.Printf("\tgithubTokenFile: %s", r.githubTokenPath)
 }
 
@@ -1129,6 +1188,7 @@ func main() {
 	releaseTag := flag.String("new-release", "", "New release tag. Must be a valid semver. The branch is automatically detected from the major and minor release")
 	org := flag.String("org", "", "The project org")
 	repo := flag.String("repo", "", "The project repo")
+	name := flag.String("name", "", "The project name (user-facing version, including proper capitalization)")
 	dryRun := flag.Bool("dry-run", true, "Should this be a dry run")
 	cacheDir := flag.String("cache-dir", "/tmp/release-tool", "The base directory used to cache git repos in")
 	cleanCacheDir := flag.Bool("clean-cache", true, "Clean the cache dir before executing")
@@ -1156,6 +1216,17 @@ func main() {
 		log.Fatal("--git-email is required")
 	} else if *githubTokenFile == "" {
 		log.Fatal("--github-token-file is a required argument")
+	}
+
+	if *name == "" {
+		// Automatically fill in the name for the main repository, to
+		// preserve existing usage. Other projects will have to
+		// provide the information on the command line
+		if *org == "kubevirt" && *repo == "kubevirt" {
+			*name = "KubeVirt"
+		} else {
+			log.Fatal("--name is a required argument")
+		}
 	}
 
 	tokenBytes, err := ioutil.ReadFile(*githubTokenFile)
@@ -1189,6 +1260,7 @@ func main() {
 		infraUrl:         infraUrl,
 		repo:             *repo,
 		org:              *org,
+		name:             *name,
 		newBranch:        *newBranch,
 		tag:              *releaseTag,
 		tagBranch:        *existingBranch,
