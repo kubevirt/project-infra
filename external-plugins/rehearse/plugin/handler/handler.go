@@ -4,21 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/r3labs/diff/v3"
-	"io/ioutil"
-	"os"
-	"os/exec"
-	"path"
-	"reflect"
-	"regexp"
-	"strconv"
-	"strings"
-
 	"github.com/go-git/go-git/v5"
 	gitconfig "github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/storage/memory"
+	"github.com/r3labs/diff/v3"
 	"github.com/sirupsen/logrus"
+	"io/ioutil"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
 	v1 "k8s.io/test-infra/prow/client/clientset/versioned/typed/prowjobs/v1"
@@ -26,6 +18,13 @@ import (
 	gitv2 "k8s.io/test-infra/prow/git/v2"
 	"k8s.io/test-infra/prow/github"
 	"k8s.io/test-infra/prow/pjutil"
+	"os"
+	"os/exec"
+	"path"
+	"reflect"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 const basicHelpCommentText = `You can trigger rehearsal for all jobs by commenting either ` + "`/rehearse`" + ` or ` + "`/rehearse all`" + `
@@ -378,17 +377,6 @@ func (h *GitHubEventsHandler) filterProwJobsByJobNames(prowjobs []prowapi.ProwJo
 	return filteredProwJobs
 }
 
-const rehearsalRestrictedAnnotation = "rehearsal.restricted"
-
-func rehearsalRestricted(job prowapi.ProwJob) bool {
-	annotations := job.GetAnnotations()
-	if annotations == nil {
-		return false
-	}
-	isRestricted, restrictedAnnotationExists := annotations[rehearsalRestrictedAnnotation]
-	return restrictedAnnotationExists && isRestricted == "true"
-}
-
 func (h *GitHubEventsHandler) generateProwJobs(
 	headConfigs, baseConfigs map[string]*config.Config, pr *github.PullRequest, eventGUID string) []prowapi.ProwJob {
 	var jobs []prowapi.ProwJob
@@ -432,19 +420,14 @@ func (h *GitHubEventsHandler) generatePresubmits(
 
 		// since we can have multiple branches we need to create one job per branch
 		for _, branch := range branches {
-			job := pjutil.NewPresubmit(*pr, pr.Base.SHA, headPresubmit, eventGUID, map[string]string{})
 
-			if rehearsalRestricted(job) {
-				h.logger.Infof("Skipping rehersal job for: %s because it is restricted", job.Name)
-				continue
-			}
-
-			repoOrg := repoFromJobKey(presubmitKey)
-			org, repo, err := gitv2.OrgRepo(repoOrg)
+			orgRepo := repoFromJobKey(presubmitKey)
+			org, repo, err := gitv2.OrgRepo(orgRepo)
 			if err != nil {
 				log.Errorf(
 					"Could not extract repo and org from job key: %s. Job name: %s",
 					presubmitKey, headPresubmit.Name)
+				continue
 			}
 
 			var targetBranchName string
@@ -457,13 +440,64 @@ func (h *GitHubEventsHandler) generatePresubmits(
 				targetBranchName = branch
 			}
 
-			if repoOrg != pr.Base.Repo.FullName {
-				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName))
+			// for each of the branches we need the HEAD sha so that we can create the correct reference
+			headCommitFromBranch, err := discoverHeadCommitFromRemote(org, repo, targetBranchName)
+			if err != nil {
+				log.Errorf(
+					"Could not get head commit from repo: %s. Job name: %s",
+					presubmitKey, headPresubmit.Name)
+				continue
 			}
+
+			targetRepoPR := makePRForTargetRepo(pr, org, repo, targetBranchName, headCommitFromBranch)
+
+			job := pjutil.NewPresubmit(*targetRepoPR, targetRepoPR.Base.SHA, headPresubmit, eventGUID, map[string]string{})
+
 			jobs = append(jobs, job)
 		}
 	}
 	return jobs
+}
+
+// makePRForTargetRepo returns a copy of the PR with replaced org, repo, head commit and target branch
+func makePRForTargetRepo(pr *github.PullRequest, org string, repo string, targetBranch string, commit string) *github.PullRequest {
+	artificialPR := deepCopy(pr)
+	artificialPR.Base.Repo.Owner.Login = org
+	artificialPR.Base.Repo.Name = repo
+	artificialPR.Base.Repo.HTMLURL = fmt.Sprintf("https://github.com/%s/%s", org, repo)
+	artificialPR.Base.SHA = commit
+	artificialPR.Base.Ref = targetBranch
+	artificialPR.Head.SHA = commit
+	artificialPR.Head.Ref = targetBranch
+	return artificialPR
+}
+
+func deepCopy(pr *github.PullRequest) *github.PullRequest {
+	result := &github.PullRequest{
+		ID:                 pr.ID,
+		NodeID:             pr.NodeID,
+		Number:             pr.Number,
+		HTMLURL:            pr.HTMLURL,
+		User:               pr.User,
+		Labels:             pr.Labels,
+		Base:               pr.Base,
+		Head:               pr.Head,
+		Title:              pr.Title,
+		Body:               pr.Body,
+		RequestedReviewers: pr.RequestedReviewers,
+		Assignees:          pr.Assignees,
+		State:              pr.State,
+		Draft:              pr.Draft,
+		Merged:             pr.Merged,
+		CreatedAt:          pr.CreatedAt,
+		UpdatedAt:          pr.UpdatedAt,
+		MergeSHA:           pr.MergeSHA,
+		Mergable:           pr.Mergable,
+		Milestone:          pr.Milestone,
+		Commits:            pr.Commits,
+		AuthorAssociation:  pr.AuthorAssociation,
+	}
+	return result
 }
 
 func (h *GitHubEventsHandler) loadConfigsAtRef(
@@ -642,4 +676,30 @@ func discoverHeadBranchName(org, repo, cloneURI string) (string, error) {
 		headBranch = "master"
 	}
 	return headBranch, nil
+}
+
+func discoverHeadCommitFromRemote(org, repo, branch string) (string, error) {
+	sourceURL := fmt.Sprintf("https://github.com/%s/%s.git", org, repo)
+
+	rem := git.NewRemote(memory.NewStorage(), &gitconfig.RemoteConfig{
+		Name: "origin",
+		URLs: []string{sourceURL},
+		Fetch: []gitconfig.RefSpec{
+			gitconfig.RefSpec(fmt.Sprintf("refs/heads/%s", branch)),
+		},
+	})
+
+	refs, err := rem.List(&git.ListOptions{})
+	if err != nil {
+		return "", err
+	}
+
+	for _, ref := range refs {
+		split := strings.Split(ref.Name().String(), "/")
+		if len(split) < 3 || split[1] != "heads" || split[2] != branch {
+			continue
+		}
+		return ref.Hash().String(), nil
+	}
+	return "", fmt.Errorf("branch %s not found", branch)
 }
