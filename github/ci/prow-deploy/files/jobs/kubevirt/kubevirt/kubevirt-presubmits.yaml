@@ -62,6 +62,59 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
+    #run_before_merge: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: kubevirt-prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 2h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-gcs-credentials: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 1
+    name: pull-kubevirt-e2e-windows-sysprep
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          unset PULL_BASE_SHA
+          automation/test.sh
+        env:
+        - name: TARGET
+          value: windows_sysprep
+        - name: KUBEVIRT_WINDOWS_PRODUCT_KEY_PATH
+          value: /etc/win-sysprep/productKey
+        image: quay.io/kubevirtci/bootstrap:v20240308-8fac017
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /etc/win-sysprep
+          name: win-sysprep          
+      nodeSelector:
+        type: bare-metal-external
+      volumes:
+      - name: win-sysprep
+        secret:
+          secretName: win-sysprep-001        
+      priorityClassName: windows
+  - always_run: false
     run_before_merge: true
     annotations:
       fork-per-release: "true"
