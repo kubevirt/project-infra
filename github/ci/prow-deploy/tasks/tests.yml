@@ -1,4 +1,8 @@
 ---
+- name: wait for pods to be created
+  pause:
+    seconds: 60
+
 - name: wait for prow pods to be ready
   shell: |
     kubectl wait --namespace kubevirt-prow \
