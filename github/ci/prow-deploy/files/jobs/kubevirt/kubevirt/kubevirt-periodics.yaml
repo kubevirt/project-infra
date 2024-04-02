@@ -173,7 +173,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.25-sysprep
+  name: periodic-kubevirt-e2e-sysprep
   spec:
     containers:
     - command:
