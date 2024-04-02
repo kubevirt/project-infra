@@ -31,6 +31,8 @@ presubmits:
         env:
           - name: GIMME_GO_VERSION
             value: "1.21.6"
+          - name: GINKGO_LABELS
+            value: '!OpenShift && !SINGLE_NODE_ONLY'
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
@@ -68,6 +70,8 @@ presubmits:
           env:
             - name: GIMME_GO_VERSION
               value: "1.21.6"
+            - name: GINKGO_LABELS
+              value: '!OpenShift && !SINGLE_NODE_ONLY'
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
