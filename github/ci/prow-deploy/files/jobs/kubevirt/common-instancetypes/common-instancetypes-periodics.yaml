@@ -1,6 +1,6 @@
 periodics:
   - name: periodic-update-common-instancetypes-bundles
-    cron: 0 2 * * *
+    cron: 0 2 * * 1
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
@@ -40,7 +40,7 @@ periodics:
           requests:
             memory: "200Mi"
   - name: periodic-update-common-instancetypes-bundles-release-0.4
-    cron: 0 4 * * *
+    cron: 0 4 * * 1
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
@@ -80,7 +80,7 @@ periodics:
           requests:
             memory: "200Mi"
   - name: periodic-update-common-instancetypes-bundles-release-0.3
-    cron: 0 3 * * *
+    cron: 0 3 * * 1
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
