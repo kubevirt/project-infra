@@ -278,6 +278,12 @@ default:
       target: both
       prowPlugin: label
       addedBy: anyone
+    - name: sig/observability
+      color: ffe38a
+      description: Denotes an issue or PR that relates to observability.
+      target: both
+      prowPlugin: label
+      addedBy: anyone
     - color: e11d21
       description: Indicates the PR's author has not DCO signed all their commits.
       name: "dco-signoff: no"
