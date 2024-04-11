@@ -26,7 +26,7 @@ presubmits:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
-        - -c
+        - -ce
         - |
           # Build the perfscale-audit binary
           make bazel-build
