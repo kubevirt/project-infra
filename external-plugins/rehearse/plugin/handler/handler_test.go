@@ -437,13 +437,20 @@ Gna meh whatever
 			TopLevelApprovers       sets.String
 			LeafApprovers           map[string]sets.String
 			ExpectedCanUserRehearse bool
+			ExpectedMessageParts    []string
 		}
 		DescribeTable("org and user",
 			func(testData CanUserRehearseOrgAndUserTestData) {
 				fakeGHC.OrgMembers = testData.OrgMembers
 				fakeOwnersClient.ExistingTopLevelApprovers = testData.TopLevelApprovers
 				fakeOwnersClient.CurrentLeafApprovers = testData.LeafApprovers
-				Expect(testable.canUserRehearse("testorg", "testrepo", pr, "testuser", testData.ChangedFiles)).To(BeEquivalentTo(testData.ExpectedCanUserRehearse))
+
+				canUserRehearse, message := testable.canUserRehearse("testorg", "testrepo", pr, "testuser", testData.ChangedFiles)
+
+				Expect(canUserRehearse).To(BeEquivalentTo(testData.ExpectedCanUserRehearse))
+				for _, part := range testData.ExpectedMessageParts {
+					Expect(message).To(ContainSubstring(part))
+				}
 			},
 			Entry("only author in org",
 				CanUserRehearseOrgAndUserTestData{
@@ -466,10 +473,22 @@ Gna meh whatever
 							"testuser",
 						},
 					},
-					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.String{},
-					LeafApprovers:           map[string]sets.String{},
+					ChangedFiles: []string{"changedFile"},
+					TopLevelApprovers: sets.String{
+						"topLevelApprover": struct{}{},
+					},
+					LeafApprovers: map[string]sets.String{
+						"changedFile": {
+							"leafApprover": struct{}{},
+						},
+					},
 					ExpectedCanUserRehearse: false,
+					ExpectedMessageParts: []string{
+						"@testuser",
+						"you need to be an approver",
+						"leafApprover",
+						"topLevelApprover",
+					},
 				},
 			),
 			Entry("user and author in org - user is a top level approver",

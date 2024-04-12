@@ -156,7 +156,15 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 		log.WithError(err).Error("Could not calculate diff for PR.")
 		return
 	}
-	if !h.canUserRehearse(org, repo, pr, event.Comment.User.Login, changedFiles) {
+	rehearse, message := h.canUserRehearse(org, repo, pr, event.Comment.User.Login, changedFiles)
+	if !rehearse {
+		if message != "" {
+			err = h.ghClient.CreateComment(org, repo, pr.Number, message)
+			if err != nil {
+				log.WithError(err).Errorf("Failed to create comment on %s/%s PR: %d", org, repo, pr.Number)
+			}
+			return
+		}
 		log.Infoln("Skipping event - user validation failed")
 		return
 	}
@@ -180,21 +188,22 @@ func (h *GitHubEventsHandler) shouldActOnIssueComment(event *github.IssueComment
 	return false
 }
 
-func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *github.PullRequest, userName string, changedFiles []string) bool {
+func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *github.PullRequest, userName string, changedFiles []string) (canUserRehearse bool, message string) {
 
 	owners, err := h.ownersClient.LoadRepoOwners(org, repo, pr.Base.Ref)
 	if err != nil {
 		log.WithError(err).Errorln(fmt.Sprintf("Could not load owners on org %s and repo %s", org, repo))
-		return false
+		return false, ""
 	}
 
 	// if user is top level approver, then
 	// rehearsal is allowed
 	// even if the author is not an org member
 	// top level approvers is only a very limited circle of people
-	for topLevelApprover := range owners.TopLevelApprovers() {
+	topLevelApprovers := owners.TopLevelApprovers()
+	for topLevelApprover := range topLevelApprovers {
 		if userName == topLevelApprover {
-			return true
+			return true, ""
 		}
 	}
 
@@ -204,11 +213,11 @@ func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *githu
 	isAuthorMember, err := h.ghClient.IsMember(org, pr.User.Login)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate PR author with the repo org")
-		return false
+		return false, ""
 	}
 	if !isAuthorMember {
 		log.Warnln("Pr author is not a member of the repo org")
-		return false
+		return false, ""
 	}
 
 	// if the user that issues rehearsal is not a member of the org, then
@@ -217,11 +226,11 @@ func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *githu
 	isUserMember, err := h.ghClient.IsMember(org, userName)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate user with the repo org")
-		return false
+		return false, ""
 	}
 	if !isUserMember {
 		log.Warnln("User is not a member of the repo org")
-		return false
+		return false, ""
 	}
 
 	// if user is not a leaf approver for all the files then
@@ -229,17 +238,31 @@ func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *githu
 	// to ensure that scope of rehearsal is not extended beyond responsibilities
 	for _, changedFile := range changedFiles {
 		isLeafApprover := false
-		for leafApprover := range owners.LeafApprovers(changedFile) {
+		var leafApprover string
+		for leafApprover = range owners.LeafApprovers(changedFile) {
 			if leafApprover == userName {
 				isLeafApprover = true
 				break
 			}
 		}
+
 		if !isLeafApprover {
-			return false
+			tlas := make([]string, len(topLevelApprovers))
+			for tla := range topLevelApprovers {
+				tlas = append(tlas, tla)
+			}
+			return false, fmt.Sprintf(`⚠️ @%s you need to be an approver for all the files to run rehearsal.
+
+@%s can help run the rehearsal.
+
+<details>
+If that doesn't work, ping someone from this list:
+%s
+</details>
+`, userName, leafApprover, strings.Join(tlas, "\n* "))
 		}
 	}
-	return true
+	return true, ""
 }
 
 func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, event *github.PullRequestEvent) {
@@ -279,7 +302,15 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 		log.WithError(err).Error("Could not calculate diff for PR.")
 		return
 	}
-	if !h.canUserRehearse(org, repo, pr, event.Sender.Login, changedFiles) {
+	rehearse, message := h.canUserRehearse(org, repo, pr, event.Sender.Login, changedFiles)
+	if !rehearse {
+		if message != "" {
+			err = h.ghClient.CreateComment(org, repo, pr.Number, message)
+			if err != nil {
+				log.WithError(err).Errorf("Failed to create comment on %s/%s PR: %d", org, repo, pr.Number)
+			}
+			return
+		}
 		log.Infoln("Skipping event. User is not authorized.")
 		return
 	}
