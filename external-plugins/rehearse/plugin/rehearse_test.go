@@ -853,9 +853,7 @@ var _ = Describe("Rehearse", func() {
 					}
 					fakelog := logrus.New()
 					eventsChan := make(chan *handler.GitHubEvent)
-					foc := &testutils.FakeOwnersClient{
-						ExistingTopLevelApprovers: sets.NewString("testuser"),
-					}
+					foc := &testutils.FakeOwnersClient{}
 					froc := &testutils.FakeRepoownersClient{
 						Foc: foc,
 					}

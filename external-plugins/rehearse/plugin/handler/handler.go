@@ -156,7 +156,7 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 		log.WithError(err).Error("Could not calculate diff for PR.")
 		return
 	}
-	if !h.canUserRehearse(org, pr, event.Comment.User.Login, changedFiles) {
+	if !h.canUserRehearse(org, repo, pr, event.Comment.User.Login, changedFiles) {
 		log.Infoln("Skipping event - user validation failed")
 		return
 	}
@@ -180,7 +180,27 @@ func (h *GitHubEventsHandler) shouldActOnIssueComment(event *github.IssueComment
 	return false
 }
 
-func (h *GitHubEventsHandler) canUserRehearse(org string, pr *github.PullRequest, userName string, changedFiles []string) bool {
+func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *github.PullRequest, userName string, changedFiles []string) bool {
+
+	owners, err := h.ownersClient.LoadRepoOwners(org, repo, pr.Base.Ref)
+	if err != nil {
+		log.WithError(err).Errorln(fmt.Sprintf("Could not load owners on org %s and repo %s", org, repo))
+		return false
+	}
+
+	// if user is top level approver, then
+	// rehearsal is allowed
+	// even if the author is not an org member
+	// top level approvers is only a very limited circle of people
+	for topLevelApprover := range owners.TopLevelApprovers() {
+		if userName == topLevelApprover {
+			return true
+		}
+	}
+
+	// if author is not a member of the org, then
+	// rehearsal is not allowed
+	// in order to avoid compromising the org with harmful PRs
 	isAuthorMember, err := h.ghClient.IsMember(org, pr.User.Login)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate PR author with the repo org")
@@ -190,6 +210,10 @@ func (h *GitHubEventsHandler) canUserRehearse(org string, pr *github.PullRequest
 		log.Warnln("Pr author is not a member of the repo org")
 		return false
 	}
+
+	// if the user that issues rehearsal is not a member of the org, then
+	// rehearsal is not allowed
+	// in order to avoid denial of service type attacks
 	isUserMember, err := h.ghClient.IsMember(org, userName)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate user with the repo org")
@@ -199,7 +223,23 @@ func (h *GitHubEventsHandler) canUserRehearse(org string, pr *github.PullRequest
 		log.Warnln("User is not a member of the repo org")
 		return false
 	}
-	return isUserMember
+
+	// if user is not a leaf approver for all the files then
+	// rehearsal is not allowed
+	// to ensure that scope of rehearsal is not extended beyond responsibilities
+	for _, changedFile := range changedFiles {
+		isLeafApprover := false
+		for leafApprover := range owners.LeafApprovers(changedFile) {
+			if leafApprover == userName {
+				isLeafApprover = true
+				break
+			}
+		}
+		if !isLeafApprover {
+			return false
+		}
+	}
+	return true
 }
 
 func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, event *github.PullRequestEvent) {
@@ -239,7 +279,7 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 		log.WithError(err).Error("Could not calculate diff for PR.")
 		return
 	}
-	if !h.canUserRehearse(org, pr, event.Sender.Login, changedFiles) {
+	if !h.canUserRehearse(org, repo, pr, event.Sender.Login, changedFiles) {
 		log.Infoln("Skipping event. User is not authorized.")
 		return
 	}

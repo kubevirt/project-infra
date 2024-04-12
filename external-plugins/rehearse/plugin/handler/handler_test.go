@@ -431,38 +431,108 @@ Gna meh whatever
 				User: github.User{Login: "testauthor"},
 			}
 		})
+		type CanUserRehearseOrgAndUserTestData struct {
+			OrgMembers              map[string][]string
+			ChangedFiles            []string
+			TopLevelApprovers       sets.String
+			LeafApprovers           map[string]sets.String
+			ExpectedCanUserRehearse bool
+		}
 		DescribeTable("org and user",
-			func(
-				orgMembers map[string][]string,
-				expectedCanUserRehearse bool,
-			) {
-				fakeGHC.OrgMembers = orgMembers
-				Expect(testable.canUserRehearse("testorg", pr, "testuser", []string{})).To(BeEquivalentTo(expectedCanUserRehearse))
+			func(testData CanUserRehearseOrgAndUserTestData) {
+				fakeGHC.OrgMembers = testData.OrgMembers
+				fakeOwnersClient.ExistingTopLevelApprovers = testData.TopLevelApprovers
+				fakeOwnersClient.CurrentLeafApprovers = testData.LeafApprovers
+				Expect(testable.canUserRehearse("testorg", "testrepo", pr, "testuser", testData.ChangedFiles)).To(BeEquivalentTo(testData.ExpectedCanUserRehearse))
 			},
-			Entry("user and author in org",
-				map[string][]string{
-					"testorg": {
-						"testauthor",
-						"testuser",
-					},
-				},
-				true,
-			),
-			Entry("only user in org",
-				map[string][]string{
-					"testorg": {
-						"testuser",
-					},
-				},
-				false,
-			),
 			Entry("only author in org",
-				map[string][]string{
-					"testorg": {
-						"testauthor",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+						},
 					},
+					ChangedFiles:            []string{},
+					TopLevelApprovers:       sets.String{},
+					LeafApprovers:           map[string]sets.String{},
+					ExpectedCanUserRehearse: false,
 				},
-				false,
+			),
+			Entry("user and author in org - user is not an approver",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+							"testuser",
+						},
+					},
+					ChangedFiles:            []string{"changedFile"},
+					TopLevelApprovers:       sets.String{},
+					LeafApprovers:           map[string]sets.String{},
+					ExpectedCanUserRehearse: false,
+				},
+			),
+			Entry("user and author in org - user is a top level approver",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+							"testuser",
+						},
+					},
+					ChangedFiles:            []string{"changedFile"},
+					TopLevelApprovers:       sets.String{"testuser": struct{}{}},
+					LeafApprovers:           map[string]sets.String{},
+					ExpectedCanUserRehearse: true,
+				},
+			),
+			Entry("user and author in org - user is a leaf approver",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+							"testuser",
+						},
+					},
+					ChangedFiles:      []string{"changedFile"},
+					TopLevelApprovers: sets.String{},
+					LeafApprovers: map[string]sets.String{
+						"changedFile": {"testuser": struct{}{}},
+					},
+					ExpectedCanUserRehearse: true,
+				},
+			),
+			Entry("user and author in org - user is not a leaf approver for all files",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+							"testuser",
+						},
+					},
+					ChangedFiles: []string{
+						"changedFile",
+						"otherChangedFile",
+					},
+					TopLevelApprovers: sets.String{},
+					LeafApprovers: map[string]sets.String{
+						"changedFile": {"testuser": struct{}{}},
+					},
+					ExpectedCanUserRehearse: false,
+				},
+			),
+			Entry("only user in org - user is top level approver",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testuser",
+						},
+					},
+					ChangedFiles:            []string{"changedFile"},
+					TopLevelApprovers:       sets.String{"testuser": struct{}{}},
+					LeafApprovers:           map[string]sets.String{},
+					ExpectedCanUserRehearse: true,
+				},
 			),
 		)
 	})

@@ -43,9 +43,9 @@ const (
 
 type FakeOwnersClient struct {
 	ExistingTopLevelApprovers sets.String
+	CurrentLeafApprovers      map[string]sets.String
 	owners                    map[string]string
 	approvers                 map[string]layeredsets.String
-	leafApprovers             map[string]sets.String
 	reviewers                 map[string]layeredsets.String
 	requiredReviewers         map[string]sets.String
 	leafReviewers             map[string]sets.String
@@ -70,7 +70,7 @@ func (foc *FakeOwnersClient) Approvers(path string) layeredsets.String {
 }
 
 func (foc *FakeOwnersClient) LeafApprovers(path string) sets.String {
-	return foc.leafApprovers[path]
+	return foc.CurrentLeafApprovers[path]
 }
 
 func (foc *FakeOwnersClient) FindApproverOwnersForFile(path string) string {
