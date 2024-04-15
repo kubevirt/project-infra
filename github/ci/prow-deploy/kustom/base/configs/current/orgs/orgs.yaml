@@ -85,6 +85,7 @@ orgs:
       - vladikr
       - xpivarc
       - zhlhahaha
+      - sbahar619
     members_can_create_repositories: false
     name: KubeVirt
     repos:
