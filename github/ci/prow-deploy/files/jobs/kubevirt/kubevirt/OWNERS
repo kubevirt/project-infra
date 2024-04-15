@@ -53,7 +53,9 @@ filters:
     - kbidarkar
   cluster-up/.*|BUILD.bazel|WORKSPACE|.bazel.*|.fossa.yml|cluster-up-sha.txt:
     approvers:
+    - brianmcarey
     - dhiller
+    - xpivarc
     labels:
     - sig/buildsystem
     reviewers:
