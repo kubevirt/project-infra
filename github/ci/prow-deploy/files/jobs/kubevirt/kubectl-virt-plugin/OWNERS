@@ -7,11 +7,11 @@
 filters:
   .*:
     approvers:
+    - 0xfelix
     - dhiller
-    - rmohr
     - stu-gott
     reviewers:
+    - 0xfelix
     - dhiller
-    - rmohr
     - stu-gott
 options: {}
