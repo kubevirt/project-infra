@@ -18,8 +18,10 @@ postsubmits:
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
-              - "-c"
-              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && make docker-build docker-push"
+              - "-ce"
+              - |
+                cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io
+                make REGISTRY=quay.io/kubevirt docker-build docker-push
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
@@ -46,7 +48,7 @@ postsubmits:
                 cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io
                 # Only push images on tags
                 COMMIT_TAG=$(git tag --points-at HEAD | head -1)
-                [ -z "$COMMIT_TAG" ] || make docker-build docker-push IMAGE_TAG=$COMMIT_TAG
+                [ -z "$COMMIT_TAG" ] || make REGISTRY=quay.io/kubevirt IMAGE_TAG=$COMMIT_TAG docker-build docker-push
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
