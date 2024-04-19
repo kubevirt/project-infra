@@ -6,15 +6,13 @@
 
 approvers:
 - 0xfelix
-- davidvossel
 - dominikholler
 - lyarwood
-- rmohr
 options: {}
 reviewers:
 - 0xfelix
 - akrejcir
+- codingben
 - jcanocan
 - ksimon1
 - lyarwood
-- opokornyy
