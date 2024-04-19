@@ -360,3 +360,34 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: false
+    cluster: kubevirt-prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 1
+    name: check-provision-centos-base
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cd $(find ./cluster-provision/k8s -name '1.*' | sort -rV | head -1) && ../provision.sh
+        env:
+        - name: PHASES
+          value: "linux"
+        - name: BYPASS_PMAN_CHANGE_CHECK
+          value: "true"
+        image: quay.io/kubevirtci/golang:v20240308-8fac017
+        name: ""
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
