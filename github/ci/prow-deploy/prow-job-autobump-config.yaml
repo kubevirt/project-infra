@@ -1,0 +1,12 @@
+---
+gitHubToken: "/etc/github/oauth"
+includedConfigPaths:
+  - "/config/github/ci/prow-deploy/files/jobs"
+excludedConfigPaths: []
+targetVersion: latest
+upstreamURLBase: "https://raw.githubusercontent.com/kubernetes/test-infra/master"
+prefixes:
+  - name: "Jobs"
+    prefix: "gcr.io/k8s-prow/"
+    summarise: true
+    consistentImages: false
