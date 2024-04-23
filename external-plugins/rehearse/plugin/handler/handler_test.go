@@ -6,11 +6,14 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/util/sets"
 	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
 	"k8s.io/test-infra/prow/config"
 	"k8s.io/test-infra/prow/git/localgit"
 	gitv2 "k8s.io/test-infra/prow/git/v2"
 	"k8s.io/test-infra/prow/github"
+	"k8s.io/test-infra/prow/github/fakegithub"
+	"kubevirt.io/project-infra/external-plugins/testutils"
 )
 
 var _ = Describe("Events", func() {
@@ -27,15 +30,13 @@ var _ = Describe("Events", func() {
 			gitrepo, gitClientFactory, err = localgit.NewV2()
 			Expect(err).ShouldNot(HaveOccurred(), "Could not create local git repo and client factory")
 			dummyLog = logrus.New()
-			eventsServer = NewGitHubEventsHandler(
-				nil,
-				dummyLog,
-				nil,
-				nil,
-				"prow-config.yaml",
-				"",
-				true,
-				gitClientFactory)
+			foc := &testutils.FakeOwnersClient{
+				ExistingTopLevelApprovers: sets.NewString("testuser"),
+			}
+			froc := &testutils.FakeRepoownersClient{
+				Foc: foc,
+			}
+			eventsServer = NewGitHubEventsHandler(nil, dummyLog, nil, nil, "prow-config.yaml", "", true, gitClientFactory, froc)
 		})
 
 		AfterEach(func() {
@@ -403,6 +404,156 @@ Gna meh whatever
 			Expect(handler.filterProwJobsByJobNames(prowJobs, []string{"prowJob1", "prowJob3"})).To(BeEquivalentTo(expected))
 		})
 
+	})
+
+	Context("canUserRehearse", func() {
+		var testable *GitHubEventsHandler
+		var fakeGHC *fakegithub.FakeClient
+		var pr *github.PullRequest
+		var fakeOwnersClient *testutils.FakeOwnersClient
+		BeforeEach(func() {
+			fakeGHC = &fakegithub.FakeClient{}
+			fakeGHC.OrgMembers = map[string][]string{
+				"testorg": {
+					"testauthor",
+					"testuser",
+				},
+			}
+			fakeOwnersClient = &testutils.FakeOwnersClient{}
+			fakeRepoownersClient := &testutils.FakeRepoownersClient{
+				Foc: fakeOwnersClient,
+			}
+			testable = &GitHubEventsHandler{
+				ghClient:     fakeGHC,
+				ownersClient: fakeRepoownersClient,
+			}
+			pr = &github.PullRequest{
+				User: github.User{Login: "testauthor"},
+			}
+		})
+		type CanUserRehearseOrgAndUserTestData struct {
+			OrgMembers              map[string][]string
+			ChangedFiles            []string
+			TopLevelApprovers       sets.String
+			LeafApprovers           map[string]sets.String
+			ExpectedCanUserRehearse bool
+			ExpectedMessageParts    []string
+		}
+		DescribeTable("org and user",
+			func(testData CanUserRehearseOrgAndUserTestData) {
+				fakeGHC.OrgMembers = testData.OrgMembers
+				fakeOwnersClient.ExistingTopLevelApprovers = testData.TopLevelApprovers
+				fakeOwnersClient.CurrentLeafApprovers = testData.LeafApprovers
+
+				canUserRehearse, message := testable.canUserRehearse("testorg", "testrepo", pr, "testuser", testData.ChangedFiles)
+
+				Expect(canUserRehearse).To(BeEquivalentTo(testData.ExpectedCanUserRehearse))
+				for _, part := range testData.ExpectedMessageParts {
+					Expect(message).To(ContainSubstring(part))
+				}
+			},
+			Entry("only author in org",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+						},
+					},
+					ChangedFiles:            []string{},
+					TopLevelApprovers:       sets.String{},
+					LeafApprovers:           map[string]sets.String{},
+					ExpectedCanUserRehearse: false,
+				},
+			),
+			Entry("user and author in org - user is not an approver",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+							"testuser",
+						},
+					},
+					ChangedFiles: []string{"changedFile"},
+					TopLevelApprovers: sets.String{
+						"topLevelApprover": struct{}{},
+					},
+					LeafApprovers: map[string]sets.String{
+						"changedFile": {
+							"leafApprover": struct{}{},
+						},
+					},
+					ExpectedCanUserRehearse: false,
+					ExpectedMessageParts: []string{
+						"@testuser",
+						"you need to be an approver",
+						"leafApprover",
+						"topLevelApprover",
+					},
+				},
+			),
+			Entry("user and author in org - user is a top level approver",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+							"testuser",
+						},
+					},
+					ChangedFiles:            []string{"changedFile"},
+					TopLevelApprovers:       sets.String{"testuser": struct{}{}},
+					LeafApprovers:           map[string]sets.String{},
+					ExpectedCanUserRehearse: true,
+				},
+			),
+			Entry("user and author in org - user is a leaf approver",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+							"testuser",
+						},
+					},
+					ChangedFiles:      []string{"changedFile"},
+					TopLevelApprovers: sets.String{},
+					LeafApprovers: map[string]sets.String{
+						"changedFile": {"testuser": struct{}{}},
+					},
+					ExpectedCanUserRehearse: true,
+				},
+			),
+			Entry("user and author in org - user is not a leaf approver for all files",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+							"testuser",
+						},
+					},
+					ChangedFiles: []string{
+						"changedFile",
+						"otherChangedFile",
+					},
+					TopLevelApprovers: sets.String{},
+					LeafApprovers: map[string]sets.String{
+						"changedFile": {"testuser": struct{}{}},
+					},
+					ExpectedCanUserRehearse: false,
+				},
+			),
+			Entry("only user in org - user is top level approver",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testuser",
+						},
+					},
+					ChangedFiles:            []string{"changedFile"},
+					TopLevelApprovers:       sets.String{"testuser": struct{}{}},
+					LeafApprovers:           map[string]sets.String{},
+					ExpectedCanUserRehearse: true,
+				},
+			),
+		)
 	})
 
 })

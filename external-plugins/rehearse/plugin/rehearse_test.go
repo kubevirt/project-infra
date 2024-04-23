@@ -2,6 +2,8 @@ package main_test
 
 import (
 	"encoding/json"
+	"k8s.io/apimachinery/pkg/util/sets"
+	"kubevirt.io/project-infra/external-plugins/testutils"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -203,15 +205,13 @@ var _ = Describe("Rehearse", func() {
 					}
 					fakelog := logrus.New()
 					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
+					foc := &testutils.FakeOwnersClient{
+						ExistingTopLevelApprovers: sets.NewString("testuser"),
+					}
+					froc := &testutils.FakeRepoownersClient{
+						Foc: foc,
+					}
+					eventsHandler := handler.NewGitHubEventsHandler(eventsChan, fakelog, prowc.ProwJobs("test-ns"), gh, "prowconfig.yaml", "", true, gitClientFactory, froc)
 
 					handlerEvent, err := makeHandlerPullRequestEvent(&event)
 					Expect(err).ShouldNot(HaveOccurred())
@@ -344,15 +344,13 @@ var _ = Describe("Rehearse", func() {
 					}
 					fakelog := logrus.New()
 					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
+					foc := &testutils.FakeOwnersClient{
+						ExistingTopLevelApprovers: sets.NewString("testuser"),
+					}
+					froc := &testutils.FakeRepoownersClient{
+						Foc: foc,
+					}
+					eventsHandler := handler.NewGitHubEventsHandler(eventsChan, fakelog, prowc.ProwJobs("test-ns"), gh, "prowconfig.yaml", "", true, gitClientFactory, froc)
 
 					handlerEvent, err := makeHandlerPullRequestEvent(&event)
 					eventsHandler.Handle(handlerEvent)
@@ -506,16 +504,14 @@ var _ = Describe("Rehearse", func() {
 						Fake: &testing.Fake{},
 					}
 					fakelog := logrus.New()
+					foc := &testutils.FakeOwnersClient{
+						ExistingTopLevelApprovers: sets.NewString("testuser"),
+					}
+					froc := &testutils.FakeRepoownersClient{
+						Foc: foc,
+					}
 					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
+					eventsHandler := handler.NewGitHubEventsHandler(eventsChan, fakelog, prowc.ProwJobs("test-ns"), gh, "prowconfig.yaml", "", true, gitClientFactory, froc)
 					handlerEvent, err := makeHandlerPullRequestEvent(&event)
 					Expect(err).ShouldNot(HaveOccurred())
 					eventsHandler.Handle(handlerEvent)
@@ -684,15 +680,13 @@ var _ = Describe("Rehearse", func() {
 					}
 					fakelog := logrus.New()
 					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						false,
-						gitClientFactory)
+					foc := &testutils.FakeOwnersClient{
+						ExistingTopLevelApprovers: sets.NewString("testuser"),
+					}
+					froc := &testutils.FakeRepoownersClient{
+						Foc: foc,
+					}
+					eventsHandler := handler.NewGitHubEventsHandler(eventsChan, fakelog, prowc.ProwJobs("test-ns"), gh, "prowconfig.yaml", "", false, gitClientFactory, froc)
 
 					handlerEvent, err := makeHandlerPullRequestEvent(&event)
 					Expect(err).ShouldNot(HaveOccurred())
@@ -859,15 +853,11 @@ var _ = Describe("Rehearse", func() {
 					}
 					fakelog := logrus.New()
 					eventsChan := make(chan *handler.GitHubEvent)
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"",
-						true,
-						gitClientFactory)
+					foc := &testutils.FakeOwnersClient{}
+					froc := &testutils.FakeRepoownersClient{
+						Foc: foc,
+					}
+					eventsHandler := handler.NewGitHubEventsHandler(eventsChan, fakelog, prowc.ProwJobs("test-ns"), gh, "prowconfig.yaml", "", true, gitClientFactory, froc)
 
 					handlerEvent, err := makeHandlerPullRequestEvent(&event)
 					Expect(err).ShouldNot(HaveOccurred())
@@ -904,15 +894,13 @@ var _ = Describe("Rehearse", func() {
 				}
 				fakelog := logrus.New()
 				eventsChan := make(chan *handler.GitHubEvent)
-				eventsHandler := handler.NewGitHubEventsHandler(
-					eventsChan,
-					fakelog,
-					prowc.ProwJobs("test-ns"),
-					gh,
-					"prowconfig.yaml",
-					"",
-					true,
-					gitClientFactory)
+				foc := &testutils.FakeOwnersClient{
+					ExistingTopLevelApprovers: sets.NewString("testuser"),
+				}
+				froc := &testutils.FakeRepoownersClient{
+					Foc: foc,
+				}
+				eventsHandler := handler.NewGitHubEventsHandler(eventsChan, fakelog, prowc.ProwJobs("test-ns"), gh, "prowconfig.yaml", "", true, gitClientFactory, froc)
 
 				handlerEvent, err := makeHandlerIssueCommentEvent(event)
 				Expect(err).ShouldNot(HaveOccurred())
