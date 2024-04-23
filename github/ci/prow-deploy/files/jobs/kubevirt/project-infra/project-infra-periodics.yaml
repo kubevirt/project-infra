@@ -511,6 +511,8 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   labels:
+    preset-podman-in-container-enabled: "true"
+    preset-docker-mirror-proxy: "true"
     preset-github-credentials: "true"
   decorate: true
   decoration_config:
@@ -521,22 +523,20 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  - org: kubernetes
-    repo: test-infra
-    base_ref: master
   cluster: kubevirt-prow-control-plane
   spec:
-    securityContext:
-      runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
-        command: ["/bin/sh"]
-        args:
-          - "-c"
-          - hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra -T main -B $'Bump Prow\n\n/cc @kubevirt/prow-job-taskforce'
-        resources:
-          requests:
-            memory: "200Mi"
+    - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+      command: ["/bin/sh"]
+      args:
+      - "-ce"
+      - |
+        hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra -T main -B $'Bump Prow\n\n/cc @kubevirt/prow-job-taskforce'
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "200Mi"
 - name: periodic-kubevirt-presubmit-requirer
   cron: "0 1 1 * *"
   max_concurrency: 1
@@ -563,7 +563,7 @@ periodics:
         args:
           - |
             git-pr.sh -c "bazel run //robots/cmd/kubevirt require presubmits -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false && bazel run //robots/cmd/kubevirt remove always_run -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b require-kubevirt-presubmits -T main -s 'Enable e2e lanes for latest kubernetes version' -B $'Enable lanes for latest kubernetes version and disable lanes with unsupported version\n\n/cc @kubevirt/prow-job-taskforce'
-            
+
         resources:
           requests:
             memory: "200Mi"

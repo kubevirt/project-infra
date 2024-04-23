@@ -1,0 +1,29 @@
+---
+gitHubToken: "/etc/github/oauth"
+includedConfigPaths:
+  - "/config/github/ci/prow-deploy/kustom/base/configs/current/config"
+  - "/config/github/ci/prow-deploy/kustom/overlays/kubevirt-prow-control-plane/resources"
+  - "/config/github/ci/prow-deploy/kustom/base/manifests/local"
+excludedConfigPaths: []
+extraFiles:
+  - "/config/hack/bump-prow.sh"
+targetVersion: upstream
+upstreamURLBase: "https://raw.githubusercontent.com/kubernetes/test-infra/master"
+prefixes:
+  - name: "Prow"
+    prefix: "gcr.io/k8s-prow/"
+    refConfigFile: "config/prow/cluster/deck_deployment.yaml"
+    repo: "https://github.com/kubernetes/test-infra"
+    summarise: true
+    consistentImages: true
+    consistentImageExceptions:
+      - "gcr.io/k8s-prow/alpine"
+      - "gcr.io/k8s-prow/analyze"
+      - "gcr.io/k8s-prow/commenter"
+      - "gcr.io/k8s-prow/configurator"
+      - "gcr.io/k8s-prow/gcsweb"
+      - "gcr.io/k8s-prow/gencred"
+      - "gcr.io/k8s-prow/git"
+      - "gcr.io/k8s-prow/issue-creator"
+      - "gcr.io/k8s-prow/label_sync"
+      - "gcr.io/k8s-prow/pr-creator"
