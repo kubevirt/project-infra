@@ -531,7 +531,7 @@ periodics:
       args:
       - "-ce"
       - |
-        hack/git-pr.sh -c "hack/bump-prow.sh /etc/github" -b prow-autobump -r project-infra -T main -B $'Bump Prow\n\n/cc @kubevirt/prow-job-taskforce'
+        hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra -T main -B $'Bump Prow\n\n/cc @kubevirt/prow-job-taskforce'
       securityContext:
         privileged: true
       resources:

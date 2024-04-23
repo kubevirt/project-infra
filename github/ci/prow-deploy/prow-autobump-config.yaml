@@ -5,6 +5,8 @@ includedConfigPaths:
   - "/config/github/ci/prow-deploy/kustom/overlays/kubevirt-prow-control-plane/resources"
   - "/config/github/ci/prow-deploy/kustom/base/manifests/local"
 excludedConfigPaths: []
+extraFiles:
+  - "/config/hack/bump-prow.sh"
 targetVersion: upstream
 upstreamURLBase: "https://raw.githubusercontent.com/kubernetes/test-infra/master"
 prefixes:

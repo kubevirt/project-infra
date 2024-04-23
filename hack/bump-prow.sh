@@ -2,17 +2,20 @@
 
 set -euxo pipefail
 
-[ -d "$1" ] || ( echo "$1 is not a directory, should contain the oauth for github bot account"; exit 1 )
+GITHUB_TOKEN_PATH="${1:-/etc/github}"
+if [ ! -d "$GITHUB_TOKEN_PATH" ]; then
+    echo "$GITHUB_TOKEN_PATH is not a directory, should contain the oauth for github bot account"
+    exit 1
+fi
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_INFRA_ROOT=$(readlink --canonicalize ${BASEDIR}/..)
-GITHUB_TOKEN_PATH="$1"
 
 autobump() {
     relative_config_path="$1"
     # the below is necessary since running the autobumper inside a pod fails because of a failing git command
     (
-        podman run -v ${PROJECT_INFRA_ROOT}/:/config:z -v ${GITHUB_TOKEN_PATH}:/etc/github -it gcr.io/k8s-prow/generic-autobumper --config /config/${relative_config_path} --skip-pullrequest
+        podman run -v ${PROJECT_INFRA_ROOT}/:/config:z -v ${GITHUB_TOKEN_PATH}:/etc/github -it gcr.io/k8s-prow/generic-autobumper:v20240419-d3bf92f82 --config /config/${relative_config_path} --skip-pullrequest
     ) || true
 }
 
