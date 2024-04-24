@@ -31,7 +31,7 @@ presubmits:
           resources:
             requests:
               memory: "8Gi"
-  - name: pull-kubevirt-goveralls
+  - name: pull-cdi-goveralls
     always_run: false # TODO: Make true after we're confident it's working
     optional: true    # TODO: Make false after we're confident it's working
     annotations:
