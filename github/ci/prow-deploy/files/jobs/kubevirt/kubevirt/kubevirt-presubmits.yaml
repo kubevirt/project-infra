@@ -895,7 +895,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.29-sig-compute-migrations
+    name: pull-kubevirt-e2e-k8s-1.30-sig-compute-migrations
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -907,7 +907,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.29-sig-compute-migrations
+          value: k8s-1.30-sig-compute-migrations
         - name: KUBEVIRT_NUM_NODES
           value: "3"
         - name: KUBEVIRT_STORAGE
