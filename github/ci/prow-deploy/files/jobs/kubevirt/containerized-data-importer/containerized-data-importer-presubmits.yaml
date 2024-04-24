@@ -36,7 +36,7 @@ presubmits:
     optional: true    # TODO: Make false after we're confident it's working
     annotations:
       fork-per-release: "true"
-    cluster: kubevirt-prow-workloads
+    cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
       grace_period: 10m0s
