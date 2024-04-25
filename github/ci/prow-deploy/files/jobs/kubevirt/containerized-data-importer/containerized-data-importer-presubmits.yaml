@@ -66,12 +66,12 @@ presubmits:
           privileged: true
         volumeMounts:
         - mountPath: /root/.docker/secrets/coveralls
-          name: kubevirtci-coveralls
+          name: containerized-data-importer-coveralls
           readOnly: true
       volumes:
-      - name: kubevirtci-coveralls
+      - name: containerized-data-importer-coveralls
         secret:
-          secretName: kubevirtci-coveralls-token
+          secretName: containerized-data-importer-coveralls-token
   - name: pull-cdi-generate-verify
     skip_branches:
       - release-v1.38
