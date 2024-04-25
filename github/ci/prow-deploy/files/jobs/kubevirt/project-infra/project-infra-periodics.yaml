@@ -696,6 +696,40 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
+- name: periodic-project-infra-prow-deployment-image-bump
+  cron: "45 0 * * *"
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    workdir: true
+  cluster: kubevirt-prow-control-plane
+  spec:
+    securityContext:
+      runAsUser: 0
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+      command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      args:
+      - |
+        if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=prow-deployment-image-bump --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
+          hack/git-pr.sh -c "hack/bump-prow-deployment-images.sh" -b prow-deployment-image-bump -r project-infra -T main -B $'Bump Prow Deployment images\nFYI @kubevirt/prow-job-taskforce\n/cc none'
+        fi
+      resources:
+        requests:
+          memory: "200Mi"
 - annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
