@@ -5,7 +5,7 @@ querier := robots/cmd/release-querier
 kubevirtci := robots/cmd/kubevirtci-bumper
 bazelbin := bazelisk
 
-.PHONY: all clean deps-update gazelle-update-repos $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
+.PHONY: all clean deps-update gazelle-update-repos update-labels $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
 all: deps-update $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
 
 clean:
@@ -37,3 +37,6 @@ install-bazelisk:
 test:
 	$(bazelbin) build //external-plugins/... //releng/... //robots/... //github/ci/services/...
 	$(bazelbin) test //external-plugins/... //releng/... //robots/...
+
+update-labels:
+	./hack/labels/update.sh
