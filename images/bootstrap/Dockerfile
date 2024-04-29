@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Includes basic workspace setup, with gcloud and a bootstrap runner
-FROM fedora:39
+FROM fedora:40
 
 WORKDIR /workspace
 RUN mkdir -p /workspace
