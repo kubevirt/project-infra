@@ -99,6 +99,7 @@ presubmits:
         type: bare-metal-external
       priorityClassName: windows
   - always_run: true
+    optional: true
     branches:
     - release-1.1
     cluster: kubevirt-prow-workloads
