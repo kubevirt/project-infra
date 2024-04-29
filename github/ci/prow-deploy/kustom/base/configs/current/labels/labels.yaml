@@ -322,13 +322,20 @@ default:
       addedBy: prow
     - name: good-first-issue
       color: 128A0C
+      description: Identifies an issue that has been specifically created or selected for first-time contributors.
       target: issues
     - name: good first issue
       color: 128A0C
+      description: Identifies an issue that has been specifically created or selected for first-time contributors.
       target: issues
+      prowPlugin: help
+      addedBy: prow
     - name: help wanted
       color: 128A0C
+      description: Identifies an issue that has been specifically created or selected for new contributors.
       target: issues
+      prowPlugin: help
+      addedBy: prow
 repos:
   kubevirt/kubevirt:
     labels:
