@@ -560,6 +560,7 @@ presubmits:
         - /bin/bash
         - -ce
         - |
+          sed -i 's/vfio_mdev/mdev/' cluster-up/cluster/${TARGET}/provider.sh
           automation/test.sh
         env:
         - name: TARGET
@@ -629,6 +630,7 @@ presubmits:
         - /bin/bash
         - -ce
         - |
+          sed -i 's/vfio_mdev/mdev/' cluster-up/cluster/${TARGET}/provider.sh
           automation/test.sh
         env:
         - name: FEATURE_GATES
