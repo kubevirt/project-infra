@@ -190,6 +190,8 @@ func (h *GitHubEventsHandler) shouldActOnIssueComment(event *github.IssueComment
 
 func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *github.PullRequest, userName string, changedFiles []string) (canUserRehearse bool, message string) {
 
+	userNameLowerCase := strings.ToLower(userName)
+
 	owners, err := h.ownersClient.LoadRepoOwners(org, repo, pr.Base.Ref)
 	if err != nil {
 		log.WithError(err).Errorln(fmt.Sprintf("Could not load owners on org %s and repo %s", org, repo))
@@ -202,7 +204,7 @@ func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *githu
 	// top level approvers is only a very limited circle of people
 	topLevelApprovers := owners.TopLevelApprovers()
 	for topLevelApprover := range topLevelApprovers {
-		if userName == topLevelApprover {
+		if userNameLowerCase == strings.ToLower(topLevelApprover) {
 			return true, ""
 		}
 	}
@@ -223,7 +225,7 @@ func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *githu
 	// if the user that issues rehearsal is not a member of the org, then
 	// rehearsal is not allowed
 	// in order to avoid denial of service type attacks
-	isUserMember, err := h.ghClient.IsMember(org, userName)
+	isUserMember, err := h.ghClient.IsMember(org, userNameLowerCase)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate user with the repo org")
 		return false, ""
@@ -240,14 +242,14 @@ func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *githu
 		isLeafApprover := false
 		var leafApprover string
 		for leafApprover = range owners.LeafApprovers(changedFile) {
-			if leafApprover == userName {
+			if strings.ToLower(leafApprover) == userNameLowerCase {
 				isLeafApprover = true
 				break
 			}
 		}
 
 		if !isLeafApprover {
-			tlas := make([]string, len(topLevelApprovers))
+			tlas := make([]string, 0, len(topLevelApprovers))
 			for tla := range topLevelApprovers {
 				tlas = append(tlas, tla)
 			}

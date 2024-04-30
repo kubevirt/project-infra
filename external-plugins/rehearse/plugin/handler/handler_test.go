@@ -411,12 +411,14 @@ Gna meh whatever
 		var fakeGHC *fakegithub.FakeClient
 		var pr *github.PullRequest
 		var fakeOwnersClient *testutils.FakeOwnersClient
+		const userName = "testuser"
+		const userNameUpperCase = "TestUser"
 		BeforeEach(func() {
 			fakeGHC = &fakegithub.FakeClient{}
 			fakeGHC.OrgMembers = map[string][]string{
 				"testorg": {
 					"testauthor",
-					"testuser",
+					userName,
 				},
 			}
 			fakeOwnersClient = &testutils.FakeOwnersClient{}
@@ -431,21 +433,14 @@ Gna meh whatever
 				User: github.User{Login: "testauthor"},
 			}
 		})
-		type CanUserRehearseOrgAndUserTestData struct {
-			OrgMembers              map[string][]string
-			ChangedFiles            []string
-			TopLevelApprovers       sets.String
-			LeafApprovers           map[string]sets.String
-			ExpectedCanUserRehearse bool
-			ExpectedMessageParts    []string
-		}
+
 		DescribeTable("org and user",
 			func(testData CanUserRehearseOrgAndUserTestData) {
 				fakeGHC.OrgMembers = testData.OrgMembers
 				fakeOwnersClient.ExistingTopLevelApprovers = testData.TopLevelApprovers
 				fakeOwnersClient.CurrentLeafApprovers = testData.LeafApprovers
 
-				canUserRehearse, message := testable.canUserRehearse("testorg", "testrepo", pr, "testuser", testData.ChangedFiles)
+				canUserRehearse, message := testable.canUserRehearse("testorg", "testrepo", pr, testData.GetUserNameOrDefault(), testData.ChangedFiles)
 
 				Expect(canUserRehearse).To(BeEquivalentTo(testData.ExpectedCanUserRehearse))
 				for _, part := range testData.ExpectedMessageParts {
@@ -470,7 +465,7 @@ Gna meh whatever
 					OrgMembers: map[string][]string{
 						"testorg": {
 							"testauthor",
-							"testuser",
+							userName,
 						},
 					},
 					ChangedFiles: []string{"changedFile"},
@@ -496,12 +491,27 @@ Gna meh whatever
 					OrgMembers: map[string][]string{
 						"testorg": {
 							"testauthor",
-							"testuser",
+							userName,
 						},
 					},
 					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.String{"testuser": struct{}{}},
+					TopLevelApprovers:       sets.String{userName: struct{}{}},
 					LeafApprovers:           map[string]sets.String{},
+					ExpectedCanUserRehearse: true,
+				},
+			),
+			Entry("user and author in org - user is a top level approver (case in OWNERS and GitHub don't match)",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+							userName,
+						},
+					},
+					ChangedFiles:            []string{"changedFile"},
+					TopLevelApprovers:       sets.String{userName: struct{}{}},
+					LeafApprovers:           map[string]sets.String{},
+					UserName:                userNameUpperCase,
 					ExpectedCanUserRehearse: true,
 				},
 			),
@@ -510,13 +520,46 @@ Gna meh whatever
 					OrgMembers: map[string][]string{
 						"testorg": {
 							"testauthor",
-							"testuser",
+							userName,
 						},
 					},
 					ChangedFiles:      []string{"changedFile"},
 					TopLevelApprovers: sets.String{},
 					LeafApprovers: map[string]sets.String{
-						"changedFile": {"testuser": struct{}{}},
+						"changedFile": {userName: struct{}{}},
+					},
+					ExpectedCanUserRehearse: true,
+				},
+			),
+			Entry("user and author in org - user is a leaf approver - case in OWNERS and GitHub is different for user (1)",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+							userName,
+						},
+					},
+					ChangedFiles:      []string{"changedFile"},
+					TopLevelApprovers: sets.String{},
+					LeafApprovers: map[string]sets.String{
+						"changedFile": {userName: struct{}{}},
+					},
+					UserName:                userNameUpperCase,
+					ExpectedCanUserRehearse: true,
+				},
+			),
+			Entry("user and author in org - user is a leaf approver - case in OWNERS and GitHub is different for user (1)",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+							userName,
+						},
+					},
+					ChangedFiles:      []string{"changedFile"},
+					TopLevelApprovers: sets.String{},
+					LeafApprovers: map[string]sets.String{
+						"changedFile": {userNameUpperCase: struct{}{}},
 					},
 					ExpectedCanUserRehearse: true,
 				},
@@ -526,7 +569,7 @@ Gna meh whatever
 					OrgMembers: map[string][]string{
 						"testorg": {
 							"testauthor",
-							"testuser",
+							userName,
 						},
 					},
 					ChangedFiles: []string{
@@ -535,7 +578,7 @@ Gna meh whatever
 					},
 					TopLevelApprovers: sets.String{},
 					LeafApprovers: map[string]sets.String{
-						"changedFile": {"testuser": struct{}{}},
+						"changedFile": {userName: struct{}{}},
 					},
 					ExpectedCanUserRehearse: false,
 				},
@@ -544,12 +587,40 @@ Gna meh whatever
 				CanUserRehearseOrgAndUserTestData{
 					OrgMembers: map[string][]string{
 						"testorg": {
-							"testuser",
+							userName,
 						},
 					},
 					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.String{"testuser": struct{}{}},
+					TopLevelApprovers:       sets.String{userName: struct{}{}},
 					LeafApprovers:           map[string]sets.String{},
+					ExpectedCanUserRehearse: true,
+				},
+			),
+			Entry("only user in org - user is top level approver - case in OWNERS and GitHub don't match (1)",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							userName,
+						},
+					},
+					ChangedFiles:            []string{"changedFile"},
+					TopLevelApprovers:       sets.String{userName: struct{}{}},
+					LeafApprovers:           map[string]sets.String{},
+					UserName:                userNameUpperCase,
+					ExpectedCanUserRehearse: true,
+				},
+			),
+			Entry("only user in org - user is top level approver - case in OWNERS and GitHub don't match (2)",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							userName,
+						},
+					},
+					ChangedFiles:            []string{"changedFile"},
+					TopLevelApprovers:       sets.String{userNameUpperCase: struct{}{}},
+					LeafApprovers:           map[string]sets.String{},
+					UserName:                userName,
 					ExpectedCanUserRehearse: true,
 				},
 			),
@@ -557,6 +628,23 @@ Gna meh whatever
 	})
 
 })
+
+type CanUserRehearseOrgAndUserTestData struct {
+	OrgMembers              map[string][]string
+	ChangedFiles            []string
+	TopLevelApprovers       sets.String
+	LeafApprovers           map[string]sets.String
+	ExpectedCanUserRehearse bool
+	ExpectedMessageParts    []string
+	UserName                string
+}
+
+func (td CanUserRehearseOrgAndUserTestData) GetUserNameOrDefault() string {
+	if td.UserName == "" {
+		return "testuser"
+	}
+	return td.UserName
+}
 
 func newPodSpec() *v1.PodSpec {
 	return &v1.PodSpec{
