@@ -120,15 +120,14 @@ presubmits:
     spec:
       affinity:
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: vgpu
-                  operator: In
-                  values:
-                  - "true"
-              topologyKey: kubernetes.io/hostname
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: vgpu
+                operator: In
+                values:
+                - "true"
+            topologyKey: kubernetes.io/hostname
             weight: 100
       containers:
       - command:
