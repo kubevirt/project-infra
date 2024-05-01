@@ -133,7 +133,7 @@ presubmits:
         - /bin/bash
         - -ce
         - |
-          sed -i 's/vfio_mdev/mdev/' cluster-up/cluster/${TARGET}/provider.sh
+          sed -i 's+/usr/sbin/modprobe vfio_mdev+# Remove loading of vfio_mdev as no longer present+' cluster-up/cluster/${TARGET}/provider.sh
           automation/test.sh
         env:
         - name: TARGET
