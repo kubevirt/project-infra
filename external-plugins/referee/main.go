@@ -31,6 +31,7 @@ import (
 	"k8s.io/test-infra/prow/interrupts"
 	"k8s.io/test-infra/prow/pluginhelp/externalplugins"
 	"kubevirt.io/project-infra/external-plugins/referee/ghgraphql"
+	"kubevirt.io/project-infra/external-plugins/referee/metrics"
 	"kubevirt.io/project-infra/external-plugins/referee/server"
 	"net/http"
 	"os"
@@ -125,6 +126,7 @@ func main() {
 	mux.Handle("/", pluginServer)
 	externalplugins.ServeExternalPluginHelp(mux, log, server.HelpProvider)
 	httpServer := &http.Server{Addr: ":" + strconv.Itoa(o.port), Handler: mux}
+	metrics.AddMetricsHandler(mux)
 	defer interrupts.WaitForGracefulShutdown()
 	interrupts.ListenAndServe(httpServer, 5*time.Second)
 

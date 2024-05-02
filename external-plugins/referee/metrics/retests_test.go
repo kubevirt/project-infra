@@ -23,6 +23,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/prometheus/client_golang/prometheus"
 	"sync"
 	"sync/atomic"
 )
@@ -35,6 +36,14 @@ func newFakeCounter() *fakeCounter {
 	return &fakeCounter{
 		CounterValue: &atomic.Int32{},
 	}
+}
+
+func (c fakeCounter) Describe(_ chan<- *prometheus.Desc) {
+	//not implemented
+}
+
+func (c fakeCounter) Collect(_ chan<- prometheus.Metric) {
+	//not implemented
 }
 
 func (c fakeCounter) Inc() {

@@ -28,13 +28,16 @@ import (
 )
 
 const (
-	totalRetestsCounterName   = "referee_retests_total"
-	retestsPerRepoCounterName = "referee_retests_%s_%s_repo_total"
-	retestsPerPRGaugeName     = "referee_retests_%s_%s_pr_since_last_commit"
+	promSubsystemForRetests   = "retests"
+	totalRetestsCounterName   = "total"
+	retestsPerRepoCounterName = "%s_%s_total"
+	retestsPerPRGaugeName     = "%s_%s_pr_since_last_commit"
 )
 
 type counter interface {
 	Inc()
+	Describe(chan<- *prometheus.Desc)
+	Collect(chan<- prometheus.Metric)
 }
 
 type gaugeVec interface {
@@ -43,7 +46,7 @@ type gaugeVec interface {
 
 var (
 	totalRetests = createCounter(
-		"referee_retests_total",
+		totalRetestsCounterName,
 		"The total number of retests encountered so far",
 	)
 	retestsPerRepo             = map[string]counter{}
@@ -62,8 +65,8 @@ var (
 	defaultCreateGaugeVecFunc = func(name, help string) gaugeVecWrapper {
 		return newGaugeVecWrapper(
 			promauto.NewGaugeVec(prometheus.GaugeOpts{
-				Namespace: "referee",
-				Subsystem: "retests",
+				Namespace: promNamespace,
+				Subsystem: promSubsystemForRetests,
 				Name:      name,
 				Help:      help,
 			},
@@ -92,11 +95,21 @@ func (w simpleGaugeVecWrapper) SetWithLabelValues(value float64, values ...strin
 }
 
 func reset() {
+	prometheus.Unregister(totalRetests)
 	totalRetests = createCounter(
 		totalRetestsCounterName,
 		"The total number of retests encountered so far",
 	)
+	for _, counter := range retestsPerRepo {
+		prometheus.Unregister(counter)
+	}
 	retestsPerRepo = map[string]counter{}
+	for _, wrapper := range retestsPerPullRequest {
+		simple, ok := wrapper.(simpleGaugeVecWrapper)
+		if ok {
+			prometheus.Unregister(simple.gaugeVec)
+		}
+	}
 	retestsPerPullRequest = map[string]gaugeVecWrapper{}
 }
 
