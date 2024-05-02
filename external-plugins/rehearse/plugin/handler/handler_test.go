@@ -531,7 +531,7 @@ Gna meh whatever
 					ExpectedCanUserRehearse: true,
 				},
 			),
-			Entry("user and author in org - user is a leaf approver - case in OWNERS and GitHub is different for user (1)",
+			Entry("user and author in org - user is a leaf approver - case in OWNERS and GitHub is different for user - OWNERS lowercase",
 				CanUserRehearseOrgAndUserTestData{
 					OrgMembers: map[string][]string{
 						"testorg": {
@@ -548,7 +548,7 @@ Gna meh whatever
 					ExpectedCanUserRehearse: true,
 				},
 			),
-			Entry("user and author in org - user is a leaf approver - case in OWNERS and GitHub is different for user (1)",
+			Entry("user and author in org - user is a leaf approver - case in OWNERS and GitHub is different for user - OWNERS uppercase",
 				CanUserRehearseOrgAndUserTestData{
 					OrgMembers: map[string][]string{
 						"testorg": {
@@ -596,7 +596,7 @@ Gna meh whatever
 					ExpectedCanUserRehearse: true,
 				},
 			),
-			Entry("only user in org - user is top level approver - case in OWNERS and GitHub don't match (1)",
+			Entry("only user in org - user is top level approver - case in OWNERS and GitHub don't match - topLeverApprovers lowercase",
 				CanUserRehearseOrgAndUserTestData{
 					OrgMembers: map[string][]string{
 						"testorg": {
@@ -610,7 +610,7 @@ Gna meh whatever
 					ExpectedCanUserRehearse: true,
 				},
 			),
-			Entry("only user in org - user is top level approver - case in OWNERS and GitHub don't match (2)",
+			Entry("only user in org - user is top level approver - case in OWNERS and GitHub don't match - topLeverApprovers uppercase",
 				CanUserRehearseOrgAndUserTestData{
 					OrgMembers: map[string][]string{
 						"testorg": {
