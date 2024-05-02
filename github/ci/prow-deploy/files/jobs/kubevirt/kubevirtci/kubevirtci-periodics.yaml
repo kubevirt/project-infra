@@ -28,6 +28,7 @@ periodics:
         command: ["/bin/sh", "-ce"]
         args:
           - |
+            source /google-cloud-sdk/path.bash.inc
             gcloud auth activate-service-account --key-file ${GOOGLE_APPLICATION_CREDENTIALS}
             ./hack/mirror-crio.sh
         resources:
