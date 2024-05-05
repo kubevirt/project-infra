@@ -2,7 +2,8 @@ postsubmits:
   kubevirt/application-aware-quota:
   - name: push-release-aaq-images
     branches:
-    - release-v\d+\.\d+
+    # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+    - ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
     cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
@@ -74,7 +75,8 @@ postsubmits:
             memory: "8Gi"
   - name: push-aaq-tag
     branches:
-    - release-v\d+\.\d+
+    # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+    - ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
     cluster: kubevirt-prow-control-plane
     always_run: true
     optional: false
