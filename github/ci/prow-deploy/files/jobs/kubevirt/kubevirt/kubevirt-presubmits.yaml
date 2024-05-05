@@ -833,6 +833,69 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
+    run_before_merge: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: kubevirt-prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-ovn-k8s-tests
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          # TODO remove
+          curl -L https://github.com/kubevirt/kubevirt/pull/11849.patch | git am -3
+          dnf install -y openssl openvswitch
+          curl -LO https://go.dev/dl/go1.21.3.linux-amd64.tar.gz
+          rm -rf /usr/local/go
+          rm -rf /root/.gimme/versions/go1.17.8.linux.amd64
+          tar -C /usr/local -xvf go1.21.3.linux-amd64.tar.gz
+          export GOROOT=/usr/local/go
+          export PATH=/usr/local/go/bin:$PATH
+          hack/test-ovn.sh
+        image: quay.io/kubevirtci/golang-legacy:v20230829-f2e4ded
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+        #env:
+        #- name: GIMME_GO_VERSION
+        #  value: "1.21.3"
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      nodeSelector:
+        type: bare-metal-external
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
