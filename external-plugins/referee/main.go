@@ -35,6 +35,7 @@ import (
 	"kubevirt.io/project-infra/external-plugins/referee/server"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -52,14 +53,39 @@ type options struct {
 	github prowflagutil.GitHubOptions
 	labels prowflagutil.Strings
 
-	webhookSecretFile string
-	team              string
+	webhookSecretFile         string
+	team                      string
+	initialRetestRepositories string
 }
 
+var retestRepoOptionRegex = regexp.MustCompile(`^[^\s/,]+/[^\s/,]+(,[^\s/,]+/[^\s/,]+)*$`)
+
+type RepoIdentifier struct {
+	Org  string
+	Repo string
+}
+
+func (o *options) InitialRetestRepositories() []RepoIdentifier {
+	if !retestRepoOptionRegex.MatchString(o.initialRetestRepositories) {
+		return nil
+	}
+	repoIds := strings.Split(o.initialRetestRepositories, ",")
+	result := make([]RepoIdentifier, 0, len(repoIds))
+	for _, repoId := range repoIds {
+		split := strings.Split(repoId, "/")
+		result = append(result, RepoIdentifier{Org: split[0], Repo: split[1]})
+	}
+	return result
+}
 func (o *options) Validate() error {
 	for idx, group := range []flagutil.OptionGroup{&o.github} {
 		if err := group.Validate(o.dryRun); err != nil {
 			return fmt.Errorf("%d: %w", idx, err)
+		}
+	}
+	if o.initialRetestRepositories != "" {
+		if !retestRepoOptionRegex.MatchString(o.initialRetestRepositories) {
+			return fmt.Errorf("%q doesn't match org/repo1,org/repo2,... ", o.initialRetestRepositories)
 		}
 	}
 
@@ -73,6 +99,7 @@ func gatherOptions() options {
 	fs.BoolVar(&o.dryRun, "dry-run", true, "Dry run for testing. Uses API tokens but does not mutate.")
 	fs.StringVar(&o.webhookSecretFile, "hmac-secret-file", "/etc/webhook/hmac", "Path to the file containing the GitHub HMAC secret.")
 	fs.StringVar(&o.team, "team", "sig-buildsystem", "Name of the GitHub team that should be pinged.")
+	fs.StringVar(&o.initialRetestRepositories, "initial-retest-repositories", "kubevirt/kubevirt", "Comma-separated names of GitHub repositories to fetch the number of retest comments for open lgtm/approved pull request in format org/repo1,org/repo2,... ")
 	for _, group := range []flagutil.OptionGroup{&o.github} {
 		group.AddFlags(fs)
 	}
@@ -108,7 +135,9 @@ func main() {
 	)
 	httpClient := oauth2.NewClient(context.Background(), src)
 
-	gitHubGQLCLient := ghgraphql.NewClient(githubv4.NewClient(httpClient))
+	gitHubGQLClient := ghgraphql.NewClient(githubv4.NewClient(httpClient))
+
+	go initializeRetestsForRepositories(log, o.InitialRetestRepositories(), gitHubGQLClient)
 
 	pluginServer := &server.Server{
 		TokenGenerator: secret.GetTokenGenerator(o.webhookSecretFile),
@@ -116,7 +145,7 @@ func main() {
 		Team:           o.team,
 
 		GithubClient:    githubClient,
-		GHGraphQLClient: gitHubGQLCLient,
+		GHGraphQLClient: gitHubGQLClient,
 		Log:             log,
 
 		DryRun: o.dryRun,
@@ -130,4 +159,25 @@ func main() {
 	defer interrupts.WaitForGracefulShutdown()
 	interrupts.ListenAndServe(httpServer, 5*time.Second)
 
+}
+
+func initializeRetestsForRepositories(log *logrus.Entry, repoIds []RepoIdentifier, gqlClient ghgraphql.GitHubGraphQLClient) {
+	for _, repoId := range repoIds {
+		org, repo := repoId.Org, repoId.Repo
+		pullRequests, err := gqlClient.FetchOpenApprovedAndLGTMedPRs(org, repo)
+		if err != nil {
+			log.Fatalf("failed to fetch pull requests for %s/%s: %v", org, repo, err)
+		}
+
+		log.Infof("checking %d PRs for retests", len(pullRequests.PRs))
+		for _, pr := range pullRequests.PRs {
+			prLog := log.WithField("pr_url", fmt.Sprintf("https://github.com/%s/%s/pull/%d", org, repo, pr.Number)).WithField("pr_title", pr.Title)
+			prTimeLineForLastCommit, err := gqlClient.FetchPRTimeLineForLastCommit(org, repo, pr.Number)
+			if err != nil {
+				prLog.Fatalf("failed to fetch number of retest comments for pr %s/%s#%d: %v", org, repo, pr.Number, err)
+			}
+			prLog.Infof("got number of retests")
+			metrics.SetForPullRequest(org, repo, pr.Number, prTimeLineForLastCommit.NumberOfRetestComments)
+		}
+	}
 }

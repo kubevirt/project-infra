@@ -26,12 +26,12 @@ import (
 )
 
 func (g gitHubGraphQLClient) FetchOpenApprovedAndLGTMedPRs(org string, repo string) (PullRequests, error) {
-	labels, err := g.fetchPRs(org, repo)
+	prs, err := g.fetchPRs(org, repo)
 	if err != nil {
 		return PullRequests{}, err
 	}
 	pullRequests := PullRequests{
-		PRs: labels,
+		PRs: prs,
 	}
 	return pullRequests, nil
 }
