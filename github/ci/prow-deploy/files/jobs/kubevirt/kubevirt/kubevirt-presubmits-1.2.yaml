@@ -61,7 +61,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    optional: true
     branches:
     - release-1.2
     cluster: kubevirt-prow-workloads
@@ -102,6 +101,7 @@ presubmits:
         type: bare-metal-external
       priorityClassName: windows
   - always_run: true
+    optional: true
     branches:
     - release-1.2
     cluster: kubevirt-prow-workloads
