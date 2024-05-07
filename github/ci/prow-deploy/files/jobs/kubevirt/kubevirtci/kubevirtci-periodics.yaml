@@ -127,6 +127,7 @@ periodics:
       - "-c"
       - >
         cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
+        ./hack/bump-centos-version.sh &&
         GIT_ASKPASS=../project-infra/hack/git-askpass.sh ../project-infra/hack/git-pr.sh -c "PHASES=linux BYPASS_PMAN_CHANGE_CHECK=true ./publish.sh" -r kubevirtci -b bump-centos-stream -T main -p $(pwd) -s "Automatic bump of CentOS Stream to latest"
       securityContext:
         privileged: true
