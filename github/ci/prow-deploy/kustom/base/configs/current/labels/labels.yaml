@@ -512,6 +512,12 @@ repos:
         name: area/monitoring
         prowPlugin: label
         target: both
+      - addedBy: approvers
+        color: FF0A3B
+        description: Label to enable rehearsals of pull requests for which the author is not allowed
+        name: ok-to-rehearse
+        prowPlugin: label
+        target: pr
   nmstate/kubernetes-nmstate:
     labels:
       - name: kind/documentation

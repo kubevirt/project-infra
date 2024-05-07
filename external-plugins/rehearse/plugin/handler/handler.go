@@ -89,6 +89,7 @@ type githubClientInterface interface {
 	IsMember(string, string) (bool, error)
 	GetPullRequest(string, string, int) (*github.PullRequest, error)
 	CreateComment(org, repo string, number int, comment string) error
+	GetIssueLabels(org, repo string, number int) ([]github.Label, error)
 }
 
 type repoOwnersClient interface {
@@ -233,6 +234,18 @@ func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *githu
 	if !isUserMember {
 		log.Warnln("User is not a member of the repo org")
 		return false, ""
+	}
+
+	// check if ok-to-rehearse label is present
+	issueLabels, err := h.ghClient.GetIssueLabels(org, repo, pr.Number)
+	if err != nil {
+		log.WithError(err).WithField("pull_request_url", fmt.Sprintf("github.com/%s/%s/pull/%d", org, repo, pr.Number)).Errorln("Could not get labels for pull request")
+		return false, ""
+	}
+	for _, label := range issueLabels {
+		if label.Name == OKToRehearse {
+			return true, ""
+		}
 	}
 
 	// if user is not a leaf approver for all the files then

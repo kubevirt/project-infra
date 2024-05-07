@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
@@ -437,6 +438,7 @@ Gna meh whatever
 		DescribeTable("org and user",
 			func(testData CanUserRehearseOrgAndUserTestData) {
 				fakeGHC.OrgMembers = testData.OrgMembers
+				fakeGHC.IssueLabelsExisting = testData.IssueLabelsExisting
 				fakeOwnersClient.ExistingTopLevelApprovers = testData.TopLevelApprovers
 				fakeOwnersClient.CurrentLeafApprovers = testData.LeafApprovers
 
@@ -484,6 +486,27 @@ Gna meh whatever
 						"leafApprover",
 						"topLevelApprover",
 					},
+				},
+			),
+			Entry("user and author in org - user is not an approver, but ok-to-rehearse label is present",
+				CanUserRehearseOrgAndUserTestData{
+					OrgMembers: map[string][]string{
+						"testorg": {
+							"testauthor",
+							userName,
+						},
+					},
+					ChangedFiles: []string{"changedFile"},
+					TopLevelApprovers: sets.String{
+						"topLevelApprover": struct{}{},
+					},
+					LeafApprovers: map[string]sets.String{
+						"changedFile": {
+							"leafApprover": struct{}{},
+						},
+					},
+					ExpectedCanUserRehearse: true,
+					IssueLabelsExisting:     []string{fmt.Sprintf("testorg/testrepo#0:%s", OKToRehearse)},
 				},
 			),
 			Entry("user and author in org - user is a top level approver",
@@ -637,6 +660,7 @@ type CanUserRehearseOrgAndUserTestData struct {
 	ExpectedCanUserRehearse bool
 	ExpectedMessageParts    []string
 	UserName                string
+	IssueLabelsExisting     []string
 }
 
 func (td CanUserRehearseOrgAndUserTestData) GetUserNameOrDefault() string {
