@@ -180,6 +180,95 @@ presubmits:
     run_before_merge: true
     annotations:
       fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: kubevirt-prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 30m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+      rehearsal.allowed: "true"
+    max_concurrency: 10
+    name: pull-kubevirt-e2e-kind-ovn-k
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -exc
+        -  |
+          sysctl fs.inotify.max_user_watches=1048576
+          sysctl fs.inotify.max_user_instances=512
+          dnf install -y git which bison openssl
+          curl -L -O https://go.dev/dl/go1.22.3.linux-amd64.tar.gz 
+          rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
+          export PATH=$PATH:/usr/local/go/bin
+          git clone https://github.com/qinqon/ovn-kubernetes -b kubevirt-e2e-ipamclaim
+          (
+            cd ovn-kubernetes
+            curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.19.0/kind-linux-amd64
+            chmod +x ./kind
+            sudo mv ./kind /usr/local/bin/kind
+            mtu=$(expr $(cat /sys/class/net/eth0/mtu) - 58)
+            export KIND_IMAGE=kindest/node
+            export K8S_VERSION=v1.28.0@sha256:dad5a6238c5e41d7cac405fae3b5eda2ad1de6f1190fa8bfc64ff5bb86173213
+            ./contrib/kind.sh --local-kind-registry -mtu $mtu -mne --enable-interconnect --num-workers 2
+          )
+          export KUBECONFIG=~/ovn.conf
+          export KUBEVIRT_PROVIDER=external
+          export DOCKER_PREFIX=localhost:5000
+          git clone https://github.com/oshoval/kubevirt -b ipam
+          (
+            cd kubevirt
+            make cluster-sync
+            kubectl -n kubevirt patch kubevirt kubevirt --type=merge --patch '{"spec":{"configuration":{"developerConfiguration":{"featureGates":["PersistentIPs"]}}}}'
+            kubectl apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/ipamclaims/v0.4.0-alpha/artifacts/k8s.cni.cncf.io_ipamclaims.yaml
+          )
+          export PATH=$(pwd)/kubevirt/_out/cmd/virtctl:$PATH
+          (
+            cd ovn-kubernetes/test/e2e
+            go test --test.timeout=1h --test.v --ginkgo.v --ginkgo.noColor=true --ginkgo.focus="should keep ip"
+          )
+        image: quay.io/kubevirtci/bootstrap-legacy:v20220810-a8f2e6c
+       #image: gcr.io/k8s-staging-test-infra/kubekins-e2e:latest-1.29
+       #image: gcr.io/k8s-staging-test-infra/krte:v20240405-14b8bc2f76-experimental
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+        - mountPath: /dev/vfio/
+          name: vfio
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+      - hostPath:
+          path: /dev/vfio/
+          type: Directory
+        name: vfio
+  - always_run: false
+    run_before_merge: true
+    annotations:
+      fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
       testgrid-dashboards: kubevirt-presubmits
     cluster: kubevirt-prow-workloads
