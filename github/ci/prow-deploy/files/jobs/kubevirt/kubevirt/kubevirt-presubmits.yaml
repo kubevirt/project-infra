@@ -105,7 +105,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       priorityClassName: windows
-  - always_run: true
+  - always_run: false
     optional: true
     annotations:
       fork-per-release: "true"

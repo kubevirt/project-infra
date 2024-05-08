@@ -98,7 +98,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       priorityClassName: windows
-  - always_run: true
+  - always_run: false
     optional: true
     branches:
     - release-1.1
