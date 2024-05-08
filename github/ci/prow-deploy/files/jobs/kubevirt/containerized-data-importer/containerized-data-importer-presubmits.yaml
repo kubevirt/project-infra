@@ -32,8 +32,8 @@ presubmits:
             requests:
               memory: "8Gi"
   - name: pull-cdi-goveralls
-    always_run: false # TODO: Make true after we're confident it's working
-    optional: true    # TODO: Make false after we're confident it's working
+    always_run: true
+    optional: true
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane

@@ -195,3 +195,43 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
+  - name: push-cdi-goveralls
+    cluster: kubevirt-prow-control-plane
+    annotations:
+      testgrid-create-test-group: "false"
+    always_run: true
+    decorate: true
+    decoration_config:
+      grace_period: 10m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && if [ ${JOB_TYPE} != 'batch' ]; then
+          make goveralls; fi
+        env:
+        - name: COVERALLS_TOKEN_FILE
+          value: /root/.docker/secrets/coveralls/token
+        image: quay.io/kubevirtci/bootstrap:v20240308-8fac017
+        name: ""
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /root/.docker/secrets/coveralls
+          name: containerized-data-importer-coveralls
+          readOnly: true
+      volumes:
+      - name: containerized-data-importer-coveralls
+        secret:
+          secretName: containerized-data-importer-coveralls-token
