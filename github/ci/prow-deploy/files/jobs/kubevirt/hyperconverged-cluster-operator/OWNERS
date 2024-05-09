@@ -7,12 +7,16 @@
 filters:
   .*:
     approvers:
+    - assafad
+    - avlitman
     - machadovilaca
     - nunnatsa
     - orenc1
     - sradco
     - tiraboschi
     reviewers:
+    - assafad
+    - avlitman
     - machadovilaca
     - nunnatsa
     - orenc1
