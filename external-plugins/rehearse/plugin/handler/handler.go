@@ -271,8 +271,9 @@ func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *githu
 @%s can help run the rehearsal.
 
 <details>
+
 If that doesn't work, ping someone from this list:
-%s
+* %s
 </details>
 `, userName, leafApprover, strings.Join(tlas, "\n* "))
 		}
