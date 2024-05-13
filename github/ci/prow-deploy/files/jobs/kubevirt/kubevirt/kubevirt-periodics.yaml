@@ -602,8 +602,7 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
-    preset-dind-enabled: "true"
+    preset-podman-in-container-enabled: "true"
     preset-docker-mirror: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
@@ -612,11 +611,12 @@ periodics:
   spec:
     containers:
     - command:
+      - /usr/local/bin/runner.sh
       - /bin/bash
       - -c
       - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
         -p ../kubevirt -T main -R
-      image: quay.io/kubevirt/builder:2212180911-8818abcfa
+      image: quay.io/kubevirtci/bootstrap:v20240308-8fac017
       name: ""
       resources:
         requests:
