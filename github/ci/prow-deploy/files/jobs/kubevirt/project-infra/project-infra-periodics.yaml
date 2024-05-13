@@ -657,7 +657,9 @@ periodics:
             value: "1.10.0,1.13.0,1.14.0,1.15.0"
         command: ["/bin/sh", "-c"]
         args:
-          - ./hack/mirror-istioctl.sh
+          - |
+            source /google-cloud-sdk/path.bash.inc
+            ./hack/mirror-istioctl.sh
         resources:
           requests:
             memory: "2Gi"
