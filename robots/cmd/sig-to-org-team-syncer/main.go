@@ -49,10 +49,15 @@ func main() {
 	if debug {
 		log.SetLevel(log.DebugLevel)
 	}
-
 	if ownersAliasesPath == "" {
 		log.Fatal("owners-aliases-path is required")
 	}
+	if orgsYamlPath == "" {
+		log.Fatal("orgs-yaml-path is required")
+	}
+
+	// 1) deserialize input file
+
 	raw, err := os.ReadFile(ownersAliasesPath)
 	if err != nil {
 		log.Fatalf("failed to read file %q: %v", ownersAliasesPath, err)
@@ -62,21 +67,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to unmarshall file %q: %v", ownersAliasesPath, err)
 	}
-	if orgsYamlPath == "" {
-		log.Fatal("orgs-yaml-path is required")
-	}
-	raw, err = os.ReadFile(orgsYamlPath)
-	if err != nil {
-		log.Fatalf("failed to read file %q: %v", ownersAliasesPath, err)
-	}
-	var fullConfig *org.FullConfig
-	err = yaml.Unmarshal(raw, &fullConfig)
-	if err != nil {
-		log.Fatalf("failed to unmarshall file %q: %v", ownersAliasesPath, err)
-	}
-	if _, ok := fullConfig.Orgs[targetOrgName]; !ok {
-		log.Fatalf("org %q not found in config %q", targetOrgName, orgsYamlPath)
-	}
+
+	// 2) condense sigs and labels out of OWNERS_ALIASES
+	//    shortcut for sig label - we assume that it's always
+	//    `sig/%s`
 
 	sigs := make(map[string]sets.Set[string])
 	labels := sets.Set[string]{}
@@ -91,6 +85,64 @@ func main() {
 		sigs[bareSigName].Insert(gitHubHandles...)
 		labels.Insert(fmt.Sprintf("sig/%s", bareSigName))
 	}
-	log.Debugf("sigs: %v", sigs)
-	log.Debugf("labels: %v", labels)
+	log.Debugf(`OWNERS_ALIASES:
+	sigs: %v
+	labels: %v`, sigs, labels)
+
+	// 3) update peribolos config file
+	//    either generate new teams for sigs that don't exist
+	//    or update team members by merging current members
+	//    with sig members from OWNERS_ALIASES
+
+	raw, err = os.ReadFile(orgsYamlPath)
+	if err != nil {
+		log.Fatalf("failed to read file %q: %v", ownersAliasesPath, err)
+	}
+	var fullConfig *org.FullConfig
+	err = yaml.Unmarshal(raw, &fullConfig)
+	if err != nil {
+		log.Fatalf("failed to unmarshall file %q: %v", ownersAliasesPath, err)
+	}
+	if _, ok := fullConfig.Orgs[targetOrgName]; !ok {
+		log.Fatalf("org %q not found in config %q", targetOrgName, orgsYamlPath)
+	}
+
+	for bareSigName, gitHubHandles := range sigs {
+		fullSigName := fmt.Sprintf("sig-%s", bareSigName)
+		if _, ok := fullConfig.Orgs[targetOrgName].Teams[fullSigName]; !ok {
+			fullConfig.Orgs[targetOrgName].Teams[fullSigName] = org.Team{
+				TeamMetadata: org.TeamMetadata{
+					Description: ptr(fmt.Sprintf("auto-generated team for sig-%s, based on OWNERS_ALIASES", bareSigName)),
+					Privacy:     ptr(org.Closed),
+				},
+				Members: gitHubHandles.UnsortedList(),
+			}
+		} else {
+			// update existing team by merging GitHub handles with existing team member handles
+			list := gitHubHandles.UnsortedList()
+			merged := sets.Set[string]{}
+			merged.Insert(list...)
+			team := fullConfig.Orgs[targetOrgName].Teams[fullSigName]
+			merged.Insert(team.Members...)
+			team.Members = merged.UnsortedList()
+			fullConfig.Orgs[targetOrgName].Teams[fullSigName] = team
+		}
+	}
+
+	newConfig, err := yaml.Marshal(&fullConfig)
+	if err != nil {
+		log.Fatalf("failed to marshall config: %v", err)
+	}
+	err = os.WriteFile(orgsYamlPath, newConfig, 0666)
+	if err != nil {
+		log.Fatalf("failed to read file %q: %v", ownersAliasesPath, err)
+	}
+
+	// 4) update labels config file
+	//    sig labels are put into the default section, as they are global for the org
+
+}
+
+func ptr[T any](e T) *T {
+	return &e
 }
