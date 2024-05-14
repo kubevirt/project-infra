@@ -23,17 +23,20 @@ import (
 	"flag"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/test-infra/prow/config/org"
+	kv_labels "kubevirt.io/project-infra/robots/pkg/labels"
 	"kubevirt.io/project-infra/robots/pkg/sig"
 	"os"
 	"regexp"
-	"sigs.k8s.io/yaml"
+	"strings"
 )
 
 var (
 	debug             bool
 	orgsYamlPath      string
+	labelsYamlPath    string
 	targetOrgName     string
 	ownersAliasesPath string
 	sigHandleMatcher  = regexp.MustCompile(`^sig-(.*)(-(approvers|reviewers))$`)
@@ -42,6 +45,7 @@ var (
 func main() {
 	flag.StringVar(&ownersAliasesPath, "owners-aliases-path", "", "path to the OWNERS_ALIASES file")
 	flag.StringVar(&orgsYamlPath, "orgs-yaml-path", "", "path to the orgs.yaml file that is the input configuration file for peribolos")
+	flag.StringVar(&labelsYamlPath, "labels-yaml-path", "", "path to the labels.yaml file that is the input configuration file for label_sync")
 	flag.StringVar(&targetOrgName, "target-org-name", "", "name of the org inside orgs.yaml file that should be synced")
 	flag.BoolVar(&debug, "debug", false, "whether debug output should be printed")
 	flag.Parse()
@@ -54,6 +58,9 @@ func main() {
 	}
 	if orgsYamlPath == "" {
 		log.Fatal("orgs-yaml-path is required")
+	}
+	if labelsYamlPath == "" {
+		log.Fatal("labels-yaml-path is required")
 	}
 
 	// 1) deserialize input file
@@ -117,6 +124,7 @@ func main() {
 				},
 				Members: gitHubHandles.UnsortedList(),
 			}
+			log.Infof("GitHub team %s added for org %s", fullSigName, targetOrgName)
 		} else {
 			// update existing team by merging GitHub handles with existing team member handles
 			list := gitHubHandles.UnsortedList()
@@ -126,6 +134,7 @@ func main() {
 			merged.Insert(team.Members...)
 			team.Members = merged.UnsortedList()
 			fullConfig.Orgs[targetOrgName].Teams[fullSigName] = team
+			log.Infof("GitHub team %s updated for org %s", fullSigName, targetOrgName)
 		}
 	}
 
@@ -135,11 +144,51 @@ func main() {
 	}
 	err = os.WriteFile(orgsYamlPath, newConfig, 0666)
 	if err != nil {
-		log.Fatalf("failed to read file %q: %v", ownersAliasesPath, err)
+		log.Fatalf("failed to write file %q: %v", orgsYamlPath, err)
 	}
 
 	// 4) update labels config file
 	//    sig labels are put into the default section, as they are global for the org
+	raw, err = os.ReadFile(labelsYamlPath)
+	if err != nil {
+		log.Fatalf("failed to read file %q: %v", labelsYamlPath, err)
+	}
+	var labelConfig *kv_labels.Configuration
+	err = yaml.Unmarshal(raw, &labelConfig)
+	if err != nil {
+		log.Fatalf("failed to unmarshall file %q: %v", labelsYamlPath, err)
+	}
+
+	// create map to more easily find the labels for the sigs
+	defaultLabels := make(map[string]*kv_labels.Label)
+	for _, label := range labelConfig.Default.Labels {
+		defaultLabels[label.Name] = &label
+	}
+	for _, label := range labels.UnsortedList() {
+		if _, ok := defaultLabels[label]; !ok {
+			newLabel := kv_labels.Label{
+				Name:             label,
+				Color:            "c5def5",
+				Description:      fmt.Sprintf("Label to mark a PR relevant for the SIG %s", strings.Split(label, "/")[1]),
+				Target:           "prs",
+				ProwPlugin:       "label",
+				IsExternalPlugin: false,
+				AddedBy:          "anyone",
+				Previously:       nil,
+				DeleteAfter:      nil,
+			}
+			labelConfig.Default.Labels = append(labelConfig.Default.Labels, newLabel)
+			log.Infof("GitHub label %s created", label)
+		}
+	}
+	newLabelConfig, err := yaml.Marshal(&labelConfig)
+	if err != nil {
+		log.Fatalf("failed to marshall label config: %v", err)
+	}
+	err = os.WriteFile(labelsYamlPath, newLabelConfig, 0666)
+	if err != nil {
+		log.Fatalf("failed to write file %q: %v", labelsYamlPath, err)
+	}
 
 }
 
