@@ -36,35 +36,35 @@ const (
 // Label holds declarative data about the label.
 type Label struct {
 	// Name is the current name of the label
-	Name string `yaml:"name"`
+	Name string `json:"name"`
 	// Color is rrggbb or color
-	Color string `yaml:"color"`
+	Color string `json:"color"`
 	// Description is brief text explaining its meaning, who can apply it
-	Description string `yaml:"description,omitempty"`
+	Description string `json:"description,omitempty"`
 	// Target specifies whether it targets PRs, issues or both
-	Target LabelTarget `yaml:"target,omitempty"`
+	Target LabelTarget `json:"target,omitempty"`
 	// ProwPlugin specifies which prow plugin add/removes this label
-	ProwPlugin string `yaml:"prowPlugin,omitempty"`
+	ProwPlugin string `json:"prowPlugin,omitempty"`
 	// IsExternalPlugin specifies if the prow plugin is external or not
-	IsExternalPlugin bool `yaml:"isExternalPlugin,omitempty"`
+	IsExternalPlugin bool `json:"isExternalPlugin,omitempty"`
 	// AddedBy specifies whether human/munger/bot adds the label
-	AddedBy string `yaml:"addedBy,omitempty"`
+	AddedBy string `json:"addedBy,omitempty"`
 	// Previously lists deprecated names for this label
-	Previously []Label `yaml:"previously,omitempty"`
+	Previously []Label `json:"previously,omitempty"`
 	// DeleteAfter specifies the label is retired and a safe date for deletion
-	DeleteAfter *time.Time `yaml:"deleteAfter,omitempty"`
+	DeleteAfter *time.Time `json:"deleteAfter,omitempty"`
 	parent      *Label     // Current name for previous labels (used internally)
 }
 
 // Configuration is a list of Repos defining Required Labels to sync into them
 // There is also a Default list of labels applied to every Repo
 type Configuration struct {
-	Default RepoConfig            `yaml:"default"`
-	Repos   map[string]RepoConfig `yaml:"repos,omitempty"`
-	Orgs    map[string]RepoConfig `yaml:"orgs,omitempty"`
+	Default RepoConfig            `json:"default"`
+	Repos   map[string]RepoConfig `json:"repos,omitempty"`
+	Orgs    map[string]RepoConfig `json:"orgs,omitempty"`
 }
 
 // RepoConfig contains only labels for the moment
 type RepoConfig struct {
-	Labels []Label `yaml:"labels"`
+	Labels []Label `json:"labels"`
 }

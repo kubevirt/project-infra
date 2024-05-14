@@ -20,16 +20,18 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v3"
+	"k8s.io/apimachinery/pkg/util/json"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/test-infra/prow/config/org"
 	kv_labels "kubevirt.io/project-infra/robots/pkg/labels"
 	"kubevirt.io/project-infra/robots/pkg/sig"
 	"os"
 	"regexp"
+	"sigs.k8s.io/yaml"
 	"strings"
 )
 
@@ -115,6 +117,9 @@ func main() {
 	}
 
 	for bareSigName, gitHubHandles := range sigs {
+		if len(gitHubHandles) == 0 {
+			continue
+		}
 		fullSigName := fmt.Sprintf("sig-%s", bareSigName)
 		if _, ok := fullConfig.Orgs[targetOrgName].Teams[fullSigName]; !ok {
 			fullConfig.Orgs[targetOrgName].Teams[fullSigName] = org.Team{
@@ -137,14 +142,9 @@ func main() {
 			log.Infof("GitHub team %s updated for org %s", fullSigName, targetOrgName)
 		}
 	}
-
-	newConfig, err := yaml.Marshal(&fullConfig)
+	err = marshallYAML(fullConfig, orgsYamlPath)
 	if err != nil {
-		log.Fatalf("failed to marshall config: %v", err)
-	}
-	err = os.WriteFile(orgsYamlPath, newConfig, 0666)
-	if err != nil {
-		log.Fatalf("failed to write file %q: %v", orgsYamlPath, err)
+		log.Fatalf("failed to read file %q: %v", orgsYamlPath, err)
 	}
 
 	// 4) update labels config file
@@ -181,15 +181,26 @@ func main() {
 			log.Infof("GitHub label %s created", label)
 		}
 	}
-	newLabelConfig, err := yaml.Marshal(&labelConfig)
+	err = marshallYAML(labelConfig, labelsYamlPath)
 	if err != nil {
-		log.Fatalf("failed to marshall label config: %v", err)
+		log.Fatalf("failed to marshall file %q: %v", labelConfig, err)
 	}
-	err = os.WriteFile(labelsYamlPath, newLabelConfig, 0666)
-	if err != nil {
-		log.Fatalf("failed to write file %q: %v", labelsYamlPath, err)
-	}
+}
 
+func marshallYAML(data interface{}, path string) error {
+	var b bytes.Buffer
+	encoder := json.NewEncoder(&b)
+	encoder.SetIndent("  ", "  ")
+	err := encoder.Encode(&data)
+	toYAML, err := yaml.JSONToYAML(b.Bytes())
+	if err != nil {
+		return fmt.Errorf("failed to marshall config: %w", err)
+	}
+	err = os.WriteFile(path, toYAML, 0666)
+	if err != nil {
+		return fmt.Errorf("failed to open file %q: %v", path, err)
+	}
+	return nil
 }
 
 func ptr[T any](e T) *T {
