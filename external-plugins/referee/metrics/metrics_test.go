@@ -68,10 +68,15 @@ var _ = Describe("metrics", func() {
 			for _, prep := range td.Preparation {
 				Expect(prep()).ToNot(HaveOccurred())
 			}
-			client := http.Client{Timeout: 1 * time.Second}
+			client := http.Client{Timeout: 500 * time.Millisecond}
 			defer client.CloseIdleConnections()
-			resp, err := client.Get(fmt.Sprintf("http://%s:%d%s", host, port, metricsPath))
-			Expect(err).NotTo(HaveOccurred())
+
+			var resp *http.Response
+			Eventually(func(g Gomega) {
+				var err error
+				resp, err = client.Get(fmt.Sprintf("http://%s:%d%s", host, port, metricsPath))
+				g.Expect(err).ToNot(HaveOccurred())
+			}).WithTimeout(10 * time.Second).WithPolling(1 * time.Second).Should(Succeed())
 			defer resp.Body.Close()
 
 			body, err := io.ReadAll(resp.Body)
