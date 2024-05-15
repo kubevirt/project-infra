@@ -30,6 +30,7 @@ import (
 	"k8s.io/test-infra/prow/pjutil"
 	"k8s.io/test-infra/prow/pluginhelp"
 	"kubevirt.io/project-infra/external-plugins/referee/ghgraphql"
+	"kubevirt.io/project-infra/external-plugins/referee/metrics"
 	"net/http"
 )
 
@@ -156,10 +157,16 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 		return nil
 	}
 
+	// increase retest rate metric
+	metrics.IncForRepository(org, repo)
+
 	prTimeLineForLastCommit, err := s.GHGraphQLClient.FetchPRTimeLineForLastCommit(org, repo, num)
 	if err != nil {
 		return fmt.Errorf("%s - failed to fetch number of retest comments: %w", pullRequestURL, err)
 	}
+
+	// update per pr retest rate
+	metrics.SetForPullRequest(org, repo, num, prTimeLineForLastCommit.NumberOfRetestComments)
 
 	if prTimeLineForLastCommit.NumberOfRetestComments < defaultMaximumNumberOfAllowedRetestComments {
 		log.Debugf("skipping due to number of retest comments (%d) less than max allowed (%d)", prTimeLineForLastCommit.NumberOfRetestComments, defaultMaximumNumberOfAllowedRetestComments)
