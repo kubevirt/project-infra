@@ -4,7 +4,7 @@ includedConfigPaths:
   - "/config/github/ci/prow-deploy/kustom/base/configs/current/config"
   - "/config/github/ci/prow-deploy/kustom/overlays/kubevirt-prow-control-plane/resources"
   - "/config/github/ci/prow-deploy/kustom/base/manifests/local"
-  - "/config/github/ci/prow-deploy/kustom/base/manifests/test_infra"
+  - "/config/github/ci/prow-deploy/kustom/base/manifests/test_infra/current"
 excludedConfigPaths: []
 extraFiles:
   - "/config/hack/bump-prow.sh"
