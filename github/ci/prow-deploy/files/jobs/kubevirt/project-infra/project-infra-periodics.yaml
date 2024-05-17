@@ -7,7 +7,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20240506-e1212ac574
+    - image: gcr.io/k8s-prow/commenter:v20240513-a9bd71bf01
       command:
       - /ko-app/commenter
       args:
@@ -51,7 +51,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20240506-e1212ac574
+    - image: gcr.io/k8s-prow/commenter:v20240513-a9bd71bf01
       command:
       - /ko-app/commenter
       args:
@@ -80,7 +80,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20240506-e1212ac574
+    - image: gcr.io/k8s-prow/commenter:v20240513-a9bd71bf01
       command:
       - /ko-app/commenter
       args:
@@ -108,7 +108,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20240506-e1212ac574
+    - image: gcr.io/k8s-prow/commenter:v20240513-a9bd71bf01
       command:
       - /ko-app/commenter
       args:
@@ -140,7 +140,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-prow/commenter:v20240506-e1212ac574
+    - image: gcr.io/k8s-prow/commenter:v20240513-a9bd71bf01
       command:
       - /ko-app/commenter
       args:
@@ -486,7 +486,7 @@ periodics:
   spec:
     containers:
     - name: peribolos
-      image: gcr.io/k8s-prow/peribolos:v20240509-1d4d0b1e7
+      image: gcr.io/k8s-prow/peribolos:v20240515-dd5d0eeaa
       command:
       - /ko-app/peribolos
       args:
