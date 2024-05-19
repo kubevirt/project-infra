@@ -823,6 +823,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
+        - name: KUBEVIRT_NUM_NODES
+          value: "3"
         image: quay.io/kubevirtci/bootstrap:v20240308-8fac017
         name: ""
         resources:
@@ -868,6 +870,8 @@ presubmits:
           value: "false"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
+        - name: KUBEVIRT_NUM_NODES
+          value: "3"
         image: quay.io/kubevirtci/bootstrap:v20240308-8fac017
         name: ""
         resources:
@@ -1408,6 +1412,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
+        - name: KUBEVIRT_NUM_NODES
+          value: "3"
         image: quay.io/kubevirtci/bootstrap:v20240308-8fac017
         name: ""
         resources:
@@ -1616,6 +1622,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
+        - name: KUBEVIRT_NUM_NODES
+          value: "3"
         image: quay.io/kubevirtci/bootstrap:v20240308-8fac017
         name: ""
         resources:
@@ -1836,6 +1844,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
+        - name: KUBEVIRT_NUM_NODES
+          value: "3"
         image: quay.io/kubevirtci/bootstrap:v20240308-8fac017
         name: ""
         resources:
