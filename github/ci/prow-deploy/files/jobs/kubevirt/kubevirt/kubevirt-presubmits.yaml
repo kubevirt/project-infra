@@ -180,6 +180,68 @@ presubmits:
     run_before_merge: true
     annotations:
       fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: kubevirt-prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 30m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-unnested: "true"
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+      rehearsal.allowed: "true"
+    max_concurrency: 10
+    name: pull-kubevirt-e2e-net-integration-tests
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -c
+        - |
+          set -ex
+          curl -L https://github.com/kubevirt/kubevirt/pull/11410.patch | git am -3
+          export KUBEVIRT_PROVIDER=kind-ovn
+          make cluster-up
+          export KUBECONFIG=$(./cluster-up/kubeconfig.sh)
+          make cluster-sync
+          export PATH=$(pwd)/_out/cmd/virtctl:$PATH
+          kubectl patch kubevirt -n kubevirt kubevirt --type merge --patch '{"spec":{"configuration":{"developerConfiguration":{"featureGates":["PersistentIPs"]}}}}'
+          cd _ci-configs/kind-ovn/_ovnk/test/e2e
+          go test --test.timeout=1h --test.v --ginkgo.v --ginkgo.no-color --ginkgo.focus="should keep ip"
+        image: quay.io/kubevirtci/golang-legacy:v20240523-1a2c9b8
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.3"
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+  - always_run: false
+    run_before_merge: true
+    annotations:
+      fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
       testgrid-dashboards: kubevirt-presubmits
     cluster: kubevirt-prow-workloads
