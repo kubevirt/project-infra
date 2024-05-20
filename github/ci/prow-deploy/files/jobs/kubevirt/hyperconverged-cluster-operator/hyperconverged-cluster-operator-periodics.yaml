@@ -25,7 +25,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20240308-8fac017
+    - image: quay.io/kubevirtci/bootstrap:v20240517-5a9a066
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
