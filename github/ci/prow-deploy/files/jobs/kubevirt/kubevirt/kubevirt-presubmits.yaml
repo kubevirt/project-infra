@@ -610,6 +610,7 @@ presubmits:
         secret:
           secretName: kubevirtci-coveralls-token
   - always_run: true
+    optional: true
     cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
