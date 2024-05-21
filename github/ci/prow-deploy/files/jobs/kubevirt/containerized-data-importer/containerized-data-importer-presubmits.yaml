@@ -518,7 +518,7 @@ presubmits:
     skip_branches:
       - release-v\d+\.\d+
     always_run: true
-    optional: true
+    optional: false
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane
