@@ -55,6 +55,7 @@ RUN dnf install -y \
     buildah \
     qemu-user-static \
     bind-utils \
+    openssl \
     wget &&\
   dnf -y clean all
 
