@@ -81,6 +81,53 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+  - always_run: false
+    run_if_changed: "cluster-up/cluster/kind-ovn/*.sh"
+    cluster: kubevirt-prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      rehearsal.allowed: "true"
+    max_concurrency: 1
+    name: check-up-kind-ovn
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -c
+        - |
+          set -ex
+          export KUBEVIRT_PROVIDER=kind-ovn
+          make cluster-up
+        image: quay.io/kubevirtci/golang-legacy:v20240523-1a2c9b8
+        name: ""
+        resources:
+          requests:
+            memory: 15Gi
+        securityContext:
+          privileged: true
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.3"
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
   - always_run: true
     cluster: kubevirt-prow-workloads
     decorate: true
