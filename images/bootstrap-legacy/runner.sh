@@ -128,6 +128,10 @@ EOF
             exit 1
         fi
     done
+
+    sysctl fs.inotify.max_user_watches=1048576
+    sysctl fs.inotify.max_user_instances=512
+
     printf '=%.0s' {1..80}; echo
     echo "Done setting up docker in docker."
 fi
