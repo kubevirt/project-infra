@@ -149,6 +149,7 @@ periodics:
           -label:lifecycle/frozen
           -label:lifecycle/stale
           -label:lifecycle/rotten
+          is:public
       - --updated=2160h
       - --token=/etc/github/oauth
       - |-
