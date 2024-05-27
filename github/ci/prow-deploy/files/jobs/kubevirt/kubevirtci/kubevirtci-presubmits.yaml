@@ -82,7 +82,7 @@ presubmits:
           type: Directory
         name: vfio
   - always_run: false
-    run_if_changed: "cluster-up/cluster/kind-ovn/*.sh"
+    run_if_changed: cluster-up/cluster/kind-ovn/.*
     cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
