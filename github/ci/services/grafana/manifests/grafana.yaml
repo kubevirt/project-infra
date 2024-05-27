@@ -7714,7 +7714,7 @@ data:
                 "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
               },
               "editorMode": "code",
-              "expr": "avg(\nprow_job_runtime_seconds_sum{org=\"kubevirt\", repo=\"kubevirt\", state=\"success\", type=\"presubmit\", \njob_name=~\"pull-kubevirt-e2e-k8s-.*-${sig}\"}\n/\nprow_job_runtime_seconds_count{org=\"kubevirt\", repo=\"kubevirt\", state=\"success\", type=\"presubmit\", job_name=~\"pull-kubevirt-e2e-k8s-.*-${sig}\"}\n) by (job_name)\n/ 3600",
+              "expr": "avg(\nprow_job_runtime_seconds_sum{org=\"kubevirt\", repo=\"kubevirt\", state=\"success\", type=\"presubmit\", \njob_name=~\"pull-kubevirt-e2e-k8s-.*-${sig}(-migrations|-serial)?\"}\n/\nprow_job_runtime_seconds_count{org=\"kubevirt\", repo=\"kubevirt\", state=\"success\", type=\"presubmit\", job_name=~\"pull-kubevirt-e2e-k8s-.*-${sig}(-migrations|-serial)?\"}\n) by (job_name)\n/ 3600",
               "hide": false,
               "legendFormat": "__auto",
               "range": true,
@@ -7812,7 +7812,7 @@ data:
                 "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
               },
               "editorMode": "code",
-              "expr": "avg(\nprow_job_runtime_seconds_sum{org=\"kubevirt\", repo=\"kubevirt\", state=\"failure\", type=\"presubmit\", \njob_name=~\"pull-kubevirt-e2e-k8s-.*-${sig}\"}\n/\nprow_job_runtime_seconds_count{org=\"kubevirt\", repo=\"kubevirt\", state=\"failure\", type=\"presubmit\", job_name=~\"pull-kubevirt-e2e-k8s-.*-${sig}\"}\n) by (job_name)\n/ 3600",
+              "expr": "avg(\nprow_job_runtime_seconds_sum{org=\"kubevirt\", repo=\"kubevirt\", state=\"failure\", type=\"presubmit\", \njob_name=~\"pull-kubevirt-e2e-k8s-.*-${sig}(-migrations|-serial)?\"}\n/\nprow_job_runtime_seconds_count{org=\"kubevirt\", repo=\"kubevirt\", state=\"failure\", type=\"presubmit\", job_name=~\"pull-kubevirt-e2e-k8s-.*-${sig}(-migrations|-serial)?\"}\n) by (job_name)\n/ 3600",
               "legendFormat": "{{job_name}}",
               "range": true,
               "refId": "A"
@@ -7831,7 +7831,7 @@ data:
           {
             "allValue": "(sig-(compute|storage|network|operator))",
             "current": {
-              "selected": false,
+              "selected": true,
               "text": "All",
               "value": "$__all"
             },
@@ -7881,7 +7881,7 @@ data:
       "timezone": "",
       "title": "kubevirt/kubevirt e2e test runtimes",
       "uid": "gY4hNc5Iz",
-      "version": 1,
+      "version": 2,
       "weekStart": ""
     }
 ---
