@@ -243,6 +243,32 @@ presubmits:
               memory: "4Gi"
             limits:
               memory: "4Gi"
+  - name: build-release-tool-image
+    always_run: false
+    run_if_changed: "releng/release-tool/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20240517-5a9a066
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - |
+              cd releng/release-tool
+              make container-build
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+            limits:
+              memory: "4Gi"
   - name: build-kubekins-e2e-image
     always_run: false
     run_if_changed: "images/kubekins-e2e/.*"
