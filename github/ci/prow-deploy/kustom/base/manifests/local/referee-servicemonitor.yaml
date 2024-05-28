@@ -1,0 +1,15 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: referee
+  name: referee
+spec:
+  endpoints:
+  - interval: 30s
+    port: default
+    scheme: http
+  selector:
+    matchLabels:
+      app: referee
