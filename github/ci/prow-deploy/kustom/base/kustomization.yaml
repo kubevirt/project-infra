@@ -18,6 +18,7 @@ resources:
   - manifests/local/prow-phased-service.yaml
   - manifests/local/referee-deployment.yaml
   - manifests/local/referee-service.yaml
+  - manifests/local/referee-servicemonitor.yaml
   - manifests/local/release-blocker_deployment.yaml
   - manifests/local/release-blocker_service.yaml
   - manifests/local/statusreconciler_rbac.yaml
