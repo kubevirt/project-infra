@@ -1,12 +1,13 @@
-FROM fedora:32
+FROM fedora:39
 
 RUN dnf install -y \
 	git \
 	gnupg2 \
+	gcc \
 	&& dnf clean all
 
 
-ENV GIMME_GO_VERSION=1.14.4
+ENV GIMME_GO_VERSION=1.21.9
 
 RUN mkdir -p /gimme && curl -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme | HOME=/gimme bash >> /etc/profile.d/gimme.sh
 
