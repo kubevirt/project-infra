@@ -1,8 +1,10 @@
-FROM quay.io/kubevirtci/bootstrap:v20231219-bf5e580 as builder
+FROM quay.io/kubevirtci/golang:v20240517-5a9a066 as builder
+
+ENV GIMME_GO_VERSION=1.22.3
 
 WORKDIR /workspace
 
-RUN dnf install -y gpgme-devel device-mapper-devel btrfs-progs-devel golang
+RUN dnf install -y gpgme-devel device-mapper-devel btrfs-progs-devel
 
 ENV GOPROXY=https://proxy.golang.org
 
@@ -10,13 +12,13 @@ COPY go.mod go.mod
 
 COPY go.sum go.sum
 
-RUN go mod download
+RUN /usr/local/bin/runner.sh /bin/sh -c "go mod download"
 
 COPY ./ ./
 
-RUN go build .
+RUN /usr/local/bin/runner.sh /bin/sh -c "go build ."
 
-FROM quay.io/kubevirtci/bootstrap:v20231219-bf5e580
+FROM quay.io/kubevirtci/bootstrap:v20240517-5a9a066
 
 WORKDIR /
 

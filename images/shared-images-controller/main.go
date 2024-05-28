@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/containers/podman/v4/pkg/bindings"
-	"github.com/containers/podman/v4/pkg/bindings/images"
+	"github.com/containers/podman/v5/pkg/bindings"
+	"github.com/containers/podman/v5/pkg/bindings/images"
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
 	"kubevirt.io/project-infra/robots/pkg/querier"
