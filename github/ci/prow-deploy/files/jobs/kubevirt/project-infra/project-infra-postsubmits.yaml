@@ -104,7 +104,7 @@ postsubmits:
               - "-c"
               - |
                 cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                cd releng/release-tool && make container-publish
+                cd releng/release-tool && make container-push
             resources:
               requests:
                 memory: "8Gi"
