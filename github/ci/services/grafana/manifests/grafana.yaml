@@ -7980,6 +7980,7 @@ data:
             "y": 0
           },
           "id": 2,
+          "interval": "15m",
           "options": {
             "legend": {
               "calcs": [],
@@ -7999,13 +8000,13 @@ data:
                 "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
               },
               "editorMode": "code",
-              "expr": "rate(referee_retests_total[1h])",
-              "legendFormat": "retest rate",
+              "expr": "increase(referee_retests_total[1h])",
+              "legendFormat": "retests/h",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "rate retests / h",
+          "title": "all: retests/h",
           "type": "timeseries"
         },
         {
@@ -8072,6 +8073,7 @@ data:
             "y": 0
           },
           "id": 4,
+          "interval": "15m",
           "options": {
             "legend": {
               "calcs": [],
@@ -8091,13 +8093,13 @@ data:
                 "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
               },
               "editorMode": "code",
-              "expr": "rate(referee_retests_kubevirt_kubevirt_total[1h])",
-              "legendFormat": "retest rate",
+              "expr": "increase(referee_retests_kubevirt_kubevirt_total[1h])",
+              "legendFormat": "retests/h",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "kubevirt/kubevirt: retest rate / h",
+          "title": "k/kubevirt: retests/h",
           "type": "timeseries"
         },
         {
@@ -8212,7 +8214,7 @@ data:
               "refId": "A"
             }
           ],
-          "title": "PRs with/without retests",
+          "title": "k/kubevirt: PRs with/without retests",
           "type": "timeseries"
         },
         {
@@ -8400,14 +8402,14 @@ data:
         "list": []
       },
       "time": {
-        "from": "now-12h",
+        "from": "now-24h",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "",
       "title": "referee - retests",
       "uid": "uAoSeksSk",
-      "version": 3,
+      "version": 4,
       "weekStart": ""
     }
 ---
