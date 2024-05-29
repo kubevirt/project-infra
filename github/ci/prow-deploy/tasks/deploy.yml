@@ -35,6 +35,14 @@
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
 
+- name: deploy monitoring crd in testing environment
+  when: deploy_environment == "kubevirtci-testing"
+  shell: |
+    kubectl apply -f '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/resources/monitoring.coreos.com/monitoring.coreos.com_servicemonitors.yaml'
+  changed_when: false
+  environment:
+    KUBECONFIG: '{{ kubeconfig_path }}'
+
 - name: Launch deployment
   shell: |
     # for now cant execute "kubectl apply --server-side" reliably on
