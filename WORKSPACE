@@ -81,9 +81,9 @@ container_pull(
 
 container_pull(
     name = "release-tool-base",
-    registry = "index.docker.io",
+    registry = "quay.io",
     repository = "kubevirtci/release-tool-base",
-    tag = "v20210120-b86882c9314933ba1a0c77965ed9d54a747f7957",
+    tag = "v20240528-e82f26ab92a95a70da09e78f76e241b5621b4a79",
 )
 
 load(
