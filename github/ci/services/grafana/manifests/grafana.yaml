@@ -8214,7 +8214,7 @@ data:
               "refId": "A"
             }
           ],
-          "title": "k/kubevirt: PRs with/without retests",
+          "title": "kubevirt: PRs with/without retests",
           "type": "timeseries"
         },
         {
