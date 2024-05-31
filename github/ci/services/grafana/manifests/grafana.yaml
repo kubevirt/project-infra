@@ -8099,7 +8099,7 @@ data:
               "refId": "A"
             }
           ],
-          "title": "k/kubevirt: retests/h",
+          "title": "kubevirt: retests/h",
           "type": "timeseries"
         },
         {
