@@ -507,7 +507,7 @@ presets:
     mountPath: /var/lib/shared-images
     readOnly: true
 - labels:
-    preset-docker-mirror: "false"
+    preset-docker-mirror: "true"
   volumes:
   - name: docker-config
     configMap:
@@ -517,7 +517,7 @@ presets:
     mountPath: /etc/default
     readOnly: true
 - labels:
-    preset-docker-mirror-proxy: "false"
+    preset-docker-mirror-proxy: "true"
   env:
   - name: CA_CERT_FILE
     value: /etc/docker-mirror-proxy/ca.crt
