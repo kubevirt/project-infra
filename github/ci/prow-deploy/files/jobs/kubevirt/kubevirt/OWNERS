@@ -51,6 +51,29 @@ filters:
     - sig/test
     reviewers:
     - kbidarkar
+  .golangci.yml:
+    approvers:
+    - acardace
+    - alonakaplan
+    - dhiller
+    - eddev
+    - enp0s3
+    - iholder101
+    - jean-edouard
+    - kbidarkar
+    - phoracek
+    - xpivarc
+    reviewers:
+    - acardace
+    - alonakaplan
+    - dhiller
+    - eddev
+    - enp0s3
+    - iholder101
+    - jean-edouard
+    - kbidarkar
+    - phoracek
+    - xpivarc
   cluster-up/.*|BUILD.bazel|WORKSPACE|.bazel.*|.fossa.yml|cluster-up-sha.txt:
     approvers:
     - brianmcarey
