@@ -507,7 +507,7 @@ presets:
     mountPath: /var/lib/shared-images
     readOnly: true
 - labels:
-    preset-docker-mirror: "true"
+    preset-docker-mirror: "false"
   volumes:
   - name: docker-config
     configMap:
