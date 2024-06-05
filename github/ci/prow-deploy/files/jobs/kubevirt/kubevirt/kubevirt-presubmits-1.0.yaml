@@ -596,6 +596,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-goveralls-1.0
     optional: true
+    skip_report: true
     spec:
       containers:
       - command:

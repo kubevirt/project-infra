@@ -518,6 +518,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-goveralls-1.1
     optional: true
+    skip_report: true
     spec:
       containers:
       - command:
