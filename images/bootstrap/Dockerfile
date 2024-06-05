@@ -105,9 +105,6 @@ COPY containers.conf /etc/containers/containers.conf
 COPY podman.json /etc/containers/networks/podman.json
 
 RUN chmod 644 /etc/containers/containers.conf
-
-ENV _CONTAINERS_USERNS_CONFIGURED=""
-
 #
 # END: PODMAN IN CONTAINER SETUP
 #
