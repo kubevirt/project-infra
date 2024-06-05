@@ -150,6 +150,8 @@ func main() {
 		if err != nil {
 			log.WithError(err).Errorf("Failed to fetch image names")
 		}
+		// Allow time for currently running jobs with old images to complete successfully before deleting old images
+		time.Sleep(period * time.Hour)
 		err = cleanOldImages(connText, tag)
 		if err != nil {
 			log.WithError(err).Errorf("Failure occured when deleting old images")
