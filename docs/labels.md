@@ -84,7 +84,6 @@ larger set of contributors to apply/remove them.
 | <a id="triage/needs-information" href="#triage/needs-information">`triage/needs-information`</a> | Indicates an issue needs more information in order to work on it.| anyone | |
 | <a id="triage/not-reproducible" href="#triage/not-reproducible">`triage/not-reproducible`</a> | Indicates an issue can not be reproduced as described.| anyone | |
 | <a id="triage/unresolved" href="#triage/unresolved">`triage/unresolved`</a> | Indicates an issue that can not or will not be resolved.| anyone | |
-| <a id="wg/ipam" href="#wg/ipam">`wg/ipam`</a> | Please see https://github.com/kubevirt/community/blob/main/sig-network/charter.md| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 
 ## Labels that apply to all repos, only for issues
 
