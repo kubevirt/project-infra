@@ -784,6 +784,40 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
+  cluster: s390x-prow-virtual
+  cron: 40 5 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 2h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-unnested: "true"
+  max_concurrency: 10
+  name: periodic-kubevirt-unit-test-s390x
+  reporter_config:
+    slack:
+      job_states_to_report: []
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - make go-test
+      image: quay.io/kubevirtci/golang:v20240306-cfcbc5c
+      name: ""
+      resources:
+        requests:
+          memory: 8Gi
+      securityContext:
+        privileged: true
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
   cluster: kubevirt-prow-control-plane
   cron: 40 4 * * *
   decorate: true
