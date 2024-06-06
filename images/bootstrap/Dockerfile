@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Includes basic workspace setup, with gcloud and a bootstrap runner
-FROM fedora:39
+FROM fedora:40
 
 WORKDIR /workspace
 RUN mkdir -p /workspace
@@ -105,9 +105,6 @@ COPY containers.conf /etc/containers/containers.conf
 COPY podman.json /etc/containers/networks/podman.json
 
 RUN chmod 644 /etc/containers/containers.conf
-
-ENV _CONTAINERS_USERNS_CONFIGURED=""
-
 #
 # END: PODMAN IN CONTAINER SETUP
 #
