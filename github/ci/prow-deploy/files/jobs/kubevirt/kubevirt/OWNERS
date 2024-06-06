@@ -85,4 +85,13 @@ filters:
     - brianmcarey
     - enp0s3
     - xpivarc
+  docs/metrics.md:
+    approvers:
+    - sradco
+    labels:
+    - sig/observability
+    reviewers:
+    - assafad
+    - avlitman
+    - machadovilaca
 options: {}
