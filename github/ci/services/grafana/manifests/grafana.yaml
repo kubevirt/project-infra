@@ -8412,6 +8412,298 @@ data:
       "version": 4,
       "weekStart": ""
     }
+  e2e-jobs-failures-h.json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            },
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 21,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line+area"
+                }
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "pr job history",
+                  "url": "https://prow.ci.kubevirt.io/job-history/gs/kubevirt-prow/pr-logs/directory/${__field.labels.job_name}"
+                },
+                {
+                  "targetBlank": true,
+                  "title": "periodics job history",
+                  "url": "https://prow.ci.kubevirt.io/job-history/gs/kubevirt-prow/logs/${__field.labels.job_name}"
+                }
+              ],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "super-light-yellow",
+                    "value": 50
+                  },
+                  {
+                    "color": "light-yellow",
+                    "value": 100
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 2,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+              },
+              "editorMode": "code",
+              "expr": "increase(prowjobs{org=\"kubevirt\", state=\"failure\"}[1h])",
+              "legendFormat": "{{job_name}}: failed/h",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(prowjobs{org=\"kubevirt\", state=\"failure\"}[1h]))",
+              "hide": false,
+              "legendFormat": "total: failed/h",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "e2e job failures/h",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "line+area"
+                }
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "pr job history",
+                  "url": "https://prow.ci.kubevirt.io/job-history/gs/kubevirt-prow/pr-logs/directory/${__field.labels.job_name}"
+                },
+                {
+                  "targetBlank": true,
+                  "title": "periodics job history",
+                  "url": "https://prow.ci.kubevirt.io/job-history/gs/kubevirt-prow/logs/${__field.labels.job_name}"
+                }
+              ],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "super-light-yellow",
+                    "value": 50
+                  },
+                  {
+                    "color": "light-yellow",
+                    "value": 100
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 24,
+            "x": 0,
+            "y": 11
+          },
+          "id": 3,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+              },
+              "editorMode": "code",
+              "expr": "increase(prowjobs{org=\"kubevirt\", state=\"aborted\"}[1h])",
+              "legendFormat": "{{job_name}}: aborted/h",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(prowjobs{org=\"kubevirt\", state=\"aborted\"}[1h]))",
+              "hide": false,
+              "legendFormat": "total: aborted/h",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "e2e job abortions/h",
+          "type": "timeseries"
+        }
+      ],
+      "refresh": "15m",
+      "schemaVersion": 37,
+      "style": "dark",
+      "tags": [],
+      "templating": {
+        "list": []
+      },
+      "time": {
+        "from": "now-2d",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "",
+      "title": "e2e job failures / h",
+      "uid": "_6XBEfyIk",
+      "version": 8,
+      "weekStart": ""
+    }
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
@@ -8448,6 +8740,18 @@ spec:
   configMapRef:
     name: grafana-dashboards-default
     key: e2e-jobs-overview.json
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: e2e-jobs-failures-h-dashboard
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  configMapRef:
+    name: grafana-dashboards-default
+    key: e2e-jobs-failures-h.json
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
