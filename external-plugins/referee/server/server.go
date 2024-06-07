@@ -117,13 +117,55 @@ func (s *Server) handleEvent(eventType, eventGUID string, payload []byte) error 
 		if err := json.Unmarshal(payload, &ic); err != nil {
 			return err
 		}
-		go func() {
+		go func(ic github.IssueCommentEvent) {
 			if err := s.handlePullRequestComment(ic); err != nil {
 				s.Log.WithError(err).WithFields(l.Data).Errorf("%s failed.", PluginName)
 			}
-		}()
+		}(ic)
+	//https://developer.github.com/webhooks/event-payloads/#pull_request
+	case "pull_request":
+		var pr github.PullRequestEvent
+		if err := json.Unmarshal(payload, &pr); err != nil {
+			return err
+		}
+		go func(pr github.PullRequestEvent) {
+			if err := s.handlePREvent(pr); err != nil {
+				s.Log.WithError(err).WithFields(l.Data).Errorf("%s failed.", PluginName)
+			}
+		}(pr)
 	default:
 		s.Log.WithFields(l.Data).Debugf("skipping event of type %q", eventType)
+	}
+	return nil
+}
+
+func (s *Server) handlePREvent(pr github.PullRequestEvent) error {
+	org := pr.Repo.Owner.Login
+	repo := pr.Repo.Name
+	num := pr.Number
+	action := pr.Action
+
+	pullRequestURL := fmt.Sprintf("https://github.com/%s/%s/pull/%d", org, repo, num)
+	log := s.Log.WithField("pull_request_url", pullRequestURL)
+
+	switch action {
+	case github.PullRequestActionOpened:
+	case github.PullRequestActionReopened:
+		// update metrics for (re)opened PRs
+		prTimeLineForLastCommit, err := s.GHGraphQLClient.FetchPRTimeLineForLastCommit(org, repo, num)
+		if err != nil {
+			return fmt.Errorf("%s - failed to fetch number of retest comments: %w", pullRequestURL, err)
+		}
+		metrics.SetForPullRequest(org, repo, num, prTimeLineForLastCommit.NumberOfRetestComments)
+		log.Infof("updated metrics on reopened PR")
+		break
+	case github.PullRequestActionClosed:
+		// PRs that have been merged or closed are not of interest for metrics
+		metrics.DeleteForPullRequest(org, repo, num)
+		break
+	default:
+		log.Infof("skipping pull_request event action %s", action)
+		return nil
 	}
 	return nil
 }
