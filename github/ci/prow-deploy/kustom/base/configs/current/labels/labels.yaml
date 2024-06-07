@@ -241,12 +241,6 @@ default:
           color: c5def5
         - name: sig-virtualization
           color: c5def5
-    - name: wg/ipam
-      description: "Please see https://github.com/kubevirt/community/blob/main/sig-network/charter.md"
-      color: c5def5
-      target: both
-      prowPlugin: label
-      addedBy: anyone
     - name: sig/code-quality
       color: ce23cf
       target: both
