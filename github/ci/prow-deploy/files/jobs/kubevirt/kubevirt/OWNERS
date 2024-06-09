@@ -87,6 +87,7 @@ filters:
     - xpivarc
   docs/metrics.md:
     approvers:
+    - machadovilaca
     - sradco
     labels:
     - sig/observability
