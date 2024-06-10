@@ -24,6 +24,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/prometheus/client_golang/prometheus"
+	"slices"
 	"sync"
 	"sync/atomic"
 )
@@ -51,17 +52,26 @@ func (c fakeCounter) Inc() {
 }
 
 type fakeGaugeVecWrapper struct {
-	Values []string
-	Value  float64
+	LabelValues []string
+	Value       float64
 }
 
 func newFakeGaugeVecWrapper() *fakeGaugeVecWrapper {
 	return &fakeGaugeVecWrapper{}
 }
 
-func (gv *fakeGaugeVecWrapper) SetWithLabelValues(value float64, values ...string) {
-	gv.Values = values
+func (gv *fakeGaugeVecWrapper) SetWithLabelValues(value float64, labelValues ...string) {
+	gv.LabelValues = labelValues
 	gv.Value = value
+}
+
+func (gv *fakeGaugeVecWrapper) DeleteLabelValues(labelValues ...string) bool {
+	if !slices.Equal(labelValues, gv.LabelValues) {
+		panic("not implemented")
+	}
+	gv.LabelValues = nil
+	gv.Value = 0
+	return true
 }
 
 var _ = Describe("retests", func() {
@@ -104,8 +114,15 @@ var _ = Describe("retests", func() {
 			SetForPullRequest("myorg", "myrepo", 1737, 42)
 			actual := gaugeVecs[fmt.Sprintf(retestsPerPRGaugeName, "myorg", "myrepo")].(*fakeGaugeVecWrapper)
 			Expect(actual).ToNot(BeNil())
-			Expect(actual.Values).To(BeEquivalentTo([]string{"1737"}))
+			Expect(actual.LabelValues).To(BeEquivalentTo([]string{"1737"}))
 			Expect(actual.Value).To(BeEquivalentTo(float64(42)))
+		})
+		It("pr gauge unset", func() {
+			SetForPullRequest("myorg", "myrepo", 1737, 42)
+			DeleteForPullRequest("myorg", "myrepo", 1737)
+			actual := gaugeVecs[fmt.Sprintf(retestsPerPRGaugeName, "myorg", "myrepo")].(*fakeGaugeVecWrapper)
+			Expect(actual).ToNot(BeNil())
+			Expect(actual.LabelValues).To(BeEmpty())
 		})
 		AfterEach(func() {
 			createCounter = defaultCreateCounterFunc

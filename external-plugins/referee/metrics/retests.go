@@ -42,6 +42,7 @@ type counter interface {
 
 type gaugeVec interface {
 	SetWithLabelValues(value float64, values ...string)
+	DeleteLabelValues(labelValues ...string) bool
 }
 
 var (
@@ -81,6 +82,7 @@ var (
 
 type gaugeVecWrapper interface {
 	SetWithLabelValues(value float64, values ...string)
+	DeleteLabelValues(labelValues ...string) bool
 }
 type simpleGaugeVecWrapper struct {
 	gaugeVec *prometheus.GaugeVec
@@ -90,8 +92,12 @@ func newGaugeVecWrapper(v *prometheus.GaugeVec) gaugeVecWrapper {
 	return simpleGaugeVecWrapper{gaugeVec: v}
 }
 
-func (w simpleGaugeVecWrapper) SetWithLabelValues(value float64, values ...string) {
-	w.gaugeVec.WithLabelValues(values...).Set(value)
+func (w simpleGaugeVecWrapper) SetWithLabelValues(value float64, labelValues ...string) {
+	w.gaugeVec.WithLabelValues(labelValues...).Set(value)
+}
+
+func (w simpleGaugeVecWrapper) DeleteLabelValues(labelValues ...string) bool {
+	return w.gaugeVec.DeleteLabelValues(labelValues...)
 }
 
 func reset() {
@@ -123,6 +129,18 @@ func SetForPullRequest(org, repo string, pr, value int) {
 		retestsPerPullRequest[retestsPerPRKey] = createGaugeVec(retestsPerPRKey, fmt.Sprintf("The number of retests per PR since last commit in %s/%s encountered so far", org, repo))
 	}
 	retestsPerPullRequest[retestsPerPRKey].SetWithLabelValues(float64(value), strconv.Itoa(pr))
+}
+
+// DeleteForPullRequest removes the number of retests for a pull request since last commit from the metrics.
+func DeleteForPullRequest(org, repo string, pr int) {
+	retestsPerPRKey := fmt.Sprintf(retestsPerPRGaugeName, org, repo)
+	retestsPerPullRequestMutex.Lock()
+	defer retestsPerPullRequestMutex.Unlock()
+	_, found := retestsPerPullRequest[retestsPerPRKey]
+	if !found {
+		retestsPerPullRequest[retestsPerPRKey] = createGaugeVec(retestsPerPRKey, fmt.Sprintf("The number of retests per PR since last commit in %s/%s encountered so far", org, repo))
+	}
+	retestsPerPullRequest[retestsPerPRKey].DeleteLabelValues(strconv.Itoa(pr))
 }
 
 // IncForRepository increases the number of retests encountered inside pull requests for a repository.
