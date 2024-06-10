@@ -67,8 +67,7 @@ func (gv *fakeGaugeVecWrapper) SetWithLabelValues(value float64, labelValues ...
 
 func (gv *fakeGaugeVecWrapper) DeleteLabelValues(labelValues ...string) bool {
 	if !slices.Equal(labelValues, gv.LabelValues) {
-		//TODO implement me
-		panic("implement me")
+		panic("not implemented")
 	}
 	gv.LabelValues = nil
 	gv.Value = 0
