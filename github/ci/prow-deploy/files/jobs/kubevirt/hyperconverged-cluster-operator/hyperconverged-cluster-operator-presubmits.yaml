@@ -22,7 +22,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20240606-447035f
+        - image: quay.io/kubevirtci/golang:v20240607-febc467
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -61,7 +61,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20240606-447035f
+        - image: quay.io/kubevirtci/golang:v20240607-febc467
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -92,7 +92,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20240606-447035f
+      - image: quay.io/kubevirtci/bootstrap:v20240607-febc467
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
