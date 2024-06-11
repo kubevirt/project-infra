@@ -538,6 +538,35 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
+- name: periodic-project-infra-check-docker-proxy-ca-cert
+  cron: "25 8 * * 5"
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-docker-mirror-proxy: "true"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    workdir: true
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/bootstrap:v20240607-febc467
+      command: ["/bin/sh"]
+      args:
+      - "-ce"
+      - |
+        dnf install -y openssl
+        hack/check-docker-proxy-ca-cert.sh
+      resources:
+        requests:
+          memory: "200Mi"
 - name: periodic-kubevirt-presubmit-requirer
   cron: "0 1 1 * *"
   max_concurrency: 1
