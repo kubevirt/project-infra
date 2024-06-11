@@ -17,6 +17,8 @@ if [ $? == 0 ]
 then
     echo "The docker-mirror-proxy CA certificate will expire within the next 90 days"
     echo "Please plan a maintenance window to renew this certificate"
+    echo "See the following for more information:"
+    echo "https://github.com/kubevirt/project-infra/blob/main/docs/how-to-renew-docker-mirror-proxy-ca-cert.md"
     exit 1
 else
     echo "Certificate check passed. The certificate will not expire in the next 90 days"
