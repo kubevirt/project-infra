@@ -8194,7 +8194,7 @@ data:
                 "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
               },
               "editorMode": "code",
-              "expr": "count(referee_retests_kubevirt_kubevirt_pr_since_last_commit==0)",
+              "expr": "count(sum by (pull_request) (referee_retests_kubevirt_kubevirt_pr_since_last_commit)==0)",
               "hide": false,
               "legendFormat": "PRs with 0 retests",
               "range": true,
@@ -8207,7 +8207,7 @@ data:
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "count(referee_retests_kubevirt_kubevirt_pr_since_last_commit>0)",
+              "expr": "count(sum by (pull_request) (referee_retests_kubevirt_kubevirt_pr_since_last_commit)>0)",
               "instant": false,
               "legendFormat": "PRs with retests",
               "range": true,
@@ -8292,7 +8292,7 @@ data:
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "referee_retests_kubevirt_kubevirt_pr_since_last_commit>2",
+              "expr": "sum by (pull_request) (referee_retests_kubevirt_kubevirt_pr_since_last_commit) >2",
               "legendFormat": "PR #{{pull_request}}",
               "range": true,
               "refId": "A"
@@ -8383,7 +8383,7 @@ data:
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sort_desc(last_over_time(referee_retests_kubevirt_kubevirt_pr_since_last_commit[1h]))",
+              "expr": "sum by (pull_request) (referee_retests_kubevirt_kubevirt_pr_since_last_commit)",
               "legendFormat": "PR #{{pull_request}}",
               "range": true,
               "refId": "A"
@@ -8409,7 +8409,7 @@ data:
       "timezone": "",
       "title": "referee - retests",
       "uid": "uAoSeksSk",
-      "version": 4,
+      "version": 7,
       "weekStart": ""
     }
   e2e-jobs-failures-h.json: |
