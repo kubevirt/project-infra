@@ -52,6 +52,7 @@ larger set of contributors to apply/remove them.
 | <a id="kind/bug" href="#kind/bug">`kind/bug`</a> | | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="kind/deprecation" href="#kind/deprecation">`kind/deprecation`</a> | Indicates the PR/issue deprecates a feature that will be removed in a subsequent release.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="kind/enhancement" href="#kind/enhancement">`kind/enhancement`</a> | | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
+| <a id="kind/failing-test" href="#kind/failing-test">`kind/failing-test`</a> | Categorizes issue or PR as related to a failing test.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="kind/flake" href="#kind/flake">`kind/flake`</a> | Categorizes issue or PR as related to a flaky test.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="kind/proposal" href="#kind/proposal">`kind/proposal`</a> | | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="kind/question" href="#kind/question">`kind/question`</a> | | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
@@ -60,6 +61,7 @@ larger set of contributors to apply/remove them.
 | <a id="lifecycle/frozen" href="#lifecycle/frozen">`lifecycle/frozen`</a> | Indicates that an issue or PR should not be auto-closed due to staleness.| prow |  [lifecycle](https://prow.ci.kubevirt.io/command-help#lifecycle) |
 | <a id="lifecycle/rotten" href="#lifecycle/rotten">`lifecycle/rotten`</a> | Denotes an issue or PR that has aged beyond stale and will be auto-closed.| prow |  [lifecycle](https://prow.ci.kubevirt.io/command-help#lifecycle) |
 | <a id="lifecycle/stale" href="#lifecycle/stale">`lifecycle/stale`</a> | Denotes an issue or PR has remained open with no activity and has become stale.| prow |  [lifecycle](https://prow.ci.kubevirt.io/command-help#lifecycle) |
+| <a id="priority/critical-urgent" href="#priority/critical-urgent">`priority/critical-urgent`</a> | Categorizes an issue or pull request as critical and of urgent priority.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/api" href="#sig/api">`sig/api`</a> | Denotes an issue or PR that relates to changes in api.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/buildsystem" href="#sig/buildsystem">`sig/buildsystem`</a> | Denotes an issue or PR that relates to changes in the build system.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/code-quality" href="#sig/code-quality">`sig/code-quality`</a> | | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
@@ -137,7 +139,6 @@ larger set of contributors to apply/remove them.
 | <a id="for/users" href="#for/users">`for/users`</a> | |  | |
 | <a id="needs/documentation" href="#needs/documentation">`needs/documentation`</a> | |  | |
 | <a id="priority/backlog" href="#priority/backlog">`priority/backlog`</a> | |  | |
-| <a id="priority/critical-urgent" href="#priority/critical-urgent">`priority/critical-urgent`</a> | |  | |
 | <a id="release-blocker" href="#release-blocker">`release-blocker`</a> | Indicates that a PR or issue is blocking a release from a specific branch.| prow |  [release-blocker](https://prow.ci.kubevirt.io/command-help#release-blocker) |
 | <a id="research-needed" href="#research-needed">`research-needed`</a> | |  | |
 | <a id="topic/api" href="#topic/api">`topic/api`</a> | |  | |

@@ -223,6 +223,10 @@ tide:
         repos:
           kubernetes-nmstate:
             skip-unknown-contexts: true
+  priority:
+  - labels: [ "kind/flake", "priority/critical-urgent" ]
+  - labels: [ "kind/failing-test", "priority/critical-urgent" ]
+  - labels: [ "kind/bug", "priority/critical-urgent" ]
 
 slack_reporter_configs:
   '*':
