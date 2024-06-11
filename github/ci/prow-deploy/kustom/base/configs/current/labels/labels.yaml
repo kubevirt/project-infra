@@ -102,6 +102,12 @@ default:
       addedBy: anyone
       prowPlugin: label
       description: Categorizes issue or PR as related to a flaky test.
+    - name: kind/failing-test
+      color: F70001
+      target: both
+      addedBy: anyone
+      prowPlugin: label
+      description: Categorizes issue or PR as related to a failing test.
     - name: kind/proposal
       color: bfd4f2
       target: both
@@ -336,6 +342,12 @@ default:
       target: issues
       prowPlugin: help
       addedBy: prow
+    - name: priority/critical-urgent
+      addedBy: anyone
+      color: d93f0b
+      description: Categorizes an issue or pull request as critical and of urgent priority.
+      prowPlugin: label
+      target: both
 repos:
   kubevirt/kubevirt:
     labels:
@@ -344,9 +356,6 @@ repos:
         target: both
       - name: priority/backlog
         color: fbca04
-        target: both
-      - name: priority/critical-urgent
-        color: d93f0b
         target: both
       - name: research-needed
         color: fef2c0
