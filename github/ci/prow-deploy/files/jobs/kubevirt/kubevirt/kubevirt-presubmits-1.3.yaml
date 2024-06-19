@@ -61,7 +61,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-1.3
     cluster: kubevirt-prow-workloads
@@ -170,7 +170,7 @@ presubmits:
           path: /var/log/audit
           type: Directory
         name: audit
-  - always_run: false
+  - always_run: true
     annotations:
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
     branches:
@@ -725,7 +725,7 @@ presubmits:
             memory: 8Gi
         securityContext:
           privileged: true
-  - always_run: false
+  - always_run: true
     branches:
     - release-1.3
     cluster: kubevirt-prow-workloads
@@ -1287,7 +1287,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-1.3
     cluster: kubevirt-prow-workloads
@@ -1330,7 +1330,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-1.3
     cluster: kubevirt-prow-workloads
@@ -1369,7 +1369,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-1.3
     cluster: kubevirt-prow-workloads
@@ -1412,7 +1412,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-1.3
     cluster: kubevirt-prow-workloads
@@ -1484,7 +1484,7 @@ presubmits:
             memory: 4Gi
         securityContext:
           privileged: true
-  - always_run: false
+  - always_run: true
     branches:
     - release-1.3
     cluster: kubevirt-prow-workloads
@@ -1527,7 +1527,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-1.3
     cluster: kubevirt-prow-workloads
@@ -1566,7 +1566,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-1.3
     cluster: kubevirt-prow-workloads
@@ -1652,7 +1652,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-1.3
     cluster: kubevirt-prow-workloads
