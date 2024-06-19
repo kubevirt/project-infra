@@ -554,7 +554,7 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  cluster: kubevirt-prow-control-plane
+  cluster: kubevirt-prow-workloads
   spec:
     containers:
     - image: quay.io/kubevirtci/bootstrap:v20240607-febc467
