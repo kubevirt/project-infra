@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/bootstrap:v20230502-bfaa042
+FROM quay.io/kubevirtci/bootstrap:v20240607-febc467
 
 RUN dnf install -y \
     cloud-utils \
@@ -7,6 +7,7 @@ RUN dnf install -y \
     libvirt \
     qemu-img \
     qemu-system-aarch64 \
+    qemu-system-s390x \
     genisoimage \
     virt-install && \
     dnf clean all && \
