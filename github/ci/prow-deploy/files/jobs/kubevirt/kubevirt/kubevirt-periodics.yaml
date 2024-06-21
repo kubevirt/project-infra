@@ -882,7 +882,7 @@ periodics:
       - /bin/sh
       - -c
       - make go-test
-      image: quay.io/kubevirtci/golang:v20240306-cfcbc5c
+      image: quay.io/kubevirtci/golang:v20240607-febc467
       name: ""
       resources:
         requests:
