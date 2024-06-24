@@ -106,7 +106,7 @@ presubmits:
         type: bare-metal-external
       priorityClassName: windows
   - always_run: false
-    optional: true
+    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
