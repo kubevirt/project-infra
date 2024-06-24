@@ -135,6 +135,10 @@ mkdir "${HOME}/.docker" && ln -s "${REGISTRY_AUTH_FILE}" "${HOME}/.docker/config
 SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct || true)
 export SOURCE_DATE_EPOCH
 
+# Podman v5 has a deprecation warning for cgroups v1
+# Ignore warning to reduce noise in job logs
+export PODMAN_IGNORE_CGROUPSV1_WARNING=true
+
 # run setup mixins
 for file in $(find /etc/setup.mixin.d/ -maxdepth 1 -name '*.sh' -print -quit); do source $file; done
 
