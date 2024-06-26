@@ -254,6 +254,10 @@ orgs:
         allow_rebase_merge: false
         allow_squash_merge: false
         default_branch: main
+      ipam-extensions:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        default_branch: main
       kubevirt:
         allow_rebase_merge: false
         allow_squash_merge: false
@@ -500,6 +504,14 @@ orgs:
         privacy: secret
         repos:
           kubesecondarydns: admin
+      ipam-extensions:
+        description: ""
+        maintainers:
+          - maiqueb
+          - qinqon
+        privacy: secret
+        repos:
+          ipam-extensions: admin
       kubevirt_maintainers:
         description: kubevirt/kubevirt only maintainers
         maintainers:

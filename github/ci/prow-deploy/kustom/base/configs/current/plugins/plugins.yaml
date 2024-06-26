@@ -136,6 +136,12 @@ plugins:
     - owners-label
     - trigger
 
+  kubevirt/ipam-extensions:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+
   kubevirt/common-instancetypes:
     plugins:
     - approve
@@ -569,6 +575,7 @@ triggers:
   - kubevirt/demo
   - kubevirt/cluster-network-addons-operator
   - kubevirt/kubesecondarydns
+  - kubevirt/ipam-extensions
   - kubevirt/node-maintenance-operator
   - kubevirt/ansible-kubevirt-modules
   - kubevirt/hyperconverged-cluster-operator
@@ -616,6 +623,7 @@ approve:
   - kubevirt/demo
   - kubevirt/cluster-network-addons-operator
   - kubevirt/kubesecondarydns
+  - kubevirt/ipam-extensions
   - nmstate/kubernetes-nmstate
   - k8snetworkplumbingwg/kubemacpool
   - kubevirt/kubectl-virt-plugin
@@ -674,6 +682,7 @@ lgtm:
   - kubevirt/demo
   - kubevirt/cluster-network-addons-operator
   - kubevirt/kubesecondarydns
+  - kubevirt/ipam-extensions
   - nmstate/kubernetes-nmstate
   - k8snetworkplumbingwg/kubemacpool
   - kubevirt/kubectl-virt-plugin
