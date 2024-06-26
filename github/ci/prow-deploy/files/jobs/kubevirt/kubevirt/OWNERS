@@ -74,7 +74,7 @@ filters:
     - kbidarkar
     - phoracek
     - xpivarc
-  cluster-up/.*|BUILD.bazel|WORKSPACE|.bazel.*|.fossa.yml|cluster-up-sha.txt:
+  cluster-up/.*|WORKSPACE|.bazel.*|.fossa.yml|cluster-up-sha.txt:
     approvers:
     - brianmcarey
     - dhiller
