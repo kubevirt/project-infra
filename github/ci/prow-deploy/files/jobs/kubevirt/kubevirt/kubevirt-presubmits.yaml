@@ -855,6 +855,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_NUM_NODES
           value: "3"
+        - name: FEATURE_GATES
+          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20240607-febc467
         name: ""
         resources:
@@ -947,6 +949,8 @@ presubmits:
           value: rook-ceph-default
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
+        - name: FEATURE_GATES
+          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20240607-febc467
         name: ""
         resources:
@@ -1787,6 +1791,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
+        - name: FEATURE_GATES
+          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20240607-febc467
         name: ""
         resources:
@@ -1876,6 +1882,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_NUM_NODES
           value: "3"
+        - name: FEATURE_GATES
+          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20240607-febc467
         name: ""
         resources:
@@ -1917,6 +1925,8 @@ presubmits:
           value: k8s-1.30-sig-storage
         - name: KUBEVIRT_PSA
           value: "true"
+        - name: FEATURE_GATES
+          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20240607-febc467
         name: ""
         resources:
@@ -1962,6 +1972,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
+        - name: FEATURE_GATES
+          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20240607-febc467
         name: ""
         resources:
@@ -2005,6 +2017,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
+        - name: FEATURE_GATES
+          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20240607-febc467
         name: ""
         resources:
