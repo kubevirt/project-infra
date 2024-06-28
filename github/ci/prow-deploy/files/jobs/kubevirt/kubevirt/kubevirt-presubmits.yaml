@@ -600,7 +600,7 @@ presubmits:
           privileged: true
   - always_run: true
     annotations:
-      fork-per-release: "true"
+      fork-per-release: "false"
     cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
