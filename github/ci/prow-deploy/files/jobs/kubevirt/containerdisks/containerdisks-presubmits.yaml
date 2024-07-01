@@ -262,3 +262,38 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: false
+    run_if_changed: "artifacts/leap/.*"
+    annotations:
+      testgrid-create-test-group: "false"
+    cluster: kubevirt-prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-containerdisks-pipeline-leap
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - ./pipeline.sh
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.2"
+        - name: FOCUS
+          value: "leap:*"
+        image: quay.io/kubevirtci/golang:v20240308-8fac017
+        name: ""
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
