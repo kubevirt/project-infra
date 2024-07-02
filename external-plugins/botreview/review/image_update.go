@@ -27,8 +27,9 @@ import (
 )
 
 const (
-	prowJobImageUpdateApproveComment    = `:thumbsup: This looks like a simple prow job image bump.`
-	prowJobImageUpdateDisapproveComment = `:thumbsdown: This doesn't look like a simple prow job image bump.`
+	prowJobImageUpdateApproveComment       = `:thumbsup: This looks like a simple prow job image bump.`
+	prowJobImageUpdateDisapproveComment    = `:thumbsdown: This doesn't look like a simple prow job image bump.`
+	prowJobImageUpdateShouldNotMergeReason = "image updates should be acked by the @kubevirt/prow-job-taskforce"
 )
 
 var (
@@ -78,7 +79,7 @@ func (t *ProwJobImageUpdate) AddIfRelevant(fileDiff *diff.FileDiff) {
 }
 
 func (t *ProwJobImageUpdate) Review() BotReviewResult {
-	result := NewCanMergeReviewResult(prowJobImageUpdateApproveComment, prowJobImageUpdateDisapproveComment)
+	result := NewShouldNotMergeReviewResult(prowJobImageUpdateApproveComment, prowJobImageUpdateDisapproveComment, prowJobImageUpdateShouldNotMergeReason)
 
 	for _, fileDiff := range t.relevantFileDiffs {
 		fileName := strings.TrimPrefix(fileDiff.NewName, "b/")
