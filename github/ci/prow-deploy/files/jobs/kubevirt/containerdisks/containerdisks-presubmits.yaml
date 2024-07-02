@@ -228,7 +228,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_if_changed: "artifacts/tumbleweed/.*"
+    run_if_changed: "artifacts/opensuse/tumbleweed/.*"
     annotations:
       testgrid-create-test-group: "false"
     cluster: kubevirt-prow-workloads
@@ -240,7 +240,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
-    name: pull-containerdisks-pipeline-tumbleweed
+    name: pull-containerdisks-pipeline-opensuse-tumbleweed
     spec:
       containers:
       - command:
@@ -252,7 +252,7 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: "1.22.2"
         - name: FOCUS
-          value: "tumbleweed:*"
+          value: "opensuse-tumbleweed:*"
         image: quay.io/kubevirtci/golang:v20240308-8fac017
         name: ""
         resources:
@@ -263,7 +263,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_if_changed: "artifacts/leap/.*"
+    run_if_changed: "artifacts/opensuse/leap/.*"
     annotations:
       testgrid-create-test-group: "false"
     cluster: kubevirt-prow-workloads
@@ -275,7 +275,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
-    name: pull-containerdisks-pipeline-leap
+    name: pull-containerdisks-pipeline-opensuse-leap
     spec:
       containers:
       - command:
@@ -287,7 +287,7 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: "1.22.2"
         - name: FOCUS
-          value: "leap:*"
+          value: "opensuse-leap:*"
         image: quay.io/kubevirtci/golang:v20240308-8fac017
         name: ""
         resources:
