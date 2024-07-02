@@ -81,11 +81,7 @@ func pullRequiredImages(ctx context.Context, tag string) error {
 		log.Infoln("Kubevirt Provider version: ", version)
 
 		name := fmt.Sprintf("%sk8s-%s:%s", kubevirtci_repo, version, tag)
-		// k8s-1.26 kubevirtci provider was renamed to k8s-1.26-centos9
-		// to track the change to CentOS Stream 9
-		if version == "1.26" {
-			name = fmt.Sprintf("%sk8s-%s-centos9:%s", kubevirtci_repo, version, tag)
-		}
+
 		if _, exists := imageNames[name]; exists {
 			log.Infoln("Image already present:", name)
 			continue
@@ -150,6 +146,8 @@ func main() {
 		if err != nil {
 			log.WithError(err).Errorf("Failed to fetch image names")
 		}
+		// Allow time for currently running jobs with old images to complete successfully before deleting old images
+		time.Sleep(period * time.Hour)
 		err = cleanOldImages(connText, tag)
 		if err != nil {
 			log.WithError(err).Errorf("Failure occured when deleting old images")
