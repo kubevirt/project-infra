@@ -275,3 +275,34 @@ postsubmits:
         resources:
           requests:
             memory: "200Mi"
+  - name: push-kubevirt-update-sig-teams-and-labels
+    branches:
+    - main
+    cluster: kubevirt-prow-control-plane
+    always_run: false
+    run_if_changed: "OWNERS_ALIASES"
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    extra_refs:
+    - org: kubevirt
+      repo: project-infra
+      base_ref: main
+    labels:
+      preset-github-credentials: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+        env:
+        command: [ "/bin/sh", "-ce" ]
+        args:
+        - |
+          project_infra_dir=$(cd ../project-infra && pwd)
+          kubevirt_dir=$(cd ../kubevirt && pwd)
+          git-pr.sh -c "cd ../project-infra && bazel run //robots/cmd/sig-to-org-team-syncer -- --owners-aliases-path=${kubevirt_dir}/OWNERS_ALIASES --orgs-yaml-path=${project_infra_dir}/github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml --target-org-name=kubevirt --labels-yaml-path=${project_infra_dir}/github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml" -p ${sig_release_dir} -s 'Automated run of robots/cmd/sig-to-org-team-syncer' -r project-infra -b update-sig-teams-and-labels -T main
+        resources:
+          requests:
+            memory: "200Mi"

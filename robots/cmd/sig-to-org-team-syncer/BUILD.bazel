@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "kubevirt.io/project-infra/robots/cmd/sig-to-org-team-syncer",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//robots/pkg/labels:go_default_library",
+        "//robots/pkg/sig:go_default_library",
+        "@com_github_sirupsen_logrus//:go_default_library",
+        "@io_k8s_apimachinery//pkg/util/json:go_default_library",
+        "@io_k8s_apimachinery//pkg/util/sets:go_default_library",
+        "@io_k8s_sigs_yaml//:go_default_library",
+        "@io_k8s_test_infra//prow/config/org:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "sig-to-org-team-syncer",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
