@@ -62,7 +62,7 @@ func (j HTMLValidator) IsValid(content []byte) error {
 			return nil
 		case nil:
 		default:
-			return fmt.Errorf("Report:\n%s\n\nerror %v when trying to validate report file %v", err, stringContent)
+			return fmt.Errorf("Report:\n%s\n\nerror %v when trying to validate", err, stringContent)
 		}
 	}
 }
