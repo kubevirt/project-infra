@@ -88,41 +88,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_if_changed: "artifacts/centos/.*"
-    annotations:
-      testgrid-create-test-group: "false"
-    cluster: kubevirt-prow-workloads
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 1h0m0s
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-    max_concurrency: 11
-    name: pull-containerdisks-pipeline-centos
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - ./pipeline.sh
-        env:
-        - name: GIMME_GO_VERSION
-          value: "1.22.2"
-        - name: FOCUS
-          value: "centos:*"
-        image: quay.io/kubevirtci/golang:v20240607-febc467
-        name: ""
-        resources:
-          requests:
-            memory: 12Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
     run_if_changed: "artifacts/centosstream/.*"
     annotations:
       testgrid-create-test-group: "false"
