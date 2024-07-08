@@ -841,17 +841,26 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240607-febc467
+        - image: quay.io/kubevirtci/golang:v20240607-febc467
           env:
+          - name: GIMME_GO_VERSION
+            value: "1.21.6"
           command:
           - /usr/local/bin/runner.sh
           - /bin/sh
           - -c
           args:
           - |
-            # we fetch presubmits for kubevirt/kubevirt branches main and release-0.59
-            bazel run //robots/cmd/kubevirt:kubevirt -- get presubmits --job-config-path-kubevirt-presubmits $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-presubmits $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits-0.59.yaml --github-token-path '' --output-file /tmp/presubmits.html
-            bazel run //robots/cmd/kubevirt:kubevirt -- get periodics --job-config-path-kubevirt-periodics $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path '' --output-file /tmp/periodics.html
+            # we fetch presubmits for kubevirt/kubevirt branches main and latest three release branches
+            go run ./robots/cmd/kubevirt/... get presubmits \
+              --job-config-path-kubevirt-presubmits $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml \
+              $(for release_branch_config in $(find $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/ -name 'kubevirt-presubmits-*.yaml' | sort -r | head -3); do echo -n "--job-config-path-kubevirt-presubmits $release_branch_config "; done) \
+              --github-token-path '' \
+              --output-file /tmp/presubmits.html
+            go run ./robots/cmd/kubevirt/... get periodics \
+              --job-config-path-kubevirt-periodics $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml \
+              --github-token-path '' \
+              --output-file /tmp/periodics.html
             gsutil cp /tmp/presubmits.html /tmp/periodics.html gs://kubevirt-prow/reports/e2ejobs/kubevirt/kubevirt
           resources:
             requests:
