@@ -68,6 +68,12 @@ secretGenerator:
       # coverallsToken
       - token=secrets/kubevirtci-coveralls-token
     type: Opaque
+  - name: containerized-data-importer-coveralls-token
+    namespace: kubevirt-prow-jobs
+    files:
+      # coverallsToken for the containerized-data-importer repository
+      - token=secrets/containerized-data-importer-coveralls-token
+    type: Opaque
   - name: win-sysprep-001
     namespace: kubevirt-prow-jobs
     files:
