@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-jira-proxy
+  labels:
+    app: github-jira-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: github-jira-proxy
+  template:
+    metadata:
+      labels:
+        app: github-jira-proxy
+    spec:
+      containers:
+        - name: github-jira-proxy
+          image: quay.io/alitman_storage_ocs/github-proxy:v0.0.3
+          args:
+            - '--github-webhook-secret-path=/etc/webhook-github/secret'
+            - '--jira-webhook-secret-path=/etc/webhook-jira/url'
+          ports:
+            - containerPort: 9900
+          volumeMounts:
+            - name: github-webhook-secret
+              mountPath: /etc/webhook-github
+              readOnly: true
+            - name: jira-webhook-url
+              mountPath: /etc/webhook-jira
+              readOnly: true
+      volumes:
+        - name: github-webhook-secret
+          secret:
+            secretName: github-webhook-secret
+        - name: jira-webhook-url
+          secret:
+            secretName: jira-webhook-url

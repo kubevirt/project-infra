@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: github-jira-proxy-service
+spec:
+  selector:
+    app: github-jira-proxy
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9900

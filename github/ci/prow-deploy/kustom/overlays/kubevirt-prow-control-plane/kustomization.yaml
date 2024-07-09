@@ -370,6 +370,16 @@ secretGenerator:
       # coverallsToken
       - token=secrets/kubevirtci-coveralls-token
     type: Opaque
+  - name: jira-webhook-url
+    namespace: kubevirt-prow
+    files:
+      - url=secrets/jira-webhook-url
+    type: Opaque
+  - name: github-webhook-secret
+    namespace: kubevirt-prow
+    files:
+      - secret=secrets/github-webhook-secret
+    type: Opaque
   - name: containerized-data-importer-coveralls-token
     namespace: kubevirt-prow-jobs
     files:

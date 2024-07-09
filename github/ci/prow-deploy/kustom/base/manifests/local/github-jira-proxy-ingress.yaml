@@ -1,0 +1,24 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  name: github-jira-proxy
+  namespace: default
+spec:
+  tls:
+    - hosts:
+        - prow.proxy.kubevirt.io
+      secretName: github-jira-proxy-tls
+  rules:
+    - host: prow.proxy.kubevirt.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: github-jira-proxy-service
+                port:
+                  number: 80

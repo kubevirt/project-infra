@@ -22,6 +22,7 @@
     - crier
     - prow-controller-manager
     - horologium
+    - github-jira-proxy
 
 - name: deploy ingress controller
   shell: |
