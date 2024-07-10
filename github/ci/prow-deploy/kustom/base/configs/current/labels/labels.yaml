@@ -278,6 +278,12 @@ default:
       target: both
       prowPlugin: label
       addedBy: anyone
+    - name: sig/ci
+      color: CF8028
+      description: Denotes an issue or PR as being related to sig-ci, marks changes to the CI system.
+      target: both
+      prowPlugin: label
+      addedBy: anyone
     - name: sig/api
       color: fcaebb
       description: Denotes an issue or PR that relates to changes in api.
