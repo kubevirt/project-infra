@@ -267,6 +267,56 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - name: pull-common-instancetypes-kubevirt-functest-centos-stream-arm64
+    branches:
+      - main
+    always_run: false
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
+    cluster: prow-arm64-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-unnested: "false"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 1
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - "/bin/sh"
+        - "-c"
+        - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
+        env:
+        - name: KUBEVIRT_PROVIDER
+          value: kind-1.28
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 16G
+        - name: FUNCTEST_EXTRA_ARGS
+          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS Stream 9"'
+        image: quay.io/kubevirtci/golang:v20240607-febc467
+        name: ""
+        resources:
+          requests:
+            memory: 20Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+        - mountPath: /var/log/audit
+          name: audit
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+      - hostPath:
+          path: /var/log/audit
+          type: Directory
+        name: audit
   - name: pull-common-instancetypes-kubevirt-functest-ubuntu
     branches:
       - main
