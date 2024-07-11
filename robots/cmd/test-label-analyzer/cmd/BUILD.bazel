@@ -14,7 +14,7 @@ go_library(
         "//robots/pkg/git:go_default_library",
         "//robots/pkg/test-label-analyzer:go_default_library",
         "//robots/pkg/test-report:go_default_library",
-        "@com_github_spf13_cobra//:go_default_library",
+        "//vendor/github.com/spf13/cobra:go_default_library",
     ],
 )
 
@@ -30,7 +30,7 @@ go_test(
     deps = [
         "//robots/pkg/git:go_default_library",
         "//robots/pkg/test-label-analyzer:go_default_library",
-        "@com_github_onsi_ginkgo_v2//:go_default_library",
-        "@com_github_onsi_gomega//:go_default_library",
+        "//vendor/github.com/onsi/ginkgo/v2:go_default_library",
+        "//vendor/github.com/onsi/gomega:go_default_library",
     ],
 )

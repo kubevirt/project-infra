@@ -5,7 +5,7 @@ go_library(
     srcs = ["main.go"],
     importpath = "kubevirt.io/project-infra/robots/cmd/kubevirt-lanes-overview",
     visibility = ["//visibility:private"],
-    deps = ["@io_k8s_test_infra//prow/config:go_default_library"],
+    deps = ["//vendor/k8s.io/test-infra/prow/config:go_default_library"],
 )
 
 go_binary(

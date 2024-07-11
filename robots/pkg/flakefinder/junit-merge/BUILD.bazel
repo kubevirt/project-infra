@@ -5,7 +5,7 @@ go_library(
     srcs = ["merge.go"],
     importpath = "kubevirt.io/project-infra/robots/pkg/flakefinder/junit-merge",
     visibility = ["//visibility:public"],
-    deps = ["@com_github_joshdk_go_junit//:go_default_library"],
+    deps = ["//vendor/github.com/joshdk/go-junit:go_default_library"],
 )
 
 go_test(
@@ -13,5 +13,5 @@ go_test(
     srcs = ["merge_test.go"],
     data = glob(["testdata/**"]),
     embed = [":go_default_library"],
-    deps = ["@com_github_joshdk_go_junit//:go_default_library"],
+    deps = ["//vendor/github.com/joshdk/go-junit:go_default_library"],
 )
