@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["canvas.go"],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/go-latex/latex/drawtex",
+    importpath = "github.com/go-latex/latex/drawtex",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/go-latex/latex/font:go_default_library",
+        "//vendor/golang.org/x/image/font/sfnt:go_default_library",
+    ],
+)

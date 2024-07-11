@@ -1,0 +1,33 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "decode.go",
+        "decode_map.go",
+        "decode_number.go",
+        "decode_query.go",
+        "decode_slice.go",
+        "decode_string.go",
+        "decode_value.go",
+        "encode.go",
+        "encode_map.go",
+        "encode_number.go",
+        "encode_slice.go",
+        "encode_value.go",
+        "ext.go",
+        "intern.go",
+        "msgpack.go",
+        "time.go",
+        "types.go",
+        "unsafe.go",
+        "version.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/vmihailenco/msgpack/v5",
+    importpath = "github.com/vmihailenco/msgpack/v5",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/vmihailenco/msgpack/v5/msgpcode:go_default_library",
+        "//vendor/github.com/vmihailenco/tagparser/v2:go_default_library",
+    ],
+)

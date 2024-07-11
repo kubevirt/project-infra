@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "change.go",
+        "difftree.go",
+        "doc.go",
+        "doubleiter.go",
+        "iter.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/go-git/go-git/v5/utils/merkletrie",
+    importpath = "github.com/go-git/go-git/v5/utils/merkletrie",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/go-git/go-git/v5/utils/merkletrie/internal/frame:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/utils/merkletrie/noder:go_default_library",
+    ],
+)

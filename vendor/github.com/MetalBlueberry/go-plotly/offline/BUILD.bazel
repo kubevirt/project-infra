@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["plot.go"],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/MetalBlueberry/go-plotly/offline",
+    importpath = "github.com/MetalBlueberry/go-plotly/offline",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/MetalBlueberry/go-plotly/graph_objects:go_default_library",
+        "//vendor/github.com/pkg/browser:go_default_library",
+    ],
+)

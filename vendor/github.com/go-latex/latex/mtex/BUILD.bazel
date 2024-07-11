@@ -1,0 +1,24 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "macros.go",
+        "mtex.go",
+        "parser.go",
+        "render.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/go-latex/latex/mtex",
+    importpath = "github.com/go-latex/latex/mtex",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/go-latex/latex:go_default_library",
+        "//vendor/github.com/go-latex/latex/ast:go_default_library",
+        "//vendor/github.com/go-latex/latex/drawtex:go_default_library",
+        "//vendor/github.com/go-latex/latex/font:go_default_library",
+        "//vendor/github.com/go-latex/latex/font/ttf:go_default_library",
+        "//vendor/github.com/go-latex/latex/internal/tex2unicode:go_default_library",
+        "//vendor/github.com/go-latex/latex/mtex/symbols:go_default_library",
+        "//vendor/github.com/go-latex/latex/tex:go_default_library",
+    ],
+)
