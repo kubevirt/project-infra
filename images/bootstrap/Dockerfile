@@ -31,6 +31,7 @@ RUN dnf install -y \
     cpio \
     dnf-plugins-core \
     findutils \
+    fuse-overlayfs \
     gcc \
     gcc-c++ \
     gettext \
