@@ -151,13 +151,20 @@ func (s *Server) handlePREvent(pr github.PullRequestEvent) error {
 	switch action {
 	case github.PullRequestActionOpened:
 	case github.PullRequestActionReopened:
-		// update metrics for (re)opened PRs
+	case github.PullRequestActionSynchronize:
+		// update metrics for PRs
 		prTimeLineForLastCommit, err := s.GHGraphQLClient.FetchPRTimeLineForLastCommit(org, repo, num)
 		if err != nil {
 			return fmt.Errorf("%s - failed to fetch number of retest comments: %w", pullRequestURL, err)
 		}
-		metrics.SetForPullRequest(org, repo, num, prTimeLineForLastCommit.NumberOfRetestComments)
-		log.Infof("updated metrics on reopened PR")
+		switch prTimeLineForLastCommit.NumberOfRetestComments {
+		case 0:
+			metrics.DeleteForPullRequest(org, repo, num)
+			break
+		default:
+			metrics.SetForPullRequest(org, repo, num, prTimeLineForLastCommit.NumberOfRetestComments)
+		}
+		log.Infof("updated metrics on PR")
 		break
 	case github.PullRequestActionClosed:
 		// PRs that have been merged or closed are not of interest for metrics

@@ -1,16 +1,15 @@
 
 .PHONY: all build test format push
 all: format push
-bazelbin := bazelisk
 CONTAINER_TAG := $(shell ../../hack/container-tag.sh)
 CONTAINER_IMAGE := referee
 CONTAINER_REPO := quay.io/kubevirtci/$(CONTAINER_IMAGE)
 
 build:
-	$(bazelbin) build //external-plugins/referee/...
+	go build ./...
 
 test:
-	$(bazelbin) test //external-plugins/referee/...
+	go test ./...
 
 format:
 	gofmt -w .
