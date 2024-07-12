@@ -456,6 +456,10 @@ branch-protection:
                 contexts: []
         vm-console-proxy:
           protect: true
+        ssp-operator:
+          branches:
+            main:
+              protect: true
     k8snetworkplumbingwg:
       repos:
         kubemacpool:
