@@ -275,7 +275,7 @@ periodics:
       env:
       - name: DOCKER_PREFIX
         value: quay.io/kubevirt
-      image: quay.io/kubevirtci/golang:v20240711-f55d15c
+      image: quay.io/kubevirtci/golang:v20240607-febc467
       name: ""
       resources:
         requests:
@@ -349,7 +349,7 @@ periodics:
         value: quay.io/kubevirt
       - name: BUILD_ARCH
         value: crossbuild-aarch64
-      image: quay.io/kubevirtci/bootstrap:v20240711-f55d15c
+      image: quay.io/kubevirtci/bootstrap:v20240607-febc467
       name: ""
       resources:
         requests:
@@ -423,7 +423,7 @@ periodics:
         value: quay.io/kubevirt
       - name: BUILD_ARCH
         value: crossbuild-s390x
-      image: quay.io/kubevirtci/golang:v20240711-f55d15c
+      image: quay.io/kubevirtci/golang:v20240607-febc467
       name: ""
       resources:
         requests:
