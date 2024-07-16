@@ -84,7 +84,7 @@ build_image() {
     local image_name="${3:?}"
     local base_image="${4:?}"
     # add qemu-user-static
-    podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    podman run --rm --privileged docker.io/multiarch/qemu-user-static --reset -p yes
     # build multi-arch images
     for arch in ${archs[*]};do
         if [[ $local_base_image == false ]]; then
