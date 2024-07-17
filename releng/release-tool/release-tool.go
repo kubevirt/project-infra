@@ -988,6 +988,9 @@ func (r *releaseData) verifyTag() error {
 	}
 
 	releases, err := r.getReleases()
+	if err != nil {
+		return err
+	}
 	for _, release := range releases {
 		if *release.TagName == r.tag {
 			log.Printf("Release tag [%s] already exists", r.tag)
