@@ -273,6 +273,15 @@ plugins:
     plugins:
     - release-note
 
+  kubevirt/kubevirt-tekton-tasks:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+    - help
+
   kubevirt/kubevirt-ssp-operator:
     plugins:
     - approve
@@ -571,6 +580,7 @@ triggers:
   - kubevirt/kubevirt-ssp-operator
   - kubevirt/sig-release
   - kubevirt/ssp-operator
+  - kubevirt/kubevirt-tekton-tasks
   - kubevirt/must-gather
   - kubevirt/demo
   - kubevirt/cluster-network-addons-operator
@@ -638,6 +648,7 @@ approve:
   - kubevirt/kubevirt-template-validator
   - kubevirt/kubevirt-ssp-operator
   - kubevirt/ssp-operator
+  - kubevirt/kubevirt-tekton-tasks
   - kubevirt/must-gather
   - kubevirt/csi-driver
   - kubevirt/user-guide
@@ -697,6 +708,7 @@ lgtm:
   - kubevirt/kubevirt-template-validator
   - kubevirt/kubevirt-ssp-operator
   - kubevirt/ssp-operator
+  - kubevirt/kubevirt-tekton-tasks
   - kubevirt/must-gather
   - kubevirt/csi-driver
   - kubevirt/user-guide

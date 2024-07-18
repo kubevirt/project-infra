@@ -121,6 +121,7 @@ tide:
     kubevirt/node-labeller: squash
     kubevirt/kubevirt-template-validator: squash
     kubevirt/kubevirt-ssp-operator: squash
+    kubevirt/kubevirt-tekton-tasks: merge
     kubevirt/csi-driver: squash
     kubevirt/ssp-operator: merge
     kubevirt/managed-tenant-quota: merge
@@ -194,6 +195,7 @@ tide:
     - kubevirt/kubevirt-template-validator
     - kubevirt/kubevirt-ssp-operator
     - kubevirt/ssp-operator
+    - kubevirt/kubevirt-tekton-tasks
     - kubevirt/managed-tenant-quota
     - kubevirt/application-aware-quota
     - kubevirt/must-gather
@@ -457,6 +459,10 @@ branch-protection:
         vm-console-proxy:
           protect: true
         ssp-operator:
+          branches:
+            main:
+              protect: true
+        kubevirt-tekton-tasks:
           branches:
             main:
               protect: true
