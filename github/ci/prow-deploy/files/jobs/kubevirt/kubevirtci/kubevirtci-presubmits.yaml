@@ -455,7 +455,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
@@ -466,7 +466,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.31
-    optional: true
     spec:
       containers:
       - command:
