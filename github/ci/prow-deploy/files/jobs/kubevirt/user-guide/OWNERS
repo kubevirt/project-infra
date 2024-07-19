@@ -22,15 +22,12 @@ filters:
     - aburdenthehand
     - alonakaplan
     - cwilkers
-    - davidvossel
     - dhiller
     - fabiand
     - jean-edouard
     - jobbler
     - mhenriks
     - phoracek
-    - rmohr
-    - stu-gott
     - vladikr
   ^docs/.*:
     labels:
