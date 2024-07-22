@@ -7,6 +7,7 @@
 filters:
   .*:
     approvers:
+    - aburdenthehand
     - alonakaplan
     - cwilkers
     - davidvossel
@@ -25,7 +26,6 @@ filters:
     - dhiller
     - fabiand
     - jean-edouard
-    - jobbler
     - mhenriks
     - phoracek
     - vladikr
