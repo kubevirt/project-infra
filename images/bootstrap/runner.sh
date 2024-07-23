@@ -86,8 +86,6 @@ if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
         echo "${!}" > /var/run/podman.pid
 
         ln -s ${PODMAN_SOCKET} /var/run/docker.sock
-        # Set podman short-name-mode to permissive
-        sed -i 's/short-name-mode = "enforcing"/short-name-mode = "permissive"/g' /etc/containers/registries.conf
     )
     # the service can be started but the socket not ready, wait for ready
     WAIT_N=0
