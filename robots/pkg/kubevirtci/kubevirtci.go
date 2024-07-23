@@ -2,6 +2,7 @@ package kubevirtci
 
 import (
 	"fmt"
+	"github.com/Masterminds/semver"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -60,11 +61,24 @@ func DropUnsupportedProviders(providerDir, clusterUpDir string, supportedRelease
 	if err != nil {
 		return err
 	}
+	var supportedVersions []*semver.Version
+	for _, r := range supportedReleases {
+		release := semver.MustParse(r.GetTagName())
+		supportedVersions = append(supportedVersions, release)
+	}
+	sort.Slice(supportedVersions, func(i, j int) bool {
+		return supportedVersions[i].Compare(supportedVersions[j]) == 1
+	})
 	for _, entry := range dirEntries {
 		if !isProviderDirectory(entry) {
 			continue
 		}
 		if isSupportedProvider(entry, supportedReleases) {
+			continue
+		}
+		version := semver.MustParse(entry.Name() + ".0")
+		if version.Compare(supportedVersions[0]) == 1 {
+			// future version, keep it
 			continue
 		}
 		err = deleteProvider(providerDir, clusterUpDir, entry)
