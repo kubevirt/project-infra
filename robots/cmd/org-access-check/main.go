@@ -42,10 +42,20 @@ type options struct {
 
 	org string
 }
-
-type AccessPermissionsToRepositories map[string]RepositoriesToCollaborators
-type RepositoriesToCollaborators map[string]Collaborators
 type Collaborators []string
+type Repositories []string
+type AccessPermission string
+type AccessPermissions []AccessPermission
+
+type AccessPermissionsToRepositories map[string]Repositories
+type CollaboratorsToAccessPermissionsToRepositories map[string]AccessPermissionsToRepositories
+
+type AccessPermissionsToCollaborators map[string]Collaborators
+type RepositoriesToAccessPermissionsToCollaborators map[string]AccessPermissionsToCollaborators
+
+type RepositoriesToCollaborators map[string]Collaborators
+
+type AccessPermissionsToRepositoriesToCollaborators map[string]RepositoriesToCollaborators
 
 func (o *options) Validate() error {
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
@@ -115,9 +125,11 @@ func main() {
 		log().WithError(err).Fatalf("failed to get github repositories for org %q", o.org)
 	}
 
-	accessPermissionsToRepos := AccessPermissionsToRepositories{
+	accessPermissionsToRepositoriesToCollaborators := AccessPermissionsToRepositoriesToCollaborators{
 		"admin": RepositoriesToCollaborators{},
 	}
+	repositoriesToAccessPermissionsToCollaborators := RepositoriesToAccessPermissionsToCollaborators{}
+	collaboratorsToAccessPermissionsToRepositories := CollaboratorsToAccessPermissionsToRepositories{}
 
 	defaultListOptions := github.ListOptions{
 		PerPage: 99999,
@@ -134,7 +146,8 @@ func main() {
 				logForRepo(repo).Info("skipping repo since archived or private")
 				continue
 			}
-			accessPermissionsToRepos["admin"][repo.GetName()] = Collaborators{}
+			accessPermissionsToRepositoriesToCollaborators["admin"][repo.GetName()] = Collaborators{}
+			repositoriesToAccessPermissionsToCollaborators[repo.GetName()] = AccessPermissionsToCollaborators{}
 			logForRepo(repo).Info("checking permissions")
 			collaborators, r, err := githubClient.Repositories.ListCollaborators(ctx, o.org, repo.GetName(), &github.ListCollaboratorsOptions{
 				Affiliation: "all",
@@ -153,11 +166,22 @@ func main() {
 					for _, perm := range checkPermissions {
 						permissions := fetchImportantPermissions(collaborator)
 						if permissions[perm] {
-							if _, ok := accessPermissionsToRepos[perm]; !ok {
-								accessPermissionsToRepos[perm] = RepositoriesToCollaborators{}
+							if _, ok := accessPermissionsToRepositoriesToCollaborators[perm]; !ok {
+								accessPermissionsToRepositoriesToCollaborators[perm] = RepositoriesToCollaborators{}
+							}
+							if _, ok := repositoriesToAccessPermissionsToCollaborators[repo.GetName()][perm]; !ok {
+								repositoriesToAccessPermissionsToCollaborators[repo.GetName()][perm] = Collaborators{}
+							}
+							if _, ok := collaboratorsToAccessPermissionsToRepositories[collaborator.GetLogin()]; !ok {
+								collaboratorsToAccessPermissionsToRepositories[collaborator.GetLogin()] = AccessPermissionsToRepositories{}
+							}
+							if _, ok := collaboratorsToAccessPermissionsToRepositories[collaborator.GetLogin()][perm]; !ok {
+								collaboratorsToAccessPermissionsToRepositories[collaborator.GetLogin()][perm] = Repositories{}
 							}
 							logForRepo(repo).WithField("collaborator", collaborator.GetLogin()).Debugf("permission %q seen", perm)
-							accessPermissionsToRepos[perm][repo.GetName()] = append(accessPermissionsToRepos[perm][repo.GetName()], collaborator.GetLogin())
+							accessPermissionsToRepositoriesToCollaborators[perm][repo.GetName()] = append(accessPermissionsToRepositoriesToCollaborators[perm][repo.GetName()], collaborator.GetLogin())
+							repositoriesToAccessPermissionsToCollaborators[repo.GetName()][perm] = append(repositoriesToAccessPermissionsToCollaborators[repo.GetName()][perm], collaborator.GetLogin())
+							collaboratorsToAccessPermissionsToRepositories[collaborator.GetLogin()][perm] = append(collaboratorsToAccessPermissionsToRepositories[collaborator.GetLogin()][perm], repo.GetName())
 						}
 					}
 				}
@@ -170,16 +194,41 @@ func main() {
 		log().WithError(err).Fatal("failed to get github repositories")
 	}
 
-	marshal, err := yaml.Marshal(accessPermissionsToRepos)
+	marshal1, err := yaml.Marshal(accessPermissionsToRepositoriesToCollaborators)
 	if err != nil {
 		log().WithError(err).Fatal("failed to marshall file")
 	}
-	temp, err := os.CreateTemp("", "org-access-*.yaml")
-	err = os.WriteFile(temp.Name(), marshal, 0666)
+	err = writeYAMLFile(marshal1, "org-accesspermissions-repos-collaborators*.yaml")
 	if err != nil {
-		log().WithError(err).Fatalf("failed to write to file %q", temp.Name())
+		log().WithError(err).Fatal("failed to marshall file")
+	}
+	marshal2, err := yaml.Marshal(repositoriesToAccessPermissionsToCollaborators)
+	if err != nil {
+		log().WithError(err).Fatal("failed to marshall file")
+	}
+	err = writeYAMLFile(marshal2, "org-repos-accesspermissions-collaborators*.yaml")
+	if err != nil {
+		log().WithError(err).Fatal("failed to marshall file")
+	}
+	marshal3, err := yaml.Marshal(collaboratorsToAccessPermissionsToRepositories)
+	if err != nil {
+		log().WithError(err).Fatal("failed to marshall file")
+	}
+	err = writeYAMLFile(marshal3, "org-collaborators-accesspermissions-repos*.yaml")
+	if err != nil {
+		log().WithError(err).Fatal("failed to marshall file")
+	}
+}
+
+func writeYAMLFile(inputYaml []byte, fileName string) error {
+	temp, err := os.CreateTemp("", fileName)
+	err = os.WriteFile(temp.Name(), inputYaml, 0666)
+	defer temp.Close()
+	if err != nil {
+		return err
 	}
 	log().Infof("File written to: %s", temp.Name())
+	return nil
 }
 
 func fetchImportantPermissions(collaborator *github.User) map[string]bool {
