@@ -19,16 +19,9 @@ filters:
     - stu-gott
     - vladikr
     reviewers:
-    - awels
-    - davidvossel
+    - brianmcarey
     - dhiller
-    - enp0s3
-    - jean-edouard
     - ormergi
     - oshoval
-    - phoracek
     - qinqon
-    - rmohr
-    - stu-gott
-    - vladikr
 options: {}
