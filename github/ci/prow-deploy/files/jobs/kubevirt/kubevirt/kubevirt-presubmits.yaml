@@ -1060,6 +1060,7 @@ presubmits:
     optional: true
     skip_branches:
     - release-\d+\.\d+
+    skip_report: true
     spec:
       containers:
       - command:
