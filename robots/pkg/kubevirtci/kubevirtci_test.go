@@ -445,6 +445,42 @@ func TestDropUnsupportedProviders(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "not yet supported providers should not get deleted",
+			args: args{
+				scenario: testScenario{
+					dirsBefore: []string{
+						"cluster-provision/k8s/1.20",
+						"cluster-provision/k8s/1.21",
+						"cluster-provision/k8s/1.22",
+						"cluster-up/cluster/k8s-1.20",
+						"cluster-up/cluster/k8s-1.21",
+						"cluster-up/cluster/k8s-1.22",
+					},
+					providerDirsAfter: []string{
+						"1.20",
+						"1.21",
+						"1.22",
+					},
+					clusterUpDirsAfter: []string{
+						"k8s-1.20",
+						"k8s-1.21",
+						"k8s-1.22",
+					},
+				},
+				providerDir:  "cluster-provision/k8s",
+				clusterUpDir: "cluster-up/cluster",
+				supportedReleases: []*github.RepositoryRelease{
+					{
+						TagName: strPointer("v1.20.2"),
+					},
+					{
+						TagName: strPointer("v1.21.1"),
+					},
+				},
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
