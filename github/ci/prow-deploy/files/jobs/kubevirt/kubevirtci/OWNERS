@@ -18,6 +18,7 @@ filters:
     - rmohr
     - stu-gott
     - vladikr
+    - xpivarc
     reviewers:
     - brianmcarey
     - dhiller
