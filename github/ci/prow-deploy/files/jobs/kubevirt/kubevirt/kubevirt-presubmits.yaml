@@ -1053,7 +1053,7 @@ presubmits:
       timeout: 4h0ms
       grace_period: 5m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
       preset-bazel-cache: "true"
