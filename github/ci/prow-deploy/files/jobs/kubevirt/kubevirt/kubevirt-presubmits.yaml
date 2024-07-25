@@ -1047,7 +1047,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
+    cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
       timeout: 4h0ms
@@ -1060,7 +1060,6 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-kubevirtci-quay-credential: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-s390x
@@ -1074,7 +1073,7 @@ presubmits:
         - image: quay.io/kubevirtci/bootstrap:v20240607-febc467
           env:
             - name: TARGET
-              value: "external"
+              value: "external-wg-s390x"
             - name: KUBEVIRT_PROVIDER
               value: "external"
             - name: DOCKER_PREFIX
@@ -1087,8 +1086,6 @@ presubmits:
               value: "Always"
             - name: BUILD_ARCH
               value: "crossbuild-s390x"
-            - name: KUBEVIRT_E2E_FOCUS
-              value: "s390x"
             - name: KUBECTL
               value: "/usr/local/bin/kubectl"
             - name: GIT_ASKPASS
