@@ -190,7 +190,7 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 	repo := ic.Repo.Name
 	num := ic.Issue.Number
 	action := ic.Action
-	user := ic.Comment.User.Login
+	commentAuthor := ic.Comment.User.Login
 
 	pullRequestURL := fmt.Sprintf("https://github.com/%s/%s/pull/%d", org, repo, num)
 	log := s.Log.WithField("pull_request_url", pullRequestURL)
@@ -198,7 +198,7 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 	switch action {
 	case github.IssueCommentActionCreated:
 	default:
-		log.Debugf("skipping for action %s by %s", action, user)
+		log.Debugf("skipping for action %s by %s", action, commentAuthor)
 		return nil
 	}
 
@@ -256,9 +256,10 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 	}
 
 	if !s.DryRun {
+		prAuthor := ic.Issue.User.Login
 		var output bytes.Buffer
 		err := tooManyRetestsCommentTemplate.Execute(&output, TooManyRequestsData{
-			Author: user,
+			Author: prAuthor,
 			Team:   s.Team,
 		})
 		if err != nil {
