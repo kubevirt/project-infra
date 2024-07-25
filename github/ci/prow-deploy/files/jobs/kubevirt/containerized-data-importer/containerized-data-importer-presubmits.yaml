@@ -31,6 +31,37 @@ presubmits:
           resources:
             requests:
               memory: "8Gi"
+  - name: pull-cdi-unit-test-s390x
+    skip_branches:
+      - release-v1.38
+      - release-v1.43
+      - release-v1.49
+    cluster: s390x-virtual-workloads #
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20240711-f55d15c
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test-unit"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
   - name: pull-cdi-goveralls
     always_run: true
     optional: true
