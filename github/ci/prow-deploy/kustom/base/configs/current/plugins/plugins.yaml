@@ -555,6 +555,7 @@ external_plugins:
     endpoint: http://referee:9900
     events:
       - issue_comment
+      - pull_request
 
 triggers:
 - repos:
