@@ -60,7 +60,7 @@ type: kubernetes.io/service-account-token
 EOF
 # export secret token data to add to user later on
 kubectl get secret prow-workloads-cluster-automation \
-    -n "default" -o yaml | \
+    -n "kubevirt-prow-jobs" -o yaml | \
     yq -r '.data.token' | \
     base64 -d
 ```
