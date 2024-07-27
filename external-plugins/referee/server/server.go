@@ -149,31 +149,39 @@ func (s *Server) handlePREvent(pr github.PullRequestEvent) error {
 	log := s.Log.WithField("pull_request_url", pullRequestURL)
 
 	switch action {
-	case github.PullRequestActionOpened:
-	case github.PullRequestActionReopened:
-	case github.PullRequestActionSynchronize:
-		// update metrics for PRs
-		prTimeLineForLastCommit, err := s.GHGraphQLClient.FetchPRTimeLineForLastCommit(org, repo, num)
-		if err != nil {
-			return fmt.Errorf("%s - failed to fetch number of retest comments: %w", pullRequestURL, err)
-		}
-		switch prTimeLineForLastCommit.NumberOfRetestComments {
-		case 0:
-			metrics.DeleteForPullRequest(org, repo, num)
-			break
-		default:
-			metrics.SetForPullRequest(org, repo, num, prTimeLineForLastCommit.NumberOfRetestComments)
-		}
-		log.Infof("updated metrics on PR")
-		break
+	case github.PullRequestActionConvertedToDraft:
+		// PRs that have been converted to draft are not tested thus they are not of interest for metrics
+		metrics.DeleteForPullRequest(org, repo, num)
+		return nil
 	case github.PullRequestActionClosed:
 		// PRs that have been merged or closed are not of interest for metrics
 		metrics.DeleteForPullRequest(org, repo, num)
-		break
+		return nil
+	case github.PullRequestActionOpened:
+	case github.PullRequestActionReopened:
+	case github.PullRequestActionReadyForReview:
+	case github.PullRequestActionSynchronize:
+		// the above cases are the ones where we need to update the metrics
 	default:
+		// all other cases -> no metric action necessary
 		log.Infof("skipping pull_request event action %s", action)
 		return nil
 	}
+	return updateMetricsForPRs(s, org, repo, num, pullRequestURL, log)
+}
+
+func updateMetricsForPRs(s *Server, org string, repo string, num int, pullRequestURL string, log *logrus.Entry) error {
+	prTimeLineForLastCommit, err := s.GHGraphQLClient.FetchPRTimeLineForLastCommit(org, repo, num)
+	if err != nil {
+		return fmt.Errorf("%s - failed to fetch number of retest comments: %w", pullRequestURL, err)
+	}
+	switch prTimeLineForLastCommit.NumberOfRetestComments {
+	case 0:
+		metrics.DeleteForPullRequest(org, repo, num)
+	default:
+		metrics.SetForPullRequest(org, repo, num, prTimeLineForLastCommit.NumberOfRetestComments)
+	}
+	log.Infof("updated metrics on PR")
 	return nil
 }
 
@@ -182,7 +190,7 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 	repo := ic.Repo.Name
 	num := ic.Issue.Number
 	action := ic.Action
-	user := ic.Comment.User.Login
+	commentAuthor := ic.Comment.User.Login
 
 	pullRequestURL := fmt.Sprintf("https://github.com/%s/%s/pull/%d", org, repo, num)
 	log := s.Log.WithField("pull_request_url", pullRequestURL)
@@ -190,7 +198,7 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 	switch action {
 	case github.IssueCommentActionCreated:
 	default:
-		log.Debugf("skipping for action %s by %s", action, user)
+		log.Debugf("skipping for action %s by %s", action, commentAuthor)
 		return nil
 	}
 
@@ -248,9 +256,10 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 	}
 
 	if !s.DryRun {
+		prAuthor := ic.Issue.User.Login
 		var output bytes.Buffer
 		err := tooManyRetestsCommentTemplate.Execute(&output, TooManyRequestsData{
-			Author: user,
+			Author: prAuthor,
 			Team:   s.Team,
 		})
 		if err != nil {

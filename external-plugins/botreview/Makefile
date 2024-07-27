@@ -17,4 +17,4 @@ test:
 
 push:
 	podman build -f ../../images/$(CONTAINER_IMAGE)/Containerfile -t $(CONTAINER_REPO):$(CONTAINER_TAG) && podman push $(CONTAINER_REPO):$(CONTAINER_TAG)
-	bash -x ../../hack/update-deployments-with-latest-image.sh $(CONTAINER_REPO)
+	bash -x ../../hack/update-deployments-with-latest-image.sh $(CONTAINER_REPO) $(CONTAINER_TAG)
