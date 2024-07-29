@@ -33,7 +33,7 @@ presubmits:
               memory: "8Gi"
   - name: pull-cdi-unit-test-s390x
     skip_branches:
-      - release-\d+\.\d+
+      - release-v\d+\.\d+
     cluster: s390x-prow-virtual
     annotations:
       fork-per-release: "true"
