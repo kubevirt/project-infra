@@ -466,7 +466,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20240711-f55d15c
+        image: quay.io/kubevirtci/bootstrap:v20240607-febc467
         name: ""
         resources:
           requests:
