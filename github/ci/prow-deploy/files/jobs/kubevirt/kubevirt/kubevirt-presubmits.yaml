@@ -427,7 +427,6 @@ presubmits:
     labels:
       preset-bazel-unnested: "true"
     name: pull-kubevirt-unit-test-s390x
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
