@@ -52,7 +52,7 @@ postsubmits:
           # docker-in-docker needs privileged mode
           env:
           - name: GIMME_GO_VERSION
-            value: "1.19.9"
+            value: "1.22.5"
           securityContext:
             privileged: true
           volumeMounts:
