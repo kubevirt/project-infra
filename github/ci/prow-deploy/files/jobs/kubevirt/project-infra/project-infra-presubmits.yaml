@@ -6,7 +6,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: gcr.io/k8s-prow/checkconfig:v20240723-dbbd2d86b
+      - image: gcr.io/k8s-prow/checkconfig:v20240730-12bb925b4
         args:
         - "/ko-app/checkconfig"
         - "--config-path"
@@ -658,7 +658,7 @@ presubmits:
     spec:
       containers:
       - name: peribolos
-        image: gcr.io/k8s-prow/peribolos:v20240723-dbbd2d86b
+        image: gcr.io/k8s-prow/peribolos:v20240730-12bb925b4
         command:
         - /ko-app/peribolos
         # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
@@ -693,7 +693,7 @@ presubmits:
     spec:
       containers:
       - name: label-sync
-        image: gcr.io/k8s-prow/label_sync:v20240719-47a381b1df
+        image: gcr.io/k8s-prow/label_sync:v20240731-a5d9345e59
         command: [ "/ko-app/label_sync" ]
         args:
         - --config=github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml
@@ -716,7 +716,7 @@ presubmits:
     spec:
       containers:
       - name: label-sync
-        image: gcr.io/k8s-prow/label_sync:v20240719-47a381b1df
+        image: gcr.io/k8s-prow/label_sync:v20240731-a5d9345e59
         command: [ "/ko-app/label_sync" ]
         args:
         - --config=github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml
