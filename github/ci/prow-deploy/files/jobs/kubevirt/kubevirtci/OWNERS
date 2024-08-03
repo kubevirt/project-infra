@@ -4,25 +4,23 @@
 # Logins who are not members of 'kubevirt' organization were filtered out
 # See the OWNERS docs: https://git.k8s.io/community/contributors/guide/owners.md
 
-filters:
-  .*:
-    approvers:
-    - awels
-    - brianmcarey
-    - davidvossel
-    - dhiller
-    - enp0s3
-    - jean-edouard
-    - phoracek
-    - qinqon
-    - rmohr
-    - stu-gott
-    - vladikr
-    - xpivarc
-    reviewers:
-    - brianmcarey
-    - dhiller
-    - ormergi
-    - oshoval
-    - qinqon
+approvers:
+- awels
+- brianmcarey
+- davidvossel
+- dhiller
+- enp0s3
+- jean-edouard
+- phoracek
+- qinqon
+- rmohr
+- stu-gott
+- vladikr
+- xpivarc
 options: {}
+reviewers:
+- brianmcarey
+- dhiller
+- ormergi
+- oshoval
+- qinqon
