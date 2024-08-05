@@ -22,7 +22,7 @@ presubmits:
         resources:
           requests:
             memory: "1Gi"
-  - name: pull-common-instancetypes-kubevirt-functest-1.1
+  - name: pull-common-instancetypes-cluster-functest-1.1
     branches:
       - release-1.1
     always_run: false
@@ -46,7 +46,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - "/bin/sh"
         - "-c"
-        - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
+        - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
@@ -61,7 +61,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-kubevirt-functest-fedora-1.1
+  - name: pull-common-instancetypes-cluster-functest-fedora-1.1
     branches:
       - release-1.1
     always_run: false
@@ -85,7 +85,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - "/bin/sh"
         - "-c"
-        - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
+        - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
@@ -100,7 +100,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-kubevirt-functest-centos-7-1.1
+  - name: pull-common-instancetypes-cluster-functest-centos-7-1.1
     branches:
       - release-1.1
     always_run: false
@@ -124,7 +124,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - "/bin/sh"
         - "-c"
-        - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
+        - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
@@ -139,7 +139,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-kubevirt-functest-centos-stream-8-1.1
+  - name: pull-common-instancetypes-cluster-functest-centos-stream-8-1.1
     branches:
       - release-1.1
     always_run: false
@@ -163,7 +163,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - "/bin/sh"
         - "-c"
-        - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
+        - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
@@ -178,7 +178,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-kubevirt-functest-centos-stream-9-1.1
+  - name: pull-common-instancetypes-cluster-functest-centos-stream-9-1.1
     branches:
       - release-1.1
     always_run: false
@@ -202,7 +202,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - "/bin/sh"
         - "-c"
-        - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
+        - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
@@ -217,7 +217,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-kubevirt-functest-ubuntu-1.1
+  - name: pull-common-instancetypes-cluster-functest-ubuntu-1.1
     branches:
       - release-1.1
     always_run: false
@@ -241,7 +241,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - "/bin/sh"
         - "-c"
-        - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
+        - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
@@ -256,7 +256,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-kubevirt-functest-validation-os-1.1
+  - name: pull-common-instancetypes-cluster-functest-validation-os-1.1
     branches:
       - release-1.1
     always_run: false
@@ -283,7 +283,7 @@ presubmits:
         - "-c"
         - |
           cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-          make kubevirt-up && make kubevirt-sync && make kubevirt-sync-containerdisks && make kubevirt-functest
+          make cluster-up && make cluster-sync && make cluster-sync-containerdisks && make cluster-functest
         env:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
