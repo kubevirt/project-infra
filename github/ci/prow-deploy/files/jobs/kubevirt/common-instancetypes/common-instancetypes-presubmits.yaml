@@ -4,7 +4,6 @@ presubmits:
     branches:
       - main
     always_run: true
-    optional: true
     decorate: true
     decoration_config:
       timeout: 3h
