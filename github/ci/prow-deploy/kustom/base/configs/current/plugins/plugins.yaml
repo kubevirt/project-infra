@@ -215,6 +215,13 @@ plugins:
     - owners-label
     - trigger
 
+  kubevirt/dra-pci-driver:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - trigger
+
   kubevirt/hostpath-provisioner:
     plugins:
     - approve
@@ -753,8 +760,8 @@ help:
     - **Provides Context**
     - **Identifies Relevant Code**
     - **Gives Examples**
-    - **Ready to Test**    
+    - **Ready to Test**
     - **Goldilocks priority**
     - **Up-To-Date**
 
-    
+
