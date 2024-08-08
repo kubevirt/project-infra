@@ -717,6 +717,7 @@ presubmits:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-apidocs
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
