@@ -551,7 +551,6 @@ presubmits:
     labels:
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-apidocs-1.2
-    optional: true
     spec:
       containers:
       - command:
