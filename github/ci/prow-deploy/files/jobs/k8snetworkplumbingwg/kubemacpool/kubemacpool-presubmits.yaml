@@ -21,7 +21,7 @@ presubmits:
         preset-shared-images: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240711-f55d15c
+          - image: quay.io/kubevirtci/bootstrap:v20240813-3a29cf1
             securityContext:
               privileged: true
             command:
@@ -52,7 +52,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240711-f55d15c
+          - image: quay.io/kubevirtci/bootstrap:v20240813-3a29cf1
             securityContext:
               privileged: true
             resources:
