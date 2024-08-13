@@ -38,7 +38,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "50Gi"
   - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.30
     skip_branches:
       - release-\d+\.\d+
@@ -77,7 +77,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "50Gi"
   - name: build-hco-test-utils-image
     always_run: false
     run_if_changed: "tests/build/.*"
