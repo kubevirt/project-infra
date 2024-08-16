@@ -12,7 +12,7 @@ targetVersion: upstream
 upstreamURLBase: "https://raw.githubusercontent.com/kubernetes/test-infra/master"
 prefixes:
   - name: "Prow"
-    prefix: "gcr.io/k8s-prow/"
+    prefix: "us-docker.pkg.dev/k8s-infra-prow/images"
     refConfigFile: "config/prow/cluster/deck_deployment.yaml"
     repo: "https://github.com/kubernetes/test-infra"
     summarise: true
