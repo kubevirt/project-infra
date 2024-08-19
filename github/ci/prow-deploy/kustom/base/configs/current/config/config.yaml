@@ -87,6 +87,7 @@ tide:
   sync_period: 2m
   merge_method:
     kubevirt/libguestfs-appliance: merge
+    kubevirt/dra-pci-driver: merge
     kubevirt/containerized-data-importer: squash
     kubevirt/cluster-api-provider-kubevirt: merge
     kubevirt/containerdisks: merge
@@ -140,6 +141,7 @@ tide:
 
   queries:
   - repos:
+    - kubevirt/dra-pci-driver
     - kubevirt/libguestfs-appliance
     - kubevirt/project-infra
     - kubevirt/kubesecondarydns
@@ -329,6 +331,10 @@ branch-protection:
             main:
               protect: true
         containerdisks:
+          branches:
+            main:
+              protect: true
+        dra-pci-driver:
           branches:
             main:
               protect: true
