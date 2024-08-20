@@ -20,7 +20,7 @@ presubmits:
         - make test
         env:
         - name: GIMME_GO_VERSION
-          value: "1.22.2"
+          value: "1.22.6"
         image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
@@ -46,7 +46,7 @@ presubmits:
         - ./build.sh -b
         env:
         - name: GIMME_GO_VERSION
-          value: "1.22.2"
+          value: "1.22.6"
         image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
@@ -75,7 +75,7 @@ presubmits:
         - ./pipeline.sh
         env:
         - name: GIMME_GO_VERSION
-          value: "1.22.2"
+          value: "1.22.6"
         - name: FOCUS
           value: "cirros:*"
         image: quay.io/kubevirtci/golang:v20240814-9b6c4af
@@ -110,7 +110,7 @@ presubmits:
         - ./pipeline.sh
         env:
         - name: GIMME_GO_VERSION
-          value: "1.22.2"
+          value: "1.22.6"
         - name: FOCUS
           value: "centos-stream:*"
         image: quay.io/kubevirtci/golang:v20240814-9b6c4af
@@ -145,7 +145,7 @@ presubmits:
         - ./pipeline.sh
         env:
         - name: GIMME_GO_VERSION
-          value: "1.22.2"
+          value: "1.22.6"
         - name: FOCUS
           value: "fedora:*"
         image: quay.io/kubevirtci/golang:v20240814-9b6c4af
@@ -180,7 +180,7 @@ presubmits:
         - ./pipeline.sh
         env:
         - name: GIMME_GO_VERSION
-          value: "1.22.2"
+          value: "1.22.6"
         - name: FOCUS
           value: "ubuntu:*"
         image: quay.io/kubevirtci/golang:v20240814-9b6c4af
@@ -215,7 +215,7 @@ presubmits:
         - ./pipeline.sh
         env:
         - name: GIMME_GO_VERSION
-          value: "1.22.2"
+          value: "1.22.6"
         - name: FOCUS
           value: "opensuse-tumbleweed:*"
         image: quay.io/kubevirtci/golang:v20240814-9b6c4af
@@ -250,7 +250,7 @@ presubmits:
         - ./pipeline.sh
         env:
         - name: GIMME_GO_VERSION
-          value: "1.22.2"
+          value: "1.22.6"
         - name: FOCUS
           value: "opensuse-leap:*"
         image: quay.io/kubevirtci/golang:v20240814-9b6c4af
