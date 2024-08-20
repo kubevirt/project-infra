@@ -670,6 +670,7 @@ approve:
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
   - kubevirt/application-aware-quota
+  - kubevirt/dra-pci-driver
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -731,6 +732,7 @@ lgtm:
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
   - kubevirt/application-aware-quota
+  - kubevirt/dra-pci-driver
   review_acts_as_lgtm: true
 
 override:
