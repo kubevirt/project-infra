@@ -193,7 +193,6 @@ orgs:
         has_projects: false
         has_wiki: false
       dra-pci-driver:
-        allow_merge_commit: false
         allow_squash_merge: false
         description: 'DRA device driver for PCI passthrough devices'
         has_projects: false
