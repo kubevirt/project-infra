@@ -45,6 +45,7 @@ presubmits:
       grace_period: 5m
     labels:
       preset-podman-in-container-enabled: "true"
+      preset-bazel-unnested: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/golang:v20240711-f55d15c
