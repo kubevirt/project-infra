@@ -575,7 +575,7 @@ orgs:
         repos:
           cloud-provider-kubevirt: admin
       dra-pci-driver-mantainers:
-        mantainers:
+        maintainers:
         - alicefr
         - victortoso
         repos:
