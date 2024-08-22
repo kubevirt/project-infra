@@ -39,7 +39,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        - image: quay.io/kubevirtci/golang:v20240814-9b6c4af
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
@@ -52,7 +52,7 @@ postsubmits:
           # docker-in-docker needs privileged mode
           env:
           - name: GIMME_GO_VERSION
-            value: "1.19.9"
+            value: "1.22.5"
           securityContext:
             privileged: true
           volumeMounts:

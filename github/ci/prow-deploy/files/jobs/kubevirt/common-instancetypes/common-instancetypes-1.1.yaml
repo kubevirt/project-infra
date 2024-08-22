@@ -1,8 +1,8 @@
 presubmits:
   kubevirt/common-instancetypes:
-  - name: pull-common-instancetypes-1.0
+  - name: pull-common-instancetypes-1.1
     branches:
-      - release-1.0
+      - release-1.1
     always_run: true
     decorate: true
     decoration_config:
@@ -13,7 +13,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/common-instancetypes-builder:v20231205-3b7ed7e
+      - image: quay.io/kubevirtci/common-instancetypes-builder:v20240802-59e70de
         command:
         - "/bin/bash"
         - "-c"
@@ -21,9 +21,9 @@ presubmits:
         resources:
           requests:
             memory: "1Gi"
-  - name: pull-common-instancetypes-cluster-functest-1.0
+  - name: pull-common-instancetypes-cluster-functest-1.1
     branches:
-      - release-1.0
+      - release-1.1
     always_run: false
     run_if_changed: "instancetypes/.*|preferences/.*|scripts/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: kubevirt-prow-workloads
@@ -60,9 +60,9 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-cluster-functest-fedora-1.0
+  - name: pull-common-instancetypes-cluster-functest-fedora-1.1
     branches:
-      - release-1.0
+      - release-1.1
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/fedora/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: kubevirt-prow-workloads
@@ -99,9 +99,9 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-cluster-functest-centos-7-1.0
+  - name: pull-common-instancetypes-cluster-functest-centos-7-1.1
     branches:
-      - release-1.0
+      - release-1.1
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: kubevirt-prow-workloads
@@ -138,9 +138,9 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-cluster-functest-centos-stream-8-1.0
+  - name: pull-common-instancetypes-cluster-functest-centos-stream-8-1.1
     branches:
-      - release-1.0
+      - release-1.1
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: kubevirt-prow-workloads
@@ -177,9 +177,9 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-cluster-functest-centos-stream-9-1.0
+  - name: pull-common-instancetypes-cluster-functest-centos-stream-9-1.1
     branches:
-      - release-1.0
+      - release-1.1
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: kubevirt-prow-workloads
@@ -216,9 +216,9 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-cluster-functest-ubuntu-1.0
+  - name: pull-common-instancetypes-cluster-functest-ubuntu-1.1
     branches:
-      - release-1.0
+      - release-1.1
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/ubuntu/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: kubevirt-prow-workloads
@@ -255,9 +255,9 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-common-instancetypes-cluster-functest-validation-os-1.0
+  - name: pull-common-instancetypes-cluster-functest-validation-os-1.1
     branches:
-      - release-1.0
+      - release-1.1
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/windows/11/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: kubevirt-prow-workloads
@@ -297,11 +297,11 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-build-common-instancetypes-builder-1.0
+  - name: pull-build-common-instancetypes-builder-1.1
     always_run: false
     run_if_changed: "image/.*"
     branches:
-      - release-1.0
+      - release-1.1
     decorate: true
     decoration_config:
       timeout: 1h

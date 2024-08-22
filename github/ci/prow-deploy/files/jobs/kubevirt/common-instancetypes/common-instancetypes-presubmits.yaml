@@ -4,7 +4,6 @@ presubmits:
     branches:
       - main
     always_run: true
-    optional: true
     decorate: true
     decoration_config:
       timeout: 3h
@@ -14,7 +13,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/common-instancetypes-builder:v20231205-3b7ed7e
+      - image: quay.io/kubevirtci/common-instancetypes-builder:v20240802-59e70de
         command:
         - "/bin/bash"
         - "-c"
@@ -52,7 +51,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.skip="VirtualMachine using a preference is able to boot"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -91,7 +90,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Fedora"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -129,7 +128,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Fedora"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -180,7 +179,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS 7"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -219,7 +218,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS Stream 8"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -258,7 +257,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS Stream 9"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -296,7 +295,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS Stream 9"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -347,7 +346,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Ubuntu"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -385,7 +384,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Ubuntu"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -436,7 +435,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*OpenSUSE Tumbleweed"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -475,7 +474,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*OpenSUSE Leap"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -513,7 +512,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*OpenSUSE Leap"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -567,7 +566,7 @@ presubmits:
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Windows guest with .*Validation OS"'
-        image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
         name: ""
         resources:
           requests:
@@ -595,7 +594,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        - image: quay.io/kubevirtci/golang:v20240814-9b6c4af
           env:
             - name: COMMON_INSTANCETYPES_CRI
               value: podman

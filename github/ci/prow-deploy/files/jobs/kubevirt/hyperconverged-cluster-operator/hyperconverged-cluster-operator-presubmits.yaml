@@ -22,7 +22,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        - image: quay.io/kubevirtci/golang:v20240814-9b6c4af
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -38,7 +38,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "50Gi"
   - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.30
     skip_branches:
       - release-\d+\.\d+
@@ -61,7 +61,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        - image: quay.io/kubevirtci/golang:v20240814-9b6c4af
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -77,7 +77,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "50Gi"
   - name: build-hco-test-utils-image
     always_run: false
     run_if_changed: "tests/build/.*"
@@ -92,7 +92,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20240711-f55d15c
+      - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"

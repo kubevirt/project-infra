@@ -7,6 +7,7 @@ if ! command -V skopeo; then
     exit 1
 fi
 
+image_tag=""
 if [ $# -gt 1 ]; then
     image_tag="$2"
 fi

@@ -1,13 +1,10 @@
 ---
 presubmits:
   kubevirt/cluster-network-addons-operator:
-    - name: pull-e2e-cluster-network-addons-operator-lifecycle-k8s
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-e2e-cnao-lifecycle-k8s-release-0.95
+      branches:
+        - release-0.95
       always_run: true
-      optional: false
       decorate: true
       decoration_config:
         timeout: 4h
@@ -22,7 +19,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
             securityContext:
               privileged: true
             resources:
@@ -33,13 +30,10 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-lifecycle-k8s.sh"
-    - name: pull-e2e-cluster-network-addons-operator-workflow-k8s
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-e2e-cnao-workflow-k8s-release-0.95
+      branches:
+        - release-0.95
       always_run: true
-      optional: false
       decorate: true
       decoration_config:
         timeout: 3h
@@ -54,7 +48,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
             securityContext:
               privileged: true
             resources:
@@ -65,13 +59,10 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-workflow-k8s.sh"
-    - name: pull-e2e-cluster-network-addons-operator-monitoring-k8s
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-e2e-cnao-monitoring-k8s-release-0.95
+      branches:
+        - release-0.95
       always_run: true
-      optional: false
       decorate: true
       decoration_config:
         timeout: 3h
@@ -86,7 +77,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
             securityContext:
               privileged: true
             resources:
@@ -97,13 +88,10 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-monitoring-k8s.sh"
-    - name: pull-e2e-cluster-network-addons-operator-kubemacpool-functests
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-e2e-cnao-kubemacpool-functests-release-0.95
+      branches:
+        - release-0.95
       always_run: true
-      optional: false
       decorate: true
       skip_report: false
       decoration_config:
@@ -119,7 +107,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
             securityContext:
               privileged: true
             resources:
@@ -130,13 +118,10 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-kubemacpool-functests.sh"
-    - name: pull-cluster-network-addons-operator-unit-test
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-cluster-network-addons-operator-unit-test-release-0.95
+      branches:
+        - release-0.95
       always_run: true
-      optional: false
       decorate: true
       decoration_config:
         timeout: 3h
@@ -150,7 +135,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
             securityContext:
               privileged: true
             resources:
@@ -161,13 +146,10 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.unit-test.sh"
-    - name: pull-e2e-cluster-network-addons-operator-multus-functests
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-e2e-cnao-multus-functests-release-0.95
+      branches:
+        - release-0.95
       always_run: true
-      optional: false
       decorate: true
       skip_report: false
       decoration_config:
@@ -183,7 +165,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
             securityContext:
               privileged: true
             resources:
@@ -194,13 +176,10 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-multus-functests.sh"
-    - name: pull-e2e-cluster-network-addons-operator-br-marker-functests
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-e2e-cnao-br-marker-functests-release-0.95
+      branches:
+        - release-0.95
       always_run: true
-      optional: false
       decorate: true
       skip_report: false
       decoration_config:
@@ -216,7 +195,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
             securityContext:
               privileged: true
             resources:
@@ -227,13 +206,10 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-bridge-marker-functests.sh"
-    - name: pull-e2e-cluster-network-addons-operator-ovs-cni-functests
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-e2e-cnao-ovs-cni-functests-release-0.95
+      branches:
+        - release-0.95
       always_run: true
-      optional: false
       decorate: true
       skip_report: false
       decoration_config:
@@ -249,7 +225,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
             securityContext:
               privileged: true
             resources:
@@ -260,13 +236,10 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-ovs-cni-functests.sh"
-    - name: pull-e2e-cluster-network-addons-operator-macvtap-cni-functests
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-e2e-cnao-macvtap-cni-functests-release-0.95
+      branches:
+        - release-0.95
       always_run: true
-      optional: false
       decorate: true
       skip_report: false
       decoration_config:
@@ -282,7 +255,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
             securityContext:
               privileged: true
             resources:
@@ -293,12 +266,11 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-macvtap-cni-functests.sh"
-    - name: pull-e2e-cnao-multus-dynamic-networks-functests
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-e2e-cnao-multus-dynamic-networks-functests-release-0.95
+      branches:
+        - release-0.95
       always_run: true
+      optional: true
       decorate: true
       skip_report: false
       decoration_config:
@@ -314,7 +286,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
             securityContext:
               privileged: true
             resources:
@@ -325,13 +297,10 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-multus-dynamic-networks-controller-functests.sh"
-    - name: pull-e2e-cnao-kube-secondary-dns-functests
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
+    - name: pull-e2e-cnao-kube-secondary-dns-functests-release-0.95
+      branches:
+        - release-0.95
       always_run: true
-      optional: false
       decorate: true
       skip_report: false
       decoration_config:
@@ -347,7 +316,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
             securityContext:
               privileged: true
             resources:

@@ -4,95 +4,36 @@
 # Logins who are not members of 'kubevirt' organization were filtered out
 # See the OWNERS docs: https://git.k8s.io/community/contributors/guide/owners.md
 
-filters:
-  .*:
-    approvers:
-    - acardace
-    - alicefr
-    - alonakaplan
-    - davidvossel
-    - enp0s3
-    - fabiand
-    - iholder101
-    - jean-edouard
-    - mhenriks
-    - rmohr
-    - stu-gott
-    - vasiliy-ul
-    - vladikr
-    - xpivarc
-    reviewers:
-    - 0xfelix
-    - acardace
-    - alicefr
-    - alonakaplan
-    - eddev
-    - enp0s3
-    - fossedihelm
-    - iholder101
-    - jean-edouard
-    - lyarwood
-    - mhenriks
-    - stu-gott
-    - vasiliy-ul
-    - victortoso
-    - vladikr
-    - xpivarc
-  .*_test.go:
-    approvers:
-    - acardace
-    - alonakaplan
-    - dhiller
-    - enp0s3
-    - kbidarkar
-    - phoracek
-    - xpivarc
-    labels:
-    - sig/test
-    reviewers:
-    - kbidarkar
-  .golangci.yml:
-    approvers:
-    - acardace
-    - alonakaplan
-    - dhiller
-    - eddev
-    - enp0s3
-    - iholder101
-    - jean-edouard
-    - kbidarkar
-    - phoracek
-    - xpivarc
-    reviewers:
-    - acardace
-    - alonakaplan
-    - dhiller
-    - eddev
-    - enp0s3
-    - iholder101
-    - jean-edouard
-    - kbidarkar
-    - phoracek
-    - xpivarc
-  cluster-up/.*|WORKSPACE|.bazel.*|.fossa.yml|cluster-up-sha.txt:
-    approvers:
-    - brianmcarey
-    - dhiller
-    - xpivarc
-    labels:
-    - sig/buildsystem
-    reviewers:
-    - brianmcarey
-    - enp0s3
-    - xpivarc
-  docs/metrics.md:
-    approvers:
-    - machadovilaca
-    - sradco
-    labels:
-    - sig/observability
-    reviewers:
-    - assafad
-    - avlitman
-    - machadovilaca
+approvers:
+- acardace
+- alicefr
+- alonakaplan
+- davidvossel
+- enp0s3
+- fabiand
+- iholder101
+- jean-edouard
+- mhenriks
+- rmohr
+- stu-gott
+- vasiliy-ul
+- vladikr
+- xpivarc
 options: {}
+reviewers:
+- 0xfelix
+- acardace
+- alicefr
+- alonakaplan
+- eddev
+- enp0s3
+- fossedihelm
+- iholder101
+- jean-edouard
+- lyarwood
+- mhenriks
+- stu-gott
+- vasiliy-ul
+- victortoso
+- vladikr
+- xpivarc

@@ -79,6 +79,7 @@ orgs:
       - sradco
       - stu-gott
       - tiraboschi
+      - TheRealSibasishBehera
       - vamsikrishna-siddu
       - vasiliy-ul
       - victortoso
@@ -189,6 +190,11 @@ orgs:
         allow_merge_commit: false
         allow_squash_merge: false
         description: 'Incubating: A framework for writing Kubernetes Device Plugins'
+        has_projects: false
+        has_wiki: false
+      dra-pci-driver:
+        allow_squash_merge: false
+        description: 'DRA device driver for PCI passthrough devices'
         has_projects: false
         has_wiki: false
       external-storage:
@@ -568,6 +574,12 @@ orgs:
           - qinqon
         repos:
           cloud-provider-kubevirt: admin
+      dra-pci-driver-mantainers:
+        maintainers:
+        - alicefr
+        - victortoso
+        repos:
+          dra-pci-driver: admin
       maintainers:
         description: ""
         maintainers:

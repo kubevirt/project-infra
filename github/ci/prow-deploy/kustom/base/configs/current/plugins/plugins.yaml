@@ -215,6 +215,13 @@ plugins:
     - owners-label
     - trigger
 
+  kubevirt/dra-pci-driver:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - trigger
+
   kubevirt/hostpath-provisioner:
     plugins:
     - approve
@@ -663,6 +670,7 @@ approve:
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
   - kubevirt/application-aware-quota
+  - kubevirt/dra-pci-driver
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -724,6 +732,7 @@ lgtm:
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
   - kubevirt/application-aware-quota
+  - kubevirt/dra-pci-driver
   review_acts_as_lgtm: true
 
 override:
@@ -753,8 +762,8 @@ help:
     - **Provides Context**
     - **Identifies Relevant Code**
     - **Gives Examples**
-    - **Ready to Test**    
+    - **Ready to Test**
     - **Goldilocks priority**
     - **Up-To-Date**
 
-    
+

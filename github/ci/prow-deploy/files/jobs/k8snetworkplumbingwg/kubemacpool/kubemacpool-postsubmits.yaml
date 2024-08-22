@@ -14,7 +14,7 @@ postsubmits:
       cluster: kubevirt-prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240711-f55d15c
+          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -37,7 +37,7 @@ postsubmits:
       cluster: kubevirt-prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20240711-f55d15c
+          - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -45,7 +45,7 @@ postsubmits:
               - |
                 cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io &&
                 # Only push images on tags
-                COMMIT_TAG=$(git tag --points-at HEAD | head -1)
+                COMMIT_TAG=$(git tag --points-at HEAD | tail -1)
                 [ -z "$COMMIT_TAG" ] ||
                 make container docker-push IMAGE_TAG=$COMMIT_TAG
             # docker-in-docker needs privileged mode
