@@ -495,6 +495,9 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
+        env:
+        - name: TIMESTAMP
+          value: "1"
         image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
         name: ""
         resources:
