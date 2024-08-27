@@ -959,7 +959,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.30-sig-compute-migrations
+    name: pull-kubevirt-e2e-k8s-1.31-sig-compute-migrations
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -971,7 +971,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.30-sig-compute-migrations
+          value: k8s-1.31-sig-compute-migrations
         - name: KUBEVIRT_NUM_NODES
           value: "3"
         - name: KUBEVIRT_STORAGE
@@ -1624,7 +1624,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.30-sig-compute-serial
+    name: pull-kubevirt-e2e-k8s-1.31-sig-compute-serial
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1636,7 +1636,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.30-sig-compute-serial
+          value: k8s-1.31-sig-compute-serial
         - name: KUBEVIRT_PSA
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
