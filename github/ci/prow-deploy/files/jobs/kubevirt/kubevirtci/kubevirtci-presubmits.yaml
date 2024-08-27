@@ -82,7 +82,6 @@ presubmits:
           type: Directory
         name: vfio
   - always_run: false
-    run_if_changed: cluster-up/cluster/kind-ovn/.*
     cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
@@ -93,6 +92,7 @@ presubmits:
       rehearsal.allowed: "true"
     max_concurrency: 1
     name: check-up-kind-ovn
+    run_if_changed: cluster-up/cluster/kind-ovn/.*
     spec:
       containers:
       - command:
@@ -103,6 +103,9 @@ presubmits:
           set -ex
           export KUBEVIRT_PROVIDER=kind-ovn
           make cluster-up
+        env:
+        - name: GIMME_GO_VERSION
+          value: 1.22.3
         image: quay.io/kubevirtci/golang-legacy:v20240523-1a2c9b8
         name: ""
         resources:
@@ -110,9 +113,6 @@ presubmits:
             memory: 15Gi
         securityContext:
           privileged: true
-        env:
-        - name: GIMME_GO_VERSION
-          value: "1.22.3"
         volumeMounts:
         - mountPath: /lib/modules
           name: modules
@@ -152,7 +152,6 @@ presubmits:
                 values:
                 - "true"
             topologyKey: kubernetes.io/hostname
-            weight: 100
       containers:
       - command:
         - /usr/local/bin/runner.sh
@@ -209,8 +208,8 @@ presubmits:
     decoration_config:
       timeout: 3h0m0s
     labels:
-      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
       rehearsal.allowed: "true"
       vgpu: "true"
     max_concurrency: 1
@@ -227,7 +226,6 @@ presubmits:
                 values:
                 - "true"
             topologyKey: kubernetes.io/hostname
-            weight: 100
       containers:
       - command:
         - /usr/local/bin/runner.sh
@@ -245,7 +243,7 @@ presubmits:
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "true"
         - name: KUBEVIRT_MEMORY_SIZE
-          value: "11264M"
+          value: 11264M
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=MediatedDevices --plugin-env
             kubevirt-conformance.E2E_SKIP=QUARANTINE
@@ -348,33 +346,6 @@ presubmits:
           path: /dev
           type: Directory
         name: devices
-  - always_run: true
-    cluster: kubevirt-prow-workloads
-    decorate: true
-    decoration_config:
-      timeout: 3h0m0s
-    labels:
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-check-provision-env: "true"
-      preset-podman-in-container-enabled: "true"
-    max_concurrency: 1
-    name: check-provision-k8s-1.28
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.28 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20240814-9b6c4af
-        name: ""
-        resources:
-          requests:
-            memory: 29Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
   - always_run: true
     cluster: kubevirt-prow-control-plane
     decorate: true
@@ -501,7 +472,7 @@ presubmits:
         - cd $(find ./cluster-provision/k8s -name '1.*' | sort -rV | head -1) && ../provision.sh
         env:
         - name: PHASES
-          value: "linux"
+          value: linux
         - name: BYPASS_PMAN_CHANGE_CHECK
           value: "true"
         image: quay.io/kubevirtci/golang:v20240814-9b6c4af
