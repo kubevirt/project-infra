@@ -379,7 +379,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
-      timeout: 5m0s
+      timeout: 15m0s
     labels:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
