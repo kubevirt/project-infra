@@ -178,7 +178,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/autoowners:v20220817-6d185c5
+    - image: quay.io/kubevirtci/autoowners:v20240827-7a3c1cc
       command:
       - "autoowners"
       args:
