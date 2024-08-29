@@ -161,9 +161,8 @@ postsubmits:
     - main
     - release-v\d+\.\d+
     cluster: kubevirt-prow-control-plane
-    always_run: true
-    optional: false
-    skip_report: true
+    always_run: false
+    run_if_changed: "hack/build/docker/builder/.*"
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
