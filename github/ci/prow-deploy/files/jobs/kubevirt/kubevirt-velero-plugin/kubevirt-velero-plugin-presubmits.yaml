@@ -18,7 +18,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -51,7 +51,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
