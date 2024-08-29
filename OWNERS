@@ -2,12 +2,6 @@ filters:
   ".*":
     reviewers:
       - ci-maintainers
-      - aglitke
-      - davidvossel
-      - phoracek
-      - rmohr
-      - tiraboschi
-      - vladikr
     approvers:
       - ci-maintainers
       - aglitke
