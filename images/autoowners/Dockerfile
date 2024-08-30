@@ -1,4 +1,4 @@
-FROM golang:1.18 as builder
+FROM docker.io/library/golang:1.22.4 as builder
 
 WORKDIR /go/src/github.com/openshift/ci-tools/
 RUN mkdir -p /go/src/github.com/openshift/ && \

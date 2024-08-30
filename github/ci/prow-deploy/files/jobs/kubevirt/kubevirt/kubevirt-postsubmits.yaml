@@ -20,20 +20,23 @@ postsubmits:
       preset-gcs-credentials: "true"
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
+      preset-pgp-bot-key: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20240814-9b6c4af
+      - image: quay.io/kubevirtci/golang:v20240829-fb5890c
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
         - name: GH_CLI_VERSION
-          value: "1.5.0"
+          value: "2.52.0"
         - name: GITHUB_TOKEN_PATH
           value: /etc/github/oauth
         - name: GITHUB_REPOSITORY
           value: kubevirt/kubevirt
         - name: GIT_USER_NAME
           value: kubevirt-bot
+        - name: GPG_USER_ID
+          value: "0x99F7C0D2E1BB8025"
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
@@ -41,6 +44,7 @@ postsubmits:
           major_minor="$(git tag --points-at HEAD | head -1 | grep -oE '[0-9]+.[0-9]+')"
           if [ $(expr $major_minor \>\= 0.40) -eq 1 ] || [ $(expr $major_minor \=\= 0.36) -eq 1 ]; then
             cat $QUAY_PASSWORD | podman login --username "$(cat "$QUAY_USER")" --password-stdin=true quay.io
+            gpg --allow-secret-key-import --import /etc/pgp/token
             ./automation/release.sh
           fi
         securityContext:
@@ -65,7 +69,7 @@ postsubmits:
       preset-gcs-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+      - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
@@ -104,7 +108,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20240814-9b6c4af
+      - image: quay.io/kubevirtci/golang:v20240829-fb5890c
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -139,7 +143,7 @@ postsubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
           env:
             - name: COVERALLS_TOKEN_FILE
               value: /root/.docker/secrets/coveralls/token
@@ -181,7 +185,7 @@ postsubmits:
         job_states_to_report: []
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
           env:
             - name: FOSSA_TOKEN_FILE
               value: /root/.docker/secrets/fossa/token
@@ -226,7 +230,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"

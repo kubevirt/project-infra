@@ -7,7 +7,6 @@
 filters:
   .*:
     approvers:
-    - assafad
     - avlitman
     - machadovilaca
     - nunnatsa
@@ -15,7 +14,6 @@ filters:
     - sradco
     - tiraboschi
     reviewers:
-    - assafad
     - avlitman
     - machadovilaca
     - nunnatsa

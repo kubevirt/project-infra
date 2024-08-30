@@ -15,7 +15,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20240814-9b6c4af
+      - image: quay.io/kubevirtci/golang:v20240829-fb5890c
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"

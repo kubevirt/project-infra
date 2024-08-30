@@ -19,7 +19,7 @@ periodics:
   cluster: kubevirt-prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20240814-9b6c4af
+      - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
         env:
           - name: BUCKET_DIR
             value: kubevirtci-crio-mirror
@@ -129,6 +129,9 @@ periodics:
         cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
         ./hack/bump-centos-version.sh &&
         GIT_ASKPASS=../project-infra/hack/git-askpass.sh ../project-infra/hack/git-pr.sh -c "PHASES=linux BYPASS_PMAN_CHANGE_CHECK=true ./publish.sh" -r kubevirtci -b bump-centos-stream -T main -p $(pwd) -s "Automatic bump of CentOS Stream to latest"
+      env:
+      - name: GIMME_GO_VERSION
+        value: "1.22.5"
       securityContext:
         privileged: true
       resources:

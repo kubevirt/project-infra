@@ -16,5 +16,5 @@ else
     _cri_bin=docker
 fi
 
-${_cri_bin} pull gcr.io/k8s-prow/mkpj 1>&2 || true
-${_cri_bin} run -i --rm -v "${root}:${root}:z" gcr.io/k8s-prow/mkpj "--config-path=${config}" "--job-config-path=${job_config_path}" "$@"
+${_cri_bin} pull us-docker.pkg.dev/k8s-infra-prow/images/mkpj 1>&2 || true
+${_cri_bin} run -i --rm -v "${root}:${root}:z" us-docker.pkg.dev/k8s-infra-prow/images/mkpj "--config-path=${config}" "--job-config-path=${job_config_path}" "$@"
