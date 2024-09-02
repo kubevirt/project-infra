@@ -91,6 +91,7 @@ orgs:
       - xpivarc
       - zhlhahaha
       - sbahar619
+      - dasionov
     members_can_create_repositories: false
     name: KubeVirt
     repos:
