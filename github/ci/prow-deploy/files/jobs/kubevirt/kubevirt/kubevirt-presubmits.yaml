@@ -2003,7 +2003,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.31-sig-compute
+          value: k8s-1.31-sig-compute-parallel
         - name: KUBEVIRT_PSA
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
