@@ -69,12 +69,13 @@ kubectl get secret prow-workloads-cluster-automation \
 
 > [!WARNING]
 > It is advised to reduce the access for the service account to minimum permissions for the namespace where Prow needs to create jobs.
-> Making the serviceaccount admin is a compromise, so that we can create secrets and other changes if required 
+> Making the serviceaccount admin is a compromise, so that we can create secrets and other changes if required
 
 ```bash
 # make serviceaccount admin on namespace
 kubectl create rolebinding kubevirt-prow-workloads-admin \
-    --role=admin \
+    --namespace kubevirt-prow-jobs \
+    --clusterrole=admin \
     --serviceaccount=kubevirt-prow-jobs:prow-workloads-cluster-automation
 ```
 
