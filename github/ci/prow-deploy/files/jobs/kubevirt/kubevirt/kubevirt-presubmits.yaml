@@ -1552,6 +1552,8 @@ presubmits:
           value: k8s-1.29-sig-storage
         - name: KUBEVIRT_PSA
           value: "true"
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
         name: ""
         resources:
@@ -1781,6 +1783,8 @@ presubmits:
           value: "true"
         - name: FEATURE_GATES
           value: NodeRestriction
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
         name: ""
         resources:
@@ -1962,6 +1966,8 @@ presubmits:
         - name: TARGET
           value: k8s-1.31-sig-storage
         - name: KUBEVIRT_PSA
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: FEATURE_GATES
           value: NodeRestriction
