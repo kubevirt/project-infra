@@ -1,6 +1,6 @@
 presubmits:
   kubevirt/hyperconverged-cluster-operator:
-  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.29
+  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.30
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -30,7 +30,7 @@ presubmits:
             - "export TARGET=k8s-1.29 && automation/test.sh"
           env:
             - name: GIMME_GO_VERSION
-              value: "1.22.3"
+              value: "1.22.6"
             - name: GINKGO_LABELS
               value: '!OpenShift && !SINGLE_NODE_ONLY'
           # docker-in-docker needs privileged mode
@@ -39,7 +39,7 @@ presubmits:
           resources:
             requests:
               memory: "50Gi"
-  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.30
+  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.31
     skip_branches:
       - release-\d+\.\d+
     annotations:
@@ -69,7 +69,7 @@ presubmits:
             - "export TARGET=k8s-1.30 && automation/test.sh"
           env:
             - name: GIMME_GO_VERSION
-              value: "1.22.3"
+              value: "1.22.6"
             - name: GINKGO_LABELS
               value: '!OpenShift && !SINGLE_NODE_ONLY'
           # docker-in-docker needs privileged mode
