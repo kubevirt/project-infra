@@ -414,6 +414,12 @@ repos:
       - name: area/instancetype
         color: bfd4f2
         target: both
+      - name: area/testing
+        color: c5def5
+        target: both
+        previously:
+          - name: topic/testing
+            color: c5def5
       - name: topic/api
         color: c5def5
         target: both
@@ -442,9 +448,6 @@ repos:
         color: c5def5
         target: both
       - name: topic/scheduling
-        color: c5def5
-        target: both
-      - name: topic/testing
         color: c5def5
         target: both
       - color: e11d21
