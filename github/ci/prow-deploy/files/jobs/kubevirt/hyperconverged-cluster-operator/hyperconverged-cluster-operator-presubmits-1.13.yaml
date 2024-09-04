@@ -1,0 +1,74 @@
+presubmits:
+  kubevirt/hyperconverged-cluster-operator:
+  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.29
+    branches:
+      - release-1.13
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 7h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-shared-images: "true"
+    cluster: kubevirt-prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20240829-fb5890c
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "export TARGET=k8s-1.29 && automation/test.sh"
+          env:
+            - name: GIMME_GO_VERSION
+              value: "1.22.6"
+            - name: GINKGO_LABELS
+              value: '!OpenShift && !SINGLE_NODE_ONLY'
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "50Gi"
+  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.30
+    branches:
+      - release-1.13
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 7h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-shared-images: "true"
+    cluster: kubevirt-prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20240829-fb5890c
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "export TARGET=k8s-1.30 && automation/test.sh"
+          env:
+            - name: GIMME_GO_VERSION
+              value: "1.22.6"
+            - name: GINKGO_LABELS
+              value: '!OpenShift && !SINGLE_NODE_ONLY'
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "50Gi"
