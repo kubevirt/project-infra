@@ -133,6 +133,7 @@ larger set of contributors to apply/remove them.
 | <a id="area/launcher" href="#area/launcher">`area/launcher`</a> | |  | |
 | <a id="area/monitoring" href="#area/monitoring">`area/monitoring`</a> | |  | |
 | <a id="area/operator" href="#area/operator">`area/operator`</a> | |  | |
+| <a id="area/testing" href="#area/testing">`area/testing`</a> |  <br><br> This was previously `topic/testing`, |  | |
 | <a id="area/virtctl" href="#area/virtctl">`area/virtctl`</a> | |  | |
 | <a id="distro/kubernetes" href="#distro/kubernetes">`distro/kubernetes`</a> |  <br><br> This was previously `distro/kuberenetes`, |  | |
 | <a id="distro/openshift" href="#distro/openshift">`distro/openshift`</a> | |  | |
@@ -153,7 +154,6 @@ larger set of contributors to apply/remove them.
 | <a id="topic/integration" href="#topic/integration">`topic/integration`</a> | |  | |
 | <a id="topic/packaging" href="#topic/packaging">`topic/packaging`</a> | |  | |
 | <a id="topic/scheduling" href="#topic/scheduling">`topic/scheduling`</a> | |  | |
-| <a id="topic/testing" href="#topic/testing">`topic/testing`</a> | |  | |
 | <a id="wontfix" href="#wontfix">`wontfix`</a> | |  | |
 
 ## Labels that apply to kubevirt/kubevirt, only for issues
