@@ -84,6 +84,7 @@ larger set of contributors to apply/remove them.
 | <a id="spam" href="#spam">`spam`</a> | Categorizes issues or PRs as an invalid contribution| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="triage/accepted" href="#triage/accepted">`triage/accepted`</a> | Indicates an issue or PR is ready to be actively worked on.| org members |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="triage/duplicate" href="#triage/duplicate">`triage/duplicate`</a> | Indicates an issue is a duplicate of other open issue.| anyone | |
+| <a id="triage/infra-issue" href="#triage/infra-issue">`triage/infra-issue`</a> | Indicates an issue was caused by failures in the infrastructure.| anyone | |
 | <a id="triage/needs-information" href="#triage/needs-information">`triage/needs-information`</a> | Indicates an issue needs more information in order to work on it.| anyone | |
 | <a id="triage/not-reproducible" href="#triage/not-reproducible">`triage/not-reproducible`</a> | Indicates an issue can not be reproduced as described.| anyone | |
 | <a id="triage/unresolved" href="#triage/unresolved">`triage/unresolved`</a> | Indicates an issue that can not or will not be resolved.| anyone | |

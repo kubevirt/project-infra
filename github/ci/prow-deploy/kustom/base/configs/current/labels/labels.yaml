@@ -36,6 +36,11 @@ default:
       previously:
         - name: triage/build-officer
           color: 8452c9
+    - color: d455d0
+      description: Indicates an issue was caused by failures in the infrastructure.
+      name: triage/infra-issue
+      target: both
+      addedBy: anyone
     - color: c2e0c6
       name: release-note
       target: prs
