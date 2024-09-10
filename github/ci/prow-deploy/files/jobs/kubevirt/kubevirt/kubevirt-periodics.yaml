@@ -262,7 +262,7 @@ periodics:
         git show -s --format=%H > _out/commit
         echo ${build_date} > _out/build_date
         bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}"
-        gsutil cp ./_out/manifests/release/kubevirt-operator.yaml ./_out/manifests/release/kubevirt-cr.yaml _out/manifests/release/conformance.yaml gs://$bucket_dir/
+        gsutil cp ./_out/manifests/release/kubevirt-operator.yaml ./_out/manifests/release/kubevirt-cr.yaml _out/manifests/release/conformance.yaml ./_out/cmd/cniplugins/kubevirt-passt-binding gs://$bucket_dir/
         gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/
         gsutil cp ./_out/tests/tests.test gs://$bucket_dir/testing/
         gsutil cp ./_out/cmd/dump/dump gs://$bucket_dir/testing/dump
