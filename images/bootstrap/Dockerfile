@@ -59,6 +59,7 @@ RUN dnf install -y \
     qemu-user-static \
     bind-utils \
     wget \
+    which \
     python3-jinja2 &&\
   dnf -y clean all
 
