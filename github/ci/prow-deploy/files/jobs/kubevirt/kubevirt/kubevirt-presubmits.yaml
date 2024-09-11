@@ -419,7 +419,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: s390x-prow-virtual
+    cluster: prow-s390x-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
