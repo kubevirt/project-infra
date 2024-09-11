@@ -23,6 +23,33 @@ postsubmits:
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
+    - name: stable-branch-kubemacpool
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-kubevirtci-quay-credential: "true"
+      branches:
+        - ^release-\d+\.\d+$
+      cluster: kubevirt-prow-workloads
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io &&
+                BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+                [ "$BRANCH_NAME" != "HEAD" ] &&
+                make container docker-push IMAGE_TAG=${BRANCH_NAME}_latest
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
     - name: release-kubemacpool
       annotations:
         testgrid-create-test-group: "false"
