@@ -117,6 +117,9 @@ RUN mkdir -p /etc/setup.mixin.d/ && mkdir -p /etc/teardown.mixin.d/
 # Trust git repositories used for e2e jobs
 RUN git config --global --add safe.directory '*'
 
+# FIXME: Workaround for issue pulling images with podman on Fedora 40 - https://github.com/containers/podman/issues/23822
+RUN ln -s /usr/bin/gzip /usr/local/bin/pigz
+
 # note the runner is also responsible for making podman in container function if
 # env PODMAN_IN_CONTAINER_ENABLED is set and similarly responsible for generating
 
