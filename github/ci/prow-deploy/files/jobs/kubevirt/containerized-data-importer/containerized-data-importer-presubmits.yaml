@@ -34,7 +34,7 @@ presubmits:
   - name: pull-cdi-unit-test-s390x
     skip_branches:
       - release-v\d+\.\d+
-    cluster: s390x-prow-virtual
+    cluster: prow-s390x-workloads
     annotations:
       fork-per-release: "true"
     always_run: true
