@@ -467,16 +467,14 @@ postsubmits:
               - |
                 cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
-                ./publish_image.sh pr-creator quay.io kubevirtci
+                ./publish_multiarch_image.sh pr-creator quay.io kubevirtci
             securityContext:
               privileged: true
             resources:
               requests:
-                memory: "16Gi"
-                cpu: "500m"
+                memory: "29Gi"
               limits:
-                memory: "16Gi"
-                cpu: "500m"
+                memory: "29Gi"
     - name: publish-vm-image-builder-image
       always_run: false
       run_if_changed: "images/vm-image-builder/.*"

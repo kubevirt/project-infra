@@ -1,6 +1,6 @@
-FROM quay.io/kubevirtci/golang:v20240229-74549d5
+FROM quay.io/kubevirtci/golang:v20240814-9b6c4af
 
-ENV GIMME_GO_VERSION=1.21.6
+ENV GIMME_GO_VERSION=1.22.6
 
 RUN set -x && \
     git clone https://github.com/kubernetes/test-infra.git && \
@@ -15,10 +15,10 @@ RUN set -x && \
 RUN set -x && \
     git clone https://github.com/kubevirt/project-infra.git && \
     cd ./project-infra && \
-    cp ./hack/git-askpass.sh hack/git-pr.sh /usr/local/bin && \
+    cp ./hack/git-askpass.sh /usr/local/bin && \
+    cp ./hack/git-pr.sh /usr/local/bin && \
     chmod +x /usr/local/bin/git-askpass.sh /usr/local/bin/git-pr.sh && \
-    bazel build //robots/cmd/labels-checker:labels-checker && \
-    cp ./bazel-out/k8-fastbuild/bin/robots/cmd/labels-checker/labels-checker_/labels-checker /usr/local/bin && \
+    /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/labels-checker ./robots/cmd/labels-checker' && \
     chmod +x /usr/local/bin/labels-checker && \
     cd .. && rm -rf ./project-infra
 
