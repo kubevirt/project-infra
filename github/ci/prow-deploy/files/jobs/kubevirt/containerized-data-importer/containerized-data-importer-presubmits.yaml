@@ -47,7 +47,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20240711-f55d15c
+        - image: quay.io/kubevirtci/golang:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"

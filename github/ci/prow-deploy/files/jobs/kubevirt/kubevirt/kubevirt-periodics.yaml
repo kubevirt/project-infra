@@ -690,7 +690,7 @@ periodics:
       - -c
       - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
         -p ../kubevirt -T main -R
-      image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+      image: quay.io/kubevirtci/pr-creator:v20240913-6773146
       name: ""
       resources:
         requests:
@@ -1567,7 +1567,7 @@ periodics:
         git-pr.sh -c "cd ../project-infra && bazelisk run //robots/cmd/uploader:uploader -- -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ${PWD} -s 'Automated run of make bump-images and //robots/cmd/uploader:uploader' -b bump-images -r kubevirt -L release-note-none -T main
       command:
       - /bin/sh
-      image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+      image: quay.io/kubevirtci/pr-creator:v20240913-6773146
       name: ""
       resources:
         requests:
