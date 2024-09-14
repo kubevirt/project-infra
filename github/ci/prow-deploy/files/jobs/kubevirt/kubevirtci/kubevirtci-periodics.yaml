@@ -57,7 +57,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+    - image: quay.io/kubevirtci/pr-creator:v20240913-6773146
       command: ["/bin/sh", "-c"]
       args:
       - |
@@ -89,7 +89,7 @@ periodics:
   cluster: kubevirt-prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+    - image: quay.io/kubevirtci/pr-creator:v20240913-6773146
       command: ["/bin/sh", "-c"]
       args:
       - GIT_ASKPASS=/usr/local/bin/git-askpass.sh git-pr.sh -c "./hack/bump-cdi.sh" -r kubevirtci -b bump-cdi -T main -p $(pwd)
@@ -120,7 +120,7 @@ periodics:
   cluster: kubevirt-prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20240305-cb764ec
+    - image: quay.io/kubevirtci/pr-creator:v20240913-6773146
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
