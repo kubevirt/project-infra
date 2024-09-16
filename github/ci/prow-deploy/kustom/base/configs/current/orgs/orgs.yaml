@@ -100,6 +100,7 @@ orgs:
       ansible-kubevirt-modules:
         allow_merge_commit: false
         allow_rebase_merge: false
+        archived: true
         description: Ansible modules for managing KubeVirt objects in Kubernetes clusters
         has_projects: true
       api-reference:
