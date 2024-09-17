@@ -192,9 +192,9 @@ periodics:
         --comment=Pull requests that are marked with `lgtm` should receive a review
         from an approver within 1 week.
 
-        After that period they are marked with the label `needs/approver-review`.
+        After that period the bot marks them with the label `needs-approver-review`.
 
-        /needs approver-review
+        /label needs-approver-review
       - --template
       - --ceiling=10
       - --confirm

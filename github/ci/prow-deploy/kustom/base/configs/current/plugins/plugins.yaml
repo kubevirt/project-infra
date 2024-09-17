@@ -741,6 +741,9 @@ override:
 label:
   restricted_labels:
     'kubevirt':
+    - allowed_users:
+      - kubevirt-bot
+      label: needs-approver-review
     - allowed_teams:
       - kubevirtorg-label
       label: good-first-issue

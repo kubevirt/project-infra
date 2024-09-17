@@ -321,7 +321,7 @@ default:
       addedBy: reviewers or members
     - color: b60205
       description: Indicates that a PR requires a review from an approver.
-      name: needs/approver-review
+      name: needs-approver-review
       target: prs
       prowPlugin: label
       addedBy: prow
