@@ -19,7 +19,35 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test-unit"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
+  - name: pull-cdi-unit-test-s390x
+    skip_branches:
+      - release-v\d+\.\d+
+    cluster: prow-s390x-workloads
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -57,7 +85,7 @@ presubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
         name: ""
         resources:
           requests:
@@ -92,7 +120,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -124,7 +152,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -156,7 +184,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -188,7 +216,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20240829-fb5890c
+        - image: quay.io/kubevirtci/golang:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -222,7 +250,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -256,7 +284,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -290,7 +318,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -324,7 +352,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -362,7 +390,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -400,7 +428,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -434,7 +462,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -468,7 +496,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -502,7 +530,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -540,7 +568,7 @@ presubmits:
         env:
         - name: FOSSA_TOKEN_FILE
           value: /root/.docker/secrets/fossa/token
-        image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
         name: ""
         resources:
           requests:
@@ -577,7 +605,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image:  quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image:  quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"

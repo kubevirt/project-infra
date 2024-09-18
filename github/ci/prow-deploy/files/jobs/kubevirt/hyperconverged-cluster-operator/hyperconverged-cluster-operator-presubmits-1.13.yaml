@@ -1,11 +1,8 @@
 presubmits:
   kubevirt/hyperconverged-cluster-operator:
-  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.30
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
+  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.29
+    branches:
+      - release-1.13
     always_run: true
     optional: false
     decorate: true
@@ -22,7 +19,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20240911-16816d3
+        - image: quay.io/kubevirtci/golang:v20240829-fb5890c
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -39,12 +36,9 @@ presubmits:
           resources:
             requests:
               memory: "50Gi"
-  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.31
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
+  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.30
+    branches:
+      - release-1.13
     always_run: true
     optional: false
     decorate: true
@@ -61,7 +55,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20240911-16816d3
+        - image: quay.io/kubevirtci/golang:v20240829-fb5890c
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -78,33 +72,3 @@ presubmits:
           resources:
             requests:
               memory: "50Gi"
-  - name: build-hco-test-utils-image
-    always_run: false
-    run_if_changed: "tests/build/.*"
-    annotations:
-      testgrid-create-test-group: "false"
-    decorate: true
-    max_concurrency: 1
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-github-credentials: "true"
-      preset-kubevirtci-quay-credential: "true"
-    cluster: kubevirt-prow-control-plane
-    spec:
-      containers:
-      - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/bash"
-        - "-c"
-        - |
-          cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io && \
-          GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/oauth) PUSH_IMAGE=false ./hack/build-in-docker.sh
-        # docker-in-docker needs privileged mode
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            memory: "1Gi"
-          limits:
-            memory: "1Gi"

@@ -1,11 +1,10 @@
 presubmits:
   kubevirt/application-aware-quota:
-  - name: pull-aaq-unit-test
-    skip_branches:
-      - release-v\d+\.\d+
+  - name: pull-aaq-unit-test-1.3
+    context: pull-aaq-unit-test
+    branches:
+      - release-v1.3
     cluster: kubevirt-prow-control-plane
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: false
     decorate: true
@@ -29,12 +28,11 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-aaq-generate-verify
-    skip_branches:
-      - release-v\d+\.\d+
+  - name: pull-aaq-generate-verify-1.3
+    context: pull-aaq-generate-verify
+    branches:
+      - release-v1.3
     cluster: kubevirt-prow-control-plane
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: false
     decorate: true
@@ -59,11 +57,10 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
-  - name: pull-aaq-functest
-    skip_branches:
-      - release-v\d+\.\d+
-    annotations:
-      fork-per-release: "true"
+  - name: pull-aaq-functest-1.3
+    context: pull-aaq-functest
+    branches:
+      - release-v1.3
     always_run: true
     optional: false
     decorate: true
@@ -86,11 +83,6 @@ presubmits:
             - "/bin/sh"
             - "-c"
             - "automation/test.sh"
-          # scheduling gates feature gate is enabled by default in versions >= 1.27
-          # this should be deleted once the default provider will be higher than 1.26
-          env:
-            - name: TARGET
-              value: k8s-1.27
           securityContext:
             privileged: true
           resources:

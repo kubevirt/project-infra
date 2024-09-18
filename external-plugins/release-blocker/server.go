@@ -324,7 +324,7 @@ func (s *Server) handleIssueComment(l *logrus.Entry, ic github.IssueCommentEvent
 
 	// not authorized.
 	if !ok {
-		resp := fmt.Sprintf("only [%s](https://github.com/orgs/%s/people) org members may request release block label", org, org)
+		resp := fmt.Sprintf("Only top-level approvers from the [OWNERS](https://github.com/%s/%s/blob/main/OWNERS_ALIASES) file may request the release block label", org, org)
 		s.log.WithFields(l.Data).Info(resp)
 		return s.ghc.CreateComment(org, repo, num, plugins.FormatICResponse(ic.Comment, resp))
 	}

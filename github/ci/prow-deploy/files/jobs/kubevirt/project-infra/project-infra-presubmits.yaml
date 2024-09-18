@@ -6,7 +6,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20240827-195f38540
+      - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20240913-6ce4fd9da
         args:
         - "/ko-app/checkconfig"
         - "--config-path"
@@ -26,7 +26,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20240829-fb5890c
+      - image: quay.io/kubevirtci/golang:v20240911-16816d3
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -49,7 +49,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20240829-fb5890c
+      - image: quay.io/kubevirtci/golang:v20240911-16816d3
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -71,7 +71,7 @@ presubmits:
     decorate: true
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20240829-fb5890c
+      - image: quay.io/kubevirtci/golang:v20240911-16816d3
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -95,7 +95,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+      - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -118,7 +118,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+      - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -149,7 +149,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -173,7 +173,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -199,7 +199,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -225,7 +225,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -251,7 +251,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20240829-fb5890c
+        - image: quay.io/kubevirtci/golang:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -277,7 +277,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -307,7 +307,7 @@ presubmits:
       base_ref: main
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -334,7 +334,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -360,7 +360,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -386,7 +386,7 @@ presubmits:
     cluster: kubevirt-prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -412,23 +412,21 @@ presubmits:
     cluster: kubevirt-prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
             - |
               cd images
-              ./publish_image.sh -b pr-creator quay.io kubevirtci
+              ./publish_multiarch_image.sh -b pr-creator quay.io kubevirtci
           securityContext:
             privileged: true
           resources:
             requests:
-              memory: "16Gi"
-              cpu: "500m"
+              memory: "29Gi"
             limits:
-              memory: "16Gi"
-              cpu: "500m"
+              memory: "29Gi"
   - name: build-vm-image-builder-image
     always_run: false
     run_if_changed: "images/bootstrap/.*"
@@ -440,7 +438,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -464,7 +462,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -489,7 +487,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -558,7 +556,7 @@ presubmits:
     cluster: kubevirt-prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20240829-fb5890c
+        - image: quay.io/kubevirtci/golang:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -600,7 +598,7 @@ presubmits:
       base_ref: main
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -630,7 +628,7 @@ presubmits:
       base_ref: master
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20240829-fb5890c
+      - image: quay.io/kubevirtci/golang:v20240911-16816d3
         command:
         - github/ci/testgrid/hack/check.sh
         securityContext:
@@ -658,7 +656,7 @@ presubmits:
     spec:
       containers:
       - name: peribolos
-        image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20240827-195f38540
+        image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20240913-6ce4fd9da
         command:
         - /ko-app/peribolos
         # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
@@ -735,7 +733,7 @@ presubmits:
     run_if_changed: 'robots/cmd/job-config-validator/.*|go.mod|go.sum'
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20240829-fb5890c
+      - image: quay.io/kubevirtci/golang:v20240911-16816d3
         env:
         - name: GIMME_GO_VERSION
           value: "1.20"
