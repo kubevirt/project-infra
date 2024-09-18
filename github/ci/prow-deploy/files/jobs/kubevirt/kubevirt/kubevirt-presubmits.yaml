@@ -1554,6 +1554,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
         name: ""
         resources:
@@ -1785,6 +1787,8 @@ presubmits:
           value: NodeRestriction
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
         name: ""
         resources:
@@ -1969,6 +1973,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         - name: FEATURE_GATES
           value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
