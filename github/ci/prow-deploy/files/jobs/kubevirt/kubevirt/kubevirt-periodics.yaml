@@ -1577,6 +1577,7 @@ periodics:
 - annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
+  cron: 45 6 * * *
   decorate: true
   extra_refs:
   - base_ref: main
@@ -1586,7 +1587,6 @@ periodics:
   - base_ref: main
     org: kubevirt
     repo: kubevirt
-  interval: 24h
   labels:
     preset-gcs-credentials: "true"
   name: periodic-kubevirt-quarantined-tests-daily-report
