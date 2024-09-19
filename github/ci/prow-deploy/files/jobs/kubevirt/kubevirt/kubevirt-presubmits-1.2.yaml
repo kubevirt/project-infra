@@ -1247,6 +1247,10 @@ presubmits:
           value: k8s-1.27-sig-storage
         - name: KUBEVIRT_PSA
           value: "true"
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20240118-315742b
         name: ""
         resources:
@@ -1448,6 +1452,10 @@ presubmits:
           value: k8s-1.28-sig-storage
         - name: KUBEVIRT_PSA
           value: "true"
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20240118-315742b
         name: ""
         resources:
@@ -1638,6 +1646,10 @@ presubmits:
           value: k8s-1.29-sig-storage
         - name: KUBEVIRT_PSA
           value: "true"
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20240118-315742b
         name: ""
         resources:
