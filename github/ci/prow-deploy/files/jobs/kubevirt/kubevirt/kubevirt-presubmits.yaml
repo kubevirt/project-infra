@@ -2113,7 +2113,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --prometheus-port 30007
-        image: quay.io/kubevirtci/bootstrap:v20240829-fb5890c
+        image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
         name: ""
         resources:
           requests:
