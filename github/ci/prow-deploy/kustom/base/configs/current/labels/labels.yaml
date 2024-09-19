@@ -359,14 +359,17 @@ default:
       description: Categorizes an issue or pull request as critical and of urgent priority.
       prowPlugin: label
       target: both
+    - name: priority/backlog
+      addedBy: anyone
+      color: fbca04
+      description: Indicate that the issue or PR is a lower priority and can be worked on in the future 
+      prowPlugin: label 
+      target: both
 repos:
   kubevirt/kubevirt:
     labels:
       - name: needs/documentation
         color: d4c5f9
-        target: both
-      - name: priority/backlog
-        color: fbca04
         target: both
       - name: research-needed
         color: fef2c0
