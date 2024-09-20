@@ -251,6 +251,11 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          env:
+          - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+            value: "true"
+          - name: KUBEVIRT_WITH_ETC_CAPACITY
+            value: "1G"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -285,6 +290,11 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          env:
+          - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+            value: "true"
+          - name: KUBEVIRT_WITH_ETC_CAPACITY
+            value: "1G"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -319,6 +329,11 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          env:
+          - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+            value: "true"
+          - name: KUBEVIRT_WITH_ETC_CAPACITY
+            value: "1G"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -353,6 +368,11 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          env:
+          - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+            value: "true"
+          - name: KUBEVIRT_WITH_ETC_CAPACITY
+            value: "1G"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -391,6 +411,11 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          env:
+          - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+            value: "true"
+          - name: KUBEVIRT_WITH_ETC_CAPACITY
+            value: "1G"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -429,6 +454,11 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          env:
+          - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+            value: "true"
+          - name: KUBEVIRT_WITH_ETC_CAPACITY
+            value: "1G"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -463,6 +493,11 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          env:
+          - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+            value: "true"
+          - name: KUBEVIRT_WITH_ETC_CAPACITY
+            value: "1G"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -497,6 +532,11 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          env:
+          - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+            value: "true"
+          - name: KUBEVIRT_WITH_ETC_CAPACITY
+            value: "1G"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -531,6 +571,11 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          env:
+          - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+            value: "true"
+          - name: KUBEVIRT_WITH_ETC_CAPACITY
+            value: "1G"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
