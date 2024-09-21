@@ -30,7 +30,7 @@ default:
     - color: 8452c9
       name: triage/build-watcher
       target: issues
-      description: Discovered by a kubevirt build-watcher. Pay attention to these issues to keep CI healthy.
+      description: DEPRECATED
       prowPlugin: label
       addedBy: anyone
       previously:

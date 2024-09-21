@@ -96,7 +96,7 @@ larger set of contributors to apply/remove them.
 | <a id="good first issue" href="#good first issue">`good first issue`</a> | Identifies an issue that has been specifically created or selected for first-time contributors.| prow |  [help](https://prow.ci.kubevirt.io/command-help#help) |
 | <a id="good-first-issue" href="#good-first-issue">`good-first-issue`</a> | Identifies an issue that has been specifically created or selected for first-time contributors.|  | |
 | <a id="help wanted" href="#help wanted">`help wanted`</a> | Identifies an issue that has been specifically created or selected for new contributors.| prow |  [help](https://prow.ci.kubevirt.io/command-help#help) |
-| <a id="triage/build-watcher" href="#triage/build-watcher">`triage/build-watcher`</a> | Discovered by a kubevirt build-watcher. Pay attention to these issues to keep CI healthy. <br><br> This was previously `triage/build-officer`, | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
+| <a id="triage/build-watcher" href="#triage/build-watcher">`triage/build-watcher`</a> | DEPRECATED <br><br> This was previously `triage/build-officer`, | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 
 ## Labels that apply to all repos, only for PRs
 
