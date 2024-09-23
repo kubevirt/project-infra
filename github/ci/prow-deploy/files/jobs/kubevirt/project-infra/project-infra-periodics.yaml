@@ -163,6 +163,41 @@ periodics:
       - --template
       - --ceiling=10
       - --confirm
+- name: periodic-project-infra-needs-approver-review
+  interval: 1h
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+      command:
+      - /ko-app/commenter
+      args:
+      - |-
+        --query=org:kubevirt
+          is:open
+          is:pr
+          label:lgtm
+          -label:approved
+          -label:do-not-merge/work-in-progress
+          -label:needs/approver-review
+          is:public
+      - --updated=168h
+      - --token=/etc/github/oauth
+      - |-
+        --comment=Pull requests that are marked with `lgtm` should receive a review
+        from an approver within 1 week.
+
+        After that period the bot marks them with the label `needs-approver-review`.
+
+        /label needs-approver-review
+      - --template
+      - --ceiling=10
+      - --confirm
 - name: periodic-project-infra-autoowners
   interval: 24h
   annotations:

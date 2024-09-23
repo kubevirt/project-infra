@@ -319,6 +319,12 @@ default:
       target: prs
       prowPlugin: lgtm
       addedBy: reviewers or members
+    - color: b60205
+      description: Indicates that a PR requires a review from an approver.
+      name: needs-approver-review
+      target: prs
+      prowPlugin: label
+      addedBy: prow
     - color: 0ffa16
       description: Indicates a PR has been approved by an approver from all required OWNERS files.
       name: approved
