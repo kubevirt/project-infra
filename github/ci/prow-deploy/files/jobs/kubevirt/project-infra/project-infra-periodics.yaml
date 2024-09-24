@@ -184,7 +184,7 @@ periodics:
           label:lgtm
           -label:approved
           -label:do-not-merge/work-in-progress
-          -label:needs/approver-review
+          -label:needs-approver-review
           is:public
       - --updated=168h
       - --token=/etc/github/oauth
