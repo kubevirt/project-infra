@@ -23,7 +23,7 @@ postsubmits:
       preset-pgp-bot-key: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20240911-16816d3
+      - image: quay.io/kubevirtci/golang:v20240923-918320b
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -69,7 +69,7 @@ postsubmits:
       preset-gcs-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+      - image: quay.io/kubevirtci/bootstrap:v20240923-918320b
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
@@ -108,7 +108,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20240911-16816d3
+      - image: quay.io/kubevirtci/golang:v20240923-918320b
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -143,7 +143,7 @@ postsubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+        - image: quay.io/kubevirtci/bootstrap:v20240923-918320b
           env:
             - name: COVERALLS_TOKEN_FILE
               value: /root/.docker/secrets/coveralls/token
@@ -185,7 +185,7 @@ postsubmits:
         job_states_to_report: []
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+        - image: quay.io/kubevirtci/bootstrap:v20240923-918320b
           env:
             - name: FOSSA_TOKEN_FILE
               value: /root/.docker/secrets/fossa/token
@@ -230,7 +230,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+        - image: quay.io/kubevirtci/bootstrap:v20240923-918320b
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
