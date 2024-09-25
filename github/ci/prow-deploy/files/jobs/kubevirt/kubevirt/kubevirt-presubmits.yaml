@@ -2079,7 +2079,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - alwways_run: false
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
