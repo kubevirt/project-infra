@@ -50,6 +50,7 @@ larger set of contributors to apply/remove them.
 | <a id="kind/api-change" href="#kind/api-change">`kind/api-change`</a> | Categorizes issue or PR as related to adding, removing, or otherwise changing an API| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="kind/blocker" href="#kind/blocker">`kind/blocker`</a> | | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="kind/bug" href="#kind/bug">`kind/bug`</a> | | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
+| <a id="kind/cleanup" href="#kind/cleanup">`kind/cleanup`</a> | Categorizes issue or PR as related to cleaning up code, process, or technical debt. <br><br> This was previously `sig/code-quality`, | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="kind/deprecation" href="#kind/deprecation">`kind/deprecation`</a> | Indicates the PR/issue deprecates a feature that will be removed in a subsequent release.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="kind/enhancement" href="#kind/enhancement">`kind/enhancement`</a> | | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="kind/failing-test" href="#kind/failing-test">`kind/failing-test`</a> | Categorizes issue or PR as related to a failing test.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
@@ -65,7 +66,6 @@ larger set of contributors to apply/remove them.
 | <a id="sig/api" href="#sig/api">`sig/api`</a> | Denotes an issue or PR that relates to changes in api.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/buildsystem" href="#sig/buildsystem">`sig/buildsystem`</a> | Denotes an issue or PR that relates to changes in the build system.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/ci" href="#sig/ci">`sig/ci`</a> | Denotes an issue or PR as being related to sig-ci, marks changes to the CI system.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
-| <a id="sig/code-quality" href="#sig/code-quality">`sig/code-quality`</a> | | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/compute" href="#sig/compute">`sig/compute`</a> |  <br><br> This was previously `topic/virtualization`, `sig-virtualization`, | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/documentation" href="#sig/documentation">`sig/documentation`</a> | | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/network" href="#sig/network">`sig/network`</a> |  <br><br> This was previously `topic/network`, | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
