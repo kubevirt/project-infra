@@ -60,6 +60,7 @@ RUN dnf install -y \
     bind-utils \
     wget \
     which \
+    openssl \
     python3-jinja2 &&\
   dnf -y clean all
 
@@ -122,7 +123,7 @@ RUN git config --global --add safe.directory '*'
 # env PODMAN_IN_CONTAINER_ENABLED is set and similarly responsible for generating
 
 # .bazelrc files if bazel remote caching is enabled
-COPY ["entrypoint.sh", "runner.sh", "create_bazel_cache_rcs.sh", \
+COPY ["entrypoint.sh", "gcs_restapi.sh", "runner.sh", "create_bazel_cache_rcs.sh", \
         "/usr/local/bin/"]
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
