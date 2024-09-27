@@ -128,6 +128,54 @@ presubmits:
           path: /sys/fs/cgroup
           type: Directory
         name: cgroup
+  - always_run: false
+    cluster: kubevirt-prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-dind-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 1
+    name: check-up-kind-1.28
+    optional: true
+    run_if_changed: cluster-up/cluster/kind(-1\.28)?
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        - make cluster-up
+        env:
+        - name: KUBEVIRT_PROVIDER
+          value: kind-1.28
+        - name: KUBEVIRT_NUM_NODES
+          value: "1"
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 11264M
+        image: quay.io/kubevirtci/golang:v20240923-918320b
+        name: ""
+        resources:
+          requests:
+            memory: 29Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+        - mountPath: /var/log/audit
+          name: audit
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+      - hostPath:
+          path: /var/log/audit
+          type: Directory
+        name: audit
   - always_run: true
     cluster: kubevirt-prow-workloads
     decorate: true
