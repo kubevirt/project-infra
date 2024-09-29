@@ -617,6 +617,22 @@ presets:
   - name: bazeluserroot
     mountPath: /tmp/cache/bazel
 - labels:
+    preset-kubevirt-s390x-icr-credential: "true"
+  env:
+  - name: ICR_USER
+    value: /etc/kubevirt-icr-cred/username
+  - name: ICR_PASSWORD
+    value: /etc/kubevirt-icr-cred/password
+  volumes:
+  - name: kubevirt-icr-cred
+    secret:
+      defaultMode: 0400
+      secretName: kubevirt-icr-credential
+  volumeMounts:
+  - name: kubevirt-icr-cred
+    mountPath: /etc/kubevirt-icr-cred
+    readOnly: true
+- labels:
     preset-kubevirtci-quay-credential: "true"
   env:
   - name: QUAY_USER

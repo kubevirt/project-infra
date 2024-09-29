@@ -425,18 +425,25 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     labels:
-      preset-bazel-unnested: "true"
+      preset-bazel-unnested: "false"
+      preset-podman-in-container-enabled: "true"
+      preset-kubevirt-s390x-icr-credential: "true"
     name: pull-kubevirt-unit-test-s390x
     skip_branches:
     - release-\d+\.\d+
     spec:
       containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - make go-test
-        image: quay.io/kubevirtci/golang:v20240923-918320b
+      - image: quay.io/kubevirtci/golang:v20240923-918320b
+        env:
+        - name: KUBEVIRT_BUILDER_IMAGE
+          value: icr.io/kubevirt/builder:2409300832-cb0dc925db-s390x
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - >
+            cat $ICR_PASSWORD | podman login icr.io --username $(cat $ICR_USER) --password-stdin=true &&
+            make test
         name: ""
         resources:
           requests:
