@@ -213,6 +213,9 @@ postsubmits:
     branches:
       - main
     decorate: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
     max_concurrency: 1
     labels:
       preset-podman-in-container-enabled: "true"
