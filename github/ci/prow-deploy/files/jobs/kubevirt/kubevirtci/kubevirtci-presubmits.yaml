@@ -431,6 +431,7 @@ presubmits:
     decoration_config:
       timeout: 3h0m0s
     labels:
+      preset-docker-mirror-proxy: "true"
       preset-kubevirtci-check-provision-env: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
