@@ -80,6 +80,8 @@ presubmits:
               memory: "50Gi"
   - name: build-hco-test-utils-image
     always_run: false
+    branches:
+    - main
     run_if_changed: "tests/build/.*"
     annotations:
       testgrid-create-test-group: "false"
