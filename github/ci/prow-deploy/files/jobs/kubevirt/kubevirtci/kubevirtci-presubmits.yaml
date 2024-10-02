@@ -442,6 +442,9 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.31 && ../provision.sh
+        env:
+        - name: SLIM
+          value: true
         image: quay.io/kubevirtci/golang:v20240923-918320b
         name: ""
         resources:
