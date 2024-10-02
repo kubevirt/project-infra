@@ -415,6 +415,7 @@ periodics:
         bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}"
         gsutil cp ./_out/manifests/release/kubevirt-operator.yaml gs://$bucket_dir/kubevirt-operator-s390x.yaml
         gsutil cp ./_out/manifests/release/kubevirt-cr.yaml gs://$bucket_dir/kubevirt-cr-s390x.yaml
+        gsutil cp ./_out/manifests/release/conformance.yaml gs://$bucket_dir/conformance-s390x.yaml
         gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/testing-s390x
         gsutil cp ./_out/commit gs://$bucket_dir/commit-s390x
         gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest-s390x
