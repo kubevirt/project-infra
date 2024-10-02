@@ -62,6 +62,7 @@ larger set of contributors to apply/remove them.
 | <a id="lifecycle/frozen" href="#lifecycle/frozen">`lifecycle/frozen`</a> | Indicates that an issue or PR should not be auto-closed due to staleness.| prow |  [lifecycle](https://prow.ci.kubevirt.io/command-help#lifecycle) |
 | <a id="lifecycle/rotten" href="#lifecycle/rotten">`lifecycle/rotten`</a> | Denotes an issue or PR that has aged beyond stale and will be auto-closed.| prow |  [lifecycle](https://prow.ci.kubevirt.io/command-help#lifecycle) |
 | <a id="lifecycle/stale" href="#lifecycle/stale">`lifecycle/stale`</a> | Denotes an issue or PR has remained open with no activity and has become stale.| prow |  [lifecycle](https://prow.ci.kubevirt.io/command-help#lifecycle) |
+| <a id="priority/backlog" href="#priority/backlog">`priority/backlog`</a> | Indicate that the issue or PR is a lower priority and can be worked on in the future| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="priority/critical-urgent" href="#priority/critical-urgent">`priority/critical-urgent`</a> | Categorizes an issue or pull request as critical and of urgent priority.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/api" href="#sig/api">`sig/api`</a> | Denotes an issue or PR that relates to changes in api.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/buildsystem" href="#sig/buildsystem">`sig/buildsystem`</a> | Denotes an issue or PR that relates to changes in the build system.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
@@ -142,7 +143,6 @@ larger set of contributors to apply/remove them.
 | <a id="for/developers" href="#for/developers">`for/developers`</a> | |  | |
 | <a id="for/users" href="#for/users">`for/users`</a> | |  | |
 | <a id="needs/documentation" href="#needs/documentation">`needs/documentation`</a> | |  | |
-| <a id="priority/backlog" href="#priority/backlog">`priority/backlog`</a> | |  | |
 | <a id="release-blocker" href="#release-blocker">`release-blocker`</a> | Indicates that a PR or issue is blocking a release from a specific branch.| prow |  [release-blocker](https://prow.ci.kubevirt.io/command-help#release-blocker) |
 | <a id="research-needed" href="#research-needed">`research-needed`</a> | |  | |
 | <a id="topic/api" href="#topic/api">`topic/api`</a> | |  | |
