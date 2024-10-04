@@ -14,15 +14,6 @@ var _ = Describe("main", func() {
 		opts.daysInThePast = 14
 	})
 
-	DescribeTable("normalizeTestName",
-		func(input, expected string) {
-			Expect(normalizeTestName(input)).To(BeEquivalentTo(expected))
-		},
-		Entry("basic", "test[QUARANTINE]test", "testtest"),
-		Entry("one space", "test [QUARANTINE]test", "test test"),
-		Entry("two spaces", "test [QUARANTINE] test", "test test"),
-	)
-
 	DescribeTable("TopXTests less comparison",
 		func(t TopXTests, expected bool) {
 			Expect(t.Less(0, 1)).To(BeEquivalentTo(expected))
