@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "loader.go",
+        "server.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/go-git/go-git/v5/plumbing/transport/server",
+    importpath = "github.com/go-git/go-git/v5/plumbing/transport/server",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/go-git/go-billy/v5:go_default_library",
+        "//vendor/github.com/go-git/go-billy/v5/osfs:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/plumbing:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/plumbing/cache:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/plumbing/format/packfile:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/plumbing/protocol/packp:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/plumbing/protocol/packp/capability:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/plumbing/revlist:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/plumbing/storer:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/plumbing/transport:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/storage/filesystem:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/utils/ioutil:go_default_library",
+    ],
+)
