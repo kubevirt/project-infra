@@ -90,6 +90,15 @@ RUN if test "${ARCH}" != s390x; then \
         rm -rf /root/.cache/bazel; \
     fi
 
+# As gcloud isn't supported on s390x, rather than installing kubectl via gcloud as in above RUN,
+# we are installing its binary as described in the kubernetes official docs.
+RUN if test "${ARCH}" == s390x; then \
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/s390x/kubectl" && \
+        install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
+        rm -f kubectl && \
+        kubectl version --client; \
+    fi
+
 #
 # BEGIN: PODMAN IN CONTAINER SETUP
 #
