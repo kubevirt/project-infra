@@ -19,7 +19,7 @@ periodics:
       - image: quay.io/kubevirtci/pr-creator:v20240913-6773146
         env:
         - name: COMMON_INSTANCETYPES_BRANCH
-          value: "release-1.1"
+          value: "release-1.2"
         - name: KUBEVIRT_BRANCH
           value: "main"
         - name: SSP_BRANCH
