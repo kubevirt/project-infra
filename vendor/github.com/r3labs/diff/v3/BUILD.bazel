@@ -1,0 +1,33 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "change_value.go",
+        "comparative.go",
+        "diff.go",
+        "diff_bool.go",
+        "diff_comparative.go",
+        "diff_float.go",
+        "diff_int.go",
+        "diff_interface.go",
+        "diff_map.go",
+        "diff_pointer.go",
+        "diff_slice.go",
+        "diff_string.go",
+        "diff_struct.go",
+        "diff_time.go",
+        "diff_uint.go",
+        "error.go",
+        "filter.go",
+        "options.go",
+        "patch.go",
+        "patch_map.go",
+        "patch_slice.go",
+        "patch_struct.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/r3labs/diff/v3",
+    importpath = "github.com/r3labs/diff/v3",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/github.com/vmihailenco/msgpack/v5:go_default_library"],
+)
