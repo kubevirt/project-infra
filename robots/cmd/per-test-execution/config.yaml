@@ -1,0 +1,6 @@
+lanes:
+- periodic-kubevirt-e2e-k8s-%s-sig-compute-migrations
+- periodic-kubevirt-e2e-k8s-%s-sig-compute
+- periodic-kubevirt-e2e-k8s-%s-sig-network
+- periodic-kubevirt-e2e-k8s-%s-sig-operator
+- periodic-kubevirt-e2e-k8s-%s-sig-storage
