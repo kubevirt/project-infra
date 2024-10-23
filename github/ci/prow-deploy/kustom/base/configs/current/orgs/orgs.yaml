@@ -93,6 +93,7 @@ orgs:
       - zhlhahaha
       - sbahar619
       - dasionov
+      - chandramerla
     members_can_create_repositories: false
     name: KubeVirt
     repos:
