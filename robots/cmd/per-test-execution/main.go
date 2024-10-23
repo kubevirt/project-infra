@@ -28,7 +28,9 @@ import (
 	"fmt"
 	junit2 "github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
+	"io"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"net/http"
 	"os"
 	"regexp"
 	"sigs.k8s.io/yaml"
@@ -36,6 +38,7 @@ import (
 	"strconv"
 	"sync"
 	"time"
+	"unicode/utf8"
 )
 
 const (
@@ -50,7 +53,8 @@ var (
 	//go:embed config.yaml
 	defaultConfig []byte
 
-	k8sVersionRegex = regexp.MustCompile(`^[0-9]\.[1-9][0-9]+$`)
+	k8sVersionRegex              = regexp.MustCompile(`^[0-9]\.[1-9][0-9]*$`)
+	k8sStableReleaseVersionRegex = regexp.MustCompile(`^v([0-9]\.[1-9][0-9]*)\.[1-9][0-9]*$`)
 )
 
 type Config struct {
@@ -68,6 +72,24 @@ type options struct {
 	Months     int
 	K8sVersion string
 	ConfigPath string
+}
+
+func (o options) loadDefaults() error {
+	if opts.K8sVersion == "" {
+		log.Info("loading default stable k8s version")
+		resp, err := http.Get("https://dl.k8s.io/release/stable.txt")
+		defer resp.Body.Close()
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		k8sStableReleaseVersion := string(body)
+		if !k8sStableReleaseVersionRegex.MatchString(k8sStableReleaseVersion) {
+			return fmt.Errorf("Kubernetes stable version %q doesn't match regex", k8sStableReleaseVersion)
+		}
+		opts.K8sVersion = k8sStableReleaseVersionRegex.FindAllStringSubmatch(k8sStableReleaseVersion, -1)[0][1]
+	}
+	return nil
 }
 
 func (o options) validate() error {
@@ -99,24 +121,53 @@ type testExecutions struct {
 	FailedExecutions int
 }
 
+type ByFailuresDescending []*testExecutions
+
+func (b ByFailuresDescending) Len() int {
+	return len(b)
+}
+func (b ByFailuresDescending) Less(i, j int) bool {
+	if b[i].FailedExecutions > b[j].FailedExecutions {
+		return true
+	}
+	if b[i].FailedExecutions == b[j].FailedExecutions &&
+		b[i].TotalExecutions > b[j].TotalExecutions {
+		return true
+	}
+	if b[i].FailedExecutions == b[j].FailedExecutions &&
+		b[i].TotalExecutions == b[j].TotalExecutions &&
+		b[i].Name < b[j].Name {
+		return true
+	}
+	return false
+}
+func (b ByFailuresDescending) Swap(i, j int) {
+	b[i], b[j] = b[j], b[i]
+}
+
 func main() {
-	flag.IntVar(&opts.Months, "months", 1, "determines how much months in the past till today are covered")
-	flag.StringVar(&opts.K8sVersion, "kubernetes-version", "1.31", "string defining the k8s version that has the most recent lane")
+	flag.IntVar(&opts.Months, "months", 3, "determines how much months in the past till today are covered")
+	flag.StringVar(&opts.K8sVersion, "kubernetes-version", "", "the k8s major.minor version for the target lane, i.e. 1.31")
 	flag.StringVar(&opts.ConfigPath, "config-path", "", "path to the config file")
 	flag.Parse()
 
-	err := opts.validate()
+	err := opts.loadDefaults()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = opts.validate()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	now := time.Now()
-	currentYear, currentMonth, _ := now.Date()
-	endOfReport, err := time.Parse(time.DateOnly, fmt.Sprintf("%04d-%02d-01", currentYear, int(currentMonth)))
+	currentYear, currentMonth, currentDay := now.Date()
+	endOfReport, err := time.Parse(time.DateOnly, fmt.Sprintf("%04d-%02d-%02d", currentYear, int(currentMonth), currentDay))
 	if err != nil {
 		log.Fatal(err)
 	}
 	startOfReport := endOfReport.AddDate(0, -opts.Months, 0)
+	startOfReport, err = time.Parse(time.DateOnly, fmt.Sprintf("%s-01", startOfReport.Format("2006-01")))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -142,11 +193,21 @@ func main() {
 				log.Printf("failed to load periodicJobDirs for %v: %v", fmt.Sprintf("%s*", periodicJobDir), fmt.Errorf("error listing gcs objects: %v", err))
 			}
 
+			buildNumbers := make([]int, 0, len(results))
+			perBuildTestExecutions := make(map[string]map[int]rune)
 			allTestExecutions := make(map[string]*testExecutions)
 			for _, result := range results {
 				for _, junit := range result.JUnit {
+					buildNumbers = append(buildNumbers, result.BuildNumber)
 					for _, test := range junit.Tests {
 						testName := flakefinder.NormalizeTestName(test.Name)
+
+						if _, exists := perBuildTestExecutions[testName]; !exists {
+							perBuildTestExecutions[testName] = make(map[int]rune)
+						}
+						r, _ := utf8.DecodeRuneInString(string(test.Status))
+						perBuildTestExecutions[testName][result.BuildNumber] = r
+
 						testExecutionRecord := &testExecutions{
 							Name:             testName,
 							TotalExecutions:  0,
@@ -173,25 +234,42 @@ func main() {
 				}
 			}
 
-			testNames := make([]string, 0, len(allTestExecutions))
-			for testName := range allTestExecutions {
-				testNames = append(testNames, testName)
+			sortedTestExecutions := make([]*testExecutions, 0, len(allTestExecutions))
+			for _, testExecution := range allTestExecutions {
+				sortedTestExecutions = append(sortedTestExecutions, testExecution)
 			}
-			sort.Strings(testNames)
+			sort.Sort(ByFailuresDescending(sortedTestExecutions))
+			sort.Ints(buildNumbers)
 
-			file, err := os.CreateTemp("/tmp", fmt.Sprintf("per-test-execution-%s-%s-%s-*.csv", startOfReport.Format("2006-01"), endOfReport.Add(-1*24*time.Hour).Format("2006-01"), periodicJobDir))
+			fileName := fmt.Sprintf(
+				"per-test-execution-%s-%s-%s-*.csv",
+				startOfReport.Format("2006-01"),
+				endOfReport.Add(-1*24*time.Hour).Format("2006-01"),
+				periodicJobDir)
+			file, err := os.CreateTemp("/tmp", fileName)
 			if err != nil {
 				log.Fatal(err)
 			}
 			defer file.Close()
 			writer := csv.NewWriter(file)
-			writer.Write([]string{"test-name", "number-of-executions", "number-of-failures"})
-			for _, testName := range testNames {
-				testExecution, exists := allTestExecutions[testName]
-				if !exists {
-					log.Fatal("test %s doesn't exist", testName)
+			headers := []string{"test-name", "number-of-executions", "number-of-failures"}
+			for _, buildNumber := range buildNumbers {
+				headers = append(headers, fmt.Sprintf("https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/logs/%s/%d", periodicJobDir, buildNumber))
+			}
+			err = writer.Write(headers)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, testExecution := range sortedTestExecutions {
+				values := []string{testExecution.Name, strconv.Itoa(testExecution.TotalExecutions), strconv.Itoa(testExecution.FailedExecutions)}
+				for _, buildNumber := range buildNumbers {
+					value := ""
+					if executionStatus, statusExists := perBuildTestExecutions[testExecution.Name][buildNumber]; statusExists {
+						value = string(executionStatus)
+					}
+					values = append(values, value)
 				}
-				err := writer.Write([]string{testExecution.Name, strconv.Itoa(testExecution.TotalExecutions), strconv.Itoa(testExecution.FailedExecutions)})
+				err = writer.Write(values)
 				if err != nil {
 					log.Fatal(err)
 				}
