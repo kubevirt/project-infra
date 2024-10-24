@@ -26,9 +26,9 @@ orgs:
       - aglitke
       - akalenyu
       - akrejcir
+      - alaypatel07
       - aliamerj
       - alicefr
-      - alaypatel07
       - AlonaKaplan
       - alromeros
       - andreabolognani
@@ -37,9 +37,11 @@ orgs:
       - avlitman
       - awels
       - Barakmor1
+      - chandramerla
       - codingben
       - cwilkers
       - dankenigsberg
+      - dasionov
       - dollierp
       - dominikholler
       - EdDev
@@ -79,11 +81,12 @@ orgs:
       - RamLavi
       - RoniKishner
       - rthallisey
+      - sbahar619
       - shellyka13
       - sradco
       - stu-gott
-      - tiraboschi
       - TheRealSibasishBehera
+      - tiraboschi
       - vamsikrishna-siddu
       - vasiliy-ul
       - victortoso
@@ -91,9 +94,6 @@ orgs:
       - vladikr
       - xpivarc
       - zhlhahaha
-      - sbahar619
-      - dasionov
-      - chandramerla
     members_can_create_repositories: false
     name: KubeVirt
     repos:
