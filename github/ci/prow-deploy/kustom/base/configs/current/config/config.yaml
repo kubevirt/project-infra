@@ -617,6 +617,11 @@ presets:
   - name: bazeluserroot
     mountPath: /tmp/cache/bazel
 - labels:
+    preset-kubevirtci-etcd-in-mem: "true"
+  env:
+    - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+      value: "true"
+- labels:
     preset-kubevirtci-quay-credential: "true"
   env:
   - name: QUAY_USER
