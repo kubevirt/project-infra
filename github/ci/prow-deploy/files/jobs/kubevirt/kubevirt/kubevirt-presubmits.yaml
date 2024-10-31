@@ -1989,6 +1989,7 @@ presubmits:
       preset-kubevirtci-etcd-in-mem: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.31-sig-compute-conformance
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
