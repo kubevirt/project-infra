@@ -428,6 +428,35 @@ presubmits:
             memory: 8Gi
         securityContext:
           privileged: true
+  - always_run: false
+    cluster: prow-s390x-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-kubevirtci-check-provision-env: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 1
+    name: check-provision-k8s-1.31-s390x
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cd cluster-provision/k8s/1.31 && ../provision.sh
+        image: quay.io/kubevirtci/golang:v20241014-80f340c
+        env:
+        - name: SLIM
+          value: "true"
+        - name: RUN_KUBEVIRT_CONFORMANCE
+          value: "false"
+        name: ""
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
   - always_run: true
     cluster: kubevirt-prow-workloads
     decorate: true
