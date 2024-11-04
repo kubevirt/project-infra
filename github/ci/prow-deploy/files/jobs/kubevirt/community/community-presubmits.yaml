@@ -1,21 +1,27 @@
 presubmits:
   kubevirt/community:
-  - name: pull-community-generate-kubevirt-devstats-repo-sql
+  - always_run: true
     cluster: kubevirt-prow-control-plane
-    always_run: false
-    run_if_changed: "sigs.yaml"
     decorate: true
+    name: pull-community-make-generate
     spec:
       containers:
-        - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20230508-844cfc0
-          command: [ "/usr/local/bin/runner.sh", "/bin/bash", "-c" ]
-          args:
-            - pip install ruamel.yaml && ./hack/generate-devstats-repo-sql.py
-          resources:
-            requests:
-              memory: "1Gi"
-            limits:
-              memory: "1Gi"
+      - args:
+        - |
+          make generate
+          git diff --exit-code || (
+            echo "ERROR: Unapplied changes detected - please run make generate and commit changes!" && exit 1
+          )
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-ce"
+        image: quay.io/kubevirtci/golang:v20241014-80f340c
+        resources:
+          requests:
+            memory: "1Gi"
+          limits:
+            memory: "1Gi"
   - name: pull-community-validate-sigs-yaml
     run_if_changed: "sigs.yaml"
     optional: false
