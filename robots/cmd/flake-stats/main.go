@@ -18,8 +18,6 @@ import (
 //go:embed flake-stats.gohtml
 var htmlTemplate string
 
-var multipleSpacesRegex = regexp.MustCompile(`\s+`)
-
 type TemplateData struct {
 	OverallFailures *TopXTest
 	TopXTests
@@ -347,9 +345,9 @@ func aggregateTopXTests(recentFlakeFinderReports []*flakefinder.Params) TopXTest
 
 			// while the normalized test name is used to aggregate the test data for the stats report
 			// i.e. `testNamesByTopXTests`
-			normalizedTestName := normalizeTestName(originalTestName)
+			normalizedTestName := flakefinder.NormalizeTestName(originalTestName)
 
-			if isQuarantineLabelPresent(originalTestName) {
+			if flakefinder.IsQuarantineLabelPresent(originalTestName) {
 				quarantinedTestNames[normalizedTestName] = struct{}{}
 			}
 
@@ -478,16 +476,6 @@ func formatFromSourceToTargetFormat(dayDate, sourceFormat, targetFormat string) 
 		panic(err)
 	}
 	return date.Format(targetFormat)
-}
-
-func isQuarantineLabelPresent(testName string) bool {
-	return strings.Contains(testName, "[QUARANTINE]")
-}
-
-// normalizeTestName removes quarantine label and in that process eventually multiple spaces to have a chance to find
-// the test name again. However, for bigger renamings it can't do much.
-func normalizeTestName(testName string) string {
-	return multipleSpacesRegex.ReplaceAllString(strings.Replace(testName, "[QUARANTINE]", "", -1), " ")
 }
 
 func NewTopXTest(topXTestName string) *TopXTest {
