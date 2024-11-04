@@ -1,39 +1,37 @@
 postsubmits:
   kubevirt/community:
-    - name: postsubmit-community-update-kubevirt-devstats-repo-sql
-      branches:
-        - main
-      cluster: kubevirt-prow-control-plane
-      always_run: false
-      run_if_changed: "sigs.yaml"
-      extra_refs:
-        - org: kubevirt
-          repo: project-infra
-          base_ref: main
-        - org: cncf
-          repo: devstats
-          base_ref: master
-      annotations:
-        testgrid-create-test-group: "false"
-      labels:
-        preset-github-credentials: "true"
-      decorate: true
-      spec:
-        containers:
-          - image: quay.io/kubevirt/builder:2212180911-8818abcfa
-            command: [ "/bin/sh" , "-c" ]
-            args:
-              - |
-                set -e
-                REPO_DIR=$(cd ../../cncf/devstats && pwd)
-                TARGET_DIR=$REPO_DIR/scripts/kubevirt/
-                mkdir -p $TARGET_DIR
-                pip3 install ruamel.yaml
-                export GIT_ASKPASS=$PWD/../project-infra/hack/git-askpass.sh
-                ../project-infra/hack/git-pr.sh -c "python3 $(pwd)/hack/generate-devstats-repo-sql.py --repo-groups-sql $TARGET_DIR/repo_groups.sql" -p $REPO_DIR -o cncf -r devstats -b update-kubevirt-devstats-repo-sql
-            resources:
-              requests:
-                memory: "1Gi"
-              limits:
-                memory: "1Gi"
+  - name: postsubmit-community-update-kubevirt-devstats-repo-sql
+    branches:
+    - main
+    cluster: kubevirt-prow-control-plane
+    always_run: false
+    run_if_changed: "sigs.yaml"
+    extra_refs:
+    - org: cncf
+      repo: devstats
+      base_ref: master
+    annotations:
+      testgrid-create-test-group: "false"
+    labels:
+      preset-github-credentials: "true"
+    decorate: true
+    spec:
+      containers:
+      - args:
+        - |
+          REPO_DIR=$(cd ../../cncf/devstats && pwd)
+          TARGET_DIR=$REPO_DIR/scripts/kubevirt/
+          mkdir -p $TARGET_DIR
+          export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+          git-pr.sh -c "go run ./generators/cmd/devstats/... --output-path $TARGET_DIR/repo_groups.sql" -p $REPO_DIR -o cncf -r devstats -b update-kubevirt-devstats-repo-sql
+        command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        image: quay.io/kubevirtci/pr-creator:v20240913-6773146
+        resources:
+          requests:
+            memory: "1Gi"
+          limits:
+            memory: "1Gi"
 
