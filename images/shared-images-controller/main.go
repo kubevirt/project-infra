@@ -24,7 +24,7 @@ func init() {
 }
 
 func getLatestTag() (tag string, err error) {
-	resp, err := http.Get("https://raw.githubusercontent.com/kubevirt/kubevirt/main/cluster-up/version.txt")
+	resp, err := http.Get("https://raw.githubusercontent.com/kubevirt/kubevirt/main/kubevirtci/cluster-up/version.txt")
 	if err != nil {
 		log.WithError(err).Errorf("Failed to get latest kubevirtci tag")
 		return "", err
