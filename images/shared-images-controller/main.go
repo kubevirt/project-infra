@@ -24,7 +24,7 @@ func init() {
 }
 
 func getLatestTag() (tag string, err error) {
-	resp, err := http.Get("https://raw.githubusercontent.com/kubevirt/kubevirt/main/cluster-up/version.txt")
+	resp, err := http.Get("https://raw.githubusercontent.com/kubevirt/kubevirt/main/kubevirtci/cluster-up/version.txt")
 	if err != nil {
 		log.WithError(err).Errorf("Failed to get latest kubevirtci tag")
 		return "", err
@@ -142,20 +142,22 @@ func main() {
 		log.WithError(err).Fatalf("Could not connect to podman socket %d", socket)
 	}
 	for {
+		log.Infof("Waiting for %d hours before checking again", period)
+		time.Sleep(period * time.Hour)
+
 		tag, err := getLatestTag()
 		if err != nil {
 			log.WithError(err).Errorf("Failed to get latest kubevirtci tag")
+			continue
 		}
 		err = pullRequiredImages(connText, tag)
 		if err != nil {
 			log.WithError(err).Errorf("Failed to fetch image names")
+			continue
 		}
 		err = cleanOldImages(connText, tag)
 		if err != nil {
 			log.WithError(err).Errorf("Failure occured when deleting old images")
 		}
-		log.Infof("Waiting for %d hours before checking again", period)
-		time.Sleep(period * time.Hour)
-
 	}
 }
