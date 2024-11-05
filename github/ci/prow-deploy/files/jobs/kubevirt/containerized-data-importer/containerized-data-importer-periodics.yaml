@@ -149,3 +149,45 @@ periodics:
       resources:
         requests:
           memory: "8Gi"
+- name: periodic-containerized-data-importer-push-nightly-AMD64
+  cron: "2 3 * * *"
+  decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-podman-in-container-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-gcs-credentials: "true"
+    preset-kubevirtci-quay-credential: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: containerized-data-importer
+      base_ref: main
+      work_dir: true
+  cluster: kubevirt-prow-workloads
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+    - image: quay.io/kubevirtci/golang:v20241014-80f340c
+      env:
+      - name: DOCKER_PREFIX
+        value: quay.io/kubevirt
+      - name: BUILD_ARCH
+        value: amd64
+      command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          ./automation/prow_periodic_push.sh
+      # docker-in-docker needs privileged mode
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "8Gi"
