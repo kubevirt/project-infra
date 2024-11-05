@@ -15,11 +15,11 @@ export GIT_ASKPASS="${PROJECT_INFRA_ROOT}/hack/git-askpass.sh"
 KUBEVIRT_DIR=${KUBEVIRT_DIR:-/home/prow/go/src/github.com/kubevirt/kubevirt}
 export KUBEVIRT_MEMORY_SIZE=16384M
 
-cd $KUBEVIRT_DIR && export KUBEVIRT_PROVIDER=$(find cluster-up/cluster/k8s-1* -maxdepth 0 -type d -printf '%f\n' | sort -r |  head -1)
+cd $KUBEVIRT_DIR && export KUBEVIRT_PROVIDER=$(find kubevirtci/cluster-up/cluster/k8s-1* -maxdepth 0 -type d -printf '%f\n' | sort -r |  head -1)
 
 make cluster-up
 
-export KUBECONFIG=$(./cluster-up/kubeconfig.sh)
+export KUBECONFIG=$(./kubevirtci/cluster-up/kubeconfig.sh)
 
 kubectl create ns kubevirt-prow && kubectl create ns kubevirt-prow-jobs
 
