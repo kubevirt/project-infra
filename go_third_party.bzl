@@ -972,15 +972,15 @@ def go_deps():
         name = "com_github_envoyproxy_go_control_plane",
         build_file_proto_mode = "disable",
         importpath = "github.com/envoyproxy/go-control-plane",
-        sum = "h1:xdCVXxEe0Y3FQith+0cj2irwZudqGYvecuLB1HtdexY=",
-        version = "v0.10.3",
+        sum = "h1:7T++XKzy4xg7PKy+bM+Sa9/oe1OC88yz2hXQUISoXfA=",
+        version = "v0.11.1-0.20230524094728-9239064ad72f",
     )
     go_repository(
         name = "com_github_envoyproxy_protoc_gen_validate",
         build_file_proto_mode = "disable",
         importpath = "github.com/envoyproxy/protoc-gen-validate",
-        sum = "h1:PS7VIOgmSVhWUEeZwTe7z7zouA22Cr590PzXKbZHOVY=",
-        version = "v0.9.1",
+        sum = "h1:c0g45+xCJhdgFGw7a5QAfdS4byAbud7miNWJ1WwEVf8=",
+        version = "v0.10.1",
     )
     go_repository(
         name = "com_github_erikstmartin_go_testdb",
@@ -1462,8 +1462,8 @@ def go_deps():
         name = "com_github_golang_glog",
         build_file_proto_mode = "disable",
         importpath = "github.com/golang/glog",
-        sum = "h1:nfP3RFugxnNRyKgeWd4oI1nYvXpxrx8ck8ZrcizshdQ=",
-        version = "v1.0.0",
+        sum = "h1:/d3pCKDPWNnvIWe0vVUpNP32qc8U3PDVxySP/y360qE=",
+        version = "v1.1.0",
     )
     go_repository(
         name = "com_github_golang_groupcache",
@@ -3964,15 +3964,15 @@ def go_deps():
         name = "com_google_cloud_go_bigquery",
         build_file_proto_mode = "disable",
         importpath = "cloud.google.com/go/bigquery",
-        sum = "h1:yE+MpeFaRX9L3rYJrIxl1zCDnTU2kyTA2FkrFd6kVT8=",
-        version = "v1.49.0",
+        sum = "h1:RscMV6LbnAmhAzD893Lv9nXXy2WCaJmbxYPWDLbGqNQ=",
+        version = "v1.50.0",
     )
     go_repository(
         name = "com_google_cloud_go_datastore",
         build_file_proto_mode = "disable",
         importpath = "cloud.google.com/go/datastore",
-        sum = "h1:4siQRf4zTiAVt/oeH4GureGkApgb2vtPQAtOmhpqQwE=",
-        version = "v1.10.0",
+        sum = "h1:iF6I/HaLs3Ado8uRKMvZRvF/ZLkWaWE9i8AiHzbC774=",
+        version = "v1.11.0",
     )
     go_repository(
         name = "com_google_cloud_go_firestore",
@@ -4633,15 +4633,15 @@ def go_deps():
         name = "org_golang_google_genproto",
         build_file_proto_mode = "disable",
         importpath = "google.golang.org/genproto",
-        sum = "h1:yJv4O9/Q178wILoVkpoaERo7wMSIAqftxsa4y/5nP+8=",
-        version = "v0.0.0-20230330154414-c0448cd141ea",
+        sum = "h1:KpwkzHKEF7B9Zxg18WzOa7djJ+Ha5DzthMyZYQfEn2A=",
+        version = "v0.0.0-20230410155749-daa745c078e1",
     )
     go_repository(
         name = "org_golang_google_grpc",
         build_file_proto_mode = "disable",
         importpath = "google.golang.org/grpc",
-        sum = "h1:EhTqbhiYeixwWQtAEZAxmV9MGqcjEU2mFx52xCzNyag=",
-        version = "v1.54.0",
+        sum = "h1:8I4C0Yq1EjstUzUJzpcRVbuYA2mODtEmpWiQoN/b2nc=",
+        version = "v1.56.3",
     )
     go_repository(
         name = "org_golang_google_protobuf",
@@ -4704,8 +4704,8 @@ def go_deps():
         name = "org_golang_x_oauth2",
         build_file_proto_mode = "disable",
         importpath = "golang.org/x/oauth2",
-        sum = "h1:Lh8GPgSKBfWSwFvtuWOfeI3aAAnbXTSutYxJiOJFgIw=",
-        version = "v0.6.0",
+        sum = "h1:qe6s0zUXlPX80/dITx3440hWZ7GwMwgDDyrSGTPJG/g=",
+        version = "v0.7.0",
     )
     go_repository(
         name = "org_golang_x_sync",
