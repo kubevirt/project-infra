@@ -1014,8 +1014,8 @@ def go_deps():
         name = "com_github_fatih_color",
         build_file_proto_mode = "disable",
         importpath = "github.com/fatih/color",
-        sum = "h1:8xPHl4/q1VyqGIPif1F+1V3Y3lSmrq01EabUW3CoW5s=",
-        version = "v1.9.0",
+        sum = "h1:zmkK9Ngbjj+K0yRhTVONQh1p/HknKYSlNT+vZCzyokM=",
+        version = "v1.16.0",
     )
     go_repository(
         name = "com_github_fatih_structs",
@@ -2017,15 +2017,15 @@ def go_deps():
         name = "com_github_hashicorp_go_cleanhttp",
         build_file_proto_mode = "disable",
         importpath = "github.com/hashicorp/go-cleanhttp",
-        sum = "h1:dH3aiDG9Jvb5r5+bYHsikaOUIpcM0xvgMXVoDkXMzJM=",
-        version = "v0.5.1",
+        sum = "h1:035FKYIWjmULyFRBKPs8TBQoi0x6d9G4xc9neXJWAZQ=",
+        version = "v0.5.2",
     )
     go_repository(
         name = "com_github_hashicorp_go_hclog",
         build_file_proto_mode = "disable",
         importpath = "github.com/hashicorp/go-hclog",
-        sum = "h1:CG6TE5H9/JXsFWJCfoIVpKFIkFe6ysEuHirp4DxCsHI=",
-        version = "v0.9.2",
+        sum = "h1:Qr2kF+eVWjTiYmU7Y31tYlP1h0q/X3Nl3tPGdaB11/k=",
+        version = "v1.6.3",
     )
     go_repository(
         name = "com_github_hashicorp_go_immutable_radix",
@@ -2066,8 +2066,8 @@ def go_deps():
         name = "com_github_hashicorp_go_retryablehttp",
         build_file_proto_mode = "disable",
         importpath = "github.com/hashicorp/go-retryablehttp",
-        sum = "h1:HJunrbHTDDbBb/ay4kxa1n+dLmttUlnP3V9oNE4hmsM=",
-        version = "v0.6.6",
+        sum = "h1:C8hUCYzor8PIfXHa4UrZkU4VvK8o9ISHxT2Q8+VepXU=",
+        version = "v0.7.7",
     )
     go_repository(
         name = "com_github_hashicorp_go_rootcerts",
@@ -2619,8 +2619,8 @@ def go_deps():
         name = "com_github_mattn_go_colorable",
         build_file_proto_mode = "disable",
         importpath = "github.com/mattn/go-colorable",
-        sum = "h1:6Su7aK7lXmJ/U79bYtBjLNaha4Fs1Rg9plHpcH+vvnE=",
-        version = "v0.1.6",
+        sum = "h1:fFA4WZxdEF4tXPZVKMLwD8oUnCTTo08duU7wxecdEvA=",
+        version = "v0.1.13",
     )
     go_repository(
         name = "com_github_mattn_go_ieproxy",
@@ -2633,8 +2633,8 @@ def go_deps():
         name = "com_github_mattn_go_isatty",
         build_file_proto_mode = "disable",
         importpath = "github.com/mattn/go-isatty",
-        sum = "h1:bq3VjFmv/sOjHtdEhmkEV4x1AJtvUvOJ2PFAZ5+peKQ=",
-        version = "v0.0.16",
+        sum = "h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=",
+        version = "v0.0.20",
     )
     go_repository(
         name = "com_github_mattn_go_runewidth",
