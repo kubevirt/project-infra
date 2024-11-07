@@ -11,7 +11,7 @@ KUBEVIRT_DIR=${KUBEVIRT_DIR:-/home/prow/go/src/github.com/kubevirt/kubevirt}
 
 cd $KUBEVIRT_DIR && make cluster-up
 
-export KUBECONFIG=$(./cluster-up/kubeconfig.sh)
+export KUBECONFIG=$(./kubevirtci/cluster-up/kubeconfig.sh)
 
 cd "$PROJECT_INFRA_ROOT"
 
