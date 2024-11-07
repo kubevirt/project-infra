@@ -304,8 +304,8 @@ go_repository(
 go_repository(
     name = "com_github_onsi_ginkgo_v2",
     importpath = "github.com/onsi/ginkgo/v2",
-    sum = "h1:BA2GMJOtfGAfagzYtrAlufIP0lq6QERkFmHLMLPwFSU=",
-    version = "v2.9.2",
+    sum = "h1:WgqUCUt/lT6yXoQ8Wef0fsNn5cAuMK7+KT9UFRz2tcU=",
+    version = "v2.11.0",
 )
 
 go_repository(
@@ -1728,6 +1728,55 @@ go_repository(
     importpath = "golang.org/x/telemetry",
     sum = "h1:IRJeR9r1pYWsHKTRe/IInb7lYvbBVIqOgsX/u0mbOWY=",
     version = "v0.0.0-20240228155512-f48c80bd79b2",
+)
+
+go_repository(
+    name = "cat_dario_mergo",
+    importpath = "dario.cat/mergo",
+    sum = "h1:AGCNq9Evsj31mOgNPcLyXc+4PNABt905YmuqPYYpBWk=",
+    version = "v1.0.0",
+)
+
+go_repository(
+    name = "com_github_bwesterb_go_ristretto",
+    importpath = "github.com/bwesterb/go-ristretto",
+    sum = "h1:1w53tCkGhCQ5djbat3+MH0BAQ5Kfgbt56UZQ/JMzngw=",
+    version = "v1.2.3",
+)
+
+go_repository(
+    name = "com_github_cloudflare_circl",
+    importpath = "github.com/cloudflare/circl",
+    sum = "h1:fE/Qz0QdIGqeWfnwq0RE0R7MI51s0M2E4Ga9kq5AEMs=",
+    version = "v1.3.3",
+)
+
+go_repository(
+    name = "com_github_mmcloughlin_avo",
+    importpath = "github.com/mmcloughlin/avo",
+    sum = "h1:nAco9/aI9Lg2kiuROBY6BhCI/z0t5jEvJfjWbL8qXLU=",
+    version = "v0.5.0",
+)
+
+go_repository(
+    name = "com_github_pjbgf_sha1cd",
+    importpath = "github.com/pjbgf/sha1cd",
+    sum = "h1:4D5XXmUUBUl/xQ6IjCkEAbqXskkq/4O7LmGn0AqMDs4=",
+    version = "v0.3.0",
+)
+
+go_repository(
+    name = "com_github_protonmail_go_crypto",
+    importpath = "github.com/ProtonMail/go-crypto",
+    sum = "h1:kkhsdkhsCvIsutKu5zLMgWtgh9YxGCNAw8Ad8hjwfYg=",
+    version = "v0.0.0-20230828082145-3c4c8a2d2371",
+)
+
+go_repository(
+    name = "com_github_skeema_knownhosts",
+    importpath = "github.com/skeema/knownhosts",
+    sum = "h1:SHWdIUa82uGZz+F+47k8SY4QhhI291cXCpopT1lK2AQ=",
+    version = "v1.2.1",
 )
 
 gazelle_dependencies()
