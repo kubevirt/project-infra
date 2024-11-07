@@ -331,7 +331,13 @@ func getDateForJob(ctx context.Context, client *storage.Client, jobID string, pe
 }
 
 func getVMIResult(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (*Result, error) {
-	reader, err := getAuditFileReaderForJob(ctx, client, jobID, performanceJobName, "VMI-perf-audit-results.json")
+	prefixedFileName := ""
+	if strings.Contains(performanceJobName, "density") {
+		prefixedFileName = "performance-density/perfscale-audit-results.json"
+	} else {
+		prefixedFileName = "performance/VMI-perf-audit-results.json"
+	}
+	reader, err := getAuditFileReaderForJob(ctx, client, jobID, performanceJobName, prefixedFileName)
 	if err != nil {
 		return nil, err
 	}
@@ -340,7 +346,7 @@ func getVMIResult(ctx context.Context, client *storage.Client, jobID string, per
 }
 
 func getVMResult(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (*Result, error) {
-	reader, err := getAuditFileReaderForJob(ctx, client, jobID, performanceJobName, "VM-perf-audit-results.json")
+	reader, err := getAuditFileReaderForJob(ctx, client, jobID, performanceJobName, "performance/VM-perf-audit-results.json")
 	if err != nil {
 		log.Printf("job: %s, error getting BuildLogReaderForJob. %+v\n", jobID, err)
 		return nil, err
@@ -364,8 +370,8 @@ func getResult(reader io.Reader) (*Result, error) {
 	return r, nil
 }
 
-func getAuditFileReaderForJob(ctx context.Context, client *storage.Client, jobID, performanceJobName, fileName string) (io.Reader, error) {
-	objPath := filepath.Join("logs", performanceJobName, jobID, "artifacts", "performance", fileName)
+func getAuditFileReaderForJob(ctx context.Context, client *storage.Client, jobID, performanceJobName, prefixedFileName string) (io.Reader, error) {
+	objPath := filepath.Join("logs", performanceJobName, jobID, "artifacts", prefixedFileName)
 	return client.Bucket(BucketName).Object(objPath).NewReader(ctx)
 }
 
