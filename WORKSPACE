@@ -1723,6 +1723,13 @@ go_repository(
     version = "v2.0.0",
 )
 
+go_repository(
+    name = "org_golang_x_telemetry",
+    importpath = "golang.org/x/telemetry",
+    sum = "h1:IRJeR9r1pYWsHKTRe/IInb7lYvbBVIqOgsX/u0mbOWY=",
+    version = "v0.0.0-20240228155512-f48c80bd79b2",
+)
+
 gazelle_dependencies()
 
 register_toolchains("//:py_toolchain")
