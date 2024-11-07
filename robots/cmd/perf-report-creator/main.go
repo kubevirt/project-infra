@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"flag"
@@ -10,7 +9,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
@@ -152,7 +150,7 @@ func runResults(r resultOpts) error {
 	since := time.Now().Add(-r.since)
 
 	// convert to perfStats
-	collection, err := extractCollectionFromLogs(ctx, storageClient, jobsDirs, since, r.performanceJobName)
+	collection, err := extractCollectionFromAuditFiles(ctx, storageClient, jobsDirs, since, r.performanceJobName)
 	if err != nil {
 		log.Printf("error getting job collection %+v\n", err)
 	}
@@ -257,7 +255,7 @@ func listAllRunsForJob(ctx context.Context, client *storage.Client, jobName stri
 	return jobDirs, nil
 }
 
-func extractCollectionFromLogs(ctx context.Context, storageClient *storage.Client, jobResults []string, since time.Time, performanceJobName string) (Collection, error) {
+func extractCollectionFromAuditFiles(ctx context.Context, storageClient *storage.Client, jobResults []string, since time.Time, performanceJobName string) (Collection, error) {
 	r := Collection{}
 	errs := []error{}
 	for _, j := range jobResults {
@@ -333,86 +331,48 @@ func getDateForJob(ctx context.Context, client *storage.Client, jobID string, pe
 }
 
 func getVMIResult(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (*Result, error) {
-	reader, err := getBuildLogReaderForJob(ctx, client, jobID, performanceJobName)
+	prefixedFileName := ""
+	if strings.Contains(performanceJobName, "density") {
+		prefixedFileName = "performance-density/perfscale-audit-results.json"
+	} else {
+		prefixedFileName = "performance/VMI-perf-audit-results.json"
+	}
+	reader, err := getAuditFileReaderForJob(ctx, client, jobID, performanceJobName, prefixedFileName)
 	if err != nil {
 		return nil, err
 	}
 
-	jsonText, err := readLinesAndMatchRegex(reader, "\"Values\": {", 0)
-	if err != nil {
-		return nil, err
-	}
-	return unmarshalJson(jsonText)
+	return getResult(reader)
 }
 
 func getVMResult(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (*Result, error) {
-	reader, err := getBuildLogReaderForJob(ctx, client, jobID, performanceJobName)
+	reader, err := getAuditFileReaderForJob(ctx, client, jobID, performanceJobName, "performance/VM-perf-audit-results.json")
 	if err != nil {
 		log.Printf("job: %s, error getting BuildLogReaderForJob. %+v\n", jobID, err)
 		return nil, err
 	}
 
-	lines, err := readLinesAndMatchRegex(reader, "\"Values\": {", 1)
+	return getResult(reader)
+}
+
+func getResult(reader io.Reader) (*Result, error) {
+	data, err := io.ReadAll(reader)
 	if err != nil {
-		log.Printf("job: %s, error running readLinesAndMatchRegex. %+v\n", jobID, err)
 		return nil, err
 	}
-	return unmarshalJson(lines)
-}
 
-func getBuildLogReaderForJob(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (io.Reader, error) {
-	objPath := filepath.Join("logs", performanceJobName, jobID, "build-log.txt")
-	return client.Bucket(BucketName).Object(objPath).NewReader(ctx)
-}
-
-func readLinesAndMatchRegex(file io.Reader, valuesRegex string, instance int) (string, error) {
-	jsonEndRegex := "^\\}$"
-	startRegex := regexp.MustCompile(valuesRegex)
-	endRegex := regexp.MustCompile(jsonEndRegex)
-	scanner := bufio.NewScanner(file)
-	matchCount := 0
-
-	// Read each line of the file and compare it against the regular expression
-	for scanner.Scan() {
-		line := scanner.Text()
-		if startRegex.MatchString(line) {
-			if matchCount != instance {
-				matchCount += 1
-				continue
-			}
-			matchCount += 1
-			lines := []string{line}
-			for scanner.Scan() {
-				line := scanner.Text()
-				if !endRegex.MatchString(line) {
-					lines = append(lines, line)
-					continue
-				}
-				lines = append(lines, line)
-				break
-			}
-			// This is needed to make sure the starting of match is json object `{`
-			//lines = lines[3:]
-			jsonText := "{" + strings.ReplaceAll(strings.Join(lines, ""), "\\n", " ")
-			if err := scanner.Err(); err != nil {
-				return "", err
-			}
-			return strings.Trim(jsonText, "S"), nil
-		}
-	}
-
-	return "", nil
-}
-
-func unmarshalJson(jsonText string) (*Result, error) {
 	r := &Result{}
-	err := json.Unmarshal([]byte(jsonText), r)
+	err = json.Unmarshal(data, r)
 	if err != nil {
-		log.Printf("error unmarshaling json: %+v\ntext: %v\n", err, jsonText)
+		log.Printf("error unmarshaling json: %+v\ntext: %v\n", err, string(data))
 		return nil, err
 	}
-
 	return r, nil
+}
+
+func getAuditFileReaderForJob(ctx context.Context, client *storage.Client, jobID, performanceJobName, prefixedFileName string) (io.Reader, error) {
+	objPath := filepath.Join("logs", performanceJobName, jobID, "artifacts", prefixedFileName)
+	return client.Bucket(BucketName).Object(objPath).NewReader(ctx)
 }
 
 func getWeeklyVMResults(results *Collection) (map[YearWeek][]ResultWithDate, error) {
