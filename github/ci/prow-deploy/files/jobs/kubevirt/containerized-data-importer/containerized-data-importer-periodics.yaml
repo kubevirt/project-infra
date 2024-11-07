@@ -178,7 +178,7 @@ periodics:
       - name: DOCKER_PREFIX
         value: quay.io/kubevirt
       - name: BUILD_ARCH
-        value: amd64
+        value: x86_64
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
