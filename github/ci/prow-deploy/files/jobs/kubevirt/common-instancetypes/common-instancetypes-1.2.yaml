@@ -282,7 +282,7 @@ presubmits:
         - "-c"
         - |
           cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-          make cluster-up && make cluster-sync && make cluster-sync-containerdisks && make cluster-functest
+          make kubevirt-up && make kubevirt-sync && make kubevirt-sync-containerdisks && make kubevirt-functest
         env:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
