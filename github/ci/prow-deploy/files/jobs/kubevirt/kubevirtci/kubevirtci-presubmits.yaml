@@ -399,7 +399,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     cluster: prow-s390x-workloads
     decorate: true
     decoration_config:
