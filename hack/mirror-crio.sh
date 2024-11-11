@@ -36,7 +36,7 @@ mirror_crio_repo_for_version () {
         echo "Mirroring from new pkgs.k8s.io repos"
         REPOID="isv_kubernetes_addons_cri-o_stable_v$1"
         curl -L -o $REPOID.repo https://download.opensuse.org/repositories/isv:/kubernetes:/addons:/cri-o:/stable:/v$1/rpm/isv:kubernetes:addons:cri-o:stable:v$1.repo
-        reposync -c $REPOID.repo -p ./$LOCAL_MIRROR_DIR -n --repoid=$REPOID --download-metadata
+        reposync -c $REPOID.repo -p ./$LOCAL_MIRROR_DIR --repoid=$REPOID --download-metadata
     fi
 }
 
