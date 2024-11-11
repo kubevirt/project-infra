@@ -27,10 +27,10 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.29 && automation/test.sh"
+            - "export TARGET=k8s-1.30 && automation/test.sh"
           env:
             - name: GIMME_GO_VERSION
-              value: "1.22.6"
+              value: "1.22.9"
             - name: GINKGO_LABELS
               value: '!OpenShift && !SINGLE_NODE_ONLY'
           # docker-in-docker needs privileged mode
@@ -66,10 +66,10 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.30 && automation/test.sh"
+            - "export TARGET=k8s-1.31 && automation/test.sh"
           env:
             - name: GIMME_GO_VERSION
-              value: "1.22.6"
+              value: "1.22.9"
             - name: GINKGO_LABELS
               value: '!OpenShift && !SINGLE_NODE_ONLY'
           # docker-in-docker needs privileged mode
