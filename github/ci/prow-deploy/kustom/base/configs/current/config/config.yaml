@@ -270,6 +270,16 @@ slack_reporter_configs:
     # The template shown below is the default
     report_template: 'Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>'
 
+  'kubevirt/hyperconverged-cluster-operator':
+    job_types_to_report:
+      - periodic
+    job_states_to_report:
+      - failure
+      - error
+    channel: 'forum-cnv-hyperconverged-cluster-operator'
+    # The template shown below is the default
+    report_template: 'Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>'
+
 branch-protection:
   required_status_checks:
     contexts:
