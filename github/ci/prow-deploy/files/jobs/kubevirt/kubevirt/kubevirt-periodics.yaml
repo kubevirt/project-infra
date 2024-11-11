@@ -1625,19 +1625,24 @@ periodics:
       - /bin/bash
       - -ce
       - |
-        output_file=/tmp/flake-stats-14days.html
-        copy_file="flake-stats-14days-$(date +%Y-%m-%d).html"
-        go run ./robots/cmd/flake-stats/main.go \
+        # generate flake stats daily report for today
+        output_file=/tmp/flake-stats-14days-$(date +%Y-%m-%d).html
+        go run ./robots/cmd/flake-stats \
           '--filter-lane-regex=.*-(root|arm64)$' \
           --output-file ${output_file} \
           --overwrite-output-file=true
         gsutil cp ${output_file} gs://kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/
-        gsutil cp ${output_file} gs://kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/${copy_file}
+
+        # generate index page with calendar
+        index_output_file=/tmp/flake-stats-14days.html
+        go run ./robots/cmd/flake-stats-index-page \
+          --output-file-path ${index_output_file}
+        gsutil cp ${index_output_file} gs://kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/
       command:
       - /bin/sh
       env:
       - name: GIMME_GO_VERSION
-        value: "1.19"
+        value: "1.21.6"
       image: quay.io/kubevirtci/golang:v20241014-80f340c
       name: ""
       resources: {}
