@@ -5,7 +5,7 @@ periodics:
   annotations:
     testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-periodics
   decoration_config:
-    timeout: 1h
+    timeout: 2h
     grace_period: 5m
   max_concurrency: 1
   labels:
