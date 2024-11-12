@@ -304,8 +304,8 @@ go_repository(
 go_repository(
     name = "com_github_onsi_ginkgo_v2",
     importpath = "github.com/onsi/ginkgo/v2",
-    sum = "h1:BA2GMJOtfGAfagzYtrAlufIP0lq6QERkFmHLMLPwFSU=",
-    version = "v2.9.2",
+    sum = "h1:WgqUCUt/lT6yXoQ8Wef0fsNn5cAuMK7+KT9UFRz2tcU=",
+    version = "v2.11.0",
 )
 
 go_repository(
@@ -346,8 +346,8 @@ go_repository(
 go_repository(
     name = "com_github_cncf_xds_go",
     importpath = "github.com/cncf/xds/go",
-    sum = "h1:ACGZRIr7HsgBKHsueQ1yM4WaVaXh21ynwqsF8M8tXhA=",
-    version = "v0.0.0-20230105202645-06c439db220b",
+    sum = "h1:/inchEIKaYC1Akx+H+gqO04wryn5h75LSazbRlnya1k=",
+    version = "v0.0.0-20230607035331-e9ce68804cb4",
 )
 
 go_repository(
@@ -480,8 +480,8 @@ go_repository(
 go_repository(
     name = "com_google_cloud_go_aiplatform",
     importpath = "cloud.google.com/go/aiplatform",
-    sum = "h1:SSvjkfGgdnYXUXk4BskjbncCFV2xNeMgy2URurDkWJo=",
-    version = "v1.36.1",
+    sum = "h1:zTw+suCVchgZyO+k847wjzdVjWmrAuehxdvcZvJwfGg=",
+    version = "v1.37.0",
 )
 
 go_repository(
@@ -522,8 +522,8 @@ go_repository(
 go_repository(
     name = "com_google_cloud_go_appengine",
     importpath = "cloud.google.com/go/appengine",
-    sum = "h1:45lfdgM1FQvUzyyXam4tdWEd30CyhY+dj5LomXXT7uI=",
-    version = "v1.7.0",
+    sum = "h1:aBGDKmRIaRRoWJ2tAoN0oVSHoWLhtO9aj/NvUyP4aYs=",
+    version = "v1.7.1",
 )
 
 go_repository(
@@ -536,15 +536,15 @@ go_repository(
 go_repository(
     name = "com_google_cloud_go_artifactregistry",
     importpath = "cloud.google.com/go/artifactregistry",
-    sum = "h1:FC97zES/c+uaqCml0cjshrXWbapwr7VG1+7aYFX6K9A=",
-    version = "v1.12.0",
+    sum = "h1:o1Q80vqEB6Qp8WLEH3b8FBLNUCrGQ4k5RFj0sn/sgO8=",
+    version = "v1.13.0",
 )
 
 go_repository(
     name = "com_google_cloud_go_asset",
     importpath = "cloud.google.com/go/asset",
-    sum = "h1:KWmYlYNI6KfdE7jRD/wMUpdF2xWsF23JqGlfxMNI0JU=",
-    version = "v1.12.0",
+    sum = "h1:YAsssO08BqZ6mncbb6FPlj9h6ACS7bJQUOlzciSfbNk=",
+    version = "v1.13.0",
 )
 
 go_repository(
@@ -634,8 +634,8 @@ go_repository(
 go_repository(
     name = "com_google_cloud_go_compute",
     importpath = "cloud.google.com/go/compute",
-    sum = "h1:+9zda3WGgW1ZSTlVppLCYFIr48Pa35q1uG2N1itbCEQ=",
-    version = "v1.19.0",
+    sum = "h1:am86mquDUgjGNWxiGn+5PGLbmgiWXlE/yNWpIpNvuXY=",
+    version = "v1.19.1",
 )
 
 go_repository(
@@ -802,8 +802,8 @@ go_repository(
 go_repository(
     name = "com_google_cloud_go_functions",
     importpath = "cloud.google.com/go/functions",
-    sum = "h1:TtRl25/oNsZyH3e4WfMRSMmFvmHC3YyQZuWaOpKI9+0=",
-    version = "v1.12.0",
+    sum = "h1:pPDqtsXG2g9HeOQLoquLbmvmb82Y4Ezdo1GXuotFoWg=",
+    version = "v1.13.0",
 )
 
 go_repository(
@@ -858,8 +858,8 @@ go_repository(
 go_repository(
     name = "com_google_cloud_go_iap",
     importpath = "cloud.google.com/go/iap",
-    sum = "h1:TOaCMv5lejwDrlTqJS6ROJoHUxnZzfsC8vA4FhwXek4=",
-    version = "v1.7.0",
+    sum = "h1:PxVHFuMxmSZyfntKXHXhd8bo82WJ+LcATenq7HLdVnU=",
+    version = "v1.7.1",
 )
 
 go_repository(
@@ -879,8 +879,8 @@ go_repository(
 go_repository(
     name = "com_google_cloud_go_kms",
     importpath = "cloud.google.com/go/kms",
-    sum = "h1:Imrtp8792uqNP9bdfPrjtUkjjqOMBcAJ2bdFaAnLhnk=",
-    version = "v1.10.0",
+    sum = "h1:7hm1bRqGCA1GBRQUrp831TwJ9TWhP+tvLuP497CQS2g=",
+    version = "v1.10.1",
 )
 
 go_repository(
@@ -1068,8 +1068,8 @@ go_repository(
 go_repository(
     name = "com_google_cloud_go_resourcemanager",
     importpath = "cloud.google.com/go/resourcemanager",
-    sum = "h1:dgNGSzrfOgpn6S3y/3wX006hr7asIziVEYInDCmiZsY=",
-    version = "v1.6.0",
+    sum = "h1:NRM0p+RJkaQF9Ee9JMnUV9BQ2QBIOq/v8M+Pbv/wmCs=",
+    version = "v1.7.0",
 )
 
 go_repository(
@@ -1159,8 +1159,8 @@ go_repository(
 go_repository(
     name = "com_google_cloud_go_spanner",
     importpath = "cloud.google.com/go/spanner",
-    sum = "h1:fba7k2apz4aI0BE59/kbeaJ78dPOXSz2PSuBIfe7SBM=",
-    version = "v1.44.0",
+    sum = "h1:7VdjZ8zj4sHbDw55atp5dfY6kn1j9sam9DRNpPQhqR4=",
+    version = "v1.45.0",
 )
 
 go_repository(
@@ -1215,8 +1215,8 @@ go_repository(
 go_repository(
     name = "com_google_cloud_go_video",
     importpath = "cloud.google.com/go/video",
-    sum = "h1:5gfvakKt13QSIYB3RL9Fu8bNQ3L5BFHjItHm/0ivaJQ=",
-    version = "v1.14.0",
+    sum = "h1:upIbnGI0ZgACm58HPjAeBMleW3sl5cT84AbYQ8PWOgM=",
+    version = "v1.15.0",
 )
 
 go_repository(
@@ -1721,6 +1721,62 @@ go_repository(
     importpath = "github.com/vmihailenco/tagparser/v2",
     sum = "h1:y09buUbR+b5aycVFQs/g70pqKVZNBmxwAhO7/IwNM9g=",
     version = "v2.0.0",
+)
+
+go_repository(
+    name = "org_golang_x_telemetry",
+    importpath = "golang.org/x/telemetry",
+    sum = "h1:IRJeR9r1pYWsHKTRe/IInb7lYvbBVIqOgsX/u0mbOWY=",
+    version = "v0.0.0-20240228155512-f48c80bd79b2",
+)
+
+go_repository(
+    name = "cat_dario_mergo",
+    importpath = "dario.cat/mergo",
+    sum = "h1:AGCNq9Evsj31mOgNPcLyXc+4PNABt905YmuqPYYpBWk=",
+    version = "v1.0.0",
+)
+
+go_repository(
+    name = "com_github_bwesterb_go_ristretto",
+    importpath = "github.com/bwesterb/go-ristretto",
+    sum = "h1:1w53tCkGhCQ5djbat3+MH0BAQ5Kfgbt56UZQ/JMzngw=",
+    version = "v1.2.3",
+)
+
+go_repository(
+    name = "com_github_cloudflare_circl",
+    importpath = "github.com/cloudflare/circl",
+    sum = "h1:fE/Qz0QdIGqeWfnwq0RE0R7MI51s0M2E4Ga9kq5AEMs=",
+    version = "v1.3.3",
+)
+
+go_repository(
+    name = "com_github_mmcloughlin_avo",
+    importpath = "github.com/mmcloughlin/avo",
+    sum = "h1:nAco9/aI9Lg2kiuROBY6BhCI/z0t5jEvJfjWbL8qXLU=",
+    version = "v0.5.0",
+)
+
+go_repository(
+    name = "com_github_pjbgf_sha1cd",
+    importpath = "github.com/pjbgf/sha1cd",
+    sum = "h1:4D5XXmUUBUl/xQ6IjCkEAbqXskkq/4O7LmGn0AqMDs4=",
+    version = "v0.3.0",
+)
+
+go_repository(
+    name = "com_github_protonmail_go_crypto",
+    importpath = "github.com/ProtonMail/go-crypto",
+    sum = "h1:kkhsdkhsCvIsutKu5zLMgWtgh9YxGCNAw8Ad8hjwfYg=",
+    version = "v0.0.0-20230828082145-3c4c8a2d2371",
+)
+
+go_repository(
+    name = "com_github_skeema_knownhosts",
+    importpath = "github.com/skeema/knownhosts",
+    sum = "h1:SHWdIUa82uGZz+F+47k8SY4QhhI291cXCpopT1lK2AQ=",
+    version = "v1.2.1",
 )
 
 gazelle_dependencies()
