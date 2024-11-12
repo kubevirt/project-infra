@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "diff.go",
+        "doc.go",
+        "reporters.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/knative.dev/pkg/kmp",
+    importpath = "knative.dev/pkg/kmp",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/google/go-cmp/cmp:go_default_library",
+        "//vendor/k8s.io/apimachinery/pkg/api/resource:go_default_library",
+    ],
+)

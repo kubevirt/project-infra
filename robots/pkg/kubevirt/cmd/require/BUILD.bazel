@@ -14,9 +14,9 @@ go_library(
         "//robots/pkg/kubevirt/log:go_default_library",
         "//robots/pkg/kubevirt/prowjobconfigs:go_default_library",
         "//robots/pkg/querier:go_default_library",
-        "@com_github_spf13_cobra//:go_default_library",
-        "@io_k8s_sigs_yaml//:go_default_library",
-        "@io_k8s_test_infra//prow/config:go_default_library",
+        "//vendor/github.com/spf13/cobra:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/config:go_default_library",
+        "//vendor/sigs.k8s.io/yaml:go_default_library",
     ],
 )
 
@@ -27,6 +27,6 @@ go_test(
     deps = [
         "//robots/pkg/kubevirt/prowjobconfigs:go_default_library",
         "//robots/pkg/querier:go_default_library",
-        "@io_k8s_test_infra//prow/config:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/config:go_default_library",
     ],
 )
