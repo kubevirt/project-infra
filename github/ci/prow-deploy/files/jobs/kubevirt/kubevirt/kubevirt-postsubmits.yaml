@@ -9,7 +9,10 @@ postsubmits:
     optional: false
     skip_report: false
     annotations:
-      testgrid-create-test-group: "false"
+      testgrid-dashboards: kubevirt-postsubmits
+      testgrid-days-of-results: "90"
+      testgrid-alert-email: push-release-kubevirt-tag@redhat.com
+      testgrid-num-failures-to-alert: "1"
     decorate: true
     decoration_config:
       timeout: 3h
