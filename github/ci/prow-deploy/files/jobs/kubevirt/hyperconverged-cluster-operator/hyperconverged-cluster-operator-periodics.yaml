@@ -36,4 +36,4 @@ periodics:
         privileged: true
       resources:
         requests:
-          memory: "8Gi"
+          memory: "50Gi"
