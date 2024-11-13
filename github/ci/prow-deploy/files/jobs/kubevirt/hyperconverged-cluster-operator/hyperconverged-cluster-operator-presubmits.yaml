@@ -78,6 +78,43 @@ presubmits:
           resources:
             requests:
               memory: "50Gi"
+  - name: fake-nightly
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 2h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-gcs-credentials: "true"
+      preset-shared-images: "true"
+      preset-kubevirtci-quay-credential: "true"
+      rehearsal.allowed: "true"
+    cluster: kubevirt-prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20241014-80f340c
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "automation/nightly/test-nightly-build.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "50Gi"
   - name: build-hco-test-utils-image
     always_run: false
     branches:
