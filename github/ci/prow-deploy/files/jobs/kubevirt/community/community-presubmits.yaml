@@ -3,6 +3,10 @@ presubmits:
   - always_run: true
     cluster: kubevirt-prow-control-plane
     decorate: true
+    extra_refs:
+    - org: kubevirt
+      repo: project-infra
+      base_ref: main
     name: pull-community-make-generate
     spec:
       containers:
