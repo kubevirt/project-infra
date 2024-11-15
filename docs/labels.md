@@ -67,7 +67,7 @@ larger set of contributors to apply/remove them.
 | <a id="sig/api" href="#sig/api">`sig/api`</a> | Denotes an issue or PR that relates to changes in api.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/buildsystem" href="#sig/buildsystem">`sig/buildsystem`</a> | Denotes an issue or PR that relates to changes in the build system.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/ci" href="#sig/ci">`sig/ci`</a> | Denotes an issue or PR as being related to sig-ci, marks changes to the CI system.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
-| <a id="sig/compute" href="#sig/compute">`sig/compute`</a> |  <br><br> This was previously `topic/virtualization`, `sig-virtualization`, | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
+| <a id="sig/compute" href="#sig/compute">`sig/compute`</a> |  <br><br> This was previously `topic/virtualization`, `sig-virtualization`, `sig/virtualization`, | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/documentation" href="#sig/documentation">`sig/documentation`</a> | | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/network" href="#sig/network">`sig/network`</a> |  <br><br> This was previously `topic/network`, | anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="sig/observability" href="#sig/observability">`sig/observability`</a> | Denotes an issue or PR that relates to observability.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
