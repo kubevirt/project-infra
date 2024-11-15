@@ -307,6 +307,24 @@ default:
       target: both
       prowPlugin: label
       addedBy: anyone
+    - name: wg/arch-s390x
+      color: E3F582
+      description: Denotes an issue or PR that relates to the s390x architecture working group.
+      target: both
+      prowPlugin: label
+      addedBy: anyone
+    - name: wg/arch-arm
+      color: E3F582
+      description: Denotes an issue or PR that relates to the ARM architecture working group.
+      target: both
+      prowPlugin: label
+      addedBy: anyone
+    - name: wg/code-quality
+      color: E3F582
+      description: Denotes an issue or PR that relates to the code-quality working group.
+      target: both
+      prowPlugin: label
+      addedBy: anyone
     - color: e11d21
       description: Indicates the PR's author has not DCO signed all their commits.
       name: "dco-signoff: no"

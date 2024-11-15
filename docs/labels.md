@@ -89,6 +89,9 @@ larger set of contributors to apply/remove them.
 | <a id="triage/needs-information" href="#triage/needs-information">`triage/needs-information`</a> | Indicates an issue needs more information in order to work on it.| anyone | |
 | <a id="triage/not-reproducible" href="#triage/not-reproducible">`triage/not-reproducible`</a> | Indicates an issue can not be reproduced as described.| anyone | |
 | <a id="triage/unresolved" href="#triage/unresolved">`triage/unresolved`</a> | Indicates an issue that can not or will not be resolved.| anyone | |
+| <a id="wg/arch-arm" href="#wg/arch-arm">`wg/arch-arm`</a> | Denotes an issue or PR that relates to the ARM architecture working group.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
+| <a id="wg/arch-s390x" href="#wg/arch-s390x">`wg/arch-s390x`</a> | Denotes an issue or PR that relates to the s390x architecture working group.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
+| <a id="wg/code-quality" href="#wg/code-quality">`wg/code-quality`</a> | Denotes an issue or PR that relates to the code-quality working group.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 
 ## Labels that apply to all repos, only for issues
 
