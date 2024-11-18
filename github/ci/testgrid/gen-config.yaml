@@ -2,6 +2,7 @@ dashboards:
 - name: kubevirt-containerized-data-importer-presubmits
 - name: kubevirt-presubmits
 - name: kubevirt-periodics
+- name: kubevirt-postsubmits
 - name: kubevirt-libguestfs-appliance-periodics
 - name: kubevirt-hyperconverged-cluster-operator-presubmits
 - name: kubevirt-hyperconverged-cluster-operator-periodics
@@ -319,6 +320,7 @@ dashboard_groups:
   - kubevirt-containerized-data-importer-presubmits
   - kubevirt-presubmits
   - kubevirt-periodics
+  - kubevirt-postsubmits
   - kubevirt-libguestfs-appliance-periodics
   - kubevirt-hyperconverged-cluster-operator-presubmits
   - kubevirt-hyperconverged-cluster-operator-periodics
