@@ -270,11 +270,15 @@ periodics:
         gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
         unset DOCKER_TAG # we want to publish to main
         export PULL_BASE_REF=main
-        export GIT_ASKPASS=$PWD/../project-infra/hack/git-askpass.sh
+        export GIT_ASKPASS="$(pwd)/automation/git-askpass.sh"
         hack/publish-staging.sh
       env:
       - name: DOCKER_PREFIX
         value: quay.io/kubevirt
+      - name: GIT_USER_NAME
+        value: kubevirt-bot
+      - name: GITHUB_TOKEN_PATH
+        value: /etc/github/oauth
       image: quay.io/kubevirtci/golang:v20241014-80f340c
       name: ""
       resources:
