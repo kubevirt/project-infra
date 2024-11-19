@@ -261,6 +261,8 @@ default:
           color: c5def5
         - name: sig-virtualization
           color: c5def5
+        - name: sig/virtualization
+          color: c5def5
     - name: sig/release
       color: 2943CF
       target: both
