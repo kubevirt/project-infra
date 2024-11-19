@@ -743,6 +743,8 @@ label:
     'kubevirt':
     - allowed_users:
       - kubevirt-bot
+      allowed_teams:
+      - needs-approver-review-label
       label: needs-approver-review
     - allowed_teams:
       - kubevirtorg-label
