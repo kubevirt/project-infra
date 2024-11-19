@@ -8,11 +8,13 @@ filters:
   .*:
     approvers:
     - aglitke
+    - alromeros
     - awels
     - mhenriks
     - shellyka13
     reviewers:
     - aglitke
+    - alromeros
     - awels
     - mhenriks
     - shellyka13
