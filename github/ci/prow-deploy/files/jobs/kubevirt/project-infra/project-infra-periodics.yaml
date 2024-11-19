@@ -157,6 +157,7 @@ periodics:
           -label:approved
           -label:do-not-merge/work-in-progress
           -label:needs-approver-review
+          -review:changes-requested
           is:public
       - --updated=168h
       - --token=/etc/github/oauth
