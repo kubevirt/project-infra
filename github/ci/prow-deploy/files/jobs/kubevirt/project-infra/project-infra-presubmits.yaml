@@ -189,32 +189,6 @@ presubmits:
               memory: "4Gi"
             limits:
               memory: "4Gi"
-  - name: build-bootstrap-legacy-images
-    always_run: false
-    run_if_changed: "images/bootstrap-legacy/.*|images/golang-legacy/.*"
-    decorate: true
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-    cluster: kubevirt-prow-control-plane
-    spec:
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20241014-80f340c
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/bash"
-            - "-ce"
-            - |
-              cd images
-              ./publish_multiarch_image.sh -a -b bootstrap-legacy quay.io kubevirtci
-              ./publish_multiarch_image.sh -a -b -l golang-legacy quay.io kubevirtci
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "4Gi"
-            limits:
-              memory: "4Gi"
   - name: build-shared-images-controller-image
     always_run: false
     run_if_changed: "images/shared-images-controller/.*"
