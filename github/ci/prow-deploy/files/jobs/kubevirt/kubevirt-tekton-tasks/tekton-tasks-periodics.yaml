@@ -12,6 +12,9 @@ periodics:
     - org: kubevirt
       repo: kubevirt-tekton-tasks
       base_ref: main
+    - org: kubevirt
+      repo: project-infra
+      base_ref: main
     labels:
       preset-github-credentials: "true"
     spec:
@@ -26,7 +29,7 @@ periodics:
           KUBEVIRT_VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | \
             jq -r '[.[]|select(.prerelease==false) | .tag_name] | sort | last')
 
-          command="sed -i "s/FROM quay.io\/kubevirt\/libguestfs-tools:.*/FROM quay.io\/kubevirt\/libguestfs-tools:${KUBEVIRT_VERSION}/g" build/Containerfile.DiskVirt"
+          command="sed -i 's/FROM quay.io\/kubevirt\/libguestfs-tools:.*/FROM quay.io\/kubevirt\/libguestfs-tools:${KUBEVIRT_VERSION}/g' build/Containerfile.DiskVirt"
           description="Automated update of libguestfs container version to ${KUBEVIRT_VERSION}\n\n\\\`\\\`\\\`release-note\nUpdated libguestfs container to ${KUBEVIRT_VERSION}\n\\\`\\\`\\\`"
           git-pr.sh -c "${command}" -p "${tt_dir}" -d "echo -e \"${description}\"" -r kubevirt-tekton-tasks -b update-libguestfs-container -T main
         resources:
