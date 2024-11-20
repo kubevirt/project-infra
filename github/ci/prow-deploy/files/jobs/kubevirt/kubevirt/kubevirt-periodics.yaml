@@ -598,7 +598,7 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
-    preset-dind-enabled: "true"
+    preset-podman-in-container-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-kind-sriov
@@ -634,7 +634,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: kind-sriov
-      image: quay.io/kubevirtci/golang-legacy:v20220810-a8f2e6c
+      image: quay.io/kubevirtci/golang:v20241014-80f340c
       name: ""
       resources:
         requests:
@@ -642,9 +642,8 @@ periodics:
       securityContext:
         privileged: true
       volumeMounts:
-      - mountPath: /lib/modules
-        name: modules
-        readOnly: true
+      - mountPath: /var/log/audit
+        name: audit
       - mountPath: /sys/fs/cgroup
         name: cgroup
       - mountPath: /dev/vfio/
@@ -654,9 +653,9 @@ periodics:
     priorityClassName: sriov
     volumes:
     - hostPath:
-        path: /lib/modules
+        path: /var/log/audit
         type: Directory
-      name: modules
+      name: audit
     - hostPath:
         path: /sys/fs/cgroup
         type: Directory
