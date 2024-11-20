@@ -38,6 +38,7 @@ import (
 	"sigs.k8s.io/yaml"
 	"sort"
 	"strconv"
+	"sync"
 	"time"
 	"unicode/utf8"
 )
@@ -288,27 +289,48 @@ func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX in
 	return topXLaneTestExecutions, nil
 }
 
+type writeReportFileResult struct {
+	reportFileName string
+	err            error
+}
+
 func writeReportFiles(ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string) ([]string, error) {
 	log.Debugf("writing report files for lanes: %v", config.Lanes)
 
+	writeReportFileResults := make(chan writeReportFileResult)
+	go doWriteReportFiles(ctx, storageClient, startOfReport, endOfReport, jobDir, writeReportFileResults)
+
 	var fileNames []string
-	for _, periodicJobDirPattern := range config.Lanes {
-		periodicJobDir := fmt.Sprintf(periodicJobDirPattern, opts.K8sVersion)
-		reportFileName, err := writeReportFile(ctx, storageClient, startOfReport, endOfReport, jobDir, periodicJobDir)
-		if err != nil {
-			return nil, err
+	for result := range writeReportFileResults {
+		if result.err != nil {
+			return nil, result.err
 		}
-		fileNames = append(fileNames, reportFileName)
+		fileNames = append(fileNames, result.reportFileName)
 	}
+
 	log.Debugf("report files: %v", fileNames)
 	return fileNames, nil
 }
 
-func writeReportFile(ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string, periodicJobDir string) (string, error) {
+func doWriteReportFiles(ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string, writeReportFileResults chan writeReportFileResult) {
+	defer close(writeReportFileResults)
+
+	var wg sync.WaitGroup
+	wg.Add(len(config.Lanes))
+	for _, periodicJobDirPattern := range config.Lanes {
+		periodicJobDir := fmt.Sprintf(periodicJobDirPattern, opts.K8sVersion)
+		go writeReportFile(&wg, ctx, storageClient, startOfReport, endOfReport, jobDir, periodicJobDir, writeReportFileResults)
+	}
+	wg.Wait()
+}
+
+func writeReportFile(wg *sync.WaitGroup, ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string, periodicJobDir string, writeReportFileResults chan writeReportFileResult) {
+	defer wg.Done()
 	log.Debugf("writing file for %q", periodicJobDir)
 	results, err := flakefinder.FindUnitTestFilesForPeriodicJob(ctx, storageClient, BucketName, []string{jobDir, periodicJobDir}, startOfReport, endOfReport)
 	if err != nil {
-		return "", fmt.Errorf("failed to load periodicJobDirs for %v: %v", fmt.Sprintf("%s*", periodicJobDir), fmt.Errorf("error listing gcs objects: %v", err))
+		writeReportFileResults <- writeReportFileResult{err: fmt.Errorf("failed to load periodicJobDirs for %v: %v", fmt.Sprintf("%s*", periodicJobDir), fmt.Errorf("error listing gcs objects: %v", err))}
+		return
 	}
 
 	log.Debugf("iterating over results for %s", periodicJobDir)
@@ -369,7 +391,8 @@ func writeReportFile(ctx context.Context, storageClient *storage.Client, startOf
 		periodicJobDir)
 	file, err := os.CreateTemp(defaultOutputDirectory, fileName)
 	if err != nil {
-		return "", err
+		writeReportFileResults <- writeReportFileResult{err: err}
+		return
 	}
 	writer := csv.NewWriter(file)
 	headers := []string{"test-name", "number-of-executions", "number-of-failures"}
@@ -378,7 +401,8 @@ func writeReportFile(ctx context.Context, storageClient *storage.Client, startOf
 	}
 	err = writer.Write(headers)
 	if err != nil {
-		return "", err
+		writeReportFileResults <- writeReportFileResult{err: err}
+		return
 	}
 	reportFileName := file.Name()
 	log.Debugf("writing values to file %q", reportFileName)
@@ -393,22 +417,23 @@ func writeReportFile(ctx context.Context, storageClient *storage.Client, startOf
 		}
 		err = writer.Write(values)
 		if err != nil {
-			return "", err
+			writeReportFileResults <- writeReportFileResult{err: err}
+			return
 		}
 	}
 	log.Debugf("flushing file %q", reportFileName)
 	writer.Flush()
 	err = writer.Error()
 	if err != nil {
-		log.Debugf("error flushing file %q: %v", reportFileName, err)
-		return "", err
+		writeReportFileResults <- writeReportFileResult{err: err}
+		return
 	}
 	err = file.Close()
 	if err != nil {
-		log.Debugf("error closing file %q: %v", reportFileName, err)
-		return "", err
+		writeReportFileResults <- writeReportFileResult{err: err}
+		return
 	}
 
 	log.Debugf("report for %q written to %q", periodicJobDir, reportFileName)
-	return reportFileName, nil
+	writeReportFileResults <- writeReportFileResult{reportFileName, err}
 }
