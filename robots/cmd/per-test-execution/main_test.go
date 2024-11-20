@@ -32,31 +32,31 @@ func TestPerTestExecution(t *testing.T) {
 
 var _ = Describe("per-test-execution", func() {
 	Context("ByFailuresDescending", func() {
-		DescribeTable("sorts", func(i, j *testExecutions, less bool) {
-			Expect(ByFailuresDescending([]*testExecutions{i, j}).Less(0, 1)).To(Equal(less))
+		DescribeTable("sorts", func(i, j *TestExecutions, less bool) {
+			Expect(ByFailuresDescending([]*TestExecutions{i, j}).Less(0, 1)).To(Equal(less))
 		},
 			Entry(
 				"nothing",
-				&testExecutions{},
-				&testExecutions{},
+				&TestExecutions{},
+				&TestExecutions{},
 				false,
 			),
 			Entry(
 				"2 failed and 80 total is not less than 3 failed and 44 total",
-				&testExecutions{FailedExecutions: 2, TotalExecutions: 80, Name: "a"},
-				&testExecutions{FailedExecutions: 3, TotalExecutions: 44, Name: "a"},
+				&TestExecutions{FailedExecutions: 2, TotalExecutions: 80, Name: "a"},
+				&TestExecutions{FailedExecutions: 3, TotalExecutions: 44, Name: "a"},
 				false,
 			),
 			Entry(
 				"3 failed and 44 total is less than 2 failed and 80 total",
-				&testExecutions{FailedExecutions: 3, TotalExecutions: 44, Name: "a"},
-				&testExecutions{FailedExecutions: 2, TotalExecutions: 80, Name: "a"},
+				&TestExecutions{FailedExecutions: 3, TotalExecutions: 44, Name: "a"},
+				&TestExecutions{FailedExecutions: 2, TotalExecutions: 80, Name: "a"},
 				true,
 			),
 			Entry(
 				"3 failed and 44 total is less than 3 failed and 44 total if test name is lexically smaller",
-				&testExecutions{FailedExecutions: 3, TotalExecutions: 44, Name: "a"},
-				&testExecutions{FailedExecutions: 3, TotalExecutions: 44, Name: "b"},
+				&TestExecutions{FailedExecutions: 3, TotalExecutions: 44, Name: "a"},
+				&TestExecutions{FailedExecutions: 3, TotalExecutions: 44, Name: "b"},
 				true,
 			),
 		)

@@ -28,21 +28,23 @@ import (
 	"fmt"
 	junit2 "github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
+	"html/template"
 	"io"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"sigs.k8s.io/yaml"
 	"sort"
 	"strconv"
-	"sync"
 	"time"
 	"unicode/utf8"
 )
 
 const (
-	BucketName = "kubevirt-prow"
+	BucketName             = "kubevirt-prow"
+	defaultOutputDirectory = "/tmp"
 )
 
 var (
@@ -53,6 +55,10 @@ var (
 	//go:embed config.yaml
 	defaultConfig []byte
 
+	//go:embed per-test-execution-top-x.gohtml
+	perTestExecutionHTMLTemplate string
+	htmlTemplate                 *template.Template
+
 	k8sVersionRegex              = regexp.MustCompile(`^[0-9]\.[1-9][0-9]*$`)
 	k8sStableReleaseVersionRegex = regexp.MustCompile(`^v([0-9]\.[1-9][0-9]*)\.[1-9][0-9]*$`)
 )
@@ -62,7 +68,13 @@ type Config struct {
 }
 
 func init() {
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetLevel(log.DebugLevel)
 	err := yaml.Unmarshal(defaultConfig, &config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	htmlTemplate, err = template.New("perTestExecutionTopX").Parse(perTestExecutionHTMLTemplate)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -70,6 +82,7 @@ func init() {
 
 type options struct {
 	Months     int
+	Days       int
 	K8sVersion string
 	ConfigPath string
 }
@@ -93,6 +106,9 @@ func (o options) loadDefaults() error {
 }
 
 func (o options) validate() error {
+	if o.Days < 0 {
+		return fmt.Errorf("invalid days value")
+	}
 	if o.Months <= 0 {
 		return fmt.Errorf("invalid months value")
 	}
@@ -115,13 +131,19 @@ func (o options) validate() error {
 	return nil
 }
 
-type testExecutions struct {
+type TestExecutions struct {
 	Name             string
 	TotalExecutions  int
 	FailedExecutions int
 }
 
-type ByFailuresDescending []*testExecutions
+type TopXTestExecutions struct {
+	PerLaneExecutions map[string][]*TestExecutions
+	StartOfReport     time.Time
+	EndOfReport       time.Time
+}
+
+type ByFailuresDescending []*TestExecutions
 
 func (b ByFailuresDescending) Len() int {
 	return len(b)
@@ -146,7 +168,8 @@ func (b ByFailuresDescending) Swap(i, j int) {
 }
 
 func main() {
-	flag.IntVar(&opts.Months, "months", 3, "determines how much months in the past till today are covered")
+	flag.IntVar(&opts.Months, "months", 3, "determines how many months in the past till today are covered")
+	flag.IntVar(&opts.Days, "days", 0, "determines how many days in the past till today are covered (if > 0, used instead of months)")
 	flag.StringVar(&opts.K8sVersion, "kubernetes-version", "", "the k8s major.minor version for the target lane, i.e. 1.31")
 	flag.StringVar(&opts.ConfigPath, "config-path", "", "path to the config file")
 	flag.Parse()
@@ -166,10 +189,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	startOfReport := endOfReport.AddDate(0, -opts.Months, 0)
-	startOfReport, err = time.Parse(time.DateOnly, fmt.Sprintf("%s-01", startOfReport.Format("2006-01")))
-	if err != nil {
-		log.Fatal(err)
+	var startOfReport time.Time
+	if opts.Days != 0 {
+		startOfReport = endOfReport.AddDate(0, 0, -opts.Days)
+	} else {
+		startOfReport = endOfReport.AddDate(0, -opts.Months, 0)
+		startOfReport, err = time.Parse(time.DateOnly, fmt.Sprintf("%s-01", startOfReport.Format("2006-01")))
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	log.Infof("Running reports for %s - %s", startOfReport.Format(time.DateOnly), endOfReport.Format(time.DateOnly))
@@ -181,102 +209,206 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var wg sync.WaitGroup
-	wg.Add(len(config.Lanes))
+	reportFilenames, err := writeReportFiles(ctx, storageClient, startOfReport, endOfReport, jobDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	topXLaneTestExecutions, err := readTopXLaneTestExecutionsFromReportFiles(reportFilenames, 10)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = writeHTMLReport(startOfReport, endOfReport, topXLaneTestExecutions)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func writeHTMLReport(startOfReport time.Time, endOfReport time.Time, topXLaneTestExecutions map[string][]*TestExecutions) error {
+	fileName := fmt.Sprintf(
+		"per-test-execution-%s-%s-*.html",
+		startOfReport.Format("2006-01"),
+		endOfReport.Add(-1*24*time.Hour).Format("2006-01"))
+	file, err := os.CreateTemp(defaultOutputDirectory, fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	err = htmlTemplate.Execute(file, TopXTestExecutions{StartOfReport: startOfReport, EndOfReport: endOfReport, PerLaneExecutions: topXLaneTestExecutions})
+	if err != nil {
+		return err
+	}
+	log.Infof("html file written to %q", file.Name())
+	return nil
+}
+
+func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX int) (map[string][]*TestExecutions, error) {
+	topXLaneTestExecutions := make(map[string][]*TestExecutions)
+	for _, filename := range reportFilenames {
+		log.Debugf("Reading top %d entries of generated file %q to create top x list", topX, filename)
+		openFile, err := os.OpenFile(filename, os.O_RDONLY, 0666)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
+		}
+		defer openFile.Close()
+		csvReader := csv.NewReader(openFile)
+		linkFilename := filepath.Base(filename)
+		testExecutionsPerLane := []*TestExecutions{}
+		for i := 0; i < topX+1; i++ {
+			record, err := csvReader.Read()
+			if err != nil {
+				return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
+			}
+			if i == 0 {
+				// skip header
+				continue
+			}
+			atoi, err := strconv.Atoi(record[1])
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
+			}
+			totalExecutions := atoi
+			atoi, err = strconv.Atoi(record[2])
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
+			}
+			failedExecutions := atoi
+			topXTestExecution := &TestExecutions{
+				Name:             record[0],
+				TotalExecutions:  totalExecutions,
+				FailedExecutions: failedExecutions,
+			}
+			testExecutionsPerLane = append(testExecutionsPerLane, topXTestExecution)
+
+		}
+		topXLaneTestExecutions[linkFilename] = testExecutionsPerLane
+	}
+	log.Debugf("test executions fetched")
+	return topXLaneTestExecutions, nil
+}
+
+func writeReportFiles(ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string) ([]string, error) {
+	log.Debugf("writing report files for lanes: %v", config.Lanes)
+
+	var fileNames []string
 	for _, periodicJobDirPattern := range config.Lanes {
 		periodicJobDir := fmt.Sprintf(periodicJobDirPattern, opts.K8sVersion)
-		go func(wg *sync.WaitGroup, ctx context.Context, periodicJobDir string, storageClient *storage.Client, opts options) {
-			defer wg.Done()
-			log.Infoln("starting report for ", periodicJobDir)
-			results, err := flakefinder.FindUnitTestFilesForPeriodicJob(ctx, storageClient, BucketName, []string{jobDir, periodicJobDir}, startOfReport, endOfReport)
-			if err != nil {
-				log.Printf("failed to load periodicJobDirs for %v: %v", fmt.Sprintf("%s*", periodicJobDir), fmt.Errorf("error listing gcs objects: %v", err))
-			}
-
-			buildNumbers := make([]int, 0, len(results))
-			perBuildTestExecutions := make(map[string]map[int]rune)
-			allTestExecutions := make(map[string]*testExecutions)
-			for _, result := range results {
-				for _, junit := range result.JUnit {
-					buildNumbers = append(buildNumbers, result.BuildNumber)
-					for _, test := range junit.Tests {
-						testName := flakefinder.NormalizeTestName(test.Name)
-
-						if _, exists := perBuildTestExecutions[testName]; !exists {
-							perBuildTestExecutions[testName] = make(map[int]rune)
-						}
-						r, _ := utf8.DecodeRuneInString(string(test.Status))
-						perBuildTestExecutions[testName][result.BuildNumber] = r
-
-						testExecutionRecord := &testExecutions{
-							Name:             testName,
-							TotalExecutions:  0,
-							FailedExecutions: 0,
-						}
-						switch test.Status {
-						case junit2.StatusFailed, junit2.StatusError:
-							if _, exists := allTestExecutions[testName]; !exists {
-								allTestExecutions[testName] = testExecutionRecord
-							}
-							testExecutionRecord = allTestExecutions[testName]
-							testExecutionRecord.FailedExecutions = testExecutionRecord.FailedExecutions + 1
-							testExecutionRecord.TotalExecutions = testExecutionRecord.TotalExecutions + 1
-						case junit2.StatusPassed:
-							if _, exists := allTestExecutions[testName]; !exists {
-								allTestExecutions[testName] = testExecutionRecord
-							}
-							testExecutionRecord = allTestExecutions[testName]
-							testExecutionRecord.TotalExecutions = testExecutionRecord.TotalExecutions + 1
-						default:
-							// NOOP
-						}
-					}
-				}
-			}
-
-			sortedTestExecutions := make([]*testExecutions, 0, len(allTestExecutions))
-			for _, testExecution := range allTestExecutions {
-				sortedTestExecutions = append(sortedTestExecutions, testExecution)
-			}
-			sort.Sort(ByFailuresDescending(sortedTestExecutions))
-			sort.Ints(buildNumbers)
-
-			fileName := fmt.Sprintf(
-				"per-test-execution-%s-%s-%s-*.csv",
-				startOfReport.Format("2006-01"),
-				endOfReport.Add(-1*24*time.Hour).Format("2006-01"),
-				periodicJobDir)
-			file, err := os.CreateTemp("/tmp", fileName)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer file.Close()
-			writer := csv.NewWriter(file)
-			headers := []string{"test-name", "number-of-executions", "number-of-failures"}
-			for _, buildNumber := range buildNumbers {
-				headers = append(headers, fmt.Sprintf("https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/logs/%s/%d", periodicJobDir, buildNumber))
-			}
-			err = writer.Write(headers)
-			if err != nil {
-				log.Fatal(err)
-			}
-			for _, testExecution := range sortedTestExecutions {
-				values := []string{testExecution.Name, strconv.Itoa(testExecution.TotalExecutions), strconv.Itoa(testExecution.FailedExecutions)}
-				for _, buildNumber := range buildNumbers {
-					value := ""
-					if executionStatus, statusExists := perBuildTestExecutions[testExecution.Name][buildNumber]; statusExists {
-						value = string(executionStatus)
-					}
-					values = append(values, value)
-				}
-				err = writer.Write(values)
-				if err != nil {
-					log.Fatal(err)
-				}
-			}
-			writer.Flush()
-			log.Infoln("Execution data written to ", file.Name())
-		}(&wg, ctx, periodicJobDir, storageClient, opts)
+		reportFileName, err := writeReportFile(ctx, storageClient, startOfReport, endOfReport, jobDir, periodicJobDir)
+		if err != nil {
+			return nil, err
+		}
+		fileNames = append(fileNames, reportFileName)
 	}
-	wg.Wait()
+	log.Debugf("report files: %v", fileNames)
+	return fileNames, nil
+}
+
+func writeReportFile(ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string, periodicJobDir string) (string, error) {
+	log.Debugf("writing file for %q", periodicJobDir)
+	results, err := flakefinder.FindUnitTestFilesForPeriodicJob(ctx, storageClient, BucketName, []string{jobDir, periodicJobDir}, startOfReport, endOfReport)
+	if err != nil {
+		return "", fmt.Errorf("failed to load periodicJobDirs for %v: %v", fmt.Sprintf("%s*", periodicJobDir), fmt.Errorf("error listing gcs objects: %v", err))
+	}
+
+	log.Debugf("iterating over results for %s", periodicJobDir)
+	buildNumbers := make([]int, 0, len(results))
+	perBuildTestExecutions := make(map[string]map[int]rune)
+	allTestExecutions := make(map[string]*TestExecutions)
+	for _, result := range results {
+		for _, junit := range result.JUnit {
+			buildNumbers = append(buildNumbers, result.BuildNumber)
+			for _, test := range junit.Tests {
+				testName := flakefinder.NormalizeTestName(test.Name)
+
+				if _, exists := perBuildTestExecutions[testName]; !exists {
+					perBuildTestExecutions[testName] = make(map[int]rune)
+				}
+				r, _ := utf8.DecodeRuneInString(string(test.Status))
+				perBuildTestExecutions[testName][result.BuildNumber] = r
+
+				testExecutionRecord := &TestExecutions{
+					Name:             testName,
+					TotalExecutions:  0,
+					FailedExecutions: 0,
+				}
+				switch test.Status {
+				case junit2.StatusFailed, junit2.StatusError:
+					if _, exists := allTestExecutions[testName]; !exists {
+						allTestExecutions[testName] = testExecutionRecord
+					}
+					testExecutionRecord = allTestExecutions[testName]
+					testExecutionRecord.FailedExecutions = testExecutionRecord.FailedExecutions + 1
+					testExecutionRecord.TotalExecutions = testExecutionRecord.TotalExecutions + 1
+				case junit2.StatusPassed:
+					if _, exists := allTestExecutions[testName]; !exists {
+						allTestExecutions[testName] = testExecutionRecord
+					}
+					testExecutionRecord = allTestExecutions[testName]
+					testExecutionRecord.TotalExecutions = testExecutionRecord.TotalExecutions + 1
+				default:
+					// NOOP
+				}
+			}
+		}
+	}
+
+	log.Debugf("sorting results for %s", periodicJobDir)
+	sortedTestExecutions := make([]*TestExecutions, 0, len(allTestExecutions))
+	for _, testExecution := range allTestExecutions {
+		sortedTestExecutions = append(sortedTestExecutions, testExecution)
+	}
+	sort.Sort(ByFailuresDescending(sortedTestExecutions))
+	sort.Ints(buildNumbers)
+
+	log.Debugf("creating file for %s", periodicJobDir)
+	fileName := fmt.Sprintf(
+		"per-test-execution-%s-%s-%s-*.csv",
+		startOfReport.Format("2006-01"),
+		endOfReport.Add(-1*24*time.Hour).Format("2006-01"),
+		periodicJobDir)
+	file, err := os.CreateTemp(defaultOutputDirectory, fileName)
+	if err != nil {
+		return "", err
+	}
+	writer := csv.NewWriter(file)
+	headers := []string{"test-name", "number-of-executions", "number-of-failures"}
+	for _, buildNumber := range buildNumbers {
+		headers = append(headers, fmt.Sprintf("https://prow.ci.kubevirt.io/view/gcs/kubevirt-prow/logs/%s/%d", periodicJobDir, buildNumber))
+	}
+	err = writer.Write(headers)
+	if err != nil {
+		return "", err
+	}
+	reportFileName := file.Name()
+	log.Debugf("writing values to file %q", reportFileName)
+	for _, testExecution := range sortedTestExecutions {
+		values := []string{testExecution.Name, strconv.Itoa(testExecution.TotalExecutions), strconv.Itoa(testExecution.FailedExecutions)}
+		for _, buildNumber := range buildNumbers {
+			value := ""
+			if executionStatus, statusExists := perBuildTestExecutions[testExecution.Name][buildNumber]; statusExists {
+				value = string(executionStatus)
+			}
+			values = append(values, value)
+		}
+		err = writer.Write(values)
+		if err != nil {
+			return "", err
+		}
+	}
+	log.Debugf("flushing file %q", reportFileName)
+	writer.Flush()
+	err = writer.Error()
+	if err != nil {
+		log.Debugf("error flushing file %q: %v", reportFileName, err)
+		return "", err
+	}
+	err = file.Close()
+	if err != nil {
+		log.Debugf("error closing file %q: %v", reportFileName, err)
+		return "", err
+	}
+
+	log.Debugf("report for %q written to %q", periodicJobDir, reportFileName)
+	return reportFileName, nil
 }
