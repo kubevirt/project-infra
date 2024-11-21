@@ -8,7 +8,7 @@ presubmits:
     decoration_config:
       timeout: 3h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       rehearsal.allowed: "true"
       sriov-pod: "true"
@@ -50,7 +50,7 @@ presubmits:
           value: "true"
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=SRIOV
-        image: quay.io/kubevirtci/golang-legacy:v20220810-a8f2e6c
+        image: quay.io/kubevirtci/golang:v20241014-80f340c
         name: ""
         resources:
           requests:
@@ -58,9 +58,8 @@ presubmits:
         securityContext:
           privileged: true
         volumeMounts:
-        - mountPath: /lib/modules
-          name: modules
-          readOnly: true
+        - mountPath: /var/log/audit
+          name: audit
         - mountPath: /sys/fs/cgroup
           name: cgroup
         - mountPath: /dev/vfio/
@@ -70,9 +69,9 @@ presubmits:
       priorityClassName: sriov
       volumes:
       - hostPath:
-          path: /lib/modules
+          path: /var/log/audit
           type: Directory
-        name: modules
+        name: audit
       - hostPath:
           path: /sys/fs/cgroup
           type: Directory
@@ -87,7 +86,7 @@ presubmits:
     decoration_config:
       timeout: 3h0m0s
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       rehearsal.allowed: "true"
     max_concurrency: 1
@@ -106,7 +105,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: 1.22.3
-        image: quay.io/kubevirtci/golang-legacy:v20240523-1a2c9b8
+        image: quay.io/kubevirtci/golang:v20241014-80f340c
         name: ""
         resources:
           requests:
@@ -114,16 +113,15 @@ presubmits:
         securityContext:
           privileged: true
         volumeMounts:
-        - mountPath: /lib/modules
-          name: modules
-          readOnly: true
+        - mountPath: /var/log/audit
+          name: audit
         - mountPath: /sys/fs/cgroup
           name: cgroup
       volumes:
       - hostPath:
-          path: /lib/modules
+          path: /var/log/audit
           type: Directory
-        name: modules
+        name: audit
       - hostPath:
           path: /sys/fs/cgroup
           type: Directory
@@ -152,7 +150,7 @@ presubmits:
         - name: KUBEVIRT_PROVIDER
           value: kind-1.28
         - name: KUBEVIRT_NUM_NODES
-          value: "1"
+          value: "2"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
         image: quay.io/kubevirtci/golang:v20241014-80f340c
