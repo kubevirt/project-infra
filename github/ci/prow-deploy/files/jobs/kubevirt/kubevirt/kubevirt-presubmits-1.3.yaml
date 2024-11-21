@@ -138,7 +138,7 @@ presubmits:
         env:
         - name: TARGET
           value: kind-1.27-vgpu
-        image: quay.io/kubevirtci/bootstrap:v20240607-febc467
+        image: quay.io/kubevirtci/bootstrap:v20241121-ac63e76
         name: ""
         resources:
           requests:
