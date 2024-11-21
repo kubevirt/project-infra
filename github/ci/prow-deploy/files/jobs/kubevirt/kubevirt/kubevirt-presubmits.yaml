@@ -289,6 +289,8 @@ presubmits:
           value: 9216M
         - name: KUBEVIRT_PSA
           value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20241014-80f340c
         name: ""
         resources:
