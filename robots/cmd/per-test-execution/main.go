@@ -140,9 +140,10 @@ type TestExecutions struct {
 }
 
 type TopXTestExecutions struct {
-	PerLaneExecutions map[string][]*TestExecutions
-	StartOfReport     time.Time
-	EndOfReport       time.Time
+	PerLaneExecutions   map[string][]*TestExecutions
+	SortedLinkFilenames []string
+	StartOfReport       time.Time
+	EndOfReport         time.Time
 }
 
 type ByFailuresDescending []*TestExecutions
@@ -216,18 +217,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	topXLaneTestExecutions, err := readTopXLaneTestExecutionsFromReportFiles(reportFilenames, 10)
+	topXLaneTestExecutions, sortedLinkFilenames, err := readTopXLaneTestExecutionsFromReportFiles(reportFilenames, 10)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = writeHTMLReport(startOfReport, endOfReport, topXLaneTestExecutions)
+	err = writeHTMLReport(startOfReport, endOfReport, topXLaneTestExecutions, sortedLinkFilenames)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func writeHTMLReport(startOfReport time.Time, endOfReport time.Time, topXLaneTestExecutions map[string][]*TestExecutions) error {
+func writeHTMLReport(startOfReport time.Time, endOfReport time.Time, topXLaneTestExecutions map[string][]*TestExecutions, sortedLinkFilenames []string) error {
 	fileName := fmt.Sprintf(
 		"per-test-execution-%s-%s-*.html",
 		startOfReport.Format("2006-01"),
@@ -237,7 +238,7 @@ func writeHTMLReport(startOfReport time.Time, endOfReport time.Time, topXLaneTes
 		return err
 	}
 	defer file.Close()
-	err = htmlTemplate.Execute(file, TopXTestExecutions{StartOfReport: startOfReport, EndOfReport: endOfReport, PerLaneExecutions: topXLaneTestExecutions})
+	err = htmlTemplate.Execute(file, TopXTestExecutions{StartOfReport: startOfReport, EndOfReport: endOfReport, PerLaneExecutions: topXLaneTestExecutions, SortedLinkFilenames: sortedLinkFilenames})
 	if err != nil {
 		return err
 	}
@@ -245,13 +246,13 @@ func writeHTMLReport(startOfReport time.Time, endOfReport time.Time, topXLaneTes
 	return nil
 }
 
-func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX int) (map[string][]*TestExecutions, error) {
+func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX int) (testExecutions map[string][]*TestExecutions, sortedLinkFilenames []string, err error) {
 	topXLaneTestExecutions := make(map[string][]*TestExecutions)
 	for _, filename := range reportFilenames {
 		log.Debugf("Reading top %d entries of generated file %q to create top x list", topX, filename)
 		openFile, err := os.OpenFile(filename, os.O_RDONLY, 0666)
 		if err != nil {
-			return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
+			return nil, nil, fmt.Errorf("failed to read file %q: %v", filename, err)
 		}
 		defer openFile.Close()
 		csvReader := csv.NewReader(openFile)
@@ -261,7 +262,7 @@ func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX in
 		for i := 0; i < topX+1; i++ {
 			record, err := csvReader.Read()
 			if err != nil {
-				return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
+				return nil, nil, fmt.Errorf("failed to read file %q: %v", filename, err)
 			}
 			if i == 0 {
 				// store headers for lookup of link to latest failure
@@ -270,12 +271,12 @@ func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX in
 			}
 			atoi, err := strconv.Atoi(record[1])
 			if err != nil {
-				return nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
+				return nil, nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
 			}
 			totalExecutions := atoi
 			atoi, err = strconv.Atoi(record[2])
 			if err != nil {
-				return nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
+				return nil, nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
 			}
 			failedExecutions := atoi
 
@@ -302,8 +303,28 @@ func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX in
 		}
 		topXLaneTestExecutions[linkFilename] = testExecutionsPerLane
 	}
+
+	for linkFilename := range topXLaneTestExecutions {
+		sortedLinkFilenames = append(sortedLinkFilenames, linkFilename)
+	}
+	sort.Slice(sortedLinkFilenames, func(i, j int) bool {
+		i1, j1 := topXLaneTestExecutions[sortedLinkFilenames[i]], topXLaneTestExecutions[sortedLinkFilenames[j]]
+		calculatePercentage := func(testExecutions []*TestExecutions) (failureRate float32) {
+			total, failed := 0, 0
+			for _, perTestExecution := range testExecutions {
+				total += perTestExecution.TotalExecutions
+				failed += perTestExecution.FailedExecutions
+			}
+			if total == 0 {
+				return 0
+			}
+			return float32(failed) / float32(total)
+		}
+		return calculatePercentage(i1) > calculatePercentage(j1)
+	})
+
 	log.Debugf("test executions fetched")
-	return topXLaneTestExecutions, nil
+	return topXLaneTestExecutions, sortedLinkFilenames, nil
 }
 
 type writeReportFileResult struct {

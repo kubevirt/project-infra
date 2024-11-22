@@ -30,8 +30,9 @@
 
 <div>From {{ $.StartOfReport.Format "2006-01-02" }} till {{ $.EndOfReport.Format "2006-01-02" }} </div>
 
-{{ range $baseFilename, $testExecutions := $.PerLaneExecutions }}
+{{ range $baseFilename := $.SortedLinkFilenames }}
     <h2>{{ $baseFilename }} <a style="text-decoration: none" href="./{{ $baseFilename }}" title="source file">🛈</a></h2>
+    {{ $testExecutions := index $.PerLaneExecutions $baseFilename }}
     {{ if $testExecutions }}
     <table>
         <tr>
