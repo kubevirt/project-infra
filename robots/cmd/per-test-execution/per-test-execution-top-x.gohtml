@@ -39,12 +39,14 @@
             <th>Test name</th>
             <th># executions</th>
             <th># failures</th>
+            <th>most recent failure</th>
         </tr>{{ range $index, $testExecution := $testExecutions }}
         {{ if $testExecution.FailedExecutions }}<tr>
             <td>{{ len (printf "a%*s" $index "") }}</td>
             <td>{{ $testExecution.Name }}</td>
             <td>{{ $testExecution.TotalExecutions }}</td>
             <td>{{ $testExecution.FailedExecutions }}</td>
+            <td><a href="{{ $testExecution.LatestFailureURL }}">🔗</a></td>
         </tr>{{ end }}
         {{ end }}
     </table>

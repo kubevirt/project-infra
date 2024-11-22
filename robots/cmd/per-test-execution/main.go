@@ -136,6 +136,7 @@ type TestExecutions struct {
 	Name             string
 	TotalExecutions  int
 	FailedExecutions int
+	LatestFailureURL string
 }
 
 type TopXTestExecutions struct {
@@ -256,13 +257,15 @@ func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX in
 		csvReader := csv.NewReader(openFile)
 		linkFilename := filepath.Base(filename)
 		testExecutionsPerLane := []*TestExecutions{}
+		var headers []string
 		for i := 0; i < topX+1; i++ {
 			record, err := csvReader.Read()
 			if err != nil {
 				return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
 			}
 			if i == 0 {
-				// skip header
+				// store headers for lookup of link to latest failure
+				headers = record
 				continue
 			}
 			atoi, err := strconv.Atoi(record[1])
@@ -275,10 +278,24 @@ func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX in
 				return nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
 			}
 			failedExecutions := atoi
+
+			var failureLink string
+			if failedExecutions > 0 {
+				// fetch link to latest failure - search for first 'f' character from end to start, since the values
+				// are stored chronologically
+				for i := len(headers) - 1; i > 0; i-- {
+					if record[i] == "f" {
+						failureLink = headers[i]
+						break
+					}
+				}
+			}
+
 			topXTestExecution := &TestExecutions{
 				Name:             record[0],
 				TotalExecutions:  totalExecutions,
 				FailedExecutions: failedExecutions,
+				LatestFailureURL: failureLink,
 			}
 			testExecutionsPerLane = append(testExecutionsPerLane, topXTestExecution)
 
