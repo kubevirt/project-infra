@@ -203,6 +203,11 @@ func main() {
 		}
 	}
 
+	reportDir, err := createReportDir(defaultOutputDirectory, startOfReport, endOfReport)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	log.Infof("Running reports for %s - %s", startOfReport.Format(time.DateOnly), endOfReport.Format(time.DateOnly))
 
 	jobDir := "logs"
@@ -212,7 +217,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	reportFilenames, err := writeReportFiles(ctx, storageClient, startOfReport, endOfReport, jobDir)
+	reportFilenames, err := writeReportFiles(ctx, storageClient, startOfReport, endOfReport, jobDir, reportDir)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -222,18 +227,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = writeHTMLReport(startOfReport, endOfReport, topXLaneTestExecutions, sortedLinkFilenames)
+	err = writeHTMLReport(startOfReport, endOfReport, topXLaneTestExecutions, sortedLinkFilenames, reportDir)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func writeHTMLReport(startOfReport time.Time, endOfReport time.Time, topXLaneTestExecutions map[string][]*TestExecutions, sortedLinkFilenames []string) error {
-	fileName := fmt.Sprintf(
-		"per-test-execution-%s-%s-*.html",
-		startOfReport.Format("2006-01"),
-		endOfReport.Add(-1*24*time.Hour).Format("2006-01"))
-	file, err := os.CreateTemp(defaultOutputDirectory, fileName)
+func writeHTMLReport(startOfReport time.Time, endOfReport time.Time, topXLaneTestExecutions map[string][]*TestExecutions, sortedLinkFilenames []string, reportDir string) error {
+	file, err := os.Create(filepath.Join(reportDir, "index.html"))
 	if err != nil {
 		return err
 	}
@@ -332,11 +333,11 @@ type writeReportFileResult struct {
 	err            error
 }
 
-func writeReportFiles(ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string) ([]string, error) {
+func writeReportFiles(ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string, reportDir string) ([]string, error) {
 	log.Debugf("writing report files for lanes: %v", config.Lanes)
 
 	writeReportFileResults := make(chan writeReportFileResult)
-	go doWriteReportFiles(ctx, storageClient, startOfReport, endOfReport, jobDir, writeReportFileResults)
+	go doWriteReportFiles(ctx, storageClient, startOfReport, endOfReport, jobDir, writeReportFileResults, reportDir)
 
 	var fileNames []string
 	for result := range writeReportFileResults {
@@ -350,19 +351,19 @@ func writeReportFiles(ctx context.Context, storageClient *storage.Client, startO
 	return fileNames, nil
 }
 
-func doWriteReportFiles(ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string, writeReportFileResults chan writeReportFileResult) {
+func doWriteReportFiles(ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string, writeReportFileResults chan writeReportFileResult, reportDir string) {
 	defer close(writeReportFileResults)
 
 	var wg sync.WaitGroup
 	wg.Add(len(config.Lanes))
 	for _, periodicJobDirPattern := range config.Lanes {
 		periodicJobDir := fmt.Sprintf(periodicJobDirPattern, opts.K8sVersion)
-		go writeReportFile(&wg, ctx, storageClient, startOfReport, endOfReport, jobDir, periodicJobDir, writeReportFileResults)
+		go writeReportFile(&wg, ctx, storageClient, startOfReport, endOfReport, jobDir, periodicJobDir, writeReportFileResults, reportDir)
 	}
 	wg.Wait()
 }
 
-func writeReportFile(wg *sync.WaitGroup, ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string, periodicJobDir string, writeReportFileResults chan writeReportFileResult) {
+func writeReportFile(wg *sync.WaitGroup, ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string, periodicJobDir string, writeReportFileResults chan writeReportFileResult, reportDir string) {
 	defer wg.Done()
 	log.Debugf("writing file for %q", periodicJobDir)
 	results, err := flakefinder.FindUnitTestFilesForPeriodicJob(ctx, storageClient, BucketName, []string{jobDir, periodicJobDir}, startOfReport, endOfReport)
@@ -422,12 +423,7 @@ func writeReportFile(wg *sync.WaitGroup, ctx context.Context, storageClient *sto
 	sort.Ints(buildNumbers)
 
 	log.Debugf("creating file for %s", periodicJobDir)
-	fileName := fmt.Sprintf(
-		"per-test-execution-%s-%s-%s-*.csv",
-		startOfReport.Format("2006-01"),
-		endOfReport.Add(-1*24*time.Hour).Format("2006-01"),
-		periodicJobDir)
-	file, err := os.CreateTemp(defaultOutputDirectory, fileName)
+	file, err := os.Create(filepath.Join(reportDir, fmt.Sprintf("%s.csv", periodicJobDir)))
 	if err != nil {
 		writeReportFileResults <- writeReportFileResult{err: err}
 		return
@@ -474,4 +470,12 @@ func writeReportFile(wg *sync.WaitGroup, ctx context.Context, storageClient *sto
 
 	log.Debugf("report for %q written to %q", periodicJobDir, reportFileName)
 	writeReportFileResults <- writeReportFileResult{reportFileName, err}
+}
+
+func createReportDir(basedir string, startOfReport, endOfReport time.Time) (string, error) {
+	reportDirName := filepath.Join(basedir, fmt.Sprintf(
+		"per-test-execution-%s-%s",
+		startOfReport.Format("2006-01"),
+		endOfReport.Add(-1*24*time.Hour).Format("2006-01")))
+	return reportDirName, os.Mkdir(reportDirName, 0777)
 }

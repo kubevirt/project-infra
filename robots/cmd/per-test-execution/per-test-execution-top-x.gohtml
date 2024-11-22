@@ -33,7 +33,7 @@
 {{ range $baseFilename := $.SortedLinkFilenames }}
     <h2>{{ $baseFilename }} <a style="text-decoration: none" href="./{{ $baseFilename }}" title="source file">🛈</a></h2>
     {{ $testExecutions := index $.PerLaneExecutions $baseFilename }}
-    {{ if $testExecutions }}
+    {{ if not $testExecutions }}<div>🎉 ♥ No failures!</div>{{ else }}
     <table>
         <tr>
             <th>#</th>
@@ -47,11 +47,10 @@
             <td>{{ $testExecution.Name }}</td>
             <td>{{ $testExecution.TotalExecutions }}</td>
             <td>{{ $testExecution.FailedExecutions }}</td>
-            <td><a href="{{ $testExecution.LatestFailureURL }}">🔗</a></td>
+            <td><a style="text-decoration: none" href="{{ $testExecution.LatestFailureURL }}">🔗</a></td>
         </tr>{{ end }}
         {{ end }}
-    </table>
-    {{ else }}<div>🎉 ♥ No failures!</div>{{ end }}
+    </table>{{ end }}
 {{ end }}
 </body>
 </html>
