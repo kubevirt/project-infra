@@ -10,7 +10,7 @@ usage: $0 <input-file>
     Removes all users without contributions (taken from the input file) from the orgs.yaml
 
     input file in csv format is manually fetched from KubeVirt devstats:
-    https://kubevirt.devstats.cncf.io/d/48/users-statistics-by-repository-group?orgId=1&from=now-1y&to=now&var-period=w&var-metric=activity&var-repogroup_name=All&var-users=All
+    https://kubevirt.devstats.cncf.io/d/9/developer-activity-counts-by-repository-group-table?orgId=1&var-period_name=Last%20year&var-metric=contributions&var-repogroup_name=All&var-country_name=All&inspect=1&inspectTab=data
 
     then from the top panel select "Inspect" > "Data" and select "Download CSV"
 EOF
@@ -51,10 +51,9 @@ if [ ! -f "$orgs_yaml_path" ]; then
 fi
 
 # generate input file from csv where each user is in a separate line
-head -1 "$input_csv_file" \
-    | tr ',' "\n" \
-    | sed 's/"//g' \
-    | sort -u \
+tail --lines=+2 "${input_csv_file}" | \
+    grep -vE '^:space:*$' | \
+    cut -f 2 -d ',' \
     > /tmp/users-with-contributions.txt
 
 ### we add some user accounts, so that they never get removed
@@ -93,21 +92,21 @@ function get_yaml_elements() {
 }
 
 # iterate over org users (members and admins), grep over contributors list, remove every user not found
-(
-    for username in $(
-        { get_yaml_elements orgs.kubevirt.members & \
-          get_yaml_elements orgs.kubevirt.admins ; \
-        } | sed 's/^- //' | sort -u); do
-        echo $username "$(grep -i -c $username /tmp/users-with-contributions.txt)"
-    done
-) | grep ' 0$' \
-  | sed 's/ 0$//' \
-  > /tmp/users-without-contributions.txt
+rm -f /tmp/users-without-contributions.txt
+touch /tmp/users-without-contributions.txt
+for username in $(
+    { get_yaml_elements orgs.kubevirt.members & \
+      get_yaml_elements orgs.kubevirt.admins ; \
+    } | sed 's/^- //' | sort -u); do
+    if (( $(grep -i -c "$username" /tmp/users-with-contributions.txt) == 0 )); then
+        echo "$username" >> /tmp/users-without-contributions.txt
+    fi
+done
 
 # remove all users without contributions
 for user in $(cat /tmp/users-without-contributions.txt); do
     sed -i -E '/\s+- '"$user"'/d' "$orgs_yaml_path"
 done
 
-echo "Users without contributions:"
+echo "users without contributions found: $(wc -l /tmp/users-without-contributions.txt)"
 cat /tmp/users-without-contributions.txt
