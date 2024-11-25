@@ -853,6 +853,26 @@ orgs:
          - vasiliy-ul
          - rthallisey
          - aburdenthehand
+      needs-approver-review-label:
+        description: "Users who can manage needs-approver-review label to any PR inside the KubeVirt org"
+        members:
+         - 0xFelix
+         - aburdenthehand
+         - acardace
+         - alicefr
+         - davidvossel
+         - dhiller
+         - EdDev
+         - enp0s3
+         - fabiand
+         - fossedihelm
+         - iholder101
+         - jean-edouard
+         - lyarwood
+         - mhenriks
+         - stu-gott
+         - vladikr
+         - xpivarc
       kubevirtkubevirt-label:
         description: "Users who can apply restricted labels to any issue inside the kubevirt/kubevirt repo"
         members:
