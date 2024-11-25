@@ -82,10 +82,11 @@ func init() {
 }
 
 type options struct {
-	Months     int
-	Days       int
-	K8sVersion string
-	ConfigPath string
+	Months          int
+	Days            int
+	K8sVersion      string
+	ConfigPath      string
+	outputDirectory string
 }
 
 func (o options) loadDefaults() error {
@@ -102,6 +103,14 @@ func (o options) loadDefaults() error {
 			return fmt.Errorf("Kubernetes stable version %q doesn't match regex", k8sStableReleaseVersion)
 		}
 		opts.K8sVersion = k8sStableReleaseVersionRegex.FindAllStringSubmatch(k8sStableReleaseVersion, -1)[0][1]
+	}
+	if o.outputDirectory != defaultOutputDirectory {
+		_, err := os.Stat(o.outputDirectory)
+		if os.IsNotExist(err) {
+			return fmt.Errorf("output directory %q doesn't exist: %v", o.outputDirectory, err)
+		} else if err != nil {
+			return fmt.Errorf("error on output directory %q: %v", o.outputDirectory, err)
+		}
 	}
 	return nil
 }
@@ -175,6 +184,7 @@ func main() {
 	flag.IntVar(&opts.Days, "days", 0, "determines how many days in the past till today are covered (if > 0, used instead of months)")
 	flag.StringVar(&opts.K8sVersion, "kubernetes-version", "", "the k8s major.minor version for the target lane, i.e. 1.31")
 	flag.StringVar(&opts.ConfigPath, "config-path", "", "path to the config file")
+	flag.StringVar(&opts.outputDirectory, "output-directory", defaultOutputDirectory, "path to the output directory - if set other than the default, it will expect it to exist")
 	flag.Parse()
 
 	err := opts.loadDefaults()
@@ -203,9 +213,15 @@ func main() {
 		}
 	}
 
-	reportDir, err := createReportDir(defaultOutputDirectory, startOfReport, endOfReport)
-	if err != nil {
-		log.Fatal(err)
+	var reportDir string
+	if opts.outputDirectory == defaultOutputDirectory {
+		reportDir, err = createReportDir(defaultOutputDirectory, startOfReport, endOfReport)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Debugf("output directory %q created", reportDir)
+	} else {
+		reportDir = opts.outputDirectory
 	}
 
 	log.Infof("Running reports for %s - %s", startOfReport.Format(time.DateOnly), endOfReport.Format(time.DateOnly))
