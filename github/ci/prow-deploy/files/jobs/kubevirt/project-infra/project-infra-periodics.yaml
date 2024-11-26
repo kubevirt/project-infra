@@ -509,7 +509,7 @@ periodics:
     preset-github-credentials: "true"
   decorate: true
   decoration_config:
-    timeout: 2h
+    timeout: 2h30m
     grace_period: 5m
   extra_refs:
   - org: kubevirt
