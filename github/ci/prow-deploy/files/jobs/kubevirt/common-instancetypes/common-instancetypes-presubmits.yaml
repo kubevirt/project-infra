@@ -537,7 +537,7 @@ presubmits:
     branches:
       - main
     always_run: false
-    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/windows/11/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/windows/11/.*|tests/functests/.*|tests/vendor/.*|tests/go.*|tests/image/validationos.*"
     cluster: kubevirt-prow-workloads
     decorate: true
     decoration_config:
