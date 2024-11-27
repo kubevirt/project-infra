@@ -348,7 +348,7 @@ default:
       name: needs-approver-review
       target: prs
       prowPlugin: label
-      addedBy: prow
+      addedBy: kubevirt-bot
     - color: 0ffa16
       description: Indicates a PR has been approved by an approver from all required OWNERS files.
       name: approved
@@ -574,6 +574,11 @@ repos:
         name: ok-to-rehearse
         prowPlugin: label
         target: pr
+      - addedBy: kubevirt-bot
+        color: 0ffa16
+        description: Indicates a PR is trusted, used by tide for auto-merging PRs.
+        name: skip-review
+        target: prs
   nmstate/kubernetes-nmstate:
     labels:
       - name: kind/documentation

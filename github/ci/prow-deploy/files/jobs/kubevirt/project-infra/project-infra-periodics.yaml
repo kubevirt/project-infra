@@ -757,8 +757,19 @@ periodics:
       - -c
       args:
       - |
-        if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=prow-job-image-bump --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
-          hack/git-pr.sh -c "hack/bump-prow-job-images.sh" -b prow-job-image-bump -r project-infra -T main -B $'Bump Prow Job images\n@kubevirt/prow-job-taskforce\n/cc none'
+        if labels-checker \
+          --org=kubevirt \
+          --repo=kubevirt \
+          --author=kubevirt-bot \
+          --branch-name=prow-job-image-bump \
+          --ensure-labels-missing=lgtm,approved,do-not-merge/hold,skip-review \
+          --github-token-path=/etc/github/oauth; then
+          hack/git-pr.sh \
+            -c "hack/bump-prow-job-images.sh" \
+            -b prow-job-image-bump \
+            -r project-infra \
+            -T main -B $'Bump Prow Job images\n@kubevirt/prow-job-taskforce\n/cc none' \
+            -L 'skip-review'
         fi
       resources:
         requests:
@@ -791,8 +802,20 @@ periodics:
       - -c
       args:
       - |
-        if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=prow-deployment-image-bump --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
-          hack/git-pr.sh -c "hack/bump-prow-deployment-images.sh" -b prow-deployment-image-bump -r project-infra -T main -B $'Bump Prow Deployment images\nFYI @kubevirt/prow-job-taskforce\n/cc none'
+        if labels-checker \
+          --org=kubevirt \
+          --repo=kubevirt \
+          --author=kubevirt-bot \
+          --branch-name=prow-deployment-image-bump \
+          --ensure-labels-missing=lgtm,approved,do-not-merge/hold,skip-review \
+          --github-token-path=/etc/github/oauth; then
+          hack/git-pr.sh \
+            -c "hack/bump-prow-deployment-images.sh" \
+            -b prow-deployment-image-bump \
+            -r project-infra \
+            -T main \
+            -B $'Bump Prow Deployment images\nFYI @kubevirt/prow-job-taskforce\n/cc none' \
+            -L 'skip-review'
         fi
       resources:
         requests:

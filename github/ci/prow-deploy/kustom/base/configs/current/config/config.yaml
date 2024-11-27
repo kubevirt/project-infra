@@ -216,6 +216,21 @@ tide:
     - do-not-merge/invalid-commit-message
     - needs-rebase
     - "dco-signoff: no"
+  # only PRs created by automation with user kubevirt-bot that execute simple bumping
+  # should receive label "skip-review"
+  - author: kubevirt-bot
+    repos:
+    - kubevirt/project-infra
+    labels:
+    - skip-review
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/work-in-progress
+    - do-not-merge/invalid-commit-message
+    - needs-rebase
+    - "dco-signoff: no"
   pr_status_base_urls:
     '*': https://prow.ci.kubevirt.io/pr
   context_options:
