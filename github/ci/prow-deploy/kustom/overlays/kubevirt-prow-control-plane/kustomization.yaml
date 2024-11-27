@@ -303,6 +303,11 @@ secretGenerator:
     files:
       - secrets/service-account.json
     type: Opaque
+  - name: virtci-gcs
+    namespace: kubevirt-prow-jobs
+    files:
+      - secrets/virtci-service-account.json
+    type: Opaque
   - name: slack-token
     files:
       - token=secrets/slack-token
