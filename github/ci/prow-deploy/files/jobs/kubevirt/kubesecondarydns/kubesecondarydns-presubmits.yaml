@@ -36,4 +36,29 @@ presubmits:
                 make cluster-up
                 make cluster-sync
                 make functest
-
+    - name: pull-kubesecondarydns-unit-test-s390x
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+      always_run: true
+      optional: false
+      decorate: true
+      cluster: prow-s390x-workloads
+      decoration_config:
+        grace_period: 5m0s
+        timeout: 2h0m0s
+      spec:
+        containers:
+        - command:
+          - /usr/local/bin/runner.sh
+          - /bin/sh
+          - -c
+          - make test
+          image: quay.io/kubevirtci/golang:v20241014-80f340c
+          name: ""
+          resources:
+            requests:
+              memory: 500Mi
+          securityContext:
+            privileged: true
