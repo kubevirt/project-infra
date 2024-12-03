@@ -3,7 +3,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = ["main.go"],
-    embedsrcs = ["config.yaml"],
+    embedsrcs = [
+        "config.yaml",
+        "per-test-execution-top-x.gohtml",
+    ],
     importpath = "kubevirt.io/project-infra/robots/cmd/per-test-execution",
     visibility = ["//visibility:private"],
     deps = [

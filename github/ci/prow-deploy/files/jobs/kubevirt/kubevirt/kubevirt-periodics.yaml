@@ -92,7 +92,37 @@ periodics:
       - -ce
       env:
       - name: GIMME_GO_VERSION
-        value: "1.19"
+        value: "1.21.6"
+      image: quay.io/kubevirtci/golang:v20241014-80f340c
+      name: ""
+      resources: {}
+- annotations:
+    testgrid-create-test-group: "false"
+  cluster: kubevirt-prow-control-plane
+  cron: 45 3 * * *
+  decorate: true
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: project-infra
+  labels:
+    preset-gcs-credentials: "true"
+  name: periodic-push-per-test-execution-results-six-months
+  spec:
+    containers:
+    - args:
+      - |
+        report_dir="/tmp/per-test-results/last-six-months"
+        mkdir -p "${report_dir}"
+        go run ./robots/cmd/per-test-execution --months 6 --output-directory "${report_dir}"
+        gsutil cp "${report_dir}/*" "gs://kubevirt-prow/reports/per-test-results/kubevirt/kubevirt/last-six-months/"
+      command:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -ce
+      env:
+      - name: GIMME_GO_VERSION
+        value: "1.21.6"
       image: quay.io/kubevirtci/golang:v20241014-80f340c
       name: ""
       resources: {}
