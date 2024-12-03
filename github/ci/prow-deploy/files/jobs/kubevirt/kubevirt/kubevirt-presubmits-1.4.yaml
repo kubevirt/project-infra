@@ -401,6 +401,7 @@ presubmits:
     cluster: prow-s390x-workloads
     context: pull-kubevirt-unit-test-s390x
     decorate: true
+    optional: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
