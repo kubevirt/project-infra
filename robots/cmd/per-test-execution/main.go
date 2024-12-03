@@ -264,12 +264,41 @@ func writeHTMLReport(startOfReport time.Time, endOfReport time.Time, topXLaneTes
 }
 
 func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX int) (testExecutions map[string][]*TestExecutions, sortedLinkFilenames []string, err error) {
+	topXLaneTestExecutions, err := fetchTopXLaneTestExecutions(reportFilenames, topX)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	for linkFilename := range topXLaneTestExecutions {
+		sortedLinkFilenames = append(sortedLinkFilenames, linkFilename)
+	}
+	sort.Slice(sortedLinkFilenames, func(i, j int) bool {
+		i1, j1 := topXLaneTestExecutions[sortedLinkFilenames[i]], topXLaneTestExecutions[sortedLinkFilenames[j]]
+		calculatePercentage := func(testExecutions []*TestExecutions) (failureRate float32) {
+			total, failed := 0, 0
+			for _, perTestExecution := range testExecutions {
+				total += perTestExecution.TotalExecutions
+				failed += perTestExecution.FailedExecutions
+			}
+			if total == 0 {
+				return 0
+			}
+			return float32(failed) / float32(total)
+		}
+		return calculatePercentage(i1) > calculatePercentage(j1)
+	})
+
+	log.Debugf("test executions fetched")
+	return topXLaneTestExecutions, sortedLinkFilenames, nil
+}
+
+func fetchTopXLaneTestExecutions(reportFilenames []string, topX int) (map[string][]*TestExecutions, error) {
 	topXLaneTestExecutions := make(map[string][]*TestExecutions)
 	for _, filename := range reportFilenames {
 		log.Debugf("Reading top %d entries of generated file %q to create top x list", topX, filename)
 		openFile, err := os.OpenFile(filename, os.O_RDONLY, 0666)
 		if err != nil {
-			return nil, nil, fmt.Errorf("failed to read file %q: %v", filename, err)
+			return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
 		}
 		defer openFile.Close()
 		csvReader := csv.NewReader(openFile)
@@ -279,7 +308,7 @@ func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX in
 		for i := 0; i < topX+1; i++ {
 			record, err := csvReader.Read()
 			if err != nil {
-				return nil, nil, fmt.Errorf("failed to read file %q: %v", filename, err)
+				return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
 			}
 			if i == 0 {
 				// store headers for lookup of link to latest failure
@@ -288,12 +317,12 @@ func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX in
 			}
 			atoi, err := strconv.Atoi(record[1])
 			if err != nil {
-				return nil, nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
+				return nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
 			}
 			totalExecutions := atoi
 			atoi, err = strconv.Atoi(record[2])
 			if err != nil {
-				return nil, nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
+				return nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
 			}
 			failedExecutions := atoi
 
@@ -320,28 +349,7 @@ func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX in
 		}
 		topXLaneTestExecutions[linkFilename] = testExecutionsPerLane
 	}
-
-	for linkFilename := range topXLaneTestExecutions {
-		sortedLinkFilenames = append(sortedLinkFilenames, linkFilename)
-	}
-	sort.Slice(sortedLinkFilenames, func(i, j int) bool {
-		i1, j1 := topXLaneTestExecutions[sortedLinkFilenames[i]], topXLaneTestExecutions[sortedLinkFilenames[j]]
-		calculatePercentage := func(testExecutions []*TestExecutions) (failureRate float32) {
-			total, failed := 0, 0
-			for _, perTestExecution := range testExecutions {
-				total += perTestExecution.TotalExecutions
-				failed += perTestExecution.FailedExecutions
-			}
-			if total == 0 {
-				return 0
-			}
-			return float32(failed) / float32(total)
-		}
-		return calculatePercentage(i1) > calculatePercentage(j1)
-	})
-
-	log.Debugf("test executions fetched")
-	return topXLaneTestExecutions, sortedLinkFilenames, nil
+	return topXLaneTestExecutions, nil
 }
 
 type writeReportFileResult struct {
@@ -388,47 +396,7 @@ func writeReportFile(wg *sync.WaitGroup, ctx context.Context, storageClient *sto
 		return
 	}
 
-	log.Debugf("iterating over results for %s", periodicJobDir)
-	buildNumbers := make([]int, 0, len(results))
-	perBuildTestExecutions := make(map[string]map[int]rune)
-	allTestExecutions := make(map[string]*TestExecutions)
-	for _, result := range results {
-		for _, junit := range result.JUnit {
-			buildNumbers = append(buildNumbers, result.BuildNumber)
-			for _, test := range junit.Tests {
-				testName := flakefinder.NormalizeTestName(test.Name)
-
-				if _, exists := perBuildTestExecutions[testName]; !exists {
-					perBuildTestExecutions[testName] = make(map[int]rune)
-				}
-				r, _ := utf8.DecodeRuneInString(string(test.Status))
-				perBuildTestExecutions[testName][result.BuildNumber] = r
-
-				testExecutionRecord := &TestExecutions{
-					Name:             testName,
-					TotalExecutions:  0,
-					FailedExecutions: 0,
-				}
-				switch test.Status {
-				case junit2.StatusFailed, junit2.StatusError:
-					if _, exists := allTestExecutions[testName]; !exists {
-						allTestExecutions[testName] = testExecutionRecord
-					}
-					testExecutionRecord = allTestExecutions[testName]
-					testExecutionRecord.FailedExecutions = testExecutionRecord.FailedExecutions + 1
-					testExecutionRecord.TotalExecutions = testExecutionRecord.TotalExecutions + 1
-				case junit2.StatusPassed:
-					if _, exists := allTestExecutions[testName]; !exists {
-						allTestExecutions[testName] = testExecutionRecord
-					}
-					testExecutionRecord = allTestExecutions[testName]
-					testExecutionRecord.TotalExecutions = testExecutionRecord.TotalExecutions + 1
-				default:
-					// NOOP
-				}
-			}
-		}
-	}
+	buildNumbers, perBuildTestExecutions, allTestExecutions := condenseToTestExecutions(periodicJobDir, results)
 
 	log.Debugf("sorting results for %s", periodicJobDir)
 	sortedTestExecutions := make([]*TestExecutions, 0, len(allTestExecutions))
@@ -486,6 +454,51 @@ func writeReportFile(wg *sync.WaitGroup, ctx context.Context, storageClient *sto
 
 	log.Debugf("report for %q written to %q", periodicJobDir, reportFileName)
 	writeReportFileResults <- writeReportFileResult{reportFileName, err}
+}
+
+func condenseToTestExecutions(periodicJobDir string, results []*flakefinder.JobResult) ([]int, map[string]map[int]rune, map[string]*TestExecutions) {
+	log.Debugf("iterating over results for %s", periodicJobDir)
+	buildNumbers := make([]int, 0, len(results))
+	perBuildTestExecutions := make(map[string]map[int]rune)
+	allTestExecutions := make(map[string]*TestExecutions)
+	for _, result := range results {
+		for _, junit := range result.JUnit {
+			buildNumbers = append(buildNumbers, result.BuildNumber)
+			for _, test := range junit.Tests {
+				testName := flakefinder.NormalizeTestName(test.Name)
+
+				if _, exists := perBuildTestExecutions[testName]; !exists {
+					perBuildTestExecutions[testName] = make(map[int]rune)
+				}
+				r, _ := utf8.DecodeRuneInString(string(test.Status))
+				perBuildTestExecutions[testName][result.BuildNumber] = r
+
+				testExecutionRecord := &TestExecutions{
+					Name:             testName,
+					TotalExecutions:  0,
+					FailedExecutions: 0,
+				}
+				switch test.Status {
+				case junit2.StatusFailed, junit2.StatusError:
+					if _, exists := allTestExecutions[testName]; !exists {
+						allTestExecutions[testName] = testExecutionRecord
+					}
+					testExecutionRecord = allTestExecutions[testName]
+					testExecutionRecord.FailedExecutions = testExecutionRecord.FailedExecutions + 1
+					testExecutionRecord.TotalExecutions = testExecutionRecord.TotalExecutions + 1
+				case junit2.StatusPassed:
+					if _, exists := allTestExecutions[testName]; !exists {
+						allTestExecutions[testName] = testExecutionRecord
+					}
+					testExecutionRecord = allTestExecutions[testName]
+					testExecutionRecord.TotalExecutions = testExecutionRecord.TotalExecutions + 1
+				default:
+					// NOOP
+				}
+			}
+		}
+	}
+	return buildNumbers, perBuildTestExecutions, allTestExecutions
 }
 
 func createReportDir(basedir string, startOfReport, endOfReport time.Time) (string, error) {
