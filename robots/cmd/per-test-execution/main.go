@@ -104,14 +104,6 @@ func (o options) loadDefaults() error {
 		}
 		opts.K8sVersion = k8sStableReleaseVersionRegex.FindAllStringSubmatch(k8sStableReleaseVersion, -1)[0][1]
 	}
-	if o.outputDirectory != defaultOutputDirectory {
-		_, err := os.Stat(o.outputDirectory)
-		if os.IsNotExist(err) {
-			return fmt.Errorf("output directory %q doesn't exist: %v", o.outputDirectory, err)
-		} else if err != nil {
-			return fmt.Errorf("error on output directory %q: %v", o.outputDirectory, err)
-		}
-	}
 	return nil
 }
 
@@ -137,6 +129,14 @@ func (o options) validate() error {
 		log.Infof("applied configuration from %q\n%s", o.ConfigPath, string(providedConfig))
 	} else {
 		log.Infof("using default configuration\n%s", string(defaultConfig))
+	}
+	if o.outputDirectory != defaultOutputDirectory {
+		_, err := os.Stat(o.outputDirectory)
+		if os.IsNotExist(err) {
+			return fmt.Errorf("output directory %q doesn't exist: %v", o.outputDirectory, err)
+		} else if err != nil {
+			return fmt.Errorf("error on output directory %q: %v", o.outputDirectory, err)
+		}
 	}
 	return nil
 }
