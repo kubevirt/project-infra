@@ -662,7 +662,6 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
-
 - name: periodic-kubevirt-job-remover
   cron: "30 0 * * *"
   max_concurrency: 1
@@ -693,7 +692,6 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
-
 - name: periodic-project-infra-mirror-istioctl
   cron: "25 1 * * 1"
   decorate: true
@@ -728,7 +726,6 @@ periodics:
         resources:
           requests:
             memory: "2Gi"
-
 - name: periodic-project-infra-prow-job-image-bump
   cron: "30 0 * * *"
   max_concurrency: 1
@@ -797,6 +794,48 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
+- name: periodic-project-infra-gcp-cluster-deprovision
+  cron: "45 7 * * *"
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 4h
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    workdir: true
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: registry.ci.openshift.org/ci/ipi-deprovision:latest
+      imagePullPolicy: Always
+      command:
+      - hack/gcp-cluster-deprovision.sh
+      env:
+      - name: HOME
+        value: /tmp
+      - name: GCP_PROJECT
+        value: kubevirt-240711
+      - name: CLUSTER_TTL
+        value: 30 minutes ago
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/gcs/virtci-service-account.json
+      resources:
+        requests:
+          memory: "300Mi"
+      volumeMounts:
+      - name: virtci-gcs
+        mountPath: /etc/gcs
+        readOnly: true
+    volumes:
+    - name: virtci-gcs
+      secret:
+        secretName: virtci-gcs
+        defaultMode: 0400
 - annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
