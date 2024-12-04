@@ -16,6 +16,7 @@
 - [Labels that apply to kubevirt/kubevirt.github.io, for both issues and PRs](#labels-that-apply-to-kubevirtkubevirt.github.io-for-both-issues-and-prs)
 - [Labels that apply to kubevirt/kubevirt.github.io, only for PRs](#labels-that-apply-to-kubevirtkubevirt.github.io-only-for-prs)
 - [Labels that apply to kubevirt/project-infra, for both issues and PRs](#labels-that-apply-to-kubevirtproject-infra-for-both-issues-and-prs)
+- [Labels that apply to kubevirt/project-infra, only for PRs](#labels-that-apply-to-kubevirtproject-infra-only-for-prs)
 - [Labels that apply to nmstate/kubernetes-nmstate, for both issues and PRs](#labels-that-apply-to-nmstatekubernetes-nmstate-for-both-issues-and-prs)
 
 
@@ -113,7 +114,7 @@ larger set of contributors to apply/remove them.
 | <a id="do-not-merge/release-note-label-needed" href="#do-not-merge/release-note-label-needed">`do-not-merge/release-note-label-needed`</a> | Indicates that a PR should not merge because it's missing one of the release note labels. <br><br> This was previously `needs/release-note`, | prow |  [release-note](https://prow.ci.kubevirt.io/command-help#release-note) |
 | <a id="do-not-merge/work-in-progress" href="#do-not-merge/work-in-progress">`do-not-merge/work-in-progress`</a> | Indicates that a PR should not merge because it is a work in progress.| prow |  [wip](https://prow.ci.kubevirt.io/command-help#wip) |
 | <a id="lgtm" href="#lgtm">`lgtm`</a> | Indicates that a PR is ready to be merged.| reviewers or members |  [lgtm](https://prow.ci.kubevirt.io/command-help#lgtm) |
-| <a id="needs-approver-review" href="#needs-approver-review">`needs-approver-review`</a> | Indicates that a PR requires a review from an approver.| prow |  [label](https://prow.ci.kubevirt.io/command-help#label) |
+| <a id="needs-approver-review" href="#needs-approver-review">`needs-approver-review`</a> | Indicates that a PR requires a review from an approver.| kubevirt-bot |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="needs-ok-to-test" href="#needs-ok-to-test">`needs-ok-to-test`</a> | Indicates a PR that requires an org member to verify it is safe to test.| prow |  [trigger](https://prow.ci.kubevirt.io/command-help#trigger) |
 | <a id="needs-rebase" href="#needs-rebase">`needs-rebase`</a> | Indicates a PR cannot be merged because it has merge conflicts with HEAD.| prow |  [needs-rebase](https://prow.ci.kubevirt.io/command-help#needs-rebase) |
 | <a id="ok-to-test" href="#ok-to-test">`ok-to-test`</a> | Indicates a non-member PR verified by an org member that is safe to test.| prow |  [trigger](https://prow.ci.kubevirt.io/command-help#trigger) |
@@ -199,6 +200,12 @@ larger set of contributors to apply/remove them.
 | <a id="area/flakefinder" href="#area/flakefinder">`area/flakefinder`</a> | Issues and PRs concerning FlakeFinder, a tool to find flaky tests| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="area/monitoring" href="#area/monitoring">`area/monitoring`</a> | Issues and PRs concerning monitoring of Prow components| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="area/prow" href="#area/prow">`area/prow`</a> | Issues and PRs concerning KubeVirt Prow, i.e. configuration, setup etc.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
+
+## Labels that apply to kubevirt/project-infra, only for PRs
+
+| Name | Description | Added By | Prow Plugin |
+| ---- | ----------- | -------- | --- |
+| <a id="skip-review" href="#skip-review">`skip-review`</a> | Indicates a PR is trusted, used by tide for auto-merging PRs.| kubevirt-bot | |
 
 ## Labels that apply to nmstate/kubernetes-nmstate, for both issues and PRs
 
