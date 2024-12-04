@@ -537,11 +537,11 @@ presubmits:
             - "-ce"
             - |
               # install kind
-              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.23.0/kind-linux-amd64
               chmod +x ./kind && mv ./kind /usr/local/bin/kind
 
               # create test cluster
-              kind create cluster --image quay.io/kubevirtci/kind:v1.21.1
+              kind create cluster --image quay.io/kubevirtci/kindest-node:v1.30.0
 
               ./github/ci/services/ci-search/hack/deploy.sh testing
 
