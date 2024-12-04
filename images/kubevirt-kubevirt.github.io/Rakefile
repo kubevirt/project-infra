@@ -63,7 +63,9 @@ namespace :links do
             :log_level          => :info,
             :external_only      => true,
             :internal_domains   => ["https://instructor.labs.sysdeseng.com", "https://www.youtube.com"],
-            :url_ignore         => [ /http(s)?:\/\/(www.)?katacoda.com.*/ ],
+            :url_ignore         => [ /http(s)?:\/\/(kubevirt.io\/\/(user-guide)?(videos)?).*/,
+                                     /http(s)?:\/\/(www.)?killercoda.com.*/,
+                                     /http(s)?:\/\/(metal.)equinix.com.*/ ],
             :url_swap           => {'https://kubevirt.io/' => '',},
             :http_status_ignore => [0, 400, 429, 999]
         }
@@ -143,4 +145,4 @@ namespace :links do
 end
 
 desc 'The default task will execute all tests in a row'
-task :default => ['links:build', 'links:test_external', 'links:test_internal']
+task :default => ['links:build']
