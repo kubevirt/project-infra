@@ -123,7 +123,7 @@ presubmits:
         preset-shared-images: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20241014-80f340c
+          - image: quay.io/kubevirtci/bootstrap:v20241121-ac63e76
             securityContext:
               privileged: true
             command:
