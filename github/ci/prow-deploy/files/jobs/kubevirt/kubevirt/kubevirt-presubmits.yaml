@@ -1234,7 +1234,7 @@ presubmits:
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
-    name: pull-kubevirt-e2e-k8s-1.29-sig-monitoring
+    name: pull-kubevirt-e2e-k8s-1.31-sig-monitoring
     run_if_changed: ^pkg/monitoring/.*|^tests/monitoring/.*|^tests/libmonitoring/.*|^vendor/github.com/machadovilaca/operator-observability/.*
     skip_branches:
     - release-\d+\.\d+
@@ -1247,7 +1247,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.29-sig-monitoring
+          value: k8s-1.31-sig-monitoring
         - name: KUBEVIRT_NUM_NODES
           value: "2"
         image: quay.io/kubevirtci/bootstrap:v20241014-80f340c
