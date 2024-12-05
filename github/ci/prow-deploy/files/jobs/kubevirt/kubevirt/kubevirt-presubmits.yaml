@@ -17,7 +17,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 4
-    name: pull-kubevirt-e2e-k8s-1.29-sig-performance
+    name: pull-kubevirt-e2e-k8s-1.31-sig-performance
     run_if_changed: ^cmd/.*|^rpm/.*|^tests/performance/.*|^hack/perftests.sh|^tools/perfscale-audit/.*|^bazel/.*|^third_party/.*|^staging/src/.*|^api/.*|^pkg/virt-.*|^pkg/controlller/.*|^pkg/monitoring/.*
     skip_branches:
     - release-\d+\.\d+
@@ -40,7 +40,7 @@ presubmits:
           FUNC_TEST_ARGS="--no-color --seed=42" make perftest
         env:
         - name: KUBEVIRT_PROVIDER
-          value: k8s-1.29
+          value: k8s-1.31
         - name: KUBEVIRT_STORAGE
           value: hpp
         - name: KUBEVIRT_MEMORY_SIZE

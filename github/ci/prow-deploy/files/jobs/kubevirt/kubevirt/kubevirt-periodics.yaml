@@ -1134,7 +1134,7 @@ periodics:
   # note: when the provider is updated, the `robots/cmd/perf-report-creator/graph.sh` and
   #       `robots/cmd/perf-report-creator/scrape.sh` needs to be updated as well, refer to this
   #       https://github.com/kubevirt/project-infra/pull/3032 for the needed changes
-  name: periodic-kubevirt-e2e-k8s-1.29-sig-performance
+  name: periodic-kubevirt-e2e-k8s-1.31-sig-performance
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1157,7 +1157,7 @@ periodics:
         FUNC_TEST_ARGS="--no-color --seed=42" make perftest
       env:
       - name: KUBEVIRT_PROVIDER
-        value: k8s-1.29
+        value: k8s-1.31
       - name: KUBEVIRT_STORAGE
         value: hpp
       - name: KUBEVIRT_MEMORY_SIZE
