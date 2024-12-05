@@ -1,18 +1,18 @@
 OUTPUT_DIR=${1}
 
 
-# plot sig-performance 1.29 weekly vmi
+# plot sig-performance 1.31 weekly vmi
 perf-report-creator weekly-graph \
   --resource=vmi \
-  --weekly-reports-dir=${OUTPUT_DIR}/weekly/periodic-kubevirt-e2e-k8s-1.29-sig-performance \
+  --weekly-reports-dir=${OUTPUT_DIR}/weekly/periodic-kubevirt-e2e-k8s-1.31-sig-performance \
   --plotly-html=true \
   --since=2022-11-29 \
   --metrics-list=vmiCreationToRunningSecondsP50,vmiCreationToRunningSecondsP95,LIST-virtualmachineinstances-count,LIST-pods-count,LIST-nodes-count,LIST-virtualmachineinstancemigrations-count,LIST-endpoints-count,GET-virtualmachineinstances-count,GET-pods-count,GET-nodes-count,GET-virtualmachineinstancemigrations-count,GET-endpoints-count,CREATE-virtualmachineinstances-count,CREATE-pods-count,CREATE-nodes-count,CREATE-virtualmachineinstancemigrations-count,CREATE-endpoints-count,PATCH-virtualmachineinstances-count,PATCH-pods-count,PATCH-nodes-count,PATCH-virtualmachineinstancemigrations-count,PATCH-endpoints-count,UPDATE-virtualmachineinstances-count,UPDATE-pods-count,UPDATE-nodes-count,UPDATE-virtualmachineinstancemigrations-count,UPDATE-endpoints-count,avgVirtAPIMemoryUsageInMB,minVirtAPIMemoryUsageInMB,maxVirtAPIMemoryUsageInMB,avgVirtAPICPUUsage,avgVirtControllerMemoryUsageInMB,minVirtControllerMemoryUsageInMB,maxVirtControllerMemoryUsageInMB,avgVirtControllerCPUUsage
 
-## plot sig-performance 1.29 weekly vm
+## plot sig-performance 1.31 weekly vm
 perf-report-creator weekly-graph \
   --resource=vm \
-  --weekly-reports-dir=${OUTPUT_DIR}/weekly/periodic-kubevirt-e2e-k8s-1.29-sig-performance \
+  --weekly-reports-dir=${OUTPUT_DIR}/weekly/periodic-kubevirt-e2e-k8s-1.31-sig-performance \
   --plotly-html=true \
   --since=2022-11-29 \
   --metrics-list=vmiCreationToRunningSecondsP50,vmiCreationToRunningSecondsP95,LIST-virtualmachineinstances-count,LIST-pods-count,LIST-nodes-count,LIST-virtualmachineinstancemigrations-count,LIST-endpoints-count,GET-virtualmachineinstances-count,GET-pods-count,GET-nodes-count,GET-virtualmachineinstancemigrations-count,GET-endpoints-count,CREATE-virtualmachineinstances-count,CREATE-pods-count,CREATE-nodes-count,CREATE-virtualmachineinstancemigrations-count,CREATE-endpoints-count,PATCH-virtualmachineinstances-count,PATCH-pods-count,PATCH-nodes-count,PATCH-virtualmachineinstancemigrations-count,PATCH-endpoints-count,UPDATE-virtualmachineinstances-count,UPDATE-pods-count,UPDATE-nodes-count,UPDATE-virtualmachineinstancemigrations-count,UPDATE-endpoints-count,avgVirtAPIMemoryUsageInMB,minVirtAPIMemoryUsageInMB,maxVirtAPIMemoryUsageInMB,avgVirtAPICPUUsage,avgVirtControllerMemoryUsageInMB,minVirtControllerMemoryUsageInMB,maxVirtControllerMemoryUsageInMB,avgVirtControllerCPUUsage
