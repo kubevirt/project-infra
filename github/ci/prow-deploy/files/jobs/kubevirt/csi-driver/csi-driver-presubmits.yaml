@@ -232,7 +232,7 @@ presubmits:
         preset-bazel-cache: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20241014-80f340c
+          - image: quay.io/kubevirtci/bootstrap:v20241121-ac63e76
             env:
               - name: COVERALLS_TOKEN_FILE
                 value: /root/.docker/secrets/coveralls/token

@@ -592,7 +592,7 @@ periodics:
   cluster: kubevirt-prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20241014-80f340c
+    - image: quay.io/kubevirtci/bootstrap:v20241121-ac63e76
       command: ["/bin/sh"]
       args:
       - "-ce"
@@ -712,7 +712,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20241014-80f340c
+      - image: quay.io/kubevirtci/bootstrap:v20241121-ac63e76
         env:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
