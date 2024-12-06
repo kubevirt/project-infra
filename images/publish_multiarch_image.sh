@@ -67,7 +67,7 @@ EOF
 }
 
 get_base_image() {
-    name="$(cat Dockerfile |grep FROM|awk '{print $2}')"
+    name="$(cat Containerfile |grep FROM|awk '{print $2}')"
     echo "${name}"
 }
 
