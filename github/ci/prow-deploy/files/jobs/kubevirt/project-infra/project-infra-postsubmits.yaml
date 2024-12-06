@@ -333,7 +333,7 @@ postsubmits:
       decorate: true
       max_concurrency: 1
       labels:
-        preset-dind-enabled: "true"
+        preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
       cluster: kubevirt-prow-control-plane

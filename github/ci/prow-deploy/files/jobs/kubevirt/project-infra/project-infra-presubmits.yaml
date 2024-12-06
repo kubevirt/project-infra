@@ -271,7 +271,7 @@ presubmits:
     run_if_changed: "images/kubevirt-kubevirt.github.io/.*"
     decorate: true
     labels:
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
     cluster: kubevirt-prow-control-plane
