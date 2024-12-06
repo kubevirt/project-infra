@@ -19,7 +19,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20241121-ac63e76
+      - image: quay.io/kubevirtci/bootstrap:v20241206-ae344ab
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
@@ -53,7 +53,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20241121-ac63e76
+      - image: quay.io/kubevirtci/bootstrap:v20241206-ae344ab
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"

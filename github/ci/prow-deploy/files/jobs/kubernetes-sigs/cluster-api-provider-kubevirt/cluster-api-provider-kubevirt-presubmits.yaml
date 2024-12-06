@@ -22,7 +22,7 @@ presubmits:
         - /bin/sh
         - -c
         - make functest
-        image: quay.io/kubevirtci/golang:v20241014-80f340c
+        image: quay.io/kubevirtci/golang:v20241206-ae344ab
         name: ""
         resources:
           requests:

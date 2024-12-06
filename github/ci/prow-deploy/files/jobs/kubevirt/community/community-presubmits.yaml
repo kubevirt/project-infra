@@ -20,7 +20,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-ce"
-        image: quay.io/kubevirtci/golang:v20241014-80f340c
+        image: quay.io/kubevirtci/golang:v20241206-ae344ab
         resources:
           requests:
             memory: "1Gi"
