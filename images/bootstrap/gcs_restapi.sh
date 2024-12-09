@@ -22,6 +22,11 @@ get_access_token() {
         exit 1
     fi
 
+    # Reuse the token if it's still valid
+    if [ -n "$access_token" ] && [ "$(date +%s)" -lt "$token_expiry" ]; then
+        return 0
+    fi
+
     local sa_email=$(jq -r '.client_email' "$GOOGLE_APPLICATION_CREDENTIALS")
     local sa_key=$(jq -r '.private_key' "$GOOGLE_APPLICATION_CREDENTIALS")
     local jwt_header=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 -w 0 | tr '+/' '-_' | tr -d '=')
@@ -34,6 +39,7 @@ get_access_token() {
          -d "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$jwt")
 
     access_token=$(echo "$response" | jq -r '.access_token')
+    token_expiry=$(($(date +%s) + 3600)) # 1 hour expiry
 
     if [ -z "$access_token" ]; then
         echo "Failed to obtain access token. Check your service account key file."
