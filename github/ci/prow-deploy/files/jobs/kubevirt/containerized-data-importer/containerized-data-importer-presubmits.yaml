@@ -9,7 +9,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
     always_run: true
-    optional: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 1h
@@ -109,7 +109,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
     always_run: true
-    optional: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 1h
@@ -141,7 +141,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
     always_run: true
-    optional: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 1h
@@ -173,7 +173,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
     always_run: true
-    optional: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 1h
