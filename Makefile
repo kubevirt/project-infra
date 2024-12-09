@@ -40,3 +40,9 @@ test:
 
 update-labels:
 	./hack/labels/update.sh
+
+install-metrics-binaries:
+	if ! command -V gocyclo; then go install github.com/fzipp/gocyclo/cmd/gocyclo@latest ; fi
+
+go-metrics: install-metrics-binaries
+	gocyclo -over 10 .
