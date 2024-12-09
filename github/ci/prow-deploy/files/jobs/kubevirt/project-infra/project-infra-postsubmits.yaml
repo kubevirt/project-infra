@@ -69,6 +69,7 @@ postsubmits:
       labels:
         preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
+        preset-podman-in-container-enabled: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20241206-ae344ab
@@ -84,6 +85,8 @@ postsubmits:
                 memory: "8Gi"
               limits:
                 memory: "8Gi"
+            securityContext:
+              privileged: true
     - name: publish-release-tool-image
       always_run: false
       run_if_changed: "releng/release-tool/.*"
@@ -685,8 +688,9 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
-        preset-kubevirtci-quay-credential: "true"
         preset-bazel-cache: "true"
+        preset-kubevirtci-quay-credential: "true"
+        preset-podman-in-container-enabled: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20241206-ae344ab
@@ -702,6 +706,8 @@ postsubmits:
                 memory: "8Gi"
               limits:
                 memory: "8Gi"
+            securityContext:
+              privileged: true
     - name: publish-test-report-image
       always_run: false
       run_if_changed: "robots/.*/test-report/.*"
