@@ -2953,7 +2953,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 1,
-      "id": 6,
+      "id": 5,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -3196,6 +3196,23 @@ data:
             "uid": "prometheus"
           },
           "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Prow Job Dashboard",
+                  "url": "https://prow.ci.kubevirt.io/?job=${__field.labels.job_name}"
+                },
+                {
+                  "targetBlank": true,
+                  "title": "Testgrid",
+                  "url": "https://testgrid.k8s.io/kubevirt-presubmits#${__field.labels.job_name}"
+                }
+              ]
+            },
+            "overrides": []
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -3265,11 +3282,13 @@ data:
           },
           "yaxes": [
             {
+              "$$hashKey": "object:79",
               "format": "short",
               "logBase": 1,
               "show": true
             },
             {
+              "$$hashKey": "object:80",
               "format": "short",
               "logBase": 1,
               "show": true
@@ -3574,7 +3593,7 @@ data:
       "timezone": "",
       "title": "e2e jobs overview V2",
       "uid": "efpTS3t4z",
-      "version": 8,
+      "version": 1,
       "weekStart": ""
     }
   merge-queue.json: |
