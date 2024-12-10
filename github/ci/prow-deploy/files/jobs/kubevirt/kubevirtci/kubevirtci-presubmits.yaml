@@ -282,6 +282,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-alpine-with-test-tooling
+    optional: true
     spec:
       affinity:
         nodeAffinity:
