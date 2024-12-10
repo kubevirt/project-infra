@@ -18,7 +18,7 @@ function queue() {
 
 function deprovision() {
   WORKDIR="${1}"
-  timeout --signal=SIGQUIT 30m openshift-install --dir "${WORKDIR}" --log-level error destroy cluster && touch "${WORKDIR}/success" || touch "${WORKDIR}/failure"
+  timeout --signal=SIGQUIT 60m openshift-install --dir "${WORKDIR}" --log-level error destroy cluster && touch "${WORKDIR}/success" || touch "${WORKDIR}/failure"
 }
 
 logdir="/tmp/deprovision"
