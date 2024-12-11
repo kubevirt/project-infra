@@ -221,6 +221,7 @@ tide:
   - author: kubevirt-bot
     repos:
     - kubevirt/project-infra
+    - kubevirt/kubevirtci
     labels:
     - skip-review
     missingLabels:

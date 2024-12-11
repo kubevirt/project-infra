@@ -15,6 +15,7 @@
 - [Labels that apply to kubevirt/kubevirt-tutorial, only for PRs](#labels-that-apply-to-kubevirtkubevirt-tutorial-only-for-prs)
 - [Labels that apply to kubevirt/kubevirt.github.io, for both issues and PRs](#labels-that-apply-to-kubevirtkubevirt.github.io-for-both-issues-and-prs)
 - [Labels that apply to kubevirt/kubevirt.github.io, only for PRs](#labels-that-apply-to-kubevirtkubevirt.github.io-only-for-prs)
+- [Labels that apply to kubevirt/kubevirtci, only for PRs](#labels-that-apply-to-kubevirtkubevirtci-only-for-prs)
 - [Labels that apply to kubevirt/project-infra, for both issues and PRs](#labels-that-apply-to-kubevirtproject-infra-for-both-issues-and-prs)
 - [Labels that apply to kubevirt/project-infra, only for PRs](#labels-that-apply-to-kubevirtproject-infra-only-for-prs)
 - [Labels that apply to nmstate/kubernetes-nmstate, for both issues and PRs](#labels-that-apply-to-nmstatekubernetes-nmstate-for-both-issues-and-prs)
@@ -191,6 +192,12 @@ larger set of contributors to apply/remove them.
 | Name | Description | Added By | Prow Plugin |
 | ---- | ----------- | -------- | --- |
 | <a id="kind/blog" href="#kind/blog">`kind/blog`</a> | Label for blog entries| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
+
+## Labels that apply to kubevirt/kubevirtci, only for PRs
+
+| Name | Description | Added By | Prow Plugin |
+| ---- | ----------- | -------- | --- |
+| <a id="skip-review" href="#skip-review">`skip-review`</a> | Indicates a PR is trusted, used by tide for auto-merging PRs.| kubevirt-bot | |
 
 ## Labels that apply to kubevirt/project-infra, for both issues and PRs
 
