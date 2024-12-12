@@ -26,3 +26,79 @@ presubmits:
             memory: "1Gi"
           limits:
             memory: "1Gi"
+  - always_run: false
+    cluster: kubevirt-prow-control-plane
+    decorate: true
+    extra_refs:
+    - org: kubevirt
+      repo: project-infra
+      base_ref: main
+    name: pull-community-make-lint
+    run_if_changed: "generators/.*|validators/.*|pkg/.*"
+    spec:
+      containers:
+      - args:
+        - |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ${GOPATH}/bin ${GOLANGCI_LINT_VERSION}
+          make lint
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-ce"
+        env:
+        - name: GOLANGCI_LINT_VERSION
+          value: "v2.4.0"
+        image: quay.io/kubevirtci/golang:v20241206-ae344ab
+        resources:
+          requests:
+            memory: "1Gi"
+          limits:
+            memory: "1Gi"
+  - always_run: false
+    cluster: kubevirt-prow-control-plane
+    decorate: true
+    extra_refs:
+    - org: kubevirt
+      repo: project-infra
+      base_ref: main
+    name: pull-community-make-test
+    run_if_changed: "generators/.*|validators/.*|pkg/.*"
+    spec:
+      containers:
+      - args:
+        - make test
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-ce"
+        image: quay.io/kubevirtci/golang:v20241206-ae344ab
+        resources:
+          requests:
+            memory: "1Gi"
+          limits:
+            memory: "1Gi"
+  - always_run: false
+    cluster: kubevirt-prow-control-plane
+    decorate: true
+    extra_refs:
+    - org: kubevirt
+      repo: project-infra
+      base_ref: main
+    name: pull-community-make-coverage
+    run_if_changed: "generators/.*|validators/.*|pkg/.*"
+    spec:
+      containers:
+      - args:
+        - |
+          go install github.com/cancue/covreport@latest
+          make coverage
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-ce"
+        image: quay.io/kubevirtci/golang:v20241206-ae344ab
+        resources:
+          requests:
+            memory: "1Gi"
+          limits:
+            memory: "1Gi"
