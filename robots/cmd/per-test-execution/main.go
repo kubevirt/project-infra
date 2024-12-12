@@ -61,7 +61,7 @@ var (
 	htmlTemplate                 *template.Template
 
 	k8sVersionRegex              = regexp.MustCompile(`^[0-9]\.[1-9][0-9]*$`)
-	k8sStableReleaseVersionRegex = regexp.MustCompile(`^v([0-9]\.[1-9][0-9]*)\.[1-9][0-9]*$`)
+	k8sStableReleaseVersionRegex = regexp.MustCompile(`^v([0-9]\.[1-9][0-9]*)\.(0|[1-9][0-9]*)$`)
 )
 
 type Config struct {
