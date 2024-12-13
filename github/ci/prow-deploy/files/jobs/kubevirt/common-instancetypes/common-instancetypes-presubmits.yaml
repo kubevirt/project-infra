@@ -123,9 +123,11 @@ presubmits:
         - "sudo dnf install binutils-gold -y && make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.28
+          value: kind-1.31
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
+        - name: KUBEVIRT_NUM_NODES
+          value: "1"
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Fedora"'
         image: quay.io/kubevirtci/golang:v20241206-ae344ab
@@ -290,9 +292,11 @@ presubmits:
         - "sudo dnf install binutils-gold -y && make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.28
+          value: kind-1.31
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
+        - name: KUBEVIRT_NUM_NODES
+          value: "1"
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS Stream 9"'
         image: quay.io/kubevirtci/golang:v20241206-ae344ab
@@ -379,9 +383,11 @@ presubmits:
         - "sudo dnf install binutils-gold -y && make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.28
+          value: kind-1.31
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
+        - name: KUBEVIRT_NUM_NODES
+          value: "1"
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Ubuntu"'
         image: quay.io/kubevirtci/golang:v20241206-ae344ab
@@ -507,9 +513,11 @@ presubmits:
         - "sudo dnf install binutils-gold -y && make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.28
+          value: kind-1.31
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
+        - name: KUBEVIRT_NUM_NODES
+          value: "1"
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*OpenSUSE Leap"'
         image: quay.io/kubevirtci/golang:v20241206-ae344ab
