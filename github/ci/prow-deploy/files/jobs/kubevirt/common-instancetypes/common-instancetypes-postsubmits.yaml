@@ -20,7 +20,7 @@ postsubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20241206-ae344ab
+          - image: quay.io/kubevirtci/golang:v20241213-57bd934
             env:
               - name: COMMON_INSTANCETYPES_CRI
                 value: podman
