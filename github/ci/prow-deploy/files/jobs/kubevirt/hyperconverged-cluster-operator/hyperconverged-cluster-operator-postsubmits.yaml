@@ -14,7 +14,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20241206-ae344ab
+          - image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
