@@ -63,3 +63,12 @@ install-metrics-binaries:
 
 lint: install-metrics-binaries
 	./hack/lint.sh
+
+coverage: make-artifacts-dir
+	if ! command -V covreport; then go install github.com/cancue/covreport@latest; fi
+	go test \
+		./external-plugins/... \
+		./releng/... \
+		./robots/... \
+		-coverprofile=/tmp/coverage.out
+	covreport  -i /tmp/coverage.out -o ${COVERAGE_OUTPUT_PATH}
