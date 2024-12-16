@@ -138,6 +138,44 @@ presubmits:
             memory: "4Gi"
         securityContext:
           runAsUser: 0
+  - always_run: false
+    cluster: kubevirt-prow-control-plane
+    decorate: true
+    name: pull-project-infra-lint
+    run_if_changed: "external-plugins/.*|releng/.*|robots/.*"
+    spec:
+      containers:
+      - args:
+        - make lint
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-ce"
+        image: quay.io/kubevirtci/golang:v20241206-ae344ab
+        resources:
+          requests:
+            memory: "1Gi"
+          limits:
+            memory: "1Gi"
+  - always_run: false
+    cluster: kubevirt-prow-control-plane
+    decorate: true
+    name: pull-project-infra-coverage
+    run_if_changed: "external-plugins/.*|releng/.*|robots/.*"
+    spec:
+      containers:
+      - args:
+        - make coverage
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-ce"
+        image: quay.io/kubevirtci/golang:v20241206-ae344ab
+        resources:
+          requests:
+            memory: "1Gi"
+          limits:
+            memory: "1Gi"
   - name: build-kubevirt-infra-bootstrap-image
     always_run: false
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
