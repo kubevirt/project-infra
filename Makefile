@@ -11,11 +11,11 @@ ifndef GOLANGCI_LINT_VERSION
 endif
 ifndef ARTIFACTS
 	ARTIFACTS=/tmp/artifacts
-    export ARTIFACTS
+	export ARTIFACTS
 endif
 ifndef COVERAGE_OUTPUT_PATH
 	COVERAGE_OUTPUT_PATH=${ARTIFACTS}/coverage.html
-    export COVERAGE_OUTPUT_PATH
+	export COVERAGE_OUTPUT_PATH
 endif
 
 .PHONY: all make-artifacts-dir clean deps-update gazelle-update-repos update-labels install-metrics-binaries lint $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
