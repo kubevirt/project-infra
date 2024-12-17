@@ -44,11 +44,83 @@ postsubmits:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
           - "-c"
-          - >
+          - |
             cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
+            SHORT_SHA=$(git rev-parse --short HEAD) &&
             ./publish.sh &&
-            echo "$(git tag --points-at HEAD | head -1)" > latest &&
-            gsutil cp ./latest gs://kubevirt-prow/release/kubevirt/kubevirtci/latest
+            # Gets git tag created by above publish.sh run
+            KUBEVIRTCI_TAG=$(git tag --points-at HEAD | head -1) &&
+            echo "$KUBEVIRTCI_TAG" > latest &&
+            gsutil cp ./latest gs://kubevirt-prow/release/kubevirt/kubevirtci/latest &&
+            echo "$KUBEVIRTCI_TAG" > amd64-$SHORT_SHA &&
+            gsutil cp ./amd64-$SHORT_SHA gs://kubevirt-prow/release/kubevirt/kubevirtci/amd64-$SHORT_SHA
+          # docker-in-docker needs privileged mode
+          env:
+          - name: GIMME_GO_VERSION
+            value: "1.22.5"
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - mountPath: /dev
+            name: devices
+          resources:
+            requests:
+              memory: "29Gi"
+    - name: publish-kubevirtci-s390x
+      branches:
+      - main
+      always_run: true
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      decoration_config:
+        timeout: 2h
+      max_concurrency: 1
+      extra_refs:
+      - org: kubevirt
+        repo: project-infra
+        base_ref: main
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-gcs-credentials: "true"
+        preset-kubevirtci-quay-credential: "true"
+      cluster: prow-s390x-workloads
+      spec:
+        volumes:
+        - hostPath:
+            path: /dev
+            type: Directory
+          name: devices
+        containers:
+        - image: quay.io/kubevirtci/golang:v20241213-57bd934
+          command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/bash"
+          - "-c"
+          - |
+            cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
+            SHORT_SHA=$(git rev-parse --short HEAD) &&
+            GCS_FILE_PATH=release/kubevirt/kubevirtci/amd64-$SHORT_SHA &&
+            source /usr/local/bin/gcs_restapi.sh &&
+            CHECK_INTERVAL=30 &&
+            while true; do
+                if stat_gcs_file kubevirt-prow "$GCS_FILE_PATH"; then
+                    echo "File $GCS_FILE_PATH is now available."
+                    break
+                else
+                    echo "File $GCS_FILE_PATH not found. Checking again in $CHECK_INTERVAL seconds."
+                    sleep $CHECK_INTERVAL
+                fi
+            done &&
+            KUBEVIRTCI_TAG=$(cat_gcs_file kubevirt-prow "$GCS_FILE_PATH")
+            if [ $? -ne 0 ]; then
+                echo "Failed to fetch KUBEVIRTCI_TAG"
+                exit 1
+            fi
+            export KUBEVIRTCI_TAG &&
+            echo "Fetched KUBEVIRTCI_TAG: $KUBEVIRTCI_TAG" &&
+            ./publish.sh &&
+            rm_gcs_file kubevirt-prow "$GCS_FILE_PATH"
           # docker-in-docker needs privileged mode
           env:
           - name: GIMME_GO_VERSION
