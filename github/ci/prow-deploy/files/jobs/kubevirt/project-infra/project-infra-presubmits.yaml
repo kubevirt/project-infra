@@ -165,7 +165,9 @@ presubmits:
     spec:
       containers:
       - args:
-        - make coverage
+        - |
+          GOBIN=/usr/local/bin/ go install github.com/onsi/ginkgo/v2/ginkgo@v2.9.2
+          make coverage
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
