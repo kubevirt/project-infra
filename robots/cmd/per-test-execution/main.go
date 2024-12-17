@@ -142,10 +142,11 @@ func (o options) validate() error {
 }
 
 type TestExecutions struct {
-	Name             string
-	TotalExecutions  int
-	FailedExecutions int
-	LatestFailureURL string
+	Name               string
+	TotalExecutions    int
+	FailedExecutions   int
+	LatestFailureURL   string
+	IsOrWasQuarantined bool
 }
 
 type TopXTestExecutions struct {
@@ -425,10 +426,14 @@ func writeReportFile(wg *sync.WaitGroup, ctx context.Context, storageClient *sto
 	reportFileName := file.Name()
 	log.Debugf("writing values to file %q", reportFileName)
 	for _, testExecution := range sortedTestExecutions {
-		values := []string{testExecution.Name, strconv.Itoa(testExecution.TotalExecutions), strconv.Itoa(testExecution.FailedExecutions)}
+		name := testExecution.Name
+		if testExecution.IsOrWasQuarantined {
+			name = "[q]" + name
+		}
+		values := []string{name, strconv.Itoa(testExecution.TotalExecutions), strconv.Itoa(testExecution.FailedExecutions)}
 		for _, buildNumber := range buildNumbers {
 			value := ""
-			if executionStatus, statusExists := perBuildTestExecutions[testExecution.Name][buildNumber]; statusExists {
+			if executionStatus, statusExists := perBuildTestExecutions[name][buildNumber]; statusExists {
 				value = string(executionStatus)
 			}
 			values = append(values, value)
@@ -479,19 +484,17 @@ func condenseToTestExecutions(periodicJobDir string, results []*flakefinder.JobR
 					FailedExecutions: 0,
 				}
 				switch test.Status {
-				case junit2.StatusFailed, junit2.StatusError:
+				case junit2.StatusFailed, junit2.StatusError, junit2.StatusPassed:
 					if _, exists := allTestExecutions[testName]; !exists {
 						allTestExecutions[testName] = testExecutionRecord
 					}
-					testExecutionRecord = allTestExecutions[testName]
-					testExecutionRecord.FailedExecutions = testExecutionRecord.FailedExecutions + 1
-					testExecutionRecord.TotalExecutions = testExecutionRecord.TotalExecutions + 1
-				case junit2.StatusPassed:
-					if _, exists := allTestExecutions[testName]; !exists {
-						allTestExecutions[testName] = testExecutionRecord
+					allTestExecutions[testName].TotalExecutions = allTestExecutions[testName].TotalExecutions + 1
+					if test.Status == junit2.StatusFailed || test.Status == junit2.StatusError {
+						allTestExecutions[testName].FailedExecutions = allTestExecutions[testName].FailedExecutions + 1
 					}
-					testExecutionRecord = allTestExecutions[testName]
-					testExecutionRecord.TotalExecutions = testExecutionRecord.TotalExecutions + 1
+					if flakefinder.IsQuarantineLabelPresent(test.Name) {
+						allTestExecutions[testName].IsOrWasQuarantined = true
+					}
 				default:
 					// NOOP
 				}
