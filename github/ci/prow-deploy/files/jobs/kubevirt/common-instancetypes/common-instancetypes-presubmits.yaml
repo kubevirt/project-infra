@@ -47,6 +47,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -86,6 +88,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -122,6 +126,8 @@ presubmits:
         - "-c"
         - "sudo dnf install binutils-gold -y && make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
         - name: KUBEVIRT_PROVIDER
           value: kind-1.28
         - name: KUBEVIRT_MEMORY_SIZE
@@ -175,6 +181,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -214,6 +222,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -253,6 +263,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -342,6 +354,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -378,6 +392,8 @@ presubmits:
         - "-c"
         - "sudo dnf install binutils-gold -y && make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
         - name: KUBEVIRT_PROVIDER
           value: kind-1.28
         - name: KUBEVIRT_MEMORY_SIZE
@@ -431,6 +447,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -470,6 +488,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -506,6 +526,8 @@ presubmits:
         - "-c"
         - "sudo dnf install binutils-gold -y && make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
         - name: KUBEVIRT_PROVIDER
           value: kind-1.28
         - name: KUBEVIRT_MEMORY_SIZE
@@ -562,6 +584,8 @@ presubmits:
           cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
           make kubevirt-up && make kubevirt-sync && make kubevirt-sync-containerdisks && make kubevirt-functest
         env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -596,6 +620,8 @@ presubmits:
       containers:
         - image: quay.io/kubevirtci/golang:v20241213-57bd934
           env:
+            - name: GIMME_GO_VERSION
+              value: "1.22.9"
             - name: COMMON_INSTANCETYPES_CRI
               value: podman
           command:
