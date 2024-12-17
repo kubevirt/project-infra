@@ -13,7 +13,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/common-instancetypes-builder:v20241017-30aa54a
+      - image: quay.io/kubevirtci/common-instancetypes-builder:v20241217-0005325
         command:
         - "/bin/bash"
         - "-c"
