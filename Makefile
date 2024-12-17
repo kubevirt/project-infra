@@ -18,11 +18,8 @@ ifndef COVERAGE_OUTPUT_PATH
 	export COVERAGE_OUTPUT_PATH
 endif
 
-.PHONY: all make-artifacts-dir clean deps-update gazelle-update-repos update-labels install-metrics-binaries lint $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
+.PHONY: all clean deps-update gazelle-update-repos update-labels install-metrics-binaries lint $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
 all: deps-update $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
-
-make-artifacts-dir:
-	mkdir -p ${ARTIFACTS}
 
 clean: install-metrics-binaries
 	$(bazelbin) clean
@@ -64,11 +61,12 @@ install-metrics-binaries:
 lint: install-metrics-binaries
 	./hack/lint.sh
 
-coverage: make-artifacts-dir
+coverage:
 	if ! command -V covreport; then go install github.com/cancue/covreport@latest; fi
 	go test \
 		./external-plugins/... \
 		./releng/... \
 		./robots/... \
 		-coverprofile=/tmp/coverage.out
+	mkdir -p ${ARTIFACTS}
 	covreport  -i /tmp/coverage.out -o ${COVERAGE_OUTPUT_PATH}
