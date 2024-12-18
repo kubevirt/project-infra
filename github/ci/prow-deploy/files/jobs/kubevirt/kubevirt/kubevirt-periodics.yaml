@@ -1696,16 +1696,7 @@ periodics:
     preset-github-credentials: "true"
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
-      env:
-      - name: GIT_AUTHOR_NAME
-        value: kubevirt-bot
-      - name: GIT_AUTHOR_EMAIL
-        value: kubevirtbot@redhat.com
-      - name: GIT_REPO_URL
-        value: https://kubevirt-bot@github.com/kubevirt/sig-release.git
-      command: [ "/bin/sh", "-ce" ]
-      args:
+    - args:
       - |
         set -x
         project_infra_dir=$(cd ../project-infra && pwd)
@@ -1719,7 +1710,7 @@ periodics:
         )
         sig_release_dir=$(cd ../sig-release && pwd)
         cd ${project_infra_dir}
-        bazelisk run //releng/feature-announce -- \
+        go run ./releng/feature-announce \
             --log-level=5 \
             --output-file=${sig_release_dir}/upcoming-changes.md \
             --org kubevirt \
@@ -1732,8 +1723,20 @@ periodics:
           echo "Nothing changed" >&2
           exit 0
         fi
-        git commit --signoff -m "robot //releng/feature-announce: update list of notable changes for next KubeVirt release"
+        git commit --signoff -m "robot ./releng/feature-announce: update list of notable changes for next KubeVirt release"
         git push ${GIT_REPO_URL} HEAD:main
+      command:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -ce
+      env:
+      - name: GIT_AUTHOR_NAME
+        value: kubevirt-bot
+      - name: GIT_AUTHOR_EMAIL
+        value: kubevirtbot@redhat.com
+      - name: GIT_REPO_URL
+        value: https://kubevirt-bot@github.com/kubevirt/sig-release.git
+      image: quay.io/kubevirtci/golang:v20241213-57bd934
       resources:
         requests:
           memory: "200Mi"
