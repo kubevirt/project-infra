@@ -1587,7 +1587,7 @@ periodics:
       - -ce
       - |
         make bump-images
-        git-pr.sh -c "cd ../project-infra && bazelisk run //robots/cmd/uploader:uploader -- -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ${PWD} -s 'Automated run of make bump-images and //robots/cmd/uploader:uploader' -b bump-images -r kubevirt -L release-note-none -T main
+        git-pr.sh -c "cd ../project-infra && go run ./robots/cmd/uploader -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ${PWD} -s 'Automated run of make bump-images and ./robots/cmd/uploader' -b bump-images -r kubevirt -L release-note-none -T main
       command:
       - /bin/sh
       image: quay.io/kubevirtci/pr-creator:v20240913-6773146
