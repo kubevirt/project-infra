@@ -1324,7 +1324,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.29-sig-storage-root
+    name: pull-kubevirt-e2e-k8s-1.31-sig-storage-root
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1337,7 +1337,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.29-sig-storage
+          value: k8s-1.31-sig-storage
         - name: FEATURE_GATES
           value: Root
         image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
@@ -1367,7 +1367,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.29-sig-compute-root
+    name: pull-kubevirt-e2e-k8s-1.31-sig-compute-root
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1380,7 +1380,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.29-sig-compute
+          value: k8s-1.31-sig-compute
         - name: FEATURE_GATES
           value: Root
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
