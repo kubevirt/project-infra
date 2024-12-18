@@ -1,0 +1,10 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["tagparser.go"],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/vmihailenco/tagparser/v2",
+    importpath = "github.com/vmihailenco/tagparser/v2",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/github.com/vmihailenco/tagparser/v2/internal/parser:go_default_library"],
+)

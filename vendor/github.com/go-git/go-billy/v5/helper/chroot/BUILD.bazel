@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["chroot.go"],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/go-git/go-billy/v5/helper/chroot",
+    importpath = "github.com/go-git/go-billy/v5/helper/chroot",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/go-git/go-billy/v5:go_default_library",
+        "//vendor/github.com/go-git/go-billy/v5/helper/polyfill:go_default_library",
+    ],
+)

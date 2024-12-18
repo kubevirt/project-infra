@@ -1,0 +1,24 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "fp.go",
+        "fp_amd64.go",
+        "fp_amd64.h",
+        "fp_amd64.s",
+        "fp_generic.go",
+        "fp_noasm.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/cloudflare/circl/math/fp25519",
+    importpath = "github.com/cloudflare/circl/math/fp25519",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/cloudflare/circl/internal/conv:go_default_library",
+    ] + select({
+        "@io_bazel_rules_go//go/platform:amd64": [
+            "//vendor/golang.org/x/sys/cpu:go_default_library",
+        ],
+        "//conditions:default": [],
+    }),
+)

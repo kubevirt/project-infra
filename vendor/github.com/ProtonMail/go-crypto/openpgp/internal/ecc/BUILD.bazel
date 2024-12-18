@@ -1,0 +1,27 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "curve25519.go",
+        "curve_info.go",
+        "curves.go",
+        "ed25519.go",
+        "ed448.go",
+        "generic.go",
+        "x448.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/ProtonMail/go-crypto/openpgp/internal/ecc",
+    importpath = "github.com/ProtonMail/go-crypto/openpgp/internal/ecc",
+    visibility = ["//vendor/github.com/ProtonMail/go-crypto/openpgp:__subpackages__"],
+    deps = [
+        "//vendor/github.com/ProtonMail/go-crypto/bitcurves:go_default_library",
+        "//vendor/github.com/ProtonMail/go-crypto/brainpool:go_default_library",
+        "//vendor/github.com/ProtonMail/go-crypto/openpgp/errors:go_default_library",
+        "//vendor/github.com/ProtonMail/go-crypto/openpgp/internal/encoding:go_default_library",
+        "//vendor/github.com/cloudflare/circl/dh/x25519:go_default_library",
+        "//vendor/github.com/cloudflare/circl/dh/x448:go_default_library",
+        "//vendor/github.com/cloudflare/circl/sign/ed25519:go_default_library",
+        "//vendor/github.com/cloudflare/circl/sign/ed448:go_default_library",
+    ],
+)

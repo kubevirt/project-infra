@@ -1,0 +1,29 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "artifact.go",
+        "build.go",
+        "build_history.go",
+        "constants.go",
+        "credentials.go",
+        "executor.go",
+        "fingerprint.go",
+        "folder.go",
+        "jenkins.go",
+        "job.go",
+        "label.go",
+        "node.go",
+        "pipeline.go",
+        "plugin.go",
+        "queue.go",
+        "request.go",
+        "utils.go",
+        "views.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/bndr/gojenkins",
+    importpath = "github.com/bndr/gojenkins",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/golang.org/x/net/html:go_default_library"],
+)

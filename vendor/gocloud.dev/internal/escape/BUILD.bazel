@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["escape.go"],
+    importmap = "kubevirt.io/project-infra/vendor/gocloud.dev/internal/escape",
+    importpath = "gocloud.dev/internal/escape",
+    visibility = ["//vendor/gocloud.dev:__subpackages__"],
+)

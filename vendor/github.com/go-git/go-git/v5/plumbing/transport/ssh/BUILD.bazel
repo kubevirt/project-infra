@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "auth_method.go",
+        "common.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/go-git/go-git/v5/plumbing/transport/ssh",
+    importpath = "github.com/go-git/go-git/v5/plumbing/transport/ssh",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/go-git/go-git/v5/plumbing/transport:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/plumbing/transport/internal/common:go_default_library",
+        "//vendor/github.com/kevinburke/ssh_config:go_default_library",
+        "//vendor/github.com/skeema/knownhosts:go_default_library",
+        "//vendor/github.com/xanzy/ssh-agent:go_default_library",
+        "//vendor/golang.org/x/crypto/ssh:go_default_library",
+        "//vendor/golang.org/x/net/proxy:go_default_library",
+    ],
+)

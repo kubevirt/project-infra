@@ -16,12 +16,12 @@ go_library(
     deps = [
         "//robots/pkg/flakefinder:go_default_library",
         "//robots/pkg/flakefinder/github:go_default_library",
-        "@com_github_google_go_github_v28//github:go_default_library",
-        "@com_google_cloud_go_storage//:go_default_library",
-        "@io_k8s_test_infra//prow/config/secret:go_default_library",
-        "@io_k8s_test_infra//prow/flagutil:go_default_library",
-        "@org_golang_google_api//iterator:go_default_library",
-        "@org_golang_x_oauth2//:go_default_library",
+        "//vendor/cloud.google.com/go/storage:go_default_library",
+        "//vendor/github.com/google/go-github/v28/github:go_default_library",
+        "//vendor/golang.org/x/oauth2:go_default_library",
+        "//vendor/google.golang.org/api/iterator:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/config/secret:go_default_library",
+        "//vendor/k8s.io/test-infra/prow/flagutil:go_default_library",
     ],
 )
 
@@ -61,7 +61,7 @@ go_test(
     deps = [
         "//robots/pkg/flakefinder:go_default_library",
         "//robots/pkg/validation:go_default_library",
-        "@com_github_onsi_ginkgo_v2//:go_default_library",
-        "@com_github_onsi_gomega//:go_default_library",
+        "//vendor/github.com/onsi/ginkgo/v2:go_default_library",
+        "//vendor/github.com/onsi/gomega:go_default_library",
     ],
 )

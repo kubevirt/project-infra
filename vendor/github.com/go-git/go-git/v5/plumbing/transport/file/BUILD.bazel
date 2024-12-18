@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "client.go",
+        "server.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/go-git/go-git/v5/plumbing/transport/file",
+    importpath = "github.com/go-git/go-git/v5/plumbing/transport/file",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/go-git/go-git/v5/plumbing/transport:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/plumbing/transport/internal/common:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/plumbing/transport/server:go_default_library",
+        "//vendor/github.com/go-git/go-git/v5/utils/ioutil:go_default_library",
+        "//vendor/golang.org/x/sys/execabs:go_default_library",
+    ],
+)

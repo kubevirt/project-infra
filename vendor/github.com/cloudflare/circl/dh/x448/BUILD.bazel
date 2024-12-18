@@ -1,0 +1,27 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "curve.go",
+        "curve_amd64.go",
+        "curve_amd64.h",
+        "curve_amd64.s",
+        "curve_generic.go",
+        "curve_noasm.go",
+        "doc.go",
+        "key.go",
+        "table.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/cloudflare/circl/dh/x448",
+    importpath = "github.com/cloudflare/circl/dh/x448",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/cloudflare/circl/math/fp448:go_default_library",
+    ] + select({
+        "@io_bazel_rules_go//go/platform:amd64": [
+            "//vendor/golang.org/x/sys/cpu:go_default_library",
+        ],
+        "//conditions:default": [],
+    }),
+)

@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "s2k.go",
+        "s2k_cache.go",
+        "s2k_config.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/ProtonMail/go-crypto/openpgp/s2k",
+    importpath = "github.com/ProtonMail/go-crypto/openpgp/s2k",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/ProtonMail/go-crypto/openpgp/errors:go_default_library",
+        "//vendor/github.com/ProtonMail/go-crypto/openpgp/internal/algorithm:go_default_library",
+        "//vendor/golang.org/x/crypto/argon2:go_default_library",
+    ],
+)
