@@ -108,7 +108,7 @@ type SupportMatrixTemplateData struct {
 	MapK6tToK8sVersions  map[string]map[string]bool
 }
 
-func GenerateMarkdownForSupportMatrix(_ *cobra.Command, _ []string) error {
+func GenerateMarkdownForSupportMatrix(_ *cobra.Command, _ []string) error { //nolint:gocyclo
 	if err := getSupportMatrixOpts.validateOptions(); err != nil {
 		return fmt.Errorf("failed to validate options: %v", err)
 	}

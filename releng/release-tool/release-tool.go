@@ -772,7 +772,7 @@ func (r *releaseData) getReleases() ([]*github.RepositoryRelease, error) {
 	return r.allReleases, nil
 }
 
-func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfterDays int) error {
+func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfterDays int) error { //nolint:gocyclo
 
 	log.Printf("Attempting to auto detect release for %s/%s", r.org, r.repo)
 
@@ -975,7 +975,7 @@ func (r *releaseData) autoDetectData(autoReleaseCadance string, autoPromoteAfter
 	return nil
 }
 
-func (r *releaseData) verifyTag() error {
+func (r *releaseData) verifyTag() error { //nolint:gocyclo
 	// must be a valid semver version
 	tagSemver, err := semver.NewVersion(r.tag)
 	if err != nil {
