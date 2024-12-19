@@ -1,0 +1,8 @@
+namespace: ci-search
+
+resources:
+- manifests/full.yaml
+- manifests/ingress.yaml
+
+patches:
+- path: patches/statefulset.yaml
