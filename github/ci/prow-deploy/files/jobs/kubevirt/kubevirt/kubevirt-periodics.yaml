@@ -768,6 +768,8 @@ periodics:
         value: "1"
       - name: KUBEVIRT_E2E_FOCUS
         value: arm64
+      - name: KUBEVIRT_E2E_SKIP
+        value: \[NoACPI\]
       image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
       name: ""
       resources:
