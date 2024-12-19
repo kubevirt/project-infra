@@ -129,9 +129,11 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: 1.22.9
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.28
+          value: kind-1.31
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
+        - name: KUBEVIRT_NUM_NODES
+          value: "1"
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Fedora"'
         image: quay.io/kubevirtci/golang:v20241213-57bd934
@@ -345,9 +347,11 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: 1.22.9
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.28
+          value: kind-1.31
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
+        - name: KUBEVIRT_NUM_NODES
+          value: "1"
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS Stream 9"'
         image: quay.io/kubevirtci/golang:v20241213-57bd934
@@ -490,9 +494,11 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: 1.22.9
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.28
+          value: kind-1.31
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
+        - name: KUBEVIRT_NUM_NODES
+          value: "1"
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Ubuntu"'
         image: quay.io/kubevirtci/golang:v20241213-57bd934
@@ -624,9 +630,11 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: 1.22.9
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.28
+          value: kind-1.31
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
+        - name: KUBEVIRT_NUM_NODES
+          value: "1"
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*OpenSUSE Leap"'
         image: quay.io/kubevirtci/golang:v20241213-57bd934
