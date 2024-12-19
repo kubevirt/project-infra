@@ -1160,7 +1160,7 @@ presubmits:
     branches:
     - release-1.4
     cluster: kubevirt-prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.29-sig-storage-root
+    context: pull-kubevirt-e2e-k8s-1.31-sig-storage-root
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1172,7 +1172,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.29-sig-storage-root-1.4
+    name: pull-kubevirt-e2e-k8s-1.31-sig-storage-root-1.4
     optional: true
     spec:
       containers:
@@ -1183,7 +1183,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.29-sig-storage
+          value: k8s-1.31-sig-storage
         - name: FEATURE_GATES
           value: Root
         image: quay.io/kubevirtci/bootstrap:v20241014-80f340c
@@ -1199,7 +1199,7 @@ presubmits:
     branches:
     - release-1.4
     cluster: kubevirt-prow-workloads
-    context: pull-kubevirt-e2e-k8s-1.29-sig-compute-root
+    context: pull-kubevirt-e2e-k8s-1.31-sig-compute-root
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1211,7 +1211,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.29-sig-compute-root-1.4
+    name: pull-kubevirt-e2e-k8s-1.31-sig-compute-root-1.4
     optional: true
     spec:
       containers:
@@ -1222,7 +1222,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.29-sig-compute
+          value: k8s-1.31-sig-compute
         - name: FEATURE_GATES
           value: Root
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
