@@ -1,3 +1,7 @@
+run:
+  modules-download-mode: readonly
+output:
+  show-stats: true
 linters:
   # initially we disable all linters, since this is an old code base with quite a lot of issues
   disable-all: true
