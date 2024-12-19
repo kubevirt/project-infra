@@ -318,7 +318,7 @@ periodics:
           - "-c"
           - |
             git-pr.sh \
-              -c "bazel run //robots/cmd/kubevirtci-bumper:kubevirtci-bumper -- -ensure-last-three-minor-of v1 --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s" \
+              -c "go run ./robots/cmd/kubevirtci-bumper:kubevirtci-bumper -ensure-last-three-minor-of v1 --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s" \
               -p ../kubevirtci \
               -r kubevirtci \
               -b patch-version-bump \
@@ -358,7 +358,7 @@ periodics:
           - "-c"
           - |
             git-pr.sh \
-              -c "bazel run //robots/cmd/kubevirtci-bumper:kubevirtci-bumper -- -ensure-latest --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" \
+              -c "go run ./robots/cmd/kubevirtci-bumper:kubevirtci-bumper -ensure-latest --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" \
               -b minor-version-bump \
               -r kubevirtci \
               -p ../kubevirtci \
@@ -426,7 +426,7 @@ periodics:
           - "-ce"
           - |
             TEMP_FILE=$(mktemp)
-            if ! bazel run //robots/cmd/kubevirt check providers -- \
+            if ! go run ./robots/cmd/kubevirt check providers \
               --job-config-path-kubevirt-presubmits=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml \
               --job-config-path-kubevirt-periodics=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml \
               --output-file=${TEMP_FILE} \
@@ -437,7 +437,11 @@ periodics:
               echo "unsupported kubevirtci providers are still in use, cancelling removal of unsupported kubevirtci providers!"
               exit 0
             fi
-            git-pr.sh -c "bazel run //robots/cmd/kubevirtci-bumper:kubevirtci-bumper -- -ensure-only-latest-three --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" -p ../kubevirtci -r kubevirtci -b remove-unsupported-versions -T main
+            git-pr.sh -c "go run ./robots/cmd/kubevirtci-bumper:kubevirtci-bumper -ensure-only-latest-three --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" \
+              -p ../kubevirtci \
+              -r kubevirtci \
+              -b remove-unsupported-versions \
+              -T main
         resources:
           requests:
             memory: "200Mi"
@@ -467,7 +471,11 @@ periodics:
         command: ["/bin/sh"]
         args:
           - "-c"
-          - git-pr.sh -c "bazel run //robots/cmd/kubevirtci-presubmit-creator:kubevirtci-presubmit-creator -- --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b create-kubevirtci-presubmit -T main
+          - |
+            git-pr.sh -c "go run ./robots/cmd/kubevirtci-presubmit-creator:kubevirtci-presubmit-creator --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" \
+              -r project-infra \
+              -b create-kubevirtci-presubmit \
+              -T main
         resources:
           requests:
             memory: "200Mi"
@@ -498,7 +506,7 @@ periodics:
           - "-ce"
           - |
             TEMP_FILE=$(mktemp)
-            if ! bazel run //robots/cmd/kubevirt check providers -- \
+            if ! go run ./robots/cmd/kubevirt check providers \
               --job-config-path-kubevirt-presubmits=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml \
               --job-config-path-kubevirt-periodics=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml \
               --output-file=${TEMP_FILE} \
@@ -509,7 +517,10 @@ periodics:
               echo "unsupported kubevirtci providers are still in use, cancelling removal of kubevirt presubmits!"
               exit 0
             fi
-            git-pr.sh -c "bazel run //robots/cmd/kubevirtci-presubmit-remover:kubevirtci-presubmit-remover -- --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b remove-kubevirtci-presubmit -T main
+            git-pr.sh -c "go run ./robots/cmd/kubevirtci-presubmit-remover:kubevirtci-presubmit-remover --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" \
+              -r project-infra \
+              -b remove-kubevirtci-presubmit \
+              -T main
         resources:
           requests:
             memory: "200Mi"
@@ -638,7 +649,12 @@ periodics:
         command: [ "/bin/sh" , "-c" ]
         args:
           - |
-            git-pr.sh -c "bazel run //robots/cmd/kubevirt require presubmits -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false && bazel run //robots/cmd/kubevirt remove always_run -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" -r project-infra -b require-kubevirt-presubmits -T main -s 'Enable e2e lanes for latest kubernetes version' -B $'Enable lanes for latest kubernetes version and disable lanes with unsupported version\n\n/cc @kubevirt/prow-job-taskforce'
+            git-pr.sh -c "go run ./robots/cmd/kubevirt require presubmits --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false && bazel run //robots/cmd/kubevirt remove always_run -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" \
+              -r project-infra \
+              -b require-kubevirt-presubmits \
+              -T main \
+              -s 'Enable e2e lanes for latest kubernetes version' \
+              -B $'Enable lanes for latest kubernetes version and disable lanes with unsupported version\n\n/cc @kubevirt/prow-job-taskforce'
 
         resources:
           requests:
@@ -669,7 +685,10 @@ periodics:
       command: [ "/bin/sh" , "-c" ]
       args:
       - |
-        git-pr.sh -c "bazel run //robots/cmd/kubevirt copy jobs -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" -r project-infra -b copy-kubevirt-jobs -T main
+        git-pr.sh -c "go run ./robots/cmd/kubevirt copy jobs --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" \
+          -r project-infra \
+          -b copy-kubevirt-jobs \
+          -T main
       resources:
         requests:
           memory: "200Mi"
@@ -699,7 +718,10 @@ periodics:
       command: [ "/bin/sh" , "-c" ]
       args:
       - |
-        git-pr.sh -c "bazel run //robots/cmd/kubevirt remove jobs -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" -r project-infra -b remove-kubevirt-jobs -T main
+        git-pr.sh -c "go run ./robots/cmd/kubevirt remove jobs --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" \
+          -r project-infra \
+          -b remove-kubevirt-jobs \
+          -T main
       resources:
         requests:
           memory: "200Mi"
@@ -940,7 +962,10 @@ periodics:
       args:
       - "-ce"
       - |
-        ./hack/git-pr.sh -c "bazel run //robots/cmd/dependabot:dependabot -- --github-token-path /etc/github/oauth --repo project-infra --org kubevirt --repo-dir $(pwd) && make gazelle test" -b dependabot-update -r project-infra -T main
+        ./hack/git-pr.sh -c "go run ./robots/cmd/dependabot:dependabot --github-token-path /etc/github/oauth --repo project-infra --org kubevirt --repo-dir $(pwd) && make gazelle test" \
+          -b dependabot-update \
+          -r project-infra \
+          -T main
       resources:
         requests:
           memory: "1Gi"
