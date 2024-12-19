@@ -267,6 +267,7 @@ postsubmits:
     - org: kubevirt
       repo: project-infra
       base_ref: main
+      workdir: true
     - org: kubevirt
       repo: sig-release
       base_ref: main
@@ -274,14 +275,26 @@ postsubmits:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/pr-creator:v20240913-6773146
-        env:
-        command: [ "/bin/sh", "-ce" ]
-        args:
+      - args:
         - |
           project_infra_dir=$(cd ../project-infra && pwd)
           sig_release_dir=$(cd ../sig-release && pwd)
-          git-pr.sh -c "cd ../project-infra && bazelisk run //robots/cmd/kubevirt -- get support-matrix --output-file=${sig_release_dir}/releases/k8s-support-matrix.md --overwrite-output-file --job-config-path=${project_infra_dir}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt" -p ${sig_release_dir} -s 'Automated run of //robots/cmd/kubevirt get support-matrix' -r sig-release -b update-support-matrix -T main
+          go run ./robots/cmd/kubevirt get support-matrix \
+            --output-file=/tmp/k8s-support-matrix.md \
+            --job-config-path=${project_infra_dir}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt \
+            --overwrite-output-file
+          git-pr.sh \
+            -c "mv /tmp/k8s-support-matrix.md ${sig_release_dir}/releases/k8s-support-matrix.md" \
+            -p ${sig_release_dir} \
+            -s 'Automated run of //robots/cmd/kubevirt get support-matrix' \
+            -r sig-release \
+            -b update-support-matrix \
+            -T main
+        command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        image: quay.io/kubevirtci/pr-creator:v20240913-6773146
         resources:
           requests:
             memory: "200Mi"
