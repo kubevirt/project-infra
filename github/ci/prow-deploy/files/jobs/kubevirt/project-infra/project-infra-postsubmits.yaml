@@ -79,7 +79,7 @@ postsubmits:
               - "-c"
               - |
                 cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                bazelisk run //external-plugins/release-blocker:push
+                make -C ./external-plugins/release-blocker push
             resources:
               requests:
                 memory: "8Gi"
