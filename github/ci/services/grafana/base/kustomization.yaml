@@ -1,0 +1,4 @@
+namespace: monitoring
+
+resources:
+- manifests/grafana.yaml
