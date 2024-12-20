@@ -1,17 +1,18 @@
+CONTAINER_IMAGE := release-blocker
+CONTAINER_REPO := quay.io/kubevirtci/$(CONTAINER_IMAGE)
 
 .PHONY: all clean format test push
 all: format test push
-bazelbin := bazelisk
 
 build:
-	$(bazelbin) build //external-plugins/release-blocker:release-blocker
+	go build ./...
 
 format:
 	gofmt -w .
 
 test:
-	$(bazelbin) test //external-plugins/release-blocker:*
+	go test ./...
 
 push:
-	$(bazelbin) run //external-plugins/release-blocker:push
-	bash -x ../../hack/update-jobs-with-latest-image.sh quay.io/kubevirtci/release-blocker
+	cd ../../images && ./publish_image.sh $(CONTAINER_IMAGE) quay.io kubevirtci
+	bash -x ../../hack/update-jobs-with-latest-image.sh $(CONTAINER_REPO)
