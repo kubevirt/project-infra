@@ -2,7 +2,6 @@ package wait
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -184,7 +183,7 @@ func ForPortOpen(host, port string) error {
 	for {
 		select {
 		case <-timeout:
-			return errors.New(fmt.Sprintf("Port %s was not open in time", port))
+			return fmt.Errorf("port %s was not open in time", port)
 		case <-tick:
 			conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, port), time.Second)
 			if err != nil {

@@ -23,5 +23,5 @@ helm upgrade --namespace monitoring -i grafana-operator oci://ghcr.io/grafana-op
 
 kubectl label -n monitoring svc/grafana-service app=grafana
 
-bazelisk test //github/ci/services/grafana/e2e:go_default_test --test_env=KUBECONFIG=$KUBECONFIG --test_output=all --test_arg=-test.v
+env KUBECONFIG=$KUBECONFIG go test -v ./github/ci/services/grafana/e2e/e2e_test.go
 

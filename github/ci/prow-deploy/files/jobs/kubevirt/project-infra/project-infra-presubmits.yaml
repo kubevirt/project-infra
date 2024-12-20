@@ -572,22 +572,25 @@ presubmits:
       base_ref: main
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
-          command:
+        - command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
-            - "-c"
+            - "-ce"
             - |
               dnf install -y helm 
               ./github/ci/services/grafana/hack/test.sh
-          securityContext:
-            privileged: true
-            runAsUser: 0
+          env:
+          - name: GIMME_GO_VERSION
+            value: "1.21.6"
+          image: quay.io/kubevirtci/golang:v20241213-57bd934
           resources:
             requests:
               memory: "29Gi"
             limits:
               memory: "29Gi"
+          securityContext:
+            privileged: true
+            runAsUser: 0
   - name: pull-project-infra-check-testgrid-config
     run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$|^github/ci/testgrid/gen-config\.yaml$|^github/ci/testgrid/default\.yaml$'
     decorate: true

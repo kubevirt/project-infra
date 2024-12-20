@@ -628,8 +628,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
-          command:
+        - command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
@@ -641,13 +640,19 @@ postsubmits:
               source ./hack/manage-secrets.sh
               decrypt_secrets
               extract_secret 'kubeconfig' ~/.kube/config
-              extract_secret 'grafanaUser' github/ci/services/grafana/secrets/kubevirt-prow-control-plane/grafana/admin-user
-              extract_secret 'grafanaPassword' github/ci/services/grafana/secrets/kubevirt-prow-control-plane/grafana/admin-password
-              extract_secret 'grafanaPromToken' github/ci/services/grafana/secrets/kubevirt-prow-control-plane/grafana/prom_bearer_token
-              extract_secret 'grafanaClientID' github/ci/services/grafana/secrets/kubevirt-prow-control-plane/grafana/client-id
-              extract_secret 'grafanaClientSecret' github/ci/services/grafana/secrets/kubevirt-prow-control-plane/grafana/client-secret
+              environment='kubevirt-prow-control-plane'
+              overlaySecretsDirectory="github/ci/services/grafana/overlays/${environment}/secrets/grafana"
+              extract_secret 'grafanaUser' "${overlaySecretsDirectory}/admin-user"
+              extract_secret 'grafanaPassword' "${overlaySecretsDirectory}/admin-password"
+              extract_secret 'grafanaPromToken' "${overlaySecretsDirectory}/prom_bearer_token"
+              extract_secret 'grafanaClientID' "${overlaySecretsDirectory}/client-id"
+              extract_secret 'grafanaClientSecret' "${overlaySecretsDirectory}/client-secret"
 
-              ./github/ci/services/grafana/hack/deploy.sh kubevirt-prow-control-plane
+              ./github/ci/services/grafana/hack/deploy.sh "${environment}"
+          env:
+          - name: GIMME_GO_VERSION
+            value: "1.21.6"
+          image: quay.io/kubevirtci/golang:v20241213-57bd934
           resources:
             requests:
               memory: "8Gi"

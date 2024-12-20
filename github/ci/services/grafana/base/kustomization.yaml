@@ -1,0 +1,17 @@
+namespace: monitoring
+
+resources:
+- manifests/grafana.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+secretGenerator:
+- name: grafana
+  namespace: monitoring
+  files:
+  - ./secrets/grafana/admin-password
+  - ./secrets/grafana/admin-user
+  - ./secrets/grafana/client-id
+  - ./secrets/grafana/client-secret
+  - ./secrets/grafana/prom_bearer_token
