@@ -1,17 +1,18 @@
+CONTAINER_IMAGE := referee
+CONTAINER_REPO := quay.io/kubevirtci/$(CONTAINER_IMAGE)
 
 .PHONY: all clean format test push
 all: format test push
-bazelbin := bazelisk
 
 build:
-	$(bazelbin) build //external-plugins/phased/plugin
+	go build ./plugin/...
 
 format:
 	gofmt -w .
 
 test:
-	$(bazelbin) test //external-plugins/phased/...
+	go test ./plugin/...
 
 push:
-	$(bazelbin) run --stamp --workspace_status_command="./hack/print-workspace-status-no-git-tag.sh" //external-plugins/phased/plugin:push
-	bash -x ../../hack/update-deployments-with-latest-image.sh quay.io/kubevirtci/phased
+	cd ../../images && ./publish_image.sh $(CONTAINER_IMAGE) quay.io kubevirtci
+	bash -x ../../hack/update-deployments-with-latest-image.sh $(CONTAINER_REPO)
