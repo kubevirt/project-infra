@@ -18,8 +18,6 @@ periodics:
       - --report_output_child_path=kubevirt/kubevirt
       - --skip_results_before_start_of_report=false
       - --pr_base_branch=main
-      command:
-      - /app/robots/cmd/flakefinder/app.binary
       image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598
       name: ""
       resources: {}
@@ -42,8 +40,6 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --periodic_job_dir_regex=periodic-kubevirt-e2e-.*
       - --pr_base_branch=main
-      command:
-      - /app/robots/cmd/flakefinder/app.binary
       image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598
       name: ""
       resources: {}
@@ -66,8 +62,6 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --periodic_job_dir_regex=periodic-kubevirt-e2e-.*
       - --pr_base_branch=main
-      command:
-      - /app/robots/cmd/flakefinder/app.binary
       image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598
       name: ""
       resources: {}
@@ -176,8 +170,6 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --periodic_job_dir_regex=periodic-kubevirt-e2e-.*
       - --pr_base_branch=main
-      command:
-      - /app/robots/cmd/flakefinder/app.binary
       image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598
       name: ""
       resources: {}

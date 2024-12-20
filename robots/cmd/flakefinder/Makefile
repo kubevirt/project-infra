@@ -1,3 +1,6 @@
+CONTAINER_IMAGE := flakefinder
+CONTAINER_REPO := quay.io/kubevirtci/$(CONTAINER_IMAGE)
+
 .PHONY: all clean verify format test push
 all: format verify test push
 
@@ -5,13 +8,15 @@ format:
 	gofmt -w .
 
 test:
-	bazel test //robots/cmd/flakefinder:* //robots/pkg/flakefinder/...:*
+	go test ./... ../../pkg/flakefinder/...
 
 verify:
 	../build-verify.sh
 
 push:
-	../push.sh flakefinder
+	cd ../../../images && ./publish_image.sh $(CONTAINER_IMAGE) quay.io kubevirtci
+	bash -x "../../../hack/update-jobs-with-latest-image.sh" "$(CONTAINER_REPO)"
+	bash -x "../../../hack/update-scripts-with-latest-image.sh" "$(CONTAINER_REPO)"
 
 clean:
 	bazel clean --expunge
