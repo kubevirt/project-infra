@@ -700,7 +700,8 @@ postsubmits:
               - "-c"
               - |
                 cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                bazelisk run //robots/cmd/ci-usage-exporter:push
+                cd images
+                ./publish_image.sh ci-usage-exporter quay.io kubevirtci
             resources:
               requests:
                 memory: "8Gi"
