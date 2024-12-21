@@ -65,13 +65,13 @@ get_image_tag() {
 build_image() {
     local build_target="${1:?}"
     local image_name="${2:?}"
-    docker build . -t "$image_name" -t "$build_target"
+    podman build . -t "$image_name" -t "$build_target"
 }
 
 publish_image() {
     local full_image_name="${1:?}"
 
-    docker push "${full_image_name}"
+    podman push "${full_image_name}"
 }
 
 get_full_image_name() {

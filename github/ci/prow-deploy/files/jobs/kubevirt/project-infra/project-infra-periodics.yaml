@@ -242,8 +242,6 @@ periodics:
   spec:
     containers:
       - image: quay.io/kubevirtci/indexpagecreator:v20230102-5ed6f7d7
-        command:
-          - "/app/robots/cmd/indexpagecreator/app.binary"
         args:
           - --dry-run=false
 - name: periodic-kubevirt-mirror-uploader
