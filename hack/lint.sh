@@ -22,6 +22,13 @@ set -e
 set -u
 set -o pipefail
 
+go version
+go env
+
+export GO111MODULE=on
+export GOFLAGS="-mod=vendor"
+export GOPROXY=off
+
 golangci-lint --version
 golangci-lint run
 
