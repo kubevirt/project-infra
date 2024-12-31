@@ -1,7 +1,7 @@
 namespace: monitoring
 
 resources:
-- manifests/grafana.yaml
+- ../../base
 
 generatorOptions:
   disableNameSuffixHash: true

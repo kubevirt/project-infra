@@ -640,8 +640,9 @@ postsubmits:
               source ./hack/manage-secrets.sh
               decrypt_secrets
               extract_secret 'kubeconfig' ~/.kube/config
+
               environment='kubevirt-prow-control-plane'
-              overlaySecretsDirectory="github/ci/services/grafana/overlays/${environment}/secrets/grafana"
+              overlaySecretsDirectory="github/ci/services/grafana/deploy/overlays/kubevirt-prow-control-plane/secrets/grafana"
               extract_secret 'grafanaUser' "${overlaySecretsDirectory}/admin-user"
               extract_secret 'grafanaPassword' "${overlaySecretsDirectory}/admin-password"
               extract_secret 'grafanaPromToken' "${overlaySecretsDirectory}/prom_bearer_token"

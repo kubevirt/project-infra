@@ -577,7 +577,14 @@ presubmits:
             - "/bin/bash"
             - "-ce"
             - |
-              dnf install -y helm 
+              # install kind
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.23.0/kind-linux-amd64
+              chmod +x ./kind && mv ./kind /usr/local/bin/kind
+
+              # create test cluster
+              kind create cluster --image quay.io/kubevirtci/kindest-node:v1.30.0
+              kubectl cluster-info --context kind-kind
+              
               ./github/ci/services/grafana/hack/test.sh
           env:
           - name: GIMME_GO_VERSION

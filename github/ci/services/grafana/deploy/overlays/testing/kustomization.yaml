@@ -1,6 +1,7 @@
+namespace: monitoring
+
 resources:
 - ../../base
-- ./manifests/ingress.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
@@ -8,11 +9,9 @@ generatorOptions:
 secretGenerator:
 - name: grafana
   namespace: monitoring
-  behavior: replace
   files:
   - ./secrets/grafana/admin-password
   - ./secrets/grafana/admin-user
   - ./secrets/grafana/client-id
   - ./secrets/grafana/client-secret
   - ./secrets/grafana/prom_bearer_token
-

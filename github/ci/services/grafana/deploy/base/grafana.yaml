@@ -6,7 +6,7 @@ metadata:
     dashboards: grafana
     folders: grafana
   name: grafana
-  namespace: monitoring
+  namespace: default
 spec:
   config:
     auth:
@@ -54,7 +54,7 @@ kind: GrafanaDatasource
 metadata:
   annotations: {}
   name: prometheus-grafanadatasource
-  namespace: monitoring
+  namespace: default
 spec:
   valuesFrom:
     - targetPath: "secureJsonData.httpHeaderValue1"
@@ -86,7 +86,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-dashboards-default
-  namespace: monitoring
+  namespace: default
   labels:
     dashboard-provider: default
   annotations:
