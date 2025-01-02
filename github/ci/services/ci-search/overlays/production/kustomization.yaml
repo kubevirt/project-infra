@@ -1,0 +1,8 @@
+resources:
+- ../../base
+
+secretGenerator:
+- name: bugzilla-credentials
+  files:
+  - api=./secrets/bugzilla-credentials
+  type: Opaque

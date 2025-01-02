@@ -95,14 +95,14 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
+      - image: quay.io/kubevirtci/golang:v20241213-57bd934
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
-        - "-c"
+        - "-ce"
         - |
           make gazelle-update-repos
-          bazel build //github/ci/services/...
+          go build ./github/ci/services/...
         resources:
           requests:
             memory: "4Gi"

@@ -590,7 +590,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
+        - image: quay.io/kubevirtci/golang:v20241213-57bd934
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -603,7 +603,7 @@ postsubmits:
               source ./hack/manage-secrets.sh
               decrypt_secrets
               extract_secret 'kubeconfig' ~/.kube/config
-              extract_secret 'bugzilla.apiKey' github/ci/services/ci-search/secrets/production/bugzilla-credentials/api
+              extract_secret 'bugzilla.apiKey' github/ci/services/ci-search/overlays/production/secrets/bugzilla-credentials
 
               ./github/ci/services/ci-search/hack/deploy.sh production
           resources:
