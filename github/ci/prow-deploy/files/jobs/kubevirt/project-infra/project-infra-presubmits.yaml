@@ -32,7 +32,6 @@ presubmits:
         - "/bin/sh"
         - "-ce"
         - |
-          GOBIN=/usr/local/bin/ go install github.com/onsi/ginkgo/v2/ginkgo@v2.9.2
           go test ./robots/...
         env:
         - name: GIMME_GO_VERSION
