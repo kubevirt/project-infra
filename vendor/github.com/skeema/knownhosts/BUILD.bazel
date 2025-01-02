@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["knownhosts.go"],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/skeema/knownhosts",
+    importpath = "github.com/skeema/knownhosts",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/golang.org/x/crypto/ssh:go_default_library",
+        "//vendor/golang.org/x/crypto/ssh/knownhosts:go_default_library",
+    ],
+)

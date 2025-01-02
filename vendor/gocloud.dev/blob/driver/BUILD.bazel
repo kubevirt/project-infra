@@ -1,0 +1,10 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["driver.go"],
+    importmap = "kubevirt.io/project-infra/vendor/gocloud.dev/blob/driver",
+    importpath = "gocloud.dev/blob/driver",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/gocloud.dev/gcerrors:go_default_library"],
+)

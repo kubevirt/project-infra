@@ -18,7 +18,7 @@ ifndef COVERAGE_OUTPUT_PATH
 	export COVERAGE_OUTPUT_PATH
 endif
 
-.PHONY: all clean deps-update gazelle-update-repos update-labels install-metrics-binaries lint $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
+.PHONY: all clean deps-update update-labels install-metrics-binaries lint $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
 all: deps-update $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
 
 clean: install-metrics-binaries
@@ -43,7 +43,7 @@ gazelle:
 	$(bazelbin) run //:gazelle
 
 gazelle-update-repos:
-	$(bazelbin) run //:gazelle -- update-repos -from_file=go.mod
+	:
 
 install-bazelisk:
 	go get -u github.com/bazelbuild/bazelisk

@@ -1,0 +1,25 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "constants.go",
+        "curve.go",
+        "isogeny.go",
+        "point.go",
+        "scalar.go",
+        "twist.go",
+        "twistPoint.go",
+        "twistTables.go",
+        "twist_basemult.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/cloudflare/circl/ecc/goldilocks",
+    importpath = "github.com/cloudflare/circl/ecc/goldilocks",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/cloudflare/circl/internal/conv:go_default_library",
+        "//vendor/github.com/cloudflare/circl/math:go_default_library",
+        "//vendor/github.com/cloudflare/circl/math/fp448:go_default_library",
+        "//vendor/github.com/cloudflare/circl/math/mlsbset:go_default_library",
+    ],
+)

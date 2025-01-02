@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["const.go"],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/pjbgf/sha1cd/internal",
+    importpath = "github.com/pjbgf/sha1cd/internal",
+    visibility = ["//vendor/github.com/pjbgf/sha1cd:__subpackages__"],
+)

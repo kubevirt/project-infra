@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["stringer.go"],
+    importmap = "kubevirt.io/project-infra/vendor/golang.org/x/tools/cmd/stringer",
+    importpath = "golang.org/x/tools/cmd/stringer",
+    visibility = ["//visibility:private"],
+    deps = ["//vendor/golang.org/x/tools/go/packages:go_default_library"],
+)
+
+go_binary(
+    name = "stringer",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)

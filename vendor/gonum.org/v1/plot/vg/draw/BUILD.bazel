@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "canvas.go",
+        "doc.go",
+        "text.go",
+        "text_plain.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/gonum.org/v1/plot/vg/draw",
+    importpath = "gonum.org/v1/plot/vg/draw",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/gonum.org/v1/plot/text:go_default_library",
+        "//vendor/gonum.org/v1/plot/vg:go_default_library",
+    ],
+)

@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["vgsvg.go"],
+    importmap = "kubevirt.io/project-infra/vendor/gonum.org/v1/plot/vg/vgsvg",
+    importpath = "gonum.org/v1/plot/vg/vgsvg",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/ajstarks/svgo:go_default_library",
+        "//vendor/golang.org/x/image/font:go_default_library",
+        "//vendor/golang.org/x/image/font/sfnt:go_default_library",
+        "//vendor/gonum.org/v1/plot/font:go_default_library",
+        "//vendor/gonum.org/v1/plot/vg:go_default_library",
+        "//vendor/gonum.org/v1/plot/vg/draw:go_default_library",
+    ],
+)

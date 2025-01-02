@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "fgprof.go",
+        "format.go",
+        "handler.go",
+        "pprof.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/felixge/fgprof",
+    importpath = "github.com/felixge/fgprof",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/github.com/google/pprof/profile:go_default_library"],
+)

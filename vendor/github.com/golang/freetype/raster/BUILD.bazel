@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "geom.go",
+        "paint.go",
+        "raster.go",
+        "stroke.go",
+    ],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/golang/freetype/raster",
+    importpath = "github.com/golang/freetype/raster",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/golang.org/x/image/math/fixed:go_default_library"],
+)

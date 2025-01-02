@@ -1,0 +1,10 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["trees.go"],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/emirpasic/gods/trees",
+    importpath = "github.com/emirpasic/gods/trees",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/github.com/emirpasic/gods/containers:go_default_library"],
+)

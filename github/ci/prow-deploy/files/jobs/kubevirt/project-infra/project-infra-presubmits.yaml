@@ -37,6 +37,8 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.21.6"
+        - name: GOFLAGS
+          value: "-mod=vendor"
         resources:
           requests:
             memory: "4Gi"
@@ -101,7 +103,6 @@ presubmits:
         - "/bin/sh"
         - "-ce"
         - |
-          make gazelle-update-repos
           go build ./github/ci/services/...
         resources:
           requests:
@@ -124,7 +125,7 @@ presubmits:
         - "/bin/sh"
         - "-ce"
         - |
-          make gazelle gazelle-update-repos
+          make gazelle
           if [ $(git status --short | wc -l) -gt 0 ]; then
             echo "Bazel configs need an update"
             echo "Uncommitted changes:"

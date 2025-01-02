@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["lists.go"],
+    importmap = "kubevirt.io/project-infra/vendor/github.com/emirpasic/gods/lists",
+    importpath = "github.com/emirpasic/gods/lists",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/emirpasic/gods/containers:go_default_library",
+        "//vendor/github.com/emirpasic/gods/utils:go_default_library",
+    ],
+)
