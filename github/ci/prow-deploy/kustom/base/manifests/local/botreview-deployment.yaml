@@ -18,7 +18,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
       - name: botreview
-        image: quay.io/kubevirtci/botreview:v20240726-15d3b253
+        image: quay.io/kubevirtci/botreview:v20250102-586a4806
         args:
         # FIXME: stay with dry run for now
         - --dry-run=true
