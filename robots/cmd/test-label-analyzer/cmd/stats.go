@@ -19,11 +19,14 @@
 package cmd
 
 import (
+	"bytes"
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"github.com/onsi/ginkgo/v2/ginkgo/outline"
 	"github.com/spf13/cobra"
 	"html/template"
+	"io"
 	"io/fs"
 	"kubevirt.io/project-infra/robots/pkg/git"
 	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
@@ -324,8 +327,32 @@ func newlineCount(s string, start int, end int) int {
 }
 
 func getGinkgoOutlineFromFile(path string) ([]*testlabelanalyzer.GinkgoNode, error) {
-	ginkgoCommand := exec.Command("ginkgo", "outline", "--format", "json", path)
-	output, err := ginkgoCommand.Output()
+
+	// since there's no output catchable from the command, we need to use pipe
+	// and redirect the output
+	old := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	buildOutlineCommand := outline.BuildOutlineCommand()
+	buildOutlineCommand.Run([]string{"--format", "json", path}, nil)
+
+	outC := make(chan string)
+	go func() {
+		var buf bytes.Buffer
+		_, err := io.Copy(&buf, r)
+		if err != nil {
+			panic(err)
+		}
+		outC <- buf.String()
+	}()
+
+	// restore the output to normal
+	err := w.Close()
+	os.Stdout = old
+	out := <-outC
+	output := []byte(out)
+
 	if err != nil {
 		switch err.(type) {
 		case *exec.ExitError:
@@ -334,12 +361,12 @@ func getGinkgoOutlineFromFile(path string) ([]*testlabelanalyzer.GinkgoNode, err
 			if strings.Contains(stdErr, "file does not import \"github.com/onsi/ginkgo/v2\"") {
 				return nil, nil
 			}
-			return nil, fmt.Errorf("exec %v failed: %s", ginkgoCommand, e.Stderr)
+			return nil, fmt.Errorf("exec %v failed: %s", buildOutlineCommand, e.Stderr)
 		case *exec.Error:
 			e := err.(*exec.Error)
-			return nil, fmt.Errorf(`exec "%v" failed: %s`, ginkgoCommand, e)
+			return nil, fmt.Errorf(`exec "%v" failed: %s`, buildOutlineCommand, e)
 		default:
-			return nil, fmt.Errorf(`exec "%v" failed: %s`, ginkgoCommand, err)
+			return nil, fmt.Errorf(`exec "%v" failed: %s`, buildOutlineCommand, err)
 		}
 	}
 	testOutline, err := toOutline(output)
