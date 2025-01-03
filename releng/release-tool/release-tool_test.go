@@ -17,6 +17,7 @@ func standardCleanup(r *releaseData) {
 func standardSetup() releaseData {
 	repo := "fake-repo"
 	org := "fake-org"
+	name := "FakeName"
 	token := "fake-token"
 	cacheDir, err := ioutil.TempDir("/tmp", "release-tool-unit-test")
 	if err != nil {
@@ -71,6 +72,7 @@ func standardSetup() releaseData {
 	r := releaseData{
 		org:              org,
 		repo:             repo,
+		name:             name,
 		allReleases:      releases,
 		allBranches:      branches,
 		blockerListCache: blockerListCache,
@@ -429,12 +431,17 @@ func TestNewTag(t *testing.T) {
 	r.tagBranch = "release-0.2"
 
 	r.dryRun = false
+	r.skipReleaseNotes = true
+
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [clone https://fake-token@github.com/fake-org/fake-repo.git %s/fake-org/https-fake-repo]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo config user.name fake-user]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo config user.email fake-email@fake.fake]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo checkout release-0.2]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo pull origin release-0.2]", r.cacheDir))
-	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo tag -s v0.2.0 -F %s/fake-org/https-fake-repo/v0.2.0-release-notes.txt]", r.cacheDir, r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo add %s/fake-org/https-fake-repo/CHANGELOG/CHANGELOG-v0.2.0.md]", r.cacheDir, r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo add %s/fake-org/https-fake-repo/CHANGELOG/README.md]", r.cacheDir, r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo commit -s -m CHANGELOG: Add release notes for v0.2.0]", r.cacheDir))
+	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo tag -s -m FakeName v0.2.0 v0.2.0]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo push https://fake-token@github.com/fake-org/fake-repo.git v0.2.0]", r.cacheDir))
 
 	seenGitCommands := []string{}
