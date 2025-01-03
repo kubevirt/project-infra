@@ -11,6 +11,8 @@ periodics:
   spec:
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
+      command:
+      - /usr/bin/flakefinder
       args:
       - --dry-run=false
       - --token=/etc/github/oauth
@@ -31,6 +33,8 @@ periodics:
   spec:
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
+      command:
+      - /usr/bin/flakefinder
       args:
       - --dry-run=false
       - --token=/etc/github/oauth
@@ -51,6 +55,8 @@ periodics:
   spec:
     containers:
     - image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
+      command:
+      - /usr/bin/flakefinder
       args:
       - --dry-run=false
       - --token=/etc/github/oauth
