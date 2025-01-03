@@ -10,7 +10,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598
+    - image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
       args:
       - --dry-run=false
       - --token=/etc/github/oauth
@@ -30,7 +30,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598
+    - image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
       args:
       - --dry-run=false
       - --token=/etc/github/oauth
@@ -50,7 +50,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20230112-ec14f598
+    - image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
       args:
       - --dry-run=false
       - --token=/etc/github/oauth
