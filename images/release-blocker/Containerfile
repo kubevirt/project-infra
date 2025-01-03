@@ -13,6 +13,6 @@ RUN mkdir kubevirt && \
     /usr/local/bin/runner.sh /bin/sh -ce "go clean -cache -modcache" && \
     cd .. && rm -rf ./project-infra
 
-FROM gcr.io/k8s-prow/git:v20231107-c87e01249e
+FROM gcr.io/k8s-prow/git:v20240729-4f255edb07
 COPY --from=builder /go/bin/release-blocker /usr/bin/release-blocker
 ENTRYPOINT ["/usr/bin/release-blocker"]
