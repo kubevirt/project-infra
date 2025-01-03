@@ -19,10 +19,7 @@ func TestPrometheusStackDeployment(t *testing.T) {
 }
 
 var _ = Describe("grafana deployment", func() {
-	DescribeTable("should deploy HTTP services",
-		func(svcPort, labelSelector, expectedContent, urlPath string) {
-			check.HTTPService(testNamespace, svcPort, labelSelector, expectedContent, urlPath)
-		},
-		Entry("grafana service", "3000", "app=grafana", "<title>Grafana</title>", ""),
-	)
+	It("should deploy HTTP services", func() {
+		check.HTTPService(testNamespace, "3000", "app=grafana", "<title>Grafana</title>", "")
+	})
 })

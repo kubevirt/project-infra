@@ -4,16 +4,14 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"net/http"
-	"strings"
-
 	. "github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-
 	"kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/client"
 	"kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/portforwarder"
 	"kubevirt.io/project-infra/github/ci/services/common/k8s/pkg/wait"
+	"net/http"
+	"strings"
 )
 
 var (

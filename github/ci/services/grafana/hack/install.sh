@@ -26,7 +26,8 @@ set -x
 
 
 WORK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BASE_DIR="$(cd "${WORK_DIR}/../deploy" && pwd)"
+BASE_DIR="$(cd "${WORK_DIR}/.." && pwd)"
+KUSTOMIZE_DIR="$(cd "${WORK_DIR}/../install" && pwd)"
 
 function usage {
     cat <<EOF
@@ -49,16 +50,15 @@ while getopts "d" opt; do
 done
 
 environment="${1}"
-[ -d "${BASE_DIR}/overlays/${environment}" ] || exit 1
+[ -d "${KUSTOMIZE_DIR}/overlays/${environment}" ] || exit 1
 
-cd "${BASE_DIR}"
+cd "${KUSTOMIZE_DIR}"
 
 if [ "$dry_run" = "true" ]; then
     kubectl kustomize "./overlays/${environment}"
     exit 0
 fi
 
-kubectl apply -k "./overlays/${environment}"
+kubectl create -k "./overlays/${environment}"
 
-kubectl wait --timeout 60s --for=jsonpath='{.status.stage}'=complete -n monitoring grafana grafana
-kubectl rollout status -w deployment grafana-deployment -n monitoring
+kubectl rollout status -w deployment grafana-operator-controller-manager -n monitoring
