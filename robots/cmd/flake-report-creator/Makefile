@@ -1,3 +1,6 @@
+CONTAINER_IMAGE := flake-report-creator
+CONTAINER_REPO := quay.io/kubevirtci/$(CONTAINER_IMAGE)
+
 .PHONY: all clean verify format test
 all: format verify test push
 
@@ -5,13 +8,15 @@ format:
 	gofmt -w .
 
 test:
-	bazel test //robots/cmd/flake-report-creator/...:* //robots/pkg/flakefinder/...:*
+	go test ./... ../pkg/flakefinder/...:*
 
 verify:
 	../build-verify.sh
 
 push:
-	../push.sh flake-report-creator
+	cd ../../../images && ./publish_image.sh $(CONTAINER_IMAGE) quay.io kubevirtci
+	bash -x "../../../hack/update-jobs-with-latest-image.sh" "$(CONTAINER_REPO)"
+	bash -x "../../../hack/update-scripts-with-latest-image.sh" "$(CONTAINER_REPO)"
 
 clean:
-	bazel clean --expunge
+	go clean -cache -modcache

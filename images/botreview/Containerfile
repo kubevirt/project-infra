@@ -7,6 +7,6 @@ RUN mkdir -p /go/src/kubevirt/ && \
     go mod vendor && \
     env GOPROXY=off GOFLAGS=-mod=vendor CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/botreview ./external-plugins/botreview/main.go
 
-FROM gcr.io/k8s-prow/git:v20231107-c87e01249e
+FROM gcr.io/k8s-prow/git:v20240729-4f255edb07
 COPY --from=builder /go/bin/botreview /usr/bin/botreview
 ENTRYPOINT ["/usr/bin/botreview"]
