@@ -19,6 +19,8 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --pr_base_branch=main
       image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
+      command:
+      - /usr/bin/flakefinder
       name: ""
       resources: {}
 - annotations:
@@ -40,6 +42,8 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --periodic_job_dir_regex=periodic-kubevirt-e2e-.*
       - --pr_base_branch=main
+      command:
+      - /usr/bin/flakefinder
       image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
       name: ""
       resources: {}
@@ -62,6 +66,8 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --periodic_job_dir_regex=periodic-kubevirt-e2e-.*
       - --pr_base_branch=main
+      command:
+      - /usr/bin/flakefinder
       image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
       name: ""
       resources: {}
@@ -170,6 +176,8 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --periodic_job_dir_regex=periodic-kubevirt-e2e-.*
       - --pr_base_branch=main
+      command:
+      - /usr/bin/flakefinder
       image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
       name: ""
       resources: {}
