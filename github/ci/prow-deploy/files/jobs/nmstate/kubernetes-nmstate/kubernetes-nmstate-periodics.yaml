@@ -11,6 +11,8 @@ periodics:
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
+      command:
+      - /usr/bin/flakefinder
       args:
       - --dry-run=false
       - --token=/etc/github/oauth
@@ -44,6 +46,8 @@ periodics:
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
+      command:
+      - /usr/bin/flakefinder
       args:
       - --dry-run=false
       - --token=/etc/github/oauth
@@ -77,6 +81,8 @@ periodics:
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
+      command:
+      - /usr/bin/flakefinder
       args:
       - --dry-run=false
       - --token=/etc/github/oauth
