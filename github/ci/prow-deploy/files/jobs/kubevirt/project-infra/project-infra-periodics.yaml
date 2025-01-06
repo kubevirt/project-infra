@@ -241,7 +241,9 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/indexpagecreator:v20230102-5ed6f7d7
+      - image: quay.io/kubevirtci/indexpagecreator:v20250106-68dbb05
+        command:
+        - /usr/bin/indexpagecreator
         args:
           - --dry-run=false
 - name: periodic-kubevirt-mirror-uploader
