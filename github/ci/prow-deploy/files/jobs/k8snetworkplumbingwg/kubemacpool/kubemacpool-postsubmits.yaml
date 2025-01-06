@@ -19,7 +19,9 @@ postsubmits:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
-              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && make container docker-push"
+              - |
+                export PLATFORMS=all &&
+                cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && make container docker-push
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
@@ -43,6 +45,7 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
+                export PLATFORMS=all &&
                 cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io &&
                 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
                 [ "$BRANCH_NAME" != "HEAD" ] &&
@@ -70,6 +73,7 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
+                export PLATFORMS=all &&
                 cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io &&
                 # Only push images on tags
                 COMMIT_TAG=$(git tag --points-at HEAD | tail -1)
