@@ -1430,7 +1430,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.29-sig-storage-root
+  name: periodic-kubevirt-e2e-k8s-1.31-sig-storage-root
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1447,7 +1447,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.29-sig-storage
+        value: k8s-1.31-sig-storage
       - name: FEATURE_GATES
         value: Root
       image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
@@ -1480,7 +1480,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.29-sig-compute-root
+  name: periodic-kubevirt-e2e-k8s-1.31-sig-compute-root
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1497,7 +1497,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.29-sig-compute
+        value: k8s-1.31-sig-compute
       - name: FEATURE_GATES
         value: Root
       image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
@@ -1530,7 +1530,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.29-sig-operator-root
+  name: periodic-kubevirt-e2e-k8s-1.31-sig-operator-root
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1547,7 +1547,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.29-sig-operator
+        value: k8s-1.31-sig-operator
       - name: FEATURE_GATES
         value: Root
       image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
