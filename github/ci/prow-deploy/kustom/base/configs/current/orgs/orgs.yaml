@@ -206,6 +206,8 @@ orgs:
         description: 'DRA device driver for PCI passthrough devices'
         has_projects: false
         has_wiki: false
+      enhancements:
+        description: Tracking KubeVirt related enhancements and issues
       external-storage:
         description: External storage plugins, provisioners, and helper libraries
         has_issues: false
@@ -589,6 +591,12 @@ orgs:
         - victortoso
         repos:
           dra-pci-driver: admin
+      enhancements-maintainers:
+        maintainers:
+          - xpivarc
+          - vladikr
+        repos:
+          enhancements: admin
       maintainers:
         description: ""
         maintainers:
