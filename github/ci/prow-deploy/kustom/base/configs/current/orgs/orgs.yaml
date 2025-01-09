@@ -596,7 +596,7 @@ orgs:
           - xpivarc
           - vladikr
         repos:
-          enhancements: admin
+          enhancements: write
       maintainers:
         description: ""
         maintainers:

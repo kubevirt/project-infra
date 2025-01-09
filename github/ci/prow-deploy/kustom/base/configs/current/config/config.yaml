@@ -138,6 +138,7 @@ tide:
     kubevirt/vm-console-proxy: merge
     kubevirt/sig-release: merge
     kubevirt/kubevirt.core: merge
+    kubevirt/enhancements: squash
 
   queries:
   - repos:
@@ -204,6 +205,7 @@ tide:
     - kubevirt/csi-driver
     - kubevirt/vm-console-proxy
     - kubevirt/kubevirt.core
+    - kubevirt/enhancements
     labels:
     - lgtm
     - approved

@@ -167,6 +167,14 @@ plugins:
     - owners-label
     - trigger
 
+  kubevirt/enhancements:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - trigger
+    - release-note
+
   kubevirt/containerdisks:
     plugins:
     - approve
@@ -610,6 +618,7 @@ triggers:
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
   - kubevirt/application-aware-quota
+  - kubevirt/enhancements
   ignore_ok_to_test: true
 - repos:
   - virtblocks/virtblocks
@@ -671,6 +680,7 @@ approve:
   - kubevirt/managed-tenant-quota
   - kubevirt/application-aware-quota
   - kubevirt/dra-pci-driver
+  - kubevirt/enhancements
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -733,6 +743,7 @@ lgtm:
   - kubevirt/managed-tenant-quota
   - kubevirt/application-aware-quota
   - kubevirt/dra-pci-driver
+  - kubevirt/enhancements
   review_acts_as_lgtm: true
 
 override:
