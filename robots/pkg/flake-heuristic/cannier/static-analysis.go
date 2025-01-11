@@ -21,43 +21,35 @@ package cannier
 
 import (
 	"go/ast"
-	"go/parser"
-	"go/token"
-	"os"
+	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 	"regexp"
 	"strings"
 )
 
-func getStaticAnalysisExtractors(filename string) ([]featureExtractor, error) {
-	content, err := os.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	code := string(content)
-
-	fs := token.NewFileSet()
-	node, err := parser.ParseFile(fs, filename, nil, parser.ParseComments)
-	if err != nil {
-		return nil, err
-	}
+func getStaticAnalysisExtractors(test *ginkgo.TestDescriptor) ([]featureExtractor, error) {
 
 	return []featureExtractor{
-		func(featureSet *FeatureSet) error { featureSet.ASTDepth = calculateASTDepth(node); return nil },
-		func(featureSet *FeatureSet) error { featureSet.Assertions = countAssertions(code); return nil },
+		func(featureSet *FeatureSet) error { featureSet.ASTDepth = calculateASTDepth(test.Test()); return nil },
 		func(featureSet *FeatureSet) error {
-			featureSet.CyclomaticComplexity = calculateCyclomaticComplexity(node)
+			// TODO: use test node
+			featureSet.Assertions = countAssertions(test.FileCode())
 			return nil
 		},
 		func(featureSet *FeatureSet) error {
-			featureSet.ExternalModules = countExternalModules(node)
+			featureSet.CyclomaticComplexity = calculateCyclomaticComplexity(test.Test())
 			return nil
 		},
 		func(featureSet *FeatureSet) error {
-			featureSet.TestLinesOfCode = countLinesOfCode(code)
+			featureSet.ExternalModules = countExternalModules(test.File())
 			return nil
 		},
 		func(featureSet *FeatureSet) error {
-			featureSet.HalsteadVolume = calculateHalsteadVolume(code)
+			// TODO: LOC for test func only
+			featureSet.TestLinesOfCode = countLinesOfCode(test.FileCode())
+			return nil
+		},
+		func(featureSet *FeatureSet) error {
+			featureSet.HalsteadVolume = calculateHalsteadVolume(test.FileCode())
 			return nil
 		},
 		calculateMaintainability,
@@ -112,6 +104,7 @@ func countAssertions(code string) int {
 
 // calculateCyclomaticComplexity calculates cyclomatic complexity.
 func calculateCyclomaticComplexity(node ast.Node) int {
+	// TODO: replace with gocyclo call
 	complexity := 1
 	ast.Inspect(node, func(n ast.Node) bool {
 		switch n.(type) {
@@ -154,7 +147,7 @@ func calculateHalsteadVolume(code string) float64 {
 }
 
 // countLinesOfCode counts the total number of lines in the code.
-// TODO: stubbed with a simple formula
+// TODO: count lines of test func instead of file
 func countLinesOfCode(code string) int {
 	return len(strings.Split(code, "\n"))
 }
