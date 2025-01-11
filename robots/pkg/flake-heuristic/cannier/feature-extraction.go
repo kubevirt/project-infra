@@ -20,24 +20,29 @@
 package cannier
 
 import (
+	"fmt"
+	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 	"time"
 )
 
 type featureExtractor func(*FeatureSet) error
 
-// ExtractFeatures extracts the feature set from a Go test file.
-func ExtractFeatures(filename string) (FeatureSet, error) {
-	featureSet := FeatureSet{}
+// ExtractFeatures extracts the feature set for a test.
+func ExtractFeatures(test *ginkgo.TestDescriptor) (*FeatureSet, error) {
+	featureSet := &FeatureSet{}
+	if test == nil {
+		return nil, fmt.Errorf("no test descriptor given")
+	}
 
 	startTime := time.Now()
 
-	extractors, err := getStaticAnalysisExtractors(filename)
+	extractors, err := getStaticAnalysisExtractors(test)
 	if err != nil {
 		return featureSet, err
 	}
 
 	extractors = append(extractors, getMonitoringExtractors(startTime)...)
-	extractors = append(extractors, getCoverageExtractors()...)
+	extractors = append(extractors, getCoverageExtractors(test)...)
 
 	// TODO: initialize process monitoring
 
@@ -46,7 +51,7 @@ func ExtractFeatures(filename string) (FeatureSet, error) {
 	// TODO: stop process monitoring
 
 	for _, extract := range extractors {
-		err = extract(&featureSet)
+		err = extract(featureSet)
 		if err != nil {
 			return featureSet, err
 		}
