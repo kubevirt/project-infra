@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Copyright 2023 Red Hat, Inc.
+ * Copyright the KubeVirt Authors.
  *
  */
 
-package test_label_analyzer
+package ginkgo
 
-// GinkgoNode is the basic structure that is compatible with the output of the command `ginkgo outline --format json`
-type GinkgoNode struct {
+// Node is the basic structure that is compatible with the output of the command `ginkgo outline --format json`
+type Node struct {
 
 	// Name of the node, usually `Describe`, `Context` ....
 	Name string `json:"name"`
@@ -49,19 +49,5 @@ type GinkgoNode struct {
 	Labels []string `json:"labels"`
 
 	// Nodes holds the child nodes of this node
-	Nodes []*GinkgoNode `json:"nodes"`
-}
-
-// CloneWithoutNodes creates a copy of this node excluding its children
-func (n GinkgoNode) CloneWithoutNodes() *GinkgoNode {
-	return &GinkgoNode{
-		Name:    n.Name,
-		Text:    n.Text,
-		Start:   n.Start,
-		End:     n.End,
-		Spec:    n.Spec,
-		Focused: n.Focused,
-		Pending: n.Pending,
-		Labels:  n.Labels,
-	}
+	Nodes []*Node `json:"nodes"`
 }

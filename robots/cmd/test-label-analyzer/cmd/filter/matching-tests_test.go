@@ -21,6 +21,7 @@ package filter
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 	"kubevirt.io/project-infra/robots/pkg/git"
 	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
@@ -43,7 +44,7 @@ var _ = Describe("filter", func() {
 								SpecsTotal: 0,
 								MatchingSpecPaths: []*testlabelanalyzer.PathStats{
 									{
-										Path: []*testlabelanalyzer.GinkgoNode{
+										Path: []*ginkgo.Node{
 											{
 												Text: "VM Live Migration",
 											},
