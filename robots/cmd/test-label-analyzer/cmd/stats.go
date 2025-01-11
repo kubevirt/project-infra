@@ -19,27 +19,26 @@
 package cmd
 
 import (
-	"bytes"
-	"cloud.google.com/go/storage"
 	"context"
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"github.com/onsi/ginkgo/v2/ginkgo/command"
-	"github.com/onsi/ginkgo/v2/ginkgo/outline"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"html/template"
 	"io"
 	"io/fs"
-	"kubevirt.io/project-infra/robots/pkg/git"
-	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
+
+	"cloud.google.com/go/storage"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	"kubevirt.io/project-infra/robots/pkg/ginkgo"
+	"kubevirt.io/project-infra/robots/pkg/git"
+	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 )
 
 const shortStatsDescription = "Generates stats over test categories"
@@ -273,7 +272,7 @@ func runStatsCommand(configurationOptions ConfigOptions) error {
 	return fmt.Errorf("not implemented")
 }
 
-func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions ConfigOptions, testFileOutlines map[string][]*testlabelanalyzer.GinkgoNode, config *testlabelanalyzer.Config) ([]*testlabelanalyzer.FileStats, error) {
+func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions ConfigOptions, testFileOutlines map[string][]*ginkgo.Node, config *testlabelanalyzer.Config) ([]*testlabelanalyzer.FileStats, error) {
 	var testFilesStats []*testlabelanalyzer.FileStats
 	for testFilePath, testFileOutline := range testFileOutlines {
 		testStatsForFile := testlabelanalyzer.GetStatsFromGinkgoOutline(config, testFileOutline)
@@ -312,8 +311,8 @@ func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions ConfigOption
 	return testFilesStats, nil
 }
 
-func getTestFileOutlines(configurationOptions ConfigOptions) (map[string][]*testlabelanalyzer.GinkgoNode, error) {
-	testFileOutlines := map[string][]*testlabelanalyzer.GinkgoNode{}
+func getTestFileOutlines(configurationOptions ConfigOptions) (map[string][]*ginkgo.Node, error) {
+	testFileOutlines := map[string][]*ginkgo.Node{}
 	err := filepath.Walk(configurationOptions.testFilePath, func(path string, info fs.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
@@ -321,7 +320,7 @@ func getTestFileOutlines(configurationOptions ConfigOptions) (map[string][]*test
 		if !strings.HasSuffix(path, ".go") {
 			return nil
 		}
-		testOutline, err2 := getGinkgoOutlineFromFile(path)
+		testOutline, err2 := ginkgo.OutlineFromFile(path)
 		if err2 != nil {
 			return err2
 		}
@@ -344,80 +343,16 @@ func newlineCount(s string, start int, end int) int {
 	return n
 }
 
-func getGinkgoOutlineFromFile(path string) (testOutline []*testlabelanalyzer.GinkgoNode, err error) {
-
-	// since there's no output catchable from the command, we need to use pipe
-	// and redirect the output
-	old := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
-
-	buildOutlineCommand := outline.BuildOutlineCommand()
-
-	// since we are using the outline command version that panics on any error
-	// we need to handle the panic, returning an error only if the command.AbortDetails
-	// indicate that case
-	defer func() {
-		if r := recover(); r != nil {
-			errClose := w.Close()
-			if errClose != nil {
-				log.Warnf("err on close: %v", errClose)
-			}
-			os.Stdout = old
-			switch x := r.(type) {
-			case error:
-				err = x
-			case command.AbortDetails:
-				d := r.(command.AbortDetails)
-				if strings.Contains(d.Error.Error(), "file does not import \"github.com/onsi/ginkgo/v2\"") {
-					err = nil
-					return
-				}
-				err = d.Error
-			default:
-				err = fmt.Errorf("unknown panic: %v", r)
-			}
-		}
-	}()
-
-	outC := make(chan string)
-	go func() {
-		var buf bytes.Buffer
-		_, err := io.Copy(&buf, r)
-		if err != nil {
-			panic(err)
-		}
-		outC <- buf.String()
-	}()
-
-	buildOutlineCommand.Run([]string{"--format", "json", path}, nil)
-
-	// restore the output to normal
-	err = w.Close()
-	if err != nil {
-		log.Warnf("err on close: %v", err)
-	}
-	os.Stdout = old
-	out := <-outC
-	output := []byte(out)
-
-	testOutline, err = toOutline(output)
-	if err != nil {
-		return nil, fmt.Errorf("toOutline failed on %s: %w", path, err)
-	}
-	return testOutline, nil
-}
-
 func collectStatsFromGinkgoOutlines(configurationOptions ConfigOptions) (string, error) {
 
 	// collect the test outline data from the files and merge it into one slice
-	var testOutlines []*testlabelanalyzer.GinkgoNode
+	var testOutlines []*ginkgo.Node
 	for _, path := range configurationOptions.ginkgoOutlinePaths {
 		fileData, err := os.ReadFile(path)
 		if err != nil {
 			return "", fmt.Errorf("failed to read file %q: %w", path, err)
 		}
-		testOutline, err2 := toOutline(fileData)
+		testOutline, err2 := ginkgo.ToOutline(fileData)
 		if err2 != nil {
 			return "", fmt.Errorf("failed to unmarshal file %q: %v", path, err)
 		}
@@ -436,9 +371,4 @@ func collectStatsFromGinkgoOutlines(configurationOptions ConfigOptions) (string,
 
 	jsonOutput := string(marshal)
 	return jsonOutput, nil
-}
-
-func toOutline(fileData []byte) (testOutline []*testlabelanalyzer.GinkgoNode, err error) {
-	err = json.Unmarshal(fileData, &testOutline)
-	return testOutline, err
 }

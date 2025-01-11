@@ -17,29 +17,15 @@
  *
  */
 
-package cannier
+package ginkgo
 
-import "kubevirt.io/project-infra/robots/pkg/ginkgo"
-
-// TODO: evaluate whether that is feasible with a reasonable amount of work, would need remote instrumentation
-
-var (
-	coverageExtractors = []featureExtractor{
-		func(featureSet *FeatureSet) error {
-			featureSet.CoveredChanges = 0
-			return nil
-		},
-		func(featureSet *FeatureSet) error {
-			featureSet.CoveredLines = 0
-			return nil
-		},
-		func(featureSet *FeatureSet) error {
-			featureSet.SourceCoveredLines = 0
-			return nil
-		},
-	}
+import (
+	. "github.com/onsi/ginkgo/v2"
+	"github.com/onsi/gomega"
+	"testing"
 )
 
-func getCoverageExtractors(test *ginkgo.TestDescriptor) []featureExtractor {
-	return coverageExtractors
+func TestGinkgo(t *testing.T) {
+	gomega.RegisterFailHandler(Fail)
+	RunSpecs(t, "ginkgo suite")
 }
