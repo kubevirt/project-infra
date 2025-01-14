@@ -13,7 +13,6 @@
 .git
 .gitignore
 github
-bazel-*
 
 node_modules
 #!include:.gitignore

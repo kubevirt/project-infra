@@ -7,6 +7,5 @@ github/ci/phx-prow/inventory
 venv
 github/ci/*.retry
 testaccount.json
-bazel-*
 .idea
 images/autoowners/autoowners
