@@ -1194,7 +1194,7 @@ periodics:
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.29-sig-performance-kwok
+  name: periodic-kubevirt-e2e-k8s-1.32-sig-performance-kwok
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1217,7 +1217,7 @@ periodics:
         FUNC_TEST_ARGS="--no-color --seed=42" make kwok-perftest
       env:
       - name: KUBEVIRT_PROVIDER
-        value: k8s-1.29
+        value: k8s-1.32
       - name: KUBEVIRT_MEMORY_SIZE
         value: 10G
       - name: KUBEVIRT_DEPLOY_KWOK
@@ -1256,7 +1256,7 @@ periodics:
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.29-sig-performance-realtime
+  name: periodic-kubevirt-e2e-k8s-1.32-sig-performance-realtime
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1276,7 +1276,7 @@ periodics:
         FUNC_TEST_ARGS="--no-color --seed=42" make realtime-perftest
       env:
       - name: KUBEVIRT_PROVIDER
-        value: k8s-1.29
+        value: k8s-1.32
       - name: KUBEVIRT_STORAGE
         value: rook-ceph-default
       - name: KUBEVIRT_MEMORY_SIZE
@@ -1376,7 +1376,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.29-sig-network-multus-v4
+  name: periodic-kubevirt-e2e-k8s-1.32-sig-network-multus-v4
   reporter_config:
     slack:
       job_states_to_report: []
@@ -1399,7 +1399,7 @@ periodics:
       - name: KUBEVIRT_PSA
         value: "true"
       - name: TARGET
-        value: k8s-1.29-sig-network
+        value: k8s-1.32-sig-network
       image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
       name: ""
       resources:

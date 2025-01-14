@@ -914,7 +914,7 @@ presubmits:
       preset-shared-images: "true"
       rehearsal.allowed: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.29-sig-network-multus-v4
+    name: pull-kubevirt-e2e-k8s-1.32-sig-network-multus-v4
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -927,7 +927,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.29-sig-network
+          value: k8s-1.32-sig-network
         - name: KUBEVIRT_WITH_MULTUS_V3
           value: "false"
         - name: KUBEVIRT_NUM_NODES
@@ -1189,7 +1189,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.29-swap-enabled
+    name: pull-kubevirt-e2e-k8s-1.32-swap-enabled
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1203,7 +1203,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.29
+          value: k8s-1.32
         - name: KUBEVIRT_E2E_FOCUS
           value: SwapTest
         - name: KUBEVIRT_SWAP_ON
@@ -1272,7 +1272,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.29-single-node
+    name: pull-kubevirt-e2e-k8s-1.32-single-node
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1285,7 +1285,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.29
+          value: k8s-1.32
         - name: KUBEVIRT_E2E_FOCUS
           value: .*
         - name: KUBEVIRT_NUM_NODES
@@ -1411,7 +1411,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.29-sig-compute-realtime
+    name: pull-kubevirt-e2e-k8s-1.32-sig-compute-realtime
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1423,7 +1423,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.29-sig-compute-realtime
+          value: k8s-1.32-sig-compute-realtime
         - name: KUBEVIRT_PSA
           value: "true"
         image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
@@ -1900,7 +1900,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
-    name: pull-kubevirt-e2e-k8s-1.29-sig-performance-kwok
+    name: pull-kubevirt-e2e-k8s-1.32-sig-performance-kwok
     skip_branches:
     - release-\d+\.\d+
     optional: true
@@ -1920,7 +1920,7 @@ presubmits:
           FUNC_TEST_ARGS="--no-color --seed=42" make kwok-perftest
         env:
         - name: KUBEVIRT_PROVIDER
-          value: k8s-1.29
+          value: k8s-1.32
         - name: KUBEVIRT_MEMORY_SIZE
           value: 10G
         - name: KUBEVIRT_DEPLOY_KWOK
