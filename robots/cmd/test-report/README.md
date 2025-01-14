@@ -137,43 +137,6 @@ test-report creates a report about which tests have been run on what lane
 ```
 
 
-### using bazel
-
-You can also use [`bazel`](https://bazel.build/) to run it:
-
-```shell
-$ bazel run //robots/cmd/test-report -- --help
-INFO: Analyzed target //robots/cmd/test-report:test-report (0 packages loaded, 0 targets configured).
-INFO: Found 1 target...
-...
-test-report creates reports about test executions
-
-Usage:
-  test-report [flags]
-  test-report [command]
-
-...
-```
-
-
-### using bazel
-
-You can use [`bazel`]() to run it:
-
-```shell
-$ bazel run //robots/cmd/test-report -- --help
-INFO: Analyzed target //robots/cmd/test-report:test-report (0 packages loaded, 0 targets configured).
-...
-test-report creates reports about test executions
-
-Usage:
-  test-report [flags]
-  test-report [command]
-
-...
-```
-
-
 ## Checking custom configuration
 
 Use ``--dry-run`` flag to see which jobs are considered for the report ahead of actually creating the report.
