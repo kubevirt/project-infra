@@ -1,8 +1,5 @@
 .PHONY: all format build container-base-build container-base-push container-build container-push test
 all: format build
-bazelbin := bazelisk
-date_prefix := `date +"v20%y%m%d-"`
-hash := `git rev-parse HEAD`
 
 format:
 	gofmt -w .
@@ -14,13 +11,13 @@ test:
 	go test
 
 container-build: test
-	$(bazelbin) run //releng/release-tool:release-tool-image
+	( cd ../../images && ./publish_image.sh -b release-tool quay.io kubevirtci )
 
 container-push:
-	$(bazelbin) run //releng/release-tool:release-tool-push
+	( cd ../../images && ./publish_image.sh release-tool quay.io kubevirtci )
 
 container-base-build:
-	docker build . -f Dockerfile.release-tool-base -t kubevirtci/release-tool-base:$(date_prefix)$(hash)
+	( cd ../../images && ./publish_image.sh -b release-tool-base quay.io kubevirtci )
 
 container-base-push:
-	docker push kubevirtci/release-tool-base:$(date_prefix)$(hash)
+	( cd ../../images && ./publish_image.sh release-tool-base quay.io kubevirtci )

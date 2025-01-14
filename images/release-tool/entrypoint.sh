@@ -14,4 +14,4 @@ rm -f testfile.txt sig.gpg
 
 echo "$@"
 
-/usr/sbin/release-tool --github-token-file=/home/releaser/github-api-token "$@"
+/usr/bin/release-tool --github-token-file=/home/releaser/github-api-token "$@"

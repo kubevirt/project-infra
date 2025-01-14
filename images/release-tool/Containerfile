@@ -1,0 +1,17 @@
+FROM quay.io/kubevirtci/golang:v20241213-57bd934 as builder
+ENV GOPROXY=https://proxy.golang.org|direct \
+    GOFLAGS="-mod=vendor -ldflags=-extldflags=\"-static\"" \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
+ENV GIMME_GO_VERSION=1.21.6
+RUN mkdir kubevirt && \
+    cd kubevirt && \
+    git clone https://github.com/kubevirt/project-infra.git && \
+    cd project-infra && \
+    /usr/local/bin/runner.sh /bin/sh -c "env GOPROXY=off go build -tags netgo -o /go/bin/release-tool ./releng/release-tool"
+
+FROM quay.io/kubevirtci/release-tool-base:v20240528-e82f26ab92a95a70da09e78f76e241b5621b4a79
+COPY ./entrypoint.sh /usr/sbin/entrypoint.sh
+COPY --from=builder /go/bin/release-tool /usr/bin/release-tool
+ENTRYPOINT ["/usr/sbin/entrypoint.sh"]

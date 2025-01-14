@@ -16,7 +16,7 @@ $ ./github/ci/services/ci-search/hack/deploy.sh production
 
 ## Tests
 
-Can be tested locally using [kind] and [bazelisk], from the root of project-infra:
+Can be tested locally using [kind] and [go], from the root of project-infra:
 
 ```bash
 $ kind create cluster

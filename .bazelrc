@@ -1,2 +1,0 @@
-build --stamp --workspace_status_command=./hack/print-workspace-status.sh
-test --test_output=all --test_arg=-test.v

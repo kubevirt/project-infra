@@ -19,4 +19,4 @@ push:
 	bash -x "../../../hack/update-scripts-with-latest-image.sh" "$(CONTAINER_REPO)"
 
 clean:
-	bazel clean --expunge
+	go clean -cache -modcache

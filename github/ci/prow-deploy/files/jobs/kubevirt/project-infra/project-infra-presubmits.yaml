@@ -110,34 +110,6 @@ presubmits:
             memory: "4Gi"
         securityContext:
           runAsUser: 0
-  - name: pull-project-infra-test-bazel-config
-    run_if_changed: "github/ci/services/.*|external-plugins/.*|releng/.*|robots/.*|go.mod"
-    decorate: true
-    cluster: kubevirt-prow-control-plane
-    labels:
-      preset-bazel-cache: "true"
-    spec:
-      containers:
-      - image: quay.io/kubevirtci/bootstrap:v20241213-57bd934
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-ce"
-        - |
-          make gazelle
-          if [ $(git status --short | wc -l) -gt 0 ]; then
-            echo "Bazel configs need an update"
-            echo "Uncommitted changes:"
-            git diff
-            exit 1
-          fi
-        resources:
-          requests:
-            memory: "4Gi"
-          limits:
-            memory: "4Gi"
-        securityContext:
-          runAsUser: 0
   - always_run: false
     cluster: kubevirt-prow-control-plane
     decorate: true
