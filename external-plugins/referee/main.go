@@ -119,7 +119,10 @@ func main() {
 		logrus.WithError(err).Fatal("Error starting secrets agent.")
 	}
 
-	githubClient := o.github.GitHubClientWithAccessToken(string(secret.GetSecret(o.github.TokenPath)))
+	githubClient, err := o.github.GitHubClientWithAccessToken(string(secret.GetSecret(o.github.TokenPath)))
+	if err != nil {
+		logrus.WithError(err).Fatal("error getting github client")
+	}
 
 	botUserData, err := githubClient.BotUser()
 	if err != nil {

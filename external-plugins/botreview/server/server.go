@@ -25,7 +25,7 @@ import (
 	"net/http"
 	"os"
 	"sigs.k8s.io/prow/pkg/config"
-	"sigs.k8s.io/prow/pkg/git"
+	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
 	"sigs.k8s.io/prow/pkg/github"
 	"sigs.k8s.io/prow/pkg/pluginhelp"
 )
@@ -66,7 +66,7 @@ type Server struct {
 	TokenGenerator func() []byte
 	BotName        string
 
-	GitClient *git.Client
+	GitClient gitv2.ClientFactory
 	Ghc       github.Client
 
 	Log *logrus.Entry

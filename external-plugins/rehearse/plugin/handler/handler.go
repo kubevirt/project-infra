@@ -4,16 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/r3labs/diff/v3"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
 	"reflect"
 	"regexp"
-	"sigs.k8s.io/prow/pkg/repoowners"
 	"strconv"
 	"strings"
+
+	"github.com/r3labs/diff/v3"
+	pi_github "kubevirt.io/project-infra/robots/pkg/github"
+	"sigs.k8s.io/prow/pkg/repoowners"
 
 	"github.com/go-git/go-git/v5"
 	gitconfig "github.com/go-git/go-git/v5/config"
@@ -138,7 +140,7 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 		return
 	}
 
-	org, repo, err := gitv2.OrgRepo(event.Repo.FullName)
+	org, repo, err := pi_github.OrgRepo(event.Repo.FullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not get org/repo from the event")
 	}
@@ -299,7 +301,7 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 		return
 	}
 
-	org, repo, err := gitv2.OrgRepo(event.Repo.FullName)
+	org, repo, err := pi_github.OrgRepo(event.Repo.FullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not get org/repo from the event")
 	}
@@ -335,7 +337,7 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 }
 
 func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github.PullRequest, eventGUID string, commentBody string) {
-	org, repo, err := gitv2.OrgRepo(pr.Base.Repo.FullName)
+	org, repo, err := pi_github.OrgRepo(pr.Base.Repo.FullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Base.Repo.FullName)
 		return
@@ -456,7 +458,7 @@ func (h *GitHubEventsHandler) getRebasedRepoClient(log *logrus.Entry, pr *github
 	if err != nil {
 		return nil, fmt.Errorf("could not change repo config: %w", err)
 	}
-	err = rebasedRepoClient.MergeAndCheckout(pr.Base.SHA, string(github.MergeSquash), pr.Head.SHA)
+	err = rebasedRepoClient.MergeAndCheckout(pr.Base.SHA, "squash", pr.Head.SHA)
 	if err != nil {
 		return nil, fmt.Errorf("could not rebase the PR on the target branch: %w", err)
 	}
@@ -562,7 +564,7 @@ func (h *GitHubEventsHandler) generatePresubmits(
 			}
 
 			repoOrg := repoFromJobKey(presubmitKey)
-			org, repo, err := gitv2.OrgRepo(repoOrg)
+			org, repo, err := pi_github.OrgRepo(repoOrg)
 			if err != nil {
 				log.Errorf(
 					"Could not extract repo and org from job key: %s. Job name: %s",

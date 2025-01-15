@@ -408,7 +408,7 @@ func TestHandleIssueComment(t *testing.T) {
 		}
 
 		foc := &testutils.FakeOwnersClient{
-			ExistingTopLevelApprovers: sets.NewString(tc.userName),
+			ExistingTopLevelApprovers: sets.New[string](tc.userName),
 		}
 
 		froc := &testutils.FakeRepoownersClient{

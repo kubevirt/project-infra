@@ -17,8 +17,8 @@ require (
 	github.com/jetstack/cert-manager v1.1.0
 	github.com/joshdk/go-junit v0.0.0-20190428045703-ad7e11aa49ff
 	github.com/lnquy/cron v1.1.1
-	github.com/onsi/ginkgo/v2 v2.15.0
-	github.com/onsi/gomega v1.31.0
+	github.com/onsi/ginkgo/v2 v2.17.1
+	github.com/onsi/gomega v1.32.0
 	github.com/prometheus/client_golang v1.19.0
 	github.com/r3labs/diff/v3 v3.0.1
 	github.com/shurcooL/githubv4 v0.0.0-20210725200734-83ba7b4c9228
@@ -230,7 +230,6 @@ replace (
 	k8s.io/api => k8s.io/api v0.30.1
 	k8s.io/apimachinery => k8s.io/apimachinery v0.30.1
 	k8s.io/client-go => k8s.io/client-go v0.30.1
-	sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.14.6
 )
 
 go 1.23

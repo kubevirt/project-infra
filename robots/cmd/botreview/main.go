@@ -86,8 +86,12 @@ func main() {
 		logrus.WithError(err).Fatal("error starting secrets agent")
 	}
 
-	githubClient := o.github.GitHubClientWithAccessToken(string(secret.GetSecret(o.github.TokenPath)))
-	gitClient, err := o.github.GitClient(o.dryRun)
+	githubClient, err := o.github.GitHubClientWithAccessToken(string(secret.GetSecret(o.github.TokenPath)))
+	if err != nil {
+		logrus.WithError(err).Fatal("error getting GitHub client")
+	}
+	cacheDir := ""
+	gitClient, err := o.github.GitClientFactory("", &cacheDir, o.dryRun, false)
 	if err != nil {
 		logrus.WithError(err).Fatal("error getting Git client")
 	}
