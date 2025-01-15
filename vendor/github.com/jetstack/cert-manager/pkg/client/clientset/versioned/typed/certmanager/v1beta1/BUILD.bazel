@@ -11,16 +11,15 @@ go_library(
         "generated_expansion.go",
         "issuer.go",
     ],
-    importmap = "kubevirt.io/project-infra/vendor/github.com/jetstack/cert-manager/pkg/client/clientset/versioned/typed/certmanager/v1beta1",
     importpath = "github.com/jetstack/cert-manager/pkg/client/clientset/versioned/typed/certmanager/v1beta1",
     visibility = ["//visibility:public"],
     deps = [
-        "//vendor/github.com/jetstack/cert-manager/pkg/apis/certmanager/v1beta1:go_default_library",
-        "//vendor/github.com/jetstack/cert-manager/pkg/client/clientset/versioned/scheme:go_default_library",
-        "//vendor/k8s.io/apimachinery/pkg/apis/meta/v1:go_default_library",
-        "//vendor/k8s.io/apimachinery/pkg/types:go_default_library",
-        "//vendor/k8s.io/apimachinery/pkg/watch:go_default_library",
-        "//vendor/k8s.io/client-go/rest:go_default_library",
+        "//pkg/apis/certmanager/v1beta1:go_default_library",
+        "//pkg/client/clientset/versioned/scheme:go_default_library",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:go_default_library",
+        "@io_k8s_apimachinery//pkg/types:go_default_library",
+        "@io_k8s_apimachinery//pkg/watch:go_default_library",
+        "@io_k8s_client_go//rest:go_default_library",
     ],
 )
 

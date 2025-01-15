@@ -8,13 +8,12 @@ go_library(
         "types.go",
         "zz_generated.deepcopy.go",
     ],
-    importmap = "kubevirt.io/project-infra/vendor/github.com/jetstack/cert-manager/pkg/apis/meta/v1",
     importpath = "github.com/jetstack/cert-manager/pkg/apis/meta/v1",
     visibility = ["//visibility:public"],
     deps = [
-        "//vendor/github.com/jetstack/cert-manager/pkg/apis/meta:go_default_library",
-        "//vendor/k8s.io/apimachinery/pkg/runtime:go_default_library",
-        "//vendor/k8s.io/apimachinery/pkg/runtime/schema:go_default_library",
+        "//pkg/apis/meta:go_default_library",
+        "@io_k8s_apimachinery//pkg/runtime:go_default_library",
+        "@io_k8s_apimachinery//pkg/runtime/schema:go_default_library",
     ],
 )
 

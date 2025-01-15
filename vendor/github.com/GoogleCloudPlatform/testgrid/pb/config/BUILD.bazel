@@ -19,14 +19,9 @@ go_proto_library(
 
 go_library(
     name = "go_default_library",
-    srcs = ["config.pb.go"],
-    importmap = "kubevirt.io/project-infra/vendor/github.com/GoogleCloudPlatform/testgrid/pb/config",
+    embed = [":config_go_proto"],
     importpath = "github.com/GoogleCloudPlatform/testgrid/pb/config",
     visibility = ["//visibility:public"],
-    deps = [
-        "//vendor/github.com/GoogleCloudPlatform/testgrid/pb/custom_evaluator:go_default_library",
-        "//vendor/github.com/golang/protobuf/proto:go_default_library",
-    ],
 )
 
 filegroup(

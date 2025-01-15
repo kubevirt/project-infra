@@ -1,18 +1,17 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "go_default_library",
     srcs = ["providers.go"],
-    importmap = "kubevirt.io/project-infra/vendor/k8s.io/test-infra/prow/io/providers",
     importpath = "k8s.io/test-infra/prow/io/providers",
     visibility = ["//visibility:public"],
     deps = [
-        "//vendor/github.com/aws/aws-sdk-go/aws:go_default_library",
-        "//vendor/github.com/aws/aws-sdk-go/aws/credentials:go_default_library",
-        "//vendor/github.com/aws/aws-sdk-go/aws/session:go_default_library",
-        "//vendor/gocloud.dev/blob:go_default_library",
-        "//vendor/gocloud.dev/blob/memblob:go_default_library",
-        "//vendor/gocloud.dev/blob/s3blob:go_default_library",
+        "@com_github_aws_aws_sdk_go//aws:go_default_library",
+        "@com_github_aws_aws_sdk_go//aws/credentials:go_default_library",
+        "@com_github_aws_aws_sdk_go//aws/session:go_default_library",
+        "@dev_gocloud//blob:go_default_library",
+        "@dev_gocloud//blob/memblob:go_default_library",
+        "@dev_gocloud//blob/s3blob:go_default_library",
     ],
 )
 
@@ -28,4 +27,10 @@ filegroup(
     srcs = [":package-srcs"],
     tags = ["automanaged"],
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["providers_test.go"],
+    embed = [":go_default_library"],
 )

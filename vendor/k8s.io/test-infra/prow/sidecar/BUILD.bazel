@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "go_default_library",
@@ -8,23 +8,22 @@ go_library(
         "options.go",
         "run.go",
     ],
-    importmap = "kubevirt.io/project-infra/vendor/k8s.io/test-infra/prow/sidecar",
     importpath = "k8s.io/test-infra/prow/sidecar",
     visibility = ["//visibility:public"],
     deps = [
-        "//vendor/github.com/mattn/go-zglob:go_default_library",
-        "//vendor/github.com/sirupsen/logrus:go_default_library",
-        "//vendor/golang.org/x/sync/semaphore:go_default_library",
-        "//vendor/k8s.io/apimachinery/pkg/util/errors:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/apis/prowjobs/v1:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/entrypoint:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/flagutil:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/gcsupload:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/pjutil/pprof:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/pod-utils/downwardapi:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/pod-utils/gcs:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/pod-utils/wrapper:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/secretutil:go_default_library",
+        "//prow/apis/prowjobs/v1:go_default_library",
+        "//prow/entrypoint:go_default_library",
+        "//prow/flagutil:go_default_library",
+        "//prow/gcsupload:go_default_library",
+        "//prow/pjutil/pprof:go_default_library",
+        "//prow/pod-utils/downwardapi:go_default_library",
+        "//prow/pod-utils/gcs:go_default_library",
+        "//prow/pod-utils/wrapper:go_default_library",
+        "//prow/secretutil:go_default_library",
+        "@com_github_mattn_go_zglob//:go_default_library",
+        "@com_github_sirupsen_logrus//:go_default_library",
+        "@io_k8s_apimachinery//pkg/util/errors:go_default_library",
+        "@org_golang_x_sync//semaphore:go_default_library",
     ],
 )
 
@@ -40,4 +39,28 @@ filegroup(
     srcs = [":package-srcs"],
     tags = ["automanaged"],
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "censor_test.go",
+        "options_test.go",
+        "run_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":go_default_library"],
+    deps = [
+        "//prow/apis/prowjobs/v1:go_default_library",
+        "//prow/entrypoint:go_default_library",
+        "//prow/flagutil:go_default_library",
+        "//prow/gcsupload:go_default_library",
+        "//prow/pod-utils/wrapper:go_default_library",
+        "//prow/secretutil:go_default_library",
+        "//prow/testutil:go_default_library",
+        "@com_github_google_go_cmp//cmp:go_default_library",
+        "@io_k8s_apimachinery//pkg/api/equality:go_default_library",
+        "@io_k8s_apimachinery//pkg/util/diff:go_default_library",
+        "@io_k8s_apimachinery//pkg/util/sets:go_default_library",
+    ],
 )

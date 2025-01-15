@@ -1,9 +1,8 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "go_default_library",
     srcs = ["junit.go"],
-    importmap = "kubevirt.io/project-infra/vendor/github.com/GoogleCloudPlatform/testgrid/metadata/junit",
     importpath = "github.com/GoogleCloudPlatform/testgrid/metadata/junit",
     visibility = ["//visibility:public"],
 )
@@ -20,4 +19,11 @@ filegroup(
     srcs = [":package-srcs"],
     tags = ["automanaged"],
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["junit_test.go"],
+    embed = [":go_default_library"],
+    deps = ["@com_github_google_go_cmp//cmp:go_default_library"],
 )

@@ -3,12 +3,11 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["config.go"],
-    importmap = "kubevirt.io/project-infra/vendor/k8s.io/test-infra/prow/flagutil/config",
     importpath = "k8s.io/test-infra/prow/flagutil/config",
     visibility = ["//visibility:public"],
     deps = [
-        "//vendor/k8s.io/test-infra/prow/config:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/flagutil:go_default_library",
+        "//prow/config:go_default_library",
+        "//prow/flagutil:go_default_library",
     ],
 )
 
