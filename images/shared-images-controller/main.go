@@ -91,6 +91,19 @@ func pullRequiredImages(ctx context.Context, tag string) error {
 			log.WithError(err).Errorf("Failed to pull image '%s'", name)
 		}
 	}
+
+	gocliTarget := fmt.Sprintf("%sgocli:%s", kubevirtci_repo, tag)
+	_, err = images.Pull(ctx, gocliTarget, nil)
+	if err != nil {
+		log.WithError(err).Errorf("Failed to pull image '%s'", gocliTarget)
+	}
+
+	registryTarget := "quay.io/libpod/registry:2.8.2"
+	_, err = images.Pull(ctx, gocliTarget, nil)
+	if err != nil {
+		log.WithError(err).Errorf("Failed to pull image '%s'", registryTarget)
+	}
+
 	return nil
 }
 
@@ -104,6 +117,10 @@ func cleanOldImages(ctx context.Context, tag string) error {
 	for _, i := range imageList {
 		for _, repoTag := range i.RepoTags {
 			if strings.Contains(repoTag, tag) {
+				log.Infof("%s is a required image", repoTag)
+				continue
+			}
+			if strings.Contains(repoTag, "2.8.2") {
 				log.Infof("%s is a required image", repoTag)
 				continue
 			}
