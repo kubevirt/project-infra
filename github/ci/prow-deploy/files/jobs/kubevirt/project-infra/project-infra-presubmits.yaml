@@ -35,7 +35,7 @@ presubmits:
           go test ./robots/...
         env:
         - name: GIMME_GO_VERSION
-          value: "1.21.6"
+          value: "1.23.4"
         - name: GOFLAGS
           value: "-mod=vendor"
         resources:
@@ -59,7 +59,7 @@ presubmits:
           go test ./releng/...
         env:
         - name: GIMME_GO_VERSION
-          value: "1.21.6"
+          value: "1.23.4"
         resources:
           requests:
             memory: "4Gi"
@@ -81,7 +81,7 @@ presubmits:
           go test ./external-plugins/...
         env:
         - name: GIMME_GO_VERSION
-          value: "1.21.6"
+          value: "1.23.4"
         resources:
           requests:
             memory: "4Gi"
@@ -560,7 +560,7 @@ presubmits:
               go test ./github/ci/services/ci-search/e2e/...
           env:
           - name: GIMME_GO_VERSION
-            value: "1.21.6"
+            value: "1.23.4"
           resources:
             requests:
               memory: "16Gi"
@@ -600,7 +600,7 @@ presubmits:
               ./github/ci/services/grafana/hack/test.sh
           env:
           - name: GIMME_GO_VERSION
-            value: "1.21.6"
+            value: "1.23.4"
           image: quay.io/kubevirtci/golang:v20241213-57bd934
           resources:
             requests:
