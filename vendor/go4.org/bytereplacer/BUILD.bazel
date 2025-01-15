@@ -1,9 +1,0 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-
-go_library(
-    name = "go_default_library",
-    srcs = ["bytereplacer.go"],
-    importmap = "kubevirt.io/project-infra/vendor/go4.org/bytereplacer",
-    importpath = "go4.org/bytereplacer",
-    visibility = ["//visibility:public"],
-)

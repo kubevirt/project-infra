@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "go_default_library",
@@ -8,19 +8,18 @@ go_library(
         "target.go",
         "upload.go",
     ],
-    importmap = "kubevirt.io/project-infra/vendor/k8s.io/test-infra/prow/pod-utils/gcs",
     importpath = "k8s.io/test-infra/prow/pod-utils/gcs",
     visibility = ["//visibility:public"],
     deps = [
-        "//vendor/github.com/GoogleCloudPlatform/testgrid/metadata:go_default_library",
-        "//vendor/github.com/sirupsen/logrus:go_default_library",
-        "//vendor/golang.org/x/sync/semaphore:go_default_library",
-        "//vendor/k8s.io/apimachinery/pkg/util/errors:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/apis/prowjobs/v1:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/io:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/io/providers:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/pod-utils/downwardapi:go_default_library",
-        "//vendor/k8s.io/utils/pointer:go_default_library",
+        "//prow/apis/prowjobs/v1:go_default_library",
+        "//prow/io:go_default_library",
+        "//prow/io/providers:go_default_library",
+        "//prow/pod-utils/downwardapi:go_default_library",
+        "@com_github_googlecloudplatform_testgrid//metadata:go_default_library",
+        "@com_github_sirupsen_logrus//:go_default_library",
+        "@io_k8s_apimachinery//pkg/util/errors:go_default_library",
+        "@io_k8s_utils//pointer:go_default_library",
+        "@org_golang_x_sync//semaphore:go_default_library",
     ],
 )
 
@@ -36,4 +35,22 @@ filegroup(
     srcs = [":package-srcs"],
     tags = ["automanaged"],
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "metadata_test.go",
+        "target_test.go",
+        "upload_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "//prow/apis/prowjobs/v1:go_default_library",
+        "//prow/io:go_default_library",
+        "//prow/pod-utils/downwardapi:go_default_library",
+        "@com_github_fsouza_fake_gcs_server//fakestorage:go_default_library",
+        "@io_k8s_apimachinery//pkg/api/equality:go_default_library",
+        "@io_k8s_utils//pointer:go_default_library",
+    ],
 )

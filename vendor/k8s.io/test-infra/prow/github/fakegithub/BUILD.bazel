@@ -8,12 +8,11 @@ load(
 go_library(
     name = "go_default_library",
     srcs = ["fakegithub.go"],
-    importmap = "kubevirt.io/project-infra/vendor/k8s.io/test-infra/prow/github/fakegithub",
     importpath = "k8s.io/test-infra/prow/github/fakegithub",
     deps = [
-        "//vendor/github.com/shurcooL/githubv4:go_default_library",
-        "//vendor/k8s.io/apimachinery/pkg/util/sets:go_default_library",
-        "//vendor/k8s.io/test-infra/prow/github:go_default_library",
+        "//prow/github:go_default_library",
+        "@com_github_shurcool_githubv4//:go_default_library",
+        "@io_k8s_apimachinery//pkg/util/sets:go_default_library",
     ],
 )
 

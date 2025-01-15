@@ -20,7 +20,7 @@ presubmits:
           requests:
             memory: "500Mi"
   - name: pull-project-infra-test-robots
-    run_if_changed: "robots/.*|WORKSPACE|go_third_party.bzl|go.mod"
+    run_if_changed: "robots/.*|go.mod"
     optional: false
     decorate: true
     cluster: kubevirt-prow-control-plane
@@ -44,7 +44,7 @@ presubmits:
           limits:
             memory: "4Gi"
   - name: pull-project-infra-test-releng
-    run_if_changed: "releng/.*|WORKSPACE|go_third_party.bzl|go.mod"
+    run_if_changed: "releng/.*|go.mod"
     optional: false
     decorate: true
     cluster: kubevirt-prow-control-plane
@@ -66,7 +66,7 @@ presubmits:
           limits:
             memory: "4Gi"
   - name: pull-project-infra-test-external-plugins
-    run_if_changed: "external-plugins/.*|WORKSPACE|go_third_party.bzl|go.mod"
+    run_if_changed: "external-plugins/.*|go.mod"
     cluster: kubevirt-prow-control-plane
     optional: false
     decorate: true
@@ -88,7 +88,7 @@ presubmits:
           limits:
             memory: "4Gi"
   - name: pull-project-infra-test-github-ci-services
-    run_if_changed: "github/ci/services/.*|WORKSPACE|go_third_party.bzl|go.mod"
+    run_if_changed: "github/ci/services/.*|go.mod"
     optional: false
     decorate: true
     cluster: kubevirt-prow-control-plane
@@ -534,7 +534,7 @@ presubmits:
           secretName: unprivileged-oauth-token
   - name: pull-project-infra-ci-search-deploy-test
     optional: false
-    run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
+    run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
@@ -571,7 +571,7 @@ presubmits:
             runAsUser: 0
   - name: pull-project-infra-grafana-deploy-test
     optional: false
-    run_if_changed: "github/ci/services/grafana/.*|github/ci/services/common/.*|WORKSPACE|go_third_party.bzl"
+    run_if_changed: "github/ci/services/grafana/.*|github/ci/services/common/.*"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"

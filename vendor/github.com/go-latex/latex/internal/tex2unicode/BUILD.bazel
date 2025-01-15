@@ -1,9 +1,0 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-
-go_library(
-    name = "go_default_library",
-    srcs = ["utf8.go"],
-    importmap = "kubevirt.io/project-infra/vendor/github.com/go-latex/latex/internal/tex2unicode",
-    importpath = "github.com/go-latex/latex/internal/tex2unicode",
-    visibility = ["//vendor/github.com/go-latex/latex:__subpackages__"],
-)
