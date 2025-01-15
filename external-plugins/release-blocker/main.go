@@ -10,14 +10,14 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"k8s.io/test-infra/pkg/flagutil"
-	"k8s.io/test-infra/prow/config"
-	"k8s.io/test-infra/prow/config/secret"
-	prowflagutil "k8s.io/test-infra/prow/flagutil"
-	"k8s.io/test-infra/prow/git/v2"
-	"k8s.io/test-infra/prow/interrupts"
-	"k8s.io/test-infra/prow/pluginhelp/externalplugins"
-	"k8s.io/test-infra/prow/plugins/ownersconfig"
-	"k8s.io/test-infra/prow/repoowners"
+	"sigs.k8s.io/prow/pkg/config"
+	"sigs.k8s.io/prow/pkg/config/secret"
+	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
+	"sigs.k8s.io/prow/pkg/git/v2"
+	"sigs.k8s.io/prow/pkg/interrupts"
+	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
+	"sigs.k8s.io/prow/pkg/plugins/ownersconfig"
+	"sigs.k8s.io/prow/pkg/repoowners"
 )
 
 type options struct {

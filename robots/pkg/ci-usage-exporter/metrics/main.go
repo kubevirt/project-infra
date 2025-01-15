@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	prowConfig "k8s.io/test-infra/prow/config"
+	prowConfig "sigs.k8s.io/prow/pkg/config"
 )
 
 var (

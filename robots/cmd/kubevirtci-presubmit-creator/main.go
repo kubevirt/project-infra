@@ -26,9 +26,9 @@ import (
 	"golang.org/x/oauth2"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
-	prowjobs "k8s.io/test-infra/prow/apis/prowjobs/v1"
-	"k8s.io/test-infra/prow/config"
+	prowapi "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
+	prowjobs "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
+	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/yaml"
 
 	"kubevirt.io/project-infra/robots/pkg/querier"

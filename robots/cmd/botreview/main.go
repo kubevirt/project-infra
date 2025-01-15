@@ -24,11 +24,11 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"k8s.io/test-infra/pkg/flagutil"
-	"k8s.io/test-infra/prow/config/secret"
-	prowflagutil "k8s.io/test-infra/prow/flagutil"
-	"k8s.io/test-infra/prow/github"
 	"kubevirt.io/project-infra/external-plugins/botreview/review"
 	"os"
+	"sigs.k8s.io/prow/pkg/config/secret"
+	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
+	"sigs.k8s.io/prow/pkg/github"
 )
 
 const robotName = "botreview"

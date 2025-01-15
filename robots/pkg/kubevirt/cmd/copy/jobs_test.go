@@ -31,8 +31,8 @@ import (
 	"github.com/go-test/deep"
 	"github.com/google/go-github/github"
 	corev1 "k8s.io/api/core/v1"
-	v1 "k8s.io/test-infra/prow/apis/prowjobs/v1"
-	"k8s.io/test-infra/prow/config"
+	v1 "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
+	"sigs.k8s.io/prow/pkg/config"
 
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )

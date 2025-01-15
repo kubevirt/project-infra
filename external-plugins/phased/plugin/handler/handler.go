@@ -9,11 +9,11 @@ import (
 	"os/exec"
 
 	"github.com/sirupsen/logrus"
-	"k8s.io/test-infra/prow/config"
-	gitv2 "k8s.io/test-infra/prow/git/v2"
-	"k8s.io/test-infra/prow/github"
-	"k8s.io/test-infra/prow/labels"
-	"k8s.io/test-infra/prow/pjutil"
+	"sigs.k8s.io/prow/pkg/config"
+	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
+	"sigs.k8s.io/prow/pkg/github"
+	"sigs.k8s.io/prow/pkg/labels"
+	"sigs.k8s.io/prow/pkg/pjutil"
 )
 
 var log *logrus.Logger

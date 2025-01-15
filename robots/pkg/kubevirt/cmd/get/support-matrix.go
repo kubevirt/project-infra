@@ -28,12 +28,12 @@ import (
 	"html/template"
 	"io"
 	"io/fs"
-	"k8s.io/test-infra/prow/config"
 	"kubevirt.io/project-infra/robots/pkg/querier"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
+	"sigs.k8s.io/prow/pkg/config"
 	"sort"
 	"time"
 )

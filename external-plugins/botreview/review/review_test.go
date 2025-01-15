@@ -23,9 +23,9 @@ import (
 	testdiff "github.com/andreyvit/diff"
 	"github.com/sirupsen/logrus"
 	"github.com/sourcegraph/go-diff/diff"
-	"k8s.io/test-infra/prow/github"
 	"os"
 	"reflect"
+	"sigs.k8s.io/prow/pkg/github"
 	"testing"
 )
 

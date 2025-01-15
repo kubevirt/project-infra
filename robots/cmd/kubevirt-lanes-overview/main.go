@@ -21,11 +21,11 @@ package main
 
 import (
 	"encoding/csv"
-	"k8s.io/test-infra/prow/config"
 	"log"
 	"os"
 	"path/filepath"
 	"regexp"
+	"sigs.k8s.io/prow/pkg/config"
 	"sort"
 )
 

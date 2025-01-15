@@ -21,13 +21,13 @@ package server
 import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
-	"k8s.io/test-infra/prow/config"
-	"k8s.io/test-infra/prow/git"
-	"k8s.io/test-infra/prow/github"
-	"k8s.io/test-infra/prow/pluginhelp"
 	"kubevirt.io/project-infra/external-plugins/botreview/review"
 	"net/http"
 	"os"
+	"sigs.k8s.io/prow/pkg/config"
+	"sigs.k8s.io/prow/pkg/git"
+	"sigs.k8s.io/prow/pkg/github"
+	"sigs.k8s.io/prow/pkg/pluginhelp"
 )
 
 const pluginName = "botreview"

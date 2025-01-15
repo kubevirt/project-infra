@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"github.com/r3labs/diff/v3"
 	"io/ioutil"
-	"k8s.io/test-infra/prow/repoowners"
 	"os"
 	"os/exec"
 	"path"
 	"reflect"
 	"regexp"
+	"sigs.k8s.io/prow/pkg/repoowners"
 	"strconv"
 	"strings"
 
@@ -21,12 +21,12 @@ import (
 	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/sirupsen/logrus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
-	v1 "k8s.io/test-infra/prow/client/clientset/versioned/typed/prowjobs/v1"
-	"k8s.io/test-infra/prow/config"
-	gitv2 "k8s.io/test-infra/prow/git/v2"
-	"k8s.io/test-infra/prow/github"
-	"k8s.io/test-infra/prow/pjutil"
+	prowapi "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
+	v1 "sigs.k8s.io/prow/pkg/client/clientset/versioned/typed/prowjobs/v1"
+	"sigs.k8s.io/prow/pkg/config"
+	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
+	"sigs.k8s.io/prow/pkg/github"
+	"sigs.k8s.io/prow/pkg/pjutil"
 )
 
 const basicHelpCommentText = `You can trigger rehearsal for all jobs by commenting either ` + "`/rehearse`" + ` or ` + "`/rehearse all`" + `

@@ -30,9 +30,9 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"k8s.io/test-infra/prow/config"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/prowjobconfigs"
+	"sigs.k8s.io/prow/pkg/config"
 )
 
 const (

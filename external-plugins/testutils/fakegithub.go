@@ -25,10 +25,10 @@ import (
 	"regexp"
 
 	"k8s.io/apimachinery/pkg/util/sets"
-	"k8s.io/test-infra/prow/github"
-	"k8s.io/test-infra/prow/pkg/layeredsets"
-	"k8s.io/test-infra/prow/plugins/ownersconfig"
-	"k8s.io/test-infra/prow/repoowners"
+	"sigs.k8s.io/prow/pkg/github"
+	"sigs.k8s.io/prow/pkg/layeredsets"
+	"sigs.k8s.io/prow/pkg/plugins/ownersconfig"
+	"sigs.k8s.io/prow/pkg/repoowners"
 	"sigs.k8s.io/yaml"
 )
 
