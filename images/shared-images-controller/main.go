@@ -81,11 +81,6 @@ func pullRequiredImages(ctx context.Context, tag string) error {
 		log.Infoln("Kubevirt Provider version: ", version)
 
 		name := fmt.Sprintf("%sk8s-%s:%s", kubevirtci_repo, version, tag)
-		// k8s-1.26 kubevirtci provider was renamed to k8s-1.26-centos9
-		// to track the change to CentOS Stream 9
-		if version == "1.26" {
-			name = fmt.Sprintf("%sk8s-%s-centos9:%s", kubevirtci_repo, version, tag)
-		}
 		if _, exists := imageNames[name]; exists {
 			log.Infoln("Image already present:", name)
 			continue
@@ -96,6 +91,19 @@ func pullRequiredImages(ctx context.Context, tag string) error {
 			log.WithError(err).Errorf("Failed to pull image '%s'", name)
 		}
 	}
+
+	gocliTarget := fmt.Sprintf("%sgocli:%s", kubevirtci_repo, tag)
+	_, err = images.Pull(ctx, gocliTarget, nil)
+	if err != nil {
+		log.WithError(err).Errorf("Failed to pull image '%s'", gocliTarget)
+	}
+
+	registryTarget := "quay.io/libpod/registry:2.8.2"
+	_, err = images.Pull(ctx, gocliTarget, nil)
+	if err != nil {
+		log.WithError(err).Errorf("Failed to pull image '%s'", registryTarget)
+	}
+
 	return nil
 }
 
@@ -109,6 +117,10 @@ func cleanOldImages(ctx context.Context, tag string) error {
 	for _, i := range imageList {
 		for _, repoTag := range i.RepoTags {
 			if strings.Contains(repoTag, tag) {
+				log.Infof("%s is a required image", repoTag)
+				continue
+			}
+			if strings.Contains(repoTag, "2.8.2") {
 				log.Infof("%s is a required image", repoTag)
 				continue
 			}
