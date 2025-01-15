@@ -732,7 +732,7 @@ presubmits:
       - image: quay.io/kubevirtci/golang:v20241213-57bd934
         env:
         - name: GIMME_GO_VERSION
-          value: "1.20"
+          value: "1.23.4"
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
