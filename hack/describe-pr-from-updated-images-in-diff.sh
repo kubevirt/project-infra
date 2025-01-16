@@ -15,32 +15,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Copyright the KubeVirt Authors
+# Copyright the KubeVirt Authors.
 #
 #
 
 set -euo pipefail
-set -x
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_INFRA_ROOT=$(readlink --canonicalize ${BASEDIR}/..)
 
 function main() {
-    for repo_name in $(kubevirtci_images_used_in_manifests); do
-        image_name="quay.io/kubevirtci/${repo_name}"
-        if ! "$PROJECT_INFRA_ROOT/hack/update-jobs-with-latest-image.sh" "$image_name"; then
-            echo "[FAIL] prow jobs update for image $image_name"
-        else
-            echo "[OK] prow jobs update for image $image_name"
-        fi
-    done
-}
+    headline="Bump prow-deploy images"
+    if [ $# -gt 0 ]; then
+        headline="$1"
+    fi
 
-function kubevirtci_images_used_in_manifests() {
-    find "${PROJECT_INFRA_ROOT}/github/ci/prow-deploy" -name '*.yaml' -print0 | \
-        xargs -0 grep -hoE 'quay.io/kubevirtci/[^: @]+' | \
-        sort -u | \
-        cut -d'/' -f3
+    cat << EOF
+${headline}
+
+FYI @kubevirt/prow-job-taskforce
+/cc none
+
+Images updated:
+EOF
+    for image in $(
+        git diff -- ${PROJECT_INFRA_ROOT}/github/ci/prow-deploy | \
+            grep -E '^\+\s+- image: ' | \
+            grep -oE 'quay.io/kubevirtci/[^: @]+' | \
+            sort -u
+    ); do
+        echo "* ${image}"
+    done
 }
 
 main "$@"
