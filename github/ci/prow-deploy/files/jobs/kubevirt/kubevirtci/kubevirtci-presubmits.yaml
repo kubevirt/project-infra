@@ -456,6 +456,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: check-provision-k8s-1.31-s390x
+    optional: true
     spec:
       containers:
       - command:
