@@ -25,12 +25,22 @@ set -x
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_INFRA_ROOT=$(readlink --canonicalize ${BASEDIR}/..)
 
-IMAGES=( botreview phased referee rehearse release-blocker )
-for image_dir in "${IMAGES[@]}"; do
-    image_name="quay.io/kubevirtci/${image_dir/#\.\//}"
-    if ! "${PROJECT_INFRA_ROOT}/hack/update-deployments-with-latest-image.sh"  "${image_name}"; then
-        echo "Failed to update prow deployments using image $image_name"
-        exit 1
-    fi
-    echo "Updated prow deployments using image $image_name"
-done
+function main() {
+    for repo_name in $(kubevirtci_images_used_in_manifests); do
+        image_name="quay.io/kubevirtci/${repo_name}"
+        if ! "${PROJECT_INFRA_ROOT}/hack/update-deployments-with-latest-image.sh"  "${image_name}"; then
+            echo "[FAIL] prow deployment update for image $image_name"
+        else
+            echo "[OK] prow deployment update for image $image_name"
+        fi
+    done
+}
+
+function kubevirtci_images_used_in_manifests() {
+    find "${PROJECT_INFRA_ROOT}/github/ci/prow-deploy" -name '*.yaml' -print0 | \
+        xargs -0 grep -hoE 'quay.io/kubevirtci/[^: @]+' | \
+        sort -u | \
+        cut -d'/' -f3
+}
+
+main "$@"
