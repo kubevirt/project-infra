@@ -8,8 +8,6 @@ filters:
   .*:
     approvers:
     - aburdenthehand
-    - alonakaplan
-    - cwilkers
     - davidvossel
     - dhiller
     - fabiand
@@ -21,8 +19,6 @@ filters:
     - vladikr
     reviewers:
     - aburdenthehand
-    - alonakaplan
-    - cwilkers
     - dhiller
     - fabiand
     - jean-edouard
