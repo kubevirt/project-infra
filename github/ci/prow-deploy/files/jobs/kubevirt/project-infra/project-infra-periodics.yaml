@@ -815,7 +815,8 @@ periodics:
             -c "hack/bump-prow-job-images.sh" \
             -b prow-job-image-bump \
             -r project-infra \
-            -T main -B $'Bump Prow Job images\n@kubevirt/prow-job-taskforce\n/cc none' \
+            -T main \
+            -d "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Job images'" \
             -L 'skip-review'
         fi
       resources:
@@ -861,7 +862,7 @@ periodics:
             -b prow-deployment-image-bump \
             -r project-infra \
             -T main \
-            -B $'Bump Prow Deployment images\nFYI @kubevirt/prow-job-taskforce\n/cc none' \
+            -d "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Deployment images'" \
             -L 'skip-review'
         fi
       resources:
