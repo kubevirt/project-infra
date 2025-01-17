@@ -15,7 +15,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20250115-814be41
+          - image: quay.io/kubevirtci/bootstrap:v20250116-814be41
             env:
             - name: OCI_BIN
               value: podman
@@ -41,7 +41,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20250115-814be41
+          - image: quay.io/kubevirtci/bootstrap:v20250116-814be41
             env:
             - name: OCI_BIN
               value: podman

@@ -25,7 +25,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20250115-814be41
+    - image: quay.io/kubevirtci/bootstrap:v20250116-814be41
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
