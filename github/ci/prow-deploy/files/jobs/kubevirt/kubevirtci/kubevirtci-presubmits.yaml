@@ -233,7 +233,6 @@ presubmits:
       vgpu: "true"
     max_concurrency: 1
     name: check-up-kind-1.30-vgpu
-    optional: true
     spec:
       affinity:
         podAntiAffinity:
