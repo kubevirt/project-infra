@@ -159,7 +159,7 @@ if [ -n "$release_note_none" ]; then
 fi
 
 if [ -z "$dry_run" ]; then
-    git commit -s -m "${summary}"
+    git commit -s -m "${summary//[@#]/}"
     git push -f "https://${user}@github.com/${user}/${repo}.git" HEAD:"${branch}"
 else
     echo "dry_run: git commit -s -m \"${summary}\""
