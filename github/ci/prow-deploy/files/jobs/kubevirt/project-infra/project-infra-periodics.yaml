@@ -933,9 +933,6 @@ periodics:
   spec:
     containers:
     - image: quay.io/kubevirtci/golang:v20250116-814be41
-      env:
-      - name: GIMME_GO_VERSION
-        value: "1.20"
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/sh"
