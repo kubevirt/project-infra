@@ -17,18 +17,19 @@
  *
  */
 
-package main
+package cmd
 
 import (
-	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/cmd/cannier/cmd"
+	"github.com/spf13/cobra"
 )
 
-func init() {
-	log.SetFormatter(&log.JSONFormatter{})
-	log.SetLevel(log.DebugLevel)
+// generateCmd represents the generate command
+var generateCmd = &cobra.Command{
+	Use:   "generate",
+	Short: "generate is the parent of the generation commands",
+	Long:  `generate is the parent of the generation commands`,
 }
 
-func main() {
-	cmd.Execute()
+func init() {
+	rootCmd.AddCommand(generateCmd)
 }
