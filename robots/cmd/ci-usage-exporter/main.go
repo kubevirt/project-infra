@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	configflagutil "k8s.io/test-infra/prow/flagutil/config"
-	"k8s.io/test-infra/prow/pjutil"
+	configflagutil "sigs.k8s.io/prow/pkg/flagutil/config"
+	"sigs.k8s.io/prow/pkg/pjutil"
 
 	"kubevirt.io/project-infra/robots/pkg/ci-usage-exporter/metrics"
 )

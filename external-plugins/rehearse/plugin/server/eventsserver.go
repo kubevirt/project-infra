@@ -3,8 +3,8 @@ package server
 import (
 	"net/http"
 
-	"k8s.io/test-infra/prow/github"
 	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/handler"
+	"sigs.k8s.io/prow/pkg/github"
 )
 
 type GitHubEventsServer struct {

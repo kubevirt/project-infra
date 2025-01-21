@@ -5,7 +5,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"k8s.io/apimachinery/pkg/util/sets"
-	"k8s.io/test-infra/prow/github"
+	"sigs.k8s.io/prow/pkg/github"
 
 	"kubevirt.io/project-infra/external-plugins/testutils"
 )
@@ -408,7 +408,7 @@ func TestHandleIssueComment(t *testing.T) {
 		}
 
 		foc := &testutils.FakeOwnersClient{
-			ExistingTopLevelApprovers: sets.NewString(tc.userName),
+			ExistingTopLevelApprovers: sets.New[string](tc.userName),
 		}
 
 		froc := &testutils.FakeRepoownersClient{

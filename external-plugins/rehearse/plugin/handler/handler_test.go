@@ -8,13 +8,13 @@ import (
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/sets"
-	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
-	"k8s.io/test-infra/prow/config"
-	"k8s.io/test-infra/prow/git/localgit"
-	gitv2 "k8s.io/test-infra/prow/git/v2"
-	"k8s.io/test-infra/prow/github"
-	"k8s.io/test-infra/prow/github/fakegithub"
 	"kubevirt.io/project-infra/external-plugins/testutils"
+	prowapi "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
+	"sigs.k8s.io/prow/pkg/config"
+	"sigs.k8s.io/prow/pkg/git/localgit"
+	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
+	"sigs.k8s.io/prow/pkg/github"
+	"sigs.k8s.io/prow/pkg/github/fakegithub"
 )
 
 var _ = Describe("Events", func() {
@@ -32,7 +32,7 @@ var _ = Describe("Events", func() {
 			Expect(err).ShouldNot(HaveOccurred(), "Could not create local git repo and client factory")
 			dummyLog = logrus.New()
 			foc := &testutils.FakeOwnersClient{
-				ExistingTopLevelApprovers: sets.NewString("testuser"),
+				ExistingTopLevelApprovers: sets.New[string]("testuser"),
 			}
 			froc := &testutils.FakeRepoownersClient{
 				Foc: foc,
@@ -457,8 +457,8 @@ Gna meh whatever
 						},
 					},
 					ChangedFiles:            []string{},
-					TopLevelApprovers:       sets.String{},
-					LeafApprovers:           map[string]sets.String{},
+					TopLevelApprovers:       sets.Set[string]{},
+					LeafApprovers:           map[string]sets.Set[string]{},
 					ExpectedCanUserRehearse: false,
 				},
 			),
@@ -471,10 +471,10 @@ Gna meh whatever
 						},
 					},
 					ChangedFiles: []string{"changedFile"},
-					TopLevelApprovers: sets.String{
+					TopLevelApprovers: sets.Set[string]{
 						"topLevelApprover": struct{}{},
 					},
-					LeafApprovers: map[string]sets.String{
+					LeafApprovers: map[string]sets.Set[string]{
 						"changedFile": {
 							"leafApprover": struct{}{},
 						},
@@ -497,10 +497,10 @@ Gna meh whatever
 						},
 					},
 					ChangedFiles: []string{"changedFile"},
-					TopLevelApprovers: sets.String{
+					TopLevelApprovers: sets.Set[string]{
 						"topLevelApprover": struct{}{},
 					},
-					LeafApprovers: map[string]sets.String{
+					LeafApprovers: map[string]sets.Set[string]{
 						"changedFile": {
 							"leafApprover": struct{}{},
 						},
@@ -518,8 +518,8 @@ Gna meh whatever
 						},
 					},
 					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.String{userName: struct{}{}},
-					LeafApprovers:           map[string]sets.String{},
+					TopLevelApprovers:       sets.Set[string]{userName: struct{}{}},
+					LeafApprovers:           map[string]sets.Set[string]{},
 					ExpectedCanUserRehearse: true,
 				},
 			),
@@ -532,8 +532,8 @@ Gna meh whatever
 						},
 					},
 					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.String{userName: struct{}{}},
-					LeafApprovers:           map[string]sets.String{},
+					TopLevelApprovers:       sets.Set[string]{userName: struct{}{}},
+					LeafApprovers:           map[string]sets.Set[string]{},
 					UserName:                userNameUpperCase,
 					ExpectedCanUserRehearse: true,
 				},
@@ -547,8 +547,8 @@ Gna meh whatever
 						},
 					},
 					ChangedFiles:      []string{"changedFile"},
-					TopLevelApprovers: sets.String{},
-					LeafApprovers: map[string]sets.String{
+					TopLevelApprovers: sets.Set[string]{},
+					LeafApprovers: map[string]sets.Set[string]{
 						"changedFile": {userName: struct{}{}},
 					},
 					ExpectedCanUserRehearse: true,
@@ -563,8 +563,8 @@ Gna meh whatever
 						},
 					},
 					ChangedFiles:      []string{"changedFile"},
-					TopLevelApprovers: sets.String{},
-					LeafApprovers: map[string]sets.String{
+					TopLevelApprovers: sets.Set[string]{},
+					LeafApprovers: map[string]sets.Set[string]{
 						"changedFile": {userName: struct{}{}},
 					},
 					UserName:                userNameUpperCase,
@@ -580,8 +580,8 @@ Gna meh whatever
 						},
 					},
 					ChangedFiles:      []string{"changedFile"},
-					TopLevelApprovers: sets.String{},
-					LeafApprovers: map[string]sets.String{
+					TopLevelApprovers: sets.Set[string]{},
+					LeafApprovers: map[string]sets.Set[string]{
 						"changedFile": {userNameUpperCase: struct{}{}},
 					},
 					ExpectedCanUserRehearse: true,
@@ -599,8 +599,8 @@ Gna meh whatever
 						"changedFile",
 						"otherChangedFile",
 					},
-					TopLevelApprovers: sets.String{},
-					LeafApprovers: map[string]sets.String{
+					TopLevelApprovers: sets.Set[string]{},
+					LeafApprovers: map[string]sets.Set[string]{
 						"changedFile": {userName: struct{}{}},
 					},
 					ExpectedCanUserRehearse: false,
@@ -614,8 +614,8 @@ Gna meh whatever
 						},
 					},
 					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.String{userName: struct{}{}},
-					LeafApprovers:           map[string]sets.String{},
+					TopLevelApprovers:       sets.Set[string]{userName: struct{}{}},
+					LeafApprovers:           map[string]sets.Set[string]{},
 					ExpectedCanUserRehearse: true,
 				},
 			),
@@ -627,8 +627,8 @@ Gna meh whatever
 						},
 					},
 					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.String{userName: struct{}{}},
-					LeafApprovers:           map[string]sets.String{},
+					TopLevelApprovers:       sets.Set[string]{userName: struct{}{}},
+					LeafApprovers:           map[string]sets.Set[string]{},
 					UserName:                userNameUpperCase,
 					ExpectedCanUserRehearse: true,
 				},
@@ -641,8 +641,8 @@ Gna meh whatever
 						},
 					},
 					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.String{userNameUpperCase: struct{}{}},
-					LeafApprovers:           map[string]sets.String{},
+					TopLevelApprovers:       sets.Set[string]{userNameUpperCase: struct{}{}},
+					LeafApprovers:           map[string]sets.Set[string]{},
 					UserName:                userName,
 					ExpectedCanUserRehearse: true,
 				},
@@ -655,8 +655,8 @@ Gna meh whatever
 type CanUserRehearseOrgAndUserTestData struct {
 	OrgMembers              map[string][]string
 	ChangedFiles            []string
-	TopLevelApprovers       sets.String
-	LeafApprovers           map[string]sets.String
+	TopLevelApprovers       sets.Set[string]
+	LeafApprovers           map[string]sets.Set[string]
 	ExpectedCanUserRehearse bool
 	ExpectedMessageParts    []string
 	UserName                string

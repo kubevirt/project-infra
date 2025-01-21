@@ -25,13 +25,13 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"html/template"
-	"k8s.io/test-infra/prow/config"
-	"k8s.io/test-infra/prow/github"
-	"k8s.io/test-infra/prow/pjutil"
-	"k8s.io/test-infra/prow/pluginhelp"
 	"kubevirt.io/project-infra/external-plugins/referee/ghgraphql"
 	"kubevirt.io/project-infra/external-plugins/referee/metrics"
 	"net/http"
+	"sigs.k8s.io/prow/pkg/config"
+	"sigs.k8s.io/prow/pkg/github"
+	"sigs.k8s.io/prow/pkg/pjutil"
+	"sigs.k8s.io/prow/pkg/pluginhelp"
 )
 
 const PluginName = "referee"

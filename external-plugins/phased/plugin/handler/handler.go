@@ -4,16 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	pi_github "kubevirt.io/project-infra/robots/pkg/github"
 	"net/http"
 	"os"
 	"os/exec"
 
 	"github.com/sirupsen/logrus"
-	"k8s.io/test-infra/prow/config"
-	gitv2 "k8s.io/test-infra/prow/git/v2"
-	"k8s.io/test-infra/prow/github"
-	"k8s.io/test-infra/prow/labels"
-	"k8s.io/test-infra/prow/pjutil"
+	"sigs.k8s.io/prow/pkg/config"
+	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
+	"sigs.k8s.io/prow/pkg/github"
+	"sigs.k8s.io/prow/pkg/labels"
+	"sigs.k8s.io/prow/pkg/pjutil"
 )
 
 var log *logrus.Logger
@@ -101,7 +102,7 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, event *g
 		return
 	}
 
-	org, repo, err := gitv2.OrgRepo(event.Repo.FullName)
+	org, repo, err := pi_github.OrgRepo(event.Repo.FullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not get org/repo from the event")
 		return
@@ -152,7 +153,7 @@ func (h *GitHubEventsHandler) loadPresubmits(pr github.PullRequest) ([]config.Pr
 		return nil, err
 	}
 
-	org, repo, err := gitv2.OrgRepo(pr.Base.Repo.FullName)
+	org, repo, err := pi_github.OrgRepo(pr.Base.Repo.FullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Base.Repo.FullName)
 		return nil, err
@@ -245,7 +246,7 @@ func listRequiredManual(ghClient githubClientInterface, pr github.PullRequest, p
 
 	org, repo, number, branch := pr.Base.Repo.Owner.Login, pr.Base.Repo.Name, pr.Number, pr.Base.Ref
 	changes := config.NewGitHubDeferredChangedFilesProvider(ghClient, org, repo, number)
-	toTest, err := pjutil.FilterPresubmits(manualRequiredFilter, changes, branch, presubmits, log)
+	toTest, err := pjutil.FilterPresubmits(defaultManualRequiredFilter, changes, branch, presubmits, log)
 	if err != nil {
 		return nil, err
 	}
@@ -253,14 +254,20 @@ func listRequiredManual(ghClient githubClientInterface, pr github.PullRequest, p
 	return toTest, nil
 }
 
-func manualRequiredFilter(p config.Presubmit) (bool, bool, bool) {
+var defaultManualRequiredFilter = manualRequiredFilter{}
+
+type manualRequiredFilter struct{}
+
+func (f manualRequiredFilter) ShouldRun(p config.Presubmit) (shouldRun bool, forcedToRun bool, defaultBehavior bool) {
 	cond := !p.Optional && !p.AlwaysRun && p.RegexpChangeMatcher.RunIfChanged == "" &&
 		p.RegexpChangeMatcher.SkipIfOnlyChanged == ""
 	return cond, cond, false
 }
 
+func (f manualRequiredFilter) Name() string { return "manualRequiredFilter" }
+
 func testRequested(ghClient githubClientInterface, pr github.PullRequest, requestedJobs []config.Presubmit) error {
-	org, repo, err := gitv2.OrgRepo(pr.Base.Repo.FullName)
+	org, repo, err := pi_github.OrgRepo(pr.Base.Repo.FullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Base.Repo.FullName)
 		return err
@@ -336,7 +343,7 @@ func (h *GitHubEventsHandler) loadProwConfig(prFullName string) (*config.Config,
 	}
 	defer os.RemoveAll(tmpdir)
 
-	org, repo, err := gitv2.OrgRepo(prFullName)
+	org, repo, err := pi_github.OrgRepo(prFullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not parse repo name: %s", prFullName)
 		return nil, err

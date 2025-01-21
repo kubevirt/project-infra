@@ -10,13 +10,13 @@ import (
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/testing"
-	prowapi "k8s.io/test-infra/prow/apis/prowjobs/v1"
-	"k8s.io/test-infra/prow/client/clientset/versioned/typed/prowjobs/v1/fake"
-	"k8s.io/test-infra/prow/config"
-	"k8s.io/test-infra/prow/git/localgit"
-	git2 "k8s.io/test-infra/prow/git/v2"
-	"k8s.io/test-infra/prow/github"
-	"k8s.io/test-infra/prow/github/fakegithub"
+	prowapi "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
+	"sigs.k8s.io/prow/pkg/client/clientset/versioned/typed/prowjobs/v1/fake"
+	"sigs.k8s.io/prow/pkg/config"
+	"sigs.k8s.io/prow/pkg/git/localgit"
+	git2 "sigs.k8s.io/prow/pkg/git/v2"
+	"sigs.k8s.io/prow/pkg/github"
+	"sigs.k8s.io/prow/pkg/github/fakegithub"
 
 	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/handler"
 )
@@ -206,7 +206,7 @@ var _ = Describe("Rehearse", func() {
 					fakelog := logrus.New()
 					eventsChan := make(chan *handler.GitHubEvent)
 					foc := &testutils.FakeOwnersClient{
-						ExistingTopLevelApprovers: sets.NewString("testuser"),
+						ExistingTopLevelApprovers: sets.New[string]("testuser"),
 					}
 					froc := &testutils.FakeRepoownersClient{
 						Foc: foc,
@@ -345,7 +345,7 @@ var _ = Describe("Rehearse", func() {
 					fakelog := logrus.New()
 					eventsChan := make(chan *handler.GitHubEvent)
 					foc := &testutils.FakeOwnersClient{
-						ExistingTopLevelApprovers: sets.NewString("testuser"),
+						ExistingTopLevelApprovers: sets.New[string]("testuser"),
 					}
 					froc := &testutils.FakeRepoownersClient{
 						Foc: foc,
@@ -505,7 +505,7 @@ var _ = Describe("Rehearse", func() {
 					}
 					fakelog := logrus.New()
 					foc := &testutils.FakeOwnersClient{
-						ExistingTopLevelApprovers: sets.NewString("testuser"),
+						ExistingTopLevelApprovers: sets.New[string]("testuser"),
 					}
 					froc := &testutils.FakeRepoownersClient{
 						Foc: foc,
@@ -681,7 +681,7 @@ var _ = Describe("Rehearse", func() {
 					fakelog := logrus.New()
 					eventsChan := make(chan *handler.GitHubEvent)
 					foc := &testutils.FakeOwnersClient{
-						ExistingTopLevelApprovers: sets.NewString("testuser"),
+						ExistingTopLevelApprovers: sets.New[string]("testuser"),
 					}
 					froc := &testutils.FakeRepoownersClient{
 						Foc: foc,
@@ -895,7 +895,7 @@ var _ = Describe("Rehearse", func() {
 				fakelog := logrus.New()
 				eventsChan := make(chan *handler.GitHubEvent)
 				foc := &testutils.FakeOwnersClient{
-					ExistingTopLevelApprovers: sets.NewString("testuser"),
+					ExistingTopLevelApprovers: sets.New[string]("testuser"),
 				}
 				froc := &testutils.FakeRepoownersClient{
 					Foc: foc,
