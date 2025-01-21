@@ -3,10 +3,6 @@ FROM quay.io/kubevirtci/golang:v20230801-94954c0
 ENV GIMME_GO_VERSION=1.19
 
 RUN set -x && \
-    /usr/local/bin/runner.sh /bin/sh -ce 'go install github.com/onsi/ginkgo/v2/ginkgo@v2.9.2' && \
-    mv /root/go/bin/ginkgo /usr/local/bin/
-
-RUN set -x && \
     git clone https://github.com/kubevirt/project-infra && \
     cd ./project-infra && \
     /usr/local/bin/runner.sh /bin/sh -ce 'go install ./robots/cmd/test-label-analyzer' && \
