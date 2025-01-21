@@ -1,13 +1,16 @@
-FROM quay.io/kubevirtci/golang:v20230801-94954c0
+FROM quay.io/kubevirtci/golang:v20241213-57bd934 as builder
+ENV GOPROXY=https://proxy.golang.org|direct \
+    GOFLAGS="-mod=vendor -ldflags=-extldflags=\"-static\"" \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
+ENV GIMME_GO_VERSION=1.23.4
+RUN mkdir kubevirt && \
+    cd kubevirt && \
+    git clone https://github.com/kubevirt/project-infra.git && \
+    cd project-infra && \
+    /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/test-label-analyzer ./robots/cmd/test-label-analyzer"
 
-ENV GIMME_GO_VERSION=1.19
-
-RUN set -x && \
-    git clone https://github.com/kubevirt/project-infra && \
-    cd ./project-infra && \
-    /usr/local/bin/runner.sh /bin/sh -ce 'go install ./robots/cmd/test-label-analyzer' && \
-    mv /root/go/bin/test-label-analyzer /usr/local/bin/ && \
-    /usr/local/bin/runner.sh /bin/sh -ce 'go clean -cache -modcache' && \
-    cd .. && rm -rf ./project-infra
-
-ENTRYPOINT ["/usr/local/bin/test-label-analyzer"]
+FROM gcr.io/k8s-prow/git:v20240729-4f255edb07
+COPY --from=builder /go/bin/test-label-analyzer /usr/bin/test-label-analyzer
+ENTRYPOINT ["/usr/bin/test-label-analyzer"]
