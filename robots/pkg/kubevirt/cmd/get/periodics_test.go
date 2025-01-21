@@ -20,7 +20,7 @@
 package get
 
 import (
-	"k8s.io/test-infra/prow/config"
+	"sigs.k8s.io/prow/pkg/config"
 	"testing"
 )
 

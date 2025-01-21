@@ -22,6 +22,7 @@ all: deps-update $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(fl
 
 clean: install-metrics-binaries
 	golangci-lint cache clean
+	go clean -cache -modcache
 
 $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator): deps-update
 	$(MAKE) --directory=$@

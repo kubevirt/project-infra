@@ -24,7 +24,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/google/go-github/github"
-	"k8s.io/test-infra/prow/config"
+	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/yaml"
 
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/flags"

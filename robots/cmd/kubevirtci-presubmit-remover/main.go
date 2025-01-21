@@ -21,9 +21,9 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"io/ioutil"
-	"k8s.io/test-infra/prow/config"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/release"
 	"os"
+	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/yaml"
 
 	"kubevirt.io/project-infra/robots/pkg/querier"

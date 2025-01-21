@@ -23,9 +23,9 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/sourcegraph/go-diff/diff"
-	"k8s.io/test-infra/prow/git"
-	"k8s.io/test-infra/prow/github"
 	"os/exec"
+	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
+	"sigs.k8s.io/prow/pkg/github"
 	"strings"
 )
 
@@ -222,9 +222,9 @@ type PRReviewOptions struct {
 	Repo              string
 }
 
-func PreparePullRequestReview(gitClient *git.Client, prReviewOptions PRReviewOptions, githubClient github.Client) (*github.PullRequest, string, error) {
+func PreparePullRequestReview(gitClient gitv2.ClientFactory, prReviewOptions PRReviewOptions, githubClient github.Client) (*github.PullRequest, string, error) {
 	// checkout repo to a temporary directory to have it reviewed
-	clone, err := gitClient.Clone(prReviewOptions.Org, prReviewOptions.Repo)
+	clone, err := gitClient.ClientFor(prReviewOptions.Org, prReviewOptions.Repo)
 	if err != nil {
 		logrus.WithError(err).Fatal("error cloning repo")
 	}

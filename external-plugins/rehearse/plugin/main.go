@@ -3,14 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"k8s.io/test-infra/prow/plugins/ownersconfig"
-	"k8s.io/test-infra/prow/repoowners"
 	"net/http"
 	"os"
+	"sigs.k8s.io/prow/pkg/plugins/ownersconfig"
+	"sigs.k8s.io/prow/pkg/repoowners"
 	"time"
 
-	prowconfig "k8s.io/test-infra/prow/config"
-	"k8s.io/test-infra/prow/pluginhelp"
+	prowconfig "sigs.k8s.io/prow/pkg/config"
+	"sigs.k8s.io/prow/pkg/pluginhelp"
 
 	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/handler"
 
@@ -18,12 +18,12 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/test-infra/pkg/flagutil"
-	v1 "k8s.io/test-infra/prow/client/clientset/versioned/typed/prowjobs/v1"
-	"k8s.io/test-infra/prow/config/secret"
-	prowflagutil "k8s.io/test-infra/prow/flagutil"
-	"k8s.io/test-infra/prow/git/v2"
-	"k8s.io/test-infra/prow/interrupts"
-	"k8s.io/test-infra/prow/pluginhelp/externalplugins"
+	v1 "sigs.k8s.io/prow/pkg/client/clientset/versioned/typed/prowjobs/v1"
+	"sigs.k8s.io/prow/pkg/config/secret"
+	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
+	"sigs.k8s.io/prow/pkg/git/v2"
+	"sigs.k8s.io/prow/pkg/interrupts"
+	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
 
 	"kubevirt.io/project-infra/external-plugins/rehearse/plugin/server"
 )

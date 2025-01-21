@@ -1,9 +1,9 @@
 package main
 
 import (
-	"k8s.io/test-infra/prow/config"
 	"kubevirt.io/project-infra/robots/pkg/querier"
 	"reflect"
+	"sigs.k8s.io/prow/pkg/config"
 	"testing"
 )
 

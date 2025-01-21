@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/prometheus/client_golang/prometheus"
-	prowConfig "k8s.io/test-infra/prow/config"
+	prowConfig "sigs.k8s.io/prow/pkg/config"
 )
 
 var memoryResources = prometheus.NewGaugeVec(prometheus.GaugeOpts{

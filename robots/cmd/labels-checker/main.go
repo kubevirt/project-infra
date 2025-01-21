@@ -22,8 +22,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"k8s.io/test-infra/prow/config/secret"
 	"os"
+	"sigs.k8s.io/prow/pkg/config/secret"
 	"strings"
 
 	"github.com/google/go-github/github"

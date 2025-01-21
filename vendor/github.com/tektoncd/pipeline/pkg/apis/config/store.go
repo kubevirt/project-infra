@@ -19,6 +19,7 @@ package config
 import (
 	"context"
 
+	sc "github.com/tektoncd/pipeline/pkg/spire/config"
 	"knative.dev/pkg/configmap"
 )
 
@@ -29,6 +30,10 @@ type cfgKey struct{}
 type Config struct {
 	Defaults     *Defaults
 	FeatureFlags *FeatureFlags
+	Metrics      *Metrics
+	SpireConfig  *sc.SpireConfig
+	Events       *Events
+	Tracing      *Tracing
 }
 
 // FromContext extracts a Config from the provided context.
@@ -46,11 +51,14 @@ func FromContextOrDefaults(ctx context.Context) *Config {
 	if cfg := FromContext(ctx); cfg != nil {
 		return cfg
 	}
-	defaults, _ := NewDefaultsFromMap(map[string]string{})
-	featureFlags, _ := NewFeatureFlagsFromMap(map[string]string{})
+
 	return &Config{
-		Defaults:     defaults,
-		FeatureFlags: featureFlags,
+		Defaults:     DefaultConfig.DeepCopy(),
+		FeatureFlags: DefaultFeatureFlags.DeepCopy(),
+		Metrics:      DefaultMetrics.DeepCopy(),
+		SpireConfig:  DefaultSpire.DeepCopy(),
+		Events:       DefaultEvents.DeepCopy(),
+		Tracing:      DefaultTracing.DeepCopy(),
 	}
 }
 
@@ -70,11 +78,15 @@ type Store struct {
 func NewStore(logger configmap.Logger, onAfterStore ...func(name string, value interface{})) *Store {
 	store := &Store{
 		UntypedStore: configmap.NewUntypedStore(
-			"defaults/features",
+			"defaults/features/artifacts",
 			logger,
 			configmap.Constructors{
 				GetDefaultsConfigName():     NewDefaultsFromConfigMap,
 				GetFeatureFlagsConfigName(): NewFeatureFlagsFromConfigMap,
+				GetMetricsConfigName():      NewMetricsFromConfigMap,
+				GetSpireConfigName():        NewSpireConfigFromConfigMap,
+				GetEventsConfigName():       NewEventsFromConfigMap,
+				GetTracingConfigName():      NewTracingFromConfigMap,
 			},
 			onAfterStore...,
 		),
@@ -92,15 +104,36 @@ func (s *Store) ToContext(ctx context.Context) context.Context {
 func (s *Store) Load() *Config {
 	defaults := s.UntypedLoad(GetDefaultsConfigName())
 	if defaults == nil {
-		defaults, _ = NewDefaultsFromMap(map[string]string{})
+		defaults = DefaultConfig.DeepCopy()
 	}
 	featureFlags := s.UntypedLoad(GetFeatureFlagsConfigName())
 	if featureFlags == nil {
-		featureFlags, _ = NewFeatureFlagsFromMap(map[string]string{})
+		featureFlags = DefaultFeatureFlags.DeepCopy()
+	}
+	metrics := s.UntypedLoad(GetMetricsConfigName())
+	if metrics == nil {
+		metrics = DefaultMetrics.DeepCopy()
+	}
+	tracing := s.UntypedLoad(GetTracingConfigName())
+	if tracing == nil {
+		tracing = DefaultTracing.DeepCopy()
+	}
+
+	spireconfig := s.UntypedLoad(GetSpireConfigName())
+	if spireconfig == nil {
+		spireconfig = DefaultSpire.DeepCopy()
+	}
+	events := s.UntypedLoad(GetEventsConfigName())
+	if events == nil {
+		events = DefaultEvents.DeepCopy()
 	}
 
 	return &Config{
 		Defaults:     defaults.(*Defaults).DeepCopy(),
 		FeatureFlags: featureFlags.(*FeatureFlags).DeepCopy(),
+		Metrics:      metrics.(*Metrics).DeepCopy(),
+		Tracing:      tracing.(*Tracing).DeepCopy(),
+		SpireConfig:  spireconfig.(*sc.SpireConfig).DeepCopy(),
+		Events:       events.(*Events).DeepCopy(),
 	}
 }

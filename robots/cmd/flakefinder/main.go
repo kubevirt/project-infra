@@ -28,13 +28,13 @@ import (
 	"path/filepath"
 	"time"
 
-	"k8s.io/test-infra/prow/config/secret"
 	ghapi "kubevirt.io/project-infra/robots/pkg/flakefinder/github"
+	"sigs.k8s.io/prow/pkg/config/secret"
 
 	"cloud.google.com/go/storage"
 	"github.com/google/go-github/v28/github"
 	"golang.org/x/oauth2"
-	"k8s.io/test-infra/prow/flagutil"
+	"sigs.k8s.io/prow/pkg/flagutil"
 
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )

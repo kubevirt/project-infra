@@ -21,13 +21,13 @@ package server
 import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
-	"k8s.io/test-infra/prow/config"
-	"k8s.io/test-infra/prow/git"
-	"k8s.io/test-infra/prow/github"
-	"k8s.io/test-infra/prow/pluginhelp"
 	"kubevirt.io/project-infra/external-plugins/botreview/review"
 	"net/http"
 	"os"
+	"sigs.k8s.io/prow/pkg/config"
+	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
+	"sigs.k8s.io/prow/pkg/github"
+	"sigs.k8s.io/prow/pkg/pluginhelp"
 )
 
 const pluginName = "botreview"
@@ -66,7 +66,7 @@ type Server struct {
 	TokenGenerator func() []byte
 	BotName        string
 
-	GitClient *git.Client
+	GitClient gitv2.ClientFactory
 	Ghc       github.Client
 
 	Log *logrus.Entry

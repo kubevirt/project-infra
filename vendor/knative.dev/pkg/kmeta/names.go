@@ -17,9 +17,9 @@ limitations under the license.
 package kmeta
 
 import (
-	"crypto/md5"
+	"crypto/md5" //nolint:gosec // No strong cryptography needed.
 	"fmt"
-	"strings"
+	"regexp"
 )
 
 // The longest name supported by the K8s is 63.
@@ -29,6 +29,8 @@ const (
 	md5Len  = 32
 	head    = longest - md5Len // How much to truncate to fit the hash.
 )
+
+var isAlphanumeric = regexp.MustCompile(`^[a-zA-Z0-9]*$`)
 
 // ChildName generates a name for the resource based upon the parent resource and suffix.
 // If the concatenated name is longer than K8s permits the name is hashed and truncated to permit
@@ -42,6 +44,7 @@ func ChildName(parent, suffix string) string {
 		// If the suffix is longer than the longest allowed suffix, then
 		// we hash the whole combined string and use that as the suffix.
 		if head-len(suffix) <= 0 {
+			//nolint:gosec // No strong cryptography needed.
 			h := md5.Sum([]byte(parent + suffix))
 			// 1. trim parent, if needed
 			if head < len(parent) {
@@ -54,11 +57,19 @@ func ChildName(parent, suffix string) string {
 			if d := longest - len(ret); d > 0 {
 				ret += suffix[:d]
 			}
-			// If due to trimming above we're terminating the string with a `-`,
-			// remove it.
-			return strings.TrimRight(ret, "-")
+			return makeValidName(ret)
 		}
+		//nolint:gosec // No strong cryptography needed.
 		n = fmt.Sprintf("%s%x", parent[:head-len(suffix)], md5.Sum([]byte(parent)))
 	}
 	return n + suffix
+}
+
+// If due to trimming above we're terminating the string with a non-alphanumeric
+// character, remove it.
+func makeValidName(n string) string {
+	for i := len(n) - 1; !isAlphanumeric.MatchString(string(n[i])); i-- {
+		n = n[:len(n)-1]
+	}
+	return n
 }

@@ -24,8 +24,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/mock"
-	"k8s.io/test-infra/prow/github"
 	"kubevirt.io/project-infra/external-plugins/referee/ghgraphql"
+	"sigs.k8s.io/prow/pkg/github"
 )
 
 const (

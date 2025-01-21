@@ -18,7 +18,7 @@ import (
 	"reflect"
 	"testing"
 
-	"k8s.io/test-infra/prow/config"
+	"sigs.k8s.io/prow/pkg/config"
 
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/prowjobconfigs"
 	"kubevirt.io/project-infra/robots/pkg/querier"
