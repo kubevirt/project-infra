@@ -143,12 +143,15 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-ce"
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.23.4"
         image: quay.io/kubevirtci/golang:v20250124-4f7dce8
         resources:
           requests:
-            memory: "1Gi"
+            memory: "4Gi"
           limits:
-            memory: "1Gi"
+            memory: "4Gi"
   - name: build-kubevirt-infra-bootstrap-image
     always_run: false
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
