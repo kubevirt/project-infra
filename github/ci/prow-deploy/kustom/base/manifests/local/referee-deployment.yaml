@@ -18,7 +18,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
       - name: referee
-        image: quay.io/kubevirtci/referee:v20250115-814be41c
+        image: quay.io/kubevirtci/referee:v20250121-1e74906d2
         args:
         - --dry-run=false
         - --port=9900
