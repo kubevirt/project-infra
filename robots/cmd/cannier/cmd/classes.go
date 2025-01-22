@@ -29,6 +29,25 @@ import (
 	"strconv"
 )
 
+const sourceDataURL = "https://storage.googleapis.com/kubevirt-prow/reports/per-test-results/kubevirt/kubevirt/last-six-months/periodic-kubevirt-e2e-k8s-1.31-sig-compute.csv"
+
+// TestLabel is a label that determines which class a test belongs to
+type TestLabel int
+
+const (
+	// MODEL_CLASS_STABLE describes that the test is stable
+	MODEL_CLASS_STABLE TestLabel = iota
+	// MODEL_CLASS_FLAKY describes that the test has a nondeterministic outcome
+	MODEL_CLASS_FLAKY = iota
+	// MODEL_CLASS_UNSTABLE describes that the test is failing
+	MODEL_CLASS_UNSTABLE = iota
+)
+
+type TestDescriptor struct {
+	Name  string
+	Label TestLabel
+}
+
 // classesCmd represents the classes command
 var classesCmd = &cobra.Command{
 	Use:   "classes",
@@ -41,63 +60,87 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// generate some classes for categorization of the model for later usage
-		resp, err := http.Get("https://storage.googleapis.com/kubevirt-prow/reports/per-test-results/kubevirt/kubevirt/last-six-months/periodic-kubevirt-e2e-k8s-1.31-sig-compute.csv")
-		if err != nil {
-			return err
-		}
-		defer func(Body io.ReadCloser) {
-			err := Body.Close()
-			if err != nil {
-				log.Error(err)
-			}
-		}(resp.Body)
-		if resp.StatusCode != 200 {
-			return fmt.Errorf("http error %q while retrieving source doc %q received", resp.Status)
-		}
-		reader := csv.NewReader(resp.Body)
-		records, err := reader.ReadAll()
+		records, err := ExtractSourceRecords(sourceDataURL)
 		if err != nil {
 			return err
 		}
 
-		binRanges := []float64{0, 0.625, 1.25, 2.5, 5.0, 10.0, 25.0, 50.0, 100.0}
-		buckets := make([][]float64, len(binRanges), len(binRanges))
-		counters := make([]int, len(binRanges), len(binRanges))
-
-		for i, record := range records {
-			if i == 0 {
-				continue
-			}
-			testName, numberOfExecutionsString, numberOfFailuresString := record[0], record[1], record[2]
-			numberOfExecutions, err := strconv.Atoi(numberOfExecutionsString)
-			if err != nil {
-				return err
-			}
-			numberOfFailures, err := strconv.Atoi(numberOfFailuresString)
-			if err != nil {
-				return err
-			}
-			var failureRateInPercent float64
-			if numberOfExecutions != 0 {
-				failureRateInPercent = (float64(numberOfFailures) / float64(numberOfExecutions)) * 100.0
-			}
-			log.Debugf("%f <- %q", failureRateInPercent, testName)
-			for i, binMax := range binRanges {
-				if binMax < failureRateInPercent {
-					continue
-				}
-				counters[i]++
-				buckets[i] = append(buckets[i], failureRateInPercent)
-				break
-			}
+		descriptors, err := DescriptorsFromRecords(records)
+		if err != nil {
+			return err
 		}
 
-		for i, binMax := range binRanges {
-			log.Infof("%f: %d, %v", binMax, counters[i], buckets[i])
+		counters := make(map[TestLabel]int)
+		for _, descriptor := range descriptors {
+			if _, ok := counters[descriptor.Label]; !ok {
+				counters[descriptor.Label] = 0
+			}
+			counters[descriptor.Label]++
+		}
+
+		for testLabel, counter := range counters {
+			log.Infof("%d: %d", testLabel, counter)
 		}
 
 		return nil
 	},
+}
+
+func ExtractSourceRecords(sourceDataURL string) ([][]string, error) {
+	resp, err := http.Get(sourceDataURL)
+	if err != nil {
+		return nil, err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Error(err)
+		}
+	}(resp.Body)
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("http error %q while retrieving source doc %q received", resp.Status)
+	}
+	reader := csv.NewReader(resp.Body)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+	return records, nil
+}
+
+func DescriptorsFromRecords(records [][]string) ([]TestDescriptor, error) {
+	var descriptors []TestDescriptor
+	for i, record := range records {
+		if i == 0 {
+			continue
+		}
+		testName, numberOfExecutionsString, numberOfFailuresString := record[0], record[1], record[2]
+		numberOfExecutions, err := strconv.Atoi(numberOfExecutionsString)
+		if err != nil {
+			return nil, err
+		}
+		numberOfFailures, err := strconv.Atoi(numberOfFailuresString)
+		if err != nil {
+			return nil, err
+		}
+		var failureRateInPercent float64
+		if numberOfExecutions != 0 {
+			failureRateInPercent = (float64(numberOfFailures) / float64(numberOfExecutions)) * 100.0
+		}
+		descriptor := TestDescriptor{
+			Name: testName,
+		}
+		switch {
+		case failureRateInPercent == 0:
+			descriptor.Label = MODEL_CLASS_STABLE
+		case failureRateInPercent < 100.0:
+			descriptor.Label = MODEL_CLASS_FLAKY
+		default:
+			descriptor.Label = MODEL_CLASS_UNSTABLE
+		}
+		descriptors = append(descriptors, descriptor)
+	}
+	return descriptors, nil
 }
 
 func init() {
@@ -105,14 +148,5 @@ func init() {
 	log.SetLevel(log.DebugLevel)
 
 	generateCmd.AddCommand(classesCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// classesCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// classesCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	classesCmd.Flags().StringP("source-data-url", "u", sourceDataURL, "url for the source data document from per-test-execution in csv format")
 }
