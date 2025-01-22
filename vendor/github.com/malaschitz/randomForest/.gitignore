@@ -1,0 +1,32 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+\.idea/markdown-navigator\.xml
+
+\.idea/markdown-navigator/profiles_settings\.xml
+
+\.idea/misc\.xml
+
+\.idea/modules\.xml
+
+\.idea/randomForest\.iml
+
+\.idea/vcs\.xml
+
+\.idea/watcherTasks\.xml
+
+\.idea/workspace\.xml
+.idea
+.DS_Store
+examples/z.go
+data.txt

@@ -8,7 +8,7 @@
 
 `git.sr.ht/~sbinet/gg` is a fork of [fogleman/gg](https://github.com/fogleman/gg) which doesn't seem to be maintained (as of January 2022).
 
-![Stars](http://i.imgur.com/CylQIJt.png)
+![Stars](https://git.sr.ht/~sbinet/gg/blob/main/examples/testdata/stars_golden.png)
 
 ## Installation
 
@@ -23,17 +23,18 @@
 
 Look how easy!
 
+[embedmd]:# (examples/circle_example_test.go go /func Example_circle/ /\n}/)
 ```go
-package main
+func Example_circle() {
+	dc := gg.NewContext(1000, 1000)
+	dc.DrawCircle(500, 500, 400)
+	dc.SetRGB(0, 0, 0)
+	dc.Fill()
 
-import "git.sr.ht/~sbinet/gg"
-
-func main() {
-    dc := gg.NewContext(1000, 1000)
-    dc.DrawCircle(500, 500, 400)
-    dc.SetRGB(0, 0, 0)
-    dc.Fill()
-    dc.SavePNG("out.png")
+	err := dc.SavePNG("testdata/circle.png")
+	if err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }
 ```
 
@@ -102,6 +103,8 @@ MeasureMultilineString(s string, lineSpacing float64) (w, h float64)
 WordWrap(s string, w float64) []string
 SetFontFace(fontFace font.Face)
 LoadFontFace(path string, points float64) error
+LoadFontFaceFromBytes(raw []byte, points float64) error
+LoadFontFaceFromFS(fsys fs.FS, path string, points float64) error
 ```
 
 ## Color Functions
@@ -196,18 +199,15 @@ LoadPNG(path string) (image.Image, error)
 SavePNG(path string, im image.Image) error
 ```
 
-![Separator](http://i.imgur.com/fsUvnPB.png)
+![Separator](https://git.sr.ht/~sbinet/gg/blob/main/examples/testdata/sine_golden.png)
 
 ## Another Example
 
 See the output of this example below.
 
+[embedmd]:# (examples/ellipse_example_test.go go /func Example_ellipse/ /\n}/)
 ```go
-package main
-
-import "git.sr.ht/~sbinet/gg"
-
-func main() {
+func Example_ellipse() {
 	const S = 1024
 	dc := gg.NewContext(S, S)
 	dc.SetRGBA(0, 0, 0, 0.1)
@@ -218,8 +218,18 @@ func main() {
 		dc.Fill()
 		dc.Pop()
 	}
-	dc.SavePNG("out.png")
+
+	im, err := gg.LoadImage("testdata/gopher.png")
+	if err != nil {
+		panic(err)
+	}
+	dc.DrawImageAnchored(im, S/2, S/2, 0.5, 0.5)
+
+	err = dc.SavePNG("testdata/ellipse.png")
+	if err != nil {
+		log.Fatalf("could not save to file: %+v", err)
+	}
 }
 ```
 
-![Ellipses](http://i.imgur.com/J9CBZef.png)
+![Ellipses](https://git.sr.ht/~sbinet/gg/blob/main/examples/testdata/ellipse_golden.png)

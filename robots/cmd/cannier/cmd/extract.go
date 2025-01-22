@@ -50,11 +50,11 @@ var extractCmd = &cobra.Command{
 	Short: "extracts a feature set from a single test",
 	Long:  `Extracts a feature set as described in the CANNIER paper from a single test.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return extractFeatures(*testName, *fileName, *outputFileName, *overwriteOutputFile)
+		return ExtractFeatures(*testName, *fileName, *outputFileName, *overwriteOutputFile)
 	},
 }
 
-func extractFeatures(testName string, fileName string, outputFileName string, overwriteOutputFile bool) error {
+func ExtractFeatures(testName string, fileName string, outputFileName string, overwriteOutputFile bool) error {
 	testDescriptor, err := ginkgo.NewTestDescriptorForName(testName, fileName)
 	if err != nil {
 		return err
