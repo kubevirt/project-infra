@@ -42,6 +42,13 @@ var _ = Describe("test-file", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(filepath.Base(stat.Name())).To(BeEquivalentTo("simple_test.go"))
 		})
+		It("finds same file if another exact test name with square brackets is given", func() {
+			actualFilepath, err := FindTestFileByName("simple does something is executed [vendor:cnv-qe]does do something else", "testdata")
+			Expect(err).ToNot(HaveOccurred())
+			stat, err := os.Stat(actualFilepath)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(filepath.Base(stat.Name())).To(BeEquivalentTo("simple_test.go"))
+		})
 		It("doesn't find a file if a non existing match is given", func() {
 			_, err := FindTestFileByName("simple does something is executed does check for something else", "testdata")
 			Expect(err).To(HaveOccurred())
