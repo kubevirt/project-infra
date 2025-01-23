@@ -84,7 +84,7 @@ and then creates a server with which users can query it.`,
 		mux.Handle("/", &server{
 			Model: model,
 		})
-		httpServer := &http.Server{Addr: ":" + strconv.Itoa(8080), Handler: mux}
+		httpServer := &http.Server{Addr: ":" + strconv.Itoa(*hostPort), Handler: mux}
 		metrics.AddMetricsHandler(mux)
 		defer interrupts.WaitForGracefulShutdown()
 		interrupts.ListenAndServe(httpServer, 5*time.Second)
