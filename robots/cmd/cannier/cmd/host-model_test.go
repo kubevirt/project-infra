@@ -21,12 +21,11 @@ package cmd
 
 import (
 	"encoding/json"
+	"kubevirt.io/project-infra/robots/pkg/cannier"
 	"os"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	"kubevirt.io/project-infra/robots/pkg/flake-heuristic/cannier"
 )
 
 var _ = Describe("host", func() {

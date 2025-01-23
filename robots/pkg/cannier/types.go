@@ -19,6 +19,26 @@
 
 package cannier
 
+const (
+	ReadCount = iota
+	WriteCount
+	RunTime
+	WaitTime
+	ContextSwitches
+	CoveredLines
+	SourceCoveredLines
+	CoveredChanges
+	MaxThreads
+	MaxChildren
+	MaxMemory
+	ASTDepth
+	Assertions
+	ExternalModules
+	HalsteadVolume
+	CyclomaticComplexity
+	TestLinesOfCode
+)
+
 // FeatureSet holds the features of the CANNIER framework.
 //
 // See the CANNIER paper at https://www.gregorykapfhammer.com/research/papers/parry2023/
@@ -92,24 +112,62 @@ type FeatureSet struct {
 	CoveredChanges int `json:"covered_changes"`
 }
 
+// AsFloatVector returns the feature vector with values in the order as described in the
+// paper. See ReadCount et al for the ordering references
 func (receiver FeatureSet) AsFloatVector() []float64 {
 	return []float64{
-		float64(receiver.ReadCount),            // 1 Read Count
-		float64(receiver.WriteCount),           // 2 Write Count
-		float64(receiver.RunTime),              // 3 Run Time
-		float64(receiver.WaitTime),             // 4 Wait Time
-		float64(receiver.ContextSwitches),      // 5 Context Switches
-		float64(receiver.CoveredLines),         // 6 Covered Lines
-		float64(receiver.SourceCoveredLines),   // 7 Source Covered Lines
-		float64(receiver.CoveredChanges),       // 8 Covered Changes
-		float64(receiver.MaxThreads),           // 9 Max. Threads
-		float64(receiver.MaxChildren),          // 10 Max. Children
-		float64(receiver.ASTDepth),             // 11 Max. Memory
-		float64(receiver.Assertions),           // 12 AST Depth
-		float64(receiver.ExternalModules),      // 13 Assertions
-		float64(receiver.HalsteadVolume),       // 14 External Modules
-		float64(receiver.CyclomaticComplexity), // 15 Halstead Volume
-		float64(receiver.TestLinesOfCode),      // 16 Cyclomatic Complexity
-		float64(receiver.Maintainability),      // 17 Test Lines of Code
+		float64(receiver.ReadCount),
+		float64(receiver.WriteCount),
+		float64(receiver.RunTime),
+		float64(receiver.WaitTime),
+		float64(receiver.ContextSwitches),
+		float64(receiver.CoveredLines),
+		float64(receiver.SourceCoveredLines),
+		float64(receiver.CoveredChanges),
+		float64(receiver.MaxThreads),
+		float64(receiver.MaxChildren),
+		float64(receiver.ASTDepth),
+		float64(receiver.Assertions),
+		float64(receiver.ExternalModules),
+		float64(receiver.HalsteadVolume),
+		float64(receiver.CyclomaticComplexity),
+		float64(receiver.TestLinesOfCode),
+		float64(receiver.Maintainability),
 	}
 }
+
+// FromFloatVector creates a feature set extracting the values in the order as described by CANNIER.
+// See ReadCount et al for the ordering references
+func FromFloatVector(features []float64) FeatureSet {
+	return FeatureSet{
+		ReadCount:            int(features[ReadCount]),
+		WriteCount:           int(features[WriteCount]),
+		RunTime:              features[RunTime],
+		WaitTime:             features[WaitTime],
+		ContextSwitches:      int(features[ContextSwitches]),
+		CoveredLines:         int(features[CoveredLines]),
+		SourceCoveredLines:   int(features[SourceCoveredLines]),
+		CoveredChanges:       int(features[CoveredChanges]),
+		MaxThreads:           int(features[MaxThreads]),
+		MaxChildren:          int(features[MaxChildren]),
+		ASTDepth:             int(features[MaxMemory]),
+		Assertions:           int(features[ASTDepth]),
+		ExternalModules:      int(features[Assertions]),
+		HalsteadVolume:       features[ExternalModules],
+		CyclomaticComplexity: int(features[HalsteadVolume]),
+		TestLinesOfCode:      int(features[CyclomaticComplexity]),
+		Maintainability:      features[TestLinesOfCode],
+	}
+}
+
+// TestLabel is a label that determines which class a test belongs to
+type TestLabel int
+
+const (
+	// MODEL_CLASS_STABLE describes that the test is stable
+	MODEL_CLASS_STABLE TestLabel = iota
+	// MODEL_CLASS_FLAKY describes that the test has a nondeterministic outcome
+	MODEL_CLASS_FLAKY = iota
+	// MODEL_CLASS_UNSTABLE describes that the test is failing
+	MODEL_CLASS_UNSTABLE = iota
+)
