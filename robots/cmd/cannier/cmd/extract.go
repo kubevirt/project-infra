@@ -22,7 +22,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"kubevirt.io/project-infra/robots/pkg/flake-heuristic/cannier"
+	"kubevirt.io/project-infra/robots/pkg/cannier"
 	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 	"os"
 
@@ -34,6 +34,7 @@ var (
 	fileName            *string
 	outputFileName      *string
 	overwriteOutputFile *bool
+	asRequest           *bool
 )
 
 func init() {
@@ -42,6 +43,7 @@ func init() {
 	fileName = extractCmd.Flags().StringP("filename", "f", "", "filename for the test to analyze")
 	outputFileName = extractCmd.Flags().StringP("output-filename", "o", "", "filename to write the resulting feature set into, format is json")
 	overwriteOutputFile = extractCmd.Flags().BoolP("overwrite", "F", false, "whether to overwrite the output file if it exists")
+	asRequest = extractCmd.Flags().BoolP("as-request", "r", true, "whether to output the bare data or the data suitable for a hosted model request")
 }
 
 // extractCmd represents the extract command
@@ -50,11 +52,11 @@ var extractCmd = &cobra.Command{
 	Short: "extracts a feature set from a single test",
 	Long:  `Extracts a feature set as described in the CANNIER paper from a single test.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return ExtractFeatures(*testName, *fileName, *outputFileName, *overwriteOutputFile)
+		return ExtractFeatures(*testName, *fileName, *outputFileName, *overwriteOutputFile, *asRequest)
 	},
 }
 
-func ExtractFeatures(testName string, fileName string, outputFileName string, overwriteOutputFile bool) error {
+func ExtractFeatures(testName string, fileName string, outputFileName string, overwriteOutputFile bool, asRequest bool) error {
 	testDescriptor, err := ginkgo.NewTestDescriptorForName(testName, fileName)
 	if err != nil {
 		return err
@@ -75,6 +77,13 @@ func ExtractFeatures(testName string, fileName string, outputFileName string, ov
 		return fmt.Errorf("error writing output file: %w", err)
 	}
 	defer outputFile.Close()
-	json.NewEncoder(outputFile).Encode(features)
+	if asRequest {
+		err = json.NewEncoder(outputFile).Encode(RequestData{Features: features})
+	} else {
+		err = json.NewEncoder(outputFile).Encode(features)
+	}
+	if err != nil {
+		return fmt.Errorf("error writing output file: %w", err)
+	}
 	return nil
 }

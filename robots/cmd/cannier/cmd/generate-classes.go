@@ -25,27 +25,16 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"io"
+	"kubevirt.io/project-infra/robots/pkg/cannier"
 	"net/http"
 	"strconv"
 )
 
 const sourceDataURL = "https://storage.googleapis.com/kubevirt-prow/reports/per-test-results/kubevirt/kubevirt/last-six-months/periodic-kubevirt-e2e-k8s-1.31-sig-compute.csv"
 
-// TestLabel is a label that determines which class a test belongs to
-type TestLabel int
-
-const (
-	// MODEL_CLASS_STABLE describes that the test is stable
-	MODEL_CLASS_STABLE TestLabel = iota
-	// MODEL_CLASS_FLAKY describes that the test has a nondeterministic outcome
-	MODEL_CLASS_FLAKY = iota
-	// MODEL_CLASS_UNSTABLE describes that the test is failing
-	MODEL_CLASS_UNSTABLE = iota
-)
-
 type TestDescriptor struct {
 	Name  string
-	Label TestLabel
+	Label cannier.TestLabel
 }
 
 // generateClassesCmd represents the classes command
@@ -74,7 +63,7 @@ to quickly create a Cobra application.`,
 			return err
 		}
 
-		counters := make(map[TestLabel]int)
+		counters := make(map[cannier.TestLabel]int)
 		for _, descriptor := range descriptors {
 			if _, ok := counters[descriptor.Label]; !ok {
 				counters[descriptor.Label] = 0
@@ -134,11 +123,11 @@ func DescriptorsFromRecords(records [][]string) ([]TestDescriptor, error) {
 		}
 		switch {
 		case failureRateInPercent == 0:
-			descriptor.Label = MODEL_CLASS_STABLE
+			descriptor.Label = cannier.MODEL_CLASS_STABLE
 		case failureRateInPercent < 100.0:
-			descriptor.Label = MODEL_CLASS_FLAKY
+			descriptor.Label = cannier.MODEL_CLASS_FLAKY
 		default:
-			descriptor.Label = MODEL_CLASS_UNSTABLE
+			descriptor.Label = cannier.MODEL_CLASS_UNSTABLE
 		}
 		descriptors = append(descriptors, descriptor)
 	}
