@@ -23,12 +23,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var generateCmd = &cobra.Command{
-	Use:   "generate",
-	Short: "generate is the parent of all generation commands",
-	Long:  `generate is the parent of all generation commands`,
+var hostCmd = &cobra.Command{
+	Use:   "host",
+	Short: "host is the parent of all hosting commands",
+	Long:  `host is the parent of all hosting commands`,
 }
 
 func init() {
-	rootCmd.AddCommand(generateCmd)
+	rootCmd.AddCommand(hostCmd)
 }
