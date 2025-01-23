@@ -24,9 +24,18 @@ import (
 	randomforest "github.com/malaschitz/randomForest"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
-	"kubevirt.io/project-infra/robots/pkg/flake-heuristic/cannier"
+	"kubevirt.io/project-infra/robots/pkg/cannier"
 	"os"
 )
+
+type RequestData struct {
+	Features *cannier.FeatureSet `json:"features"`
+}
+
+type ResponseData struct {
+	Classes     []float64 `json:"classes"`
+	Description string    `json:"description"`
+}
 
 type TestDataPool struct {
 	TestDescriptor

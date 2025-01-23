@@ -26,7 +26,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"kubevirt.io/project-infra/external-plugins/referee/metrics"
-	"kubevirt.io/project-infra/robots/pkg/flake-heuristic/cannier"
 	"net/http"
 	"sigs.k8s.io/prow/pkg/interrupts"
 	"strconv"
@@ -35,15 +34,6 @@ import (
 
 type server struct {
 	Model randomforest.Forest
-}
-
-type RequestData struct {
-	Features cannier.FeatureSet `json:"features"`
-}
-
-type ResponseData struct {
-	Classes     []float64 `json:"classes"`
-	Description string    `json:"description"`
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
