@@ -42,7 +42,7 @@ var _ = Describe("host", func() {
 
 		It("serialize works", func() {
 			requestData := &RequestData{
-				Features: cannier.FeatureSet{
+				Features: &cannier.FeatureSet{
 					ASTDepth:             0,
 					Assertions:           0,
 					CyclomaticComplexity: 0,
@@ -64,6 +64,7 @@ var _ = Describe("host", func() {
 				},
 			}
 			temp, err := os.CreateTemp("", "host-model_test*.json")
+			Expect(err).ToNot(HaveOccurred())
 			err = json.NewEncoder(temp).Encode(&requestData)
 			Expect(err).ToNot(HaveOccurred())
 		})
