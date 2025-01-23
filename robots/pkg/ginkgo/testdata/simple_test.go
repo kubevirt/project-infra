@@ -42,6 +42,10 @@ var _ = Describe("simple", func() {
 			Expect(DoesSomething(true)).ToNot(BeNil())
 		})
 
+		It("[vendor:cnv-qe]does do something else", func() {
+			Expect(DoesSomething(true)).ToNot(BeNil())
+		})
+
 	})
 
 })
