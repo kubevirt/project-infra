@@ -29,6 +29,8 @@ import (
 	"strings"
 )
 
+var ripgrepOutputMatcher = regexp.MustCompile("(?m)^([^:]+):[^:]+$")
+
 func init() {
 	command := osexec.Command("which", "rg")
 	output, err := command.CombinedOutput()
@@ -42,10 +44,9 @@ func FindTestFileByName(name string, directoryPath string) (string, error) {
 	command.Dir = directoryPath
 	output, err := command.CombinedOutput()
 	if err != nil {
-		return "", fmt.Errorf("couldn't find test file with %v: %v", command.String(), err)
+		return "", fmt.Errorf("couldn't find test file with %v in directory %q: %v", command.String(), directoryPath, err)
 	}
 	fileNames := make(map[string]struct{})
-	ripgrepOutputMatcher := regexp.MustCompile("(?m)^([^:]+):[^:]+$")
 	allStringSubmatches := ripgrepOutputMatcher.FindAllStringSubmatch(string(output), -1)
 	for _, submatch := range allStringSubmatches {
 		fileNames[submatch[1]] = struct{}{}
@@ -63,7 +64,7 @@ func FindTestFileByName(name string, directoryPath string) (string, error) {
 }
 
 func byTestName(name string) string {
-	regex := fmt.Sprintf(`"%s"`, strings.ReplaceAll(name, " ", ".*"))
+	regex := fmt.Sprintf(`"%s"`, strings.ReplaceAll(regexp.QuoteMeta(name), " ", ".*"))
 	regexp.MustCompile(regex)
 	return regex
 }
