@@ -91,3 +91,25 @@ type FeatureSet struct {
 	// CoveredChanges holds the total number of times each covered line has been modified in the last 75 commits
 	CoveredChanges int `json:"covered_changes"`
 }
+
+func (receiver FeatureSet) AsFloatVector() []float64 {
+	return []float64{
+		float64(receiver.ReadCount),            // 1 Read Count
+		float64(receiver.WriteCount),           // 2 Write Count
+		float64(receiver.RunTime),              // 3 Run Time
+		float64(receiver.WaitTime),             // 4 Wait Time
+		float64(receiver.ContextSwitches),      // 5 Context Switches
+		float64(receiver.CoveredLines),         // 6 Covered Lines
+		float64(receiver.SourceCoveredLines),   // 7 Source Covered Lines
+		float64(receiver.CoveredChanges),       // 8 Covered Changes
+		float64(receiver.MaxThreads),           // 9 Max. Threads
+		float64(receiver.MaxChildren),          // 10 Max. Children
+		float64(receiver.ASTDepth),             // 11 Max. Memory
+		float64(receiver.Assertions),           // 12 AST Depth
+		float64(receiver.ExternalModules),      // 13 Assertions
+		float64(receiver.HalsteadVolume),       // 14 External Modules
+		float64(receiver.CyclomaticComplexity), // 15 Halstead Volume
+		float64(receiver.TestLinesOfCode),      // 16 Cyclomatic Complexity
+		float64(receiver.Maintainability),      // 17 Test Lines of Code
+	}
+}
