@@ -20,15 +20,13 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
+	"testing"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
-var generateCmd = &cobra.Command{
-	Use:   "generate",
-	Short: "generate is the parent of all generation commands",
-	Long:  `generate is the parent of all generation commands`,
-}
-
-func init() {
-	rootCmd.AddCommand(generateCmd)
+func TestCmd(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "cannier cmd")
 }

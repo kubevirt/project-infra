@@ -48,8 +48,8 @@ type TestDescriptor struct {
 	Label TestLabel
 }
 
-// classesCmd represents the classes command
-var classesCmd = &cobra.Command{
+// generateClassesCmd represents the classes command
+var generateClassesCmd = &cobra.Command{
 	Use:   "classes",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
@@ -59,10 +59,14 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// generate some classes for categorization of the model for later usage
-		records, err := ExtractSourceRecords(sourceDataURL)
-		if err != nil {
-			return err
+		// generate classes for categorization of the model for later usage
+		var records [][]string
+		for _, url := range perTestExecutionCSVLinks {
+			sourceRecords, err := ExtractSourceRecords(url)
+			if err != nil {
+				return err
+			}
+			records = append(records, sourceRecords...)
 		}
 
 		descriptors, err := DescriptorsFromRecords(records)
@@ -98,22 +102,20 @@ func ExtractSourceRecords(sourceDataURL string) ([][]string, error) {
 		}
 	}(resp.Body)
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("http error %q while retrieving source doc %q received", resp.Status)
+		return nil, fmt.Errorf("http error %q while retrieving source doc %q received", resp.Status, sourceDataURL)
 	}
 	reader := csv.NewReader(resp.Body)
 	records, err := reader.ReadAll()
 	if err != nil {
 		return nil, err
 	}
+	records = records[1:]
 	return records, nil
 }
 
 func DescriptorsFromRecords(records [][]string) ([]TestDescriptor, error) {
 	var descriptors []TestDescriptor
-	for i, record := range records {
-		if i == 0 {
-			continue
-		}
+	for _, record := range records {
 		testName, numberOfExecutionsString, numberOfFailuresString := record[0], record[1], record[2]
 		numberOfExecutions, err := strconv.Atoi(numberOfExecutionsString)
 		if err != nil {
@@ -144,9 +146,6 @@ func DescriptorsFromRecords(records [][]string) ([]TestDescriptor, error) {
 }
 
 func init() {
-	log.SetFormatter(&log.JSONFormatter{})
-	log.SetLevel(log.DebugLevel)
-
-	generateCmd.AddCommand(classesCmd)
-	classesCmd.Flags().StringP("source-data-url", "u", sourceDataURL, "url for the source data document from per-test-execution in csv format")
+	generateCmd.AddCommand(generateClassesCmd)
+	generateClassesCmd.Flags().StringP("source-data-url", "u", sourceDataURL, "url for the source data document from per-test-execution in csv format")
 }
