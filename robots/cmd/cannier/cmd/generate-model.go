@@ -23,7 +23,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"kubevirt.io/project-infra/robots/pkg/flake-heuristic/cannier"
+	"kubevirt.io/project-infra/robots/pkg/cannier"
 	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 	"time"
 )
