@@ -123,11 +123,11 @@ func DescriptorsFromRecords(records [][]string) ([]TestDescriptor, error) {
 		}
 		switch {
 		case failureRateInPercent == 0:
-			descriptor.Label = cannier.MODEL_CLASS_STABLE
+			descriptor.Label = cannier.TestLabelStable
 		case failureRateInPercent < 100.0:
-			descriptor.Label = cannier.MODEL_CLASS_FLAKY
+			descriptor.Label = cannier.TestLabelFlaky
 		default:
-			descriptor.Label = cannier.MODEL_CLASS_UNSTABLE
+			descriptor.Label = cannier.TestLabelUnstable
 		}
 		descriptors = append(descriptors, descriptor)
 	}
