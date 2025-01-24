@@ -23,10 +23,14 @@ import (
 	"fmt"
 	randomforest "github.com/malaschitz/randomForest"
 	log "github.com/sirupsen/logrus"
+	"gonum.org/v1/gonum/floats"
+	"gonum.org/v1/gonum/stat"
 	"gopkg.in/yaml.v2"
 	"kubevirt.io/project-infra/robots/pkg/cannier"
 	"os"
 )
+
+const defaultModelFilepath = "/tmp/kubevirt-cannier-model-data.yaml"
 
 type RequestData struct {
 	Features *cannier.FeatureSet `json:"features"`
@@ -55,6 +59,73 @@ func (d *ModelData) Append(x []float64, y int) {
 
 func (d *ModelData) Boruta() (importantFeatures []int, mapOfFeatures map[int]int) {
 	return randomforest.BorutaDefault(d.XData, d.YData)
+}
+
+type StatValue struct {
+	Name  string  `json:"name"`
+	Value float64 `json:"value"`
+}
+
+func newStat(name string, value float64) StatValue {
+	return StatValue{
+		Name:  name,
+		Value: value,
+	}
+}
+
+type StatCollection struct {
+	Name  string      `json:"name"`
+	Stats []StatValue `json:"stats"`
+}
+
+type Stats struct {
+	FeatureStats []StatCollection
+	ClassStats   StatCollection
+}
+
+func (d *ModelData) Stats() Stats {
+	featureNames := cannier.FeatureNames()
+	featureValues := make([][]float64, len(featureNames))
+	for i := 0; i < len(featureNames); i++ {
+		featureValues[i] = make([]float64, len(d.XData))
+	}
+	for i, featureVector := range d.XData {
+		for k := range featureNames {
+			featureValues[k][i] = featureVector[k]
+		}
+	}
+	featureStats := make([]StatCollection, len(featureNames))
+	for i, featureName := range featureNames {
+		featureStats[i] = StatCollection{
+			Name: featureName,
+			Stats: []StatValue{
+				newStat("Min", floats.Min(featureValues[i])),
+				newStat("Max", floats.Max(featureValues[i])),
+				newStat("Mean", stat.Mean(featureValues[i], nil)),
+				newStat("StdDev", stat.StdDev(featureValues[i], nil)),
+				newStat("Variance", stat.Variance(featureValues[i], nil)),
+				newStat("Entropy", stat.Entropy(featureValues[i])),
+				newStat("Count", float64(len(featureValues[i]))),
+			},
+		}
+	}
+	yDataFloats := make([]float64, len(d.YData))
+	perLabelCounts := make(map[cannier.TestLabel]int, 3)
+	for i, clz := range d.YData {
+		yDataFloats[i] = float64(clz)
+		perLabelCounts[cannier.TestLabel(clz)]++
+	}
+	classStats := StatCollection{
+		Name: "TestLabel",
+		Stats: []StatValue{
+			newStat("Count", float64(len(d.YData))),
+		},
+	}
+	testLabels := cannier.TestLabels()
+	for clz, perLabelCount := range perLabelCounts {
+		classStats.Stats = append(classStats.Stats, newStat(fmt.Sprintf("Count_%s", testLabels[clz]), float64(perLabelCount)))
+	}
+	return Stats{featureStats, classStats}
 }
 
 func (d *ModelData) Model() randomforest.Forest {
