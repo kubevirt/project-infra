@@ -32,11 +32,11 @@ import (
 	"time"
 )
 
-type server struct {
-	Model randomforest.Forest
+type votingHandler struct {
+	model randomforest.Forest
 }
 
-func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *votingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var requestData *RequestData
 	err := json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
@@ -44,7 +44,7 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Errorf("unable to process request body: %v", err).Error()))
 		return
 	}
-	featureClasses := s.Model.Vote(requestData.Features.AsFloatVector())
+	featureClasses := s.model.Vote(requestData.Features.AsFloatVector())
 	err = json.NewEncoder(w).Encode(ResponseData{
 		Classes:     featureClasses,
 		Description: "test",
@@ -59,6 +59,19 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 var hostModelDataPath *string
 var hostPort *int
 
+type statsHandler struct {
+	modelData *ModelData
+}
+
+func (s *statsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	err := json.NewEncoder(w).Encode(s.modelData.Stats())
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Errorf("unable to process request: %v", err).Error()))
+		return
+	}
+}
+
 var hostModelCmd = &cobra.Command{
 	Use:   "model",
 	Short: "host model hosts a model generated from test data",
@@ -70,19 +83,22 @@ and then creates a server with which users can query it.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		log.WithField("cmd", "host model").Infof("loading model data")
-		storedDataModel, err := Load(*hostModelDataPath)
+		modelData, err := Load(*hostModelDataPath)
 		if err != nil {
 			return err
 		}
 
 		log.WithField("cmd", "host model").Infof("training model")
-		model := storedDataModel.Model()
+		model := modelData.Model()
 		model.Train(1000)
 
 		log.WithField("cmd", "host model").Infof("starting to serve on port %d", *hostPort)
 		mux := http.NewServeMux()
-		mux.Handle("/", &server{
-			Model: model,
+		mux.Handle("/", &votingHandler{
+			model,
+		})
+		mux.Handle("/stats", &statsHandler{
+			modelData,
 		})
 		httpServer := &http.Server{Addr: ":" + strconv.Itoa(*hostPort), Handler: mux}
 		metrics.AddMetricsHandler(mux)
@@ -96,7 +112,7 @@ and then creates a server with which users can query it.`,
 func init() {
 	hostCmd.AddCommand(hostModelCmd)
 
-	hostModelDataPath = hostModelCmd.Flags().StringP("host-model-data-filepath", "f", "/tmp/kubevirt-cannier-model-data.yaml", "output path for binary file to write model data to")
+	hostModelDataPath = hostModelCmd.Flags().StringP("host-model-data-filepath", "f", defaultModelFilepath, "output path for binary file to write model data to")
 	hostPort = hostModelCmd.Flags().IntP("host-port", "p", 8080, "host port for server")
 
 }
