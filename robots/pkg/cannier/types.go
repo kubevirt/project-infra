@@ -37,7 +37,34 @@ const (
 	HalsteadVolume
 	CyclomaticComplexity
 	TestLinesOfCode
+	Maintainability
 )
+
+var featureNames = [18]string{
+	"ReadCount",
+	"WriteCount",
+	"RunTime",
+	"WaitTime",
+	"ContextSwitches",
+	"CoveredLines",
+	"SourceCoveredLines",
+	"CoveredChanges",
+	"MaxThreads",
+	"MaxChildren",
+	"MaxMemory",
+	"ASTDepth",
+	"Assertions",
+	"ExternalModules",
+	"HalsteadVolume",
+	"CyclomaticComplexity",
+	"TestLinesOfCode",
+	"Maintainability",
+}
+
+func FeatureNames() [18]string {
+	result := featureNames
+	return result
+}
 
 // FeatureSet holds the features of the CANNIER framework.
 //
@@ -126,6 +153,7 @@ func (receiver FeatureSet) AsFloatVector() []float64 {
 		float64(receiver.CoveredChanges),
 		float64(receiver.MaxThreads),
 		float64(receiver.MaxChildren),
+		float64(receiver.MaxMemory),
 		float64(receiver.ASTDepth),
 		float64(receiver.Assertions),
 		float64(receiver.ExternalModules),
@@ -150,13 +178,14 @@ func FromFloatVector(features []float64) FeatureSet {
 		CoveredChanges:       int(features[CoveredChanges]),
 		MaxThreads:           int(features[MaxThreads]),
 		MaxChildren:          int(features[MaxChildren]),
-		ASTDepth:             int(features[MaxMemory]),
-		Assertions:           int(features[ASTDepth]),
-		ExternalModules:      int(features[Assertions]),
-		HalsteadVolume:       features[ExternalModules],
-		CyclomaticComplexity: int(features[HalsteadVolume]),
-		TestLinesOfCode:      int(features[CyclomaticComplexity]),
-		Maintainability:      features[TestLinesOfCode],
+		MaxMemory:            int(features[MaxMemory]),
+		ASTDepth:             int(features[ASTDepth]),
+		Assertions:           int(features[Assertions]),
+		ExternalModules:      int(features[ExternalModules]),
+		HalsteadVolume:       features[HalsteadVolume],
+		CyclomaticComplexity: int(features[CyclomaticComplexity]),
+		TestLinesOfCode:      int(features[TestLinesOfCode]),
+		Maintainability:      features[Maintainability],
 	}
 }
 
@@ -164,10 +193,21 @@ func FromFloatVector(features []float64) FeatureSet {
 type TestLabel int
 
 const (
-	// MODEL_CLASS_STABLE describes that the test is stable
-	MODEL_CLASS_STABLE TestLabel = iota
-	// MODEL_CLASS_FLAKY describes that the test has a nondeterministic outcome
-	MODEL_CLASS_FLAKY = iota
-	// MODEL_CLASS_UNSTABLE describes that the test is failing
-	MODEL_CLASS_UNSTABLE = iota
+	// TestLabelStable describes that the test is stable
+	TestLabelStable TestLabel = iota
+	// TestLabelFlaky describes that the test has a nondeterministic outcome
+	TestLabelFlaky = iota
+	// TestLabelUnstable describes that the test is failing
+	TestLabelUnstable = iota
 )
+
+var testLabels = [3]string{
+	"Stable",
+	"Flaky",
+	"Unstable",
+}
+
+func TestLabels() [3]string {
+	result := testLabels
+	return result
+}
