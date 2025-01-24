@@ -97,7 +97,7 @@ func init() {
 	generateCmd.AddCommand(generateModelCmd)
 
 	testSourcePath = generateModelCmd.Flags().StringP("test-source-path", "t", "../kubevirt/tests", "Help message for toggle")
-	outputBinaryFilepath = generateModelCmd.Flags().StringP("output-binary-filepath", "o", "/tmp/kubevirt-cannier-model-data.yaml", "output path for binary file to write model data to")
+	outputBinaryFilepath = generateModelCmd.Flags().StringP("output-binary-filepath", "o", defaultModelFilepath, "output path for binary file to write model data to")
 	onlyTestSubset = generateModelCmd.Flags().Bool("test-subset", false, "Help message for toggle")
 }
 
