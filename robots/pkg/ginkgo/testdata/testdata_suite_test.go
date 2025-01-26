@@ -22,32 +22,10 @@ package main
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"testing"
 )
 
-var _ = Describe("simple", func() {
-
-	Context("was previously part of the latter node", func() {
-
-		It("[test_id:1742]is still found", func() {
-			Expect(DoesSomething(true)).ToNot(BeNil())
-		})
-
-	})
-
-	When("does something is executed", func() {
-
-		It("does not return an error", func() {
-			Expect(DoesSomething(false)).To(BeNil())
-		})
-
-		It("does return an error", func() {
-			Expect(DoesSomething(true)).ToNot(BeNil())
-		})
-
-		It("[vendor:cnv-qe]does do something else", func() {
-			Expect(DoesSomething(true)).ToNot(BeNil())
-		})
-
-	})
-
-})
+func TestTestData(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "testdata suite")
+}
