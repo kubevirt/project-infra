@@ -29,7 +29,11 @@ import (
 	"strings"
 )
 
-var ripgrepOutputMatcher = regexp.MustCompile("(?m)^([^:]+):[^:]+$")
+var (
+	ripgrepOutputMatcher = regexp.MustCompile("^([^:]+):.*$")
+	testIdMatcher        = regexp.MustCompile("\\[test_id:[0-9]+]")
+	testIdExtractor      = regexp.MustCompile("(\\[test_id:[0-9]+])")
+)
 
 func init() {
 	command := osexec.Command("which", "rg")
@@ -40,15 +44,29 @@ func init() {
 }
 
 func FindTestFileByName(name string, directoryPath string) (string, error) {
-	command := osexec.Command("rg", "--multiline", "--multiline-dotall", byTestName(name))
-	command.Dir = directoryPath
+	var command *osexec.Cmd
+	if testIdMatcher.MatchString(name) {
+		submatch := testIdExtractor.FindStringSubmatch(name)
+		command = osexec.Command("rg", regexp.QuoteMeta(submatch[1]))
+		command.Dir = directoryPath
+	} else {
+		command = osexec.Command("rg", "--multiline", "--multiline-dotall", byTestName(name))
+		command.Dir = directoryPath
+	}
 	output, err := command.CombinedOutput()
 	if err != nil {
 		return "", fmt.Errorf("couldn't find test file with %v in directory %q: %v", command.String(), directoryPath, err)
 	}
 	fileNames := make(map[string]struct{})
-	allStringSubmatches := ripgrepOutputMatcher.FindAllStringSubmatch(string(output), -1)
-	for _, submatch := range allStringSubmatches {
+	for _, line := range strings.Split(string(output), "\n") {
+		if line == "" {
+			continue
+		}
+		if !ripgrepOutputMatcher.MatchString(line) {
+			log.Warnf("%q did not match regex %q", line, ripgrepOutputMatcher.String())
+			continue
+		}
+		submatch := ripgrepOutputMatcher.FindStringSubmatch(line)
 		fileNames[submatch[1]] = struct{}{}
 	}
 	if len(fileNames) == 0 {
