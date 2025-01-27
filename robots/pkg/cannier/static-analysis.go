@@ -26,7 +26,7 @@ import (
 	"strings"
 )
 
-func getStaticAnalysisExtractors(test *ginkgo.TestDescriptor) ([]featureExtractor, error) {
+func getStaticAnalysisExtractors(test *ginkgo.SourceTestDescriptor) ([]featureExtractor, error) {
 
 	return []featureExtractor{
 		func(featureSet *FeatureSet) error { featureSet.ASTDepth = calculateASTDepth(test.Test()); return nil },
