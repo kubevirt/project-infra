@@ -1,6 +1,6 @@
 periodics:
 - name: periodic-hco-push-nightly-build-main
-  cron: "2 2 * * *"
+  cron: "2 4 * * *"
   decorate: true
   annotations:
     testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-periodics
