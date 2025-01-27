@@ -31,8 +31,6 @@ import (
 
 var (
 	ripgrepOutputMatcher = regexp.MustCompile("^([^:]+):.*$")
-	testIdMatcher        = regexp.MustCompile("\\[test_id:[0-9]+]")
-	testIdExtractor      = regexp.MustCompile("(\\[test_id:[0-9]+])")
 )
 
 func init() {
@@ -44,18 +42,25 @@ func init() {
 }
 
 func FindTestFileByName(name string, directoryPath string) (string, error) {
-	var command *osexec.Cmd
-	if testIdMatcher.MatchString(name) {
-		submatch := testIdExtractor.FindStringSubmatch(name)
-		command = osexec.Command("rg", regexp.QuoteMeta(submatch[1]))
-		command.Dir = directoryPath
-	} else {
-		command = osexec.Command("rg", "--multiline", "--multiline-dotall", byTestName(name))
-		command.Dir = directoryPath
+	command := osexec.Command("rg", "--multiline", "--multiline-dotall", byTestName(name))
+	command.Dir = directoryPath
+	return findTestFile(command)
+}
+
+func FindTestFileById(name string, directoryPath string) (string, error) {
+	testId, err := GetTestId(name)
+	if err != nil {
+		return "", err
 	}
+	command := osexec.Command("rg", regexp.QuoteMeta(testId))
+	command.Dir = directoryPath
+	return findTestFile(command)
+}
+
+func findTestFile(command *osexec.Cmd) (string, error) {
 	output, err := command.CombinedOutput()
 	if err != nil {
-		return "", fmt.Errorf("couldn't find test file with %v in directory %q: %v", command.String(), directoryPath, err)
+		return "", fmt.Errorf("couldn't find test file with %v in directory %q: %v", command.String(), command.Dir, err)
 	}
 	fileNames := make(map[string]struct{})
 	for _, line := range strings.Split(string(output), "\n") {
@@ -76,7 +81,7 @@ func FindTestFileByName(name string, directoryPath string) (string, error) {
 		return "", fmt.Errorf("multiple matching files found: %v", fileNames)
 	}
 	for fileName, _ := range fileNames {
-		return filepath.Join(directoryPath, fileName), nil
+		return filepath.Join(command.Dir, fileName), nil
 	}
 	return "", nil
 }
