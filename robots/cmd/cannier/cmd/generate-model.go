@@ -20,11 +20,13 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"kubevirt.io/project-infra/robots/pkg/cannier"
 	"kubevirt.io/project-infra/robots/pkg/ginkgo"
+	"os"
 	"time"
 )
 
@@ -39,6 +41,7 @@ var perTestExecutionCSVLinks = []string{
 var (
 	testSourcePath       *string
 	outputBinaryFilepath *string
+	outputErrorFilepath  *string
 	onlyTestSubset       *bool
 )
 
@@ -98,25 +101,35 @@ func init() {
 
 	testSourcePath = generateModelCmd.Flags().StringP("test-source-path", "t", "../kubevirt/tests", "Help message for toggle")
 	outputBinaryFilepath = generateModelCmd.Flags().StringP("output-binary-filepath", "o", defaultModelFilepath, "output path for binary file to write model data to")
+	outputErrorFilepath = generateModelCmd.Flags().StringP("output-error-filepath", "e", defaultErrorFilepath, "output path for error file")
 	onlyTestSubset = generateModelCmd.Flags().Bool("test-subset", false, "Help message for toggle")
+}
+
+type DescriptorError struct {
+	TestName string `json:"test_name"`
+	Error    error  `json:"error"`
 }
 
 func GenerateModelData(modelLog *log.Entry) (*ModelData, error) {
 	modelLog.Infof("fetching test data")
 
 	// fetch tests from csv, attach file names, then extract feature vector
+	descriptorErrors := make([]DescriptorError, 0)
 	dataSourcesByName := make(map[string]TestDataPool)
 	for i, url := range perTestExecutionCSVLinks {
 		if *onlyTestSubset && i > 0 {
 			break
 		}
-		urlLog := modelLog.WithField("url", url)
+		urlLog := modelLog.WithFields(log.Fields{
+			"index": i,
+			"url":   url,
+		})
 		urlLog.Infof("fetching test data")
 		records, err := ExtractSourceRecords(url)
 		if err != nil {
 			return nil, err
 		}
-		descriptors, err := DescriptorsFromRecords(records)
+		descriptors, err := ModelTestDescriptorsFromRecords(records)
 		if err != nil {
 			return nil, err
 		}
@@ -125,27 +138,63 @@ func GenerateModelData(modelLog *log.Entry) (*ModelData, error) {
 				break
 			}
 			logTest := urlLog.WithField("test", descriptor.Name)
-			logTest.Infof("Fetching data for test %q", descriptor.Name)
-			testFileName, err := ginkgo.FindTestFileByName(descriptor.Name, *testSourcePath)
-			if err != nil {
-				logTest.Warnf("could not find test file: %v", err)
-				continue
+			if ginkgo.HasTestId(descriptor.Name) {
+				logTest.Infof("fetching data for test %q by id", descriptor.Name)
+				testFileName, err := ginkgo.FindTestFileById(descriptor.Name, *testSourcePath)
+				if err != nil {
+					descriptorErrors = append(descriptorErrors, DescriptorError{descriptor.Name, err})
+					continue
+				}
+				testDescriptor, err := ginkgo.NewTestDescriptorForID(descriptor.Name, testFileName)
+				if err != nil {
+					descriptorErrors = append(descriptorErrors, DescriptorError{descriptor.Name, err})
+					continue
+				}
+				logTest.Infof("extracting feature vector for test %q", descriptor.Name)
+				features, err := cannier.ExtractFeatures(testDescriptor)
+				if err != nil {
+					return nil, err
+				}
+				dataSourcesByName[descriptor.Name] = TestDataPool{
+					ModelTestDescriptor: descriptor,
+					testFileName:        testFileName,
+					Features:            features,
+				}
+			} else {
+				logTest.Infof("fetching data for test %q by name", descriptor.Name)
+				testFileName, err := ginkgo.FindTestFileByName(descriptor.Name, *testSourcePath)
+				if err != nil {
+					descriptorErrors = append(descriptorErrors, DescriptorError{descriptor.Name, err})
+					continue
+				}
+				testDescriptor, err := ginkgo.NewTestDescriptorForName(descriptor.Name, testFileName)
+				if err != nil {
+					descriptorErrors = append(descriptorErrors, DescriptorError{descriptor.Name, err})
+					continue
+				}
+				logTest.Infof("extracting feature vector for test %q", descriptor.Name)
+				features, err := cannier.ExtractFeatures(testDescriptor)
+				if err != nil {
+					return nil, err
+				}
+				dataSourcesByName[descriptor.Name] = TestDataPool{
+					ModelTestDescriptor: descriptor,
+					testFileName:        testFileName,
+					Features:            features,
+				}
 			}
-			testDescriptor, err := ginkgo.NewTestDescriptorForName(descriptor.Name, testFileName)
-			if err != nil {
-				logTest.Warnf("could not create descriptor for file %q: %v", testFileName, err)
-				continue
-			}
-			logTest.Infof("extracting feature vector for test %q", descriptor.Name)
-			features, err := cannier.ExtractFeatures(testDescriptor)
-			if err != nil {
-				return nil, err
-			}
-			dataSourcesByName[descriptor.Name] = TestDataPool{
-				TestDescriptor: descriptor,
-				testFileName:   testFileName,
-				Features:       features,
-			}
+		}
+	}
+	if len(descriptorErrors) > 0 {
+		log.Warnf("while retrieving test data %d errors occurred", len(descriptorErrors))
+		errFile, err := os.Create(*outputErrorFilepath)
+		if err != nil {
+			return nil, err
+		}
+		defer errFile.Close()
+		err = json.NewEncoder(errFile).Encode(&descriptorErrors)
+		if err != nil {
+			return nil, err
 		}
 	}
 
@@ -153,7 +202,7 @@ func GenerateModelData(modelLog *log.Entry) (*ModelData, error) {
 	modelData := &ModelData{}
 	log.Infof("generating model data")
 	for _, ds := range dataSourcesByName {
-		modelData.Append(ds.Features.AsFloatVector(), int(ds.TestDescriptor.Label))
+		modelData.Append(ds.Features.AsFloatVector(), int(ds.ModelTestDescriptor.Label))
 	}
 	return modelData, nil
 }

@@ -31,6 +31,7 @@ import (
 )
 
 const defaultModelFilepath = "/tmp/kubevirt-cannier-model-data.yaml"
+const defaultErrorFilepath = "/tmp/errors.json"
 
 type RequestData struct {
 	Features *cannier.FeatureSet `json:"features"`
@@ -42,7 +43,7 @@ type ResponseData struct {
 }
 
 type TestDataPool struct {
-	TestDescriptor
+	ModelTestDescriptor
 	testFileName string
 	Features     *cannier.FeatureSet
 }
