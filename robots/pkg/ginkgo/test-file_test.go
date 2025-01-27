@@ -49,22 +49,39 @@ var _ = Describe("test-file", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(filepath.Base(stat.Name())).To(BeEquivalentTo("simple_test.go"))
 		})
+		It("doesn't find a file if a non existing match is given", func() {
+			_, err := FindTestFileByName("simple does something is executed does check for something else", "testdata")
+			Expect(err).To(HaveOccurred())
+		})
+	})
+	When("FindTestFileById", func() {
 		It("finds file if node was moved inside a file but test_id is present", func() {
-			actualFilepath, err := FindTestFileByName("simple does something is executed [test_id:1742]is still found", "testdata")
+			actualFilepath, err := FindTestFileById("simple does something is executed [test_id:1742]is still found", "testdata")
 			Expect(err).ToNot(HaveOccurred())
 			stat, err := os.Stat(actualFilepath)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(filepath.Base(stat.Name())).To(BeEquivalentTo("simple_test.go"))
 		})
 		It("finds file if node was moved into another file but test_id is present", func() {
-			actualFilepath, err := FindTestFileByName("simple does something is executed [test_id:4217]is still found", "testdata")
+			actualFilepath, err := FindTestFileById("simple does something is executed [test_id:4217]is still found", "testdata")
 			Expect(err).ToNot(HaveOccurred())
 			stat, err := os.Stat(actualFilepath)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(filepath.Base(stat.Name())).To(BeEquivalentTo("simple-other_test.go"))
 		})
-		It("doesn't find a file if a non existing match is given", func() {
-			_, err := FindTestFileByName("simple does something is executed does check for something else", "testdata")
+		It("finds file if node is in table entry", func() {
+			actualFilepath, err := FindTestFileById("simple is a table [test_id:8976]2nd testcase", "testdata")
+			Expect(err).ToNot(HaveOccurred())
+			stat, err := os.Stat(actualFilepath)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(filepath.Base(stat.Name())).To(BeEquivalentTo("simple_test.go"))
+		})
+		It("err on no id present", func() {
+			_, err := FindTestFileById("simple does something is executed does check for something else", "testdata")
+			Expect(err).To(HaveOccurred())
+		})
+		It("err on no file with id present", func() {
+			_, err := FindTestFileById("simple does something is executed [test_id:1737]is still found", "testdata")
 			Expect(err).To(HaveOccurred())
 		})
 	})

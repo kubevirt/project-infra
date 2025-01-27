@@ -28,8 +28,37 @@ import (
 	"strings"
 )
 
-type TestDescriptor struct {
+func NewTestDescriptorForName(name string, filename string) (*SourceTestDescriptor, error) {
+	if name == "" || filename == "" {
+		return nil, fmt.Errorf("name and filename are required")
+	}
+	t := &SourceTestDescriptor{testName: name, filename: filename}
+	err := t.initForName()
+	if err != nil {
+		return nil, err
+	}
+	return t, nil
+}
+
+func NewTestDescriptorForID(testNameWithID string, filename string) (*SourceTestDescriptor, error) {
+	testId, err := GetTestId(testNameWithID)
+	if err != nil {
+		return nil, fmt.Errorf("testID is required and needs to match format")
+	}
+	if filename == "" {
+		return nil, fmt.Errorf("filename is required")
+	}
+	t := &SourceTestDescriptor{testID: testId, filename: filename}
+	err = t.initForID()
+	if err != nil {
+		return nil, err
+	}
+	return t, nil
+}
+
+type SourceTestDescriptor struct {
 	testName    string
+	testID      string
 	filename    string
 	fileCode    string
 	file        *ast.File
@@ -37,61 +66,73 @@ type TestDescriptor struct {
 	testNode    *ast.CallExpr
 }
 
-func (t *TestDescriptor) TestName() string {
+func (t *SourceTestDescriptor) TestName() string {
 	return t.testName
 }
 
-func (t *TestDescriptor) Filename() string {
+func (t *SourceTestDescriptor) Filename() string {
 	return t.filename
 }
 
-func (t *TestDescriptor) FileCode() string {
+func (t *SourceTestDescriptor) FileCode() string {
 	return t.fileCode
 }
 
-func (t *TestDescriptor) File() *ast.File {
+func (t *SourceTestDescriptor) File() *ast.File {
 	return t.file
 }
 
-func (t *TestDescriptor) OutlineNode() *Node {
+func (t *SourceTestDescriptor) OutlineNode() *Node {
 	return t.outlineNode
 }
 
-func (t *TestDescriptor) Test() *ast.CallExpr {
+func (t *SourceTestDescriptor) Test() *ast.CallExpr {
 	return t.testNode
 }
 
 type initFunc func() error
 
-func (t *TestDescriptor) init() error {
-	for _, init := range []initFunc{
+func (t *SourceTestDescriptor) initForName() error {
+	return t.init([]initFunc{
 		t.initContent,
 		t.initFile,
-		t.initOutlineNode,
+		t.initOutlineNodeForName,
 		t.initTestNode,
-	} {
+	})
+}
+
+func (t *SourceTestDescriptor) initForID() error {
+	return t.init([]initFunc{
+		t.initContent,
+		t.initFile,
+		t.initOutlineNodeForID,
+		t.initTestNode,
+	})
+}
+
+func (t *SourceTestDescriptor) init(inits []initFunc) error {
+	for _, init := range inits {
 		err := init()
 		if err != nil {
 			return err
 		}
 	}
-
 	return nil
 }
 
-func (t *TestDescriptor) initContent() (err error) {
+func (t *SourceTestDescriptor) initContent() (err error) {
 	content, err := os.ReadFile(t.Filename())
 	t.fileCode = string(content)
 	return
 }
 
-func (t *TestDescriptor) initFile() (err error) {
+func (t *SourceTestDescriptor) initFile() (err error) {
 	fs := token.NewFileSet()
 	t.file, err = parser.ParseFile(fs, t.Filename(), nil, parser.ParseComments)
 	return
 }
 
-func (t *TestDescriptor) initOutlineNode() error {
+func (t *SourceTestDescriptor) initOutlineNodeForName() error {
 	outlineFromFile, err := OutlineFromFile(t.filename)
 	if err != nil {
 		return err
@@ -118,7 +159,37 @@ func (t *TestDescriptor) initOutlineNode() error {
 	return nil
 }
 
-func (t *TestDescriptor) initTestNode() error {
+func (t *SourceTestDescriptor) initOutlineNodeForID() error {
+	outlineFromFile, err := OutlineFromFile(t.filename)
+	if err != nil {
+		return err
+	}
+
+	var traverseOutline func(text string, nodes []*Node)
+	traverseOutline = func(text string, nodes []*Node) {
+		if t.outlineNode != nil {
+			return
+		}
+		for _, n := range nodes {
+			nodeText := strings.TrimSpace(strings.Join([]string{text, n.Text}, " "))
+			if strings.Contains(nodeText, t.testID) {
+				// TODO: we need to make sure that the test node has already been reached (should usually be the case,
+				// or there would be test_id duplicates, but you never know)
+				t.outlineNode = n
+				t.testName = nodeText
+				return
+			}
+			traverseOutline(nodeText, n.Nodes)
+		}
+	}
+	traverseOutline("", outlineFromFile)
+	if t.outlineNode == nil {
+		return fmt.Errorf("could not find ginkgo outline node with name %q in file %q", t.testName, t.filename)
+	}
+	return nil
+}
+
+func (t *SourceTestDescriptor) initTestNode() error {
 	ast.Inspect(t.file, func(node ast.Node) bool {
 		if t.testNode != nil {
 			return true
@@ -136,16 +207,4 @@ func (t *TestDescriptor) initTestNode() error {
 		return fmt.Errorf("could not find ginkgo call node with name %q in file %q", t.testName, t.filename)
 	}
 	return nil
-}
-
-func NewTestDescriptorForName(name string, filename string) (*TestDescriptor, error) {
-	if name == "" || filename == "" {
-		return nil, fmt.Errorf("name and filename are required")
-	}
-	t := &TestDescriptor{testName: name, filename: filename}
-	err := t.init()
-	if err != nil {
-		return nil, err
-	}
-	return t, nil
 }

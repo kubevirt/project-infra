@@ -28,7 +28,7 @@ import (
 type featureExtractor func(*FeatureSet) error
 
 // ExtractFeatures extracts the feature set for a test.
-func ExtractFeatures(test *ginkgo.TestDescriptor) (*FeatureSet, error) {
+func ExtractFeatures(test *ginkgo.SourceTestDescriptor) (*FeatureSet, error) {
 	featureSet := &FeatureSet{}
 	if test == nil {
 		return nil, fmt.Errorf("no test descriptor given")
