@@ -50,4 +50,13 @@ var _ = Describe("simple", func() {
 
 	})
 
+	DescribeTable("is a table",
+		func(a, b string) {
+			Expect(a).ToNot(BeEquivalentTo(""))
+			Expect(b).ToNot(BeEquivalentTo(""))
+		},
+		Entry("first testcase", "17", "42"),
+		Entry("[test_id:8976]2nd testcase", "17", "42"),
+	)
+
 })

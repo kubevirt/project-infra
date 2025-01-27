@@ -30,7 +30,7 @@ import (
 var _ = Describe("new test descriptor", func() {
 
 	When("test 'does not return an error'", func() {
-		var test *TestDescriptor
+		var test *SourceTestDescriptor
 		var err error
 
 		BeforeEach(func() {
@@ -67,8 +67,84 @@ var _ = Describe("new test descriptor", func() {
 
 	})
 
+	When("test 'simple does something is executed [test_id:1742]is still found'", func() {
+		var test *SourceTestDescriptor
+		var err error
+
+		BeforeEach(func() {
+			test, err = NewTestDescriptorForID("simple does something is executed [test_id:1742]is still found", "testdata/simple_test.go")
+		})
+
+		It("returns no error", func() {
+			Expect(err).To(BeNil())
+		})
+
+		It("returns an instance", func() {
+			Expect(test).ToNot(BeNil())
+		})
+
+		It("initializes code", func() {
+			Expect(test.FileCode()).ToNot(BeEquivalentTo(""))
+		})
+
+		It("initializes file", func() {
+			Expect(test.File()).ToNot(BeNil())
+		})
+
+		It("initializes test outline node", func() {
+			Expect(test.OutlineNode()).ToNot(BeNil())
+		})
+
+		It("initializes test ast", func() {
+			Expect(test.Test()).ToNot(BeNil())
+		})
+
+		It("hits right test ast", func() {
+			Expect(strings.Trim(test.Test().Args[0].(*ast.BasicLit).Value, "\"")).To(BeEquivalentTo("[test_id:1742]is still found"))
+		})
+
+	})
+
+	When("test 'simple is a table [test_id:8976]2nd testcase'", func() {
+		var test *SourceTestDescriptor
+		var err error
+
+		BeforeEach(func() {
+			test, err = NewTestDescriptorForID("simple is a table [test_id:8976]2nd testcase", "testdata/simple_test.go")
+		})
+
+		It("returns no error", func() {
+			Expect(err).To(BeNil())
+		})
+
+		It("returns an instance", func() {
+			Expect(test).ToNot(BeNil())
+		})
+
+		It("initializes code", func() {
+			Expect(test.FileCode()).ToNot(BeEquivalentTo(""))
+		})
+
+		It("initializes file", func() {
+			Expect(test.File()).ToNot(BeNil())
+		})
+
+		It("initializes test outline node", func() {
+			Expect(test.OutlineNode()).ToNot(BeNil())
+		})
+
+		It("initializes test ast", func() {
+			Expect(test.Test()).ToNot(BeNil())
+		})
+
+		It("hits right test ast", func() {
+			Expect(strings.Trim(test.Test().Args[0].(*ast.BasicLit).Value, "\"")).To(BeEquivalentTo("[test_id:8976]2nd testcase"))
+		})
+
+	})
+
 	When("test 'does return an error'", func() {
-		var test *TestDescriptor
+		var test *SourceTestDescriptor
 
 		BeforeEach(func() {
 			var err error

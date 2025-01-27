@@ -17,29 +17,27 @@
  *
  */
 
-package cannier
+package ginkgo
 
-import "kubevirt.io/project-infra/robots/pkg/ginkgo"
-
-// TODO: evaluate whether that is feasible with a reasonable amount of work, would need remote instrumentation
-
-var (
-	coverageExtractors = []featureExtractor{
-		func(featureSet *FeatureSet) error {
-			featureSet.CoveredChanges = 0
-			return nil
-		},
-		func(featureSet *FeatureSet) error {
-			featureSet.CoveredLines = 0
-			return nil
-		},
-		func(featureSet *FeatureSet) error {
-			featureSet.SourceCoveredLines = 0
-			return nil
-		},
-	}
+import (
+	"fmt"
+	"regexp"
 )
 
-func getCoverageExtractors(test *ginkgo.SourceTestDescriptor) []featureExtractor {
-	return coverageExtractors
+var (
+	testIdMatcher   = regexp.MustCompile("\\[test_id:[0-9]+]")
+	testIdExtractor = regexp.MustCompile("(\\[test_id:[0-9]+])")
+)
+
+func GetTestId(name string) (string, error) {
+	if !HasTestId(name) {
+		return "", fmt.Errorf("no test id present")
+	}
+	submatch := testIdExtractor.FindStringSubmatch(name)
+	testId := submatch[1]
+	return testId, nil
+}
+
+func HasTestId(name string) bool {
+	return testIdMatcher.MatchString(name)
 }

@@ -32,7 +32,7 @@ import (
 
 const sourceDataURL = "https://storage.googleapis.com/kubevirt-prow/reports/per-test-results/kubevirt/kubevirt/last-six-months/periodic-kubevirt-e2e-k8s-1.31-sig-compute.csv"
 
-type TestDescriptor struct {
+type ModelTestDescriptor struct {
 	Name  string
 	Label cannier.TestLabel
 }
@@ -58,7 +58,7 @@ to quickly create a Cobra application.`,
 			records = append(records, sourceRecords...)
 		}
 
-		descriptors, err := DescriptorsFromRecords(records)
+		descriptors, err := ModelTestDescriptorsFromRecords(records)
 		if err != nil {
 			return err
 		}
@@ -102,8 +102,8 @@ func ExtractSourceRecords(sourceDataURL string) ([][]string, error) {
 	return records, nil
 }
 
-func DescriptorsFromRecords(records [][]string) ([]TestDescriptor, error) {
-	var descriptors []TestDescriptor
+func ModelTestDescriptorsFromRecords(records [][]string) ([]ModelTestDescriptor, error) {
+	var descriptors []ModelTestDescriptor
 	for _, record := range records {
 		testName, numberOfExecutionsString, numberOfFailuresString := record[0], record[1], record[2]
 		numberOfExecutions, err := strconv.Atoi(numberOfExecutionsString)
@@ -118,7 +118,7 @@ func DescriptorsFromRecords(records [][]string) ([]TestDescriptor, error) {
 		if numberOfExecutions != 0 {
 			failureRateInPercent = (float64(numberOfFailures) / float64(numberOfExecutions)) * 100.0
 		}
-		descriptor := TestDescriptor{
+		descriptor := ModelTestDescriptor{
 			Name: testName,
 		}
 		switch {
