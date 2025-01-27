@@ -81,8 +81,6 @@ func OutlineFromFile(path string) (testOutline []*Node, err error) {
 		}
 	}()
 
-	buildOutlineCommand.Run([]string{"--format", "json", path}, nil)
-
 	outC := make(chan string)
 	go func() {
 		var buf bytes.Buffer
@@ -92,6 +90,8 @@ func OutlineFromFile(path string) (testOutline []*Node, err error) {
 		}
 		outC <- buf.String()
 	}()
+
+	buildOutlineCommand.Run([]string{"--format", "json", path}, nil)
 
 	// restore the output to normal
 	err = w.Close()
