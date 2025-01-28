@@ -22,12 +22,20 @@ package cmd
 import "github.com/spf13/cobra"
 
 func init() {
-	rootCmd.AddCommand(extractCmd)
+	extractCmd.AddCommand(extractTestNamesCmd)
 }
 
-// extractFeatureSetCmd represents the extract command
-var extractCmd = &cobra.Command{
-	Use:   "extract",
-	Short: "extract is the parent of all extract subcommands",
-	Long:  ` is the parent of all extract subcommands`,
+var extractTestNamesCmd = &cobra.Command{
+	Use:   "testnames",
+	Short: "testnames extracts the names for the changed ginkgo tests for a range of commits",
+	Long: `Extracts the names for the changed ginkgo tests for a range of commits.
+
+Test names are determined by looking at the changes from the lines changed in the commits, then matching those with the ginkgo outline for the changed files.`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return ExtractTestNames()
+	},
+}
+
+func ExtractTestNames() error {
+	return nil
 }
