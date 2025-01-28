@@ -23,7 +23,9 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"github.com/onsi/ginkgo/v2/ginkgo/command"
 	"github.com/onsi/ginkgo/v2/ginkgo/outline"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"html/template"
 	"io"
@@ -31,7 +33,6 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/git"
 	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -326,7 +327,7 @@ func newlineCount(s string, start int, end int) int {
 	return n
 }
 
-func getGinkgoOutlineFromFile(path string) ([]*testlabelanalyzer.GinkgoNode, error) {
+func getGinkgoOutlineFromFile(path string) (testOutline []*testlabelanalyzer.GinkgoNode, err error) {
 
 	// since there's no output catchable from the command, we need to use pipe
 	// and redirect the output
@@ -335,7 +336,32 @@ func getGinkgoOutlineFromFile(path string) ([]*testlabelanalyzer.GinkgoNode, err
 	os.Stdout = w
 
 	buildOutlineCommand := outline.BuildOutlineCommand()
-	buildOutlineCommand.Run([]string{"--format", "json", path}, nil)
+
+	// since we are using the outline command version that panics on any error
+	// we need to handle the panic, returning an error only if the command.AbortDetails
+	// indicate that case
+	defer func() {
+		if r := recover(); r != nil {
+			errClose := w.Close()
+			if errClose != nil {
+				log.Warnf("err on close: %v", errClose)
+			}
+			os.Stdout = old
+			switch x := r.(type) {
+			case error:
+				err = x
+			case command.AbortDetails:
+				d := r.(command.AbortDetails)
+				if strings.Contains(d.Error.Error(), "file does not import \"github.com/onsi/ginkgo/v2\"") {
+					err = nil
+					return
+				}
+				err = d.Error
+			default:
+				err = fmt.Errorf("unknown panic: %v", r)
+			}
+		}
+	}()
 
 	outC := make(chan string)
 	go func() {
@@ -347,29 +373,18 @@ func getGinkgoOutlineFromFile(path string) ([]*testlabelanalyzer.GinkgoNode, err
 		outC <- buf.String()
 	}()
 
+	buildOutlineCommand.Run([]string{"--format", "json", path}, nil)
+
 	// restore the output to normal
-	err := w.Close()
+	err = w.Close()
+	if err != nil {
+		log.Warnf("err on close: %v", err)
+	}
 	os.Stdout = old
 	out := <-outC
 	output := []byte(out)
 
-	if err != nil {
-		switch err.(type) {
-		case *exec.ExitError:
-			e := err.(*exec.ExitError)
-			stdErr := string(e.Stderr)
-			if strings.Contains(stdErr, "file does not import \"github.com/onsi/ginkgo/v2\"") {
-				return nil, nil
-			}
-			return nil, fmt.Errorf("exec %v failed: %s", buildOutlineCommand, e.Stderr)
-		case *exec.Error:
-			e := err.(*exec.Error)
-			return nil, fmt.Errorf(`exec "%v" failed: %s`, buildOutlineCommand, e)
-		default:
-			return nil, fmt.Errorf(`exec "%v" failed: %s`, buildOutlineCommand, err)
-		}
-	}
-	testOutline, err := toOutline(output)
+	testOutline, err = toOutline(output)
 	if err != nil {
 		return nil, fmt.Errorf("toOutline failed on %s: %w", path, err)
 	}
