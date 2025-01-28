@@ -33,6 +33,16 @@ const BlameDateLayout = "2006-01-02 15:04:05 -0700"
 
 var gitBlameRegex = regexp.MustCompile(`^(\^?[0-9a-f]+)(\s+\S+)?\s+\(([\S ]+)\s([0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}\s[-+][0-9]{4})\s+([0-9]+)\)\s(.*)$`)
 
+// string submatch indexes for the regex
+const (
+	commitID = iota + 1
+	_
+	author
+	date
+	lineNo
+	line
+)
+
 // BlameLine holds the record of a line of data that the git blame command provides
 type BlameLine struct {
 	CommitID string    `json:"commit_id"`
@@ -43,8 +53,8 @@ type BlameLine struct {
 }
 
 // GetBlameLinesForFile returns the git blame information per line for the given file. If no line numbers are given via `lineNos` then the blame for the full file is returned, otherwise the blame is reduced to the given line numbers of the file
-func GetBlameLinesForFile(testFilePath string, lineNos ...int) ([]*BlameLine, error) {
-	blameLines, err := getBlameForFile(testFilePath, lineNos...)
+func GetBlameLinesForFile(sourceFilepath string, lineNos ...int) ([]*BlameLine, error) {
+	blameLines, err := getBlameForFile(sourceFilepath, lineNos...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,40 +62,40 @@ func GetBlameLinesForFile(testFilePath string, lineNos ...int) ([]*BlameLine, er
 	return gitBlameInfo, nil
 }
 
-func extractBlameInfo(lines []string) []*BlameLine {
+func extractBlameInfo(gitBlameLines []string) []*BlameLine {
 	var info []*BlameLine
-	for _, line := range lines {
-		if !gitBlameRegex.MatchString(line) {
+	for _, blameLine := range gitBlameLines {
+		if !gitBlameRegex.MatchString(blameLine) {
 			continue
 		}
-		submatches := gitBlameRegex.FindAllStringSubmatch(line, -1)
-		date, err := time.Parse(BlameDateLayout, submatches[0][4])
+		submatch := gitBlameRegex.FindStringSubmatch(blameLine)
+		commitDate, err := time.Parse(BlameDateLayout, submatch[date])
 		if err != nil {
 			panic(err)
 		}
-		lineNo, err := strconv.Atoi(submatches[0][5])
+		fileLineNo, err := strconv.Atoi(submatch[lineNo])
 		if err != nil {
 			panic(err)
 		}
 		info = append(info, &BlameLine{
-			CommitID: submatches[0][1],
-			Author:   strings.TrimSpace(submatches[0][3]),
-			Date:     date,
-			LineNo:   lineNo,
-			Line:     submatches[0][6],
+			CommitID: submatch[commitID],
+			Author:   strings.TrimSpace(submatch[author]),
+			Date:     commitDate,
+			LineNo:   fileLineNo,
+			Line:     submatch[line],
 		})
 	}
 	return info
 }
 
 // getBlameForFile returns the git blame information for the given file. If no line numbers are given via `lineNos` then the blame for the full file is returned, otherwise the blame is reduced to the given line numbers of the file
-func getBlameForFile(testFilePath string, lineNos ...int) ([]string, error) {
-	blameArgs := []string{"blame", filepath.Base(testFilePath)}
+func getBlameForFile(sourceFilepath string, lineNos ...int) ([]string, error) {
+	blameArgs := []string{"blame", filepath.Base(sourceFilepath)}
 	for _, blameLineNo := range lineNos {
 		blameArgs = append(blameArgs, fmt.Sprintf("-L %d,%d", blameLineNo, blameLineNo))
 	}
 	command := exec.Command("git", blameArgs...)
-	command.Dir = filepath.Dir(testFilePath)
+	command.Dir = filepath.Dir(sourceFilepath)
 	output, err := command.Output()
 	if err != nil {
 		switch e := err.(type) {
