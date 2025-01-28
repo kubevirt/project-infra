@@ -14,32 +14,35 @@
  * limitations under the License.
  *
  * Copyright 2023 Red Hat, Inc.
- *
  */
 
 package git
 
 import (
 	"fmt"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
-	"os"
-
-	"testing"
+	"os/exec"
 )
 
-func TestGit(t *testing.T) {
-	RegisterFailHandler(Fail)
+func execGit(sourceFilepath string, args []string) ([]byte, error) {
+	command := exec.Command("git", args...)
+	command.Dir = sourceFilepath
+	output, err := handleOutput(command)
+	return output, err
+}
 
-	stat, err := os.Stat("testdata/repo")
-	if os.IsNotExist(err) || !stat.IsDir() {
-		var output []byte
-		output, err = execGit("testdata", []string{"clone", "repo.gitbundle", "repo"})
-		if err != nil {
-			panic(err)
+func handleOutput(command *exec.Cmd) ([]byte, error) {
+	output, err := command.Output()
+	if err != nil {
+		switch err.(type) {
+		case *exec.ExitError:
+			e := err.(*exec.ExitError)
+			return nil, fmt.Errorf("exec %s failed: %s", command, e.Stderr)
+		case *exec.Error:
+			e := err.(*exec.Error)
+			return nil, fmt.Errorf("exec %s failed: %s", command, e)
+		default:
+			return nil, fmt.Errorf("exec %s failed: %s", command, err)
 		}
-		fmt.Printf(string(output))
 	}
-
-	RunSpecs(t, "Git Main Suite")
+	return output, nil
 }
