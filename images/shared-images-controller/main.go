@@ -99,7 +99,7 @@ func pullRequiredImages(ctx context.Context, tag string) error {
 	}
 
 	registryTarget := "quay.io/libpod/registry:2.8.2"
-	_, err = images.Pull(ctx, gocliTarget, nil)
+	_, err = images.Pull(ctx, registryTarget, nil)
 	if err != nil {
 		log.WithError(err).Errorf("Failed to pull image '%s'", registryTarget)
 	}
