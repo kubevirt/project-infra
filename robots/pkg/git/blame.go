@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Copyright 2023 Red Hat, Inc.
+ * Copyright the KubeVirt Authors.
+ *
  */
 
 package git
 
 import (
 	"fmt"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -31,7 +31,7 @@ import (
 // BlameDateLayout is the layout that is used to parse git blame dates
 const BlameDateLayout = "2006-01-02 15:04:05 -0700"
 
-var gitBlameRegex = regexp.MustCompile(`^(\^?[0-9a-f]+)(\s+\S+)?\s+\(([\S ]+)\s([0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}\s[-+][0-9]{4})\s+([0-9]+)\)\s(.*)$`)
+var blameRegex = regexp.MustCompile(`^(\^?[0-9a-f]+)(\s+\S+)?\s+\(([\S ]+)\s([0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}\s[-+][0-9]{4})\s+([0-9]+)\)\s(.*)$`)
 
 // string submatch indexes for the regex
 const (
@@ -62,13 +62,31 @@ func GetBlameLinesForFile(sourceFilepath string, lineNos ...int) ([]*BlameLine, 
 	return gitBlameInfo, nil
 }
 
+// getBlameForFile returns the git blame information for the given file. If no line numbers are given via `lineNos` then the blame for the full file is returned, otherwise the blame is reduced to the given line numbers of the file
+func getBlameForFile(sourceFilepath string, lineNos ...int) ([]string, error) {
+	output, err := execGit(filepath.Dir(sourceFilepath), blameArgs(sourceFilepath, lineNos))
+	if err != nil {
+		return nil, err
+	}
+	blameLines := strings.Split(string(output), "\n")
+	return blameLines, nil
+}
+
+func blameArgs(sourceFilepath string, lineNos []int) []string {
+	blameArgs := []string{"blame", filepath.Base(sourceFilepath)}
+	for _, blameLineNo := range lineNos {
+		blameArgs = append(blameArgs, fmt.Sprintf("-L %d,%d", blameLineNo, blameLineNo))
+	}
+	return blameArgs
+}
+
 func extractBlameInfo(gitBlameLines []string) []*BlameLine {
 	var info []*BlameLine
 	for _, blameLine := range gitBlameLines {
-		if !gitBlameRegex.MatchString(blameLine) {
+		if !blameRegex.MatchString(blameLine) {
 			continue
 		}
-		submatch := gitBlameRegex.FindStringSubmatch(blameLine)
+		submatch := blameRegex.FindStringSubmatch(blameLine)
 		commitDate, err := time.Parse(BlameDateLayout, submatch[date])
 		if err != nil {
 			panic(err)
@@ -86,27 +104,4 @@ func extractBlameInfo(gitBlameLines []string) []*BlameLine {
 		})
 	}
 	return info
-}
-
-// getBlameForFile returns the git blame information for the given file. If no line numbers are given via `lineNos` then the blame for the full file is returned, otherwise the blame is reduced to the given line numbers of the file
-func getBlameForFile(sourceFilepath string, lineNos ...int) ([]string, error) {
-	blameArgs := []string{"blame", filepath.Base(sourceFilepath)}
-	for _, blameLineNo := range lineNos {
-		blameArgs = append(blameArgs, fmt.Sprintf("-L %d,%d", blameLineNo, blameLineNo))
-	}
-	command := exec.Command("git", blameArgs...)
-	command.Dir = filepath.Dir(sourceFilepath)
-	output, err := command.Output()
-	if err != nil {
-		switch e := err.(type) {
-		case *exec.ExitError:
-			return nil, fmt.Errorf("exec %s failed: %s", command, e.Stderr)
-		case *exec.Error:
-			return nil, fmt.Errorf("exec %s failed: %s", command, e)
-		default:
-			return nil, fmt.Errorf("exec %s failed: %s", command, err)
-		}
-	}
-	blameLines := strings.Split(string(output), "\n")
-	return blameLines, nil
 }
