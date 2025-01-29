@@ -92,16 +92,11 @@ func pullRequiredImages(ctx context.Context, tag string) error {
 		}
 	}
 
-	gocliTarget := fmt.Sprintf("%sgocli:%s", kubevirtci_repo, tag)
-	_, err = images.Pull(ctx, gocliTarget, nil)
-	if err != nil {
-		log.WithError(err).Errorf("Failed to pull image '%s'", gocliTarget)
-	}
-
-	registryTarget := "quay.io/libpod/registry:2.8.2"
-	_, err = images.Pull(ctx, registryTarget, nil)
-	if err != nil {
-		log.WithError(err).Errorf("Failed to pull image '%s'", registryTarget)
+	for _, image := range []string{fmt.Sprintf("%sgocli:%s", kubevirtci_repo, tag), "quay.io/libpod/registry:2.8.2"} {
+		_, err = images.Pull(ctx, image, nil)
+		if err != nil {
+			log.WithError(err).Errorf("Failed to pull image '%s'", image)
+		}
 	}
 
 	return nil
