@@ -131,6 +131,7 @@ orgs:
         has_projects: true
       cdi-operator:
         has_projects: true
+        archived: true
       client-go:
         description: Go client for kubevirt
         has_projects: true
@@ -139,12 +140,14 @@ orgs:
         description: An auto-generated python SDK to interact with KubeVirt resources
         has_projects: false
       cloud-image-builder:
+        archived: true
         description: Scripts and playbooks for creating and testing cloud images containing Kubernetes and KubeVirt
         has_projects: true
       cloud-provider-kubevirt:
         description: Kubernetes cloud-provider for KubeVirt
         has_projects: true
       cluster-api-provider-external:
+        archived: true
         description: The external provider implementation of the Cluster Management API.
         has_projects: true
       cluster-network-addons-operator:
@@ -184,6 +187,7 @@ orgs:
       controller-lifecycle-operator-sdk:
         has_projects: true
       cpu-nfd-plugin:
+        archived: true
         description: NFD plugin, which list all supported cpu models on host.
         has_projects: true
       csi-driver:
@@ -191,6 +195,7 @@ orgs:
         has_projects: true
         default_branch: main
       demo:
+        archived: true
         allow_rebase_merge: false
         description: Easy to use KubeVirt demo based on minikube.
         has_projects: false
@@ -209,10 +214,12 @@ orgs:
       enhancements:
         description: Tracking KubeVirt related enhancements and issues
       external-storage:
+        archived: true
         description: External storage plugins, provisioners, and helper libraries
         has_issues: false
         has_projects: true
       gluster-kubernetes:
+        archived: true
         description: GlusterFS Native Storage Service for Kubernetes
         has_issues: false
         has_projects: true
@@ -232,6 +239,7 @@ orgs:
         has_projects: false
         has_wiki: false
       k8s-start:
+        archived: true
         allow_rebase_merge: false
         allow_squash_merge: false
         description: k8s playground
@@ -242,6 +250,7 @@ orgs:
         description: Training scenarios for https://katacoda.com/kubevirt
         has_projects: true
       krew-index:
+        archived: true
         description: Plugin index for https://github.com/kubernetes-sigs/krew. This repo is for plugin maintainers.
         has_issues: false
         has_projects: true
@@ -304,6 +313,7 @@ orgs:
         has_projects: true
         archived: true
       kubevirt-tutorial:
+        archived: true
         description: Demo that guides users through an end to end KubeVirt experience.
         has_projects: true
         homepage: https://www.kubevirt.io/
@@ -319,14 +329,17 @@ orgs:
         description: Contains cluster definitions and client tools to quickly spin up and destroy ephemeral and scalable k8s and ocp clusters for testing
         has_projects: true
       kvm-info-nfd-plugin:
+        archived: true
         description: Plugin for Kubernetes Node Feature Discovery for high(er) level KVM featues
         has_projects: true
       libvirt:
+        archived: true
         allow_rebase_merge: false
         description: DEPRECATED Vanilla dockerized libvirt image, used as a base for kubevirt
         has_projects: false
         has_wiki: false
       machine-remediation:
+        archived: true
         description: 'Incubating: Deploy all components to recognize unhealthy machines and apply different remediation strategies on it'
         has_projects: true
       macvtap-cni:
@@ -349,6 +362,7 @@ orgs:
         description: A Kubernetes Operator to manage node maintenance through NodeMaintenance custom resources
         has_projects: true
       origin-web-console:
+        archived: true
         default_branch: cnv-3.10
         description: Web Console for the OpenShift Application Platform
         has_issues: false
@@ -356,6 +370,7 @@ orgs:
         has_wiki: false
         homepage: https://www.openshift.org/
       origin-web-console-server:
+        archived: true
         default_branch: cnv-3.10
         has_issues: false
         has_projects: true
@@ -366,11 +381,13 @@ orgs:
         has_projects: false
         has_wiki: false
       qe-tools:
+        archived: true
         allow_rebase_merge: false
         allow_squash_merge: false
         description: Different Ginkgo reporters for QE purposes
         has_projects: true
       run:
+        archived: true
         allow_rebase_merge: false
         allow_squash_merge: false
         description: This repository is backing run.kubevirt.io.
@@ -389,6 +406,7 @@ orgs:
         has_projects: true
         default_branch: main
       storage-demo:
+        archived: true
         description: 'Incubating: Container images for a kubevirt storage demo environment'
         has_projects: true
       terraform-provider-kubevirt:
@@ -402,10 +420,12 @@ orgs:
         description: Operator which deploys kubevirt-tekton-tasks in cluster
         has_projects: true
       test-benchmarks:
+        archived: true
         default_branch: main
         description: setup to create reproducible benchmarks tests with containers and KubeVirt VMs
         has_projects: true
       test-infra-containers:
+        archived: true
         description: All containers which are useful for testing (tgtd, cinder, ceph, gluster, ...)
         has_projects: true
       user-guide:
@@ -440,9 +460,11 @@ orgs:
         description: Operator for importing VMs from RHV to KubeVirt
         has_projects: true
       vmctl:
+        archived: true
         description: Use KubeVirt VMs with Deployments, Replica Sets, …
         has_projects: true
       web-ui:
+        archived: true
         description: OpenShift Cluster Console UI
         has_projects: true
         has_wiki: false
@@ -454,9 +476,11 @@ orgs:
         description: https://kubevirt.io/web-ui-components
         has_projects: true
       web-ui-design:
+        archived: true
         description: ' Images and Markdown documenting proposed user workflows for the UI'
         has_projects: true
       web-ui-operator:
+        archived: true
         description: Operator for web-ui
         has_projects: true
       containerized-data-importer-api:
