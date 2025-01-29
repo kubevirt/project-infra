@@ -45,6 +45,34 @@ func (n Node) CloneWithoutNodes() *Node {
 	}
 }
 
+// NodeFilter describes the interface for a positive filter, meaning that a
+// filter that returns true will let the node pass.
+type NodeFilter func(*Node) bool
+
+// CloneWithNodes creates a copy of this node including clones of its children
+func (n Node) CloneWithNodes(filters ...NodeFilter) *Node {
+	clone := &Node{
+		Name:    n.Name,
+		Text:    n.Text,
+		Start:   n.Start,
+		End:     n.End,
+		Spec:    n.Spec,
+		Focused: n.Focused,
+		Pending: n.Pending,
+		Labels:  n.Labels,
+	}
+nextChild:
+	for _, child := range n.Nodes {
+		for _, f := range filters {
+			if !f(child) {
+				continue nextChild
+			}
+		}
+		clone.Nodes = append(clone.Nodes, child.CloneWithNodes())
+	}
+	return clone
+}
+
 func OutlineFromFile(path string) (testOutline []*Node, err error) {
 
 	// since there's no output catchable from the command, we need to use pipe
