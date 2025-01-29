@@ -22,6 +22,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 	"kubevirt.io/project-infra/robots/pkg/git"
@@ -30,9 +31,13 @@ import (
 	"regexp"
 )
 
-var revisionRange *string
-var repoPath *string
-var testSubDirectory *string
+// flag variables
+var (
+	revisionRange    *string
+	repoPath         *string
+	testSubDirectory *string
+	debug            *bool
+)
 
 var revisionRangeRegex = regexp.MustCompile(`^([^\s]+)(..([^\s]+))?$`)
 
@@ -41,6 +46,7 @@ func init() {
 	revisionRange = extractTestNamesCmd.Flags().StringP("revision-range", "r", "main..HEAD", "gives the revision range to look at when determining the changes")
 	repoPath = extractTestNamesCmd.Flags().StringP("repo-path", "p", "", "gives the test directory to look at when determining the changed tests")
 	testSubDirectory = extractTestNamesCmd.Flags().StringP("test-subdirectory", "t", "", "gives the test directory to look at when determining the changed tests")
+	debug = extractTestNamesCmd.Flags().BoolP("debug", "D", false, "print and store debugging information - WARNING: might be VERY verbose!")
 }
 
 var extractTestNamesCmd = &cobra.Command{
@@ -50,12 +56,15 @@ var extractTestNamesCmd = &cobra.Command{
 
 Test names are determined by looking at the changes from the lines changed in the commits, then matching those with the ginkgo outline for the changed files.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		return ExtractTestNames(*revisionRange, *testSubDirectory, *repoPath)
+		log.SetFormatter(&log.JSONFormatter{})
+		if *debug {
+			log.SetLevel(log.DebugLevel)
+		}
+		return ExtractTestNames(*revisionRange, *testSubDirectory, *repoPath, *debug)
 	},
 }
 
-func ExtractTestNames(revisionRange string, testDirectory string, repoPath string) error {
+func ExtractTestNames(revisionRange string, testDirectory string, repoPath string, debug bool) error {
 	if !revisionRangeRegex.MatchString(revisionRange) {
 		return fmt.Errorf("revision range must be a valid git revision range")
 	}
@@ -84,10 +93,69 @@ func ExtractTestNames(revisionRange string, testDirectory string, repoPath strin
 			blameLines[testFilename] = blameLinesForFile
 		}
 	}
-	fmt.Printf("outlines:")
-	encoder := json.NewEncoder(os.Stdout)
-	encoder.Encode(&outlines)
-	fmt.Printf("blameLines:")
-	encoder.Encode(&blameLines)
+	if debug {
+		commitsTemp, err := os.CreateTemp("", "commits-*.json")
+		if err != nil {
+			return err
+		}
+		defer commitsTemp.Close()
+		json.NewEncoder(commitsTemp).Encode(&commits)
+		log.Debugf("commits written to %q", commitsTemp.Name())
+		outlinesTemp, err := os.CreateTemp("", "outlines-*.json")
+		if err != nil {
+			return err
+		}
+		defer outlinesTemp.Close()
+		json.NewEncoder(outlinesTemp).Encode(&outlines)
+		log.Debugf("outlines written to %q", outlinesTemp.Name())
+		blameLinesTemp, err := os.CreateTemp("", "blame-lines-*.json")
+		if err != nil {
+			return err
+		}
+		json.NewEncoder(blameLinesTemp).Encode(&blameLines)
+		log.Debugf("blameLines written to %q", blameLinesTemp.Name())
+	}
 	return nil
+}
+
+func extractChangedTestNames(commits []*git.LogCommit,
+	outlines map[string][]*ginkgo.Node, blameLines map[string][]*git.BlameLine) []string {
+	return nil
+}
+
+func blameLinesForCommits(commits []*git.LogCommit, blameLines map[string][]*git.BlameLine) (filenamesToBlamelines map[string][]*git.BlameLine) {
+	filenamesToBlamelines = make(map[string][]*git.BlameLine)
+	commitIDs := make(map[string]struct{})
+	for _, commit := range commits {
+		commitIDs[commit.Hash[:11]] = struct{}{}
+	}
+
+	for filename, blameLinesForFile := range blameLines {
+		for _, line := range blameLinesForFile {
+			if _, ok := commitIDs[line.CommitID]; !ok {
+				continue
+			}
+			filenamesToBlamelines[filename] = append(filenamesToBlamelines[filename], line)
+		}
+	}
+
+	return
+}
+
+func outlinesForBlameLines(blamelines map[string][]*git.BlameLine, outlines map[string][]*ginkgo.Node) (result []*ginkgo.Node) {
+	for blameFilename, _ := range blamelines {
+		if _, ok := outlines[blameFilename]; !ok {
+			continue
+		}
+
+		// match the outline to the blameLine
+		// problem: blameLine has a lineNo, where outline has characterNo start and end
+		// therefore make a list of all lines with character start
+
+		// as result return the filtered outline, meaning an outline with all containers
+		// affected by the changes, this way the caller can construct the full test names
+		// directly
+
+	}
+	return
 }

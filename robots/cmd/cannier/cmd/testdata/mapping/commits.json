@@ -1,0 +1,24 @@
+[
+  {
+    "Hash": "5af2202a7752e3e1a357f9c1c7cac353b2ba73a4",
+    "FileChanges": [
+      {
+        "ChangeType": "M",
+        "Filename": "tests/decorators/decorators.go"
+      },
+      {
+        "ChangeType": "M",
+        "Filename": "tests/guestlog/guestlog.go"
+      }
+    ]
+  },
+  {
+    "Hash": "2900c5a9884b7446ca0331cb4f9659b697e0b68f",
+    "FileChanges": [
+      {
+        "ChangeType": "M",
+        "Filename": "tests/decorators/decorators.go"
+      }
+    ]
+  }
+]
