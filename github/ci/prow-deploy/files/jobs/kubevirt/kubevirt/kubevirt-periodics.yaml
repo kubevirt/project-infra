@@ -1632,7 +1632,7 @@ periodics:
           gsutil cp ${output_file_name} gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/
       command:
       - /bin/sh
-      image: quay.io/kubevirtci/test-label-analyzer:v20250114-69bd12c
+      image: quay.io/kubevirtci/test-label-analyzer:v20250128-e22c3ab
       name: ""
       resources: {}
 - annotations:
