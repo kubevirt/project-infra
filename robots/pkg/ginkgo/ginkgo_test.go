@@ -46,4 +46,37 @@ var _ = Describe("stats", func() {
 
 	})
 
+	Context("Node", func() {
+		When("clone", func() {
+			var n *Node
+			BeforeEach(func() {
+				n = &Node{
+					Nodes: []*Node{
+						{
+							Name:    "By",
+							Text:    "the way",
+							Start:   0,
+							End:     0,
+							Spec:    false,
+							Focused: false,
+							Pending: false,
+							Labels:  nil,
+							Nodes:   nil,
+						},
+					},
+				}
+			})
+			It("filters nodes", func() {
+				Expect(n.CloneWithNodes(func(n *Node) bool {
+					return n.Name != "By"
+				}).Nodes).To(HaveLen(0))
+			})
+			It("doesn't filter other nodes", func() {
+				Expect(n.CloneWithNodes(func(n *Node) bool {
+					return n.Name == "By"
+				}).Nodes).To(HaveLen(1))
+			})
+		})
+	})
+
 })
