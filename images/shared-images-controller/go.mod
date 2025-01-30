@@ -1,8 +1,8 @@
 module shared-images-controller
 
-go 1.22.0
+go 1.23.0
 
-toolchain go1.22.5
+toolchain go1.23.5
 
 require (
 	github.com/containers/podman/v5 v5.2.5

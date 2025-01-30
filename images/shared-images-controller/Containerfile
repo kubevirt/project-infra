@@ -1,6 +1,6 @@
 FROM quay.io/kubevirtci/golang:v20240517-5a9a066 as builder
 
-ENV GIMME_GO_VERSION=1.22.3
+ENV GIMME_GO_VERSION=1.23.5
 
 WORKDIR /workspace
 
