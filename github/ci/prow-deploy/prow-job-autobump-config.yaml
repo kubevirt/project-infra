@@ -9,4 +9,4 @@ prefixes:
   - name: "Jobs"
     prefix: "us-docker.pkg.dev/k8s-infra-prow/images"
     summarise: true
-    consistentImages: false
+    consistentImages: true
