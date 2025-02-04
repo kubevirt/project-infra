@@ -396,6 +396,13 @@ default:
       prowPlugin: label 
       target: both
 repos:
+  kubevirt/containerized-data-importer:
+    labels:
+      - addedBy: kubevirt-bot
+        color: 0ffa16
+        description: Indicates a PR is trusted, used by tide for auto-merging PRs.
+        name: skip-review
+        target: prs
   kubevirt/kubevirt:
     labels:
       - name: needs/documentation
