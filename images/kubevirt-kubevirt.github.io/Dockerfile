@@ -23,7 +23,7 @@ RUN dnf update -y && \
       xkeyboard-config qrencode-libs memstrack \
       openssl-devel ruby-devel rubygems-devel \
       nodejs-docs rubygem-rdoc glibc-all-langpacks vim-minimal tar \
-      diffutils npm pigz bzip2 xz python3-pip jq -x git -x make && \
+      diffutils npm pigz bzip2 xz python3-pip jq -x git -x make -x python3 && \
     dnf clean all && \
     rm -rf /root/{.bundle,.config,.npm,anaconda*,original-ks.cfg} /tmp/phantomjs /var/cache/dnf
 
