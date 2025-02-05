@@ -13,6 +13,7 @@ presubmits:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -51,6 +52,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --prometheus-port 30007
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20250124-4f7dce8
         name: ""
         resources:
