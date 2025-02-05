@@ -224,6 +224,7 @@ tide:
     repos:
     - kubevirt/project-infra
     - kubevirt/kubevirtci
+    - kubevirt/containerized-data-importer
     labels:
     - skip-review
     missingLabels:
