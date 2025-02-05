@@ -12,7 +12,7 @@ periodics:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20241206-a2fd4ec
+        - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20250204-099f8c8
           env:
             - name: NOKOGIRI_USE_SYSTEM_LIBRARIES
               value: "true"

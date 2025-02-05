@@ -19,7 +19,7 @@ postsubmits:
       securityContext:
         runAsUser: 0
       containers:
-      - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20241206-a2fd4ec
+      - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20250204-099f8c8
         env:
         - name: GIT_AUTHOR_NAME
           value: kubevirt-bot
