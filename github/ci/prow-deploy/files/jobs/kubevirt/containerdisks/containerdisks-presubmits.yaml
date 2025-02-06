@@ -65,7 +65,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
-    name: pull-containerdisks-pipeline-cirros
+    name: pull-containerdisks-pipeline-centos-stream-9
     spec:
       containers:
       - command:
@@ -77,7 +77,7 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: "1.22.9"
         - name: FOCUS
-          value: "cirros:*"
+          value: "centos-stream:9"
         image: quay.io/kubevirtci/golang:v20250124-4f7dce8
         name: ""
         resources:
