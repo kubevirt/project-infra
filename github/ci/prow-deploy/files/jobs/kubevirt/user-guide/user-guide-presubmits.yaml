@@ -7,7 +7,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20250204-099f8c8
+      - image: quay.io/kubevirtci/kubevirt-kubevirt.github.io:v20250206-aade083
         command: [ "/usr/bin/bash", "-c" ]
         args:
         - "rake -- -u"
