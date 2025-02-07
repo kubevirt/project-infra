@@ -104,7 +104,7 @@ postsubmits:
             source /usr/local/bin/gcs_restapi.sh &&
             CHECK_INTERVAL=30 &&
             while true; do
-                if stat_gcs_file kubevirt-prow "$GCS_FILE_PATH"; then
+                if stat_gcs_file kubevirt-prow "$GCS_FILE_PATH" "false"; then
                     echo "File $GCS_FILE_PATH is now available."
                     break
                 else
@@ -112,7 +112,7 @@ postsubmits:
                     sleep $CHECK_INTERVAL
                 fi
             done &&
-            KUBEVIRTCI_TAG=$(cat_gcs_file kubevirt-prow "$GCS_FILE_PATH")
+            KUBEVIRTCI_TAG=$(cat_gcs_file kubevirt-prow "$GCS_FILE_PATH" "false")
             if [ $? -ne 0 ]; then
                 echo "Failed to fetch KUBEVIRTCI_TAG"
                 exit 1

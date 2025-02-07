@@ -47,6 +47,18 @@ get_access_token() {
     fi
 }
 
+get_auth_header() {
+    local auth=${1:-"true"}
+
+    if [ "$auth" == "false" ]; then
+        echo ""
+        return 0
+    fi
+
+    get_access_token || exit 1
+    echo "-H \"Authorization: Bearer $access_token\""
+}
+
 urlencode_path() {
     local path="$1"
     echo "$path" | sed 's/\//%2F/g'
@@ -59,11 +71,11 @@ upload_to_gcs() {
     local destination_blob=$(urlencode_path "$3")
     local content_type="application/octet-stream"
 
-    get_access_token
+    auth_header=$(get_auth_header) || exit 1
 
     upload_response=$(curl -X POST \
       --data-binary @"$source_file" \
-      -H "Authorization: Bearer $access_token" \
+      $auth_header \
       -H "Content-Type: $content_type" \
       "${BASE_URL}/upload/storage/v1/b/$bucket_name/o?uploadType=media&name=$destination_blob")
 
@@ -81,11 +93,12 @@ upload_to_gcs() {
 stat_gcs_file() {
     local bucket_name="$1"
     local gcs_file_path=$(urlencode_path "$2")
+    local auth="$3"
 
-    get_access_token
+    auth_header=$(get_auth_header "$auth") || exit 1
 
     stat_response=$(curl -s -X GET \
-      -H "Authorization: Bearer $access_token" \
+      $auth_header \
       "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path")
 
     if echo "$stat_response" | jq -e '.error' > /dev/null; then
@@ -99,12 +112,14 @@ stat_gcs_file() {
 cat_gcs_file() {
     local bucket_name="$1"
     local gcs_file_path=$(urlencode_path "$2")
+    local auth="$3"
 
-    get_access_token
+    auth_header=$(get_auth_header "$auth") || exit 1
 
-    file_content=$(curl -s -X GET \
-      -H "Authorization: Bearer $access_token" \
-      "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path?alt=media")
+    file_content=$(curl --silent --fail -X GET \
+      $auth_header \
+      -H "Cache-Control: no-cache" \
+      "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path?alt=media&ignoreCache=1")
 
     if [ -z "$file_content" ]; then
         echo "Error: No content received"
@@ -120,10 +135,10 @@ rm_gcs_file() {
     local bucket_name="$1"
     local gcs_file_path=$(urlencode_path "$2")
 
-    get_access_token
+    auth_header=$(get_auth_header) || exit 1
 
     delete_response=$(curl -s -X DELETE \
-      -H "Authorization: Bearer $access_token" \
+      $auth_header \
       "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path")
 
     if [ -z "$delete_response" ]; then
