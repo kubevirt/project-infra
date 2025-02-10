@@ -482,7 +482,9 @@ branch-protection:
                 # release automation is able to run
                 contexts: []
         vm-console-proxy:
-          protect: true
+          branches:
+            main:
+              protect: true
         ssp-operator:
           branches:
             main:
