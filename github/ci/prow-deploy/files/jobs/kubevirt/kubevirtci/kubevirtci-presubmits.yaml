@@ -407,7 +407,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.30 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -493,7 +493,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.31 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -549,7 +549,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.32 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
