@@ -28,6 +28,8 @@ ARG ARCH
 
 # Install packages
 RUN dnf install -y \
+    bind-utils \
+    buildah \
     cpio \
     dnf-plugins-core \
     findutils \
@@ -45,23 +47,22 @@ RUN dnf install -y \
     libvirt-devel \
     make \
     mercurial \
+    openssl \
     patch \
     procps-ng \
     protobuf-compiler \
     python3-devel \
+    python3-jinja2 \
     python-unversioned-command \
+    qemu-user-static \
     redhat-rpm-config \
+    ripgrep \
     rsync \
     rsync-daemon \
     skopeo \
     sudo \
-    buildah \
-    qemu-user-static \
-    bind-utils \
     wget \
-    which \
-    openssl \
-    python3-jinja2 &&\
+    which && \
   dnf -y clean all
 
 
