@@ -52,6 +52,8 @@ spec:
         volumeMounts:
         - name: cache
           mountPath: /data
+        securityContext:
+          privileged: true
         resources:
           requests:
             cpu: "1.2"
