@@ -50,7 +50,7 @@ presubmits:
           value: "true"
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=SRIOV
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -105,7 +105,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: 1.22.3
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -152,7 +152,7 @@ presubmits:
           value: "2"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -199,7 +199,7 @@ presubmits:
           value: "2"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -264,7 +264,7 @@ presubmits:
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=MediatedDevices --plugin-env
             kubevirt-conformance.E2E_SKIP=QUARANTINE
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -309,7 +309,7 @@ presubmits:
         - /bin/bash
         - -c
         - cd cluster-provision/gocli/ && make all container
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -346,7 +346,7 @@ presubmits:
         - -c
         - dnf install -y genisoimage libvirt && cd cluster-provision/images/vm-image-builder
           && ./create-containerdisk.sh alpine-cloud-init
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -382,7 +382,7 @@ presubmits:
         - |
           (cd cluster-provision/gocli && make test && make container)
           podman run --rm -v $(pwd):/workdir:Z quay.io/kubevirtci/gocli provision-manager --debug
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -407,7 +407,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.30 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -433,7 +433,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.30 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         env:
         - name: SLIM
           value: "true"
@@ -463,7 +463,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.31 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         env:
         - name: SLIM
           value: "true"
@@ -493,7 +493,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.31 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -519,7 +519,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.32 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         env:
         - name: SLIM
           value: "true"
@@ -549,7 +549,7 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.32 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
@@ -580,7 +580,7 @@ presubmits:
           value: linux
         - name: BYPASS_PMAN_CHANGE_CHECK
           value: "true"
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
