@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"sigs.k8s.io/prow/pkg/config"
 	"testing"
 	"time"
 
@@ -455,5 +458,42 @@ func TestNewTag(t *testing.T) {
 		if entry != expectedGitCommands[i] {
 			t.Errorf("expected command %s and got %s", expectedGitCommands[i], entry)
 		}
+	}
+}
+
+func TestConfigureReleaseJob(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "convertJobConfig-*")
+	if err != nil {
+		t.Errorf("got unexpected error %s", err)
+		return
+	}
+	defer func(path string) {
+		err := os.RemoveAll(path)
+		if err != nil {
+			log.Warnf("failed to remove temp dir %s", tempDir)
+		}
+	}(tempDir)
+
+	tempOutputFile := filepath.Join(tempDir, "kubevirt-presubmits-1.6.yaml")
+	err = configureReleaseJob(
+		"testdata/jobconfig/kubevirt-presubmits-1.6.yaml",
+		tempOutputFile,
+	)
+	jobConfig, err := config.ReadJobConfig(tempOutputFile)
+	if err != nil {
+		t.Errorf("got unexpected error %s", err)
+	}
+	for _, presubmits := range jobConfig.PresubmitsStatic {
+		for _, presubmit := range presubmits {
+			if presubmit.RunBeforeMerge {
+				t.Errorf("got unexpected RunBeforeMerge on job %s", presubmit.Name)
+			}
+			if _, ok := presubmit.Labels["preset-bazel-cache"]; ok {
+				t.Errorf("got unexpected Label \"preset-bazel-cache\" on job %s", presubmit.Name)
+			}
+		}
+	}
+	if err != nil {
+		t.Errorf("got unexpected error %s", err)
 	}
 }

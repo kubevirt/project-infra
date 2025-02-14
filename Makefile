@@ -16,6 +16,10 @@ ifndef COVERAGE_OUTPUT_PATH
 	COVERAGE_OUTPUT_PATH=${ARTIFACTS}/coverage.html
 	export COVERAGE_OUTPUT_PATH
 endif
+ifndef WHAT_COVERAGE
+	WHAT_COVERAGE=./external-plugins/... ./releng/... ./robots/...
+	export WHAT_COVERAGE
+endif
 
 .PHONY: all clean deps-update update-labels install-metrics-binaries lint $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
 all: deps-update $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
@@ -50,10 +54,6 @@ lint: install-metrics-binaries
 
 coverage:
 	if ! command -V covreport; then go install github.com/cancue/covreport@latest; fi
-	go test \
-		./external-plugins/... \
-		./releng/... \
-		./robots/... \
-		-coverprofile=/tmp/coverage.out
+	go test ${WHAT_COVERAGE} -coverprofile=/tmp/coverage.out
 	mkdir -p ${ARTIFACTS}
 	covreport  -i /tmp/coverage.out -o ${COVERAGE_OUTPUT_PATH}
