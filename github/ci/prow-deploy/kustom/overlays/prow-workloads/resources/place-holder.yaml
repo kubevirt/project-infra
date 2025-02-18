@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sriov-place-holder
+  namespace: kubevirt-prow-jobs
+  labels:
+    name: sriov-place-holder
+spec:
+  selector:
+    matchLabels:
+      name: sriov-place-holder
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: sriov-place-holder
+        sriov-pod: "true"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: sriov-pod
+                operator: In
+                values:
+                - "true"
+            topologyKey: kubernetes.io/hostname
+      nodeSelector:
+        hardwareSupport: sriov-nic
+      terminationGracePeriodSeconds: 1
+      priorityClassName: sriov-place-holder
+      tolerations:
+      - operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: sriov-place-holder
+        image: k8s.gcr.io/busybox
+        command: [ "/bin/sh", "-c", "while true; do sleep 86400; done" ]
+        resources:
+          requests:
+            memory: 29Gi

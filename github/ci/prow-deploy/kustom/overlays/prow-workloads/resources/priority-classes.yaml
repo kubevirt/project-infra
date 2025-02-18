@@ -1,0 +1,36 @@
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: sriov
+value: 1000001
+preemptionPolicy: PreemptLowerPriority
+globalDefault: false
+description: "Allows sriov jobs to be scheduled with higher priority."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: vgpu
+value: 1000000
+preemptionPolicy: Never
+globalDefault: false
+description: "Allows gpu jobs to be scheduled with higher priority."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: windows
+value: 900000
+preemptionPolicy: Never
+globalDefault: false
+description: "Allows windows jobs to be scheduled with higher priority."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: sriov-place-holder
+value: 1000000
+preemptionPolicy: Never
+globalDefault: false
+description: "Allows to have sriov place holder jobs"
