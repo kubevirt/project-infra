@@ -225,6 +225,7 @@ tide:
     - kubevirt/project-infra
     - kubevirt/kubevirtci
     - kubevirt/containerized-data-importer
+    - kubevirt/kubevirt
     labels:
     - skip-review
     missingLabels:

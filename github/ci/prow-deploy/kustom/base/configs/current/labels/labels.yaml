@@ -507,6 +507,11 @@ repos:
         target: both
         prowPlugin: release-blocker
         addedBy: prow
+      - addedBy: kubevirt-bot
+        color: 0ffa16
+        description: Indicates a PR is trusted, used by tide for auto-merging PRs.
+        name: skip-review
+        target: prs
   kubevirt/kubevirtci:
     labels:
     - addedBy: kubevirt-bot

@@ -180,6 +180,7 @@ larger set of contributors to apply/remove them.
 | Name | Description | Added By | Prow Plugin |
 | ---- | ----------- | -------- | --- |
 | <a id="kind/build-change" href="#kind/build-change">`kind/build-change`</a> | Categorizes PRs as related to changing build files of virt-* components| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
+| <a id="skip-review" href="#skip-review">`skip-review`</a> | Indicates a PR is trusted, used by tide for auto-merging PRs.| kubevirt-bot | |
 
 ## Labels that apply to kubevirt/kubevirt-tutorial, only for PRs
 
