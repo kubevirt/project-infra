@@ -1079,7 +1079,7 @@ presubmits:
           value: dual
         - name: RUN_ON_ARM64_INFRA
           value: "true"
-        image: quay.io/kubevirtci/bootstrap-legacy:v20240523-1a2c9b8
+        image: quay.io/kubevirtci/bootstrap-legacy:v20230829-f2e4ded
         name: ""
         resources:
           requests:
