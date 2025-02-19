@@ -22,7 +22,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"regexp"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"kubevirt.io/project-infra/robots/cmd/test-label-analyzer/cmd/filter"
@@ -53,6 +55,7 @@ type ConfigOptions struct {
 
 	// remoteURL is the absolute path to the test files containing the test code with the analyzed state, most likely
 	// containing a commit id defining the state of the observed outlines
+	// if the url contains a pattern "%s" the tool will replace that with the latest commit id it finds
 	remoteURL string
 
 	// testNameLabelRE is the regular expression for an on the fly created configuration of test names to match against
@@ -100,6 +103,18 @@ func (s *ConfigOptions) validate() error {
 		}
 		if s.remoteURL == "" {
 			return fmt.Errorf("remote-url is required together with test-file-path")
+		} else {
+			if strings.Contains(s.remoteURL, "%s") {
+				// fetch commit id and replace pattern with it
+				// cd ../kubevirt && git --no-pager log -1 --format=%H | tr -d '\n'
+				command := exec.Command("git", "--no-pager", "log", "-1", "--format=%H")
+				command.Dir = s.testFilePath
+				output, err := command.CombinedOutput()
+				if err != nil {
+					return err
+				}
+				s.remoteURL = fmt.Sprintf(s.remoteURL, strings.ReplaceAll(string(output), "\n", ""))
+			}
 		}
 	}
 	return nil
