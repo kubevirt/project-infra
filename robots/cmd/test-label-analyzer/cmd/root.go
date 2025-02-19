@@ -63,6 +63,9 @@ type ConfigOptions struct {
 
 	// outputHTML defines whether HTML should be generated, default is JSON
 	outputHTML bool
+
+	// outputGCSURL defines the target where to put the generated output
+	outputGCSURL string
 }
 
 // validate checks the configuration options for validity and returns an error describing the first error encountered
@@ -114,6 +117,12 @@ func (s *ConfigOptions) validate() error {
 					return err
 				}
 				s.remoteURL = fmt.Sprintf(s.remoteURL, strings.ReplaceAll(string(output), "\n", ""))
+			}
+		}
+		if s.outputGCSURL != "" {
+			gcsURLPattern := regexp.MustCompile("^gs://.*")
+			if !gcsURLPattern.MatchString(s.outputGCSURL) {
+				return fmt.Errorf("outputGCSURL must match pattern")
 			}
 		}
 	}
@@ -240,6 +249,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.remoteURL, "remote-url", "", "remote path to tests to be analyzed")
 	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.testNameLabelRE, "test-name-label-re", "", "regular expression for test names to match against")
 	RootCmd.PersistentFlags().BoolVar(&rootConfigOpts.outputHTML, "output-html", false, "defines whether HTML output should be generated, default is JSON")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.outputGCSURL, "output-gcs-url", "", "defines where to put the output (optional)")
 
 	RootCmd.AddCommand(filter.Command())
 }

@@ -20,6 +20,8 @@ package cmd
 
 import (
 	"bytes"
+	"cloud.google.com/go/storage"
+	"context"
 	_ "embed"
 	"encoding/json"
 	"fmt"
@@ -249,7 +251,22 @@ func runStatsCommand(configurationOptions ConfigOptions) error {
 		}
 
 		statsHTMLData := NewStatsHTMLData(filesStats, configurationOptions)
-		err = htmlTemplate.Execute(os.Stdout, statsHTMLData)
+		var outputWriter io.Writer = os.Stdout
+		if configurationOptions.outputGCSURL != "" {
+			ctx := context.Background()
+			storageClient, err := storage.NewClient(ctx)
+			if err != nil {
+				log.Fatalf("Failed to create new storage client: %v.\n", err)
+			}
+
+			gcsRegexp := regexp.MustCompile(`^gs://([^/]+)/(.*)$`)
+			matches := gcsRegexp.FindStringSubmatch(configurationOptions.outputGCSURL)
+			reportObject := storageClient.Bucket(matches[1]).Object(matches[2])
+			writer := reportObject.NewWriter(ctx)
+			defer writer.Close()
+			outputWriter = writer
+		}
+		err = htmlTemplate.Execute(outputWriter, statsHTMLData)
 		return err
 	}
 
