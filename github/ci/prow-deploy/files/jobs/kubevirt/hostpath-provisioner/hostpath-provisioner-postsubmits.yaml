@@ -3,7 +3,7 @@ postsubmits:
   - name: push-release-hostpath-provisioner-images
     branches:
     - release-v\d+\.\d+
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     always_run: true
     optional: false
     skip_report: true
@@ -45,7 +45,7 @@ postsubmits:
   - name: push-latest-hostpath-provisioner-images
     branches:
     - main
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     always_run: true
     optional: false
     skip_report: true
