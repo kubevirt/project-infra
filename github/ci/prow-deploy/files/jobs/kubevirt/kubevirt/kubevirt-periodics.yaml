@@ -155,33 +155,6 @@ periodics:
       name: ""
       resources: {}
 - annotations:
-    testgrid-create-test-group: "false"
-  cluster: kubevirt-prow-control-plane
-  decorate: true
-  decoration_config:
-    grace_period: 5m0s
-    timeout: 4h0m0s
-  interval: 168h
-  labels:
-    preset-gcs-credentials: "true"
-    preset-github-credentials: "true"
-  name: periodic-publish-kubevirt-flakefinder-four-weekly-report
-  spec:
-    containers:
-    - args:
-      - --dry-run=false
-      - --token=/etc/github/oauth
-      - --merged=672h
-      - --report_output_child_path=kubevirt/kubevirt
-      - --skip_results_before_start_of_report=false
-      - --periodic_job_dir_regex=periodic-kubevirt-e2e-.*
-      - --pr_base_branch=main
-      command:
-      - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
-      name: ""
-      resources: {}
-- annotations:
     testgrid-alert-email: bodnopoz@redhat.com, kubevirtci-sysprep-test@googlegroups.com
     testgrid-alert-stale-results-hours: "1"
     testgrid-dashboards: kubevirt-periodics
