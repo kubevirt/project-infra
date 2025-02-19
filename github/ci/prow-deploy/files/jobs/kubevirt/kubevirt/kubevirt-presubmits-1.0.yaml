@@ -179,7 +179,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.0
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     context: pull-kubevirt-e2e-kind-1.25-vgpu
     decorate: true
     decoration_config:

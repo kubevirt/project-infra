@@ -103,7 +103,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.2
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     context: pull-kubevirt-e2e-kind-1.27-vgpu
     decorate: true
     decoration_config:
