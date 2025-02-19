@@ -14,7 +14,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-shared-images: "true"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external
