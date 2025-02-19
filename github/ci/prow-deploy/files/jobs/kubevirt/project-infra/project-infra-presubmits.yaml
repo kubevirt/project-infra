@@ -371,7 +371,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
@@ -397,7 +397,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
@@ -498,7 +498,7 @@ presubmits:
       preset-gcs-credentials: "true"
       preset-pgp-bot-key: "true"
       preset-podman-shared-images: "true"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     extra_refs:
     - org: kubevirt
       repo: kubevirt
@@ -541,7 +541,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     spec:
       containers:
         - image: quay.io/kubevirtci/golang:v20250211-4e3c019
@@ -579,7 +579,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-shared-images: "true"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     extra_refs:
     - org: kubevirt
       repo: kubevirt
