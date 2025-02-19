@@ -25,6 +25,8 @@ set -x
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_INFRA_ROOT=$(readlink --canonicalize ${BASEDIR}/..)
 
+source "${BASEDIR}/_include_image_funcs.sh"
+
 function main() {
     for repo_name in $(kubevirtci_images_used_in_manifests); do
         image_name="quay.io/kubevirtci/${repo_name}"
@@ -34,13 +36,6 @@ function main() {
             echo "[OK] prow deployment update for image $image_name"
         fi
     done
-}
-
-function kubevirtci_images_used_in_manifests() {
-    find "${PROJECT_INFRA_ROOT}/github/ci/prow-deploy" -name '*.yaml' -print0 | \
-        xargs -0 grep -hoE 'quay.io/kubevirtci/[^: @]+' | \
-        sort -u | \
-        cut -d'/' -f3
 }
 
 main "$@"
