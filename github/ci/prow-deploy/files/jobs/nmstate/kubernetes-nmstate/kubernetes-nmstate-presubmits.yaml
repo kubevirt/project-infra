@@ -47,7 +47,7 @@ presubmits:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
-      cluster: kubevirt-prow-workloads
+      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
@@ -83,7 +83,7 @@ presubmits:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
-      cluster: kubevirt-prow-workloads
+      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
@@ -151,7 +151,7 @@ presubmits:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
-      cluster: kubevirt-prow-workloads
+      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
@@ -186,7 +186,7 @@ presubmits:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-shared-images: "true"
-      cluster: kubevirt-prow-workloads
+      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external

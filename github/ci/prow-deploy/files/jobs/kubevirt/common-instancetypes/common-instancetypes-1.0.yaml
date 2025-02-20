@@ -26,7 +26,7 @@ presubmits:
       - release-1.0
     always_run: false
     run_if_changed: "instancetypes/.*|preferences/.*|scripts/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -65,7 +65,7 @@ presubmits:
       - release-1.0
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/fedora/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -104,7 +104,7 @@ presubmits:
       - release-1.0
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -143,7 +143,7 @@ presubmits:
       - release-1.0
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -182,7 +182,7 @@ presubmits:
       - release-1.0
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -221,7 +221,7 @@ presubmits:
       - release-1.0
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/ubuntu/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -260,7 +260,7 @@ presubmits:
       - release-1.0
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/windows/11/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -311,7 +311,7 @@ presubmits:
       preset-docker-mirror: "true"
     annotations:
       testgrid-create-test-group: "false"
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     spec:
       nodeSelector:
         type: bare-metal-external

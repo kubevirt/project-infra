@@ -68,7 +68,7 @@ presubmits:
       timeout: 5h
       grace_period: 5m
     max_concurrency: 6
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"

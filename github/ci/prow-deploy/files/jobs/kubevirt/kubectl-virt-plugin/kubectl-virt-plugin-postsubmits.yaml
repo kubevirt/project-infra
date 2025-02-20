@@ -14,7 +14,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
         preset-kubevirtci-quay-credential: "true"
-      cluster: kubevirt-prow-workloads
+      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external

@@ -11,7 +11,7 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       branches:
         - main
-      cluster: kubevirt-prow-workloads
+      cluster: prow-workloads
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
@@ -37,7 +37,7 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       branches:
         - ^\d+\.\d+\.\d+$
-      cluster: kubevirt-prow-workloads
+      cluster: prow-workloads
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019

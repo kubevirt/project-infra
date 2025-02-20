@@ -10,7 +10,7 @@ presubmits:
       decoration_config:
         timeout: 3h
         grace_period: 5m
-      cluster: kubevirt-prow-workloads
+      cluster: prow-workloads
       max_concurrency: 6
       labels:
         preset-dind-enabled: "true"
