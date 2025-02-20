@@ -281,7 +281,7 @@ periodics:
         - -ce
         args:
         - |
-          git-pr.sh -c "go run ./robots/cmd/uploader -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ../kubevirt -r kubevirt -L lgtm,approved,release-note-none -T main
+          git-pr.sh -c "go run ./robots/cmd/uploader -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ../kubevirt -r kubevirt -L skip-review,release-note-none -T main
           git-pr.sh -c "go run ./robots/cmd/uploader -workspace ${PWD}/../containerized-data-importer/WORKSPACE -dry-run=false" -p ../containerized-data-importer -r containerized-data-importer -T main -L skip-review,release-note-none
         resources:
           requests:
