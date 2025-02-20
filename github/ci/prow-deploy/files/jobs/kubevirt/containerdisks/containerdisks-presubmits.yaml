@@ -116,7 +116,7 @@ presubmits:
           value: "2501140834-56eb34e6"
         - name: KUBEVIRT_SLIM
           value: "true"
-        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        image: quay.io/kubevirtci/golang:v20250211-4e3c019
         name: ""
         resources:
           requests:
