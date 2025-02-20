@@ -2,7 +2,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-containerdisks-periodics
     testgrid-alert-email: fmatouschek@redhat.com, lyarwood@redhat.com
-  cluster: kubevirt-prow-workloads
+  cluster: prow-workloads
   cron: 0 2 * * *
   decorate: true
   decoration_config:

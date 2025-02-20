@@ -109,7 +109,7 @@ presubmits:
               requests:
                 memory: "4Gi"
     - name: pull-csi-driver-e2e-k8s
-      cluster: kubevirt-prow-workloads
+      cluster: prow-workloads
       skip_branches:
         - release-\d+\.\d+
       annotations:
@@ -144,7 +144,7 @@ presubmits:
               requests:
                 memory: "29Gi"
     - name: pull-csi-driver-split-e2e-k8s
-      cluster: kubevirt-prow-workloads
+      cluster: prow-workloads
       skip_branches:
         - release-\d+\.\d+
       annotations:
@@ -179,7 +179,7 @@ presubmits:
               requests:
                 memory: "29Gi"
     - name: pull-csi-driver-split-k8s-suite-k8s
-      cluster: kubevirt-prow-workloads
+      cluster: prow-workloads
       skip_branches:
         - release-\d+\.\d+
       annotations:

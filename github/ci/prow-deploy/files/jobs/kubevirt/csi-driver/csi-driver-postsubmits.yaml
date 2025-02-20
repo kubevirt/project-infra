@@ -18,7 +18,7 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
         rehearsal.allowed: "true"
-      cluster: kubevirt-prow-workloads
+      cluster: prow-workloads
       spec:
         nodeSelector:
           type: bare-metal-external
