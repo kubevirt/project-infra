@@ -221,7 +221,7 @@ presubmits:
           type: Directory
         name: audit
   - always_run: true
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
