@@ -590,7 +590,7 @@ periodics:
     k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: kubevirt-prow-workloads
+  cluster: prow-workloads
   cron: 0 23 * * 6
   decorate: true
   decoration_config:

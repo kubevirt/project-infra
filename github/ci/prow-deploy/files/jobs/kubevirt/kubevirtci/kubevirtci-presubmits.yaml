@@ -3,7 +3,7 @@ presubmits:
   - always_run: true
     annotations:
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
-    cluster: kubevirt-prow-workloads
+    cluster: prow-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
