@@ -22,7 +22,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"regexp"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"kubevirt.io/project-infra/robots/cmd/test-label-analyzer/cmd/filter"
@@ -53,6 +55,7 @@ type ConfigOptions struct {
 
 	// remoteURL is the absolute path to the test files containing the test code with the analyzed state, most likely
 	// containing a commit id defining the state of the observed outlines
+	// if the url contains a pattern "%s" the tool will replace that with the latest commit id it finds
 	remoteURL string
 
 	// testNameLabelRE is the regular expression for an on the fly created configuration of test names to match against
@@ -60,6 +63,9 @@ type ConfigOptions struct {
 
 	// outputHTML defines whether HTML should be generated, default is JSON
 	outputHTML bool
+
+	// outputGCSURL defines the target where to put the generated output
+	outputGCSURL string
 }
 
 // validate checks the configuration options for validity and returns an error describing the first error encountered
@@ -100,6 +106,24 @@ func (s *ConfigOptions) validate() error {
 		}
 		if s.remoteURL == "" {
 			return fmt.Errorf("remote-url is required together with test-file-path")
+		} else {
+			if strings.Contains(s.remoteURL, "%s") {
+				// fetch commit id and replace pattern with it
+				// cd ../kubevirt && git --no-pager log -1 --format=%H | tr -d '\n'
+				command := exec.Command("git", "--no-pager", "log", "-1", "--format=%H")
+				command.Dir = s.testFilePath
+				output, err := command.CombinedOutput()
+				if err != nil {
+					return err
+				}
+				s.remoteURL = fmt.Sprintf(s.remoteURL, strings.ReplaceAll(string(output), "\n", ""))
+			}
+		}
+		if s.outputGCSURL != "" {
+			gcsURLPattern := regexp.MustCompile("^gs://.*")
+			if !gcsURLPattern.MatchString(s.outputGCSURL) {
+				return fmt.Errorf("outputGCSURL must match pattern")
+			}
 		}
 	}
 	return nil
@@ -225,6 +249,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.remoteURL, "remote-url", "", "remote path to tests to be analyzed")
 	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.testNameLabelRE, "test-name-label-re", "", "regular expression for test names to match against")
 	RootCmd.PersistentFlags().BoolVar(&rootConfigOpts.outputHTML, "output-html", false, "defines whether HTML output should be generated, default is JSON")
+	RootCmd.PersistentFlags().StringVar(&rootConfigOpts.outputGCSURL, "output-gcs-url", "", "defines where to put the output (optional)")
 
 	RootCmd.AddCommand(filter.Command())
 }
