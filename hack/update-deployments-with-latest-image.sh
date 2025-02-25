@@ -12,7 +12,7 @@ if [ $# -gt 1 ]; then
     image_tag="$2"
 fi
 
-declare -a deployment_dirs=('/../github/ci/prow-deploy/kustom/base/manifests/local' '/../github/ci/prow-deploy/kustom/overlays/kubevirt-prow-workloads/resources')
+declare -a deployment_dirs=('/../github/ci/prow-deploy/kustom/base/manifests/local' '/../github/ci/prow-deploy/kustom/overlays/prow-workloads/resources')
 
 for i in "${deployment_dirs[@]}";
 do
