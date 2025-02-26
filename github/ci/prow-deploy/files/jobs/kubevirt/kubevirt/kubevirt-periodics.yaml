@@ -46,7 +46,10 @@ periodics:
       - /usr/bin/flakefinder
       image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
       name: ""
-      resources: {}
+      resources:
+        requests:
+          memory: 8Gi
+          cpu: 0.5
 - annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
