@@ -20,13 +20,26 @@
 package git
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"os"
 
 	"testing"
 )
 
 func TestGit(t *testing.T) {
 	RegisterFailHandler(Fail)
+
+	stat, err := os.Stat("testdata/repo")
+	if os.IsNotExist(err) || !stat.IsDir() {
+		var output []byte
+		output, err = execGit("testdata", []string{"clone", "repo.gitbundle", "repo"})
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf(string(output))
+	}
+
 	RunSpecs(t, "Git Main Suite")
 }
