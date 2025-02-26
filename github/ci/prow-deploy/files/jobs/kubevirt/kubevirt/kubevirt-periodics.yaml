@@ -1593,21 +1593,14 @@ periodics:
   spec:
     containers:
     - args:
-      - /usr/local/bin/runner.sh
-      - /bin/bash
-      - -ce
-      - |
-        output_file_name="/tmp/index.html"
-        git_commit=$(cd ../kubevirt && git --no-pager log -1 --format=%H | tr -d '\n')
-        test-label-analyzer stats \
-          --output-html=true \
-          --config-name quarantine \
-          --test-file-path $(cd ../kubevirt && pwd)/tests \
-          --remote-url "https://github.com/kubevirt/kubevirt/tree/${git_commit}/tests" \
-            > ${output_file_name}
-          gsutil cp ${output_file_name} gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/
+      - stats
+      - --output-html=true
+      - --config-name=quarantine
+      - --test-file-path=/home/prow/go/src/github.com/kubevirt/kubevirt/tests
+      - --remote-url=https://github.com/kubevirt/kubevirt/tree/%s/tests
+      - --output-gcs-url=gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/index.html
       command:
-      - /bin/sh
+      - /usr/bin/test-label-analyzer
       image: quay.io/kubevirtci/test-label-analyzer:v20250219-108bcae
       name: ""
       resources: {}
