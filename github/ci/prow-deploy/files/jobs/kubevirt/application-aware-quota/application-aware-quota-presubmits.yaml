@@ -86,11 +86,6 @@ presubmits:
             - "/bin/sh"
             - "-c"
             - "automation/test.sh"
-          # scheduling gates feature gate is enabled by default in versions >= 1.27
-          # this should be deleted once the default provider will be higher than 1.26
-          env:
-            - name: TARGET
-              value: k8s-1.27
           securityContext:
             privileged: true
           resources:
