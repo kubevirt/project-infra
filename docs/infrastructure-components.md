@@ -95,7 +95,7 @@ This is a self managed cluster with bare metals as workers. It runs the e2e jobs
 
 #### Context
 
-kubevirt-prow-workloads
+prow-workloads
 
 #### Components
 
