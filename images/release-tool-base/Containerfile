@@ -1,4 +1,4 @@
-FROM fedora:39
+FROM fedora:41
 
 RUN dnf install -y \
 	git \
@@ -7,7 +7,7 @@ RUN dnf install -y \
 	&& dnf clean all
 
 
-ENV GIMME_GO_VERSION=1.21.9
+ENV GIMME_GO_VERSION=1.21.13
 
 RUN mkdir -p /gimme && curl -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme | HOME=/gimme bash >> /etc/profile.d/gimme.sh
 
@@ -19,7 +19,7 @@ RUN set -x && \
     source /etc/profile.d/gimme.sh && \
     git clone https://github.com/kubernetes/test-infra.git && \
     cd /test-infra && \
-    git checkout 1f3edddfe487b7df5714dbd9de3b2ed6e691485e && \
+    git checkout 71ea51ce37adf5ea3ab3374adc94750125208f73 && \
     cd /test-infra/robots/pr-creator && \
     go install && \
     cd /test-infra/releng/config-forker && \
