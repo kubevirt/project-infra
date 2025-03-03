@@ -265,6 +265,42 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
+    run_if_changed: "artifacts/ubuntu/.*"
+    annotations:
+      testgrid-create-test-group: "false"
+    cluster: prow-s390x-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 3
+    name: pull-containerdisks-pipeline-ubuntu-s390x
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - ./pipeline.sh
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.22.9"
+        - name: FOCUS
+          value: "ubuntu:*"
+        - name: KUBEVIRTCI_TAG
+          value: "2501140834-56eb34e6"
+        - name: KUBEVIRT_SLIM
+          value: "true"
+        image: quay.io/kubevirtci/golang:v20250124-4f7dce8
+        name: ""
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+  - always_run: false
     run_if_changed: "artifacts/opensuse/tumbleweed/.*"
     annotations:
       testgrid-create-test-group: "false"
