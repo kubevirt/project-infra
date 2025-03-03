@@ -1602,6 +1602,8 @@ presubmits:
           value: --usb 30M --usb 40M
         - name: FEATURE_GATES
           value: NodeRestriction
+        - name: KUBEVIRT_LABEL_FILTER
+          value: "(USB)"
         image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
         name: ""
         resources:
