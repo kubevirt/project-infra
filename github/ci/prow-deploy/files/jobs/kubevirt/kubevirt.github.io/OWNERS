@@ -8,7 +8,6 @@ filters:
   .*:
     approvers:
     - aburdenthehand
-    - cwilkers
     - davidvossel
     - dhiller
     - fabiand
@@ -18,7 +17,6 @@ filters:
     reviewers:
     - aburdenthehand
     - brianmcarey
-    - cwilkers
     - jean-edouard
   ^_(data|layouts|sass|css|js)/.*:
     labels:
