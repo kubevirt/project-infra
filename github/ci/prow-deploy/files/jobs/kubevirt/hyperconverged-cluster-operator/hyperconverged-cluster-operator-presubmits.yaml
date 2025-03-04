@@ -117,7 +117,7 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
     always_run: true
-    optional: true
+    optional: false
     decorate: true
     decoration_config:
       timeout: 2h
