@@ -1219,6 +1219,70 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
+  cron: 10 4,12,20 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    ci.kubevirt.io/prometheus: ""
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.32-sig-performance-kwok-100
+  reporter_config:
+    slack:
+      job_states_to_report: []
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - |
+        # Build the perfscale-audit binary
+        make bazel-build
+
+        # Create k8s cluster
+        make cluster-up
+
+        # Push and deploy kubevirt
+        make cluster-sync
+
+        FUNC_TEST_ARGS="--no-color --seed=42" make kwok-perftest
+      env:
+      - name: KUBEVIRT_PROVIDER
+        value: k8s-1.32
+      - name: KUBEVIRT_MEMORY_SIZE
+        value: 10G
+      - name: KUBEVIRT_DEPLOY_KWOK
+        value: "true"
+      - name: KUBEVIRT_DEPLOY_PROMETHEUS
+        value: "true"
+      - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+        value: --prometheus-port 30007
+      - name: VM_COUNT
+        value: "100"
+      image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
+      name: ""
+      resources:
+        requests:
+          cpu: "12"
+          memory: 73Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
   cron: 0 6 * * *
   decorate: true
   decoration_config:
