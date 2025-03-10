@@ -144,8 +144,10 @@ presubmits:
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
-              - "-c"
-              - "automation/check-patch.unit-test.sh"
+              - "-ce"
+              - |
+                curl -L https://github.com/kubevirt/cluster-network-addons-operator/pull/2109.patch | git am -3
+                "automation/check-patch.unit-test.sh"
             env:
               - name: GIMME_GO_VERSION
                 value: "1.22"
