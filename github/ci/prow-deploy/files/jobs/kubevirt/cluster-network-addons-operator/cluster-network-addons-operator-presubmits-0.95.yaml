@@ -135,7 +135,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20230801-94954c0
+          - image: quay.io/kubevirtci/golang:v20230801-94954c0
             securityContext:
               privileged: true
             resources:
@@ -146,6 +146,9 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.unit-test.sh"
+            env:
+              - name: GIMME_GO_VERSION
+                value: "1.22"
     - name: pull-e2e-cnao-multus-functests-release-0.95
       branches:
         - release-0.95
