@@ -146,7 +146,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"
   - name: pull-containerized-data-importer-e2e-ceph-1.43
     context: pull-containerized-data-importer-e2e-ceph
     branches:
@@ -178,4 +178,4 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"

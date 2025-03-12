@@ -87,4 +87,4 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"

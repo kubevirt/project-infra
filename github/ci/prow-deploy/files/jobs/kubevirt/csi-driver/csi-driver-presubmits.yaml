@@ -142,7 +142,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
     - name: pull-csi-driver-split-e2e-k8s
       cluster: prow-workloads
       skip_branches:
@@ -177,7 +177,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
     - name: pull-csi-driver-split-k8s-suite-k8s
       cluster: prow-workloads
       skip_branches:
@@ -212,7 +212,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
     - name: pull-csi-driver-goveralls
       cluster: kubevirt-prow-control-plane
       skip_branches:

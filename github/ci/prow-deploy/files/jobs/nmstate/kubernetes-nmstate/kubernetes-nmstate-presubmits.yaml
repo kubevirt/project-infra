@@ -57,7 +57,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             env:
               - name: GIMME_GO_VERSION
                 value: "1.18"
@@ -93,7 +93,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             env:
               - name: GIMME_GO_VERSION
                 value: "1.18"
@@ -161,7 +161,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             env:
               - name: GIMME_GO_VERSION
                 value: "1.16"
@@ -196,7 +196,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             env:
               - name: GIMME_GO_VERSION
                 value: "1.16"

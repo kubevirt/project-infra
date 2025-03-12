@@ -412,9 +412,9 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"
             limits:
-              memory: "29Gi"
+              memory: "52Gi"
   - name: build-vm-image-builder-image
     always_run: false
     run_if_changed: "images/bootstrap/.*"
@@ -522,7 +522,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"
           volumeMounts:
           - name: molecule-docker
             mountPath: /tmp/prow-deploy-molecule
@@ -606,9 +606,9 @@ presubmits:
           image: quay.io/kubevirtci/golang:v20250211-4e3c019
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"
             limits:
-              memory: "29Gi"
+              memory: "52Gi"
           securityContext:
             privileged: true
             runAsUser: 0

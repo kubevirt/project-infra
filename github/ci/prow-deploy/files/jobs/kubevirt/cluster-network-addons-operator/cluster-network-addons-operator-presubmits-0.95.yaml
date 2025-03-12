@@ -24,7 +24,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -53,7 +53,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -82,7 +82,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -112,7 +112,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -170,7 +170,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -200,7 +200,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -230,7 +230,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -260,7 +260,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -291,7 +291,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -321,7 +321,7 @@ presubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"

@@ -65,7 +65,7 @@ postsubmits:
             name: devices
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"
     - name: publish-kubevirtci-s390x
       branches:
       - main
@@ -132,4 +132,4 @@ postsubmits:
             name: devices
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"

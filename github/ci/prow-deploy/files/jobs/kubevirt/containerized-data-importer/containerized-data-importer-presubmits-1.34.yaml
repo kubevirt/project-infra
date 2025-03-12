@@ -30,7 +30,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"
   - name: pull-containerized-data-importer-e2e-k8s-1.19-ceph
     branches:
       - release-v1.34
@@ -61,4 +61,4 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"

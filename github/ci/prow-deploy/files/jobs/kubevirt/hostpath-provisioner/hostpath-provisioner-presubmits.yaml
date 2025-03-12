@@ -32,7 +32,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"
   - name: pull-hostpath-provisioner-e2e-k8s-ceph
     skip_branches:
       - release-\d+\.\d+
@@ -65,7 +65,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"
   - name: pull-hostpath-provisioner-sanity
     skip_branches:
       - release-\d+\.\d+
@@ -128,7 +128,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "29Gi"
+              memory: "52Gi"
   - name: pull-hpp-unit-test
     cluster: kubevirt-prow-control-plane
     skip_branches:

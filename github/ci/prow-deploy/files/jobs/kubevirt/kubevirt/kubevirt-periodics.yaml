@@ -196,7 +196,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
       volumeMounts:
@@ -508,7 +508,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -644,7 +644,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
       volumeMounts:
@@ -1329,7 +1329,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -1383,7 +1383,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -1433,7 +1433,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -1483,7 +1483,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -1533,7 +1533,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -1758,7 +1758,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -1810,7 +1810,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -1860,7 +1860,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -1910,7 +1910,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -1960,7 +1960,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -2012,7 +2012,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -2062,7 +2062,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -2112,7 +2112,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -2164,7 +2164,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -2214,7 +2214,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -2266,7 +2266,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -2316,7 +2316,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
@@ -2366,7 +2366,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 29Gi
+          memory: 52Gi
       securityContext:
         privileged: true
     nodeSelector:
