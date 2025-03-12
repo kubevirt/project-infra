@@ -143,7 +143,7 @@ periodics:
         privileged: true
       resources:
         requests:
-          memory: "29Gi"
+          memory: "52Gi"
 - name: periodic-kubevirtci-bump-centos-base-s390x
   cron: "0 4 * * 2" #Triggered at same time as x86 job so that both will run on same commit
   annotations:
@@ -202,4 +202,4 @@ periodics:
         privileged: true
       resources:
         requests:
-          memory: "29Gi"
+          memory: "52Gi"

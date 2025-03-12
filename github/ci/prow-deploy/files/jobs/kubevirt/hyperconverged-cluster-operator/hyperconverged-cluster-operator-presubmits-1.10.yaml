@@ -33,7 +33,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "29Gi"
+            memory: "52Gi"
   - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.27
     branches:
       - release-1.10
@@ -67,4 +67,4 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "29Gi"
+            memory: "52Gi"

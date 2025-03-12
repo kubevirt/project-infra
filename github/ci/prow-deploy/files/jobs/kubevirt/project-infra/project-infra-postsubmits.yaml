@@ -231,9 +231,9 @@ postsubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
               limits:
-                memory: "29Gi"
+                memory: "52Gi"
     - name: publish-shared-images-controller-image
       always_run: false
       run_if_changed: "images/shared-images-controller/.*"
@@ -442,9 +442,9 @@ postsubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
               limits:
-                memory: "29Gi"
+                memory: "52Gi"
     - name: publish-vm-image-builder-image
       always_run: false
       run_if_changed: "images/vm-image-builder/.*"
@@ -474,9 +474,9 @@ postsubmits:
               privileged: true
             resources:
               requests:
-                memory: "29Gi"
+                memory: "52Gi"
               limits:
-                memory: "29Gi"
+                memory: "52Gi"
     - name: publish-fedora-coreos-kubevirt-image
       always_run: false
       run_if_changed: "images/fedora-coreos-kubevirt/.*"

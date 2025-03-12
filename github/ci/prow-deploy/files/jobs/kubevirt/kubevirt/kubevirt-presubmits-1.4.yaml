@@ -94,7 +94,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -218,7 +218,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
         volumeMounts:
@@ -280,7 +280,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -762,7 +762,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -806,7 +806,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -850,7 +850,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -945,7 +945,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
         volumeMounts:
@@ -1000,7 +1000,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
   - always_run: true
@@ -1068,7 +1068,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1106,7 +1106,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
   - always_run: false
@@ -1190,7 +1190,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1233,7 +1233,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1274,7 +1274,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1346,7 +1346,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1388,7 +1388,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1430,7 +1430,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1474,7 +1474,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1514,7 +1514,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1558,7 +1558,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1602,7 +1602,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1646,7 +1646,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1688,7 +1688,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1732,7 +1732,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1776,7 +1776,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1820,7 +1820,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1862,7 +1862,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:

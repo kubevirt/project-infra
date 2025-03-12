@@ -32,7 +32,7 @@ presubmits:
           privileged: true
         resources:
           requests:
-            memory: "29Gi"
+            memory: "52Gi"
   - name: pull-node-maintenance-operator-check
     cluster: kubevirt-prow-control-plane
     branches:
