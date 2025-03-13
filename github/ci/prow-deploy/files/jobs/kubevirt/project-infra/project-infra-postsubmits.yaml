@@ -113,6 +113,8 @@ postsubmits:
                 memory: "8Gi"
               limits:
                 memory: "8Gi"
+            securityContext:
+              privileged: true
     - name: publish-botreview-image
       always_run: false
       run_if_changed: "external-plugins/botreview/.*"
