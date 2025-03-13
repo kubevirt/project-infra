@@ -482,7 +482,7 @@ func (r *releaseData) forkProwJobs() error {
 	return nil
 }
 
-// configureReleaseJob changes the values from the configuration requuired for jobs running against
+// configureReleaseJob changes the values from the configuration required for jobs running against
 // main branch to what is required in the config for presubmits on release branches. It
 //   - changes { run_before_merge: true; always_run: false }
 //     to { always_run: true }
