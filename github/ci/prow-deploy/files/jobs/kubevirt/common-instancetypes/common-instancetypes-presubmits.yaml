@@ -15,7 +15,8 @@ presubmits:
       containers:
       - image: quay.io/kubevirtci/common-instancetypes-builder:v20250313-98b0031
         command:
-        - "/bin/bash"
+        - /usr/local/bin/runner.sh
+        - "/bin/sh"
         - "-c"
         - "make check-tree-clean all && cp _build/* /logs/artifacts"
         resources:
