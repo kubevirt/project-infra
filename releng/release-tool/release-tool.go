@@ -8,7 +8,10 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
+	"sigs.k8s.io/prow/pkg/config"
+	"sigs.k8s.io/yaml"
 	"sort"
 	"strconv"
 	"strings"
@@ -415,10 +418,22 @@ func (r *releaseData) forkProwJobs() error {
 	// create new prow configs if they don't already exist
 	if _, err := os.Stat(fullOutputConfig); err != nil && os.IsNotExist(err) {
 		log.Printf("Creating new prow yaml at path %s", fullOutputConfig)
-		cmd := exec.Command("/usr/bin/config-forker", "--job-config", fullJobConfig, "--version", version, "--output", fullOutputConfig)
+		temp, err := os.MkdirTemp("", "presubmits")
+		if err != nil {
+			log.Printf("ERROR: temp dir creation failed: %s", err)
+			return err
+		}
+		tempPresubmitsConfigPath := filepath.Join(temp, "presubmits.yaml")
+		cmd := exec.Command("/usr/bin/config-forker", "--job-config", fullJobConfig, "--version", version, "--output", tempPresubmitsConfigPath)
 		bytes, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Printf("ERROR: config-forker command output: %s : %s ", string(bytes), err)
+			return err
+		}
+
+		err = configureReleaseJob(tempPresubmitsConfigPath, fullOutputConfig)
+		if err != nil {
+			log.Printf("ERROR: configuring release job failed: %s", err)
 			return err
 		}
 
@@ -464,6 +479,48 @@ func (r *releaseData) forkProwJobs() error {
 		}
 	}
 
+	return nil
+}
+
+// configureReleaseJob changes the values from the configuration required for jobs running against
+// main branch to what is required in the config for presubmits on release branches. It
+//   - changes { run_before_merge: true; always_run: false }
+//     to { always_run: true }
+//   - deletes { labels.preset_bazel_cache: true }
+func configureReleaseJob(configPath string, outputPath string) error {
+	if outputPath == configPath {
+		return fmt.Errorf("output-path and config-path must not be the same")
+	}
+	jobConfig, err := config.ReadJobConfig(configPath)
+	if err != nil {
+		return err
+	}
+	for key, presubmits := range jobConfig.PresubmitsStatic {
+		var newPresubmits []config.Presubmit
+		for _, presubmit := range presubmits {
+			if presubmit.RunBeforeMerge {
+				presubmit.AlwaysRun = true
+				presubmit.RunBeforeMerge = false
+			}
+			if _, hasLabel := presubmit.Labels["preset-bazel-cache"]; hasLabel {
+				delete(presubmit.Labels, "preset-bazel-cache")
+			}
+			newPresubmits = append(newPresubmits, presubmit)
+		}
+		jobConfig.PresubmitsStatic[key] = newPresubmits
+	}
+	marshalled, err := yaml.Marshal(&jobConfig)
+	if err != nil {
+		return err
+	}
+	_, err = os.Stat(outputPath)
+	if err == nil || !os.IsNotExist(err) {
+		return fmt.Errorf("unexpected error on output file %s: %v", outputPath, err)
+	}
+	err = os.WriteFile(outputPath, marshalled, os.ModePerm)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
