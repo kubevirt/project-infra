@@ -13,9 +13,10 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/common-instancetypes-builder:v20241217-0005325
+      - image: quay.io/kubevirtci/common-instancetypes-builder:v20250313-98b0031
         command:
-        - "/bin/bash"
+        - /usr/local/bin/runner.sh
+        - "/bin/sh"
         - "-c"
         - "make check-tree-clean all && cp _build/* /logs/artifacts"
         resources:
@@ -48,7 +49,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: "1.22.9"
+          value: "1.23.7"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -89,7 +90,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -127,7 +128,7 @@ presubmits:
         - "sudo dnf install binutils-gold -y && make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_PROVIDER
           value: kind-1.28
         - name: KUBEVIRT_MEMORY_SIZE
@@ -182,7 +183,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -223,7 +224,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -264,7 +265,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -305,7 +306,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -343,7 +344,7 @@ presubmits:
         - "sudo dnf install binutils-gold -y && make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_PROVIDER
           value: kind-1.28
         - name: KUBEVIRT_MEMORY_SIZE
@@ -395,7 +396,7 @@ presubmits:
         - "sudo dnf install binutils-gold -y && make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_PROVIDER
           value: kind-1.28
         - name: KUBEVIRT_MEMORY_SIZE
@@ -450,7 +451,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -488,7 +489,7 @@ presubmits:
         - "sudo dnf install binutils-gold -y && make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_PROVIDER
           value: kind-1.28
         - name: KUBEVIRT_MEMORY_SIZE
@@ -543,7 +544,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -584,7 +585,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -622,7 +623,7 @@ presubmits:
         - "sudo dnf install binutils-gold -y && make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_PROVIDER
           value: kind-1.28
         - name: KUBEVIRT_MEMORY_SIZE
@@ -680,7 +681,7 @@ presubmits:
           make kubevirt-up && make kubevirt-sync && make kubevirt-sync-containerdisks && make kubevirt-functest
         env:
         - name: GIMME_GO_VERSION
-          value: 1.22.9
+          value: 1.23.7
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
