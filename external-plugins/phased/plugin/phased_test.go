@@ -16,6 +16,7 @@ import (
 	"sigs.k8s.io/prow/pkg/labels"
 
 	"kubevirt.io/project-infra/external-plugins/phased/plugin/handler"
+	kubeVirtLabels "kubevirt.io/project-infra/robots/pkg/github/labels"
 )
 
 const (
@@ -193,6 +194,12 @@ var _ = Describe("Phased", func() {
 					AddedLabel:      labels.Approved,
 					LGTMLabelExists: false,
 					ExpectComment:   false}),
+			Entry("Skip Review is added, LGTM and Approve dont exist",
+				TestCase{
+					AddedLabel:         kubeVirtLabels.SkipReview,
+					ApproveLabelExists: false,
+					LGTMLabelExists:    false,
+					ExpectComment:      true}),
 		)
 
 	})

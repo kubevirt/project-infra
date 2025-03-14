@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	pi_github "kubevirt.io/project-infra/robots/pkg/github"
+	kubeVirtLabels "kubevirt.io/project-infra/robots/pkg/github/labels"
 	"net/http"
 	"os"
 	"os/exec"
@@ -190,7 +191,8 @@ func (h *GitHubEventsHandler) shouldRunPhase2(org, repo, eventLabel string, prNu
 	}
 
 	return (eventLabel == labels.LGTM && github.HasLabel(labels.Approved, l)) ||
-		(eventLabel == labels.Approved && github.HasLabel(labels.LGTM, l)), nil
+		(eventLabel == labels.Approved && github.HasLabel(labels.LGTM, l)) ||
+		(eventLabel == kubeVirtLabels.SkipReview), nil
 }
 
 func catFile(log *logrus.Logger, gitDir, file, refspec string) ([]byte, int) {
