@@ -49,7 +49,9 @@ func init() {
 type options struct {
 	port int
 
-	dryRun bool
+	dryRun                               bool
+	maximumNumberOfAllowedRetestComments int
+
 	github prowflagutil.GitHubOptions
 	labels prowflagutil.Strings
 
@@ -100,6 +102,7 @@ func gatherOptions() options {
 	fs.StringVar(&o.webhookSecretFile, "hmac-secret-file", "/etc/webhook/hmac", "Path to the file containing the GitHub HMAC secret.")
 	fs.StringVar(&o.team, "team", "sig-buildsystem", "Name of the GitHub team that should be pinged.")
 	fs.StringVar(&o.initialRetestRepositories, "initial-retest-repositories", "kubevirt/kubevirt", "Comma-separated names of GitHub repositories to fetch the number of retest comments for open lgtm/approved pull request in format org/repo1,org/repo2,... ")
+	fs.IntVar(&o.maximumNumberOfAllowedRetestComments, "max-no-of-allowed-retest-comments", server.DefaultMaximumNumberOfAllowedRetestComments, "Maximum number of allowed retest comments.")
 	for _, group := range []flagutil.OptionGroup{&o.github} {
 		group.AddFlags(fs)
 	}
@@ -151,7 +154,8 @@ func main() {
 		GHGraphQLClient: gitHubGQLClient,
 		Log:             log,
 
-		DryRun: o.dryRun,
+		DryRun:                               o.dryRun,
+		MaximumNumberOfAllowedRetestComments: o.maximumNumberOfAllowedRetestComments,
 	}
 
 	mux := http.NewServeMux()

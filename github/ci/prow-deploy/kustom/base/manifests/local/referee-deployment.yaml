@@ -21,6 +21,7 @@ spec:
         image: quay.io/kubevirtci/referee:v20250121-1e74906d2
         args:
         - --dry-run=false
+        # - --max-no-of-allowed-retest-comments=3 TODO enable this after image update
         - --port=9900
         - --github-token-path=/etc/github/oauth
         - --github-endpoint=http://ghproxy
