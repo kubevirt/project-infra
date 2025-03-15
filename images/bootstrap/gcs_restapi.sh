@@ -81,11 +81,17 @@ upload_to_gcs() {
 stat_gcs_file() {
     local bucket_name="$1"
     local gcs_file_path=$(urlencode_path "$2")
+    local auth="$3"
 
-    get_access_token
+    if [ "$auth" == "false" ]; then
+        auth_header=""
+    else
+        get_access_token
+        auth_header="-H \"Authorization: Bearer $access_token\""
+    fi
 
     stat_response=$(curl -s -X GET \
-      -H "Authorization: Bearer $access_token" \
+      $auth_header \
       "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path")
 
     if echo "$stat_response" | jq -e '.error' > /dev/null; then
@@ -99,12 +105,19 @@ stat_gcs_file() {
 cat_gcs_file() {
     local bucket_name="$1"
     local gcs_file_path=$(urlencode_path "$2")
+    local auth="$3"
 
-    get_access_token
+    if [ "$auth" == "false" ]; then
+        auth_header=""
+    else
+        get_access_token
+        auth_header="-H \"Authorization: Bearer $access_token\""
+    fi
 
-    file_content=$(curl -s -X GET \
-      -H "Authorization: Bearer $access_token" \
-      "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path?alt=media")
+    file_content=$(curl --silent --fail -X GET \
+      $auth_header \
+      -H "Cache-Control: no-cache" \
+      "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path?alt=media&ignoreCache=1")
 
     if [ -z "$file_content" ]; then
         echo "Error: No content received"
