@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-subset
+spec:
+  ports:
+    - port: 9900
+      protocol: TCP
+      targetPort: 9900
+  selector:
+    app: test-subset
+  type: ClusterIP
