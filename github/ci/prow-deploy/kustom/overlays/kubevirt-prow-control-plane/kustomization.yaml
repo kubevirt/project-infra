@@ -31,6 +31,12 @@ patches:
       version: v1
       group: apps
       kind: Deployment
+      name: test-subset
+    path: patches/JsonRFC6902/test-subset-deployment.yaml
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
       name: gcsweb
     path: patches/JsonRFC6902/gcsweb-deployment.yaml
   - target:
@@ -198,6 +204,12 @@ patches:
       version: v1
       kind: ClusterRoleBinding
       name: prow-rehearse
+    path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: ClusterRoleBinding
+      name: test-subset
     path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
   - target:
       group: rbac.authorization.k8s.io
