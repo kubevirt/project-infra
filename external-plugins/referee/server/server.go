@@ -35,7 +35,7 @@ import (
 )
 
 const PluginName = "referee"
-const defaultMaximumNumberOfAllowedRetestComments = 5
+const DefaultMaximumNumberOfAllowedRetestComments = 5
 
 type TooManyRequestsData struct {
 	Author string
@@ -86,6 +86,10 @@ type Server struct {
 
 	// DryRun says whether to create comments on PRs or to just write them to the log
 	DryRun bool
+
+	// MaximumNumberOfAllowedRetestComments defines the max number of allowed retests per commit
+	// value defaults to DefaultMaximumNumberOfAllowedRetestComments
+	MaximumNumberOfAllowedRetestComments int
 
 	// Team is the name of the GitHub team that should be pinged
 	Team string
@@ -225,8 +229,9 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 	// update per pr retest rate
 	metrics.SetForPullRequest(org, repo, num, prTimeLineForLastCommit.NumberOfRetestComments)
 
-	if prTimeLineForLastCommit.NumberOfRetestComments < defaultMaximumNumberOfAllowedRetestComments {
-		log.Debugf("skipping due to number of retest comments (%d) less than max allowed (%d)", prTimeLineForLastCommit.NumberOfRetestComments, defaultMaximumNumberOfAllowedRetestComments)
+	maxNumberOfAllowedRetestComments := s.maxNumberOfAllowedRetestComments()
+	if prTimeLineForLastCommit.NumberOfRetestComments < maxNumberOfAllowedRetestComments {
+		log.Debugf("skipping due to number of retest comments (%d) less than max allowed (%d)", prTimeLineForLastCommit.NumberOfRetestComments, maxNumberOfAllowedRetestComments)
 		return nil
 	}
 
@@ -271,4 +276,11 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 		}
 	}
 	return nil
+}
+
+func (s *Server) maxNumberOfAllowedRetestComments() int {
+	if s.MaximumNumberOfAllowedRetestComments > 0 {
+		return s.MaximumNumberOfAllowedRetestComments
+	}
+	return DefaultMaximumNumberOfAllowedRetestComments
 }
