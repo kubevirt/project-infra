@@ -9,7 +9,7 @@ RUN mkdir kubevirt && \
     cd kubevirt && \
     git clone https://github.com/kubevirt/project-infra.git && \
     cd project-infra && \
-    /usr/local/bin/runner.sh /bin/sh -c "env GOPROXY=off go build -tags netgo -o /go/bin/test-subset ./external-plugins/test-subset/main.go"
+    /usr/local/bin/runner.sh /bin/sh -c "env GOPROXY=off go build -tags netgo -o /go/bin/test-subset ./external-plugins/test-subset/plugin/main.go"
 
 FROM gcr.io/k8s-prow/git:v20240729-4f255edb07
 COPY --from=builder /go/bin/test-subset /usr/bin/test-subset
