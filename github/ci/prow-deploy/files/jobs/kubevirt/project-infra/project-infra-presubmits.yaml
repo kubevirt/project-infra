@@ -488,6 +488,30 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
+  - name: build-test-subset-image
+    always_run: false
+    run_if_changed: "images/test-subset/.*|external-plugins/test-subset/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b test-subset quay.io kubevirtci"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
   - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/.*"
