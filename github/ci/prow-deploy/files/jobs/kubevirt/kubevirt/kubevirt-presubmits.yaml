@@ -53,7 +53,7 @@ presubmits:
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --prometheus-port 30007
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
         name: ""
         resources:
@@ -65,7 +65,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -85,6 +84,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-windows2016
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -108,7 +108,6 @@ presubmits:
         type: bare-metal-external
       priorityClassName: windows
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -124,6 +123,7 @@ presubmits:
       vgpu: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.30-vgpu
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -137,7 +137,6 @@ presubmits:
                 values:
                 - "true"
             topologyKey: kubernetes.io/hostname
-            weight: 100
       containers:
       - command:
         - /usr/local/bin/runner.sh
@@ -179,7 +178,6 @@ presubmits:
           type: Directory
         name: audit
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
@@ -191,13 +189,14 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-unnested: "true"
-      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
       rehearsal.allowed: "true"
       sriov-pod: "true"
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-sriov
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -292,7 +291,7 @@ presubmits:
         - name: KUBEVIRT_PSA
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
         name: ""
         resources:
@@ -852,7 +851,6 @@ presubmits:
         securityContext:
           privileged: true
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -871,6 +869,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.32-ipv6-sig-network
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1157,7 +1156,6 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     name: pull-kubevirt-code-lint
-    optional: false
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1396,7 +1394,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    optional: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1415,6 +1412,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.32-sig-compute-realtime
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1471,7 +1469,6 @@ presubmits:
         securityContext:
           privileged: true
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1490,6 +1487,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.30-sig-network
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1518,7 +1516,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1537,6 +1534,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.30-sig-storage
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1554,7 +1552,7 @@ presubmits:
         - name: FEATURE_GATES
           value: NodeRestriction
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
         name: ""
         resources:
@@ -1565,7 +1563,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1584,6 +1581,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.30-sig-compute
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1612,7 +1610,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1631,6 +1628,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.30-sig-operator
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1657,7 +1655,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1676,6 +1673,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.31-sig-network
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1704,7 +1702,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1723,6 +1720,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.31-sig-storage
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1738,7 +1736,7 @@ presubmits:
         - name: KUBEVIRT_PSA
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         - name: FEATURE_GATES
           value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
@@ -1763,10 +1761,10 @@ presubmits:
       preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.31-sig-compute-conformance
     optional: true
@@ -1796,7 +1794,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1815,6 +1812,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.31-sig-compute
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1843,7 +1841,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    run_before_merge: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1862,6 +1859,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.31-sig-operator
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1904,9 +1902,9 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
     name: pull-kubevirt-e2e-k8s-1.32-sig-performance-kwok
+    optional: true
     skip_branches:
     - release-\d+\.\d+
-    optional: true
     spec:
       containers:
       - command:
@@ -2159,6 +2157,192 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
+        - name: FEATURE_GATES
+          value: NodeRestriction
+        image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-etcd-in-mem: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.33-sig-network
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.33-sig-network
+        - name: KUBEVIRT_PSA
+          value: "true"
+        - name: KUBEVIRT_NUM_NODES
+          value: "3"
+        - name: FEATURE_GATES
+          value: NodeRestriction
+        image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-etcd-in-mem: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.33-sig-storage
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.33-sig-storage
+        - name: KUBEVIRT_PSA
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: 1G
+        - name: FEATURE_GATES
+          value: NodeRestriction
+        image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-etcd-in-mem: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.33-sig-compute
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.33-sig-compute
+        - name: KUBEVIRT_PSA
+          value: "true"
+        - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+          value: --usb 30M --usb 40M
+        - name: FEATURE_GATES
+          value: NodeRestriction
+        image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-etcd-in-mem: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.33-sig-operator
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.33-sig-operator
+        - name: KUBEVIRT_PSA
+          value: "true"
         - name: FEATURE_GATES
           value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
