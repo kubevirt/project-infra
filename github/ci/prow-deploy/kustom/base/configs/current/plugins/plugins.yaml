@@ -688,13 +688,15 @@ approve:
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
-  commandHelpLink: https://go.k8s.io/bot-commands
+  commandHelpLink: https://prow.ci.kubevirt.io/command-help
+  pr_process_link: https://github.com/kubevirt/community/blob/main/docs/add-merge-automation-to-your-repository.md#example-workflow
 - repos:
   - kubevirt/secrets
   require_self_approval: false
   lgtm_acts_as_approve: true
   ignore_review_state: true
-  commandHelpLink: https://go.k8s.io/bot-commands
+  commandHelpLink: https://prow.ci.kubevirt.io/command-help
+  pr_process_link: https://github.com/kubevirt/community/blob/main/docs/add-merge-automation-to-your-repository.md#example-workflow
 
 lgtm:
 - repos:
