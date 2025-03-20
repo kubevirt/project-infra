@@ -1293,7 +1293,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
-        image: quay.io/kubevirtci/bootstrap:v20240118-315742b
+        image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
         name: ""
         resources:
           requests:
