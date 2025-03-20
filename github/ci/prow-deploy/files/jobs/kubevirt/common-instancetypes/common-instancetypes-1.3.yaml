@@ -696,7 +696,7 @@ presubmits:
         type: bare-metal-external
   - name: pull-common-instancetypes-kubevirt-functest-debian-11-1.3
     branches:
-      - main
+      - release-1.3
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/debian/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
@@ -737,7 +737,7 @@ presubmits:
         type: bare-metal-external
   - name: pull-common-instancetypes-kubevirt-functest-debian-11-arm64-1.3
     branches:
-      - main
+      - relase-1.3
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/debian/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-arm64-workloads
@@ -789,7 +789,7 @@ presubmits:
           name: audit
   - name: pull-common-instancetypes-kubevirt-functest-debian-12-1.3
     branches:
-      - main
+      - relase-1.3
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/debian/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
@@ -830,7 +830,7 @@ presubmits:
         type: bare-metal-external
   - name: pull-common-instancetypes-kubevirt-functest-debian-12-arm64-1.3
     branches:
-      - main
+      - relase-1.3
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/debian/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-arm64-workloads
