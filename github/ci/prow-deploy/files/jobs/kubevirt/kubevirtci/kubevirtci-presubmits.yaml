@@ -411,7 +411,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 8Gi
+            memory: 16Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -497,7 +497,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 8Gi
+            memory: 16Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -553,7 +553,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 8Gi
+            memory: 16Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -581,7 +581,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 8Gi
+            memory: 16Gi
         securityContext:
           privileged: true
       nodeSelector:
