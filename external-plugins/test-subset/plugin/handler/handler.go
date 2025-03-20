@@ -109,36 +109,40 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, event *g
 
 	org, repo, err := pi_github.OrgRepo(event.Repo.FullName)
 	if err != nil {
-		log.WithError(err).Errorf("Could not get OrgRepo %s", event.Repo.FullName)
+		log.WithError(err).Errorf("could not get OrgRepo %s", event.Repo.FullName)
 		return
 	}
 
 	if !(org == "kubevirt" && repo == "kubevirt") {
+		log.WithFields(logrus.Fields{"org": org, "repo": repo}).Debug("org/repo mismatch - aborting")
 		return
 	}
 
 	pr, err := h.ghClient.GetPullRequest(org, repo, event.Issue.Number)
 	if err != nil {
-		log.WithError(err).Errorf("Could not get PR number %d", event.Issue.Number)
+		log.WithError(err).Errorf("could not get PR number %d", event.Issue.Number)
 		return
 	}
 
 	if !isOpenUnmerged(*pr) {
+		log.WithField("isOpenUnmerged", "false").Debug("invalid state - aborting")
 		return
 	}
 
 	if !h.canUserTrigger(org, event.Comment.User.Login) {
+		log.WithField("canUserTrigger", "false").Debugf("%s can't trigger - aborting", event.Comment.User.Login)
 		return
 	}
 
 	if !testSubsetCommentRe.MatchString(event.Comment.Body) {
-		log.Errorf("Comment does not match the expected syntax, %s", event.Comment.Body)
+		log.Errorf("comment does not match the expected syntax, %s", event.Comment.Body)
 		return
 	}
 
 	matches := testSubsetCommentRe.FindStringSubmatch(event.Comment.Body)
 	// extra precaution, not mandatory due to the regex
 	if len(matches) < 3 {
+		log.WithField("matches", fmt.Sprintf("%v", matches)).Debug("no match - aborting")
 		return
 	}
 
@@ -155,6 +159,7 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, event *g
 	}
 
 	if presubmits == nil {
+		log.Debug("no presubmits - aborting")
 		return
 	}
 
@@ -168,6 +173,7 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, event *g
 	}
 
 	if presubmit.Name == "" {
+		log.Debugf("no presubmit %s found - aborting", jobName)
 		return
 	}
 
@@ -182,6 +188,7 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, event *g
 	testSubsetName := strings.Join([]string{"test-subset", job.Spec.Job}, "-")
 	job.Spec.Job = testSubsetName
 	job.Spec.Context = testSubsetName
+	log.WithField("job", fmt.Sprintf("%v", job)).Debug("creating prow job")
 	_, err = h.prowClient.Create(context.Background(), &job, metav1.CreateOptions{})
 	if err != nil {
 		log.WithError(err).Errorf("Error creating prow job")
@@ -266,6 +273,11 @@ func fetchRemoteFile(url string) ([]byte, error) {
 }
 
 func isOpenUnmerged(pr github.PullRequest) bool {
+	log.WithFields(logrus.Fields{
+		"merged":   pr.Merged,
+		"state":    pr.State,
+		"mergable": pr.Mergable,
+	}).Trace("isOpenUnmerged")
 	if pr.Merged || pr.State != "open" {
 		return false
 	}
@@ -364,6 +376,11 @@ func (h *GitHubEventsHandler) shouldActOnIssueComment(event *github.IssueComment
 
 func (h *GitHubEventsHandler) canUserTrigger(org string, userName string) bool {
 	isMember, err := h.ghClient.IsMember(org, userName)
+	log.WithFields(logrus.Fields{
+		"org":      org,
+		"userName": userName,
+		"isMember": isMember,
+	}).Trace("canUserTrigger")
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate PR author with the repo org")
 		return false
