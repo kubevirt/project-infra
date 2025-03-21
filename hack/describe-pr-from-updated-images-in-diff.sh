@@ -21,8 +21,7 @@
 
 set -euo pipefail
 
-BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-PROJECT_INFRA_ROOT=$(readlink --canonicalize ${BASEDIR}/..)
+PROJECT_INFRA_ROOT=$(readlink --canonicalize "$( dirname "${BASH_SOURCE[0]}" )/..")
 
 function main() {
     headline="Bump prow-deploy images"
@@ -39,8 +38,8 @@ FYI @kubevirt/prow-job-taskforce
 Images updated:
 EOF
     for image in $(
-        git diff -- ${PROJECT_INFRA_ROOT}/github/ci/prow-deploy | \
-            grep -E '^\+\s+- image: ' | \
+        git show -- "${PROJECT_INFRA_ROOT}/github/ci/prow-deploy" | \
+            grep -E '^\+\s+-? image: ' | \
             grep -oE 'quay.io/kubevirtci/[^: @]+' | \
             sort -u
     ); do
