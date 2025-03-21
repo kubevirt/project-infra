@@ -14,6 +14,8 @@ import (
 	"text/template"
 	"time"
 
+	"gopkg.in/yaml.v3"
+
 	grob "github.com/MetalBlueberry/go-plotly/graph_objects"
 	"github.com/MetalBlueberry/go-plotly/offline"
 	gonumplot "gonum.org/v1/plot"
@@ -37,6 +39,18 @@ type PlotData struct {
 	XAxisLabel string
 	YAxisLabel string
 	Curves     []Curve
+}
+
+type LineShape struct {
+	Type     string            `json:"type,omitempty"`
+	X0       string            `json:"x0,omitempty"`
+	X1       string            `json:"x1,omitempty"`
+	Y0       float64           `json:"y0"`
+	Y1       float64           `json:"y1,omitempty"`
+	Yref     string            `json:"yref,omitempty"`
+	Editable bool              `json:"editable"`
+	Line     grob.ScatterLine  `json:"line,omitempty"`
+	Label    map[string]string `json:"label"`
 }
 
 func gatherPlotData(basePath string, resource string, metric ResultType, since *time.Time) ([]Curve, error) {
@@ -213,7 +227,7 @@ func drawDynamicGraph(filepath string, data PlotData) error {
 	return nil
 }
 
-func figFromData(data PlotData) *grob.Fig {
+func figFromData(data PlotData, isDuringRelease bool) *grob.Fig {
 	fig := &grob.Fig{
 		Data: grob.Traces{
 			&grob.Scatter{
@@ -240,6 +254,22 @@ func figFromData(data PlotData) *grob.Fig {
 			Xaxis: &grob.LayoutXaxis{Type: grob.LayoutXaxisTypeDate},
 		},
 	}
+
+	if isDuringRelease {
+		yamlData, err := os.ReadFile("./robots/cmd/perf-report-creator/shape.yaml")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var shapes []LineShape
+		err = yaml.Unmarshal(yamlData, &shapes)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fig.Layout.Shapes = shapes
+	}
+
 	return fig
 }
 
@@ -269,6 +299,7 @@ func plotWeeklyGraph(opts weeklyGraphOpts) error {
 	if err != nil {
 		return err
 	}
+
 	for _, metric := range metrics {
 		data, err := gatherPlotData(opts.weeklyReportsDir, opts.resource, ResultType(metric), &since)
 		if err != nil {
@@ -295,9 +326,15 @@ func plotWeeklyGraph(opts weeklyGraphOpts) error {
 			XAxisLabel: "Start date of week",
 			YAxisLabel: "Metric Value",
 			Curves:     data,
-		}))
+		}, opts.isDuringRelease))
 	}
-	ToHtml(figs, filepath.Join(opts.weeklyReportsDir, opts.resource, "index.html"))
+
+	htmlFileName := "index.html"
+	if opts.isDuringRelease {
+		htmlFileName = "release-index.html"
+	}
+
+	ToHtml(figs, filepath.Join(opts.weeklyReportsDir, opts.resource, htmlFileName))
 
 	return errors.NewAggregate(errs)
 }
