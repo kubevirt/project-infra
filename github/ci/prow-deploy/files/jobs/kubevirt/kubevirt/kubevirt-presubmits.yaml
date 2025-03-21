@@ -189,8 +189,8 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-unnested: "true"
+      preset-pinc-in-mem-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
       rehearsal.allowed: "true"
       sriov-pod: "true"
@@ -1954,7 +1954,7 @@ presubmits:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
-      preset-podman-in-container-enabled: "true"
+      preset-pinc-in-mem-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -2046,7 +2046,7 @@ presubmits:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
-      preset-podman-in-container-enabled: "true"
+      preset-pinc-in-mem-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -2092,7 +2092,7 @@ presubmits:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
-      preset-podman-in-container-enabled: "true"
+      preset-pinc-in-mem-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
@@ -2136,7 +2136,7 @@ presubmits:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
-      preset-podman-in-container-enabled: "true"
+      preset-pinc-in-mem-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
