@@ -19,7 +19,7 @@ presubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
+          - image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
             securityContext:
               privileged: true
             command:
@@ -49,7 +49,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
+          - image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
             securityContext:
               privileged: true
             resources:
