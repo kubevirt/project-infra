@@ -88,7 +88,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    optional: true
+    optional: false
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
@@ -194,7 +194,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    optional: true
     run_if_changed: "artifacts/centosstream/.*"
     annotations:
       testgrid-create-test-group: "false"
@@ -301,7 +300,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    optional: true
     run_if_changed: "artifacts/ubuntu/.*"
     annotations:
       testgrid-create-test-group: "false"
