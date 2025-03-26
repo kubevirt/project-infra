@@ -96,7 +96,7 @@ type MockResponse struct {
 type MockResponses map[string]MockResponse
 
 type testCaseDataForTestRemoveStaleDownloadURLS struct {
-	name		   string
+	name           string
 	data           []byte
 	responses      MockResponses
 	expectedLength int
@@ -116,8 +116,7 @@ rpm(
 )
 `),
 		responses: MockResponses{
-			"https://mirror.ette.biz/fedora/linux/updates/32/Everything/x86_64/Packages/v/vim-minimal-8.2.2146-2.fc32.x86_64.rpm":
-			MockResponse{
+			"https://mirror.ette.biz/fedora/linux/updates/32/Everything/x86_64/Packages/v/vim-minimal-8.2.2146-2.fc32.x86_64.rpm": MockResponse{
 				resp: &http.Response{
 					StatusCode: 404,
 					Body:       http.NoBody,
@@ -139,8 +138,7 @@ rpm(
 )
 `),
 		responses: MockResponses{
-			"https://mirror.dogado.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm":
-			MockResponse{
+			"https://mirror.dogado.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm": MockResponse{
 				resp: &http.Response{
 					StatusCode: 200,
 					Body:       http.NoBody,
@@ -157,7 +155,7 @@ rpm(
     sha256 = "c7e5d5de11d4c791596ca39d1587c50caba0e06f12a7c24c5d40421d291cd661",
 )
 `),
-		responses: MockResponses{},
+		responses:      MockResponses{},
 		expectedLength: 0,
 	},
 	{
@@ -170,8 +168,7 @@ rpm(
 )
 `),
 		responses: MockResponses{
-			"https://mirror.dogado.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm":
-			MockResponse{
+			"https://mirror.dogado.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm": MockResponse{
 				resp: &http.Response{
 					StatusCode: 404,
 					Body:       http.NoBody,
@@ -190,8 +187,7 @@ rpm(
 )
 `),
 		responses: MockResponses{
-			"https://mirror.dogado.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm":
-			MockResponse{
+			"https://mirror.dogado.de/fedora/linux/updates/32/Everything/x86_64/Packages/f/findutils-4.7.0-4.fc32.x86_64.rpm": MockResponse{
 				resp: &http.Response{
 					StatusCode: 200,
 					Body:       http.NoBody,
@@ -224,10 +220,10 @@ func TestRemoveStaleDownloadURLS(t *testing.T) {
 }
 
 type testCaseDataForForCheckArtifactsHaveURLs struct {
-	name		   string
-	data           []byte
-	expectFails    bool
-	shouldContain  []string
+	name          string
+	data          []byte
+	expectFails   bool
+	shouldContain []string
 }
 
 var testCasesForCheckArtifactsHaveURLs = []testCaseDataForForCheckArtifactsHaveURLs{
@@ -325,7 +321,7 @@ func TestCheckArtifactsHaveURLS(t *testing.T) {
 
 type artifactAppendURLTestData struct {
 	artifact     *Artifact
-	newURL 	     string
+	newURL       string
 	expectedURLs []string
 }
 
@@ -362,8 +358,8 @@ var artifactAppendURLTestDataSet = []artifactAppendURLTestData{
 				&build.CallExpr{
 					List: []build.Expr{
 						&build.AssignExpr{
-							Comments:  build.Comments{},
-							LHS:       &build.Ident{
+							Comments: build.Comments{},
+							LHS: &build.Ident{
 								Comments: build.Comments{},
 								NamePos:  build.Position{},
 								Name:     "url",
@@ -371,7 +367,7 @@ var artifactAppendURLTestDataSet = []artifactAppendURLTestData{
 							OpPos:     build.Position{},
 							Op:        "=",
 							LineBreak: false,
-							RHS:       &build.StringExpr{
+							RHS: &build.StringExpr{
 								Comments:    build.Comments{},
 								Start:       build.Position{},
 								Value:       "test42",
@@ -397,8 +393,8 @@ var artifactAppendURLTestDataSet = []artifactAppendURLTestData{
 				&build.CallExpr{
 					List: []build.Expr{
 						&build.AssignExpr{
-							Comments:  build.Comments{},
-							LHS:       &build.Ident{
+							Comments: build.Comments{},
+							LHS: &build.Ident{
 								Comments: build.Comments{},
 								NamePos:  build.Position{},
 								Name:     "urls",
@@ -406,10 +402,10 @@ var artifactAppendURLTestDataSet = []artifactAppendURLTestData{
 							OpPos:     build.Position{},
 							Op:        "=",
 							LineBreak: false,
-							RHS:       &build.ListExpr{
-								Comments:       build.Comments{},
-								Start:          build.Position{},
-								List:           []build.Expr{
+							RHS: &build.ListExpr{
+								Comments: build.Comments{},
+								Start:    build.Position{},
+								List: []build.Expr{
 									&build.StringExpr{
 										Comments:    build.Comments{},
 										Start:       build.Position{},
