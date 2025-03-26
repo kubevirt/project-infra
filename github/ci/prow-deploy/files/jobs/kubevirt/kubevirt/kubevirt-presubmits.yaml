@@ -282,7 +282,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh
+        - TARGET_COMMIT_RANGE=$PULL_BASE_SHA.. automation/repeated_test.sh
         env:
         - name: KUBEVIRT_E2E_PARALLEL
           value: "true"
