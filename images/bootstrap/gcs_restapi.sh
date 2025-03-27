@@ -15,7 +15,7 @@
 
 BASE_URL="https://storage.googleapis.com"
 
-# Function to validate GOOGLE_APPLICATION_CREDENTIALS and and set access_token global variable
+# Function to validate GOOGLE_APPLICATION_CREDENTIALS and set access_token global variable
 get_access_token() {
     if [ -z "${GOOGLE_APPLICATION_CREDENTIALS}" ]; then
         echo "GOOGLE_APPLICATION_CREDENTIALS is not set. Please set it to the path of your service account key file."
@@ -56,7 +56,7 @@ get_auth_header() {
     fi
 
     get_access_token || exit 1
-    echo "-H \"Authorization: Bearer $access_token\""
+    echo "Authorization: Bearer $access_token"
 }
 
 urlencode_path() {
@@ -75,7 +75,7 @@ upload_to_gcs() {
 
     upload_response=$(curl -X POST \
       --data-binary @"$source_file" \
-      $auth_header \
+      -H "$auth_header" \
       -H "Content-Type: $content_type" \
       "${BASE_URL}/upload/storage/v1/b/$bucket_name/o?uploadType=media&name=$destination_blob")
 
@@ -98,7 +98,7 @@ stat_gcs_file() {
     auth_header=$(get_auth_header "$auth") || exit 1
 
     stat_response=$(curl -s -X GET \
-      $auth_header \
+      ${auth_header:+-H "$auth_header"} \
       "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path")
 
     if echo "$stat_response" | jq -e '.error' > /dev/null; then
@@ -117,7 +117,7 @@ cat_gcs_file() {
     auth_header=$(get_auth_header "$auth") || exit 1
 
     file_content=$(curl --silent --fail -X GET \
-      $auth_header \
+      ${auth_header:+-H "$auth_header"} \
       -H "Cache-Control: no-cache" \
       "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path?alt=media&ignoreCache=1")
 
@@ -138,7 +138,7 @@ rm_gcs_file() {
     auth_header=$(get_auth_header) || exit 1
 
     delete_response=$(curl -s -X DELETE \
-      $auth_header \
+      -H "$auth_header" \
       "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path")
 
     if [ -z "$delete_response" ]; then
