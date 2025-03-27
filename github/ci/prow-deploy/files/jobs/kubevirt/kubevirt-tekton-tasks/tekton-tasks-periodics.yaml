@@ -35,3 +35,39 @@ periodics:
         resources:
           requests:
             memory: "200Mi"
+  - name: periodic-update-virtio-win-container-version
+    cron: 0 2 * * 1
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+    max_concurrency: 1
+    cluster: kubevirt-prow-control-plane
+    extra_refs:
+    - org: kubevirt
+      repo: kubevirt-tekton-tasks
+      base_ref: main
+    - org: kubevirt
+      repo: project-infra
+      base_ref: main
+    labels:
+      preset-github-credentials: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/pr-creator:v20240913-6773146
+        env:
+        command: [ "/bin/bash", "-ce" ]
+        args:
+        - |
+          tt_dir=$(cd ../kubevirt-tekton-tasks && pwd)
+          # Fetch kubevirt version
+          KUBEVIRT_VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | \
+            jq -r '[.[]|select(.prerelease==false) | .tag_name] | sort | last')
+
+          command="sed -i 's/quay.io\/kubevirt\/virtio-container-disk.*/quay.io\/kubevirt\/virtio-container-disk:${KUBEVIRT_VERSION}/g' templates-pipelines/windows-efi-installer/manifests/windows-efi-installer.yaml release/pipelines/windows-efi-installer/windows-efi-installer.yaml"
+          description="Automated update of virtio win image version to ${KUBEVIRT_VERSION}\n\n\\\`\\\`\\\`release-note\nUpdated virtio win image to ${KUBEVIRT_VERSION}\n\\\`\\\`\\\`"
+          git-pr.sh -c "${command}" -p "${tt_dir}" -d "echo -e \"${description}\"" -r kubevirt-tekton-tasks -b update-virtio-win-container -T main
+        resources:
+          requests:
+            memory: "200Mi"
