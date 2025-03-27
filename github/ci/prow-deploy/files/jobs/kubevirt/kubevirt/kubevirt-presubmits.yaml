@@ -974,8 +974,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.32-sig-compute-migrations
-        - name: KUBEVIRT_NUM_NODES
-          value: "3"
         - name: KUBEVIRT_STORAGE
           value: rook-ceph-default
         - name: FEATURE_GATES
