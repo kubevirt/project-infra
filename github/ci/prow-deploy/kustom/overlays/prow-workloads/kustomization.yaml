@@ -15,6 +15,20 @@ resources:
 components:
   - ../../components/docker-mirror-proxy/hostpath
 
+patches:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: docker-mirror-proxy
+    path: patches/JsonRFC6902/docker_mirror_deployment.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: greenhouse
+    path: patches/JsonRFC6902/greenhouse_deployment.yaml
+
 generatorOptions:
   disableNameSuffixHash: true
 
