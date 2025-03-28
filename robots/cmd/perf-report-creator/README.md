@@ -63,6 +63,8 @@ Usage of weekly-graph:
         comma separated list of metrics to be plotted (default "vmiCreationToRunningSecondsP95")
   -plotly-html
         boolean for selecting what kind of graph will be plotted (default true)
+  -is-release
+        boolean for selecting if the graph is for a release version (default false)
   -resource string
         resource for which the graph will be plotted (default "vmi")
   -weekly-reports-dir string
@@ -77,3 +79,47 @@ or `<output-dir>/<vmi/vm>/<week-start-date>/index.html` depending on the command
 
 All the three steps will be run in sequence to generate weekly graphs that can be uploaded to a separate git repository
 to keep track of performance numbers over time/versions.
+
+##### Release Graph Usage
+
+#### How to use automated release graph creation
+
+This is a setup script to create a release graph for a given release version.
+
+Before running the script, please make sure you have the following:
+
+1. A fork github repository `ci-performance-benchmarks`.
+2. A github account with write access to the `ci-performance-benchmarks` repository.
+3. Have a github token/password handy.
+4. Set the following environment variables:
+    - GIT_AUTHOR_NAME
+    - GIT_AUTHOR_EMAIL
+    - RELEASE_VERSION
+    - SINCE_DATE
+5. Update the shape.yaml file with all the fields for the release version. and remove the data for the releases before the since date.
+Example:
+```
+- type: line
+  x0: "2024-12-05"  # date of the release
+  x1: "2024-12-05"  # date of the release
+  y0: 0
+  y1: 1
+  yref: paper
+  editable: true  
+  line:
+    color: violet # color of the line
+    width: 2
+    dash: dot
+  label:
+    text: k8s-1.31   # release version/k8s version
+    xanchor: right
+```
+
+And run the shell script inside a container using the following command.
+
+```shell
+docker run -it --rm -v $(pwd):/src ubuntu:latest /src/hack/plot_release_graph.sh
+```
+
+This step will create a release graph for the given release version. It will create a new branch, push the changes to the 
+target github repository and create a Pull request.
