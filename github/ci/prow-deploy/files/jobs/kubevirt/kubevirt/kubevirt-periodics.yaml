@@ -1368,10 +1368,6 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.32-sig-compute-migrations
-      - name: KUBEVIRT_NUM_NODES
-        value: "3"
-      - name: KUBEVIRT_STORAGE
-        value: rook-ceph-default
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
       name: ""
       resources:
