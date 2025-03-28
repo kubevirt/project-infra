@@ -35,8 +35,10 @@ periodics:
           url=https://storage.googleapis.com/kubevirt-prow/devel/release/kubevirt/libguestfs-appliance
           bucket_dir="kubevirt-prow/devel/release/kubevirt/libguestfs-appliance"
           ./create-libguestfs-appliance.sh
-          curl --output /dev/null --silent --head --fail $url/$(cat ./output/latest-version.txt) || gsutil cp ./output/libguestfs-appliance-*.tar.xz gs://$bucket_dir/
-          gsutil cp ./output/latest-version.txt gs://$bucket_dir/
+          curl --output /dev/null --silent --head --fail $url/$(cat ./output/latest-version-amd64.txt) || gsutil cp ./output/libguestfs-appliance-*amd64.tar.xz gs://$bucket_dir/
+          gsutil cp ./output/latest-version-amd64.txt gs://$bucket_dir/
+          curl --output /dev/null --silent --head --fail $url/$(cat ./output/latest-version-s390x.txt) || gsutil cp ./output/libguestfs-appliance-*s390x.tar.xz gs://$bucket_dir/
+          gsutil cp ./output/latest-version-s390x.txt gs://$bucket_dir/
       # docker-in-docker needs privileged mode
       securityContext:
         privileged: true
