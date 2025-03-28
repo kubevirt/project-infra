@@ -1417,8 +1417,6 @@ periodics:
         value: "true"
       - name: KUBEVIRT_QUARANTINE
         value: "true"
-      - name: KUBEVIRT_PSA
-        value: "true"
       - name: TARGET
         value: k8s-1.32-sig-network
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
@@ -1789,8 +1787,6 @@ periodics:
         value: "true"
       - name: KUBEVIRT_QUARANTINE
         value: "true"
-      - name: KUBEVIRT_PSA
-        value: "true"
       - name: TARGET
         value: k8s-1.30-sig-network
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
@@ -1837,8 +1833,6 @@ periodics:
       - name: KUBEVIRT_E2E_RUN_ALL_SUITES
         value: "true"
       - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: KUBEVIRT_PSA
         value: "true"
       - name: TARGET
         value: k8s-1.30-sig-storage
@@ -1887,8 +1881,6 @@ periodics:
         value: "true"
       - name: KUBEVIRT_QUARANTINE
         value: "true"
-      - name: KUBEVIRT_PSA
-        value: "true"
       - name: TARGET
         value: k8s-1.30-sig-compute
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
@@ -1935,8 +1927,6 @@ periodics:
       - name: KUBEVIRT_E2E_RUN_ALL_SUITES
         value: "true"
       - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: KUBEVIRT_PSA
         value: "true"
       - name: TARGET
         value: k8s-1.30-sig-operator
@@ -1985,8 +1975,6 @@ periodics:
         value: "true"
       - name: KUBEVIRT_QUARANTINE
         value: "true"
-      - name: KUBEVIRT_PSA
-        value: "true"
       - name: TARGET
         value: k8s-1.31-sig-network
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
@@ -2033,8 +2021,6 @@ periodics:
       - name: KUBEVIRT_E2E_RUN_ALL_SUITES
         value: "true"
       - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: KUBEVIRT_PSA
         value: "true"
       - name: TARGET
         value: k8s-1.31-sig-storage
@@ -2083,8 +2069,6 @@ periodics:
         value: "true"
       - name: KUBEVIRT_QUARANTINE
         value: "true"
-      - name: KUBEVIRT_PSA
-        value: "true"
       - name: TARGET
         value: k8s-1.31-sig-compute
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
@@ -2131,8 +2115,6 @@ periodics:
       - name: KUBEVIRT_E2E_RUN_ALL_SUITES
         value: "true"
       - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: KUBEVIRT_PSA
         value: "true"
       - name: TARGET
         value: k8s-1.31-sig-operator
@@ -2181,8 +2163,6 @@ periodics:
         value: "true"
       - name: KUBEVIRT_QUARANTINE
         value: "true"
-      - name: KUBEVIRT_PSA
-        value: "true"
       - name: TARGET
         value: k8s-1.31-sig-monitoring
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
@@ -2230,8 +2210,6 @@ periodics:
         value: "true"
       - name: KUBEVIRT_QUARANTINE
         value: "true"
-      - name: KUBEVIRT_PSA
-        value: "true"
       - name: TARGET
         value: k8s-1.32-sig-network
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
@@ -2278,8 +2256,6 @@ periodics:
       - name: KUBEVIRT_E2E_RUN_ALL_SUITES
         value: "true"
       - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: KUBEVIRT_PSA
         value: "true"
       - name: TARGET
         value: k8s-1.32-sig-network
@@ -2330,8 +2306,6 @@ periodics:
         value: "true"
       - name: KUBEVIRT_QUARANTINE
         value: "true"
-      - name: KUBEVIRT_PSA
-        value: "true"
       - name: TARGET
         value: k8s-1.32-sig-storage
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
@@ -2378,8 +2352,6 @@ periodics:
       - name: KUBEVIRT_E2E_RUN_ALL_SUITES
         value: "true"
       - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: KUBEVIRT_PSA
         value: "true"
       - name: TARGET
         value: k8s-1.32-sig-compute
@@ -2428,8 +2400,6 @@ periodics:
         value: "true"
       - name: KUBEVIRT_QUARANTINE
         value: "true"
-      - name: KUBEVIRT_PSA
-        value: "true"
       - name: TARGET
         value: k8s-1.32-sig-operator
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
@@ -2476,8 +2446,6 @@ periodics:
       - name: KUBEVIRT_E2E_RUN_ALL_SUITES
         value: "true"
       - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: KUBEVIRT_PSA
         value: "true"
       - name: TARGET
         value: k8s-1.33-sig-network
@@ -2526,8 +2494,6 @@ periodics:
         value: "true"
       - name: KUBEVIRT_QUARANTINE
         value: "true"
-      - name: KUBEVIRT_PSA
-        value: "true"
       - name: TARGET
         value: k8s-1.33-sig-storage
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
@@ -2575,8 +2541,6 @@ periodics:
         value: "true"
       - name: KUBEVIRT_QUARANTINE
         value: "true"
-      - name: KUBEVIRT_PSA
-        value: "true"
       - name: TARGET
         value: k8s-1.33-sig-compute
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
@@ -2623,8 +2587,6 @@ periodics:
       - name: KUBEVIRT_E2E_RUN_ALL_SUITES
         value: "true"
       - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: KUBEVIRT_PSA
         value: "true"
       - name: TARGET
         value: k8s-1.33-sig-operator

@@ -884,8 +884,6 @@ presubmits:
           value: k8s-1.32-sig-network
         - name: KUBEVIRT_SINGLE_STACK
           value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -970,8 +968,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.32-sig-compute-migrations
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -1415,8 +1411,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.32-sig-compute-realtime
-        - name: KUBEVIRT_PSA
-          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -1490,10 +1484,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.30-sig-network
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -1535,10 +1525,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.30-sig-storage
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -1580,12 +1566,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.30-sig-compute-parallel
-        - name: KUBEVIRT_PSA
-          value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -1627,10 +1609,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.30-sig-operator
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -1672,10 +1650,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.31-sig-network
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -1717,10 +1691,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.31-sig-storage
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -1762,10 +1732,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.31-sig-compute-conformance
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -1807,12 +1773,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.31-sig-compute-parallel
-        - name: KUBEVIRT_PSA
-          value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -1854,10 +1816,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.31-sig-operator
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -1953,10 +1911,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.32-sig-network
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -1997,10 +1951,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.32-sig-storage
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -2041,12 +1991,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.32-sig-compute-parallel
-        - name: KUBEVIRT_PSA
-          value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -2087,10 +2033,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.32-sig-operator
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -2131,12 +2073,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.32-sig-compute-serial
-        - name: KUBEVIRT_PSA
-          value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -2178,12 +2116,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.33-sig-compute-serial
-        - name: KUBEVIRT_PSA
-          value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -2225,10 +2159,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.33-sig-network
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -2270,10 +2200,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.33-sig-storage
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -2315,12 +2241,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.33-sig-compute
-        - name: KUBEVIRT_PSA
-          value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
@@ -2362,10 +2284,6 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.33-sig-operator
-        - name: KUBEVIRT_PSA
-          value: "true"
-        - name: FEATURE_GATES
-          value: NodeRestriction
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
