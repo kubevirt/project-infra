@@ -73,3 +73,13 @@ func LogCommits(revisionRange string, path string, subDirectory string) ([]*LogC
 	}
 	return logCommits, nil
 }
+
+func GetLatestMergeCommit(path string, subDirectory string) (string, error) {
+	output, err := execGit(path, []string{"log", "--max-count=1", "--format=%H", "--merges", "--", subDirectory})
+	if err != nil {
+		return "", err
+	}
+	mergeCommit := string(output)
+	mergeCommit = strings.TrimSuffix(mergeCommit, "\n")
+	return mergeCommit, nil
+}
