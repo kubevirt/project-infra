@@ -26,6 +26,7 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 	"kubevirt.io/project-infra/robots/pkg/git"
 	"os"
+	"path/filepath"
 )
 
 type TestDataContainer struct {
@@ -173,6 +174,69 @@ var _ = Describe("extract testnames", func() {
 			paths := extractChangedTestPaths(container.data())
 			testNames := generateTestNames(paths)
 			Expect(testNames[0]).To(ContainSubstring(expectedPartialTestName))
+		})
+
+	})
+
+	FWhen("extracting test names from generated outline", Ordered, func() {
+
+		const (
+			testfileName        = "simple_test.go"
+			testfilePartialPath = "testdata"
+			testfilePath        = "robots/cmd/cannier/cmd/testdata"
+		)
+
+		var (
+			outlines         map[string][]*ginkgo.Node
+			blameLines       map[string][]*git.BlameLine
+			testfileContents map[string]string
+			testPaths        [][]*ginkgo.Node
+			changedTestNames []string
+		)
+
+		BeforeAll(func() {
+
+			absBasePath, err := filepath.Abs("./../../../..")
+			testfile := filepath.Join(testfilePath, testfileName)
+			Expect(err).ToNot(HaveOccurred())
+
+			commits, err := git.LogCommits("925bc9317..0051bfb64", absBasePath, testfilePath)
+			Expect(err).ToNot(HaveOccurred())
+
+			testOutline, err := ginkgo.OutlineFromFile(filepath.Join(testfilePartialPath, testfileName))
+			Expect(err).ToNot(HaveOccurred())
+			outlines = map[string][]*ginkgo.Node{
+				testfile: testOutline,
+			}
+
+			blameLinesForFile, err := git.GetBlameLinesForFile(filepath.Join(testfilePartialPath, testfileName))
+			Expect(err).ToNot(HaveOccurred())
+			blameLines = map[string][]*git.BlameLine{
+				testfile: blameLinesForFile,
+			}
+
+			testfileContent, err := os.ReadFile(filepath.Join(testfilePartialPath, testfileName))
+			Expect(err).ToNot(HaveOccurred())
+			testfileContents = map[string]string{
+				testfile: string(testfileContent),
+			}
+
+			testPaths = extractChangedTestPaths(commits, outlines, blameLines, testfileContents)
+			changedTestNames = generateTestNames(testPaths)
+		})
+
+		It("should contain paths", func() {
+			Expect(testPaths).ToNot(BeEmpty())
+		})
+
+		It("should contain test names", func() {
+			Expect(changedTestNames).ToNot(BeEmpty())
+		})
+
+		It("no test name should contain test names", func() {
+			for _, name := range changedTestNames {
+				Expect(name).ToNot(ContainSubstring("undefined"))
+			}
 		})
 
 	})

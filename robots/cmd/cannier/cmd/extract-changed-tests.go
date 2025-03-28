@@ -189,11 +189,15 @@ func createFile(outputPath string, pattern string) (file *os.File, err error) {
 	return
 }
 
+// FIXME use dry-run data to extract the full test names, since we will never get those from the nodes
 func generateTestNames(allPaths [][]*ginkgo.Node) []string {
 	var testnames []string
 	for _, path := range allPaths {
 		var texts []string
 		for _, node := range path {
+			if node.Text == "undefined" {
+				continue
+			}
 			texts = append(texts, node.Text)
 		}
 		testname := strings.Join(texts, " ")
@@ -205,15 +209,39 @@ func generateTestNames(allPaths [][]*ginkgo.Node) []string {
 	return testnames
 }
 
+type CommitHashMap interface {
+	HasCommitID(hash string) bool
+}
+
+type commitHashMapImpl struct {
+	hashes []string
+}
+
+func (c commitHashMapImpl) HasCommitID(hash string) bool {
+	for _, commit := range c.hashes {
+		if strings.HasPrefix(commit, hash) {
+			return true
+		}
+	}
+	return false
+}
+
+func NewHashMap(hashes []string) CommitHashMap {
+	return &commitHashMapImpl{
+		hashes: hashes,
+	}
+}
+
 func extractChangedTestPaths(commits []*git.LogCommit, outlines map[string][]*ginkgo.Node, blameLines map[string][]*git.BlameLine, testfileContents map[string]string) [][]*ginkgo.Node {
 	filenames := map[string]struct{}{}
-	commitHashes := map[string]struct{}{}
+	var commitHashes []string
 	for _, commit := range commits {
-		commitHashes[commit.Hash[:11]] = struct{}{}
+		commitHashes = append(commitHashes, commit.Hash)
 		for _, change := range commit.FileChanges {
 			filenames[change.Filename] = struct{}{}
 		}
 	}
+	hashMap := NewHashMap(commitHashes)
 
 	var allPaths [][]*ginkgo.Node
 	for filename := range filenames {
@@ -222,7 +250,7 @@ func extractChangedTestPaths(commits []*git.LogCommit, outlines map[string][]*gi
 		}
 		var lines []int
 		for _, blame := range blameLines[filename] {
-			if _, ok := commitHashes[blame.CommitID]; !ok {
+			if !hashMap.HasCommitID(blame.CommitID) {
 				continue
 			}
 			lines = append(lines, blame.LineNo)
