@@ -1846,8 +1846,6 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.30-sig-storage
-      - name: KUBEVIRT_WITH_ETC_CAPACITY
-        value: 1G
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
       name: ""
       resources:
@@ -2044,8 +2042,6 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.31-sig-storage
-      - name: KUBEVIRT_WITH_ETC_CAPACITY
-        value: 1G
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
       name: ""
       resources:
@@ -2344,8 +2340,6 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.32-sig-storage
-      - name: KUBEVIRT_WITH_ETC_CAPACITY
-        value: 1G
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
       name: ""
       resources:
@@ -2542,8 +2536,6 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.33-sig-storage
-      - name: KUBEVIRT_WITH_ETC_CAPACITY
-        value: 1G
       image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
       name: ""
       resources:
