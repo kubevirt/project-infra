@@ -1272,7 +1272,7 @@ presubmits:
     labels:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
+      preset-pinc-in-mem-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
