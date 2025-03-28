@@ -164,7 +164,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20250320-f6c439c
+    - image: quay.io/kubevirtci/golang:v20250327-c3122d8
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
