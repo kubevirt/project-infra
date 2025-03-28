@@ -84,7 +84,7 @@ func (a *Artifact) RemoveURLs(notFoundUrls []string) {
 
 type HTTPClient interface {
 	Head(uri string) (resp *http.Response, err error)
-	Get(uri string)  (resp *http.Response, err error)
+	Get(uri string) (resp *http.Response, err error)
 }
 
 var Client HTTPClient
@@ -184,15 +184,16 @@ func getMirror(artifact Artifact, regexp *regexp.Regexp) string {
 	return ""
 }
 
-func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, artifact Artifact, bucket string, httpClient HTTPClient) (err error) {
-	reportObject := client.Bucket(bucket).Object(artifact.SHA256())
+func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, artifact Artifact, bucket string, dir string, httpClient HTTPClient) (err error) {
+	obj := path.Join(dir, artifact.SHA256())
+	reportObject := client.Bucket(bucket).Object(obj)
 	reader, err := reportObject.NewReader(ctx)
 	if err != nil && err != storage.ErrObjectNotExist {
 		return fmt.Errorf("error checking if object exists: %v", err)
 	} else if err == nil {
 		// object already exists
 		reader.Close()
-		log.Printf("File %s already exists, will not upload again\n", artifact.SHA256())
+		log.Printf("File %s already exists, will not upload again\n", obj)
 		return nil
 	}
 	for _, uri := range artifact.URLs() {
@@ -236,8 +237,9 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 	return fmt.Errorf("artifact download urls exhausted, failed to upload %s", artifact.Name())
 }
 
-func VerifyArtifact(ctx context.Context, client *storage.Client, artifact Artifact, bucket string) (err error) {
-	reportObject := client.Bucket(bucket).Object(artifact.SHA256())
+func VerifyArtifact(ctx context.Context, client *storage.Client, artifact Artifact, bucket string, dir string) (err error) {
+	obj := path.Join(dir, artifact.SHA256())
+	reportObject := client.Bucket(bucket).Object(obj)
 	reader, err := reportObject.NewReader(ctx)
 	if err == storage.ErrObjectNotExist {
 		return fmt.Errorf("artifact %v: object is not cached: %v", artifact.Name(), err)
@@ -256,9 +258,9 @@ func VerifyArtifact(ctx context.Context, client *storage.Client, artifact Artifa
 	return nil
 }
 
-func GenerateFilePath(bucket string, artifact *Artifact) string {
+func GenerateFilePath(bucket string, dir string, artifact *Artifact) string {
 	u, _ := url.Parse("https://storage.googleapis.com")
-	u.Path = path.Join(u.Path, bucket, artifact.SHA256())
+	u.Path = path.Join(u.Path, bucket, path.Join(dir, artifact.SHA256()))
 	return u.String()
 }
 

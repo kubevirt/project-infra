@@ -25,6 +25,7 @@ type options struct {
 	workspacePath   string
 	continueOnError bool
 	verify          bool
+	dir             string
 }
 
 func (o *options) Validate() error {
@@ -41,6 +42,7 @@ func gatherOptions() options {
 	fs.BoolVar(&o.verify, "verify", false, "Verify that all artifacts are uploaded and that they have the right shasum")
 	fs.BoolVar(&o.continueOnError, "continue-on-error", false, "Try to upload as many artifacts as possible. Exit code will still be non-zero in case of errors")
 	fs.StringVar(&o.bucket, "bucket", "builddeps", "bucket where to upload")
+	fs.StringVar(&o.dir, "dir", "", "directory inside the bucket")
 	fs.StringVar(&o.workspacePath, "workspace", "", "path to the workspace file")
 	fs.Parse(os.Args[1:])
 	return o
@@ -82,8 +84,8 @@ func verify(options options, artifacts []mirror.Artifact) {
 	}
 	failed := false
 	for _, artifact := range artifacts {
-		newFileUrl := mirror.GenerateFilePath(options.bucket, &artifact)
-		err := mirror.VerifyArtifact(ctx, client, artifact, options.bucket)
+		newFileUrl := mirror.GenerateFilePath(options.bucket, options.dir, &artifact)
+		err := mirror.VerifyArtifact(ctx, client, artifact, options.dir, options.bucket)
 		if err != nil {
 			log.Printf("failed to upload %s to %s: %s", artifact.Name(), newFileUrl, err)
 			failed = true
@@ -109,8 +111,8 @@ func upload(options options, workspace *build.File, artifacts []mirror.Artifact)
 
 	failed := false
 	for _, artifact := range invalid {
-		newFileUrl := mirror.GenerateFilePath(options.bucket, &artifact)
-		err := mirror.WriteToBucket(options.dryRun, ctx, client, artifact, options.bucket, http.DefaultClient)
+		newFileUrl := mirror.GenerateFilePath(options.bucket, options.dir, &artifact)
+		err := mirror.WriteToBucket(options.dryRun, ctx, client, artifact, options.bucket, options.dir, http.DefaultClient)
 		if err != nil {
 			log.Printf("failed to upload %s to %s: %s", artifact.Name(), newFileUrl, err)
 			if options.continueOnError {
