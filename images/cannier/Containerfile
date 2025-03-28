@@ -5,11 +5,12 @@ ENV GOPROXY=https://proxy.golang.org|direct \
     GOOS=linux \
     GOARCH=amd64
 ENV GIMME_GO_VERSION=1.23.4
-RUN mkdir kubevirt && \
-    cd kubevirt && \
-    git clone https://github.com/dhiller/project-infra.git && \
-    cd project-infra && \
-    git checkout 3f3bfbdd95b4a3a008d786b723ab0ae6a211020c && \
+RUN mkdir -p kubevirt/project-infra && \
+    cd kubevirt/project-infra && \
+    git init && \
+    git remote add origin https://github.com/dhiller/project-infra.git && \
+    git fetch origin 78970486b0cb1b6f6333271dc70f9ad118ee50d5 && \
+    git reset --hard 78970486b0cb1b6f6333271dc70f9ad118ee50d5 && \
     /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/cannier ./robots/cmd/cannier"
 RUN dnf install -y \
     ripgrep
