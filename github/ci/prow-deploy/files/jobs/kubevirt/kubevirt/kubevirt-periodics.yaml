@@ -533,7 +533,8 @@ periodics:
   max_concurrency: 1
   name: periodic-kubevirt-e2e-kind-1.30-vgpu
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     affinity:
       podAntiAffinity:
@@ -607,7 +608,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-kind-sriov
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     affinity:
       podAntiAffinity:
@@ -723,7 +725,8 @@ periodics:
   max_concurrency: 5
   name: periodic-kubevirt-kind-e2e-test-ARM64
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -773,7 +776,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-test-S390X
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -856,7 +860,8 @@ periodics:
   max_concurrency: 10
   name: periodic-kubevirt-unit-test-Arm64
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -889,7 +894,8 @@ periodics:
   max_concurrency: 10
   name: periodic-kubevirt-unit-test-s390x
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -929,7 +935,8 @@ periodics:
   max_concurrency: 1
   name: periodic-kubevirt-performance-cluster-100-density-test
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1008,7 +1015,8 @@ periodics:
   max_concurrency: 1
   name: periodic-kubevirt-performance-cluster-scale-density-test
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1096,7 +1104,8 @@ periodics:
     preset-podman-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.31-sig-performance
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1161,7 +1170,8 @@ periodics:
     preset-podman-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.32-sig-performance-kwok
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1223,7 +1233,7 @@ periodics:
   name: periodic-kubevirt-e2e-k8s-1.32-sig-performance-kwok-100
   reporter_config:
     slack:
-      job_states_to_report: []
+      report: false
   spec:
     containers:
     - command:
@@ -1286,7 +1296,8 @@ periodics:
     preset-podman-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.32-sig-performance-realtime
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1353,7 +1364,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.32-sig-compute-migrations
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1404,7 +1416,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.32-sig-network-multus-v4
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1457,7 +1470,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.31-sig-storage-root
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1506,7 +1520,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.31-sig-compute-root
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1555,7 +1570,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.31-sig-operator-root
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1780,7 +1796,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.30-sig-network
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1829,7 +1846,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.30-sig-storage
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1880,7 +1898,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.30-sig-compute
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1929,7 +1948,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.30-sig-operator
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -1978,7 +1998,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.31-sig-network
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2027,7 +2048,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.31-sig-storage
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2078,7 +2100,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.31-sig-compute
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2127,7 +2150,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.31-sig-operator
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2176,7 +2200,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.31-sig-monitoring
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2227,7 +2252,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.32-sig-network
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2276,7 +2302,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.32-ipv6-sig-network
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2327,7 +2354,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.32-sig-storage
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2378,7 +2406,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.32-sig-compute
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2427,7 +2456,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.32-sig-operator
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2476,7 +2506,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.33-sig-network
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2525,7 +2556,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.33-sig-storage
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2576,7 +2608,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.33-sig-compute
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
@@ -2625,7 +2658,8 @@ periodics:
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-k8s-1.33-sig-operator
   reporter_config:
-    slack: {}
+    slack:
+      report: false
   spec:
     containers:
     - command:
