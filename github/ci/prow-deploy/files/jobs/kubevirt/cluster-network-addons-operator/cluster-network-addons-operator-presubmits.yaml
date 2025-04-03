@@ -65,6 +65,34 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-workflow-k8s.sh"
+    - name: pull-e2e-cluster-network-addons-operator-workflow-k8s-s390x
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+      always_run: true
+      optional: true
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      max_concurrency: 3
+      cluster: prow-s390x-workloads
+      labels:
+        preset-podman-in-container-enabled: "true"
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "7Gi"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "automation/check-patch.e2e-workflow-k8s.sh"
     - name: pull-e2e-cluster-network-addons-operator-monitoring-k8s
       skip_branches:
         - release-\d+\.\d+
