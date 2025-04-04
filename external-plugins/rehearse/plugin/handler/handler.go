@@ -31,12 +31,22 @@ import (
 	"sigs.k8s.io/prow/pkg/pjutil"
 )
 
-const basicHelpCommentText = `You can trigger rehearsal for all jobs by commenting either ` + "`/rehearse`" + ` or ` + "`/rehearse all`" + `
-on this PR.
+const basicHelpCommentText = `
+A rehearsal can be triggered for all jobs by commenting either ` + "`/rehearse`" + ` or ` + "`/rehearse all`" + ` on this PR.
 
-For a specific PR you can comment ` + "`/rehearse {job-name}`" + `.
+A rehearsal for a specific job can be triggered by commenting ` + "`/rehearse {job-name}`" + `.
 
-For a list of jobs that you can rehearse you can comment ` + "`/rehearse ?`" + `.`
+Commenting ` + "`/rehearse ?`" + ` triggers a comment with a list of jobs that can be rehearsed.
+
+A pull request can be rehearsed if either the user is authorized to rehearse or the pull
+request has the ` + "`ok-to-rehearse`" + ` label.
+
+Authorized users are the group of users that are members of the KubeVirt GitHub 
+organization AND either are approvers[1] for all files in the pull request or are
+top-level approvers[1] in the ` + "`project-infra`" + ` project.
+
+[1]: see [OWNERS](https://www.kubernetes.dev/docs/guide/owners/#owners) file definition for reference.
+`
 
 var log *logrus.Logger
 
