@@ -22,6 +22,7 @@ package test_label_analyzer
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 )
 
 var _ = Describe("GetStatsFromGinkgoOutline", func() {
@@ -36,7 +37,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 
 		It("does not match any test since no spec", func() {
 			Expect(GetStatsFromGinkgoOutline(NewQuarantineDefaultConfig(),
-				[]*GinkgoNode{
+				[]*ginkgo.Node{
 					{
 						Spec: false,
 					},
@@ -49,7 +50,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 		It("does not match any test since spec doesn't match", func() {
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
-				[]*GinkgoNode{
+				[]*ginkgo.Node{
 					{
 						Spec: true,
 					},
@@ -63,7 +64,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 			quarantineLabelCategory.Hits = 1
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
-				[]*GinkgoNode{
+				[]*ginkgo.Node{
 					{
 						Text: "[QUARANTINE]",
 						Spec: true,
@@ -73,7 +74,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					SpecsTotal: 1,
 					MatchingSpecPaths: []*PathStats{
 						{
-							Path: []*GinkgoNode{
+							Path: []*ginkgo.Node{
 								{
 									Text: "[QUARANTINE]",
 									Spec: true,
@@ -92,9 +93,9 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 		It("has sub node which is a spec", func() {
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
-				[]*GinkgoNode{
+				[]*ginkgo.Node{
 					{
-						Nodes: []*GinkgoNode{
+						Nodes: []*ginkgo.Node{
 							{
 								Spec: true,
 							},
@@ -110,9 +111,9 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 			quarantineLabelCategory.Hits = 1
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
-				[]*GinkgoNode{
+				[]*ginkgo.Node{
 					{
-						Nodes: []*GinkgoNode{
+						Nodes: []*ginkgo.Node{
 							{
 								Text: "[QUARANTINE]",
 								Spec: true,
@@ -124,7 +125,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					SpecsTotal: 1,
 					MatchingSpecPaths: []*PathStats{
 						{
-							Path: []*GinkgoNode{
+							Path: []*ginkgo.Node{
 								{},
 								{
 									Text: "[QUARANTINE]",
@@ -141,14 +142,14 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 			quarantineLabelCategory.Hits = 1
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
-				[]*GinkgoNode{
+				[]*ginkgo.Node{
 					{
 						Text: "parent",
-						Nodes: []*GinkgoNode{
+						Nodes: []*ginkgo.Node{
 							{
 								Text: "child",
 								Spec: false,
-								Nodes: []*GinkgoNode{
+								Nodes: []*ginkgo.Node{
 									{
 										Text: "[QUARANTINE]",
 										Spec: true,
@@ -162,7 +163,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					SpecsTotal: 1,
 					MatchingSpecPaths: []*PathStats{
 						{
-							Path: []*GinkgoNode{
+							Path: []*ginkgo.Node{
 								{
 									Text: "parent",
 								},
@@ -184,14 +185,14 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 			quarantineLabelCategory.Hits = 1
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
-				[]*GinkgoNode{
+				[]*ginkgo.Node{
 					{
 						Text: "parent",
-						Nodes: []*GinkgoNode{
+						Nodes: []*ginkgo.Node{
 							{
 								Text: "[QUARANTINE]",
 								Spec: false,
-								Nodes: []*GinkgoNode{
+								Nodes: []*ginkgo.Node{
 									{
 										Text: "child",
 										Spec: true,
@@ -205,7 +206,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					SpecsTotal: 1,
 					MatchingSpecPaths: []*PathStats{
 						{
-							Path: []*GinkgoNode{
+							Path: []*ginkgo.Node{
 								{
 									Text: "parent",
 								},
@@ -227,14 +228,14 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 			quarantineLabelCategory.Hits = 1
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
-				[]*GinkgoNode{
+				[]*ginkgo.Node{
 					{
 						Text: "parent",
-						Nodes: []*GinkgoNode{
+						Nodes: []*ginkgo.Node{
 							{
 								Text: "[QUARANTINE]",
 								Spec: false,
-								Nodes: []*GinkgoNode{
+								Nodes: []*ginkgo.Node{
 									{
 										Text: "[QUARANTINE]",
 										Spec: true,
@@ -248,7 +249,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					SpecsTotal: 1,
 					MatchingSpecPaths: []*PathStats{
 						{
-							Path: []*GinkgoNode{
+							Path: []*ginkgo.Node{
 								{
 									Text: "parent",
 								},
@@ -270,14 +271,14 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 			quarantineLabelCategory.Hits = 2
 			Expect(GetStatsFromGinkgoOutline(
 				NewQuarantineDefaultConfig(),
-				[]*GinkgoNode{
+				[]*ginkgo.Node{
 					{
 						Text: "parent",
-						Nodes: []*GinkgoNode{
+						Nodes: []*ginkgo.Node{
 							{
 								Text: "[QUARANTINE]",
 								Spec: false,
-								Nodes: []*GinkgoNode{
+								Nodes: []*ginkgo.Node{
 									{
 										Text: "first",
 										Spec: true,
@@ -295,7 +296,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					SpecsTotal: 2,
 					MatchingSpecPaths: []*PathStats{
 						{
-							Path: []*GinkgoNode{
+							Path: []*ginkgo.Node{
 								{
 									Text: "parent",
 								},
@@ -311,7 +312,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 							MatchingCategory: quarantineLabelCategory,
 						},
 						{
-							Path: []*GinkgoNode{
+							Path: []*ginkgo.Node{
 								{
 									Text: "parent",
 								},
@@ -334,14 +335,14 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 			category.Hits = 2
 			Expect(GetStatsFromGinkgoOutline(
 				NewTestNameDefaultConfig("parent first child"),
-				[]*GinkgoNode{
+				[]*ginkgo.Node{
 					{
 						Text: "parent",
-						Nodes: []*GinkgoNode{
+						Nodes: []*ginkgo.Node{
 							{
 								Text: "first child",
 								Spec: false,
-								Nodes: []*GinkgoNode{
+								Nodes: []*ginkgo.Node{
 									{
 										Text: "child of first child",
 										Spec: true,
@@ -359,7 +360,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					SpecsTotal: 2,
 					MatchingSpecPaths: []*PathStats{
 						{
-							Path: []*GinkgoNode{
+							Path: []*ginkgo.Node{
 								{
 									Text: "parent",
 								},
@@ -374,7 +375,7 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 							MatchingCategory: category,
 						},
 						{
-							Path: []*GinkgoNode{
+							Path: []*ginkgo.Node{
 								{
 									Text: "parent",
 								},

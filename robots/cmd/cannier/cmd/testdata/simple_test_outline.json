@@ -1,0 +1,116 @@
+[
+  {
+    "name": "Describe",
+    "text": "simple",
+    "start": 745,
+    "end": 1508,
+    "spec": false,
+    "focused": false,
+    "pending": false,
+    "labels": [],
+    "nodes": [
+      {
+        "name": "Context",
+        "text": "was previously part of the latter node",
+        "start": 775,
+        "end": 936,
+        "spec": false,
+        "focused": false,
+        "pending": false,
+        "labels": [],
+        "nodes": [
+          {
+            "name": "It",
+            "text": "[test_id:1742]is still found",
+            "start": 837,
+            "end": 931,
+            "spec": true,
+            "focused": false,
+            "pending": false,
+            "labels": [],
+            "nodes": []
+          }
+        ]
+      },
+      {
+        "name": "When",
+        "text": "does something is executed",
+        "start": 939,
+        "end": 1276,
+        "spec": false,
+        "focused": false,
+        "pending": false,
+        "labels": [],
+        "nodes": [
+          {
+            "name": "It",
+            "text": "does not return an error",
+            "start": 986,
+            "end": 1074,
+            "spec": true,
+            "focused": false,
+            "pending": false,
+            "labels": [],
+            "nodes": []
+          },
+          {
+            "name": "It",
+            "text": "does return an error",
+            "start": 1078,
+            "end": 1164,
+            "spec": true,
+            "focused": false,
+            "pending": false,
+            "labels": [],
+            "nodes": []
+          },
+          {
+            "name": "It",
+            "text": "[vendor:cnv-qe]does do something else",
+            "start": 1168,
+            "end": 1271,
+            "spec": true,
+            "focused": false,
+            "pending": false,
+            "labels": [],
+            "nodes": []
+          }
+        ]
+      },
+      {
+        "name": "DescribeTable",
+        "text": "is a table",
+        "start": 1279,
+        "end": 1504,
+        "spec": false,
+        "focused": false,
+        "pending": false,
+        "labels": [],
+        "nodes": [
+          {
+            "name": "Entry",
+            "text": "first testcase",
+            "start": 1414,
+            "end": 1449,
+            "spec": true,
+            "focused": false,
+            "pending": false,
+            "labels": [],
+            "nodes": []
+          },
+          {
+            "name": "Entry",
+            "text": "[test_id:8976]2nd testcase",
+            "start": 1453,
+            "end": 1500,
+            "spec": true,
+            "focused": false,
+            "pending": false,
+            "labels": [],
+            "nodes": []
+          }
+        ]
+      }
+    ]
+  }
+]
