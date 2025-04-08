@@ -45,6 +45,9 @@ update-labels:
 lint:
 	./hack/lint.sh
 
+plot-release-graph:
+	./hack/performance-benchmarks/plot.sh
+
 coverage:
 	if ! command -V covreport; then go install github.com/cancue/covreport@latest; fi
 	go test ${WHAT_COVERAGE} -coverprofile=/tmp/coverage.out
