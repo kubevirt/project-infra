@@ -13,7 +13,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/common-instancetypes-builder:v20250313-98b0031
+      - image: quay.io/kubevirtci/common-instancetypes-builder:v20250408-8288bbf
         command:
         - /usr/local/bin/runner.sh
         - "/bin/sh"
@@ -949,7 +949,7 @@ presubmits:
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
               value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Oracle Linux 8"'
-          image: quay.io/kubevirtci/golang:v20250211-4e3c019
+          image: quay.io/kubevirtci/golang:v20250327-c3122d8
           name: ""
           resources:
             requests:
@@ -991,7 +991,7 @@ presubmits:
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
               value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Oracle Linux 8"'
-          image: quay.io/kubevirtci/golang:v20250211-4e3c019
+          image: quay.io/kubevirtci/golang:v20250327-c3122d8
           name: ""
           resources:
             requests:
@@ -1047,7 +1047,7 @@ presubmits:
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
               value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Oracle Linux 9"'
-          image: quay.io/kubevirtci/golang:v20250211-4e3c019
+          image: quay.io/kubevirtci/golang:v20250327-c3122d8
           name: ""
           resources:
             requests:
@@ -1089,7 +1089,7 @@ presubmits:
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
               value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Oracle Linux 9"'
-          image: quay.io/kubevirtci/golang:v20250211-4e3c019
+          image: quay.io/kubevirtci/golang:v20250327-c3122d8
           name: ""
           resources:
             requests:
