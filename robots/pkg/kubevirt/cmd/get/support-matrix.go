@@ -95,12 +95,6 @@ func init() {
 	getSupportMatrixCommand.PersistentFlags().StringVar(&getSupportMatrixOpts.KubeVirtVersion, "kubevirt-version", "", "version of kubevirt to generate matrix for, default is empty string, which means all recent versions")
 }
 
-func majorMinorString(i *querier.SemVer) string {
-	return fmt.Sprintf("%s.%s", i.Major, i.Minor)
-}
-
-type checkSemVerFunc func(k8sVersion string) bool
-
 type SupportMatrixTemplateData struct {
 	K6tVersions          []string
 	K8sVersions          []string

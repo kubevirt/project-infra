@@ -52,9 +52,7 @@ type options struct {
 	dryRun                               bool
 	maximumNumberOfAllowedRetestComments int
 
-	github prowflagutil.GitHubOptions
-	labels prowflagutil.Strings
-
+	github                    prowflagutil.GitHubOptions
 	webhookSecretFile         string
 	team                      string
 	initialRetestRepositories string

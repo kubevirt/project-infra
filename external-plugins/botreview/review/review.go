@@ -89,14 +89,9 @@ func (r *Reviewer) withFields() *logrus.Entry {
 func (r *Reviewer) info(message string) {
 	r.withFields().Info(message)
 }
-func (r *Reviewer) infoF(message string, args ...interface{}) {
-	r.withFields().Infof(message, args...)
-}
+
 func (r *Reviewer) fatalF(message string, args ...interface{}) {
 	r.withFields().Fatalf(message, args...)
-}
-func (r *Reviewer) debugF(message string, args ...interface{}) {
-	r.withFields().Debugf(message, args...)
 }
 
 func (r *Reviewer) ReviewLocalCode() ([]BotReviewResult, error) {

@@ -9,7 +9,7 @@ linters:
   enable:
   - gocyclo
 #  - staticcheck
-#  - unused
+  - unused
 #  - ineffassign
 #  - govet
 #  - gosimple

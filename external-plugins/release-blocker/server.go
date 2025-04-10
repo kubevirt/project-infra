@@ -60,7 +60,6 @@ type Server struct {
 	botName        string
 
 	// Used for unit testing
-	push         func(newBranch string) error
 	ghc          githubClient
 	log          *logrus.Entry
 	ownersClient prowOwnersClient

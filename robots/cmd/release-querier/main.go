@@ -29,22 +29,16 @@ import (
 )
 
 type options struct {
-	port int
-
-	dryRun bool
-
-	webhookSecretFile string
-	mirrorRegex       string
-	org               string
-	repo              string
-	TokenPath         string
-	endpoint          string
-	latest            bool
-	latestPatchOf     string
-	latestThreeMinor  string
-	template          string
-	major             int
-	minor             int
+	org              string
+	repo             string
+	TokenPath        string
+	endpoint         string
+	latest           bool
+	latestPatchOf    string
+	latestThreeMinor string
+	template         string
+	major            int
+	minor            int
 }
 
 func (o *options) Validate() error {

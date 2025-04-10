@@ -68,7 +68,6 @@ func init() {
 type prowOptions struct {
 	org                  string
 	repo                 string
-	gcsBaseUrl           string
 	bucketName           string
 	jobDataPathes        []string
 	matchingSubDirRegExp string
