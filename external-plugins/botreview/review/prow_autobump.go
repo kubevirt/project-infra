@@ -40,7 +40,6 @@ func init() {
 
 type ProwAutobump struct {
 	relevantFileDiffs []*diff.FileDiff
-	notMatchingHunks  []*diff.Hunk
 }
 
 func (t *ProwAutobump) IsRelevant() bool {

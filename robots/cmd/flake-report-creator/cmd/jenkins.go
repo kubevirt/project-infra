@@ -94,7 +94,6 @@ type jenkinsOptions struct {
 	endpoint              string
 	jobNamePatterns       []string
 	startFrom             time.Duration
-	cnvVersions           string
 	maxConnsPerHost       int
 	artifactFileNameRegex string
 	insecureSkipVerify    bool

@@ -30,21 +30,6 @@ import (
 	"sigs.k8s.io/prow/pkg/pluginhelp"
 )
 
-const pluginName = "botreview"
-
-type issueEvent struct {
-	github.IssueEvent `json:",inline"`
-	Sender            github.User `json:"sender"`
-}
-
-type githubClient interface {
-	AddLabel(org, repo string, number int, label string) error
-	RemoveLabel(org, repo string, number int, label string) error
-	GetIssueLabels(org, repo string, number int) ([]github.Label, error)
-	CreateComment(org, repo string, number int, comment string) error
-	IsMember(org, user string) (bool, error)
-}
-
 // HelpProvider construct the pluginhelp.PluginHelp for this plugin.
 func HelpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	pluginHelp := &pluginhelp.PluginHelp{
