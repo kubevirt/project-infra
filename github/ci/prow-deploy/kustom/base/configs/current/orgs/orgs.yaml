@@ -212,6 +212,8 @@ orgs:
         description: 'DRA device driver for PCI passthrough devices'
         has_projects: false
         has_wiki: false
+      eks-serviceaccount-mutator:
+        description: mutating webhook to propagate EKS token info into the Kubevirt VMs
       enhancements:
         description: Tracking KubeVirt related enhancements and issues
       external-storage:
