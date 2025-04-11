@@ -29,12 +29,6 @@ import (
 )
 
 type options struct {
-	port int
-
-	dryRun bool
-
-	webhookSecretFile      string
-	mirrorRegex            string
 	TokenPath              string
 	endpoint               string
 	ensureLatest           bool

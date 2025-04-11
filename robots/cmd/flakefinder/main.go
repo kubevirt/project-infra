@@ -64,7 +64,6 @@ type options struct {
 	isDryRun                bool
 	endpoint                flagutil.Strings
 	tokenPath               string
-	graphqlEndpoint         string
 	merged                  time.Duration
 	isPreview               bool
 	prBaseBranch            string

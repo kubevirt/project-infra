@@ -24,7 +24,6 @@ type options struct {
 
 	dryRun bool
 	github prowflagutil.GitHubOptions
-	labels prowflagutil.Strings
 
 	webhookSecretFile string
 }
