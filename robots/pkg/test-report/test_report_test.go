@@ -113,8 +113,8 @@ func Test_CreateReportData(t *testing.T) {
 					},
 				},
 				jobNamePatternsToTestNameFilterRegexps: map[*regexp.Regexp]*regexp.Regexp{
-					regexp.MustCompile("version-1\\.2"): regexp.MustCompile("testName"),
-					regexp.MustCompile("version-2\\.3"): regexp.MustCompile("testName42"),
+					regexp.MustCompile(`version-1\.2`): regexp.MustCompile("testName"),
+					regexp.MustCompile(`version-2\.3`): regexp.MustCompile("testName42"),
 				},
 			},
 			/*
@@ -148,8 +148,8 @@ func Test_CreateReportData(t *testing.T) {
 					},
 				},
 				jobNamePatternsToTestNameFilterRegexps: map[*regexp.Regexp]*regexp.Regexp{
-					regexp.MustCompile("version-1\\.2"): regexp.MustCompile("testName"),
-					regexp.MustCompile("version-2\\.3"): regexp.MustCompile("testName42"),
+					regexp.MustCompile(`version-1\.2`): regexp.MustCompile("testName"),
+					regexp.MustCompile(`version-2\.3`): regexp.MustCompile("testName42"),
 				},
 			},
 			/*
@@ -183,8 +183,8 @@ func Test_CreateReportData(t *testing.T) {
 					},
 				},
 				jobNamePatternsToTestNameFilterRegexps: map[*regexp.Regexp]*regexp.Regexp{
-					regexp.MustCompile("version-1\\.2"): regexp.MustCompile("testName"),
-					regexp.MustCompile("version-2\\.3"): regexp.MustCompile("testName"),
+					regexp.MustCompile(`version-1\.2`): regexp.MustCompile("testName"),
+					regexp.MustCompile(`version-2\.3`): regexp.MustCompile("testName"),
 				},
 			},
 			/*
@@ -219,9 +219,9 @@ func Test_CreateReportData(t *testing.T) {
 					},
 				},
 				jobNamePatternsToTestNameFilterRegexps: map[*regexp.Regexp]*regexp.Regexp{
-					regexp.MustCompile("version-1\\.2"): regexp.MustCompile("testName"),
-					regexp.MustCompile("version-2\\.3"): regexp.MustCompile("testName42"),
-					regexp.MustCompile("version-3\\.4"): regexp.MustCompile("testName42"),
+					regexp.MustCompile(`version-1\.2`): regexp.MustCompile("testName"),
+					regexp.MustCompile(`version-2\.3`): regexp.MustCompile("testName42"),
+					regexp.MustCompile(`version-3\.4`): regexp.MustCompile("testName42"),
 				},
 			},
 			/*

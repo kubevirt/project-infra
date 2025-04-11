@@ -518,7 +518,10 @@ func (h *GitHubEventsHandler) generateProwJobs(
 	var jobs []prowapi.ProwJob
 
 	for path, headConfig := range headConfigs {
-		baseConfig, _ := baseConfigs[path]
+		baseConfig, ok := baseConfigs[path]
+		if !ok {
+			log.Errorf("Path %s not found in base configs", path)
+		}
 		jobs = append(jobs, h.generatePresubmits(headConfig, baseConfig, pr, eventGUID)...)
 	}
 
@@ -643,7 +646,7 @@ func (h *GitHubEventsHandler) loadConfigsAtRef(
 		// directories as we do here
 		// thus we need to reset the SourcePath to the original value for each job config
 		for _, presubmits := range pc.PresubmitsStatic {
-			for index, _ := range presubmits {
+			for index := range presubmits {
 				presubmits[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
 			}
 		}

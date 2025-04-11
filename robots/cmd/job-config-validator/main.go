@@ -95,16 +95,12 @@ func main() {
 	}
 
 	// remove each file for which we find a key in the configMap from the list
-	for key, _ := range configMap.Data {
-		if _, exists := jobConfigFileNames[key]; exists {
-			delete(jobConfigFileNames, key)
-		}
+	for key := range configMap.Data {
+		delete(jobConfigFileNames, key)
 	}
 	// If ConfigMapSpec is GZIP compressed the keys will be found there
-	for key, _ := range configMap.BinaryData {
-		if _, exists := jobConfigFileNames[key]; exists {
-			delete(jobConfigFileNames, key)
-		}
+	for key := range configMap.BinaryData {
+		delete(jobConfigFileNames, key)
 	}
 
 	// if there's anything left in the list, the job config is not complete

@@ -120,7 +120,6 @@ func main() {
 			githubOrgAdmins[admin.GetLogin()] = struct{}{}
 		}
 		log().Infof("org admins are %v", adminHandles)
-		break
 	default:
 		log().WithError(err).Fatalf("failed to get github repositories for org %q", o.org)
 	}
@@ -185,7 +184,6 @@ func main() {
 						}
 					}
 				}
-				break
 			default:
 				logForRepo(repo).WithError(err).Fatal("failed to get github collaborators")
 			}

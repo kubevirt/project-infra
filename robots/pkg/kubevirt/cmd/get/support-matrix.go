@@ -140,7 +140,7 @@ func GenerateMarkdownForSupportMatrix(_ *cobra.Command, _ []string) error { //no
 			return fmt.Errorf("failed to read job config: %v", readConfigErr)
 		}
 		for _, presubmit := range jobConfig.PresubmitsStatic["kubevirt/kubevirt"] {
-			if presubmit.AlwaysRun == false || presubmit.Optional == true {
+			if !presubmit.AlwaysRun || presubmit.Optional {
 				continue
 			}
 			k8sVersion := ""

@@ -169,8 +169,8 @@ func (r *Reviewer) AttachReviewComments(botReviewResults []BotReviewResult, gith
 		if reviewResult.ShouldNotMergeReason() != "" {
 			shouldNotMergeReasons = append(shouldNotMergeReasons, reviewResult.ShouldNotMergeReason())
 		}
-		botReviewComments = append(botReviewComments, fmt.Sprintf("%s", reviewResult))
-		shortBotReviewComments = append(shortBotReviewComments, fmt.Sprintf(reviewResult.ShortString()))
+		botReviewComments = append(botReviewComments, reviewResult.String())
+		shortBotReviewComments = append(shortBotReviewComments, reviewResult.ShortString())
 	}
 	approveLabels := unapprovePRComment
 	if isApproved {

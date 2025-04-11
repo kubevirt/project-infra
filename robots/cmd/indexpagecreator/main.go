@@ -134,6 +134,6 @@ func getReportDirectories(ctx context.Context, client *storage.Client) (reportDi
 			reportDirs = append(reportDirs, fmt.Sprintf("%s/%s", partialDir, subdirectory))
 		}
 	}
-	sort.Sort(sort.StringSlice(reportDirs))
+	sort.Strings(reportDirs)
 	return reportDirs, nil
 }

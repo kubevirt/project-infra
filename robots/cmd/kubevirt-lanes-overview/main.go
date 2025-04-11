@@ -35,7 +35,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error reading kubevirt job dir: %v", err)
 	}
-	kubevirtJobFileNameRegexp := regexp.MustCompile("kubevirt-(presubmits|periodics)\\.yaml")
+	kubevirtJobFileNameRegexp := regexp.MustCompile(`kubevirt-(presubmits|periodics)\\.yaml`)
 	kubevirtJobNameRegexp := regexp.MustCompile("(pull|periodic)-kubevirt-e2e-.*")
 	kubevirtJobNamesToEnvVars := map[string]map[string]string{}
 	kubevirtJobNames := []string{}
@@ -80,7 +80,7 @@ func main() {
 	}
 	sort.Strings(kubevirtJobNames)
 	envVars := []string{}
-	for envVarName, _ := range envVarsMap {
+	for envVarName := range envVarsMap {
 		envVars = append(envVars, envVarName)
 	}
 	sort.Strings(envVars)

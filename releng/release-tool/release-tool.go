@@ -502,9 +502,7 @@ func configureReleaseJob(configPath string, outputPath string) error {
 				presubmit.AlwaysRun = true
 				presubmit.RunBeforeMerge = false
 			}
-			if _, hasLabel := presubmit.Labels["preset-bazel-cache"]; hasLabel {
-				delete(presubmit.Labels, "preset-bazel-cache")
-			}
+			delete(presubmit.Labels, "preset-bazel-cache")
 			newPresubmits = append(newPresubmits, presubmit)
 		}
 		jobConfig.PresubmitsStatic[key] = newPresubmits

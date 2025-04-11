@@ -121,14 +121,12 @@ func (o *prowOptions) validate() error {
 				jobDataPathes = append(jobDataPathes, fmt.Sprintf(argsToEvaluate[jobDataPath], presubmit))
 			}
 			o.jobDataPathes = jobDataPathes
-			break
 		case periodics:
 			var jobDataPathes []string
 			for _, periodic := range strings.Split(o.periodics, ",") {
 				jobDataPathes = append(jobDataPathes, argsToEvaluate[jobDataPath]+periodic)
 			}
 			o.jobDataPathes = jobDataPathes
-			break
 		default:
 			return fmt.Errorf("unknown jobType %s", jobType)
 		}
