@@ -21,6 +21,7 @@ periodics:
       - --org=nmstate
       - --repo=kubernetes-nmstate
       - --skip_results_before_start_of_report=false
+      - --pr_base_branch=main
       volumeMounts:
       - name: token
         mountPath: /etc/github
@@ -56,6 +57,7 @@ periodics:
       - --org=nmstate
       - --repo=kubernetes-nmstate
       - --skip_results_before_start_of_report=false
+      - --pr_base_branch=main
       volumeMounts:
       - name: token
         mountPath: /etc/github
@@ -91,6 +93,7 @@ periodics:
       - --org=nmstate
       - --repo=kubernetes-nmstate
       - --skip_results_before_start_of_report=false
+      - --pr_base_branch=main
       volumeMounts:
       - name: token
         mountPath: /etc/github

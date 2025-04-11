@@ -20,6 +20,7 @@ periodics:
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
       - --repo=cluster-network-addons-operator
       - --skip_results_before_start_of_report=false
+      - --pr_base_branch=main
 - name: periodic-publish-cnao-flakefinder-daily-report
   cron: "15 1 * * *"
   annotations:
@@ -41,6 +42,7 @@ periodics:
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
       - --repo=cluster-network-addons-operator
       - --skip_results_before_start_of_report=false
+      - --pr_base_branch=main
 - name: periodic-publish-cnao-flakefinder-four-weekly-report
   interval: 168h
   annotations:
@@ -62,3 +64,4 @@ periodics:
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
       - --repo=cluster-network-addons-operator
       - --skip_results_before_start_of_report=false
+      - --pr_base_branch=main
