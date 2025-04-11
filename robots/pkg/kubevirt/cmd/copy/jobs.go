@@ -297,9 +297,7 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 		newJob.ReporterConfig = allPeriodicJobs[sourceJobName].ReporterConfig.DeepCopy()
 		newJob.Spec = allPeriodicJobs[sourceJobName].Spec.DeepCopy()
 
-		for _, extraRef := range allPeriodicJobs[sourceJobName].UtilityConfig.ExtraRefs {
-			newJob.UtilityConfig.ExtraRefs = append(newJob.UtilityConfig.ExtraRefs, extraRef)
-		}
+		newJob.UtilityConfig.ExtraRefs = append(newJob.UtilityConfig.ExtraRefs, allPeriodicJobs[sourceJobName].UtilityConfig.ExtraRefs...)
 
 		for containerIndex, container := range newJob.Spec.Containers {
 			for envVarIndex, envVar := range container.Env {

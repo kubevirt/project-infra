@@ -62,8 +62,7 @@ func main() {
 	)
 	httpClient := oauth2.NewClient(context.Background(), src)
 
-	var gitHubClient *githubv4.Client
-	gitHubClient = githubv4.NewClient(httpClient)
+	gitHubClient := githubv4.NewClient(httpClient)
 
 	gitHubGraphQLClient := ghgraphql.NewClient(gitHubClient)
 

@@ -37,7 +37,7 @@ var cronRegex *regexp.Regexp
 
 func init() {
 	var err error
-	cronRegex, err = regexp.Compile("[0-9] [0-9]+,[0-9]+,[0-9]+ \\* \\* \\*")
+	cronRegex, err = regexp.Compile(`[0-9] [0-9]+,[0-9]+,[0-9]+ \*\ \*\ \*`)
 	if err != nil {
 		panic(err)
 	}

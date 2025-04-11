@@ -411,5 +411,5 @@ func getMondayOfWeekDate(year, week int) string {
 	weekMonday := firstDayOfYear.AddDate(0, 0, daysUntilFirstMonday+((week-1)*7))
 
 	// print the Monday in ISO format
-	return fmt.Sprintf("%s", weekMonday.Format("2006-01-02"))
+	return weekMonday.Format("2006-01-02")
 }

@@ -518,7 +518,10 @@ func (h *GitHubEventsHandler) generateProwJobs(
 	var jobs []prowapi.ProwJob
 
 	for path, headConfig := range headConfigs {
-		baseConfig, _ := baseConfigs[path]
+		baseConfig, ok := baseConfigs[path]
+		if !ok {
+			log.Errorf("Path %s not found in base configs", path)
+		}
 		jobs = append(jobs, h.generatePresubmits(headConfig, baseConfig, pr, eventGUID)...)
 	}
 

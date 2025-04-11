@@ -2,7 +2,6 @@ package limiter
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -13,7 +12,7 @@ import (
 )
 
 const (
-	bucketName = "kubevirtest"
+	bucketName      = "kubevirtest"
 	credentialsPath = "testaccount.json"
 )
 
@@ -22,7 +21,7 @@ func Test(t *testing.T) {
 	ctx := context.Background()
 
 	if _, err := os.Stat(credentialsPath); os.IsNotExist(err) {
-		t.Skip(fmt.Sprintf("credentials file %s not found", credentialsPath))
+		t.Skipf("credentials file %s not found", credentialsPath)
 	}
 
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsPath))

@@ -196,16 +196,14 @@ func appendProviderNamesToJobNames(base config.JobBase, result map[string][]stri
 			if !providerRegex.MatchString(env.Value) {
 				continue
 			}
-			var submatches []string
-			submatches = providerRegex.FindStringSubmatch(name)
+			submatches := providerRegex.FindStringSubmatch(name)
 			providerNames = append(providerNames, submatches[1])
 		}
 	}
 	for _, providerName := range providerNames {
-		if _, exists := result[providerName]; exists {
-			result[providerName] = append(result[providerName], name)
-		} else {
-			result[providerName] = []string{name}
+		if result[providerName] == nil {
+			result[providerName] = []string{}
 		}
+		result[providerName] = append(result[providerName], name)
 	}
 }
