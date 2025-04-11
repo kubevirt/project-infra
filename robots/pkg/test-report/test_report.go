@@ -186,7 +186,6 @@ func CreateReportData(jobNamePatternsToTestNameFilterRegexps map[*regexp.Regexp]
 			case TestExecution_Run:
 				testSkipped = false
 				filteredOnAllLanes = false
-				break
 			case TestExecution_Skipped:
 				jobNameMatcherFound := false
 				for jobNameMatcher, testNameMatcher := range jobNamePatternsToTestNameFilterRegexps {
