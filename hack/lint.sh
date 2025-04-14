@@ -22,6 +22,10 @@ set -e
 set -u
 set -o pipefail
 
+if ! command -V golangci-lint; then
+    echo "golangci-lint binary required to be installed locally" && exit 1;
+fi
+
 golangci-lint --version
 golangci-lint run
 
