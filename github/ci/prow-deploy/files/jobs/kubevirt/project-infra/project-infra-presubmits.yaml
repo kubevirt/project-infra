@@ -110,19 +110,24 @@ presubmits:
             memory: "4Gi"
         securityContext:
           runAsUser: 0
-  - always_run: false
+  - always_run: true
     cluster: kubevirt-prow-control-plane
     decorate: true
     name: pull-project-infra-lint
-    run_if_changed: "external-plugins/.*|releng/.*|robots/.*"
     spec:
       containers:
-      - args:
-        - make lint
-        command:
+      - command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-ce"
+        - |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ${GOPATH}/bin ${GOLANGCI_LINT_VERSION}
+          make lint
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.24.1"
+        - name: GOLANGCI_LINT_VERSION
+          value: "v1.64.8"
         image: quay.io/kubevirtci/golang:v20250327-c3122d8
         resources:
           requests:
