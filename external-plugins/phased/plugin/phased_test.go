@@ -81,7 +81,9 @@ var _ = Describe("Phased", func() {
 				},
 			})
 
-			makeRepoWithEmptyProwConfig(gitrepo, org, repo)
+			if err := makeRepoWithEmptyProwConfig(gitrepo, org, repo); err != nil {
+				logrus.WithError(err).Fatal("Failed to create fake git repo")
+			}
 
 			Expect(err).ShouldNot(HaveOccurred())
 			err = gitrepo.AddCommit(org, repo, map[string][]byte{
@@ -94,7 +96,9 @@ var _ = Describe("Phased", func() {
 
 		AfterEach(func() {
 			if gitClientFactory != nil {
-				gitClientFactory.Clean()
+				if err := gitClientFactory.Clean(); err != nil {
+					logrus.WithError(err).Error("Failed to clean up git client factory")
+				}
 			}
 		})
 

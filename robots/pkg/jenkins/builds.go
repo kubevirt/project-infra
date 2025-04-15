@@ -194,7 +194,7 @@ var openOnStatusGateWayTimeout = func(err error) bool {
 var circuitBreakerBuildDataGetter = circuitbreaker.NewCircuitBreaker(retryDelay, openOnStatusGateWayTimeout)
 
 func getBuildFromGetterWithRetry(buildDataGetter BuildDataGetter, buildNumber int64, fLog *log.Entry) (build *gojenkins.Build, statusCode int, err error) {
-	retry.Do(
+	if err := retry.Do(
 		circuitBreakerBuildDataGetter.WrapRetryableFunc(
 			func() error {
 				build, err = buildDataGetter.GetBuild(buildNumber)
@@ -218,7 +218,9 @@ func getBuildFromGetterWithRetry(buildDataGetter BuildDataGetter, buildNumber in
 		// time per each retry with a random jitter value, since the default retry.BackOffDelay would
 		// multiply the wait time on each retry
 		retry.DelayType(retry.CombineDelay(retry.FixedDelay, retry.RandomDelay)),
-	)
+	); err != nil {
+		fLog.Fatalf("failed to fetch build data for build no %d: %v", buildNumber, err)
+	}
 	return build, statusCode, err
 }
 

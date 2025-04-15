@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
+
 	"sigs.k8s.io/prow/pkg/plugins/ownersconfig"
 	"sigs.k8s.io/prow/pkg/repoowners"
-	"time"
 
 	prowconfig "sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/prow/pkg/pluginhelp"
@@ -115,7 +116,9 @@ func gatherOptions() *options {
 	for _, group := range []flagutil.OptionGroup{&o.github} {
 		group.AddFlags(fs)
 	}
-	fs.Parse(os.Args[1:])
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		logrus.Fatalf("failed to parse: %v", err)
+	}
 	return o
 }
 

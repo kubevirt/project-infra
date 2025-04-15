@@ -43,7 +43,9 @@ func gatherOptions() options {
 	fs.StringVar(&o.bucket, "bucket", "builddeps", "bucket where to upload")
 	fs.StringVar(&o.dir, "dir", "", "directory inside the bucket")
 	fs.StringVar(&o.workspacePath, "workspace", "", "path to the workspace file")
-	fs.Parse(os.Args[1:])
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		log.Fatalf("could not parse flags: %v", err)
+	}
 	return o
 }
 

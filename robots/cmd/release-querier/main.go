@@ -82,7 +82,10 @@ func gatherOptions() options {
 	fs.StringVar(&o.latestThreeMinor, "last-three-minor-of", "", "Query for the last three minor releases of a given release (e.g. v1 or 2)")
 	fs.StringVar(&o.latestPatchOf, "last-patch-of", "", "Latest patch release of the given release (e.g. v1.14 or 0.12)")
 	fs.StringVar(&o.template, "template", "v{{.Major}}.{{.Minor}}.{{.Patch}}", "How to print the detected versions")
-	fs.Parse(os.Args[1:])
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		logrus.WithError(err).Error("Failed to parse command line arguments.")
+		os.Exit(1)
+	}
 	return o
 }
 
@@ -133,19 +136,25 @@ func main() {
 	if o.latest {
 		latest := querier.LatestRelease(releases)
 		if latest != nil {
-			tmpl.Execute(os.Stdout, querier.ParseRelease(latest))
+			if err := tmpl.Execute(os.Stdout, querier.ParseRelease(latest)); err != nil {
+				log.Panicln(err)
+			}
 			fmt.Print("\n")
 		}
 	} else if o.latestPatchOf != "" {
 		latestPatchOf := querier.LastPatchOf(uint(o.major), uint(o.minor), releases)
 		if latestPatchOf != nil {
-			tmpl.Execute(os.Stdout, querier.ParseRelease(latestPatchOf))
+			if err := tmpl.Execute(os.Stdout, querier.ParseRelease(latestPatchOf)); err != nil {
+				log.Panicln(err)
+			}
 			fmt.Print("\n")
 		}
 	} else if o.latestThreeMinor != "" {
 		minors := querier.LastThreeMinor(uint(o.major), releases)
 		for _, release := range minors {
-			tmpl.Execute(os.Stdout, querier.ParseRelease(release))
+			if err := tmpl.Execute(os.Stdout, querier.ParseRelease(release)); err != nil {
+				log.Panicln(err)
+			}
 			fmt.Print("\n")
 		}
 	}

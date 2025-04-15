@@ -81,7 +81,10 @@ func gatherOptions() options {
 	fs.BoolVar(&o.ensureOnlyLatestThree, "ensure-only-latest-three", false, "Ensure that only the latest three minor releases of the given major release exist (aka remove older providers)")
 	fs.StringVar(&o.providerDir, "k8s-provider-dir", "", "The directory of the k8s providers")
 	fs.StringVar(&o.clusterUpDir, "cluster-up-dir", "", "The directory of the cluster up configurations")
-	fs.Parse(os.Args[1:])
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		logrus.WithError(err).Error("Failed to parse command line arguments.")
+		os.Exit(1)
+	}
 	return o
 }
 
