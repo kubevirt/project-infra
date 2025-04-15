@@ -27,7 +27,7 @@ if ! command -V golangci-lint; then
 fi
 
 golangci-lint --version
-golangci-lint run
+golangci-lint run --timeout 20m
 
 if [ $(git grep '//nolint' -- '**/*.go' | wc -l) -gt 0 ]; then
     echo 'WARNING: nolint directive detected';
