@@ -130,7 +130,7 @@ periodics:
         cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
         ./hack/bump-centos-version.sh &&
         SHORT_SHA=$(git rev-parse --short HEAD) &&
-        GIT_ASKPASS=../project-infra/hack/git-askpass.sh ../project-infra/hack/git-pr.sh -c "PHASES=linux BYPASS_PMAN_CHANGE_CHECK=true ./publish.sh" -r kubevirtci -b bump-centos-stream -T main -p $(pwd) -s "Automatic bump of CentOS Stream to latest" &&
+        GIT_ASKPASS=../project-infra/hack/git-askpass.sh ../project-infra/hack/git-pr.sh -c "PHASES=linux BYPASS_PMAN_CHANGE_CHECK=true ./publish.sh" -r kubevirtci -b bump-centos-stream -T main -p $(pwd) -s "Automatic bump of CentOS Stream to latest" -L skip-review &&
         # For passing centos image tag to dependent (s390x) prow job
         image_tag=$(cat cluster-provision/k8s/base-image | cut -d ':' -f 2) &&
         echo "$image_tag" > amd64-centos9-$SHORT_SHA &&
