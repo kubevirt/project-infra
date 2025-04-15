@@ -40,4 +40,4 @@ spec:
         command: [ "/bin/sh", "-c", "while true; do sleep 86400; done" ]
         resources:
           requests:
-            memory: 29Gi
+            memory: 52Gi
