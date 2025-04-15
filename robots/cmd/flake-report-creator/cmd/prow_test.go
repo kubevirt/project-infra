@@ -4,7 +4,6 @@ import (
 	"github.com/joshdk/go-junit"
 	"io/ioutil"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
 	"kubevirt.io/project-infra/robots/pkg/validation"
 	"os"
 	"path/filepath"
@@ -18,7 +17,6 @@ func Test_writeProwReportToFileProducesValidOutput(t *testing.T) {
 		endOfReport   time.Time
 		reports       []*flakefinder.JobResult
 		validators    []validation.ContentValidator
-		ratings       []build.Rating
 	}
 	tests := []struct {
 		name string
@@ -207,7 +205,6 @@ func Test_writeProwReportToFileCreatesTags(t *testing.T) {
 		startOfReport time.Time
 		endOfReport   time.Time
 		reports       []*flakefinder.JobResult
-		ratings       []build.Rating
 		expectations  []expectation
 	}
 	tests := []struct {

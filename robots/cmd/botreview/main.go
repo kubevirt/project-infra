@@ -43,7 +43,6 @@ type options struct {
 
 	dryRun bool
 	github prowflagutil.GitHubOptions
-	labels prowflagutil.Strings
 }
 
 func (o *options) Validate() error {

@@ -32,8 +32,6 @@ import (
 const OrgAndRepoForJobConfig = "kubevirt/kubevirtci"
 
 type options struct {
-	port int
-
 	dryRun bool
 
 	TokenPath                        string

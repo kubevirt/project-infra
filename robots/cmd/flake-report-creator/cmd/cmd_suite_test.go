@@ -24,10 +24,6 @@ import (
 	"testing"
 )
 
-type expecter interface {
-	contains(content string, t *testing.T)
-}
-
 type expectation struct {
 	expectedToBeContained string
 }

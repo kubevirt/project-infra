@@ -11,7 +11,6 @@ import (
 func TestCreateBumpedJobForRelease(t *testing.T) {
 	type args struct {
 		expectedJob config.Presubmit
-		expectedErr bool
 		semver      *querier.SemVer
 	}
 	tests := []struct {
@@ -86,10 +85,6 @@ func TestCreateBumpedJobForRelease(t *testing.T) {
 			}
 		})
 	}
-}
-
-var blah = map[string][]config.Presubmit{
-	OrgAndRepoForJobConfig: []config.Presubmit{},
 }
 
 func TestAddNewPresubmitIfNotExists(t *testing.T) {

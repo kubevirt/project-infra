@@ -15,7 +15,6 @@ import (
 	"time"
 
 	grob "github.com/MetalBlueberry/go-plotly/graph_objects"
-	"github.com/MetalBlueberry/go-plotly/offline"
 	gonumplot "gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
@@ -179,38 +178,6 @@ func drawStaticGraph(filePath string, data PlotData) error {
 	}
 
 	return p.Save(30*vg.Centimeter, 15*vg.Centimeter, filePath)
-}
-
-func drawDynamicGraph(filepath string, data PlotData) error {
-	fig := &grob.Fig{
-		Data: grob.Traces{
-			&grob.Scatter{
-				X:     data.Curves[0].X,
-				Y:     data.Curves[0].Y,
-				Mode:  "markers",
-				Xaxis: data.XAxisLabel,
-				Yaxis: data.YAxisLabel,
-			},
-			&grob.Scatter{
-				X:     data.Curves[1].X,
-				Y:     data.Curves[1].Y,
-				Mode:  "lines",
-				Xaxis: data.XAxisLabel,
-				Yaxis: data.YAxisLabel,
-			},
-		},
-		Layout: &grob.Layout{
-			Title: &grob.LayoutTitle{
-				Text: data.Title,
-			},
-			Xaxis: &grob.LayoutXaxis{Type: grob.LayoutXaxisTypeDate},
-		},
-	}
-
-	//offline.Show(fig)
-	offline.ToHtml(fig, filepath)
-
-	return nil
 }
 
 func figFromData(data PlotData) *grob.Fig {

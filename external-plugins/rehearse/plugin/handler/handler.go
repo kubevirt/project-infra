@@ -678,14 +678,6 @@ func repoFromJobKey(jobKey string) string {
 	return strings.Join(r, "/")
 }
 
-func hashPeriodicsConfig(periodics []config.Periodic) map[string]config.Periodic {
-	p := map[string]config.Periodic{}
-	for _, periodic := range periodics {
-		p[periodic.JobBase.Name] = periodic
-	}
-	return p
-}
-
 func hashPresubmitsConfig(presubmits map[string][]config.Presubmit) map[string]config.Presubmit {
 	presubmitsFlat := map[string]config.Presubmit{}
 	for repo, presubmitsForRepo := range presubmits {

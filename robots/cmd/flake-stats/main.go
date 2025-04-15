@@ -106,20 +106,6 @@ func (t TopXTests) Less(i, j int) bool {
 		(iAllFailures.Sum == jAllFailures.Sum && iAllFailures.Max == jAllFailures.Max && iAllFailures.Avg > jAllFailures.Avg)
 }
 
-func (t TopXTests) calculateWeightedDatedFailureSums(i int, firstDayOfReport time.Time) int {
-	tiFailuresPerDay := t[i].FailuresPerDay
-	iWeightedDatedFailureSums := 0
-	for iDate, iFailuresPerDay := range tiFailuresPerDay {
-		parse, err := time.Parse(time.RFC3339, iDate)
-		if err != nil {
-			panic(err)
-		}
-		daysAfterStart := int(parse.Sub(firstDayOfReport).Hours()) / 24
-		iWeightedDatedFailureSums += daysAfterStart * daysAfterStart * iFailuresPerDay.Sum
-	}
-	return iWeightedDatedFailureSums
-}
-
 func (t TopXTests) Swap(i, j int) {
 	t[i], t[j] = t[j], t[i]
 }
