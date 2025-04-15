@@ -133,6 +133,8 @@ orgs:
       cdi-operator:
         has_projects: true
         archived: true
+      charts:
+        description: Helm charts for KubeVirt
       client-go:
         description: Go client for kubevirt
         has_projects: true
