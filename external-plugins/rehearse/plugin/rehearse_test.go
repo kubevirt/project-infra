@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"encoding/json"
+
 	"k8s.io/apimachinery/pkg/util/sets"
 	"kubevirt.io/project-infra/external-plugins/testutils"
 
@@ -37,7 +38,9 @@ var _ = Describe("Rehearse", func() {
 
 		AfterEach(func() {
 			if gitClientFactory != nil {
-				gitClientFactory.Clean()
+				if err := gitClientFactory.Clean(); err != nil {
+					logrus.WithError(err).Error("Failed to clean up git client factory")
+				}
 			}
 		})
 
@@ -46,7 +49,9 @@ var _ = Describe("Rehearse", func() {
 			It("Should generate Prow jobs for the changed configs", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					if err := makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar"); err != nil {
+						logrus.WithError(err).Fatal("Failed to create fake git repo")
+					}
 				})
 
 				var baseref string
@@ -228,7 +233,9 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs if there are no changes", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					if err := makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar"); err != nil {
+						logrus.WithError(err).Fatal("Failed to create fake git repo")
+					}
 				})
 
 				var baseref string
@@ -365,7 +372,9 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs if a job was deleted", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					if err := makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar"); err != nil {
+						logrus.WithError(err).Fatal("Failed to create fake git repo")
+					}
 				})
 
 				var baseref string
@@ -526,7 +535,9 @@ var _ = Describe("Rehearse", func() {
 			It("Should not act on pull request event if always run is set to false", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					if err := makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar"); err != nil {
+						logrus.WithError(err).Fatal("Failed to create fake git repo")
+					}
 				})
 
 				var baseref string
@@ -706,7 +717,9 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					if err := makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar"); err != nil {
+						logrus.WithError(err).Fatal("Failed to create fake git repo")
+					}
 				})
 
 				var baseref string
@@ -914,7 +927,9 @@ var _ = Describe("Rehearse", func() {
 
 		AfterEach(func() {
 			if gitClientFactory != nil {
-				gitClientFactory.Clean()
+				if err := gitClientFactory.Clean(); err != nil {
+					logrus.WithError(err).Error("Failed to clean up git client factory")
+				}
 			}
 		})
 
@@ -922,7 +937,9 @@ var _ = Describe("Rehearse", func() {
 
 			It("Should generate Prow jobs for the changed configs", func() {
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					if err := makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar"); err != nil {
+						logrus.WithError(err).Fatal("Failed to create fake git repo")
+					}
 				})
 
 				var baseref string
@@ -1103,7 +1120,9 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs if there are no changes", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					if err := makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar"); err != nil {
+						logrus.WithError(err).Fatal("Failed to create fake git repo")
+					}
 				})
 
 				var baseref string
@@ -1234,7 +1253,9 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs if a job was deleted", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					if err := makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar"); err != nil {
+						logrus.WithError(err).Fatal("Failed to create fake git repo")
+					}
 				})
 
 				var baseref string
@@ -1386,7 +1407,9 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs if a job is not permitted", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					if err := makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar"); err != nil {
+						logrus.WithError(err).Fatal("Failed to create fake git repo")
+					}
 				})
 
 				var baseref string
@@ -1536,7 +1559,9 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					if err := makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar"); err != nil {
+						logrus.WithError(err).Fatal("Failed to create fake git repo")
+					}
 				})
 
 				var baseref string
