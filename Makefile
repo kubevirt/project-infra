@@ -4,10 +4,6 @@ flake-issue-creator := robots/cmd/flake-issue-creator
 querier := robots/cmd/release-querier
 kubevirtci := robots/cmd/kubevirtci-bumper
 
-ifndef GOLANGCI_LINT_VERSION
-	GOLANGCI_LINT_VERSION=v1.62.2
-	export GOLANGCI_LINT_VERSION
-endif
 ifndef ARTIFACTS
 	ARTIFACTS=/tmp/artifacts
 	export ARTIFACTS
