@@ -131,9 +131,9 @@ presubmits:
         image: quay.io/kubevirtci/golang:v20250327-c3122d8
         resources:
           requests:
-            memory: "1Gi"
+            memory: "4Gi"
           limits:
-            memory: "1Gi"
+            memory: "4Gi"
   - always_run: false
     cluster: kubevirt-prow-control-plane
     decorate: true
