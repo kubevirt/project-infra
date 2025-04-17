@@ -166,9 +166,7 @@ func (h *GitHubEventsHandler) loadPresubmits(pr github.PullRequest) ([]config.Pr
 		if index != orgRepo {
 			continue
 		}
-		for _, job := range jobs {
-			presubmits = append(presubmits, job)
-		}
+		presubmits = append(presubmits, jobs...)
 	}
 
 	return presubmits, nil

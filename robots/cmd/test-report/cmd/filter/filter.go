@@ -134,19 +134,19 @@ var defaultGroupConfigs = groupConfigs{
 	groupConfig{
 		name:    "storage",
 		version: regexp.MustCompile(versionPattern),
-		sig:     regexp.MustCompile(".*\\[sig-storage].*"),
+		sig:     regexp.MustCompile(`.*\[sig-storage\].*`),
 		lanes:   regexp.MustCompile(".*(storage|quarantined).*"),
 	},
 	groupConfig{
 		name:    "virtualization",
 		version: regexp.MustCompile(versionPattern),
-		sig:     regexp.MustCompile(".*\\[sig-(compute|operator)].*"),
+		sig:     regexp.MustCompile(`.*\[sig-(compute|operator)\].*`),
 		lanes:   regexp.MustCompile(".*(compute|operator|quarantined).*"),
 	},
 	groupConfig{
 		name:    "network",
 		version: regexp.MustCompile(versionPattern),
-		sig:     regexp.MustCompile(".*\\[sig-network].*"),
+		sig:     regexp.MustCompile(`.*\\[sig-network].*`),
 		lanes:   regexp.MustCompile(".*(network|quarantined).*"),
 	},
 	groupConfig{

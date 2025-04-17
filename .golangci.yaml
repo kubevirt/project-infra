@@ -12,7 +12,7 @@ linters:
   - unused
 #  - ineffassign
 #  - govet
-#  - gosimple
+  - gosimple
 #  - errcheck
 #linters-settings:
 #  gocyclo:

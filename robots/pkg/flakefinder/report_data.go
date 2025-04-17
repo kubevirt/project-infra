@@ -215,7 +215,7 @@ type TestAttribute struct {
 	AttributeType TestAttributeType
 }
 
-var testNameTagRegex = regexp.MustCompile("\\[[^]\\[]+\\]")
+var testNameTagRegex = regexp.MustCompile(`\[[^\]\[]+\]`)
 
 // GetBareTestName returns the test name with all meta data removed
 func GetBareTestName(testName string) string {

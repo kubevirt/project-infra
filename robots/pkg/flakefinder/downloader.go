@@ -49,7 +49,7 @@ const (
 var testJobNameRegex *regexp.Regexp
 
 func init() {
-	testJobNameRegex = regexp.MustCompile(".*-(e2e(-[a-z\\d]+)?)$")
+	testJobNameRegex = regexp.MustCompile(`.*-(e2e(-[a-z\\d]+)?)$`)
 }
 
 func FindUnitTestFiles(ctx context.Context, client *storage.Client, bucket, repo string, change api.Change, startOfReport time.Time, skipBeforeStartOfReport bool) ([]*JobResult, error) {
