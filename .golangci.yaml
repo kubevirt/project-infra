@@ -13,7 +13,7 @@ linters:
 #  - ineffassign
 #  - govet
 #  - gosimple
-#  - errcheck
-#linters-settings:
-#  gocyclo:
-#    min-complexity: 10
+  - errcheck
+linters-settings:
+  gocyclo:
+    min-complexity: 40
