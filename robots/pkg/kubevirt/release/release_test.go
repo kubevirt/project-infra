@@ -41,29 +41,29 @@ func Test_getLatestMinorReleases(t *testing.T) {
 			name: "two elements, same minor",
 			args: args{
 				releases: []*querier.SemVer{
-					{"1", "17", "42"},
-					{"1", "17", "37"},
+					{Major: "1", Minor: "17", Patch: "42"},
+					{Major: "1", Minor: "17", Patch: "37"},
 				},
 			},
 			wantLatestMinorReleases: []*querier.SemVer{
-				{"1", "17", "42"},
+				{Major: "1", Minor: "17", Patch: "42"},
 			},
 		},
 		{
 			name: "five elements, three minors",
 			args: args{
 				releases: []*querier.SemVer{
-					{"1", "17", "42"},
-					{"1", "17", "37"},
-					{"1", "16", "4"},
-					{"1", "16", "3"},
-					{"1", "15", "1"},
+					{Major: "1", Minor: "17", Patch: "42"},
+					{Major: "1", Minor: "17", Patch: "37"},
+					{Major: "1", Minor: "16", Patch: "4"},
+					{Major: "1", Minor: "16", Patch: "3"},
+					{Major: "1", Minor: "15", Patch: "1"},
 				},
 			},
 			wantLatestMinorReleases: []*querier.SemVer{
-				{"1", "17", "42"},
-				{"1", "16", "4"},
-				{"1", "15", "1"},
+				{Major: "1", Minor: "17", Patch: "42"},
+				{Major: "1", Minor: "16", Patch: "4"},
+				{Major: "1", Minor: "15", Patch: "1"},
 			},
 		},
 	}
