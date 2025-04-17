@@ -100,7 +100,7 @@ var _ = Describe("Rehearse", func() {
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
+					headConfig, _ := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
 								"foo/bar": {
@@ -138,7 +138,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
@@ -580,7 +580,7 @@ var _ = Describe("Rehearse", func() {
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
+					headConfig, _ := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
 								"foo/bar": {
@@ -618,7 +618,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
@@ -760,7 +760,7 @@ var _ = Describe("Rehearse", func() {
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
+					headConfig, _ := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
 								"foo/bar": {
@@ -798,7 +798,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
@@ -976,7 +976,7 @@ var _ = Describe("Rehearse", func() {
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
+					headConfig, _ := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
 								"foo/bar": {
@@ -1014,7 +1014,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
@@ -1288,7 +1288,7 @@ var _ = Describe("Rehearse", func() {
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
+					headConfig, _ := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
 								"foo/bar": {
@@ -1311,7 +1311,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
@@ -1434,7 +1434,7 @@ var _ = Describe("Rehearse", func() {
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
+					headConfig, _ := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
 								"foo/bar": {
@@ -1457,7 +1457,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())
@@ -1590,7 +1590,7 @@ var _ = Describe("Rehearse", func() {
 
 				var headref string
 				By("Generating a head commit with a modified job", func() {
-					headConfig, err := json.Marshal(&config.Config{
+					headConfig, _ := json.Marshal(&config.Config{
 						JobConfig: config.JobConfig{
 							PresubmitsStatic: map[string][]config.Presubmit{
 								"foo/bar": {
@@ -1628,7 +1628,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
-					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
+					err := gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
 					Expect(err).ShouldNot(HaveOccurred())

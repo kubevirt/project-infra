@@ -284,13 +284,12 @@ func (s *Server) handleIssueComment(l *logrus.Entry, ic github.IssueCommentEvent
 	if ic.Action != github.IssueCommentActionCreated {
 		return nil
 	}
-
+	var needsLabel bool
 	org := ic.Repo.Owner.Login
 	repo := ic.Repo.Name
 	num := ic.Issue.Number
 	commentAuthor := ic.Comment.User.Login
 
-	needsLabel := true
 	targetBranch := ""
 
 	l = l.WithFields(logrus.Fields{
