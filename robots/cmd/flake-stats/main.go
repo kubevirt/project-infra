@@ -361,11 +361,11 @@ func aggregateFailuresPerJob(reportData *flakefinder.Params, originalTestName st
 			continue
 		}
 
-		currentTopXTest, topXTestsExists := testNamesByTopXTests[normalizedTestName]
+		_, topXTestsExists := testNamesByTopXTests[normalizedTestName]
 		if !topXTestsExists {
 			testNamesByTopXTests[normalizedTestName] = NewTopXTest(normalizedTestName)
 		}
-		currentTopXTest = testNamesByTopXTests[normalizedTestName]
+		currentTopXTest := testNamesByTopXTests[normalizedTestName]
 
 		aggregateAllFailuresPerTest(currentTopXTest, jobFailures)
 		aggregateFailuresPerTestPerDay(currentTopXTest, reportData, jobFailures)

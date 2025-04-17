@@ -93,6 +93,9 @@ func CreateReportIndex(ctx context.Context, client *storage.Client, org, repo st
 
 	if printIndexPageToStdOut {
 		err = WriteReportIndexPage(reportDirGcsObjects, os.Stdout, org, repo)
+		if err != nil {
+			return fmt.Errorf("failed generating index page: %v", err)
+		}
 	} else {
 		reportIndexObjectWriter := flakefinder.CreateOutputWriter(client, ctx, ReportOutputPath)
 		err = WriteReportIndexPage(reportDirGcsObjects, reportIndexObjectWriter, org, repo)

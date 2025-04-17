@@ -245,6 +245,9 @@ func GenerateMarkdownForSupportMatrix(_ *cobra.Command, _ []string) error { //no
 	var writer io.Writer
 	if getSupportMatrixOpts.OutputFile != "" {
 		writer, err = os.OpenFile(getSupportMatrixOpts.OutputFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+		if err != nil {
+			return fmt.Errorf("failed to open file %q: %v", getSupportMatrixOpts.OutputFile, err)
+		}
 	} else {
 		writer = os.Stdout
 	}
@@ -341,6 +344,9 @@ func fetchK8sSchedules() (*schedulesDoc, error) {
 	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error when reading k8s schedule yaml: %v", err)
+	}
 	var k8sSchedules *schedulesDoc
 	err = yaml.Unmarshal(body, &k8sSchedules)
 	if err != nil {
@@ -356,6 +362,9 @@ func fetchK8sEOLs() (*EOLDoc, error) {
 	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error when reading %q: %v", k8sEOLYAML, err)
+	}
 	var eolDoc *EOLDoc
 	err = yaml.Unmarshal(body, &eolDoc)
 	if err != nil {

@@ -312,7 +312,9 @@ func (r *releaseData) makeTag(branch string) error {
 	r.generateReleaseNotes()
 
 	_, err := gitCommand("-C", r.repoDir, "tag", "-s", r.tag, "-F", r.releaseNotesFile)
-
+	if err != nil {
+		return err
+	}
 	if !r.dryRun {
 		_, err = gitCommand("-C", r.repoDir, "push", r.repoUrl, r.tag)
 		if err != nil {
@@ -755,6 +757,9 @@ func (r *releaseData) getBlockers(branch string) (*blockerListCacheEntry, error)
 	}
 
 	prs, _, err := r.githubClient.PullRequests.List(context.Background(), r.org, r.repo, prListOptions)
+	if err != nil {
+		return nil, err
+	}
 
 	filteredPRs := []*github.PullRequest{}
 	filteredIssues := []*github.Issue{}

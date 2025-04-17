@@ -10,8 +10,8 @@ linters:
   - gocyclo
 #  - staticcheck
   - unused
-#  - ineffassign
   - govet
+  - ineffassign
   - gosimple
 #  - errcheck
 #linters-settings:
