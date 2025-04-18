@@ -11,7 +11,7 @@ linters:
 #  - staticcheck
   - unused
 #  - ineffassign
-#  - govet
+  - govet
   - gosimple
 #  - errcheck
 #linters-settings:

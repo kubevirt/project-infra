@@ -137,7 +137,6 @@ func runResults(r resultOpts) error {
 	}
 	if err != nil {
 		return fmt.Errorf("Failed to create new storage client: %v.\n", err)
-		return err
 	}
 
 	jobsDirs, err := listAllRunsForJob(ctx, storageClient, r.performanceJobName)

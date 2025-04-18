@@ -248,7 +248,7 @@ func release(tagName string, released bool) *github.RepositoryRelease {
 		TagName: &tagName,
 	}
 	if released {
-		release.PublishedAt = &github.Timestamp{time.Now()}
+		release.PublishedAt = &github.Timestamp{Time: time.Now()}
 	}
 	return release
 }
