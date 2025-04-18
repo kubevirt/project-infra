@@ -55,7 +55,7 @@ func main() {
 	}
 	fmt.Println(options.dryRun)
 
-	rawFile, err := ioutil.ReadFile(options.workspacePath)
+	rawFile, _ := ioutil.ReadFile(options.workspacePath)
 	workspace, err := build.ParseWorkspace("workspace", rawFile)
 	if err != nil {
 		log.Fatalf("could not load workspace file: %v", err)

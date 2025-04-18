@@ -136,7 +136,7 @@ var _ = Describe("root tests", func() {
 
 			command = exec.Command("git", "commit", "-m", "test commit")
 			command.Dir = tempDir
-			err = command.Run()
+			_ = command.Run()
 
 			var gitBlameLines []*git.BlameLine
 			gitBlameLines, err = git.GetBlameLinesForFile(targetFile)

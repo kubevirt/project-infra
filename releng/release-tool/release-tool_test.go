@@ -475,7 +475,7 @@ func TestConfigureReleaseJob(t *testing.T) {
 	}(tempDir)
 
 	tempOutputFile := filepath.Join(tempDir, "kubevirt-presubmits-1.6.yaml")
-	err = configureReleaseJob(
+	_ = configureReleaseJob(
 		"testdata/jobconfig/kubevirt-presubmits-1.6.yaml",
 		tempOutputFile,
 	)

@@ -198,7 +198,7 @@ func GetPeriodics(cmd *cobra.Command, args []string) error {
 
 	data := NewPeriodicsData()
 
-	periodicsJobConfig, err := config.ReadJobConfig(getPeriodicJobsOpts.jobConfigPathKubevirtPeriodics)
+	periodicsJobConfig, _ := config.ReadJobConfig(getPeriodicJobsOpts.jobConfigPathKubevirtPeriodics)
 	for _, periodic := range periodicsJobConfig.Periodics {
 		if !strings.Contains(periodic.Name, "e2e") {
 			continue

@@ -172,7 +172,6 @@ func createOutputFile(outputFileToCreate string) (outputFile *os.File, err error
 		if err != nil {
 			return nil, fmt.Errorf("failed to create temporary output file: %v", err)
 		}
-		outputFileToCreate = outputFile.Name()
 	} else {
 		outputFile, err = os.Create(outputFileToCreate)
 		if err != nil {

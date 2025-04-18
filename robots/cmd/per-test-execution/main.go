@@ -92,7 +92,7 @@ type options struct {
 func (o options) loadDefaults() error {
 	if opts.K8sVersion == "" {
 		log.Info("loading default stable k8s version")
-		resp, err := http.Get("https://dl.k8s.io/release/stable.txt")
+		resp, _ := http.Get("https://dl.k8s.io/release/stable.txt")
 		defer resp.Body.Close()
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
