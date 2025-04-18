@@ -63,6 +63,8 @@ Usage of weekly-graph:
         comma separated list of metrics to be plotted (default "vmiCreationToRunningSecondsP95")
   -plotly-html
         boolean for selecting what kind of graph will be plotted (default true)
+  -is-release
+        boolean for selecting if the graph is for a release version (default false)
   -resource string
         resource for which the graph will be plotted (default "vmi")
   -weekly-reports-dir string
