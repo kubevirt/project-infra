@@ -203,3 +203,39 @@ periodics:
       resources:
         requests:
           memory: "52Gi"
+- name: periodic-kubevirtci-bump-hco
+  cron: "0 */12 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+  max_concurrency: 1
+  extra_refs:
+    - org: kubevirt
+      repo: project-infra
+      base_ref: main
+    - org: kubevirt
+      repo: hyperconverged-cluster-operator
+      base_ref: main
+  labels:
+    preset-podman-in-container-enabled: "true"
+    preset-docker-mirror: "true"
+    preset-gcs-credentials: "true"
+    preset-github-credentials: "true"
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+      - image: quay.io/kubevirtci/pr-creator:v20240913-6773146
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -e
+            if labels-checker --org=kubevirt --repo=hyperconverged-cluster-operator --author=kubevirt-bot --branch-name=bump-kubevirtci --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
+              git-pr.sh -c "cd ../hyperconverged-cluster-operator && make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -p ../hyperconverged-cluster-operator -T main
+            fi
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
