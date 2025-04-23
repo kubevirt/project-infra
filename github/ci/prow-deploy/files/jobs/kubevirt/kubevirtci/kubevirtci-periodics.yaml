@@ -232,7 +232,7 @@ periodics:
           - |
             set -e
             if labels-checker --org=kubevirt --repo=hyperconverged-cluster-operator --author=kubevirt-bot --branch-name=bump-kubevirtci --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
-              git-pr.sh -c "cd ../hyperconverged-cluster-operator && make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -p ../hyperconverged-cluster-operator -T main
+              git-pr.sh -c "cd ../hyperconverged-cluster-operator && make bump-kubevirtci" -b bump-kubevirtci -p ../hyperconverged-cluster-operator -T main -R
             fi
         securityContext:
           privileged: true
