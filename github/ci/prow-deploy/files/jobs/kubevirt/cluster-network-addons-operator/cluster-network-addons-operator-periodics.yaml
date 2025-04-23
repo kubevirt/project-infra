@@ -65,3 +65,42 @@ periodics:
       - --repo=cluster-network-addons-operator
       - --skip_results_before_start_of_report=false
       - --pr_base_branch=main
+- name: periodic-cnao-workflow-k8s-nightly
+  cron: "2 7 * * *"
+  decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
+  decoration_config:
+    timeout: 3h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-podman-in-container-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-gcs-credentials: "true"
+    preset-kubevirtci-quay-credential: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: cluster-network-addons-operator
+      base_ref: main
+      work_dir: true
+  cluster: kubevirt-prow-workloads
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+      - image: quay.io/kubevirtci/golang:v20241213-57bd934
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - |
+            ./automation/test-nightly-build.sh
+        args:
+        - --pr_base_branch=main
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "52Gi"
