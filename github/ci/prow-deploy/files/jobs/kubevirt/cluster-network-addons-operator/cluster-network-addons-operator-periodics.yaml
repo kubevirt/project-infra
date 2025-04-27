@@ -84,7 +84,7 @@ periodics:
       repo: cluster-network-addons-operator
       base_ref: main
       work_dir: true
-  cluster: kubevirt-prow-workloads
+  cluster: prow-workloads
   spec:
     nodeSelector:
       type: bare-metal-external
