@@ -21,12 +21,15 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 	"kubevirt.io/project-infra/robots/pkg/git"
 	"os"
+	osexec "os/exec"
 	"path/filepath"
+	"strings"
 )
 
 type TestDataContainer struct {
@@ -178,7 +181,7 @@ var _ = Describe("extract testnames", func() {
 
 	})
 
-	FWhen("extracting test names from generated outline", Ordered, func() {
+	When("extracting test names from generated outline", Ordered, func() {
 
 		const (
 			testfileName        = "simple_test.go"
@@ -200,7 +203,18 @@ var _ = Describe("extract testnames", func() {
 			testfile := filepath.Join(testfilePath, testfileName)
 			Expect(err).ToNot(HaveOccurred())
 
-			commits, err := git.LogCommits("925bc9317..0051bfb64", absBasePath, testfilePath)
+			// determine latest commit id on test file
+			// note: required to make test robust against rebases
+			cmd := osexec.Command("git", "log", "--format=%H", "-1", "--", testfilePath)
+			cmd.Dir = absBasePath
+			output, err := cmd.Output()
+			Expect(err).ToNot(HaveOccurred())
+
+			commitID := string(output)
+			commitID = strings.TrimSuffix(commitID, "\n")
+			Expect(commitID).ToNot(BeEquivalentTo(""))
+
+			commits, err := git.LogCommits(fmt.Sprintf("%s^1..%s", commitID, commitID), absBasePath, testfilePath)
 			Expect(err).ToNot(HaveOccurred())
 
 			testOutline, err := ginkgo.OutlineFromFile(filepath.Join(testfilePartialPath, testfileName))
