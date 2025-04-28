@@ -92,24 +92,31 @@ func extractChangedTests(debug bool, revisionRange string, testDirectory string,
 				continue
 			}
 			testfileFullPath := filepath.Join(repoPath, fileChange.Filename)
-			testfileContent, err := os.ReadFile(testfileFullPath)
-			if err != nil {
-				return err
+			switch fileChange.ChangeType {
+			case git.Deleted:
+				outlines[fileChange.Filename] = []*ginkgo.Node{}
+				testfileContents[fileChange.Filename] = ""
+				blameLines[fileChange.Filename] = []*git.BlameLine{}
+			default:
+				testfileContent, err := os.ReadFile(testfileFullPath)
+				if err != nil {
+					return err
+				}
+				outline, err := ginkgo.OutlineFromFile(testfileFullPath)
+				if err != nil {
+					return err
+				}
+				if len(outline) == 0 {
+					continue
+				}
+				outlines[fileChange.Filename] = outline
+				testfileContents[fileChange.Filename] = string(testfileContent)
+				blameLinesForFile, err := git.GetBlameLinesForFile(testfileFullPath)
+				if err != nil {
+					return err
+				}
+				blameLines[fileChange.Filename] = blameLinesForFile
 			}
-			outline, err := ginkgo.OutlineFromFile(testfileFullPath)
-			if err != nil {
-				return err
-			}
-			if len(outline) == 0 {
-				continue
-			}
-			outlines[fileChange.Filename] = outline
-			testfileContents[fileChange.Filename] = string(testfileContent)
-			blameLinesForFile, err := git.GetBlameLinesForFile(testfileFullPath)
-			if err != nil {
-				return err
-			}
-			blameLines[fileChange.Filename] = blameLinesForFile
 		}
 	}
 	if debug {
