@@ -66,7 +66,7 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --pr_base_branch=main
 - name: periodic-cnao-workflow-k8s-nightly
-  cron: "2 7 * * *"
+  cron: "2 2 * * *"
   decorate: true
   annotations:
     testgrid-create-test-group: "false"
