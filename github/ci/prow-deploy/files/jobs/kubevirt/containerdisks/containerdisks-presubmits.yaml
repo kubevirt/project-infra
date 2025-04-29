@@ -88,7 +88,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: true
-    optional: false
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
