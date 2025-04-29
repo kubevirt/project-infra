@@ -292,6 +292,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
+        - name: CANNIER_IMAGE
+          value: quay.io/kubevirtci/cannier:v20250428-dc1823e
         image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
         name: ""
         resources:
