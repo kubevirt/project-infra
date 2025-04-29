@@ -398,6 +398,35 @@ periodics:
         resources:
           requests:
             memory: "200Mi"
+- name: periodic-bump-bootstrap-fedora-base-version
+  interval: 168h
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    workdir: true
+  cluster: kubevirt-prow-control-plane
+  spec:
+    securityContext:
+      runAsUser: 0
+    containers:
+      - image: quay.io/kubevirtci/pr-creator:v20240913-6773146
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - git-pr.sh -c "./hack/bump-fedora-images-version.sh ./images/bootstrap/Containerfile" -p ./ -r project-infra -b bootstrap-fedora-version-bump -T main
+        resources:
+          requests:
+            memory: "200Mi"
 - name: periodic-kubevirtci-cluster-unsupported-version-remover
   cron: "30 3 * * *"
   max_concurrency: 1
