@@ -96,7 +96,13 @@ periodics:
       args:
       - |
         set -e
-        if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=bump-fedora-provision --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
+        if labels-checker \
+              --org=kubevirt \
+              --repo=kubevirt \
+              --author=kubevirt-bot \
+              --branch-name=bump-fedora-provision \
+              --ensure-labels-missing=lgtm,approved,do-not-merge/hold \
+              --github-token-path=/etc/github/oauth; then
           git-pr.sh -c "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile" -d "Bump fedora provisioning base to latest version" -b bump-fedora-provision -p ../kubevirtci -T main
         fi
       securityContext:

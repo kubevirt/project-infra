@@ -420,10 +420,17 @@ periodics:
       runAsUser: 0
     containers:
       - image: quay.io/kubevirtci/pr-creator:v20240913-6773146
-        command: ["/bin/sh"]
+        command:
+        - "/bin/bash"
+        - -c
         args:
-          - "-c"
-          - git-pr.sh -c "./hack/bump-fedora-images-version.sh ./images/bootstrap/Containerfile" -p ./ -r project-infra -b bootstrap-fedora-version-bump -T main
+          - |
+              git-pr.sh \
+              -c "./hack/bump-fedora-images-version.sh ./images/bootstrap/Containerfile" \
+              -p ./ \
+              -r project-infra \
+              -b bootstrap-fedora-version-bump \
+              -T main
         resources:
           requests:
             memory: "200Mi"
