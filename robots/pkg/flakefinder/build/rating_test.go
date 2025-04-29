@@ -21,7 +21,6 @@ package build
 
 import (
 	"encoding/json"
-	"fmt"
 	"math"
 	"os"
 	osexec "os/exec"
@@ -253,11 +252,13 @@ func TestNewRating(t *testing.T) {
 			}
 			gotIndent, err := json.MarshalIndent(got, "", "\t")
 			if err != nil {
-				t.Errorf(fmt.Sprintf("%v", err))
+				t.Errorf("%v", err)
+
 			}
 			wantIndent, err := json.MarshalIndent(tt.want, "", "\t")
 			if err != nil {
-				t.Errorf(fmt.Sprintf("%v", err))
+				t.Errorf("%v", err)
+
 			}
 			t.Errorf("NewRating() = %v\n, want\n %v\n, diff:\n %v", string(gotIndent), string(wantIndent), diff(string(gotIndent), string(wantIndent)))
 		})

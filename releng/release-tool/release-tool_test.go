@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sigs.k8s.io/prow/pkg/config"
 	"testing"
 	"time"
+
+	log "github.com/sirupsen/logrus"
+	"sigs.k8s.io/prow/pkg/config"
 
 	"github.com/google/go-github/v32/github"
 )
@@ -21,7 +21,7 @@ func standardSetup() releaseData {
 	repo := "fake-repo"
 	org := "fake-org"
 	token := "fake-token"
-	cacheDir, err := ioutil.TempDir("/tmp", "release-tool-unit-test")
+	cacheDir, err := os.MkdirTemp("/tmp", "release-tool-unit-test")
 	if err != nil {
 		panic(err)
 	}
@@ -481,6 +481,7 @@ func TestConfigureReleaseJob(t *testing.T) {
 	)
 	if err != nil {
 		t.Errorf("got unexpected error %s", err)
+		return
 	}
 	jobConfig, err := config.ReadJobConfig(tempOutputFile)
 	if err != nil {

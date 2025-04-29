@@ -2,7 +2,6 @@ package kubevirtci
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -69,7 +68,7 @@ func TestReadExistingProviders(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dir, err := ioutil.TempDir("", "prefix")
+			dir, err := os.MkdirTemp("", "prefix")
 			if err != nil {
 				panic(err)
 			}
@@ -95,11 +94,11 @@ func createEnsureProviderExistsEnv(tt struct {
 	wantedClusterUp []querier.SemVer
 	wantErr         bool
 }) (string, string) {
-	providerDir, err := ioutil.TempDir("", "prefix")
+	providerDir, err := os.MkdirTemp("", "prefix")
 	if err != nil {
 		panic(err)
 	}
-	clusterUpDir, err := ioutil.TempDir("", "prefix")
+	clusterUpDir, err := os.MkdirTemp("", "prefix")
 	if err != nil {
 		panic(err)
 	}
@@ -120,12 +119,12 @@ func createRelease(dir string, semver querier.SemVer) {
 	if err != nil && !os.IsExist(err) {
 		panic(err)
 	}
-	err = ioutil.WriteFile(filepath.Join(path, "version"), []byte(fmt.Sprintf("%s.%s.%s", semver.Major, semver.Minor, semver.Patch)), os.ModePerm)
+	err = os.WriteFile(filepath.Join(path, "version"), []byte(fmt.Sprintf("%s.%s.%s", semver.Major, semver.Minor, semver.Patch)), os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
 	// emulate discoverable content
-	err = ioutil.WriteFile(filepath.Join(path, fmt.Sprintf("%s.%s.%s", semver.Major, semver.Minor, semver.Patch)), []byte(fmt.Sprintf("%s.%s.%s", semver.Major, semver.Minor, semver.Patch)), os.ModePerm)
+	err = os.WriteFile(filepath.Join(path, fmt.Sprintf("%s.%s.%s", semver.Major, semver.Minor, semver.Patch)), []byte(fmt.Sprintf("%s.%s.%s", semver.Major, semver.Minor, semver.Patch)), os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
@@ -145,7 +144,7 @@ func createClusterUp(dir string, semver querier.SemVer) {
 		panic(err)
 	}
 	// emulate doc file with semver content
-	err = ioutil.WriteFile(filepath.Join(path, "blah.md"), []byte(fmt.Sprintf("k8s-%s %s.1", semver.Major, semver.Minor)), os.ModePerm)
+	err = os.WriteFile(filepath.Join(path, "blah.md"), []byte(fmt.Sprintf("k8s-%s %s.1", semver.Major, semver.Minor)), os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
@@ -161,7 +160,7 @@ func newSemVerMinor(major string, minor string) querier.SemVer {
 
 func readExistingClusterUpFolders(clusterUpDir string) ([]querier.SemVer, error) {
 	semvers := []querier.SemVer{}
-	fileinfo, err := ioutil.ReadDir(clusterUpDir)
+	fileinfo, err := os.ReadDir(clusterUpDir)
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +211,7 @@ func TestBumpMinorReleaseOfProvider(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dir, err := ioutil.TempDir("", "prefix")
+			dir, err := os.MkdirTemp("", "prefix")
 			if err != nil {
 				panic(err)
 			}
@@ -223,7 +222,7 @@ func TestBumpMinorReleaseOfProvider(t *testing.T) {
 			}
 			got, err := ReadExistingProviders(dir)
 			if err != nil {
-				panic(err)
+				t.Errorf("ReadExistingProvider raised unexpected error = %v", err)
 			}
 			if !reflect.DeepEqual(got, tt.wanted) {
 				t.Errorf("ReadExistingProviders() got = %v, want %v", got, tt.wanted)
@@ -501,19 +500,19 @@ func TestDropUnsupportedProviders(t *testing.T) {
 				t.Fatalf("DropUnsupportedProviders() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			if err == nil {
-				checkForSuperfluousDirEntries(t, err, targetClusterUpDir, tt.args.scenario.clusterUpDirsAfter)
+				checkForSuperfluousDirEntries(t, targetClusterUpDir, tt.args.scenario.clusterUpDirsAfter)
 				checkForRequiredDirEntries(t, targetClusterUpDir, tt.args.scenario.clusterUpDirsAfter)
-				checkForSuperfluousDirEntries(t, err, targetProviderDir, tt.args.scenario.providerDirsAfter)
+				checkForSuperfluousDirEntries(t, targetProviderDir, tt.args.scenario.providerDirsAfter)
 				checkForRequiredDirEntries(t, targetProviderDir, tt.args.scenario.providerDirsAfter)
 			}
 		})
 	}
 }
 
-func checkForSuperfluousDirEntries(t *testing.T, err error, pathToCheck string, listOfEntriesThatShouldExist []string) {
+func checkForSuperfluousDirEntries(t *testing.T, pathToCheck string, listOfEntriesThatShouldExist []string) {
 	dirEntries, err := os.ReadDir(pathToCheck)
 	if err != nil {
-		panic(err)
+		t.Errorf("DropUnsupportedProviders() error = %v", err)
 	}
 	for _, entry := range dirEntries {
 		found := false

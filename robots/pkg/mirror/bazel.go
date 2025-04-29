@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"hash"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -94,7 +93,7 @@ func init() {
 }
 
 func LoadWorkspace(path string) (*build.File, error) {
-	workspaceData, err := ioutil.ReadFile(path)
+	workspaceData, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse WORSPACE file: %v", err)
 	}
@@ -110,7 +109,7 @@ func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
 		fmt.Println(build.FormatString(workspace))
 		return nil
 	}
-	return ioutil.WriteFile(path, build.Format(workspace), 0666)
+	return os.WriteFile(path, build.Format(workspace), 0666)
 }
 
 func GetArtifacts(workspace *build.File) (artifacts []Artifact, err error) {

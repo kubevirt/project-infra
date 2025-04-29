@@ -17,7 +17,7 @@ package github
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -34,7 +34,7 @@ func NewGitHubClient(ctx context.Context) (*github.Client, error) {
 			return nil, fmt.Errorf("failed to create github client: %v", err)
 		}
 	} else {
-		token, err := ioutil.ReadFile(flags.Options.GitHubTokenPath)
+		token, err := os.ReadFile(flags.Options.GitHubTokenPath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read github token file %s: %v", flags.Options.GitHubTokenPath, err)
 		}

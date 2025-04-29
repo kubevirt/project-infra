@@ -17,7 +17,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"text/template"
@@ -109,7 +108,7 @@ func main() {
 			log.Panicln(err)
 		}
 	} else {
-		token, err := ioutil.ReadFile(o.TokenPath)
+		token, err := os.ReadFile(o.TokenPath)
 		if err != nil {
 			log.Panicln(err)
 		}

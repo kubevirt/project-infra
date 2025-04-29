@@ -1,17 +1,18 @@
 package cmd
 
 import (
-	"github.com/bndr/gojenkins"
-	"github.com/joshdk/go-junit"
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
-	"kubevirt.io/project-infra/robots/pkg/validation"
+	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/bndr/gojenkins"
+	"github.com/joshdk/go-junit"
+	log "github.com/sirupsen/logrus"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
+	"kubevirt.io/project-infra/robots/pkg/validation"
 )
 
 func Test_fetchJunitFilesFromArtifacts(t *testing.T) {
@@ -302,7 +303,7 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 		},
 	}
 
-	tempDir, err := ioutil.TempDir("", "reportFile")
+	tempDir, err := os.MkdirTemp("", "reportFile")
 	if err != nil {
 		t.Errorf("failed to create temp report file: %v", err)
 		return
@@ -314,7 +315,7 @@ func Test_writeReportToFileProducesValidOutput(t *testing.T) {
 
 			for _, currentValidator := range tt.args.validators {
 				targetFileName := currentValidator.GetTargetFileName(tempFile)
-				content, err := ioutil.ReadFile(targetFileName)
+				content, err := os.ReadFile(targetFileName)
 				if err != nil {
 					t.Errorf("failed to read temp report file: %v", err)
 					return
@@ -389,7 +390,7 @@ func Test_writeReportToFileCreatesTags(t *testing.T) {
 		},
 	}
 
-	tempDir, err := ioutil.TempDir("", "reportFile")
+	tempDir, err := os.MkdirTemp("", "reportFile")
 	if err != nil {
 		t.Errorf("failed to create temp report file: %v", err)
 		return
@@ -399,7 +400,7 @@ func Test_writeReportToFileCreatesTags(t *testing.T) {
 			tempFile := filepath.Join(tempDir, "report.html")
 			writeReportToFile(tt.args.startOfReport, tt.args.endOfReport, tt.args.reports, tempFile, tt.args.ratings)
 
-			content, err := ioutil.ReadFile(tempFile)
+			content, err := os.ReadFile(tempFile)
 			if err != nil {
 				t.Errorf("failed to read temp report file: %v", err)
 				return

@@ -208,7 +208,7 @@ func runStatsCommand(configurationOptions ConfigOptions) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf(jsonOutput)
+		fmt.Println(jsonOutput)
 		return nil
 	}
 
@@ -241,7 +241,7 @@ func runStatsCommand(configurationOptions ConfigOptions) error {
 			if err != nil {
 				return err
 			}
-			fmt.Printf(string(data))
+			fmt.Println(string(data))
 			return nil
 		}
 

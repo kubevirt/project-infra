@@ -94,7 +94,7 @@ func (o options) loadDefaults() error {
 		log.Info("loading default stable k8s version")
 		resp, err := http.Get("https://dl.k8s.io/release/stable.txt")
 		if err != nil {
-			return fmt.Errorf("failed to get stable version: %v", err)
+			return fmt.Errorf("failed to fetch stable k8s version: %v", err)
 		}
 		if err := resp.Body.Close(); err != nil {
 			return fmt.Errorf("failed to close response body: %v", err)

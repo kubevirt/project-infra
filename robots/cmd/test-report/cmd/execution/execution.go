@@ -26,19 +26,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/bndr/gojenkins"
-	"github.com/sirupsen/logrus"
 	"io"
 	"io/fs"
-	"io/ioutil"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
 	"net/http"
 	"os"
 	"regexp"
-	"sigs.k8s.io/yaml"
 	"strings"
 	"time"
+
+	"github.com/bndr/gojenkins"
+	"github.com/sirupsen/logrus"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
+	"sigs.k8s.io/yaml"
 
 	"github.com/spf13/cobra"
 )
@@ -124,7 +124,7 @@ func (o *executionReportFlagOptions) Validate() error {
 		if err != nil && errors.Is(err, os.ErrNotExist) {
 			return err
 		}
-		file, err := ioutil.ReadFile(o.configFile)
+		file, err := os.ReadFile(o.configFile)
 		if err != nil {
 			return err
 		}
@@ -281,17 +281,20 @@ func runExecutionReport() error {
 
 	data.SetDataRange(startOfReport, endOfReport)
 	reportConfig, err := yaml.Marshal(config)
+	if err != nil {
+		logger.Fatalf("failed to marshall config: %v", err)
+	}
 	data.SetReportConfig(string(reportConfig))
 	data.SetReportConfigName(configName)
 
-	err = writeHTMLReportToOutputFile(err, data)
+	err = writeHTMLReportToOutputFile(data)
 	if err != nil {
 		logger.Fatalf("failed to write report: %v", err)
 	}
 	return nil
 }
 
-func writeHTMLReportToOutputFile(err error, data test_report.Data) error {
+func writeHTMLReportToOutputFile(data test_report.Data) error {
 	htmlReportOutputWriter, err := os.OpenFile(executionReportFlagOpts.outputFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to write report %q: %v", executionReportFlagOpts.outputFile, err)

@@ -17,12 +17,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"os"
+
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"io/ioutil"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/release"
-	"os"
 	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/yaml"
 
@@ -83,7 +83,7 @@ func main() {
 			log.Panicln(err)
 		}
 	} else {
-		token, err := ioutil.ReadFile(o.TokenPath)
+		token, err := os.ReadFile(o.TokenPath)
 		if err != nil {
 			log.Panicln(err)
 		}
@@ -136,7 +136,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	err = ioutil.WriteFile(o.jobConfigPathKubevirtciPresubmit, marshalledConfig, os.ModePerm)
+	err = os.WriteFile(o.jobConfigPathKubevirtciPresubmit, marshalledConfig, os.ModePerm)
 	if err != nil {
 		log.WithError(err).Error("Failed to write jobconfig")
 	}
