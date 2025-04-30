@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Includes basic workspace setup, with gcloud and a bootstrap runner
-FROM fedora:41
+FROM fedora:42
 
 WORKDIR /workspace
 RUN mkdir -p /workspace
@@ -41,7 +41,7 @@ RUN dnf install -y \
     glibc-devel \
     glibc-static \
     iproute \
-    java-11-openjdk-devel \
+    java-21-openjdk-devel \
     jq \
     libstdc++-static \
     libvirt-devel \
