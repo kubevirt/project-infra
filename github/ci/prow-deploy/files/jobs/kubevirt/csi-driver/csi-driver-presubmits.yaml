@@ -21,7 +21,7 @@ presubmits:
         preset-shared-images: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20250327-c3122d8
+          - image: quay.io/kubevirtci/golang:v20250430-c82a730
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -57,7 +57,7 @@ presubmits:
         preset-shared-images: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20250327-c3122d8
+          - image: quay.io/kubevirtci/golang:v20250430-c82a730
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -93,7 +93,7 @@ presubmits:
         preset-shared-images: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20250327-c3122d8
+          - image: quay.io/kubevirtci/golang:v20250430-c82a730
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -131,7 +131,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20250327-c3122d8
+          - image: quay.io/kubevirtci/golang:v20250430-c82a730
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -166,7 +166,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20250327-c3122d8
+          - image: quay.io/kubevirtci/golang:v20250430-c82a730
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -201,7 +201,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20250327-c3122d8
+          - image: quay.io/kubevirtci/golang:v20250430-c82a730
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -232,7 +232,7 @@ presubmits:
         preset-bazel-cache: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
+          - image: quay.io/kubevirtci/bootstrap:v20250430-c82a730
             env:
               - name: COVERALLS_TOKEN_FILE
                 value: /root/.docker/secrets/coveralls/token

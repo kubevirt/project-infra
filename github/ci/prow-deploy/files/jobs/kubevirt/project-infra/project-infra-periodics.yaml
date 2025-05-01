@@ -658,7 +658,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
+    - image: quay.io/kubevirtci/bootstrap:v20250430-c82a730
       command: ["/bin/sh"]
       args:
       - "-ce"
@@ -798,7 +798,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
+      - image: quay.io/kubevirtci/bootstrap:v20250430-c82a730
         env:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
@@ -968,7 +968,7 @@ periodics:
   name: periodic-project-infra-check-prow-jobconfigs
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20250327-c3122d8
+    - image: quay.io/kubevirtci/golang:v20250430-c82a730
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/sh"
@@ -1043,7 +1043,7 @@ periodics:
   name: periodic-project-infra-perf-report-creator
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20250327-c3122d8
+    - image: quay.io/kubevirtci/golang:v20250430-c82a730
       env:
         - name: GIMME_GO_VERSION
           value: "1.22.5"
