@@ -101,7 +101,7 @@ func (t *TestHTMLData) initElementsMatchingConfig() {
 	}
 }
 
-var replaceToPermaLinkMatcher = regexp.MustCompile(`https://github.com/[\\w]+/[\\w]+/((tree|blob)/[\\w]+)/.*`)
+var replaceToPermaLinkMatcher = regexp.MustCompile(`https://github.com/[\w]+/[\w]+/((tree|blob)/[\w]+)/.*`)
 
 // initPermalinks initializes Permalinks with the permanent links to the GitBlameLines
 func (t *TestHTMLData) initPermalinks() {
