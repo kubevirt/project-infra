@@ -25,8 +25,8 @@ import (
 )
 
 var (
-	testIdMatcher   = regexp.MustCompile("\\[test_id:[0-9]+]")
-	testIdExtractor = regexp.MustCompile("(\\[test_id:[0-9]+])")
+	testIdMatcher   = regexp.MustCompile(`\[test_id:[0-9]+]`)
+	testIdExtractor = regexp.MustCompile(`(\[test_id:[0-9]+])`)
 )
 
 func GetTestId(name string) (string, error) {
