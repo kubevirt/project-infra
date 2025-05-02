@@ -297,10 +297,6 @@ func blameLinesForCommits(commits []*git.LogCommit, blameLines map[string][]*git
 	return
 }
 
-func extractTestNamesFromData(commits []*git.LogCommit, outlines map[string][]*ginkgo.Node, lines map[string][]*git.BlameLine) ([]string, error) {
-	return nil, fmt.Errorf("TODO")
-}
-
 type CharRange struct {
 	Start, End int
 }

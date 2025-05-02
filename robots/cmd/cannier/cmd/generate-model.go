@@ -65,7 +65,7 @@ serialized blob to given path.`,
 
 		startTime := time.Now()
 		logElapsedTime := func(e *log.Entry) *log.Entry {
-			return e.WithField("elapsed", fmt.Sprintf("%v", time.Now().Sub(startTime)))
+			return e.WithField("elapsed", fmt.Sprintf("%v", time.Since(startTime)))
 		}
 
 		logElapsedTime(modelLog).Infof("boruta")
