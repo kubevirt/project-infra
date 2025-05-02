@@ -479,6 +479,9 @@ func TestConfigureReleaseJob(t *testing.T) {
 		"testdata/jobconfig/kubevirt-presubmits-1.6.yaml",
 		tempOutputFile,
 	)
+	if err != nil {
+		t.Errorf("got unexpected error %s", err)
+	}
 	jobConfig, err := config.ReadJobConfig(tempOutputFile)
 	if err != nil {
 		t.Errorf("got unexpected error %s", err)

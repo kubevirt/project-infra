@@ -138,6 +138,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
+					Expect(err).ShouldNot(HaveOccurred())
 					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
@@ -618,6 +619,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
+					Expect(err).ShouldNot(HaveOccurred())
 					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
@@ -798,6 +800,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
+					Expect(err).ShouldNot(HaveOccurred())
 					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
@@ -1014,6 +1017,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
+					Expect(err).ShouldNot(HaveOccurred())
 					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
@@ -1311,6 +1315,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
+					Expect(err).ShouldNot(HaveOccurred())
 					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
@@ -1457,6 +1462,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
+					Expect(err).ShouldNot(HaveOccurred())
 					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})
@@ -1628,6 +1634,7 @@ var _ = Describe("Rehearse", func() {
 							},
 						},
 					})
+					Expect(err).ShouldNot(HaveOccurred())
 					err = gitrepo.AddCommit("foo", "bar", map[string][]byte{
 						"jobs-config.yaml": headConfig,
 					})

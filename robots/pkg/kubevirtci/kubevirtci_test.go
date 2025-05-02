@@ -222,6 +222,9 @@ func TestBumpMinorReleaseOfProvider(t *testing.T) {
 				t.Errorf("BumpMinorReleaseOfProvider() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			got, err := ReadExistingProviders(dir)
+			if err != nil {
+				panic(err)
+			}
 			if !reflect.DeepEqual(got, tt.wanted) {
 				t.Errorf("ReadExistingProviders() got = %v, want %v", got, tt.wanted)
 			}
@@ -509,6 +512,9 @@ func TestDropUnsupportedProviders(t *testing.T) {
 
 func checkForSuperfluousDirEntries(t *testing.T, err error, pathToCheck string, listOfEntriesThatShouldExist []string) {
 	dirEntries, err := os.ReadDir(pathToCheck)
+	if err != nil {
+		panic(err)
+	}
 	for _, entry := range dirEntries {
 		found := false
 		for _, clusterUpDir := range listOfEntriesThatShouldExist {

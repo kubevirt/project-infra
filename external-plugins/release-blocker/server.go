@@ -284,13 +284,11 @@ func (s *Server) handleIssueComment(l *logrus.Entry, ic github.IssueCommentEvent
 	if ic.Action != github.IssueCommentActionCreated {
 		return nil
 	}
-
 	org := ic.Repo.Owner.Login
 	repo := ic.Repo.Name
 	num := ic.Issue.Number
 	commentAuthor := ic.Comment.User.Login
 
-	needsLabel := true
 	targetBranch := ""
 
 	l = l.WithFields(logrus.Fields{
@@ -303,10 +301,8 @@ func (s *Server) handleIssueComment(l *logrus.Entry, ic github.IssueCommentEvent
 	matches := releaseBlockRe.FindAllStringSubmatch(ic.Comment.Body, -1)
 
 	if len(cancelMatches) == 1 && len(cancelMatches[0]) == 2 {
-		needsLabel = false
 		targetBranch = strings.TrimSpace(cancelMatches[0][1])
 	} else if len(matches) == 1 && len(matches[0]) == 2 {
-		needsLabel = true
 		targetBranch = strings.TrimSpace(matches[0][1])
 	} else {
 		// no matches
@@ -333,6 +329,7 @@ func (s *Server) handleIssueComment(l *logrus.Entry, ic github.IssueCommentEvent
 		WithField("target_branch", targetBranch).
 		Debug("release-blocker request.")
 
+	needsLabel := len(cancelMatches) != 1 || len(cancelMatches[0]) != 2
 	resp, err := s.handleLabel(targetBranch, org, repo, num, needsLabel)
 	if err != nil {
 		s.log.WithFields(l.Data).WithError(err)

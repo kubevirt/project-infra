@@ -182,6 +182,9 @@ func Test_writeProwReportToFileProducesValidOutput(t *testing.T) {
 				return
 			}
 			err = writeProwReportToFile(tt.args.startOfReport, tt.args.reports, tempFile)
+			if err != nil {
+				t.Errorf("failed to write report to file: %v", err)
+			}
 
 			for _, currentValidator := range tt.args.validators {
 				targetFileName := currentValidator.GetTargetFileName(baseReportFile)

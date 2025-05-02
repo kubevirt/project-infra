@@ -72,6 +72,9 @@ func main() {
 	}
 
 	clientset, err := NewClientset()
+	if err != nil {
+		log.Fatalf("Failed to create clientset: %v", err)
+	}
 	configMap, err := clientset.CoreV1().ConfigMaps(opts.configMapNameSpace).Get(context.Background(), opts.configMapName, metav1.GetOptions{})
 	if err != nil {
 		log.Fatalf("Failed to fetch configmap %q in namespace %q : %v", opts.configMapName, opts.configMapNameSpace, err)
