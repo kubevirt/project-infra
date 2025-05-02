@@ -34,6 +34,7 @@ RUN dnf install -y \
     dnf-plugins-core \
     findutils \
     fuse-overlayfs \
+    gawk \
     gcc \
     gcc-c++ \
     gettext \
