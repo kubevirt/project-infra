@@ -252,13 +252,11 @@ func TestNewRating(t *testing.T) {
 			}
 			gotIndent, err := json.MarshalIndent(got, "", "\t")
 			if err != nil {
-				t.Errorf("%v", err)
-
+				t.Error(err)
 			}
 			wantIndent, err := json.MarshalIndent(tt.want, "", "\t")
 			if err != nil {
-				t.Errorf("%v", err)
-
+				t.Error(err)
 			}
 			t.Errorf("NewRating() = %v\n, want\n %v\n, diff:\n %v", string(gotIndent), string(wantIndent), diff(string(gotIndent), string(wantIndent)))
 		})

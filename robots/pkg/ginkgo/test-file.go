@@ -80,7 +80,7 @@ func findTestFile(command *osexec.Cmd) (string, error) {
 	if len(fileNames) > 1 {
 		return "", fmt.Errorf("multiple matching files found: %v", fileNames)
 	}
-	for fileName, _ := range fileNames {
+	for fileName := range fileNames {
 		return filepath.Join(command.Dir, fileName), nil
 	}
 	return "", nil

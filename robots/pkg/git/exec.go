@@ -33,12 +33,10 @@ func execGit(sourceFilepath string, args []string) ([]byte, error) {
 func handleOutput(command *exec.Cmd) ([]byte, error) {
 	output, err := command.Output()
 	if err != nil {
-		switch err.(type) {
+		switch e := err.(type) {
 		case *exec.ExitError:
-			e := err.(*exec.ExitError)
 			return nil, fmt.Errorf("exec %s failed: %s", command, e.Stderr)
 		case *exec.Error:
-			e := err.(*exec.Error)
 			return nil, fmt.Errorf("exec %s failed: %s", command, e)
 		default:
 			return nil, fmt.Errorf("exec %s failed: %s", command, err)
