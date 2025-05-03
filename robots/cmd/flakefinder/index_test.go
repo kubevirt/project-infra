@@ -76,7 +76,7 @@ var _ = Describe("index.go", func() {
 			htmlIndex = buffer.String()
 			if testOptions.printTestOutput {
 				logger := log.New(os.Stdout, "index_test.go:", log.Flags())
-				logger.Printf(htmlIndex)
+				logger.Print(htmlIndex)
 			}
 		}
 

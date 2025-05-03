@@ -17,6 +17,7 @@ require (
 	github.com/jetstack/cert-manager v1.1.0
 	github.com/joshdk/go-junit v0.0.0-20190428045703-ad7e11aa49ff
 	github.com/lnquy/cron v1.1.1
+	github.com/malaschitz/randomForest v0.0.0-20240228214944-c64ffe1648e0
 	github.com/onsi/ginkgo/v2 v2.19.0
 	github.com/onsi/gomega v1.34.1
 	github.com/prometheus/client_golang v1.19.0
@@ -199,6 +200,7 @@ require (
 	golang.org/x/tools v0.23.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
+	gonum.org/v1/gonum v0.12.0 // indirect
 	google.golang.org/genproto v0.0.0-20240812133136-8ffd90a71988 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240812133136-8ffd90a71988 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240812133136-8ffd90a71988 // indirect

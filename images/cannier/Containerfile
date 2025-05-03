@@ -1,0 +1,21 @@
+FROM quay.io/kubevirtci/golang:v20250211-4e3c019 as builder
+ENV GOPROXY=https://proxy.golang.org|direct \
+    GOFLAGS="-mod=vendor -ldflags=-extldflags=\"-static\"" \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
+ENV GIMME_GO_VERSION=1.23.4
+ENV COMMIT_ID=d3d2c49d62caa4454c1529f192463acc2648d382
+RUN mkdir -p kubevirt/project-infra && \
+    cd kubevirt/project-infra && \
+    git init && \
+    git remote add origin https://github.com/dhiller/project-infra.git && \
+    git fetch origin $COMMIT_ID && \
+    git reset --hard $COMMIT_ID && \
+    /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/cannier ./robots/cmd/cannier"
+RUN dnf install -y \
+    ripgrep
+FROM gcr.io/k8s-prow/git:v20240729-4f255edb07
+COPY --from=builder /go/bin/cannier /usr/bin/cannier
+COPY --from=builder /usr/bin/rg /usr/bin/rg
+ENTRYPOINT ["/usr/bin/cannier"]
