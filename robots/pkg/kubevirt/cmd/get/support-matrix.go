@@ -164,10 +164,6 @@ func GenerateMarkdownForSupportMatrix(_ *cobra.Command, _ []string) error { //no
 		}
 	}
 
-	k6tVersions := make([]string, 0)
-	for k6tVersion := range k6tVersionsSet {
-		k6tVersions = append(k6tVersions, k6tVersion)
-	}
 	k8sVersions := make([]string, 0)
 	for k8sVersion := range k8sVersionsSet {
 		k8sVersions = append(k8sVersions, k8sVersion)
@@ -239,7 +235,7 @@ func GenerateMarkdownForSupportMatrix(_ *cobra.Command, _ []string) error { //no
 		}
 		k6tVersionsWithK8sInformation = append(k6tVersionsWithK8sInformation, k6tVersion)
 	}
-	k6tVersions = k6tVersionsWithK8sInformation
+	k6tVersions := k6tVersionsWithK8sInformation
 	sort.SliceStable(k6tVersions, generateStringSemVerComparison(k6tVersions))
 
 	var writer io.Writer

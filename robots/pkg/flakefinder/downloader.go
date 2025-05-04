@@ -23,7 +23,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"path"
 	"regexp"
 	"sort"
@@ -351,7 +351,7 @@ func readGcsObject(ctx context.Context, client *storage.Client, bucket, object s
 	} else if err != nil {
 		return nil, fmt.Errorf("cannot read object '%s': %v", object, err)
 	}
-	return ioutil.ReadAll(reader)
+	return io.ReadAll(reader)
 }
 
 // sortBuilds converts all build from str to int and sorts all builds in descending order and

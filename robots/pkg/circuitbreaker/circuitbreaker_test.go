@@ -21,14 +21,15 @@ package circuitbreaker_test
 
 import (
 	"fmt"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
-	"io/ioutil"
-	"kubevirt.io/project-infra/robots/pkg/circuitbreaker"
+	"io"
 	"strings"
 	"sync"
 	"testing"
 	"time"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+	"kubevirt.io/project-infra/robots/pkg/circuitbreaker"
 )
 
 func TestCircuitBreaker(t *testing.T) {
@@ -39,7 +40,7 @@ func TestCircuitBreaker(t *testing.T) {
 var _ = Describe("circuitbreaker.go", func() {
 
 	BeforeEach(func() {
-		circuitbreaker.Log().SetOutput(ioutil.Discard)
+		circuitbreaker.Log().SetOutput(io.Discard)
 	})
 
 	alwaysOpenCircuit := func(err error) bool {

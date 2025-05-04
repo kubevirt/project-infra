@@ -3,12 +3,13 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	pi_github "kubevirt.io/project-infra/robots/pkg/github"
-	kubeVirtLabels "kubevirt.io/project-infra/robots/pkg/github/labels"
+	"io"
 	"net/http"
 	"os"
 	"os/exec"
+
+	pi_github "kubevirt.io/project-infra/robots/pkg/github"
+	kubeVirtLabels "kubevirt.io/project-infra/robots/pkg/github/labels"
 
 	"github.com/sirupsen/logrus"
 	"sigs.k8s.io/prow/pkg/config"
@@ -201,7 +202,7 @@ func catFile(log *logrus.Logger, gitDir, file, refspec string) ([]byte, int) {
 }
 
 func writeTempFile(log *logrus.Logger, basedir string, content []byte) (string, error) {
-	tmpfile, err := ioutil.TempFile(basedir, "job-config")
+	tmpfile, err := os.CreateTemp(basedir, "job-config")
 	if err != nil {
 		log.WithError(err).Errorf("Could not create temp file for job config.")
 		return "", err
@@ -227,7 +228,7 @@ func fetchRemoteFile(url string) ([]byte, error) {
 		return nil, fmt.Errorf("HTTP request failed with status: %v", resp.Status)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -336,7 +337,7 @@ func loadConfigBytes(h *GitHubEventsHandler, org, repo string) ([]byte, []byte, 
 }
 
 func (h *GitHubEventsHandler) loadProwConfig(prFullName string) (*config.Config, error) {
-	tmpdir, err := ioutil.TempDir("", "prow-configs")
+	tmpdir, err := os.MkdirTemp("", "prow-configs")
 	if err != nil {
 		log.WithError(err).Error("Could not create a temp directory to store configs.")
 		return nil, err

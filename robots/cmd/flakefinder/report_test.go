@@ -55,7 +55,7 @@ var _ = Describe("report.go", func() {
 			Expect(err).ToNot(HaveOccurred())
 			if testOptions.printTestOutput {
 				logger := log.New(os.Stdout, "report_test.go:", log.Flags())
-				logger.Printf(buffer.String())
+				logger.Println(buffer.String())
 			}
 		}
 
@@ -307,7 +307,7 @@ var _ = Describe("report.go", func() {
 			Expect(err).ToNot(HaveOccurred())
 			if testOptions.printTestOutput {
 				logger := log.New(os.Stdout, "reportCSV:", log.Flags())
-				logger.Printf(buffer.String())
+				logger.Println(buffer.String())
 			}
 		}
 

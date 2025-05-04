@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -54,8 +53,7 @@ func main() {
 		log.Fatalf("invalid arguments: %v", err)
 	}
 	fmt.Println(options.dryRun)
-
-	rawFile, err := ioutil.ReadFile(options.workspacePath)
+	rawFile, err := os.ReadFile(options.workspacePath)
 	if err != nil {
 		log.Fatalf("could not read workspace file: %v", err)
 	}

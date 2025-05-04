@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -148,7 +147,7 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 	if err != nil {
 		log.WithError(err).Errorf("Could not get PR number %d", event.Issue.Number)
 	}
-	repoClient, err := h.getRebasedRepoClient(log, pr, err, org, repo)
+	repoClient, err := h.getRebasedRepoClient(log, pr, org, repo)
 	if err != nil {
 		log.WithError(err).Error("could not get repo client")
 		return
@@ -309,7 +308,7 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 	if err != nil {
 		log.WithError(err).Errorf("Could not get PR number %d", event.PullRequest.Number)
 	}
-	repoClient, err := h.getRebasedRepoClient(log, pr, err, org, repo)
+	repoClient, err := h.getRebasedRepoClient(log, pr, org, repo)
 	if err != nil {
 		log.WithError(err).Error("could not get repo client")
 		return
@@ -342,7 +341,7 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Base.Repo.FullName)
 		return
 	}
-	repoClient, err := h.getRebasedRepoClient(log, pr, err, org, repo)
+	repoClient, err := h.getRebasedRepoClient(log, pr, org, repo)
 	if err != nil {
 		log.WithError(err).Error("could not get repo client")
 		return
@@ -443,7 +442,7 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 	}
 }
 
-func (h *GitHubEventsHandler) getRebasedRepoClient(log *logrus.Entry, pr *github.PullRequest, err error, org string, repo string) (gitv2.RepoClient, error) {
+func (h *GitHubEventsHandler) getRebasedRepoClient(log *logrus.Entry, pr *github.PullRequest, org string, repo string) (gitv2.RepoClient, error) {
 	log.Debugln("Generating git client")
 	rebasedRepoClient, err := h.gitClientFactory.ClientFor(org, repo)
 	if err != nil {
@@ -597,7 +596,7 @@ func (h *GitHubEventsHandler) loadConfigsAtRef(
 	changedJobConfigs []string, git gitv2.RepoClient, ref string) (map[string]*config.Config, error) {
 	configs := map[string]*config.Config{}
 
-	tmpdir, err := ioutil.TempDir("", "prow-configs")
+	tmpdir, err := os.MkdirTemp("", "prow-configs")
 	if err != nil {
 		log.WithError(err).Error("Could not create a temp directory to store configs.")
 		return nil, err
@@ -700,7 +699,7 @@ func catFile(log *logrus.Logger, gitDir, file, refspec string) ([]byte, int) {
 }
 
 func writeTempFile(log *logrus.Logger, basedir string, content []byte) (string, error) {
-	tmpfile, err := ioutil.TempFile(basedir, "job-config")
+	tmpfile, err := os.CreateTemp(basedir, "job-config")
 	if err != nil {
 		log.WithError(err).Errorf("Could not create temp file for job config.")
 		return "", err

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/joshdk/go-junit"
-	"io/ioutil"
 	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"kubevirt.io/project-infra/robots/pkg/validation"
 	"os"
@@ -168,7 +167,7 @@ func Test_writeProwReportToFileProducesValidOutput(t *testing.T) {
 		},
 	}
 
-	tempDir, err := ioutil.TempDir("", "reportFile")
+	tempDir, err := os.MkdirTemp("", "reportFile")
 	if err != nil {
 		t.Errorf("failed to create temp report file: %v", err)
 		return
@@ -184,11 +183,12 @@ func Test_writeProwReportToFileProducesValidOutput(t *testing.T) {
 			err = writeProwReportToFile(tt.args.startOfReport, tt.args.reports, tempFile)
 			if err != nil {
 				t.Errorf("failed to write report to file: %v", err)
+				return
 			}
 
 			for _, currentValidator := range tt.args.validators {
 				targetFileName := currentValidator.GetTargetFileName(baseReportFile)
-				content, err := ioutil.ReadFile(targetFileName)
+				content, err := os.ReadFile(targetFileName)
 				if err != nil {
 					t.Errorf("failed to read temp report file: %v", err)
 					return
@@ -262,7 +262,7 @@ func Test_writeProwReportToFileCreatesTags(t *testing.T) {
 		},
 	}
 
-	tempDir, err := ioutil.TempDir("", "reportFile")
+	tempDir, err := os.MkdirTemp("", "reportFile")
 	if err != nil {
 		t.Errorf("failed to create temp report file: %v", err)
 		return
@@ -277,7 +277,7 @@ func Test_writeProwReportToFileCreatesTags(t *testing.T) {
 			}
 			writeProwReportToFile(tt.args.startOfReport, tt.args.reports, tempFile)
 
-			content, err := ioutil.ReadFile(baseReportFile)
+			content, err := os.ReadFile(baseReportFile)
 			if err != nil {
 				t.Errorf("failed to read temp report file: %v", err)
 				return

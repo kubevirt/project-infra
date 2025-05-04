@@ -17,7 +17,6 @@ package remove
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -145,7 +144,7 @@ func runAlwaysRunCommand(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	err = ioutil.WriteFile(removeAlwaysRunOpts.jobConfigPathKubevirtPresubmits, marshalledConfig, os.ModePerm)
+	err = os.WriteFile(removeAlwaysRunOpts.jobConfigPathKubevirtPresubmits, marshalledConfig, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("failed to write jobconfig %s: %v", removeAlwaysRunOpts.jobConfigPathKubevirtPresubmits, err)
 	}

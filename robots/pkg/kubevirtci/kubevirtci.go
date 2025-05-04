@@ -2,8 +2,6 @@ package kubevirtci
 
 import (
 	"fmt"
-	"github.com/Masterminds/semver"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -11,6 +9,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/Masterminds/semver"
 
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
@@ -180,14 +180,14 @@ func copyRecursive(sourceDir string, targetDir string) error {
 
 func ReadExistingProviders(providerDir string) ([]querier.SemVer, error) {
 	semvers := []querier.SemVer{}
-	fileinfo, err := ioutil.ReadDir(providerDir)
+	fileinfo, err := os.ReadDir(providerDir)
 	if err != nil {
 		return nil, err
 	}
 	for _, file := range fileinfo {
 		if file.IsDir() {
 			if ProviderFolderRegex.MatchString(file.Name()) {
-				versionBytes, err := ioutil.ReadFile(filepath.Join(providerDir, file.Name(), "version"))
+				versionBytes, err := os.ReadFile(filepath.Join(providerDir, file.Name(), "version"))
 				if os.IsNotExist(err) {
 					continue
 				} else if err != nil {

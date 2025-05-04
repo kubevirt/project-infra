@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"image/color"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"path"
@@ -78,7 +78,7 @@ func gatherPlotData(basePath string, resource string, metric ResultType, since *
 				return err
 			}
 			//defer jsonFile.Close()
-			byteValue, err := ioutil.ReadAll(jsonFile)
+			byteValue, err := io.ReadAll(jsonFile)
 			if err != nil {
 				return err
 			}
@@ -272,7 +272,7 @@ func plotWeeklyGraph(opts weeklyGraphOpts) error {
 // ToHtml saves the figure as standalone HTML. It still requires internet to load plotly.js from CDN.
 func ToHtml(figs []*grob.Fig, path string) {
 	buf := figToBuffer(figs)
-	ioutil.WriteFile(path, buf.Bytes(), os.ModePerm)
+	os.WriteFile(path, buf.Bytes(), os.ModePerm)
 }
 
 func figToBuffer(figs []*grob.Fig) *bytes.Buffer {

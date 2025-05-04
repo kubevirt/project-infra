@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -64,7 +63,7 @@ func main() {
 		log().WithError(err).Fatal("Invalid arguments provided.")
 	}
 
-	rawToken, err := ioutil.ReadFile(o.tokenPath)
+	rawToken, err := os.ReadFile(o.tokenPath)
 	if err != nil {
 		log().Panicln(err)
 	}

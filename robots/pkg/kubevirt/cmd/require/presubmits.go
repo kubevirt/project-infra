@@ -17,7 +17,6 @@ package require
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -129,7 +128,7 @@ func run(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	err = ioutil.WriteFile(requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, marshalledConfig, os.ModePerm)
+	err = os.WriteFile(requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, marshalledConfig, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("failed to write jobconfig %s: %v", requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, err)
 	}

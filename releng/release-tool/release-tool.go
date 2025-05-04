@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -1222,7 +1221,7 @@ func main() {
 		log.Fatal("--github-token-file is a required argument")
 	}
 
-	tokenBytes, err := ioutil.ReadFile(*githubTokenFile)
+	tokenBytes, err := os.ReadFile(*githubTokenFile)
 	if err != nil {
 		log.Fatalf("ERROR accessing github token: %s ", err)
 	}

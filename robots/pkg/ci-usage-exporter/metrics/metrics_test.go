@@ -3,7 +3,7 @@ package metrics_test
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"strings"
@@ -82,7 +82,7 @@ var _ = Describe("resources", func() {
 		Expect(err).NotTo(HaveOccurred())
 		defer resp.Body.Close()
 
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		Expect(err).NotTo(HaveOccurred())
 
 		bodyStr := string(body)
