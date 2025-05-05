@@ -771,10 +771,12 @@ orgs:
         - dhiller
         - davidvossel
         - fabiand
+        - fossedihelm
         - xpivarc
         repos:
           sig-release: write
           project-infra: write
+          kubevirt: write
       rerun-jobs-hco:
         description: can rerun failed job in the hyperconverged-cluster-operator repository
         maintainers:
