@@ -139,7 +139,7 @@ presubmits:
           value: icr.io/kubevirt/builder:2405141107-77fe60855
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Fedora"'
-        image: quay.io/kubevirtci/golang:v20250327-c3122d8
+        image: quay.io/kubevirtci/golang:v20250502-3eb3b33
         name: ""
         resources:
           requests:
