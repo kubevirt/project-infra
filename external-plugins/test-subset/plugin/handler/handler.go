@@ -30,6 +30,7 @@ func init() {
 	log = logrus.New()
 	log.SetOutput(os.Stdout)
 	log.SetFormatter(&logrus.JSONFormatter{})
+	log.SetLevel(logrus.DebugLevel)
 }
 
 type GitHubEvent struct {
