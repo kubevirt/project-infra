@@ -698,7 +698,7 @@ periodics:
       - /bin/bash
       - -c
       - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
-        -p ../kubevirt -T main -R
+        -p ../kubevirt -T main -R -L skip-review -B $'Run of `cd ../kubevirt && make rpm-deps`\n\n/release-blocker main'
       image: quay.io/kubevirtci/pr-creator:v20240913-6773146
       name: ""
       resources:
