@@ -50,7 +50,7 @@ spec:
             secretName: hmac-token
         - name: oauth
           secret:
-            secretName: commenter-oauth-token
+            secretName: oauth-token
         - name: plugins
           configMap:
             name: plugins
