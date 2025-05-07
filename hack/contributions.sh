@@ -61,6 +61,7 @@ podman run \
     quay.io/kubevirtci/contributions:v20250417-cd6921f \
     --github-token "/etc/github/$(basename "${oauth_token}")" \
     --orgs-file-path "/project-infra/github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml" \
-    "$@"
+    "$@" 2>&1 | tee "${temp_dir}/output.txt"
+report_file=$(grep -oE '[^/]*\.yaml' "${temp_dir}/output.txt" | head -n1)
 
-ls -la "${temp_dir}"
+echo "Detailed user activity report: ${temp_dir}/${report_file}"
