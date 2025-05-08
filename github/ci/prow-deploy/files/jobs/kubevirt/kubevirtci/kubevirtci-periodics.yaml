@@ -263,6 +263,7 @@ periodics:
     preset-docker-mirror: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
+    rehearsal.allowed: "true"
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -272,7 +273,12 @@ periodics:
           - |
             set -e
             if labels-checker --org=kubevirt --repo=hyperconverged-cluster-operator --author=kubevirt-bot --branch-name=bump-kubevirtci --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
-              git-pr.sh -c "cd ../hyperconverged-cluster-operator && make bump-kubevirtci" -b bump-kubevirtci -p ../hyperconverged-cluster-operator -T main -R
+              git-pr.sh \
+                -c "cd ../hyperconverged-cluster-operator && make bump-kubevirtci" \
+                -b bump-kubevirtci \
+                -p ../hyperconverged-cluster-operator \
+                -r hyperconverged-cluster-operator \
+                -T main -R
             fi
         securityContext:
           privileged: true
