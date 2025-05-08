@@ -278,6 +278,7 @@ periodics:
                 -b bump-kubevirtci \
                 -p ../hyperconverged-cluster-operator \
                 -r hyperconverged-cluster-operator \
+                -L "release-note-none" \
                 -T main -R
             fi
         securityContext:
