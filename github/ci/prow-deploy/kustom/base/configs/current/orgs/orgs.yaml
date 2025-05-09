@@ -237,6 +237,10 @@ orgs:
         allow_rebase_merge: false
         description: Operator pattern for managing multi-operator products
         has_projects: true
+      irsa-mutation-webhook:
+        allow_merge_commit: false
+        allow_rebase_merge: false
+        description: Webhook to mutate virt-launcher pods by injecting a virtiofs container for IRSA token sharing
       k8s-seccomp-generator:
         allow_rebase_merge: false
         allow_squash_merge: false
@@ -626,6 +630,12 @@ orgs:
           - vladikr
         repos:
           enhancements: write
+      irsa-mutation-webhook-maintainers:
+        maintainers:
+          - aqilbeig
+          - aerosouund
+        repos:
+          irsa-mutation-webhook: write
       maintainers:
         description: ""
         maintainers:

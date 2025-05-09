@@ -254,6 +254,14 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/irsa-mutation-webhook:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+
   kubevirt/katacoda-scenarios:
     plugins:
     - approve
@@ -623,6 +631,7 @@ triggers:
   - kubevirt/managed-tenant-quota
   - kubevirt/application-aware-quota
   - kubevirt/enhancements
+  - kubevirt/irsa-mutation-webhook
   ignore_ok_to_test: true
 - repos:
   - virtblocks/virtblocks
@@ -685,6 +694,7 @@ approve:
   - kubevirt/application-aware-quota
   - kubevirt/dra-pci-driver
   - kubevirt/enhancements
+  - kubevirt/irsa-mutation-webhook
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -750,6 +760,7 @@ lgtm:
   - kubevirt/application-aware-quota
   - kubevirt/dra-pci-driver
   - kubevirt/enhancements
+  - kubevirt/irsa-mutation-webhook
   review_acts_as_lgtm: true
 
 override:

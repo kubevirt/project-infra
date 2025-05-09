@@ -139,6 +139,7 @@ tide:
     kubevirt/sig-release: merge
     kubevirt/kubevirt.core: merge
     kubevirt/enhancements: squash
+    kubevirt/irsa-mutation-webhook: squash
 
   queries:
   - repos:
@@ -206,6 +207,7 @@ tide:
     - kubevirt/vm-console-proxy
     - kubevirt/kubevirt.core
     - kubevirt/enhancements
+    - kubevirt/irsa-mutation-webhook
     labels:
     - lgtm
     - approved
