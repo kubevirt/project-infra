@@ -678,7 +678,6 @@ orgs:
           - phoracek
           - awels
           - aburdenthehand
-          - acardace
           - xpivarc
         privacy: closed
         repos:
@@ -769,7 +768,6 @@ orgs:
         description: Team maintaining the release of KubeVirt
         maintainers:
         - aburdenthehand
-        - acardace
         - dhiller
         - davidvossel
         - fabiand
@@ -897,7 +895,6 @@ orgs:
         members:
          - 0xFelix
          - aburdenthehand
-         - acardace
          - alicefr
          - davidvossel
          - dhiller
@@ -929,7 +926,6 @@ orgs:
          - enp0s3
          - xpivarc
          - vasiliy-ul
-         - acardace
          - alicefr
       kubevirtproject-infra-label:
         description: "Users who can apply restricted labels to any issue inside the kubevirt/project-infra repo"
