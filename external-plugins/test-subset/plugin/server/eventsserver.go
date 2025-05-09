@@ -34,5 +34,7 @@ func (s *GitHubEventsServer) ServeHTTP(writer http.ResponseWriter, request *http
 		Payload: eventPayload,
 	}
 	go s.eventsHandler.Handle(event)
-	writer.Write([]byte("Event received. Have a nice day."))
+	if _, err := writer.Write([]byte("Event received. Have a nice day.")); err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	}
 }
