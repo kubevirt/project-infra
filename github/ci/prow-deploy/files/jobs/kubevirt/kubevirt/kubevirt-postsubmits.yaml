@@ -93,7 +93,7 @@ postsubmits:
   - name: push-kubevirt-main
     branches:
     - main
-    cluster: kubevirt-prow-control-plane
+    cluster: prow-workloads
     always_run: true
     optional: false
     skip_report: false
