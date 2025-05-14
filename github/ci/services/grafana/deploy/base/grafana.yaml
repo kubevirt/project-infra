@@ -8858,6 +8858,300 @@ data:
       "version": 8,
       "weekStart": ""
     }
+  e2e-lane-runtimes.json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            },
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 15,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 26,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 2,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+              },
+              "editorMode": "code",
+              "expr": "avg(\n  prow_job_runtime_seconds_sum{org=\"kubevirt\", repo=\"kubevirt\", state=~\"${status}\", type=~\"${jobtype}\", job_name=~\".*-kubevirt-e2e-k8s-${k8sversion}-(${sig})(-migrations|-serial)?\"}\n  /\n  prow_job_runtime_seconds_count{org=\"kubevirt\", repo=\"kubevirt\", state=~\"${status}\", type=~\"${jobtype}\", job_name=~\".*-kubevirt-e2e-k8s-${k8sversion}-(${sig})(-migrations|-serial)?\"}\n) by (job_name,state)\n/ 3600",
+              "legendFormat": "{{job_name}}({{state}})",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "k/kubevirt",
+          "type": "timeseries"
+        }
+      ],
+      "schemaVersion": 37,
+      "style": "dark",
+      "tags": [],
+      "templating": {
+        "list": [
+          {
+            "allValue": "sig-[^-]+",
+            "current": {
+              "selected": true,
+              "text": [
+                "sig-compute"
+              ],
+              "value": [
+                "sig-compute"
+              ]
+            },
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "sig",
+            "options": [
+              {
+                "selected": false,
+                "text": "All",
+                "value": "$__all"
+              },
+              {
+                "selected": false,
+                "text": "sig-storage",
+                "value": "sig-storage"
+              },
+              {
+                "selected": false,
+                "text": "sig-network",
+                "value": "sig-network"
+              },
+              {
+                "selected": true,
+                "text": "sig-compute",
+                "value": "sig-compute"
+              },
+              {
+                "selected": false,
+                "text": "sig-operator",
+                "value": "sig-operator"
+              },
+              {
+                "selected": false,
+                "text": "sig-monitoring",
+                "value": "sig-monitoring"
+              }
+            ],
+            "query": "sig-storage,sig-network,sig-compute,sig-operator,sig-monitoring",
+            "queryValue": "",
+            "skipUrlSync": false,
+            "type": "custom"
+          },
+          {
+            "current": {
+              "selected": false,
+              "text": ".*",
+              "value": ".*"
+            },
+            "description": "The K8s version in major.minor, i.e. \"1.32\"",
+            "hide": 0,
+            "name": "k8sversion",
+            "options": [
+              {
+                "selected": true,
+                "text": ".*",
+                "value": ".*"
+              }
+            ],
+            "query": ".*",
+            "skipUrlSync": false,
+            "type": "textbox"
+          },
+          {
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "description": "The status, i.e. success or failure - keep empty to use default of both",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "status",
+            "options": [
+              {
+                "selected": true,
+                "text": "All",
+                "value": "$__all"
+              },
+              {
+                "selected": false,
+                "text": "failure",
+                "value": "failure"
+              },
+              {
+                "selected": false,
+                "text": "success",
+                "value": "success"
+              }
+            ],
+            "query": "failure,success",
+            "queryValue": "",
+            "skipUrlSync": false,
+            "type": "custom"
+          },
+          {
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "description": "The job type, i.e. presubmit or periodic",
+            "hide": 0,
+            "includeAll": true,
+            "label": "",
+            "multi": true,
+            "name": "jobtype",
+            "options": [
+              {
+                "selected": true,
+                "text": "All",
+                "value": "$__all"
+              },
+              {
+                "selected": false,
+                "text": "periodic",
+                "value": "periodic"
+              },
+              {
+                "selected": false,
+                "text": "presubmit",
+                "value": "presubmit"
+              }
+            ],
+            "query": "periodic,presubmit",
+            "queryValue": "",
+            "skipUrlSync": false,
+            "type": "custom"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-90d",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "",
+      "title": "e2e lane runtimes",
+      "uid": "tuG1kd-Hz",
+      "version": 7,
+      "weekStart": ""
+    }
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
@@ -9013,6 +9307,18 @@ spec:
   configMapRef:
     name: grafana-dashboards-default
     key: prow-job-load.json
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: e2e-lane-runtimes-dashboard
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  configMapRef:
+    name: grafana-dashboards-default
+    key: e2e-lane-runtimes.json
 ---
 # FIXME the metric for the dashboard is missing, we need to reestablish it
 #apiVersion: grafana.integreatly.org/v1beta1
