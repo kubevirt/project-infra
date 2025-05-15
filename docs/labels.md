@@ -123,6 +123,7 @@ larger set of contributors to apply/remove them.
 | <a id="release-note" href="#release-note">`release-note`</a> | Denotes a PR that will be considered when it comes time to generate release notes.| prow |  [release-note](https://prow.ci.kubevirt.io/command-help#release-note) |
 | <a id="release-note-action-required" href="#release-note-action-required">`release-note-action-required`</a> | Denotes a PR that introduces potentially breaking changes that require user action.| prow |  [releasenote](https://prow.ci.kubevirt.io/command-help#releasenote) |
 | <a id="release-note-none" href="#release-note-none">`release-note-none`</a> | Denotes a PR that doesn't merit a release note.| prow |  [release-note](https://prow.ci.kubevirt.io/command-help#release-note) |
+| <a id="approved-vep" href="#approved-vep">`approved-vep`</a> | Indicates that a PR is tied to an approved VEP and is prioritized.| approvers |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 
 ## Labels that apply to kubevirt/containerized-data-importer, only for PRs
 

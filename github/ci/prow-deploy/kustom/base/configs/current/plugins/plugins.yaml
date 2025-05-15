@@ -796,6 +796,9 @@ label:
     - allowed_teams:
       - kubevirtproject-infra-label
       label: good-first-issue
+    - allowed_teams:
+      - needs-approver-review-label
+      label: approved-vep
 
 help:
   help_guidelines_url: "https://www.github.com/kubevirt/community/tree/main/contributors/help-wanted.md"

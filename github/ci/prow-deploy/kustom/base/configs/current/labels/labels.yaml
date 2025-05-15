@@ -349,6 +349,12 @@ default:
       target: prs
       prowPlugin: label
       addedBy: kubevirt-bot
+    - color: 57b004
+      description: Indicates that a PR is tied to an approved VEP and is prioritized.
+      name: approved-vep
+      target: prs
+      prowPlugin: label
+      addedBy: approvers
     - color: 0ffa16
       description: Indicates a PR has been approved by an approver from all required OWNERS files.
       name: approved
