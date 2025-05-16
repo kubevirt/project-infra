@@ -889,61 +889,38 @@ orgs:
           - ksimon1
         repos:
           common-instancetypes: admin
+      restricted-labels-kubevirt:
+        description: "Users who can manage restricted labels inside the KubeVirt org"
+        members:
+        - 0xFelix
+        - aburdenthehand
+        - alicefr
+        - davidvossel
+        - dhiller
+        - EdDev
+        - enp0s3
+        - fabiand
+        - fossedihelm
+        - iholder101
+        - jean-edouard
+        - lyarwood
+        - mhenriks
+        - rthallisey
+        - stu-gott
+        - vladikr
+        - xpivarc
       kubevirtorg-label:
-        description: "Users who can apply restricted labels to any issue inside the KubeVirt org"
+        description: "[DEPRECATED]Users who can apply restricted labels to any issue inside the KubeVirt org"
         members:
-         - davidvossel
-         - vladikr
-         - rmohr
-         - fabiand
-         - stu-gott
-         - vasiliy-ul
-         - rthallisey
-         - aburdenthehand
       needs-approver-review-label:
-        description: "Users who can manage needs-approver-review label to any PR inside the KubeVirt org"
+        description: "[DEPRECATED]Users who can manage needs-approver-review label to any PR inside the KubeVirt org"
         members:
-         - 0xFelix
-         - aburdenthehand
-         - alicefr
-         - davidvossel
-         - dhiller
-         - EdDev
-         - enp0s3
-         - fabiand
-         - fossedihelm
-         - iholder101
-         - jean-edouard
-         - lyarwood
-         - mhenriks
-         - stu-gott
-         - vladikr
-         - xpivarc
       kubevirtkubevirt-label:
-        description: "Users who can apply restricted labels to any issue inside the kubevirt/kubevirt repo"
+        description: "[DEPRECATED]Users who can apply restricted labels to any issue inside the kubevirt/kubevirt repo"
         members:
-         - 0xFelix
-         - iholder101
-         - davidvossel
-         - vladikr
-         - rmohr
-         - stu-gott
-         - fabiand
-         - AlonaKaplan
-         - dhiller
-         - jean-edouard
-         - mhenriks
-         - enp0s3
-         - xpivarc
-         - vasiliy-ul
-         - alicefr
       kubevirtproject-infra-label:
-        description: "Users who can apply restricted labels to any issue inside the kubevirt/project-infra repo"
+        description: "[DEPRECATED]Users who can apply restricted labels to any issue inside the kubevirt/project-infra repo"
         members:
-         - dhiller
-         - brianmcarey
-         - enp0s3
-         - xpivarc
       sig-buildsystem:
         description: "Users who are responsible for when things go wrong wrt CI."
         members:
