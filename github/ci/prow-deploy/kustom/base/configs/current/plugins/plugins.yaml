@@ -768,8 +768,10 @@ override:
 
 label:
   restricted_labels:
-    'kubevirt':
 
+    # ORG section
+    # for repo specific sections see below
+    'kubevirt':
     - allowed_users:
       #
       # kubevirt-bot ONLY is allowed to use "skip-review"
@@ -785,20 +787,24 @@ label:
       allowed_teams:
       - needs-approver-review-label
       label: needs-approver-review
+
     - allowed_teams:
       - kubevirtorg-label
       label: good-first-issue
+
+    - allowed_teams:
+      - needs-approver-review-label
+      label: approved-vep
+
     'kubevirt/kubevirt':
     - allowed_teams:
       - kubevirtkubevirt-label
       label: good-first-issue
+
     'kubevirt/project-infra':
     - allowed_teams:
       - kubevirtproject-infra-label
       label: good-first-issue
-    - allowed_teams:
-      - needs-approver-review-label
-      label: approved-vep
 
 help:
   help_guidelines_url: "https://www.github.com/kubevirt/community/tree/main/contributors/help-wanted.md"
