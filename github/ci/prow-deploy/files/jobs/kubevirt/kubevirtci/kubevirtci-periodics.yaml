@@ -279,7 +279,9 @@ periodics:
                 -p ../hyperconverged-cluster-operator \
                 -r hyperconverged-cluster-operator \
                 -L "release-note-none" \
-                -T main -R
+                -d "../hyperconverged-cluster-operator/hack/pr-description-for-bump-kvci.sh" \
+                -T main \
+                -R
             fi
         securityContext:
           privileged: true
