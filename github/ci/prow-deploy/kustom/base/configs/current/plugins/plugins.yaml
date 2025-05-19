@@ -785,26 +785,16 @@ label:
     - allowed_users:
       - kubevirt-bot
       allowed_teams:
-      - needs-approver-review-label
+      - restricted-labels-kubevirt
       label: needs-approver-review
 
     - allowed_teams:
-      - kubevirtorg-label
+      - restricted-labels-kubevirt
       label: good-first-issue
 
     - allowed_teams:
-      - needs-approver-review-label
+      - restricted-labels-kubevirt
       label: approved-vep
-
-    'kubevirt/kubevirt':
-    - allowed_teams:
-      - kubevirtkubevirt-label
-      label: good-first-issue
-
-    'kubevirt/project-infra':
-    - allowed_teams:
-      - kubevirtproject-infra-label
-      label: good-first-issue
 
 help:
   help_guidelines_url: "https://www.github.com/kubevirt/community/tree/main/contributors/help-wanted.md"
