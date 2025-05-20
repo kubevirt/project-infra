@@ -117,6 +117,7 @@ tide:
     kubevirt/hyperconverged-cluster-operator: squash
     kubevirt/common-instancetypes: merge
     kubevirt/common-templates: merge
+    kubevirt/charts: squash
     kubevirt/kvm-info-nfd-plugin: squash
     kubevirt/cpu-nfd-plugin: squash
     kubevirt/node-labeller: squash
@@ -192,6 +193,7 @@ tide:
     - kubevirt/hyperconverged-cluster-operator
     - kubevirt/common-instancetypes
     - kubevirt/common-templates
+    - kubevirt/charts
     - kubevirt/kvm-info-nfd-plugin
     - kubevirt/cpu-nfd-plugin
     - kubevirt/node-labeller
@@ -487,6 +489,10 @@ branch-protection:
             main:
               protect: true
         ssp-operator:
+          branches:
+            main:
+              protect: true
+        charts:
           branches:
             main:
               protect: true
