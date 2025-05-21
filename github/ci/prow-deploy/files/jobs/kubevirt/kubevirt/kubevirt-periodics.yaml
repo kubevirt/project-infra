@@ -1486,6 +1486,8 @@ periodics:
         value: k8s-1.31-sig-compute
       - name: FEATURE_GATES
         value: Root
+      - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+        value: --usb 30M --usb 40M
       image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
       name: ""
       resources:
@@ -1856,6 +1858,8 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.30-sig-compute
+      - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+        value: --usb 30M --usb 40M
       image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
       name: ""
       resources:
@@ -2048,6 +2052,8 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.31-sig-compute
+      - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+        value: --usb 30M --usb 40M
       image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
       name: ""
       resources:
@@ -2338,6 +2344,8 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.32-sig-compute
+      - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+        value: --usb 30M --usb 40M
       image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
       name: ""
       resources:
@@ -2530,6 +2538,8 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.33-sig-compute
+      - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+        value: --usb 30M --usb 40M
       image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
       name: ""
       resources:
