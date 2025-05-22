@@ -635,6 +635,9 @@ approve:
   commandHelpLink: https://prow.ci.kubevirt.io/command-help
   pr_process_link: https://github.com/kubevirt/community/blob/main/docs/add-merge-automation-to-your-repository.md#example-workflow
 
+blunderbuss:
+  ignore_drafts: true
+
 config_updater:
   maps:
     github/ci/prow-deploy/kustom/base/configs/current/config/config.yaml:
