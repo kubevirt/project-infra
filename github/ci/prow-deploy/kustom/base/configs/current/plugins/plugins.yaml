@@ -173,7 +173,6 @@ plugins:
     - lgtm
     - owners-label
     - trigger
-    - release-note
 
   kubevirt/containerdisks:
     plugins:
