@@ -14,6 +14,8 @@ import (
 	"text/template"
 	"time"
 
+	"gopkg.in/yaml.v3"
+
 	grob "github.com/MetalBlueberry/go-plotly/graph_objects"
 	gonumplot "gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -36,6 +38,24 @@ type PlotData struct {
 	XAxisLabel string
 	YAxisLabel string
 	Curves     []Curve
+}
+
+type LineShape struct {
+	Type     string            `yaml:"type"`
+	X0       string            `yaml:"x0"`
+	X1       string            `yaml:"x1"`
+	Y0       float64           `yaml:"y0"`
+	Y1       float64           `yaml:"y1"`
+	Yref     string            `yaml:"yref"`
+	Editable bool              `yaml:"editable"`
+	Line     grob.ScatterLine  `yaml:"line"`
+	Label    map[string]string `yaml:"label"`
+}
+
+type ReleaseConfig struct {
+	ReleaseVersion string       `yaml:"releaseVersion"`
+	SinceDate      string       `yaml:"sinceDate"`
+	LineShapes     []*LineShape `yaml:"lineShapes"`
 }
 
 func gatherPlotData(basePath string, resource string, metric ResultType, since *time.Time) ([]Curve, error) {
@@ -180,7 +200,7 @@ func drawStaticGraph(filePath string, data PlotData) error {
 	return p.Save(30*vg.Centimeter, 15*vg.Centimeter, filePath)
 }
 
-func figFromData(data PlotData) *grob.Fig {
+func figFromData(data PlotData, isDuringRelease bool, lineShapes []*LineShape) *grob.Fig {
 	fig := &grob.Fig{
 		Data: grob.Traces{
 			&grob.Scatter{
@@ -207,6 +227,30 @@ func figFromData(data PlotData) *grob.Fig {
 			Xaxis: &grob.LayoutXaxis{Type: grob.LayoutXaxisTypeDate},
 		},
 	}
+
+	if isDuringRelease && len(lineShapes) > 0 {
+		shapes := make([]interface{}, 0, len(lineShapes))
+		for _, shape := range lineShapes {
+			shapes = append(shapes, map[string]interface{}{
+				"type":     shape.Type,
+				"x0":       shape.X0,
+				"x1":       shape.X1,
+				"y0":       shape.Y0,
+				"y1":       shape.Y1,
+				"yref":     shape.Yref,
+				"editable": shape.Editable,
+				"line": map[string]interface{}{
+					"color": shape.Line.Color,
+					"width": shape.Line.Width,
+					"dash":  shape.Line.Dash,
+				},
+				"label": shape.Label,
+			})
+		}
+
+		fig.Layout.Shapes = shapes
+	}
+
 	return fig
 }
 
@@ -232,10 +276,30 @@ func plotWeeklyGraph(opts weeklyGraphOpts) error {
 	var errs []error
 	var figs []*grob.Fig
 	metrics := strings.Split(opts.metricList, ",")
-	since, err := time.Parse("2006-01-02", opts.since)
-	if err != nil {
-		return err
+
+	var (
+		since      time.Time
+		err        error
+		lineShapes []*LineShape
+	)
+
+	if opts.isDuringRelease {
+		config, err := parseReleaseConfig(opts.releaseConfig)
+		if err != nil {
+			return fmt.Errorf("failed to parse release config: %v", err)
+		}
+		since, err = time.Parse("2006-01-02", config.SinceDate)
+		if err != nil {
+			return fmt.Errorf("failed to parse sinceDate from release config: %v", err)
+		}
+		lineShapes = config.LineShapes
+	} else {
+		since, err = time.Parse("2006-01-02", opts.since)
+		if err != nil {
+			return fmt.Errorf("failed to parse sinceDate from since flag: %v", err)
+		}
 	}
+
 	for _, metric := range metrics {
 		data, err := gatherPlotData(opts.weeklyReportsDir, opts.resource, ResultType(metric), &since)
 		if err != nil {
@@ -262,9 +326,15 @@ func plotWeeklyGraph(opts weeklyGraphOpts) error {
 			XAxisLabel: "Start date of week",
 			YAxisLabel: "Metric Value",
 			Curves:     data,
-		}))
+		}, opts.isDuringRelease, lineShapes))
 	}
-	ToHtml(figs, filepath.Join(opts.weeklyReportsDir, opts.resource, "index.html"))
+
+	htmlFileName := "index.html"
+	if opts.isDuringRelease {
+		htmlFileName = "release-index.html"
+	}
+
+	ToHtml(figs, filepath.Join(opts.weeklyReportsDir, opts.resource, htmlFileName))
 
 	return errors.NewAggregate(errs)
 }
@@ -292,6 +362,32 @@ func figToBuffer(figs []*grob.Fig) *bytes.Buffer {
 	buf := &bytes.Buffer{}
 	tmpl.Execute(buf, figBytesList)
 	return buf
+}
+
+func parseReleaseConfig(configPath string) (ReleaseConfig, error) {
+	if configPath == "" {
+		return ReleaseConfig{}, fmt.Errorf("no release config path provided")
+	}
+
+	yamlData, err := os.ReadFile(configPath)
+	if err != nil {
+		return ReleaseConfig{}, fmt.Errorf("failed to read release config file %s: %v", configPath, err)
+	}
+
+	var config ReleaseConfig
+	err = yaml.Unmarshal(yamlData, &config)
+	if err != nil {
+		return ReleaseConfig{}, fmt.Errorf("failed to parse release config YAML: %v", err)
+	}
+
+	if config.ReleaseVersion == "" {
+		return ReleaseConfig{}, fmt.Errorf("releaseVersion is required in release config")
+	}
+	if config.SinceDate == "" {
+		return ReleaseConfig{}, fmt.Errorf("sinceDate is required in release config")
+	}
+
+	return config, nil
 }
 
 var baseHtml = `
