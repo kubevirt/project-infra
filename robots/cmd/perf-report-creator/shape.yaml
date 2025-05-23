@@ -1,0 +1,73 @@
+releaseVersion: "v1-5"
+sinceDate: "2024-01-01"
+lineShapes:
+  - type: line
+    x0: "2024-03-05"
+    x1: "2024-03-05"
+    y0: 0
+    y1: 1
+    yref: paper
+    editable: true
+    line:
+      color: grey
+      width: 2
+      dash: dot
+    label:
+      text: v1.2.0
+      xanchor: right
+  - type: line
+    x0: "2024-03-25"
+    x1: "2024-03-25"
+    y0: 0
+    y1: 1
+    yref: paper
+    editable: true
+    line:
+      color: blue
+      width: 2
+      dash: dot
+    label:
+      text: k8s-1.29
+      xanchor: right
+  - type: line
+    x0: "2024-07-17"
+    x1: "2024-07-17"
+    y0: 0
+    y1: 1
+    yref: paper
+    editable: true
+    line:
+      color: green
+      width: 2
+      dash: dot
+    label:
+      text: v1.3.0
+      xanchor: right
+  - type: line
+    x0: "2024-11-13"
+    x1: "2024-11-13"
+    y0: 0
+    y1: 1
+    yref: paper
+    editable: true
+    line:
+      color: red
+      width: 2
+      dash: dot
+    label:
+      text: v1.4.0
+      xanchor: right
+  - type: line
+    x0: "2024-12-05"
+    x1: "2024-12-05"
+    y0: 0
+    y1: 1
+    yref: paper
+    editable: true
+    line:
+      color: violet
+      width: 2
+      dash: dot
+    label:
+      text: k8s-1.31
+      xanchor: right
