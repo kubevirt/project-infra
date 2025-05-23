@@ -710,7 +710,10 @@ func writeTempFile(log *logrus.Logger, basedir string, content []byte) (string, 
 		log.WithError(err).Errorf("Could not write data to file: %s", tmpfile.Name())
 		return "", err
 	}
-	tmpfile.Sync()
+	if err := tmpfile.Sync(); err != nil {
+		log.WithError(err).Errorf("Could not sync file: %s", tmpfile.Name())
+		return "", err
+	}
 	return tmpfile.Name(), nil
 }
 
