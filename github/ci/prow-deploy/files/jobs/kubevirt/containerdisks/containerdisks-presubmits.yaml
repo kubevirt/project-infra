@@ -111,9 +111,7 @@ presubmits:
           value: "1.24.1"
         - name: FOCUS
           value: "centos-stream:9"
-        - name: KUBEVIRTCI_TAG
-          value: "2501140834-56eb34e6"
-        - name: KUBEVIRT_SLIM
+        - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
         image: quay.io/kubevirtci/golang:v20250502-3eb3b33
         name: ""
@@ -217,9 +215,7 @@ presubmits:
           value: "1.24.1"
         - name: FOCUS
           value: "centos-stream:*"
-        - name: KUBEVIRTCI_TAG
-          value: "2501140834-56eb34e6"
-        - name: KUBEVIRT_SLIM
+        - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
         image: quay.io/kubevirtci/golang:v20250502-3eb3b33
         name: ""
@@ -288,9 +284,7 @@ presubmits:
           value: "1.24.1"
         - name: FOCUS
           value: "fedora:*"
-        - name: KUBEVIRTCI_TAG
-          value: "2501140834-56eb34e6"
-        - name: KUBEVIRT_SLIM
+        - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
         image: quay.io/kubevirtci/golang:v20250502-3eb3b33
         name: ""
@@ -359,9 +353,7 @@ presubmits:
           value: "1.24.1"
         - name: FOCUS
           value: "ubuntu:*"
-        - name: KUBEVIRTCI_TAG
-          value: "2501140834-56eb34e6"
-        - name: KUBEVIRT_SLIM
+        - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
         image: quay.io/kubevirtci/golang:v20250502-3eb3b33
         name: ""
