@@ -149,6 +149,7 @@ tide:
     - kubevirt/kubesecondarydns
     - kubevirt/ipam-extensions
     - kubevirt/cluster-api-provider-kubevirt
+    - kubevirt/charts
     - kubevirt/machine-remediation-operator
     - kubevirt/kubevirtci
     - kubevirt/kubevirt.github.io
@@ -489,6 +490,10 @@ branch-protection:
             main:
               protect: true
         ssp-operator:
+          branches:
+            main:
+              protect: true
+        charts:
           branches:
             main:
               protect: true

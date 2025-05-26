@@ -100,6 +100,12 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/charts:
+    plugins:
+    - approve
+    - lgtm
+    - trigger
+
   kubevirt/cloud-image-builder:
     plugins:
     - approve
@@ -590,6 +596,7 @@ triggers:
   - kubevirt/machine-remediation-operator
   - kubevirt/kubevirtci
   - kubevirt/kubevirt
+  - kubevirt/charts
   - kubevirt/containerdisks
   - kubevirt/kubevirt.github.io
   - kubevirt/cloud-image-builder
@@ -648,6 +655,7 @@ approve:
   - kubevirt/project-infra
   - kubevirt/machine-remediation-operator
   - kubevirt/kubevirtci
+  - kubevirt/charts
   - kubevirt/containerdisks
   - kubevirt/kubevirt.github.io
   - kubevirt/cloud-image-builder
@@ -714,6 +722,7 @@ lgtm:
   - kubevirt/project-infra
   - kubevirt/kubevirtci
   - kubevirt/kubevirt.github.io
+  - kubevirt/charts
   - kubevirt/cloud-image-builder
   - kubevirt/community
   - kubevirt/kubevirt-tutorial
