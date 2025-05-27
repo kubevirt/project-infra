@@ -92,6 +92,8 @@ presubmits:
         env:
         - name: TARGET
           value: windows2016
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
@@ -143,6 +145,8 @@ presubmits:
         env:
         - name: TARGET
           value: kind-1.35-vgpu
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
@@ -1070,6 +1074,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.36-sig-network
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         - name: KUBEVIRT_SINGLE_STACK
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
@@ -1158,6 +1164,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.36-emulated-igb
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
@@ -1800,6 +1808,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.34-sig-network
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
@@ -1841,6 +1851,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.34-sig-storage
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
@@ -1882,6 +1894,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.34-sig-compute-parallel
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
@@ -1925,6 +1939,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.34-sig-operator
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
@@ -1966,6 +1982,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.35-sig-network
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
@@ -2007,6 +2025,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.35-sig-storage
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
@@ -2048,6 +2068,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.35-sig-compute-parallel
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
@@ -2091,6 +2113,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.35-sig-operator
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
