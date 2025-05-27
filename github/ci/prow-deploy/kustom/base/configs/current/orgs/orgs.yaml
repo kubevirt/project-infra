@@ -790,6 +790,7 @@ orgs:
           sig-release: write
           project-infra: write
           kubevirt: write
+          charts: write
       rerun-jobs-hco:
         description: can rerun failed job in the hyperconverged-cluster-operator repository
         maintainers:
@@ -969,3 +970,11 @@ orgs:
           - lyarwood
         repos:
           containerdisks: admin
+      charts-maintainers:
+        description: Maintainers of helm charts
+        privacy: closed
+        maintainers:
+          - dhiller
+          - lerrigatto
+        repos:
+          charts: write
