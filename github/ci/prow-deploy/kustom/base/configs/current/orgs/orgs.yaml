@@ -977,4 +977,4 @@ orgs:
           - dhiller
           - lerrigatto
         repos:
-          charts: admin
+          charts: write
