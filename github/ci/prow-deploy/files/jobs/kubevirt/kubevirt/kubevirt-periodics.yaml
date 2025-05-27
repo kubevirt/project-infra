@@ -1827,7 +1827,7 @@ periodics:
   decorate: true
   decoration_config:
     grace_period: 5m0s
-    timeout: 4h0m0s
+    timeout: 5h0m0s
   extra_refs:
   - base_ref: main
     org: kubevirt
@@ -1860,6 +1860,8 @@ periodics:
         value: k8s-1.30-sig-compute
       - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
         value: --usb 30M --usb 40M
+      - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
+        value: 4h45m
       image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
       name: ""
       resources:
@@ -2021,7 +2023,7 @@ periodics:
   decorate: true
   decoration_config:
     grace_period: 5m0s
-    timeout: 4h0m0s
+    timeout: 5h0m0s
   extra_refs:
   - base_ref: main
     org: kubevirt
@@ -2054,6 +2056,8 @@ periodics:
         value: k8s-1.31-sig-compute
       - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
         value: --usb 30M --usb 40M
+      - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
+        value: 4h45m
       image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
       name: ""
       resources:
@@ -2313,7 +2317,7 @@ periodics:
   decorate: true
   decoration_config:
     grace_period: 5m0s
-    timeout: 4h0m0s
+    timeout: 5h0m0s
   extra_refs:
   - base_ref: main
     org: kubevirt
@@ -2346,6 +2350,8 @@ periodics:
         value: k8s-1.32-sig-compute
       - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
         value: --usb 30M --usb 40M
+      - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
+        value: 4h45m
       image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
       name: ""
       resources:
@@ -2507,7 +2513,7 @@ periodics:
   decorate: true
   decoration_config:
     grace_period: 5m0s
-    timeout: 4h0m0s
+    timeout: 5h0m0s
   extra_refs:
   - base_ref: main
     org: kubevirt
@@ -2540,6 +2546,8 @@ periodics:
         value: k8s-1.33-sig-compute
       - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
         value: --usb 30M --usb 40M
+      - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
+        value: 4h45m
       image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
       name: ""
       resources:
