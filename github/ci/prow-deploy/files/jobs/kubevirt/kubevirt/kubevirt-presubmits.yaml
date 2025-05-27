@@ -104,6 +104,9 @@ presubmits:
             memory: 52Gi
         securityContext:
           privileged: true
+        env:
+          - name: RUN_BEFORE_MERGE
+            value: "true"
       nodeSelector:
         type: bare-metal-external
       priorityClassName: windows
@@ -147,6 +150,8 @@ presubmits:
         env:
         - name: TARGET
           value: kind-1.30-vgpu
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
         name: ""
         resources:
@@ -226,6 +231,8 @@ presubmits:
         env:
         - name: TARGET
           value: kind-sriov
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
         name: ""
         resources:
@@ -886,6 +893,8 @@ presubmits:
           value: k8s-1.32-sig-network
         - name: KUBEVIRT_SINGLE_STACK
           value: "true"
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
         name: ""
         resources:
@@ -1365,6 +1374,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.30-sig-network
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
         name: ""
         resources:
@@ -1406,6 +1417,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.30-sig-storage
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
         name: ""
         resources:
@@ -1449,6 +1462,8 @@ presubmits:
           value: k8s-1.30-sig-compute-parallel
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
         name: ""
         resources:
@@ -1490,6 +1505,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.30-sig-operator
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
         name: ""
         resources:
@@ -1531,6 +1548,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.31-sig-network
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
         name: ""
         resources:
@@ -1572,6 +1591,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.31-sig-storage
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
         name: ""
         resources:
@@ -1656,6 +1677,8 @@ presubmits:
           value: k8s-1.31-sig-compute-parallel
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
         name: ""
         resources:
@@ -1697,6 +1720,8 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.31-sig-operator
+        - name: RUN_BEFORE_MERGE
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
         name: ""
         resources:
