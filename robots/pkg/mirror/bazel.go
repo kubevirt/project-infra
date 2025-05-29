@@ -30,6 +30,10 @@ func (a *Artifact) URLs() []string {
 	return a.rule.AttrStrings("urls")
 }
 
+func (a *Artifact) SetAuthPatterns(patterns []*build.KeyValueExpr) {
+	a.rule.SetAttr("auth_patterns", &build.DictExpr{List: patterns})
+}
+
 func (a *Artifact) Name() string {
 	return a.rule.AttrString("name")
 }
