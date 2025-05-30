@@ -52,12 +52,10 @@ orgs:
       - fossedihelm
       - geetikakay
       - germag
-      - gouyang
       - iholder101
       - jberkus
       - jcanocan
       - jean-edouard
-      - jobbler
       - jschintag
       - kbidarkar
       - ksimon1
@@ -98,7 +96,6 @@ orgs:
       - vamsikrishna-siddu
       - vasiliy-ul
       - victortoso
-      - VirrageS
       - vladikr
       - xpivarc
       - zhlhahaha
@@ -529,7 +526,6 @@ orgs:
         maintainers:
         members:
           - kbidarkar
-          - gouyang
           - dollierp
         privacy: closed
         repos:
