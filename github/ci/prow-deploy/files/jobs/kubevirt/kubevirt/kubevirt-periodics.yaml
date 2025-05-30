@@ -102,6 +102,43 @@ periodics:
 - annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
+  cron: 30 3 * * *
+  decorate: true
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: project-infra
+  labels:
+    preset-gcs-credentials: "true"
+  name: periodic-report-merge-commit-summary
+  spec:
+    containers:
+    - args:
+      - |
+        report_dir="/tmp/merge-commit-summary"
+        mkdir -p "${report_dir}"
+        go run ./robots/cmd/merge-commit-summary \
+          --days-in-the-past 7 \
+          --output-file "${report_dir}/index.html"
+        gsutil cp "${report_dir}/*" "gs://kubevirt-prow/reports/merge-commit-summary/kubevirt/kubevirt/last-seven-days/"
+      command:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -ce
+      env:
+      - name: GIMME_GO_VERSION
+        value: 1.23.4
+      - name: GITHUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: oauth-token
+            key: oauth
+      image: quay.io/kubevirtci/golang:v20250502-3eb3b33
+      name: ""
+      resources: {}
+- annotations:
+    testgrid-create-test-group: "false"
+  cluster: kubevirt-prow-control-plane
   cron: 45 3 * * *
   decorate: true
   extra_refs:
