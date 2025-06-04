@@ -25,6 +25,7 @@ type options struct {
 	continueOnError bool
 	verify          bool
 	dir             string
+	requiresAuth    bool
 }
 
 func (o *options) Validate() error {
@@ -42,6 +43,7 @@ func gatherOptions() options {
 	fs.BoolVar(&o.continueOnError, "continue-on-error", false, "Try to upload as many artifacts as possible. Exit code will still be non-zero in case of errors")
 	fs.StringVar(&o.bucket, "bucket", "builddeps", "bucket where to upload")
 	fs.StringVar(&o.dir, "dir", "", "directory inside the bucket")
+	fs.BoolVar(&o.requiresAuth, "requires-auth", false, "set to true if the bucket requires authentication for downloading artifacts")
 	fs.StringVar(&o.workspacePath, "workspace", "", "path to the workspace file")
 	fs.Parse(os.Args[1:])
 	return o
@@ -111,6 +113,13 @@ func upload(options options, workspace *build.File, artifacts []mirror.Artifact)
 	invalid := mirror.FilterArtifactsWithoutMirror(artifacts, targetMirrorURLPattern)
 
 	failed := false
+	var authPatterns []*build.KeyValueExpr
+	if options.requiresAuth {
+		authPatterns = append(authPatterns, &build.KeyValueExpr{
+			Key:   &build.StringExpr{Value: "storage.googleapis.com"},
+			Value: &build.StringExpr{Value: "Bearer <password>"},
+		})
+	}
 	for _, artifact := range invalid {
 		newFileUrl := mirror.GenerateFilePath(options.bucket, options.dir, &artifact)
 		err := mirror.WriteToBucket(options.dryRun, ctx, client, artifact, options.bucket, options.dir, http.DefaultClient)
@@ -123,6 +132,9 @@ func upload(options options, workspace *build.File, artifacts []mirror.Artifact)
 			}
 		}
 		artifact.AppendURL(newFileUrl)
+		if len(authPatterns) > 0 {
+			artifact.SetAuthPatterns(authPatterns)
+		}
 	}
 
 	mirror.RemoveStaleDownloadURLS(artifacts, targetMirrorURLPattern, http.DefaultClient)
