@@ -167,6 +167,7 @@ tide:
     - kubevirt/secrets
     - kubevirt/test-benchmarks
     - kubevirt/sig-release
+    - kubevirt/enhancements
     labels:
     - lgtm
     - approved
@@ -207,7 +208,6 @@ tide:
     - kubevirt/csi-driver
     - kubevirt/vm-console-proxy
     - kubevirt/kubevirt.core
-    - kubevirt/enhancements
     - kubevirt/irsa-mutation-webhook
     labels:
     - lgtm
