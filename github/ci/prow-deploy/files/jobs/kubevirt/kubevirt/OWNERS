@@ -5,7 +5,6 @@
 # See the OWNERS docs: https://git.k8s.io/community/contributors/guide/owners.md
 
 approvers:
-- alicefr
 - davidvossel
 - enp0s3
 - fabiand
@@ -20,7 +19,6 @@ approvers:
 options: {}
 reviewers:
 - 0xfelix
-- alicefr
 - eddev
 - enp0s3
 - fossedihelm
