@@ -63,6 +63,8 @@ Usage of weekly-graph:
         comma separated list of metrics to be plotted (default "vmiCreationToRunningSecondsP95")
   -plotly-html
         boolean for selecting what kind of graph will be plotted (default true)
+  -is-release
+        boolean for selecting if the graph is for a release version (default false)
   -resource string
         resource for which the graph will be plotted (default "vmi")
   -weekly-reports-dir string
@@ -77,3 +79,44 @@ or `<output-dir>/<vmi/vm>/<week-start-date>/index.html` depending on the command
 
 All the three steps will be run in sequence to generate weekly graphs that can be uploaded to a separate git repository
 to keep track of performance numbers over time/versions.
+
+#### Performance Benchmark Release Graphs
+
+This describes how performance benchmark graphs are generated for KubeVirt releases.
+
+##### Overview
+
+The scripts in this directory create release graphs that track KubeVirt performance metrics over time. The graphs are generated from benchmark data collected during periodic test runs.
+
+##### DEVELOPERS GUIDE
+
+Before running the graph generation scripts, ensure you have:
+1. Update the 
+    - `RELEASE_VERSION` - Version to generate graphs for (in format, e.g. "v1-6") 
+    - `SINCE_DATE` - Start date to collect data from (in "YYYY-MM-DD" format, e.g. "2024-01-01")
+     
+     for a `post-project-infra-kubevirt-releasegraph` prow job in `/Users/svarnam/Git/code_repos/project-infra/github/ci/prow-deploy/files/jobs/kubevirt/project-infra/project-infra-postsubmits.yaml`
+
+2. Update the `shape.yaml` file with all the fields for the release version. and remove the data for the releases before the since date.
+
+     Example:
+     ```
+     - type: line
+       x0: "2024-03-25"
+       x1: "2024-03-25"
+       y0: 0
+       y1: 1
+       yref: paper
+       editable: true
+       line:
+         color: blue
+         width: 2
+         dash: dot
+       label:
+         text: k8s-1.29
+         xanchor: right
+     ```
+
+As it is a postsubmit job it is triggered when it sees any change in the `/Users/svarnam/Git/code_repos/project-infra/robots/cmd/perf-report-creator/shape.yaml` file.
+
+This will create a new directory in the ci-performance-benchmarks repo with the name as the latest version(eg. v1.6.0) which has the plots for the given release version. Commit and push the changes to the remote repository and create a PR using the credentials provided in the environment variables token, name and email.
