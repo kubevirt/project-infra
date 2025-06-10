@@ -115,6 +115,9 @@ periodics:
     containers:
     - args:
       - |
+        dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo
+        dnf install -y gh --repo gh-cli
+
         report_dir="/tmp/merge-commit-summary"
         mkdir -p "${report_dir}"
         go run ./robots/cmd/merge-commit-summary \
