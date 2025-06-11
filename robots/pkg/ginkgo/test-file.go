@@ -41,6 +41,29 @@ func init() {
 	}
 }
 
+func FindFileAndDescriptor(testSourcePath, testName string) (testDescriptor *SourceTestDescriptor, testFileName string, err error) {
+	if HasTestId(testName) {
+		testFileName, err = FindTestFileById(testName, testSourcePath)
+		if err != nil {
+			return nil, "", fmt.Errorf("could not find test file by id: %w", err)
+		}
+		testDescriptor, err = NewTestDescriptorForID(testName, testFileName)
+		if err != nil {
+			return nil, "", fmt.Errorf("could not find test descriptor by id: %w", err)
+		}
+	} else {
+		testFileName, err = FindTestFileByName(testName, testSourcePath)
+		if err != nil {
+			return nil, "", fmt.Errorf("could not find test file by name: %w", err)
+		}
+		testDescriptor, err = NewTestDescriptorForName(testName, testFileName)
+		if err != nil {
+			return nil, "", fmt.Errorf("could not find test descriptor by name: %w", err)
+		}
+	}
+	return
+}
+
 func FindTestFileByName(name string, directoryPath string) (string, error) {
 	command := osexec.Command("rg", "--multiline", "--multiline-dotall", byTestName(name))
 	command.Dir = directoryPath

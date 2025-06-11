@@ -137,51 +137,22 @@ func GenerateModelData(modelLog *log.Entry) (*ModelData, error) {
 			if *onlyTestSubset && k > 20 {
 				break
 			}
-			logTest := urlLog.WithField("test", descriptor.Name)
-			if ginkgo.HasTestId(descriptor.Name) {
-				logTest.Infof("fetching data for test %q by id", descriptor.Name)
-				testFileName, err := ginkgo.FindTestFileById(descriptor.Name, *testSourcePath)
-				if err != nil {
-					descriptorErrors = append(descriptorErrors, DescriptorError{descriptor.Name, err})
-					continue
-				}
-				testDescriptor, err := ginkgo.NewTestDescriptorForID(descriptor.Name, testFileName)
-				if err != nil {
-					descriptorErrors = append(descriptorErrors, DescriptorError{descriptor.Name, err})
-					continue
-				}
-				logTest.Infof("extracting feature vector for test %q", descriptor.Name)
-				features, err := cannier.ExtractFeatures(testDescriptor)
-				if err != nil {
-					return nil, err
-				}
-				dataSourcesByName[descriptor.Name] = TestDataPool{
-					ModelTestDescriptor: descriptor,
-					testFileName:        testFileName,
-					Features:            features,
-				}
-			} else {
-				logTest.Infof("fetching data for test %q by name", descriptor.Name)
-				testFileName, err := ginkgo.FindTestFileByName(descriptor.Name, *testSourcePath)
-				if err != nil {
-					descriptorErrors = append(descriptorErrors, DescriptorError{descriptor.Name, err})
-					continue
-				}
-				testDescriptor, err := ginkgo.NewTestDescriptorForName(descriptor.Name, testFileName)
-				if err != nil {
-					descriptorErrors = append(descriptorErrors, DescriptorError{descriptor.Name, err})
-					continue
-				}
-				logTest.Infof("extracting feature vector for test %q", descriptor.Name)
-				features, err := cannier.ExtractFeatures(testDescriptor)
-				if err != nil {
-					return nil, err
-				}
-				dataSourcesByName[descriptor.Name] = TestDataPool{
-					ModelTestDescriptor: descriptor,
-					testFileName:        testFileName,
-					Features:            features,
-				}
+			testlogger := urlLog.WithField("test", descriptor.Name)
+			testlogger.Infof("fetching data for test %q", descriptor.Name)
+			testDescriptor, testFileName, err := ginkgo.FindFileAndDescriptor(*testSourcePath, descriptor.Name)
+			if err != nil {
+				descriptorErrors = append(descriptorErrors, DescriptorError{descriptor.Name, err})
+				continue
+			}
+			testlogger.Infof("extracting feature vector for test %q", descriptor.Name)
+			features, err := cannier.ExtractFeatures(testDescriptor)
+			if err != nil {
+				return nil, err
+			}
+			dataSourcesByName[descriptor.Name] = TestDataPool{
+				ModelTestDescriptor: descriptor,
+				testFileName:        testFileName,
+				Features:            features,
 			}
 		}
 	}
