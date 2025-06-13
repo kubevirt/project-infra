@@ -303,6 +303,53 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 36h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-etcd-in-mem: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 2
+    name: pull-kubevirt-check-dequarantine-test
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - TARGET_COMMIT_RANGE=$PULL_BASE_SHA.. automation/repeated_test.sh
+        env:
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 9216M
+        - name: NUM_TESTS
+          value: "500"
+        - name: KUBEVIRT_PSA
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: 1G
+        - name: CANNIER_IMAGE
+          value: quay.io/kubevirtci/cannier:v20250428-dc1823e
+        image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
   - always_run: true
     annotations:
       fork-per-release: "true"
