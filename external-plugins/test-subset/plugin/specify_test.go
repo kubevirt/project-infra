@@ -41,14 +41,18 @@ var _ = Describe("Test-subset", func() {
 
 		AfterEach(func() {
 			if gitClientFactory != nil {
-				gitClientFactory.Clean()
+				if err := gitClientFactory.Clean(); err != nil {
+					logrus.WithError(err).Error("Failed to clean up git client factory")
+				}
 			}
 		})
 
 		Context("a member comments a test-subset command", func() {
 			It("Should run the specified prow jobs", func() {
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, org, repo)
+					if err := makeRepoWithEmptyProwConfig(gitrepo, org, repo); err != nil {
+						logrus.WithError(err).Fatal("Failed to create fake git repo")
+					}
 				})
 
 				var baseref string

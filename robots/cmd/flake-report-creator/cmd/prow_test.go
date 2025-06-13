@@ -275,7 +275,10 @@ func Test_writeProwReportToFileCreatesTags(t *testing.T) {
 				t.Errorf("failed to create temp report file: %v", err)
 				return
 			}
-			writeProwReportToFile(tt.args.startOfReport, tt.args.reports, tempFile)
+			if err := writeProwReportToFile(tt.args.startOfReport, tt.args.reports, tempFile); err != nil {
+				t.Errorf("failed to write report to file: %v", err)
+				return
+			}
 
 			content, err := os.ReadFile(baseReportFile)
 			if err != nil {
