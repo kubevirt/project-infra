@@ -45,6 +45,7 @@ presubmits:
       grace_period: 5m
     labels:
       preset-podman-in-container-enabled: "true"
+    skip_report: true
     spec:
       containers:
         - image: quay.io/kubevirtci/golang:v20250502-3eb3b33
