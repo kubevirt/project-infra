@@ -99,7 +99,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: pull-containerdisks-pipeline-centos-stream-9-s390x
-    skip_report: true
     spec:
       containers:
       - command:
@@ -204,7 +203,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: pull-containerdisks-pipeline-centosstream-s390x
-    skip_report: true
     spec:
       containers:
       - command:
@@ -274,7 +272,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: pull-containerdisks-pipeline-fedora-s390x
-    skip_report: true
     spec:
       containers:
       - command:
@@ -344,7 +341,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: pull-containerdisks-pipeline-ubuntu-s390x
-    skip_report: true
     spec:
       containers:
       - command:

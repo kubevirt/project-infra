@@ -119,7 +119,6 @@ presubmits:
       preset-kubevirt-s390x-icr-credential: "true"
     max_concurrency: 1
     optional: true
-    skip_report: true
     spec:
       containers:
       - command:
