@@ -123,6 +123,7 @@ presubmits:
       timeout: 2h
       grace_period: 5m
     cluster: prow-s390x-workloads
+    skip_report: true
     spec:
       containers:
         - image: quay.io/kubevirtci/golang:v20250502-3eb3b33
