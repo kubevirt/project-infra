@@ -424,7 +424,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.4
-    cluster: prow-arm64-workloads-2
+    cluster: prow-arm64-workloads
     context: pull-kubevirt-unit-test-arm64
     decorate: true
     decoration_config:
@@ -909,7 +909,7 @@ presubmits:
   - always_run: true
     branches:
     - release-1.4
-    cluster: prow-arm64-workloads-2
+    cluster: prow-arm64-workloads
     context: pull-kubevirt-conformance-arm64
     decorate: true
     decoration_config:
