@@ -80,7 +80,6 @@ presubmits:
       cluster: prow-s390x-workloads
       labels:
         preset-podman-in-container-enabled: "true"
-      skip_report: true
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33

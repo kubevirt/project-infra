@@ -434,7 +434,6 @@ presubmits:
     name: pull-kubevirt-unit-test-s390x
     skip_branches:
     - release-\d+\.\d+
-    skip_report: true
     spec:
       containers:
       - command:
