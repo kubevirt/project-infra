@@ -856,6 +856,123 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: true
+    branches:
+    - release-1.5
+    cluster: prow-arm64-workloads
+    context: pull-kubevirt-e2e-arm64
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-unnested: "false"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 5
+    name: pull-kubevirt-e2e-arm64-1.5
+    optional: true
+    skip_report: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          automation/test.sh
+        env:
+        - name: TARGET
+          value: kind-1.28-wg-arm64
+        - name: KUBEVIRT_NUM_NODES
+          value: "1"
+        image: quay.io/kubevirtci/bootstrap:v20250211-4e3c019
+        name: ""
+        resources:
+          requests:
+            memory: 16Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+        - mountPath: /var/log/audit
+          name: audit
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+      - hostPath:
+          path: /var/log/audit
+          type: Directory
+        name: audit
+  - always_run: true
+    branches:
+    - release-1.5
+    cluster: prow-arm64-workloads-2
+    context: pull-kubevirt-conformance-arm64
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-unnested: "false"
+      preset-dind-enabled: "true"
+    max_concurrency: 4
+    name: pull-kubevirt-conformance-arm64-1.5
+    optional: true
+    skip_report: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          automation/conformance.sh
+        env:
+        - name: TARGET
+          value: kind-1.28
+        - name: KUBEVIRT_PROVIDER
+          value: kind-1.28
+        - name: KUBEVIRT_NUM_NODES
+          value: "3"
+        - name: IPFAMILY
+          value: dual
+        - name: RUN_ON_ARM64_INFRA
+          value: "true"
+        image: quay.io/kubevirtci/bootstrap-legacy:v20240523-1a2c9b8
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+        - mountPath: /var/log/audit
+          name: audit
+      dnsConfig:
+        nameservers:
+        - 8.8.8.8
+      dnsPolicy: None
+      volumes:
+      - hostPath:
+          path: /lib/modules
+          type: Directory
+        name: modules
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+      - hostPath:
+          path: /var/log/audit
+          type: Directory
+        name: audit
   - always_run: false
     branches:
     - release-1.5
