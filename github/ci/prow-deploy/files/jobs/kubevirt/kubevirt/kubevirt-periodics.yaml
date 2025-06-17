@@ -749,6 +749,52 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
+  cluster: prow-arm64-workloads
+  cron: 40 4 1,5,9,13,17,19 * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-unnested: "false"
+    preset-podman-in-container-enabled: "true"
+  max_concurrency: 5
+  name: periodic-kubevirt-kind-e2e-test-ARM64
+  reporter_config:
+    slack:
+      report: false
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -ce
+      - automation/test.sh
+      env:
+      - name: TARGET
+        value: kind-1.31-wg-arm64
+      - name: KUBEVIRT_NUM_NODES
+        value: "1"
+      image: quay.io/kubevirtci/bootstrap:v20250320-f6c439c
+      name: ""
+      resources:
+        requests:
+          memory: 16Gi
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: /var/log/audit
+        name: audit
+    volumes:
+    - emptyDir: {}
+      name: audit
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 30 4,12,20,00 * * *
   decorate: true
@@ -839,7 +885,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-arm64-workloads-2
+  cluster: prow-arm64-workloads
   cron: 40 4 * * *
   decorate: true
   decoration_config:
