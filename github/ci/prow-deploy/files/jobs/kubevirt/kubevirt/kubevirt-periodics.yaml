@@ -787,10 +787,18 @@ periodics:
       securityContext:
         privileged: true
       volumeMounts:
+      - mountPath: /sys/fs/cgroup
+        name: cgroup
       - mountPath: /var/log/audit
         name: audit
     volumes:
-    - emptyDir: {}
+    - hostPath:
+        path: /sys/fs/cgroup
+        type: Directory
+      name: cgroup
+    - hostPath:
+        path: /var/log/audit
+        type: Directory
       name: audit
 - annotations:
     testgrid-dashboards: kubevirt-periodics
