@@ -1433,6 +1433,51 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
+  cron: 20 5,13,21 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-unnested: "true"
+    preset-podman-in-container-enabled: "true"
+  name: periodic-kubevirt-e2e-kind-1.31-sev
+  reporter_config:
+    slack:
+      report: false
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: kind-1.31-sev
+      - name: KUBEVIRT_PROVIDER
+        value: kind-1.31
+      image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
+      name: ""
+      resources:
+        requests:
+          memory: 18Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
   cron: 0 5 * * 0
   decorate: true
   decoration_config:
