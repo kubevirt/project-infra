@@ -571,7 +571,7 @@ periodics:
     preset-podman-shared-images: "true"
     vgpu: "true"
   max_concurrency: 1
-  name: periodic-kubevirt-e2e-kind-1.30-vgpu
+  name: periodic-kubevirt-e2e-kind-1.33-vgpu
   reporter_config:
     slack:
       report: false
@@ -597,7 +597,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: kind-1.30-vgpu
+        value: kind-1.33-vgpu
       image: quay.io/kubevirtci/golang:v20250502-3eb3b33
       name: ""
       resources:
