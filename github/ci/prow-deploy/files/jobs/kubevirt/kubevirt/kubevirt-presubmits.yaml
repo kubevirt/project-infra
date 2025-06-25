@@ -1038,7 +1038,7 @@ presubmits:
     labels:
       preset-bazel-unnested: "false"
       preset-podman-in-container-enabled: "true"
-    max_concurrency: 5
+    max_concurrency: 2
     name: pull-kubevirt-e2e-arm64
     optional: true
     skip_branches:
