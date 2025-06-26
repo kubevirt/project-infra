@@ -676,7 +676,7 @@ presubmits:
       preset-github-credentials: "true"
     decorate: true
     decoration_config:
-      timeout: 2h
+      timeout: 3h
       grace_period: 5m
     max_concurrency: 1
     cluster: kubevirt-prow-control-plane
