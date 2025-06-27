@@ -425,7 +425,7 @@ func (r *releaseData) forkProwJobs() error {
 			return err
 		}
 		tempPresubmitsConfigPath := filepath.Join(temp, "presubmits.yaml")
-		cmd := exec.Command("/usr/bin/config-forker", "--job-config", fullJobConfig, "--version", version, "--output", tempPresubmitsConfigPath)
+		cmd := exec.Command("/usr/bin/config-forker", "--job-config", fullJobConfig, "--version", version, "--output", tempPresubmitsConfigPath, "--go-version", "1.21.13")
 		bytes, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Printf("ERROR: config-forker command output: %s : %s ", string(bytes), err)
@@ -1207,6 +1207,8 @@ func main() {
 	autoReleaseCadance := flag.String("auto-release-cadance", "monthly", "set the auto release cadance to daily or monthly")
 	autoPromoteAfterDays := flag.Int("auto-promote-after-days", 7, "Set the set the time before autopromoting a release candidate")
 
+	forkReleaseJobsOnly := flag.Bool("fork-release-jobs-only", false, "Skip everything else, only fork the configs and make necessary adjustments")
+
 	flag.Parse()
 
 	if *org == "" {
@@ -1274,6 +1276,18 @@ func main() {
 
 	if *autoRelease {
 		r.autoDetectData(*autoReleaseCadance, *autoPromoteAfterDays)
+	}
+
+	if *forkReleaseJobsOnly {
+		err = r.checkoutProjectInfra()
+		if err != nil {
+			log.Fatalf("ERROR checking out project-infra: %s ", err)
+		}
+		err = r.forkProwJobs()
+		if err != nil {
+			log.Fatalf("ERROR Forking prow jobs: %s ", err)
+		}
+		return
 	}
 
 	// If this is a promotion, we need to set the tag to promote
