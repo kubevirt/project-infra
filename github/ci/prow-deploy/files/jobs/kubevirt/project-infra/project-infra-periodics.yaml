@@ -1126,7 +1126,7 @@ periodics:
       - "curl"
       - "--fail"
       - "--insecure"
-      - "https://api.upstream-ci-arm-418.cnv-qe.rhood.us:6443/livez?verbose"
+      - "https://api.upstream-ci-arm-sno-419.cnv-qe.rhood.us:6443/livez?verbose"
       resources:
         requests:
           memory: "200Mi"
