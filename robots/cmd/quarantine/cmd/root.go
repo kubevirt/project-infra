@@ -17,26 +17,40 @@
  *
  */
 
-package main
+package cmd
 
 import (
-	_ "embed"
-	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flake-stats"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	"os"
 )
 
-func init() {
-	log.SetFormatter(&log.JSONFormatter{})
-	log.SetLevel(log.DebugLevel)
+var rootCmd = &cobra.Command{
+	Use: "quarantine",
 }
 
-func main() {
-	flakeStatsOptions, err := flakestats.ParseFlags()
-	if err != nil {
-		log.WithError(err).Fatalf("failed parsing flags")
-	}
-	err = flakestats.GenerateReport(flakeStatsOptions)
-	if err != nil {
-		log.WithError(err).Fatalf("failed writing report")
+type QuarantineOptions struct {
+	testSourcePath string
+
+	// autoQuarantine
+	daysInThePast int
+
+	// quarantineTest
+	testName string
+}
+
+var quarantineOpts QuarantineOptions
+
+func init() {
+	rootCmd.PersistentFlags().StringVar(&quarantineOpts.testSourcePath, "test-source-path", "../kubevirt/tests/", "the path to the test source")
+
+	rootCmd.AddCommand(quarantineTestCmd)
+	rootCmd.AddCommand(autoQuarantineCmd)
+}
+
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		logrus.WithError(err).Error("failed to run command")
+		os.Exit(1)
 	}
 }

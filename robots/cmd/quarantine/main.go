@@ -20,9 +20,8 @@
 package main
 
 import (
-	_ "embed"
 	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flake-stats"
+	"kubevirt.io/project-infra/robots/cmd/quarantine/cmd"
 )
 
 func init() {
@@ -31,12 +30,5 @@ func init() {
 }
 
 func main() {
-	flakeStatsOptions, err := flakestats.ParseFlags()
-	if err != nil {
-		log.WithError(err).Fatalf("failed parsing flags")
-	}
-	err = flakestats.GenerateReport(flakeStatsOptions)
-	if err != nil {
-		log.WithError(err).Fatalf("failed writing report")
-	}
+	cmd.Execute()
 }

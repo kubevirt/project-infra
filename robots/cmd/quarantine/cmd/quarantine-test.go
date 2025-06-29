@@ -17,26 +17,32 @@
  *
  */
 
-package main
+package cmd
 
 import (
-	_ "embed"
+	"fmt"
 	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flake-stats"
+	"github.com/spf13/cobra"
+	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 )
 
-func init() {
-	log.SetFormatter(&log.JSONFormatter{})
-	log.SetLevel(log.DebugLevel)
+var quarantineTestCmd = &cobra.Command{
+	Use:  "test",
+	RunE: QuarantineTest,
 }
 
-func main() {
-	flakeStatsOptions, err := flakestats.ParseFlags()
+func init() {
+	quarantineTestCmd.PersistentFlags().StringVar(&quarantineOpts.testName, "test-name", "", "the name of the test to quarantine")
+}
+
+func QuarantineTest(cmd *cobra.Command, args []string) error {
+
+	descriptor, _, err := ginkgo.FindFileAndDescriptor(quarantineOpts.testSourcePath, quarantineOpts.testName)
 	if err != nil {
-		log.WithError(err).Fatalf("failed parsing flags")
+		return fmt.Errorf("could not find file or descriptor for test %q: %w", &quarantineOpts.testName, err)
 	}
-	err = flakestats.GenerateReport(flakeStatsOptions)
-	if err != nil {
-		log.WithError(err).Fatalf("failed writing report")
-	}
+
+	log.Infof("preparing to quarantine test %q with data %+v", descriptor.OutlineNode().Text, descriptor.OutlineNode())
+
+	return nil
 }
