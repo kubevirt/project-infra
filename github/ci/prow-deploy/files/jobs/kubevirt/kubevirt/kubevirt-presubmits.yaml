@@ -59,7 +59,7 @@ presubmits:
         resources:
           requests:
             cpu: "12"
-            memory: 73Gi
+            memory: 128Gi
         securityContext:
           privileged: true
       nodeSelector:
