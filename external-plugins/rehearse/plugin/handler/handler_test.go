@@ -42,7 +42,9 @@ var _ = Describe("Events", func() {
 
 		AfterEach(func() {
 			if gitClientFactory != nil {
-				gitClientFactory.Clean()
+				if err := gitClientFactory.Clean(); err != nil {
+					logrus.WithError(err).Error("Failed to clean up git client factory")
+				}
 			}
 		})
 

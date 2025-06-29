@@ -22,6 +22,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"net/http"
+	"os"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/shurcooL/githubv4"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
@@ -29,16 +36,10 @@ import (
 	"kubevirt.io/project-infra/external-plugins/referee/ghgraphql"
 	"kubevirt.io/project-infra/external-plugins/referee/metrics"
 	"kubevirt.io/project-infra/external-plugins/referee/server"
-	"net/http"
-	"os"
-	"regexp"
 	"sigs.k8s.io/prow/pkg/config/secret"
 	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/interrupts"
 	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
-	"strconv"
-	"strings"
-	"time"
 )
 
 func init() {
@@ -104,7 +105,9 @@ func gatherOptions() options {
 	for _, group := range []flagutil.OptionGroup{&o.github} {
 		group.AddFlags(fs)
 	}
-	fs.Parse(os.Args[1:])
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		logrus.Fatalf("failed to parse: %v", err)
+	}
 	return o
 }
 
