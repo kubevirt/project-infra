@@ -778,12 +778,12 @@ periodics:
       - name: TARGET
         value: kind-1.31-wg-arm64
       - name: KUBEVIRT_NUM_NODES
-        value: "1"
+        value: "2"
       image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
       name: ""
       resources:
         requests:
-          memory: 16Gi
+          memory: 24Gi
       securityContext:
         privileged: true
       volumeMounts:
