@@ -17,7 +17,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 4
-    name: pull-kubevirt-e2e-k8s-1.31-sig-performance
+    name: pull-kubevirt-e2e-k8s-1.31-sig-performance-1.6
     run_if_changed: ^cmd/.*|^rpm/.*|^tests/performance/.*|^hack/perftests.sh|^tools/perfscale-audit/.*|^bazel/.*|^third_party/.*|^staging/src/.*|^api/.*|^pkg/virt-.*|^pkg/controlller/.*|^pkg/monitoring/.*
     spec:
       containers:
@@ -79,7 +79,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 1
-    name: pull-kubevirt-e2e-windows2016
+    name: pull-kubevirt-e2e-windows2016-1.6
     spec:
       containers:
       - command:
@@ -115,7 +115,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       vgpu: "true"
     max_concurrency: 1
-    name: pull-kubevirt-e2e-kind-1.30-vgpu
+    name: pull-kubevirt-e2e-kind-1.30-vgpu-1.6
     spec:
       affinity:
         podAntiAffinity:
@@ -186,7 +186,7 @@ presubmits:
       rehearsal.allowed: "true"
       sriov-pod: "true"
     max_concurrency: 10
-    name: pull-kubevirt-e2e-kind-sriov
+    name: pull-kubevirt-e2e-kind-sriov-1.6
     spec:
       affinity:
         podAntiAffinity:
@@ -260,7 +260,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-check-tests-for-flakes
+    name: pull-kubevirt-check-tests-for-flakes-1.6
     optional: true
     spec:
       containers:
@@ -305,7 +305,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 2
-    name: pull-kubevirt-check-dequarantine-test
+    name: pull-kubevirt-check-dequarantine-test-1.6
     optional: true
     spec:
       containers:
@@ -345,7 +345,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-generate
+    name: pull-kubevirt-generate-1.6
     spec:
       containers:
       - command:
@@ -371,7 +371,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-verify-rpms
+    name: pull-kubevirt-verify-rpms-1.6
     optional: true
     run_if_changed: WORKSPACE
     spec:
@@ -399,7 +399,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-verify-go-mod
+    name: pull-kubevirt-verify-go-mod-1.6
     spec:
       containers:
       - command:
@@ -427,7 +427,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-gosec
+    name: pull-kubevirt-gosec-1.6
     optional: true
     skip_report: true
     spec:
@@ -455,7 +455,7 @@ presubmits:
       timeout: 2h0m0s
     labels:
       preset-bazel-unnested: "true"
-    name: pull-kubevirt-unit-test-s390x
+    name: pull-kubevirt-unit-test-s390x-1.6
     spec:
       containers:
       - command:
@@ -481,7 +481,7 @@ presubmits:
       timeout: 2h0m0s
     labels:
       preset-bazel-unnested: "false"
-    name: pull-kubevirt-unit-test-arm64
+    name: pull-kubevirt-unit-test-arm64-1.6
     optional: true
     skip_report: true
     spec:
@@ -510,7 +510,7 @@ presubmits:
     labels:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
-    name: pull-kubevirt-build
+    name: pull-kubevirt-build-1.6
     spec:
       containers:
       - command:
@@ -537,7 +537,7 @@ presubmits:
     labels:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
-    name: pull-kubevirt-build-arm64
+    name: pull-kubevirt-build-arm64-1.6
     spec:
       containers:
       - command:
@@ -567,7 +567,7 @@ presubmits:
     labels:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
-    name: pull-kubevirt-build-s390x
+    name: pull-kubevirt-build-s390x-1.6
     spec:
       containers:
       - command:
@@ -597,7 +597,7 @@ presubmits:
     labels:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-unit-test
+    name: pull-kubevirt-unit-test-1.6
     spec:
       containers:
       - command:
@@ -624,7 +624,7 @@ presubmits:
     labels:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-fuzz
+    name: pull-kubevirt-fuzz-1.6
     optional: true
     spec:
       containers:
@@ -651,7 +651,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-apidocs
+    name: pull-kubevirt-apidocs-1.6
     spec:
       containers:
       - command:
@@ -677,7 +677,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-client-python
+    name: pull-kubevirt-client-python-1.6
     spec:
       containers:
       - command:
@@ -703,7 +703,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-manifests
+    name: pull-kubevirt-manifests-1.6
     spec:
       containers:
       - command:
@@ -730,7 +730,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-prom-rules-verify
+    name: pull-kubevirt-prom-rules-verify-1.6
     spec:
       containers:
       - command:
@@ -757,7 +757,7 @@ presubmits:
     labels:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
-    name: pull-kubevirt-check-unassigned-tests
+    name: pull-kubevirt-check-unassigned-tests-1.6
     spec:
       containers:
       - command:
@@ -789,7 +789,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-ipv6-sig-network
+    name: pull-kubevirt-e2e-k8s-1.32-ipv6-sig-network-1.6
     spec:
       containers:
       - command:
@@ -829,7 +829,7 @@ presubmits:
       preset-shared-images: "true"
       rehearsal.allowed: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-sig-network-multus-v4
+    name: pull-kubevirt-e2e-k8s-1.32-sig-network-multus-v4-1.6
     optional: true
     spec:
       containers:
@@ -869,7 +869,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations
+    name: pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6
     spec:
       containers:
       - command:
@@ -902,7 +902,7 @@ presubmits:
       preset-bazel-unnested: "false"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 2
-    name: pull-kubevirt-e2e-arm64
+    name: pull-kubevirt-e2e-arm64-1.6
     optional: true
     skip_report: true
     spec:
@@ -952,7 +952,7 @@ presubmits:
       preset-bazel-unnested: "false"
       preset-dind-enabled: "true"
     max_concurrency: 4
-    name: pull-kubevirt-conformance-arm64
+    name: pull-kubevirt-conformance-arm64-1.6
     optional: true
     skip_report: true
     spec:
@@ -1048,7 +1048,7 @@ presubmits:
     labels:
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
-    name: pull-kubevirt-code-lint
+    name: pull-kubevirt-code-lint-1.6
     spec:
       containers:
       - command:
@@ -1080,7 +1080,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-swap-enabled
+    name: pull-kubevirt-e2e-k8s-1.32-swap-enabled-1.6
     optional: true
     skip_report: true
     spec:
@@ -1120,7 +1120,7 @@ presubmits:
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
-    name: pull-kubevirt-e2e-k8s-1.31-sig-monitoring
+    name: pull-kubevirt-e2e-k8s-1.31-sig-monitoring-1.6
     run_if_changed: ^pkg/monitoring/.*|^tests/monitoring/.*|^tests/libmonitoring/.*|^vendor/github.com/machadovilaca/operator-observability/.*
     spec:
       containers:
@@ -1155,7 +1155,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-single-node
+    name: pull-kubevirt-e2e-k8s-1.32-single-node-1.6
     optional: true
     spec:
       containers:
@@ -1202,7 +1202,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.31-sig-storage-root
+    name: pull-kubevirt-e2e-k8s-1.31-sig-storage-root-1.6
     optional: true
     spec:
       containers:
@@ -1242,7 +1242,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.31-sig-compute-root
+    name: pull-kubevirt-e2e-k8s-1.31-sig-compute-root-1.6
     optional: true
     spec:
       containers:
@@ -1284,7 +1284,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-sig-compute-realtime
+    name: pull-kubevirt-e2e-k8s-1.32-sig-compute-realtime-1.6
     optional: true
     spec:
       containers:
@@ -1317,7 +1317,7 @@ presubmits:
     labels:
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
-    name: pull-kubevirt-metrics-lint
+    name: pull-kubevirt-metrics-lint-1.6
     optional: true
     run_if_changed: docs/metrics.md
     spec:
@@ -1352,7 +1352,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.31-sig-network
+    name: pull-kubevirt-e2e-k8s-1.31-sig-network-1.6
     spec:
       containers:
       - command:
@@ -1389,7 +1389,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.31-sig-storage
+    name: pull-kubevirt-e2e-k8s-1.31-sig-storage-1.6
     spec:
       containers:
       - command:
@@ -1426,7 +1426,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.31-sig-compute
+    name: pull-kubevirt-e2e-k8s-1.31-sig-compute-1.6
     spec:
       containers:
       - command:
@@ -1465,7 +1465,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.31-sig-operator
+    name: pull-kubevirt-e2e-k8s-1.31-sig-operator-1.6
     spec:
       containers:
       - command:
@@ -1500,7 +1500,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
-    name: pull-kubevirt-e2e-k8s-1.32-sig-performance-kwok
+    name: pull-kubevirt-e2e-k8s-1.32-sig-performance-kwok-1.6
     optional: true
     spec:
       containers:
@@ -1554,7 +1554,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-sig-network
+    name: pull-kubevirt-e2e-k8s-1.32-sig-network-1.6
     spec:
       containers:
       - command:
@@ -1591,7 +1591,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-sig-storage
+    name: pull-kubevirt-e2e-k8s-1.32-sig-storage-1.6
     spec:
       containers:
       - command:
@@ -1628,7 +1628,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-sig-compute
+    name: pull-kubevirt-e2e-k8s-1.32-sig-compute-1.6
     spec:
       containers:
       - command:
@@ -1667,7 +1667,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-sig-operator
+    name: pull-kubevirt-e2e-k8s-1.32-sig-operator-1.6
     spec:
       containers:
       - command:
@@ -1704,7 +1704,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-sig-compute-serial
+    name: pull-kubevirt-e2e-k8s-1.32-sig-compute-serial-1.6
     spec:
       containers:
       - command:
@@ -1743,7 +1743,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-sig-compute-serial
+    name: pull-kubevirt-e2e-k8s-1.33-sig-compute-serial-1.6
     optional: true
     spec:
       containers:
@@ -1783,7 +1783,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-sig-network
+    name: pull-kubevirt-e2e-k8s-1.33-sig-network-1.6
     optional: true
     spec:
       containers:
@@ -1821,7 +1821,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-sig-storage
+    name: pull-kubevirt-e2e-k8s-1.33-sig-storage-1.6
     optional: true
     spec:
       containers:
@@ -1859,7 +1859,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-sig-compute
+    name: pull-kubevirt-e2e-k8s-1.33-sig-compute-1.6
     optional: true
     spec:
       containers:
@@ -1899,7 +1899,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-sig-operator
+    name: pull-kubevirt-e2e-k8s-1.33-sig-operator-1.6
     optional: true
     spec:
       containers:
