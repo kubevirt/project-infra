@@ -83,7 +83,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 1
-    name: pull-kubevirt-e2e-windows2016
+    name: pull-kubevirt-e2e-k8s-1.31-windows2016
     run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
@@ -95,8 +95,6 @@ presubmits:
         - -c
         - automation/test.sh
         env:
-        - name: KUBEVIRT_PROVIDER
-          value: k8s-1.31
         - name: TARGET
           value: windows2016
         image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
