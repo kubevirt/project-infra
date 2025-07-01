@@ -123,6 +123,9 @@ if [[ -n "${GOOGLE_APPLICATION_CREDENTIALS:-}" ]]; then
   gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}" || true
 fi
 
+# Kind cluster providers expect /var/log/audit to be present
+mkdir -p /var/log/audit
+
 # Set up Container Registry Auth file
 mkdir -p "${HOME}/containers" && echo "{}" > "${HOME}/containers/auth.json"
 export REGISTRY_AUTH_FILE="${HOME}/containers/auth.json"
