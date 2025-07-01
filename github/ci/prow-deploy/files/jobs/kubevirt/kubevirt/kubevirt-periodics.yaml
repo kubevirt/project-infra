@@ -1483,8 +1483,6 @@ periodics:
       volumeMounts:
       - mountPath: /var/log/audit
         name: audit
-    nodeSelector:
-      type: bare-metal-external
     volumes:
     - hostPath:
         path: /var/log/audit
