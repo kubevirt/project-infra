@@ -1440,7 +1440,7 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
+  cluster: amd-workloads
   cron: 20 5,13,21 * * *
   decorate: true
   decoration_config:
