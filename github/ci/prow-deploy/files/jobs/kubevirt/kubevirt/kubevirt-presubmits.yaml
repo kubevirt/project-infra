@@ -1050,7 +1050,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations
+    name: pull-kubevirt-e2e-k8s-1.33-sig-compute-migrations
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1062,7 +1062,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.32-sig-compute-migrations
+          value: k8s-1.33-sig-compute-migrations
         image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
         name: ""
         resources:
@@ -1249,7 +1249,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-swap-enabled
+    name: pull-kubevirt-e2e-k8s-1.33-swap-enabled
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1263,7 +1263,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.32
+          value: k8s-1.33
         - name: KUBEVIRT_E2E_FOCUS
           value: SwapTest
         - name: KUBEVIRT_SWAP_ON
@@ -1423,7 +1423,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.31-sig-compute-root
+    name: pull-kubevirt-e2e-k8s-1.33-sig-compute-root
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1436,7 +1436,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.31-sig-compute
+          value: k8s-1.33-sig-compute
         - name: FEATURE_GATES
           value: Root
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
@@ -1468,7 +1468,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.32-sig-compute-realtime
+    name: pull-kubevirt-e2e-k8s-1.33-sig-compute-realtime
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1481,7 +1481,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.32-sig-compute-realtime
+          value: k8s-1.33-sig-compute-realtime
         image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
         name: ""
         resources:
@@ -1623,7 +1623,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.31-sig-compute-conformance
+    name: pull-kubevirt-e2e-k8s-1.33-sig-compute-conformance
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1636,7 +1636,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.31-sig-compute-conformance
+          value: k8s-1.33-sig-compute-conformance
         image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
         name: ""
         resources:
