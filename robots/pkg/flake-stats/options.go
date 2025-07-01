@@ -22,14 +22,37 @@ package flakestats
 import (
 	"flag"
 	"fmt"
-	"os"
+	"kubevirt.io/project-infra/robots/pkg/options"
 	"regexp"
 )
 
+func NewWriteOptions() *WriteOptions {
+	outputFileOptions := options.NewOutputFileOptions("flake-stats-*.html")
+	return &WriteOptions{
+		OutputFileOptions: outputFileOptions,
+	}
+}
+
 type WriteOptions struct {
-	OutputFile          string
-	OverwriteOutputFile bool
-	OutputFormat        string
+	*options.OutputFileOptions
+	OutputFormat string
+}
+
+func (o *WriteOptions) Validate() error {
+	err := o.OutputFileOptions.Validate()
+	if err != nil {
+		return err
+	}
+	outputFormatAllowed := false
+	for _, outputFormat := range outputFormats {
+		if o.OutputFormat == outputFormat {
+			outputFormatAllowed = true
+		}
+	}
+	if !outputFormatAllowed {
+		return fmt.Errorf("output format %q not allowed, use one of %v", o.OutputFormat, outputFormats)
+	}
+	return nil
 }
 
 type ReportOption func(r *ReportOptions)
@@ -42,6 +65,11 @@ func DaysInThePast(d int) func(r *ReportOptions) {
 func FilterPeriodicJobRunResults(f bool) func(r *ReportOptions) {
 	return func(r *ReportOptions) {
 		r.FilterPeriodicJobRunResults = f
+	}
+}
+func FilterLaneRegex(s string) func(r *ReportOptions) {
+	return func(r *ReportOptions) {
+		r.FilterLaneRegexString = s
 	}
 }
 
@@ -68,28 +96,10 @@ type ReportOptions struct {
 	FilterLaneRegexString       string
 	filterLaneRegex             *regexp.Regexp
 }
-type Options struct {
-	ReportOptions
-	WriteOptions
-}
 
-func (o *Options) Validate() error {
+func (o *ReportOptions) Validate() error {
 	if o.DaysInThePast <= 0 {
 		return fmt.Errorf("invalid value for DaysInThePast %d", o.DaysInThePast)
-	}
-	if o.OutputFile == "" {
-		file, err := os.CreateTemp("", "flake-stats-*.html")
-		if err != nil {
-			return fmt.Errorf("failed to generate temp file: %w", err)
-		}
-		o.OutputFile = file.Name()
-	} else {
-		if !o.OverwriteOutputFile {
-			stats, err := os.Stat(o.OutputFile)
-			if stats != nil || !os.IsNotExist(err) {
-				return fmt.Errorf("file %q exists or error occurred: %w", o.OutputFile, err)
-			}
-		}
 	}
 	if o.FilterLaneRegexString != "" {
 		var err error
@@ -98,20 +108,31 @@ func (o *Options) Validate() error {
 			return fmt.Errorf("failed to compile regex %q for filtering lane: %w", o.FilterLaneRegexString, err)
 		}
 	}
-	outputFormatAllowed := false
-	for _, outputFormat := range outputFormats {
-		if o.OutputFormat == outputFormat {
-			outputFormatAllowed = true
-		}
+	return nil
+}
+
+type Options struct {
+	ReportOptions
+	WriteOptions
+}
+
+func (o *Options) Validate() error {
+	err := o.ReportOptions.Validate()
+	if err != nil {
+		return fmt.Errorf("report options invalid: %w", err)
 	}
-	if !outputFormatAllowed {
-		return fmt.Errorf("output format %q not allowed, use one of %v", o.OutputFormat, outputFormats)
+	err = o.WriteOptions.Validate()
+	if err != nil {
+		return fmt.Errorf("write options invalid: %w", err)
 	}
 	return nil
 }
 
 func ParseFlags() (*Options, error) {
-	flakeStatsOptions := &Options{}
+	writeOptions := NewWriteOptions()
+	flakeStatsOptions := &Options{
+		WriteOptions: *writeOptions,
+	}
 
 	flag.IntVar(&flakeStatsOptions.DaysInThePast, "days-in-the-past", defaultDaysInThePast, "determines how much days in the past till today are covered")
 	flag.StringVar(&flakeStatsOptions.OutputFile, "output-file", "", "outputfile to write to, default is a tempfile in folder")
