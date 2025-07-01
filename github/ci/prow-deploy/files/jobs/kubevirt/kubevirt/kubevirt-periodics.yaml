@@ -1453,7 +1453,7 @@ periodics:
   labels:
     preset-bazel-unnested: "true"
     preset-podman-in-container-enabled: "true"
-  name: periodic-kubevirt-e2e-kind-1.31-sev
+  name: periodic-kubevirt-e2e-kind-1.33-sev
   reporter_config:
     slack:
       report: false
@@ -1470,9 +1470,9 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: kind-1.31-sev
+        value: kind-1.33-sev
       - name: KUBEVIRT_PROVIDER
-        value: kind-1.31
+        value: kind-1.33
       image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
       name: ""
       resources:
@@ -1483,8 +1483,6 @@ periodics:
       volumeMounts:
       - mountPath: /var/log/audit
         name: audit
-    nodeSelector:
-      type: bare-metal-external
     volumes:
     - hostPath:
         path: /var/log/audit
