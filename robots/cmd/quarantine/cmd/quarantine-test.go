@@ -20,28 +20,29 @@
 package cmd
 
 import (
-	"github.com/sirupsen/logrus"
+	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"os"
+	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 )
 
-var rootCmd = &cobra.Command{
-	Use: "quarantine",
+var quarantineTestCmd = &cobra.Command{
+	Use:  "Test",
+	RunE: QuarantineTest,
 }
-
-var quarantineOpts quarantineOptions
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&quarantineOpts.testSourcePath, "Test-source-path", "../kubevirt/tests/", "the path to the Test source")
-
-	rootCmd.AddCommand(mostFlakyTestsReportCmd)
-	rootCmd.AddCommand(quarantineTestCmd)
-	rootCmd.AddCommand(autoQuarantineCmd)
+	quarantineTestCmd.PersistentFlags().StringVar(&quarantineOpts.testName, "Test-name", "", "the name of the Test to quarantine")
 }
 
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		logrus.WithError(err).Error("failed to run command")
-		os.Exit(1)
+func QuarantineTest(cmd *cobra.Command, args []string) error {
+
+	descriptor, _, err := ginkgo.FindFileAndDescriptor(quarantineOpts.testSourcePath, quarantineOpts.testName)
+	if err != nil {
+		return fmt.Errorf("could not find file or descriptor for Test %q: %w", &quarantineOpts.testName, err)
 	}
+
+	log.Infof("preparing to quarantine Test %q with data %+v", descriptor.OutlineNode().Text, descriptor.OutlineNode())
+
+	return nil
 }
