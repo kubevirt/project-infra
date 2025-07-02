@@ -610,8 +610,6 @@ periodics:
         name: cgroup
       - mountPath: /dev/vfio/
         name: vfio
-      - mountPath: /var/log/audit
-        name: audit
     nodeSelector:
       hardwareSupport: gpu
     priorityClassName: vgpu
@@ -624,10 +622,6 @@ periodics:
         path: /dev/vfio
         type: Directory
       name: vfio
-    - hostPath:
-        path: /var/log/audit
-        type: Directory
-      name: audit
 - annotations:
     k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
     testgrid-dashboards: kubevirt-periodics
@@ -687,8 +681,6 @@ periodics:
       securityContext:
         privileged: true
       volumeMounts:
-      - mountPath: /var/log/audit
-        name: audit
       - mountPath: /sys/fs/cgroup
         name: cgroup
       - mountPath: /dev/vfio/
@@ -697,10 +689,6 @@ periodics:
       hardwareSupport: sriov-nic
     priorityClassName: sriov
     volumes:
-    - hostPath:
-        path: /var/log/audit
-        type: Directory
-      name: audit
     - hostPath:
         path: /sys/fs/cgroup
         type: Directory
@@ -789,17 +777,11 @@ periodics:
       volumeMounts:
       - mountPath: /sys/fs/cgroup
         name: cgroup
-      - mountPath: /var/log/audit
-        name: audit
     volumes:
     - hostPath:
         path: /sys/fs/cgroup
         type: Directory
       name: cgroup
-    - hostPath:
-        path: /var/log/audit
-        type: Directory
-      name: audit
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
@@ -1480,14 +1462,6 @@ periodics:
           memory: 18Gi
       securityContext:
         privileged: true
-      volumeMounts:
-      - mountPath: /var/log/audit
-        name: audit
-    volumes:
-    - hostPath:
-        path: /var/log/audit
-        type: Directory
-      name: audit
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
