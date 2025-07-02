@@ -14,7 +14,7 @@ postsubmits:
       cluster: prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
+          - image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -40,7 +40,7 @@ postsubmits:
       cluster: prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20250502-3eb3b33
+          - image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
