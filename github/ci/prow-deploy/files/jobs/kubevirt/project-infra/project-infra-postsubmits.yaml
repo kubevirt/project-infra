@@ -860,17 +860,25 @@ postsubmits:
           - -c
           args:
           - |
-            # we fetch presubmits for kubevirt/kubevirt branches main and latest three release branches
+            # we create presubmit documents for kubevirt/kubevirt branches main and latest three release branches
             go run ./robots/cmd/kubevirt/... get presubmits \
               --job-config-path-kubevirt-presubmits $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml \
-              $(for release_branch_config in $(find $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/ -name 'kubevirt-presubmits-*.yaml' | sort -r | head -3); do echo -n "--job-config-path-kubevirt-presubmits $release_branch_config "; done) \
               --github-token-path '' \
               --output-file /tmp/presubmits.html
+
+            for release_branch_config in $(find $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/ -name 'kubevirt-presubmits-*.yaml' | sort -r | head -3); do
+              go run ./robots/cmd/kubevirt/... get presubmits \
+                --job-config-path-kubevirt-presubmits "${release_branch_config}" \
+                --github-token-path '' \
+                --output-file "/tmp/presubmits-${release_branch_config}.html"
+            done
+
             go run ./robots/cmd/kubevirt/... get periodics \
               --job-config-path-kubevirt-periodics $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml \
               --github-token-path '' \
               --output-file /tmp/periodics.html
-            gsutil cp /tmp/presubmits.html /tmp/periodics.html gs://kubevirt-prow/reports/e2ejobs/kubevirt/kubevirt
+
+            gsutil cp /tmp/presubmits*.html /tmp/periodics.html gs://kubevirt-prow/reports/e2ejobs/kubevirt/kubevirt
           resources:
             requests:
               memory: "200Mi"
