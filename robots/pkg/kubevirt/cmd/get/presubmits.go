@@ -95,28 +95,22 @@ func (d presubmits) Len() int {
 }
 
 func (d presubmits) Less(i, j int) bool {
-	// gating jobs have highest priority
-	if isGating(d[i]) && !isGating(d[j]) {
-		return true
+	if isGating(d[i]) != isGating(d[j]) {
+		return isGating(d[i])
 	}
-	if !isGating(d[i]) && isGating(d[j]) {
-		return false
+	if d[i].AlwaysRun != d[j].AlwaysRun {
+		return d[i].AlwaysRun
 	}
-	// `always_run: true` is next
-	if d[i].AlwaysRun && !d[j].AlwaysRun {
-		return true
+	if d[i].RunBeforeMerge != d[j].RunBeforeMerge {
+		return d[i].RunBeforeMerge
 	}
-	if !d[i].AlwaysRun && d[j].AlwaysRun {
-		return false
+	if (d[i].RunIfChanged != "") != (d[j].RunIfChanged != "") {
+		return d[i].RunIfChanged != ""
 	}
-	// followed by one of `RunIfChanged` or `SkipIfOnlyChanged`
-	if (d[i].RunIfChanged != "" || d[i].SkipIfOnlyChanged != "") && (d[j].RunIfChanged == "" && d[j].SkipIfOnlyChanged == "") {
-		return true
+	if (d[i].SkipIfOnlyChanged != "") != (d[j].SkipIfOnlyChanged != "") {
+		return d[i].SkipIfOnlyChanged != ""
 	}
-	if (d[i].RunIfChanged == "" && d[i].SkipIfOnlyChanged == "") && (d[j].RunIfChanged != "" || d[j].SkipIfOnlyChanged != "") {
-		return false
-	}
-	return d[i].Name < d[j].Name
+	return strings.Compare(d[i].Name, d[j].Name) < 0
 }
 
 func (d presubmits) Swap(i, j int) {
@@ -124,7 +118,7 @@ func (d presubmits) Swap(i, j int) {
 }
 
 func isGating(row config.Presubmit) bool {
-	return row.AlwaysRun && !row.Optional
+	return !row.Optional && (row.AlwaysRun || row.RunBeforeMerge)
 }
 
 func GetPresubmits(cmd *cobra.Command, args []string) error {
