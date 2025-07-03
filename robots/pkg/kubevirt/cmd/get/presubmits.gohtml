@@ -68,6 +68,7 @@
         <th>Name</th>
         <th>Env</th>
         <th>AlwaysRun</th>
+        <th>RunBeforeMerge</th>
         <th>Optional</th>
         <th>RunIfChanged</th>
         <th>SkipIfOnlyChanged</th>
@@ -81,6 +82,7 @@
             </td>
             <td title="Env" class="env">{{ range $container := $presubmit.Spec.Containers }}{{ range $env := $container.Env }}<div>{{ $env.Name}}: {{$env.Value}}</div>{{ end }}{{ end }}</td>
             <td title="AlwaysRun">{{ if $presubmit.AlwaysRun }}☑{{ else }}☐{{ end }}</td>
+            <td title="RunBeforeMerge">{{ if $presubmit.RunBeforeMerge }}☑{{ else }}☐{{ end }}</td>
             <td title="Optional">{{ if $presubmit.Optional }}☑{{ else }}☐{{ end }}</td>
             <td title="RunIfChanged" class="conditional">{{ $presubmit.RunIfChanged }}</td>
             <td title="SkipIfOnlyChanged" class="conditional">{{ $presubmit.SkipIfOnlyChanged }}</td>
