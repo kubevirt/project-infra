@@ -15,7 +15,7 @@ autobump() {
     relative_config_path="$1"
     # the below is necessary since running the autobumper inside a pod fails because of a failing git command
     (
-        podman run -v ${PROJECT_INFRA_ROOT}/:/config:z -v ${GITHUB_TOKEN_PATH}:/etc/github -it us-docker.pkg.dev/k8s-infra-prow/images/generic-autobumper:v20250626-3e50f2237 --config /config/${relative_config_path} --skip-pullrequest --signoff
+        podman run -v ${PROJECT_INFRA_ROOT}/:/config:z -v ${GITHUB_TOKEN_PATH}:/etc/github -it us-docker.pkg.dev/k8s-infra-prow/images/generic-autobumper:v20250704-9d994e8dc --config /config/${relative_config_path} --skip-pullrequest --signoff
     ) || true
 }
 
