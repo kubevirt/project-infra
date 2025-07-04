@@ -1078,8 +1078,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-unnested: "false"
-      preset-dind-enabled: "true"
+      preset-podman-in-container-enabled: "true"
     max_concurrency: 2
     name: pull-kubevirt-conformance-arm64
     optional: true
@@ -1105,7 +1104,7 @@ presubmits:
           value: dual
         - name: RUN_ON_ARM64_INFRA
           value: "true"
-        image: quay.io/kubevirtci/bootstrap-legacy:v20230829-f2e4ded
+        image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
         name: ""
         resources:
           requests:
@@ -1113,20 +1112,9 @@ presubmits:
         securityContext:
           privileged: true
         volumeMounts:
-        - mountPath: /lib/modules
-          name: modules
-          readOnly: true
         - mountPath: /sys/fs/cgroup
           name: cgroup
-      dnsConfig:
-        nameservers:
-        - 8.8.8.8
-      dnsPolicy: None
       volumes:
-      - hostPath:
-          path: /lib/modules
-          type: Directory
-        name: modules
       - hostPath:
           path: /sys/fs/cgroup
           type: Directory
