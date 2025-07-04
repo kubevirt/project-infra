@@ -53,7 +53,9 @@ func init() {
 
 	exporters = append(exporters, r)
 
-	prometheus.Register(memoryResources)
+	if err := prometheus.Register(memoryResources); err != nil {
+		panic(err)
+	}
 }
 
 func (r *resourcesExporter) registerJobBase(orgrepo, kind string, alwaysRun bool, jobBase prowConfig.JobBase, brancher prowConfig.Brancher) error {
