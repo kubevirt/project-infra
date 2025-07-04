@@ -17,26 +17,15 @@
  *
  */
 
-package main
+package ginkgo
 
 import (
-	_ "embed"
-	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flake-stats"
+	. "github.com/onsi/ginkgo/v2"
+	"github.com/onsi/gomega"
+	"testing"
 )
 
-func init() {
-	log.SetFormatter(&log.JSONFormatter{})
-	log.SetLevel(log.DebugLevel)
-}
-
-func main() {
-	flakeStatsOptions, err := flakestats.ParseFlags()
-	if err != nil {
-		log.WithError(err).Fatalf("failed parsing flags")
-	}
-	err = flakestats.GenerateReport(flakeStatsOptions)
-	if err != nil {
-		log.WithError(err).Fatalf("failed writing report")
-	}
+func TestGinkgo(t *testing.T) {
+	gomega.RegisterFailHandler(Fail)
+	RunSpecs(t, "ginkgo suite")
 }
