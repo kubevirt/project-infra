@@ -113,15 +113,9 @@ presubmits:
         securityContext:
           privileged: true
         volumeMounts:
-        - mountPath: /var/log/audit
-          name: audit
         - mountPath: /sys/fs/cgroup
           name: cgroup
       volumes:
-      - hostPath:
-          path: /var/log/audit
-          type: Directory
-        name: audit
       - hostPath:
           path: /sys/fs/cgroup
           type: Directory
@@ -162,17 +156,11 @@ presubmits:
         volumeMounts:
         - mountPath: /sys/fs/cgroup
           name: cgroup
-        - mountPath: /var/log/audit
-          name: audit
       volumes:
       - hostPath:
           path: /sys/fs/cgroup
           type: Directory
         name: cgroup
-      - hostPath:
-          path: /var/log/audit
-          type: Directory
-        name: audit
   - always_run: false
     cluster: prow-workloads
     decorate: true
@@ -209,17 +197,11 @@ presubmits:
         volumeMounts:
         - mountPath: /sys/fs/cgroup
           name: cgroup
-        - mountPath: /var/log/audit
-          name: audit
       volumes:
       - hostPath:
           path: /sys/fs/cgroup
           type: Directory
         name: cgroup
-      - hostPath:
-          path: /var/log/audit
-          type: Directory
-        name: audit
   - always_run: true
     cluster: prow-workloads
     decorate: true
@@ -274,8 +256,6 @@ presubmits:
         volumeMounts:
         - mountPath: /sys/fs/cgroup
           name: cgroup
-        - mountPath: /var/log/audit
-          name: audit
         - mountPath: /dev/vfio/
           name: vfio
       nodeSelector:
@@ -286,10 +266,6 @@ presubmits:
           path: /sys/fs/cgroup
           type: Directory
         name: cgroup
-      - hostPath:
-          path: /var/log/audit
-          type: Directory
-        name: audit
       - hostPath:
           path: /dev/vfio/
           type: Directory
@@ -348,8 +324,6 @@ presubmits:
         volumeMounts:
         - mountPath: /sys/fs/cgroup
           name: cgroup
-        - mountPath: /var/log/audit
-          name: audit
         - mountPath: /dev/vfio/
           name: vfio
       nodeSelector:
@@ -360,10 +334,6 @@ presubmits:
           path: /sys/fs/cgroup
           type: Directory
         name: cgroup
-      - hostPath:
-          path: /var/log/audit
-          type: Directory
-        name: audit
       - hostPath:
           path: /dev/vfio/
           type: Directory
