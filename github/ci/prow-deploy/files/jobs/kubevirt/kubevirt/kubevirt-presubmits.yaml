@@ -977,6 +977,8 @@ presubmits:
           value: k8s-1.32-sig-network
         - name: KUBEVIRT_WITH_MULTUS_V3
           value: "false"
+        - name: KUBEVIRT_WITH_DYN_NET_CTRL
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
         name: ""
         resources:
