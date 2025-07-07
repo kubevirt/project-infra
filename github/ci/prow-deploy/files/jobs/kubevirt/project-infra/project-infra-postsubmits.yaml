@@ -857,7 +857,7 @@ postsubmits:
           command:
           - /usr/local/bin/runner.sh
           - /bin/sh
-          - -c
+          - -ce
           args:
           - |
             # we create presubmit documents for kubevirt/kubevirt branches main and latest three release branches
@@ -867,10 +867,11 @@ postsubmits:
               --output-file /tmp/presubmits.html
 
             for release_branch_config in $(find $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/ -name 'kubevirt-presubmits-*.yaml' | sort -r | head -3); do
+              release_branch="$( echo "${release_branch_config}" | sed -E 's/.*kubevirt-presubmits-([0-9]+\.[0-9]+)\.yaml/\1/' )"
               go run ./robots/cmd/kubevirt/... get presubmits \
                 --job-config-path-kubevirt-presubmits "${release_branch_config}" \
                 --github-token-path '' \
-                --output-file "/tmp/presubmits-${release_branch_config}.html"
+                --output-file "/tmp/presubmits-${release_branch}.html"
             done
 
             go run ./robots/cmd/kubevirt/... get periodics \
