@@ -159,8 +159,6 @@ presubmits:
           name: cgroup
         - mountPath: /dev/vfio/
           name: vfio
-        - mountPath: /var/log/audit
-          name: audit
       nodeSelector:
         hardwareSupport: gpu
       priorityClassName: vgpu
@@ -173,10 +171,6 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-      - hostPath:
-          path: /var/log/audit
-          type: Directory
-        name: audit
   - always_run: false
     annotations:
       fork-per-release: "true"
@@ -1069,17 +1063,11 @@ presubmits:
         volumeMounts:
         - mountPath: /sys/fs/cgroup
           name: cgroup
-        - mountPath: /var/log/audit
-          name: audit
       volumes:
       - hostPath:
           path: /sys/fs/cgroup
           type: Directory
         name: cgroup
-      - hostPath:
-          path: /var/log/audit
-          type: Directory
-        name: audit
   - always_run: false
     annotations:
       fork-per-release: "true"
@@ -1130,8 +1118,6 @@ presubmits:
           readOnly: true
         - mountPath: /sys/fs/cgroup
           name: cgroup
-        - mountPath: /var/log/audit
-          name: audit
       dnsConfig:
         nameservers:
         - 8.8.8.8
@@ -1145,10 +1131,6 @@ presubmits:
           path: /sys/fs/cgroup
           type: Directory
         name: cgroup
-      - hostPath:
-          path: /var/log/audit
-          type: Directory
-        name: audit
   - always_run: false
     annotations:
       fork-per-release: "true"
