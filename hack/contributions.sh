@@ -54,7 +54,7 @@ project_infra_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
 temp_dir=$(mktemp -d /tmp/contributions-XXXXXX)
 
 podman run \
-    -v "${temp_dir}:/tmp" \
+    -v "${temp_dir}:/tmp:z" \
     -v "$(dirname "${oauth_token}"):/etc/github" \
     -v "${project_infra_dir}:/project-infra" \
     --rm \
