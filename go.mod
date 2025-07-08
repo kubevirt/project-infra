@@ -27,6 +27,7 @@ require (
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/mod v0.19.0
+	golang.org/x/net v0.38.0
 	golang.org/x/oauth2 v0.22.0
 	gonum.org/v1/plot v0.12.0
 	google.golang.org/api v0.191.0
@@ -190,7 +191,6 @@ require (
 	golang.org/x/crypto v0.36.0 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/image v0.18.0 // indirect
-	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sync v0.12.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/term v0.30.0 // indirect
@@ -231,6 +231,6 @@ replace (
 	k8s.io/client-go => k8s.io/client-go v0.30.1
 )
 
-go 1.23.0
+go 1.24.0
 
-toolchain go1.24.1
+toolchain go1.24.4
