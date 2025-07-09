@@ -425,7 +425,7 @@ presubmits:
             memory: 8Gi
         securityContext:
           privileged: true
-  - always_run: true
+  - always_run: false
     branches:
     - release-1.5
     cluster: prow-arm64-workloads
@@ -856,7 +856,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     branches:
     - release-1.5
     cluster: prow-arm64-workloads
@@ -906,7 +906,7 @@ presubmits:
           path: /var/log/audit
           type: Directory
         name: audit
-  - always_run: true
+  - always_run: false
     branches:
     - release-1.5
     cluster: prow-arm64-workloads
