@@ -75,7 +75,7 @@
     </tr>
     {{ range $row, $presubmit := . }}
         <tr>
-            <td title="Job Name"{{- if eq $presubmit.AlwaysRun true }}{{ if ne $presubmit.Optional true }} title="job is gating" class="gating"{{ else }} class="alwaysRun"{{ end }}{{ end -}}>{{ $presubmit.Name }}
+            <td title="Job Name"{{- if or (eq $presubmit.AlwaysRun true) (eq $presubmit.RunBeforeMerge true) }}{{ if ne $presubmit.Optional true }} title="job is gating" class="gating"{{ else }} class="alwaysRun"{{ end }}{{ end -}}>{{ $presubmit.Name }}
                 <br/>
                 <a href="https://prow.ci.kubevirt.io/?job={{ $presubmit.Name }}"><img
                             src="https://prow.ci.kubevirt.io/badge.svg?jobs={{ $presubmit.Name }}"/></a>
