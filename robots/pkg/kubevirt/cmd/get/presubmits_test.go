@@ -90,72 +90,75 @@ var _ = Describe("presubmits", func() {
 
 		DescribeTable("sorts entries as expected",
 			func(expected presubmits) {
-				toSort := make(presubmits, len(expected))
-				copy(toSort, expected)
-
 				for k := 0; k < 10; k++ {
-					// randomize order
-					list := rand.Perm(len(toSort))
-					for i := range toSort {
-						j := list[i]
-						toSort[j], toSort[i] = toSort[i], toSort[j]
-					}
-
-					expectedNames := names(expected)
+					toSort := shuffle(expected)
 					sort.Sort(toSort)
 					actualNames := names(toSort)
-					Expect(actualNames).To(BeEquivalentTo(expectedNames))
+					Expect(actualNames).To(BeEquivalentTo(names(expected)))
 				}
 			},
 			Entry("small", presubmits{
-				config.Presubmit{JobBase: config.JobBase{Name: "a-ra___"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-o____"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
+				newPresubmit(withName("a-ra___"), alwaysRun()),
+				newPresubmit(withName("a-o____"), runBeforeMerge(), optional()),
 			}),
 			Entry("medium", presubmits{
-				config.Presubmit{JobBase: config.JobBase{Name: "a-ra___"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-r_b__"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-o___s"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: "37"}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-o____"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
+				newPresubmit(withName("a-ra___"), alwaysRun()),
+				newPresubmit(withName("a-r_b__"), runBeforeMerge()),
+				newPresubmit(withName("a-o___s"), skipIfOnlyChanged("37"), optional()),
+				newPresubmit(withName("a-o____"), optional()),
 			}),
 			Entry("big", presubmits{
-				config.Presubmit{JobBase: config.JobBase{Name: "a-ra___"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-r_b__"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-oa___"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-o_b__"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-o__r_"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "42", SkipIfOnlyChanged: ""}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-o___s"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: "37"}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-o____"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
+				newPresubmit(withName("a-ra___"), alwaysRun()),
+				newPresubmit(withName("a-r_b__"), runBeforeMerge()),
+				newPresubmit(withName("a-oa___"), alwaysRun(), optional()),
+				newPresubmit(withName("a-o_b__"), runBeforeMerge(), optional()),
+				newPresubmit(withName("a-o__r_"), runIfChanged("42"), optional()),
+				newPresubmit(withName("a-o___s"), skipIfOnlyChanged("37"), optional()),
+				newPresubmit(withName("a-o____"), optional()),
 			}),
 			Entry("lex big", presubmits{
-				config.Presubmit{JobBase: config.JobBase{Name: "a-ra___"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
-				config.Presubmit{JobBase: config.JobBase{Name: "b-ra___"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-r_b__"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
-				config.Presubmit{JobBase: config.JobBase{Name: "b-r_b__"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-oa___"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "b-oa___"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-o_b__"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "b-o_b__"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-o__r_"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "42", SkipIfOnlyChanged: ""}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "b-o__r_"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "42", SkipIfOnlyChanged: ""}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-o___s"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: "37"}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "b-o___s"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: "37"}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "a-o____"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
-				config.Presubmit{JobBase: config.JobBase{Name: "b-o____"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
+				newPresubmit(withName("a-ra___"), alwaysRun()),
+				newPresubmit(withName("b-ra___"), alwaysRun()),
+				newPresubmit(withName("a-r_b__"), runBeforeMerge()),
+				newPresubmit(withName("b-r_b__"), runBeforeMerge()),
+				newPresubmit(withName("a-oa___"), alwaysRun(), optional()),
+				newPresubmit(withName("b-oa___"), alwaysRun(), optional()),
+				newPresubmit(withName("a-o_b__"), runBeforeMerge(), optional()),
+				newPresubmit(withName("b-o_b__"), runBeforeMerge(), optional()),
+				newPresubmit(withName("a-o__r_"), runIfChanged("42"), optional()),
+				newPresubmit(withName("b-o__r_"), runIfChanged("42"), optional()),
+				newPresubmit(withName("a-o___s"), skipIfOnlyChanged("37"), optional()),
+				newPresubmit(withName("b-o___s"), skipIfOnlyChanged("37"), optional()),
+				newPresubmit(withName("a-o____"), optional()),
+				newPresubmit(withName("b-o____"), optional()),
 			}),
-			Entry("k8sVersions", presubmits{
-				config.Presubmit{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.33-sig-compute"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
-				config.Presubmit{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.33-sig-storage"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
-				config.Presubmit{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.32-sig-compute"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
+			Entry("k8sVersions in different groups", presubmits{
+				newPresubmit(withName("pull-kubevirt-e2e-k8s-1.33-sig-compute"), alwaysRun()),
+				newPresubmit(withName("pull-kubevirt-e2e-k8s-1.33-sig-storage"), alwaysRun()),
+				newPresubmit(withName("pull-kubevirt-e2e-k8s-1.32-sig-compute"), runBeforeMerge()),
+				newPresubmit(withName("pull-kubevirt-e2e-k8s-1.32-sig-storage"), runBeforeMerge()),
 			}),
-			Entry("k8sVersions blah", presubmits{
-				NewAlwaysRun("pull-kubevirt-e2e-k8s-1.33-sig-compute"),
-				NewAlwaysRun("pull-kubevirt-e2e-k8s-1.33-sig-compute-serial"),
-				NewAlwaysRun("pull-kubevirt-e2e-k8s-1.33-sig-network"),
-				NewAlwaysRun("pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations"),
+			Entry("k8sVersions in same group (always_run)", presubmits{
+				newPresubmit(withName("pull-kubevirt-e2e-k8s-1.33-sig-compute"), alwaysRun()),
+				newPresubmit(withName("pull-kubevirt-e2e-k8s-1.33-sig-compute-serial"), alwaysRun()),
+				newPresubmit(withName("pull-kubevirt-e2e-k8s-1.33-sig-network"), alwaysRun()),
+				newPresubmit(withName("pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations"), alwaysRun()),
 			}),
 		)
 	})
 })
+
+// shuffle returns a slice with all elements from the original in random order
+func shuffle(source presubmits) presubmits {
+	var result = make(presubmits, len(source))
+	copy(result, source)
+	list := rand.Perm(len(result))
+	for i := range result {
+		j := list[i]
+		result[j], result[i] = result[i], result[j]
+	}
+	return result
+}
 
 func names(p presubmits) []string {
 	var result []string
@@ -167,23 +170,43 @@ func names(p presubmits) []string {
 
 type presubmitConfig func(p *config.Presubmit)
 
+func withName(name string) presubmitConfig {
+	return func(p *config.Presubmit) {
+		p.Name = name
+	}
+}
+
 func alwaysRun() presubmitConfig {
 	return func(p *config.Presubmit) {
 		p.AlwaysRun = true
 	}
 }
 
-func setName(name string) presubmitConfig {
+func runBeforeMerge() presubmitConfig {
 	return func(p *config.Presubmit) {
-		p.Name = name
+		p.RunBeforeMerge = true
 	}
 }
 
-func NewAlwaysRun(name string) config.Presubmit {
-	return NewPresubmit(setName(name), alwaysRun())
+func optional() presubmitConfig {
+	return func(p *config.Presubmit) {
+		p.Optional = true
+	}
 }
 
-func NewPresubmit(configs ...presubmitConfig) config.Presubmit {
+func skipIfOnlyChanged(regex string) presubmitConfig {
+	return func(p *config.Presubmit) {
+		p.SkipIfOnlyChanged = regex
+	}
+}
+
+func runIfChanged(regex string) presubmitConfig {
+	return func(p *config.Presubmit) {
+		p.RunIfChanged = regex
+	}
+}
+
+func newPresubmit(configs ...presubmitConfig) config.Presubmit {
 	result := &config.Presubmit{JobBase: config.JobBase{Name: ""}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false}
 	for _, c := range configs {
 		c(result)
