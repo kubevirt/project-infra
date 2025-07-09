@@ -131,6 +131,12 @@ var _ = Describe("presubmits", func() {
 				config.Presubmit{JobBase: config.JobBase{Name: "a-o____"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
 				config.Presubmit{JobBase: config.JobBase{Name: "b-o____"}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: true},
 			}),
+			Entry("k8sVersions", presubmits{
+				config.Presubmit{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.33-sig-compute"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
+				config.Presubmit{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.33-sig-storage"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
+				config.Presubmit{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.32-sig-compute"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
+				config.Presubmit{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.33-sig-compute"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
+			}),
 		)
 	})
 })

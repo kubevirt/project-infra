@@ -23,9 +23,11 @@ import (
 	"bytes"
 	_ "embed"
 	"fmt"
+	"github.com/Masterminds/semver"
 	"html/template"
 	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -94,6 +96,8 @@ func (d presubmits) Len() int {
 	return len(d)
 }
 
+var k8sVersionMatcher = regexp.MustCompile(`(kind|k8s)-([0-9]+\.[0-9]+)`)
+
 func (d presubmits) Less(i, j int) bool {
 	if isGating(d[i]) != isGating(d[j]) {
 		return isGating(d[i])
@@ -110,6 +114,25 @@ func (d presubmits) Less(i, j int) bool {
 	if (d[i].SkipIfOnlyChanged != "") != (d[j].SkipIfOnlyChanged != "") {
 		return d[i].SkipIfOnlyChanged != ""
 	}
+
+	// add sorting by k8s version if present
+	if k8sVersionMatcher.MatchString(d[i].Name) && k8sVersionMatcher.MatchString(d[j].Name) {
+		// extract k8s versions
+		iK8sVersionMatch := k8sVersionMatcher.FindAllStringSubmatch(d[i].Name, 2)
+		iVersion, err := semver.NewVersion("v" + iK8sVersionMatch[0][2])
+		if err != nil {
+			panic(err)
+		}
+		jK8sVersionMatch := k8sVersionMatcher.FindAllStringSubmatch(d[j].Name, 2)
+		jVersion, err := semver.NewVersion("v" + jK8sVersionMatch[0][2])
+		if err != nil {
+			panic(err)
+		}
+		if iVersion.GreaterThan(jVersion) {
+			return true
+		}
+	}
+
 	return strings.Compare(d[i].Name, d[j].Name) < 0
 }
 
