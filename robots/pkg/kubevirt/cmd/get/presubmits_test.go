@@ -22,6 +22,7 @@ package get
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"math/rand"
 	"sigs.k8s.io/prow/pkg/config"
 	"sort"
 	"testing"
@@ -89,12 +90,22 @@ var _ = Describe("presubmits", func() {
 
 		DescribeTable("sorts entries as expected",
 			func(expected presubmits) {
-				var toSort presubmits
-				for i := len(expected) - 1; i >= 0; i-- {
-					toSort = append(toSort, expected[i])
+				toSort := make(presubmits, len(expected))
+				copy(toSort, expected)
+
+				for k := 0; k < 10; k++ {
+					// randomize order
+					list := rand.Perm(len(toSort))
+					for i := range toSort {
+						j := list[i]
+						toSort[j], toSort[i] = toSort[i], toSort[j]
+					}
+
+					expectedNames := names(expected)
+					sort.Sort(toSort)
+					actualNames := names(toSort)
+					Expect(actualNames).To(BeEquivalentTo(expectedNames))
 				}
-				sort.Sort(toSort)
-				Expect(toSort).To(BeEquivalentTo(expected))
 			},
 			Entry("small", presubmits{
 				config.Presubmit{JobBase: config.JobBase{Name: "a-ra___"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
@@ -135,8 +146,47 @@ var _ = Describe("presubmits", func() {
 				config.Presubmit{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.33-sig-compute"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
 				config.Presubmit{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.33-sig-storage"}, AlwaysRun: true, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
 				config.Presubmit{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.32-sig-compute"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
-				config.Presubmit{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.33-sig-compute"}, AlwaysRun: false, RunBeforeMerge: true, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false},
+			}),
+			Entry("k8sVersions blah", presubmits{
+				NewAlwaysRun("pull-kubevirt-e2e-k8s-1.33-sig-compute"),
+				NewAlwaysRun("pull-kubevirt-e2e-k8s-1.33-sig-compute-serial"),
+				NewAlwaysRun("pull-kubevirt-e2e-k8s-1.33-sig-network"),
+				NewAlwaysRun("pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations"),
 			}),
 		)
 	})
 })
+
+func names(p presubmits) []string {
+	var result []string
+	for _, presubmit := range p {
+		result = append(result, presubmit.Name)
+	}
+	return result
+}
+
+type presubmitConfig func(p *config.Presubmit)
+
+func alwaysRun() presubmitConfig {
+	return func(p *config.Presubmit) {
+		p.AlwaysRun = true
+	}
+}
+
+func setName(name string) presubmitConfig {
+	return func(p *config.Presubmit) {
+		p.Name = name
+	}
+}
+
+func NewAlwaysRun(name string) config.Presubmit {
+	return NewPresubmit(setName(name), alwaysRun())
+}
+
+func NewPresubmit(configs ...presubmitConfig) config.Presubmit {
+	result := &config.Presubmit{JobBase: config.JobBase{Name: ""}, AlwaysRun: false, RunBeforeMerge: false, RegexpChangeMatcher: config.RegexpChangeMatcher{RunIfChanged: "", SkipIfOnlyChanged: ""}, Optional: false}
+	for _, c := range configs {
+		c(result)
+	}
+	return *result
+}
