@@ -26,9 +26,6 @@ kubectl create ns kubevirt-prow && kubectl create ns kubevirt-prow-jobs
 kubectl label node node01 ci.kubevirt.io/cachenode=true ingress-ready=true
 
 POD_NAME=$KUBEVIRT_PROVIDER-node01
-if [ "${CI}" == "true" ]; then
-    POD_NAME=$JOB_NAME-node01
-fi
 
 NODE_POD_IP=$(podman inspect $POD_NAME -f '{{ .NetworkSettings.IPAddress }}')
 
