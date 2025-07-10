@@ -26,8 +26,21 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 )
 
+const (
+	short = `Quarantine a test given by test name`
+)
+
 var quarantineTestCmd = &cobra.Command{
 	Use:  "test",
+	Short: short,
+	Long: short+`, i.o.w.
+modify a test by attaching the label and decorator
+as defined in KubeVirt docs. This prepares it to be recognized by CI automation
+that the test is to be excluded from e2e presubmit lane runs and only run in
+periodic tests.
+
+More information about quarantining e2e tests in KubeVirt can be found here:
+https://github.com/kubevirt/kubevirt/blob/main/docs/quarantine.md#quarantine-pr`,
 	RunE: QuarantineTest,
 }
 
