@@ -17,26 +17,27 @@
  *
  */
 
-package main
+package ginkgo
 
 import (
-	_ "embed"
-	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flake-stats"
+	"fmt"
+	"regexp"
 )
 
-func init() {
-	log.SetFormatter(&log.JSONFormatter{})
-	log.SetLevel(log.DebugLevel)
+var (
+	testIdMatcher   = regexp.MustCompile(`\[test_id:[0-9]+]`)
+	testIdExtractor = regexp.MustCompile(`(\[test_id:[0-9]+])`)
+)
+
+func GetTestId(name string) (string, error) {
+	if !HasTestId(name) {
+		return "", fmt.Errorf("no test id present")
+	}
+	submatch := testIdExtractor.FindStringSubmatch(name)
+	testId := submatch[1]
+	return testId, nil
 }
 
-func main() {
-	flakeStatsOptions, err := flakestats.ParseFlags()
-	if err != nil {
-		log.WithError(err).Fatalf("failed parsing flags")
-	}
-	err = flakestats.GenerateReport(flakeStatsOptions)
-	if err != nil {
-		log.WithError(err).Fatalf("failed writing report")
-	}
+func HasTestId(name string) bool {
+	return testIdMatcher.MatchString(name)
 }
