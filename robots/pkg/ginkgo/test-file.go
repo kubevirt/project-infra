@@ -41,6 +41,18 @@ func init() {
 	}
 }
 
+func QuarantineTestInFile(descriptor *SourceTestDescriptor) error {
+	code, err := quarantine(descriptor.FileCode(), descriptor.OutlineNode().Text)
+	if err != nil {
+		return fmt.Errorf("could not quarantine test %q: %w", descriptor.TestName(), err)
+	}
+	err = os.WriteFile(descriptor.Filename(), []byte(code), os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("could not write file for quarantined test %q: %w", descriptor.TestName(), err)
+	}
+	return nil
+}
+
 func FindFileAndDescriptor(testSourcePath, testName string) (testDescriptor *SourceTestDescriptor, testFileName string, err error) {
 	if HasTestId(testName) {
 		testFileName, err = FindTestFileById(testName, testSourcePath)
