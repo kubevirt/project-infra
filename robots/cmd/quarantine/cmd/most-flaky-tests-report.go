@@ -33,10 +33,23 @@ import (
 	"strings"
 )
 
+const (
+	shortReportHelp = `Creates a report of the most flaky tests`
+)
+
 var (
 	mostFlakyTestsReportCmd = &cobra.Command{
-		Use:  "report",
-		RunE: MostFlakyTestsReport,
+		Use:   "report",
+		RunE:  MostFlakyTestsReport,
+		Short: shortReportHelp,
+		Long: shortReportHelp + ` using data from flake-stats and search.ci
+
+It fetches data for flake-stats from the last x days, then for each test it
+scrapes search.ci for impact on lanes.
+All tests that exceed either the 3 day or 14 day value are added to
+the report.
+All output is aggregated with links to sources into an html page.
+`,
 	}
 
 	//go:embed most-flaky-tests-report.gohtml
@@ -88,7 +101,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 		sort.Slice(mostFlakyTests[timeRange], sortTestToQuarantineFunc)
 	}
 
-	template, err := template.New("mostFlakyTests").Parse(mostFlakyTestsReportTemplate)
+	reportTemplate, err := template.New("mostFlakyTests").Parse(mostFlakyTestsReportTemplate)
 	if err != nil {
 		return fmt.Errorf("could not read template: %w", err)
 	}
@@ -96,7 +109,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return fmt.Errorf("could not create temp file: %w", err)
 	}
-	err = template.Execute(outputFile, NewMostFlakyTestsTemplateData(mostFlakyTests))
+	err = reportTemplate.Execute(outputFile, NewMostFlakyTestsTemplateData(mostFlakyTests))
 	if err != nil {
 		return fmt.Errorf("could not execute template: %w", err)
 	}
