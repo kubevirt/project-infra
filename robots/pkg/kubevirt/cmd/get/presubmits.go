@@ -128,8 +128,8 @@ func (d presubmits) Less(i, j int) bool {
 		if err != nil {
 			panic(err)
 		}
-		if iVersion.GreaterThan(jVersion) {
-			return true
+		if iVersion.GreaterThan(jVersion) != jVersion.GreaterThan(iVersion) {
+			return iVersion.GreaterThan(jVersion)
 		}
 	}
 
