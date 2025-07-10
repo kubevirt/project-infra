@@ -17,30 +17,21 @@
  *
  */
 
-package cmd
+package ginkgo
 
 import (
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-	"os"
+	"fmt"
+	"strings"
 )
 
-var rootCmd = &cobra.Command{
-	Use: "quarantine",
-}
-
-var quarantineOpts quarantineOptions
-
-func init() {
-	rootCmd.PersistentFlags().StringVar(&quarantineOpts.testSourcePath, "Test-source-path", "../kubevirt/tests/", "the path to the Test source")
-
-	rootCmd.AddCommand(mostFlakyTestsReportCmd)
-	rootCmd.AddCommand(quarantineTestCmd)
-}
-
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		logrus.WithError(err).Error("failed to run command")
-		os.Exit(1)
+func modify(input string, substring string, replacement string) (string, error) {
+	if substring == "" {
+		return "", fmt.Errorf("substring must not be empty")
 	}
+	return strings.Replace(input, substring, replacement, 1), nil
+}
+
+func quarantine(input string, nodeText string) (string, error) {
+	replacement := fmt.Sprintf(`"[QUARANTINE]%s", decorators.quarantine`, nodeText)
+	return modify(input, fmt.Sprintf(`%q`, nodeText), replacement)
 }

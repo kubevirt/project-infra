@@ -31,6 +31,8 @@ type quarantineOptions struct {
 
 	// autoQuarantine
 	daysInThePast int
+
+	testName string
 }
 
 type TestToQuarantine struct {
