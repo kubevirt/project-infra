@@ -172,6 +172,34 @@ periodics:
 - annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
+  cron: 45 3 * * *
+  decorate: true
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: project-infra
+  labels:
+    preset-gcs-credentials: "true"
+  name: periodic-publish-kubevirt-most-flaky-tests-report
+  spec:
+    containers:
+    - args:
+      - |
+        go run ./robots/cmd/quarantine report --output-file "/tmp/index.html"
+        gsutil cp "/tmp/index.html" "gs://kubevirt-prow/reports/most-flaky-tests/kubevirt/kubevirt/"
+      command:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -ce
+      env:
+      - name: GIMME_GO_VERSION
+        value: 1.23.4
+      image: quay.io/kubevirtci/golang:v20250502-3eb3b33
+      name: ""
+      resources: {}
+- annotations:
+    testgrid-create-test-group: "false"
+  cluster: kubevirt-prow-control-plane
   cron: 25 1 * * *
   decorate: true
   extra_refs:

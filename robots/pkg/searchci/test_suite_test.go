@@ -13,30 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Copyright the KubeVirt Authors.
+ * Copyright 2023 Red Hat, Inc.
  *
  */
 
-package main
+package searchci
 
 import (
-	_ "embed"
-	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flake-stats"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
+	"testing"
 )
 
-func init() {
-	log.SetFormatter(&log.JSONFormatter{})
-	log.SetLevel(log.DebugLevel)
-}
-
-func main() {
-	flakeStatsOptions, err := flakestats.ParseFlags()
-	if err != nil {
-		log.WithError(err).Fatalf("failed parsing flags")
-	}
-	err = flakestats.GenerateReport(flakeStatsOptions)
-	if err != nil {
-		log.WithError(err).Fatalf("failed writing report")
-	}
+func TestSearchCI(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "SearchCI Main Suite")
 }

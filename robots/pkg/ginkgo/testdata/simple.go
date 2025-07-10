@@ -19,24 +19,11 @@
 
 package main
 
-import (
-	_ "embed"
-	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flake-stats"
-)
+import "fmt"
 
-func init() {
-	log.SetFormatter(&log.JSONFormatter{})
-	log.SetLevel(log.DebugLevel)
-}
-
-func main() {
-	flakeStatsOptions, err := flakestats.ParseFlags()
-	if err != nil {
-		log.WithError(err).Fatalf("failed parsing flags")
+func DoesSomething(returnErr bool) error {
+	if returnErr {
+		return fmt.Errorf("error: %d", 42)
 	}
-	err = flakestats.GenerateReport(flakeStatsOptions)
-	if err != nil {
-		log.WithError(err).Fatalf("failed writing report")
-	}
+	return nil
 }

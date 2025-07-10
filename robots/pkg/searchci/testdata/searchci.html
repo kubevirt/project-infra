@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><title>Search OpenShift CI</title>
+<link rel="stylesheet" href="/static/bootstrap-4.4.1.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="/static/uPlot.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<style>
+#results.nowrap PRE { white-space: pre; }
+#results PRE { width: calc(95vw - 2.5em); white-space: pre-wrap; padding-bottom: 1em; }
+.row-match TD { border-top: 0; }
+.table TD { padding-bottom: 0.25rem; }
+#results .table-job-compact TD > PRE { margin-bottom: 0; padding-bottom: 0.25rem; }
+</style>
+</head>
+<body>
+<div id="results" class="container-fluid nowrap">
+
+<form class="form mt-4 mb-4" method="GET">
+	<div class="input-group input-group-lg mb-2">
+		<input title="A regular expression over the contents of test logs and junit output - uses ripgrep regular expressions" autocomplete="off" autofocus name="search" class="form-control col-auto" value="\[test_id:3007] Should force restart a VM with terminationGracePeriodSeconds\u003e0" placeholder="Search OpenShift CI failures by entering a regex search ...">
+		<select title="How far back to search for jobs" name="maxAge" class="form-control custom-select col-1" onchange="this.form.submit();"><option value="6h" >6h</option><option value="12h" >12h</option><option value="24h" >1d</option><option value="48h" >2d</option><option value="168h" >7d</option><option value="336h" selected>14d</option></select>
+		<select title="Number of lines before and after the match to show" name="context" class="form-control custom-select col-1" onchange="this.form.submit();"><option value="-1" selected>Links</option><option value="0" >No context</option><option value="1" selected>1 lines</option><option value="2" >2 lines</option><option value="3" >3 lines</option><option value="5" >5 lines</option><option value="7" >7 lines</option><option value="10" >10 lines</option><option value="15" >15 lines</option></select>
+		<select title="Type of results to return" name="type" class="form-control custom-select col-1" onchange="this.form.submit();"><option value="bug+issue+junit" >bug+issue+junit</option><option value="bug+junit" >bug+junit</option><option value="bug+issue" >bug+issue</option><option value="issue" >issue</option><option value="bug" >bug</option><option value="junit" selected>junit</option><option value="build-log" >build-log</option><option value="all" >all</option></select>
+		<div class="input-group-append"><input class="btn btn-outline-primary" type="submit" value="Search"></div>
+	</div>
+	<div class="input-group input-group-sm mb-3">
+		<div class="input-group-prepend"><span class="input-group-text" for="name">Job:</span></div>
+		<input title="A regular expression that matches the name of a job or the title of a bug" class="form-control col-auto" name="name" value="" placeholder="Focus job or bug names by regex ...">
+		<input title="A regular expression that matches the name of a job or the title of a bug" class="form-control col-auto" name="excludeName" value="periodic-.*" placeholder="Skip job or bug names by regex ...">
+		<input title="The number of matches per job / file to show" autocomplete="off" class="form-control col-1" name="maxMatches" value="5" placeholder="Max matches per job or bug">
+		<input title="The maximum number of bytes for the response" autocomplete="off" class="form-control col-1" name="maxBytes" value="20971520" placeholder="Max bytes to return">
+		<select title="Group results by job (with stats) or no grouping" name="groupBy" class="form-control custom-select col-1" onchange="this.form.submit();">[<option value="job" selected>job</option> <option value="none" >none</option>]</select>
+		<div class="input-group-append"><span class="input-group-text">
+			<input id="wrap" type="checkbox" name="wrap"  onchange="document.getElementById('results').classList.toggle('nowrap')">
+			<label for="wrap" style="margin-bottom: 0; margin-left: 0.4em;">Wrap lines</label>
+		</span></div>
+	</div>
+</form>
+<div style="margin-top: 3rem; position: relative" class="pl-3"><div class="table-responsive"><table class="table table-job-compact"><tbody>
+<tr><td colspan="4"><a target="_blank" href="https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.30-sig-compute">pull-kubevirt-e2e-k8s-1.30-sig-compute</a> <a href="/?context=1&amp;excludeName=&amp;groupByJob=job&amp;maxAge=672h0m0s&amp;maxBytes=20971520&amp;maxMatches=5&amp;mode=text&amp;name=%5Epull-kubevirt-e2e-k8s-1%5C.30-sig-compute%24&amp;search=%5C%5Btest_id%3A3007%5D+Should+force+restart+a+VM+with+terminationGracePeriodSeconds%5Cu003e0&amp;searchType=junit&amp;wrapLines=false">(all)</a> - <em title="107 runs, 7 failures, 5 matching runs">107 runs, 7% failed, 71% of failures match = 5% impact</em></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14632/pull-kubevirt-e2e-k8s-1.30-sig-compute/1932345605980426240">#1932345605980426240</a></td><td>junit</td><td class="text-nowrap">36 hours ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14884/pull-kubevirt-e2e-k8s-1.30-sig-compute/1932327352512024576">#1932327352512024576</a></td><td>junit</td><td class="text-nowrap">37 hours ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14802/pull-kubevirt-e2e-k8s-1.30-sig-compute/1930397210671845376">#1930397210671845376</a></td><td>junit</td><td class="text-nowrap">6 days ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14778/pull-kubevirt-e2e-k8s-1.30-sig-compute/1929970742955347968">#1929970742955347968</a></td><td>junit</td><td class="text-nowrap">8 days ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14811/pull-kubevirt-e2e-k8s-1.30-sig-compute/1929615565396119552">#1929615565396119552</a></td><td>junit</td><td class="text-nowrap">9 days ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+<tr><td colspan="4"><a target="_blank" href="https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.32-sig-compute">pull-kubevirt-e2e-k8s-1.32-sig-compute</a> <a href="/?context=1&amp;excludeName=&amp;groupByJob=job&amp;maxAge=672h0m0s&amp;maxBytes=20971520&amp;maxMatches=5&amp;mode=text&amp;name=%5Epull-kubevirt-e2e-k8s-1%5C.32-sig-compute%24&amp;search=%5C%5Btest_id%3A3007%5D+Should+force+restart+a+VM+with+terminationGracePeriodSeconds%5Cu003e0&amp;searchType=junit&amp;wrapLines=false">(all)</a> - <em title="295 runs, 28 failures, 5 matching runs">295 runs, 9% failed, 18% of failures match = 2% impact</em></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14772/pull-kubevirt-e2e-k8s-1.32-sig-compute/1932138749500592128">#1932138749500592128</a></td><td>junit</td><td class="text-nowrap">2 days ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14891/pull-kubevirt-e2e-k8s-1.32-sig-compute/1932035949563219968">#1932035949563219968</a></td><td>junit</td><td class="text-nowrap">2 days ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14865/pull-kubevirt-e2e-k8s-1.32-sig-compute/1930524395059548160">#1930524395059548160</a></td><td>junit</td><td class="text-nowrap">6 days ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14705/pull-kubevirt-e2e-k8s-1.32-sig-compute/1929642612067667968">#1929642612067667968</a></td><td>junit</td><td class="text-nowrap">8 days ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14827/pull-kubevirt-e2e-k8s-1.32-sig-compute/1928099054068174848">#1928099054068174848</a></td><td>junit</td><td class="text-nowrap">13 days ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+<tr><td colspan="4"><a target="_blank" href="https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.31-sig-compute">pull-kubevirt-e2e-k8s-1.31-sig-compute</a> <a href="/?context=1&amp;excludeName=&amp;groupByJob=job&amp;maxAge=672h0m0s&amp;maxBytes=20971520&amp;maxMatches=5&amp;mode=text&amp;name=%5Epull-kubevirt-e2e-k8s-1%5C.31-sig-compute%24&amp;search=%5C%5Btest_id%3A3007%5D+Should+force+restart+a+VM+with+terminationGracePeriodSeconds%5Cu003e0&amp;searchType=junit&amp;wrapLines=false">(all)</a> - <em title="104 runs, 3 failures, 1 matching runs">104 runs, 3% failed, 33% of failures match = 1% impact</em></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14870/pull-kubevirt-e2e-k8s-1.31-sig-compute/1930595985533177856">#1930595985533177856</a></td><td>junit</td><td class="text-nowrap">6 days ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+</table></div>
+<p style="position:absolute; top: -2rem;" class="small"><em title="10751 runs, 1121 failing runs, 11 matched runs, 216 jobs, 3 matched jobs">Found in 0.10% of runs (0.98% of failures) across 10751 total runs and 216 jobs (10.43% failed) in 8.878s</em> - <a href="/">clear search</a> | <a href="/chart?search=%5C%5Btest_id%3A3007%5D+Should+force+restart+a+VM+with+terminationGracePeriodSeconds%5Cu003e0&amp;maxAge=336h&amp;context=1&amp;type=junit&amp;name=&amp;excludeName=periodic-.*&amp;maxMatches=5&amp;maxBytes=&amp;groupBy=job">chart view</a> - source code located <a target="_blank" href="https://github.com/openshift/ci-search">on github</a></p></div>
+</div>
+</body>
+</html>
