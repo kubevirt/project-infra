@@ -171,6 +171,56 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: amd-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 30m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-unnested: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 5
+    name: pull-kubevirt-e2e-kind-1.33-sev
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: kind-1.33-sev
+        - name: KUBEVIRT_PROVIDER
+          value: kind-1.33
+        image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
+        name: ""
+        resources:
+          requests:
+            memory: 18Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+        - mountPath: /dev/vfio/
+          name: vfio
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+      - hostPath:
+          path: /dev/vfio/
+          type: Directory
+        name: vfio
   - always_run: false
     annotations:
       fork-per-release: "true"
