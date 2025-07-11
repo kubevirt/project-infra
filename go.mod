@@ -29,6 +29,7 @@ require (
 	golang.org/x/mod v0.19.0
 	golang.org/x/net v0.38.0
 	golang.org/x/oauth2 v0.22.0
+	gonum.org/v1/gonum v0.12.0
 	gonum.org/v1/plot v0.12.0
 	google.golang.org/api v0.191.0
 	gopkg.in/yaml.v2 v2.4.0
