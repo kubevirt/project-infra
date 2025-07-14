@@ -96,9 +96,11 @@ func (o options) loadDefaults() error {
 		if err != nil {
 			return fmt.Errorf("failed to fetch stable k8s version: %v", err)
 		}
-		if err := resp.Body.Close(); err != nil {
-			return fmt.Errorf("failed to close response body: %v", err)
-		}
+		defer func() {
+			if err := resp.Body.Close(); err != nil {
+				log.Errorf("failed to close response body: %v", err)
+			}
+		}()
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return err
