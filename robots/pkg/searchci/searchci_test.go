@@ -56,7 +56,7 @@ var _ = Describe("searchci", func() {
 	})
 	DescribeTable("FilterRelevantImpacts",
 		func(impacts []Impact, timeRange TimeRange, relevantimpacts []Impact) {
-			Expect(FilterRelevantImpacts(impacts, timeRange)).To(BeEquivalentTo(relevantimpacts))
+			Expect(FilterImpacts(impacts, timeRange)).To(BeEquivalentTo(relevantimpacts))
 		},
 		Entry("filters a relevant impact for fourteen days",
 			[]Impact{
@@ -102,7 +102,7 @@ var _ = Describe("searchci", func() {
 			},
 		),
 	)
-	Context("ScrapeRelevantImpacts", func() {
+	Context("ScrapeImpacts", func() {
 		var body []byte
 		var server *httptest.Server
 		BeforeEach(func() {
@@ -119,7 +119,7 @@ var _ = Describe("searchci", func() {
 			server.Close()
 		})
 		It("scrapes", func() {
-			impacts, err := ScrapeRelevantImpacts(testName, FourteenDays)
+			impacts, err := ScrapeImpacts(testName, FourteenDays)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(impacts).ToNot(BeNil())
 		})

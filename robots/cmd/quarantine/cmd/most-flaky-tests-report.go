@@ -29,6 +29,7 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/options"
 	"kubevirt.io/project-infra/robots/pkg/searchci"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -62,13 +63,14 @@ func init() {
 	mostFlakyTestsReportCmd.PersistentFlags().IntVar(&quarantineOpts.daysInThePast, "days-in-the-past", 14, "the number of days in the past")
 	mostFlakyTestsReportCmd.PersistentFlags().StringVar(&outputFileOpts.OutputFile, "output-file", "", "the name of the output file, or empty string to create a temp file")
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&outputFileOpts.OverwriteOutputFile, "overwrite-output-file", false, "whether to overwrite the output file")
+	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&quarantineOpts.filterPeriodicJobRunResults, "filter-periodic-job-run-results", true, "whether to filter the results for periodics")
 }
 
 func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 	reportOpts := flakestats.NewDefaultReportOpts(
 		flakestats.DaysInThePast(quarantineOpts.daysInThePast),
-		flakestats.FilterPeriodicJobRunResults(true),
-		flakestats.FilterLaneRegex("e2e.*arm|pull-kubevirt-check-tests-for-flakes.*|pull-kubevirt-check-dequarantine-Test.*"),
+		flakestats.FilterPeriodicJobRunResults(quarantineOpts.filterPeriodicJobRunResults),
+		flakestats.FilterLaneRegex("rehearsal|e2e.*arm"),
 	)
 	err := reportOpts.Validate()
 	if err != nil {
@@ -83,10 +85,10 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("error while aggregating data: %w", err)
 	}
 	mostFlakyTests := make(map[searchci.TimeRange][]*TestToQuarantine)
-	for _, timeRange := range []searchci.TimeRange{searchci.FourteenDays, searchci.ThreeDays} {
+	for _, timeRange := range mostFlakyTestsTimeRanges {
 		for _, topXTest := range topXTests {
 			var candidate *TestToQuarantine
-			candidate, err = getPossibleQuarantineCandidate(topXTest, timeRange)
+			candidate, err = getQuarantineCandidate(topXTest, timeRange)
 			if err != nil {
 				return fmt.Errorf("could not scrape results for Test %q: %w", topXTest.Name, err)
 			}
@@ -117,29 +119,63 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-func getPossibleQuarantineCandidate(topXTest *flakestats.TopXTest, timeRange searchci.TimeRange) (*TestToQuarantine, error) {
-	relevantImpacts, err := searchci.ScrapeRelevantImpacts(topXTest.Name, timeRange)
+func getQuarantineCandidate(topXTest *flakestats.TopXTest, timeRange searchci.TimeRange) (*TestToQuarantine, error) {
+	impacts, err := searchci.ScrapeImpacts(topXTest.Name, timeRange)
 	if err != nil {
-		return nil, fmt.Errorf("could not scrape results for Test %q: %w", topXTest.Name, err)
+		return nil, fmt.Errorf("could not scrape results for test %q: %w", topXTest.Name, err)
 	}
-	relevantImpacts = searchci.FilterRelevantImpactsWithOpts(relevantImpacts, func(i searchci.Impact) bool {
-		return !strings.Contains(i.URL, "pull-kubevirt-check-tests-for-flakes") &&
-			!strings.Contains(i.URL, "pull-kubevirt-check-dequarantine-test")
-	})
-	if relevantImpacts == nil {
-		log.Infof("search.ci found no matches for %q", topXTest.Name)
+	if impacts == nil {
+		log.Infof("search.ci scrape found no matches for test %q", topXTest.Name)
 		return nil, nil
 	}
-	sortRelevantImpactsFunc := func(i, j int) bool {
-		a, b := relevantImpacts[i], relevantImpacts[j]
-		return a.Percent > b.Percent
+	impacts = searchci.FilterImpactsBy(impacts,
+		matchesAnyFailureLane(topXTest),
+		isNotARehearsal(),
+		isNotAFlakeCheckRun(),
+		isNotADeQuarantineCheckRun(),
+	)
+	if impacts == nil {
+		log.Infof("search.ci filter left no matches for test %q", topXTest.Name)
+		return nil, nil
 	}
-	sort.Slice(relevantImpacts, sortRelevantImpactsFunc)
+	sort.Slice(impacts, func(i, j int) bool {
+		return impacts[i].Percent > impacts[j].Percent
+	})
 	newTestToQuarantine := &TestToQuarantine{
 		Test:            topXTest,
-		RelevantImpacts: relevantImpacts,
+		RelevantImpacts: impacts,
 		SearchCIURL:     searchci.NewScrapeURL(topXTest.Name, timeRange),
 		TimeRange:       timeRange,
 	}
 	return newTestToQuarantine, nil
+}
+
+func matchesAnyFailureLane(topXTest *flakestats.TopXTest) func(i searchci.Impact) bool {
+	var lanes []string
+	for l := range topXTest.FailuresPerLane {
+		lanes = append(lanes, l)
+	}
+	laneMatcher := regexp.MustCompile(fmt.Sprintf(`http.*/(%s)[^/]+[^/]+$`, strings.Join(lanes, "|")))
+	laneMatcherOpt := func(i searchci.Impact) bool {
+		return laneMatcher.MatchString(i.URL)
+	}
+	return laneMatcherOpt
+}
+
+func isNotARehearsal() func(i searchci.Impact) bool {
+	return func(i searchci.Impact) bool {
+		return !strings.Contains(i.URL, "rehearsal")
+	}
+}
+
+func isNotAFlakeCheckRun() func(i searchci.Impact) bool {
+	return func(i searchci.Impact) bool {
+		return !strings.Contains(i.URL, "check-tests-for-flakes")
+	}
+}
+
+func isNotADeQuarantineCheckRun() func(i searchci.Impact) bool {
+	return func(i searchci.Impact) bool {
+		return !strings.Contains(i.URL, "check-dequarantine-test")
+	}
 }

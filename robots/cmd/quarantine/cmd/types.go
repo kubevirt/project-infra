@@ -31,6 +31,8 @@ type quarantineOptions struct {
 
 	// autoQuarantine
 	daysInThePast int
+
+	filterPeriodicJobRunResults bool
 }
 
 type TestToQuarantine struct {
@@ -40,6 +42,10 @@ type TestToQuarantine struct {
 	RelevantImpacts []searchci.Impact
 }
 
+var (
+	mostFlakyTestsTimeRanges = []searchci.TimeRange{searchci.ThreeDays, searchci.FourteenDays}
+)
+
 func (t TestToQuarantine) String() string {
 	return fmt.Sprintf("TestToQuarantine{Test: %+v, SearchCIURL: %q, RelevantImpacts: %+v}", t.Test, t.SearchCIURL, t.RelevantImpacts)
 }
@@ -48,10 +54,12 @@ func NewMostFlakyTestsTemplateData(mostFlakyTests map[searchci.TimeRange][]*Test
 	return MostFlakyTestsTemplateData{
 		ReportCreation: time.Now(),
 		MostFlakyTests: mostFlakyTests,
+		TimeRanges:     mostFlakyTestsTimeRanges,
 	}
 }
 
 type MostFlakyTestsTemplateData struct {
 	ReportCreation time.Time
 	MostFlakyTests map[searchci.TimeRange][]*TestToQuarantine
+	TimeRanges     []searchci.TimeRange
 }
