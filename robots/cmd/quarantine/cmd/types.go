@@ -32,6 +32,8 @@ type quarantineOptions struct {
 	// autoQuarantine
 	daysInThePast int
 
+	testName string
+
 	filterPeriodicJobRunResults bool
 }
 
