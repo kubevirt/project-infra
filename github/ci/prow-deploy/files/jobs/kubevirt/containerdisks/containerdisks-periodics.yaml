@@ -1,6 +1,47 @@
 periodics:
 - annotations:
     testgrid-dashboards: kubevirt-containerdisks-periodics
+    testgrid-alert-email: nestor.acuna@ibm.com, ashok.pariya@ibm.com
+  cluster: prow-s390x-workloads
+  cron: 0 1 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 7h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: containerdisks
+    workdir: true
+  labels:
+    preset-podman-in-container-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-quay-credential: "true"
+  max_concurrency: 1
+  name: periodic-containerdisks-s390x-verify-nightly
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - ./pipeline-periodic.sh
+      env:
+      - name: GIMME_GO_VERSION
+        value: "1.24.1"
+      - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
+        value: "true"
+      - name: PROMOTE_DRY_RUN
+        value: "true"
+      image: quay.io/kubevirtci/golang:v20250502-3eb3b33
+      name: ""
+      resources:
+        requests:
+          memory: 16Gi
+      securityContext:
+        privileged: true
+- annotations:
+    testgrid-dashboards: kubevirt-containerdisks-periodics
     testgrid-alert-email: fmatouschek@redhat.com, lyarwood@redhat.com
   cluster: prow-workloads
   cron: 0 2 * * *
