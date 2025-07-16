@@ -63,37 +63,64 @@
     <h1>kubevirt/kubevirt: most flaky tests report</h1>
 </section>
 
-{{ range $timeRange := $.TimeRanges }}
-    {{ $mostFlakyTests := index $.MostFlakyTests $timeRange }}
+{{ if $.SIGs }}
     <section class="container">
         <div class="card-grid">
-            <h2>Timerange: {{ $timeRange }}</h2>
+            <div class="card" id="index">
+                {{ range $sig := $.SIGs }}<a href="#{{ $sig }}">{{ $sig }}</a>&nbsp;{{ end }}
+            </div>
         </div>
     </section>
-    {{ if $mostFlakyTests }}
+    {{ range $sig := $.SIGs }}
+        <hr/>
         <section class="container">
             <div class="card-grid">
-                {{ range $mostFlakyTest := $mostFlakyTests }}
-                    <div class="card" id="test_{{ $mostFlakyTest.Test.Name }}">
-                        <a href="#test_{{ $mostFlakyTest.Test.Name }}">#</a>
-                        <code title="{{ $mostFlakyTest.Test.Name }}">{{ $mostFlakyTest.Test.Name }}</code>
-                        <a href="{{ $mostFlakyTest.SearchCIURL }}" title="search.ci">🔎</a><br/>
-                        {{ range $relevantImpact := $mostFlakyTest.RelevantImpacts }}
-                            <b>{{ if $mostFlakyTest.Test.NoteHasBeenQuarantined }}<span title="Test has been quarantined">Q!</span>{{ end }}
-                                💥<span title="Test has impact of {{ $relevantImpact.Percent }}%"> {{ $relevantImpact.Percent }}%</span> :</b>
-                            <a href="{{ $relevantImpact.URL }}" title="{{ $relevantImpact.URL }}">{{ $relevantImpact.URLToDisplay }}</a>
+                <div class="card" id="{{ $sig }}">
+                    <h1>{{ $sig }} <a href="#index">&uarr;</a></h1>
+                </div>
+            </div>
+        </section>
+        {{ range $timeRange := $.TimeRanges }}
+            {{ $mostFlakyTests := index $.MostFlakyTestsBySig $sig $timeRange }}
+            <section class="container">
+                <div class="card-grid">
+                    <div class="card" id="{{ $sig }}_{{ $timeRange }}">
+                        <h2>Timerange: {{ $timeRange }}</h2>
+                    </div>
+                </div>
+            </section>
+            {{ if $mostFlakyTests }}
+                <section class="container">
+                    <div class="card-grid">
+                        {{ range $mostFlakyTest := $mostFlakyTests }}
+                            <div class="card" id="test_{{ $mostFlakyTest.Test.Name }}">
+                                <a href="#test_{{ $mostFlakyTest.Test.Name }}">#</a>
+                                <code title="{{ $mostFlakyTest.Test.Name }}">{{ $mostFlakyTest.Test.Name }}</code>
+                                <a href="{{ $mostFlakyTest.SearchCIURL }}" title="search.ci">🔎</a><br/>
+                                {{ range $relevantImpact := $mostFlakyTest.RelevantImpacts }}
+                                    <b>{{ if $mostFlakyTest.Test.NoteHasBeenQuarantined }}<span title="Test has been quarantined">Q!</span>{{ end }}
+                                        💥<span title="Test has impact of {{ $relevantImpact.Percent }}%"> {{ $relevantImpact.Percent }}%</span> :</b>
+                                    <a href="{{ $relevantImpact.URL }}" title="{{ $relevantImpact.URL }}">{{ $relevantImpact.URLToDisplay }}</a>
+                                {{ end }}
+                            </div>
                         {{ end }}
                     </div>
-                {{ end }}
-            </div>
-        </section>
-    {{ else }}
-        <section class="container">
-            <div class="card-grid">
-                No results! 👍
-            </div>
-        </section>
+                </section>
+            {{ else }}
+                <section class="container">
+                    <div class="card-grid">
+                        No results! 👍
+                    </div>
+                </section>
+            {{ end }}
+        {{ end }}
     {{ end }}
+{{ else }}
+<section class="container">
+    <div class="card-grid">
+        No results for any SIG! 🥳 💃🕺
+    </div>
+</section>
 {{ end }}
 
 <section class="container">

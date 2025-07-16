@@ -50,16 +50,18 @@ func (t TestToQuarantine) String() string {
 	return fmt.Sprintf("TestToQuarantine{Test: %+v, SearchCIURL: %q, RelevantImpacts: %+v}", t.Test, t.SearchCIURL, t.RelevantImpacts)
 }
 
-func NewMostFlakyTestsTemplateData(mostFlakyTests map[searchci.TimeRange][]*TestToQuarantine) MostFlakyTestsTemplateData {
+func NewMostFlakyTestsTemplateData(mostFlakyTestsBySig map[string]map[searchci.TimeRange][]*TestToQuarantine, sigs []string) MostFlakyTestsTemplateData {
 	return MostFlakyTestsTemplateData{
-		ReportCreation: time.Now(),
-		MostFlakyTests: mostFlakyTests,
-		TimeRanges:     mostFlakyTestsTimeRanges,
+		ReportCreation:      time.Now(),
+		MostFlakyTestsBySig: mostFlakyTestsBySig,
+		SIGs:                sigs,
+		TimeRanges:          mostFlakyTestsTimeRanges,
 	}
 }
 
 type MostFlakyTestsTemplateData struct {
-	ReportCreation time.Time
-	MostFlakyTests map[searchci.TimeRange][]*TestToQuarantine
-	TimeRanges     []searchci.TimeRange
+	ReportCreation      time.Time
+	TimeRanges          []searchci.TimeRange
+	SIGs                []string
+	MostFlakyTestsBySig map[string]map[searchci.TimeRange][]*TestToQuarantine
 }

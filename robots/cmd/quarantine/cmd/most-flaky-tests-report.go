@@ -66,6 +66,8 @@ func init() {
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&quarantineOpts.filterPeriodicJobRunResults, "filter-periodic-job-run-results", true, "whether to filter the results for periodics")
 }
 
+var sigMatcher = regexp.MustCompile(`\[(sig-[^]]+)]`)
+
 func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 	reportOpts := flakestats.NewDefaultReportOpts(
 		flakestats.DaysInThePast(quarantineOpts.daysInThePast),
@@ -84,13 +86,36 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return fmt.Errorf("error while aggregating data: %w", err)
 	}
+	sigs, mostFlakyTestsBySig, err := aggregateMostFlakyTestsBySIG(topXTests)
+	if err != nil {
+		return err
+	}
+
+	reportTemplate, err := template.New("mostFlakyTests").Parse(mostFlakyTestsReportTemplate)
+	if err != nil {
+		return fmt.Errorf("could not read template: %w", err)
+	}
+	outputFile, err := os.Create(outputFileOpts.OutputFile)
+	if err != nil {
+		return fmt.Errorf("could not create temp file: %w", err)
+	}
+	err = reportTemplate.Execute(outputFile, NewMostFlakyTestsTemplateData(mostFlakyTestsBySig, sigs))
+	if err != nil {
+		return fmt.Errorf("could not execute template: %w", err)
+	}
+	log.Infof("report written to %q", outputFile.Name())
+	return nil
+}
+
+const noSIGKey = "NONE"
+
+func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string, mostFlakyTestsBySIG map[string]map[searchci.TimeRange][]*TestToQuarantine, err error) {
 	mostFlakyTests := make(map[searchci.TimeRange][]*TestToQuarantine)
 	for _, timeRange := range mostFlakyTestsTimeRanges {
 		for _, topXTest := range topXTests {
-			var candidate *TestToQuarantine
-			candidate, err = getQuarantineCandidate(topXTest, timeRange)
+			candidate, err := getQuarantineCandidate(topXTest, timeRange)
 			if err != nil {
-				return fmt.Errorf("could not scrape results for Test %q: %w", topXTest.Name, err)
+				return nil, nil, fmt.Errorf("could not scrape results for Test %q: %w", topXTest.Name, err)
 			}
 			if candidate == nil {
 				continue
@@ -102,21 +127,32 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 		}
 		sort.Slice(mostFlakyTests[timeRange], sortTestToQuarantineFunc)
 	}
-
-	reportTemplate, err := template.New("mostFlakyTests").Parse(mostFlakyTestsReportTemplate)
-	if err != nil {
-		return fmt.Errorf("could not read template: %w", err)
+	mostFlakyTestsBySIG = make(map[string]map[searchci.TimeRange][]*TestToQuarantine)
+	mapOfSIGs := make(map[string]struct{})
+	for timeRange, testsToQuarantine := range mostFlakyTests {
+		for _, testToQuarantine := range testsToQuarantine {
+			key := noSIGKey
+			if sigMatcher.MatchString(testToQuarantine.Test.Name) {
+				submatch := sigMatcher.FindStringSubmatch(testToQuarantine.Test.Name)
+				key = submatch[1]
+			}
+			mapOfSIGs[key] = struct{}{}
+			if _, ok := mostFlakyTestsBySIG[key]; !ok {
+				mostFlakyTestsBySIG[key] = make(map[searchci.TimeRange][]*TestToQuarantine)
+			}
+			mostFlakyTestsBySIG[key][timeRange] = append(mostFlakyTestsBySIG[key][timeRange], testToQuarantine)
+		}
 	}
-	outputFile, err := os.Create(outputFileOpts.OutputFile)
-	if err != nil {
-		return fmt.Errorf("could not create temp file: %w", err)
+	for sig := range mapOfSIGs {
+		sigs = append(sigs, sig)
 	}
-	err = reportTemplate.Execute(outputFile, NewMostFlakyTestsTemplateData(mostFlakyTests))
-	if err != nil {
-		return fmt.Errorf("could not execute template: %w", err)
-	}
-	log.Infof("report written to %q", outputFile.Name())
-	return nil
+	sort.Slice(sigs, func(i, j int) bool {
+		if sigs[i] == noSIGKey || sigs[j] == noSIGKey {
+			return sigs[j] == noSIGKey
+		}
+		return sigs[i] < sigs[j]
+	})
+	return sigs, mostFlakyTestsBySIG, nil
 }
 
 func getQuarantineCandidate(topXTest *flakestats.TopXTest, timeRange searchci.TimeRange) (*TestToQuarantine, error) {
