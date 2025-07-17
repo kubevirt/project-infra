@@ -37,6 +37,18 @@ import (
 	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
+var (
+	pTrue  *bool
+	pFalse *bool
+)
+
+func init() {
+	vTrue := true
+	pTrue = &vTrue
+	vFalse := false
+	pFalse = &vFalse
+}
+
 func Test_getSourceAndTargetRelease(t *testing.T) {
 	type args struct {
 		releases []*github.RepositoryRelease
@@ -153,87 +165,87 @@ func Test_copyPeriodicJobsForNewProvider(t *testing.T) {
 		*/
 		// TODO it seems that job_states_to_report has gotten an omitempty which effectively removes it when serializing
 		// need to see whether we can reactivate the test
-		//{
-		//	name: "reporterconfig with empty job states slice is preserved even with no job state to report",
-		//	args: args{
-		//		jobConfig: &config.JobConfig{
-		//			Periodics: []config.Periodic{
-		//				{
-		//					JobBase: config.JobBase{
-		//						Labels: map[string]string{},
-		//						ReporterConfig: &v1.ReporterConfig{
-		//							Slack: &v1.SlackReporterConfig{
-		//								JobStatesToReport: []v1.ProwJobState{},
-		//							},
-		//						},
-		//						Name: prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
-		//						Spec: &corev1.PodSpec{
-		//							Containers: []corev1.Container{
-		//								{
-		//									Env: []corev1.EnvVar{},
-		//								},
-		//							},
-		//						},
-		//					},
-		//					Interval: "",
-		//					Cron:     "0 1,9,17 * * *",
-		//					Tags:     nil,
-		//				},
-		//			},
-		//		},
-		//		targetProviderReleaseSemver: semver("1", "22", "0"),
-		//		sourceProviderReleaseSemver: semver("1", "21", "0"),
-		//	},
-		//	wantUpdated: true,
-		//	wantJobConfig: &config.JobConfig{
-		//		Periodics: []config.Periodic{
-		//			{
-		//				JobBase: config.JobBase{
-		//					Labels: map[string]string{},
-		//					Name:   prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
-		//					ReporterConfig: &v1.ReporterConfig{
-		//						Slack: &v1.SlackReporterConfig{
-		//							JobStatesToReport: []v1.ProwJobState{},
-		//						},
-		//					},
-		//					Spec: &corev1.PodSpec{
-		//						Containers: []corev1.Container{
-		//							{
-		//								Env: []corev1.EnvVar{},
-		//							},
-		//						},
-		//					},
-		//				},
-		//				Interval: "",
-		//				Cron:     "0 1,9,17 * * *",
-		//				Tags:     nil,
-		//			},
-		//			{
-		//				JobBase: config.JobBase{
-		//					Annotations: map[string]string{},
-		//					Labels:      map[string]string{},
-		//					Name:        prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
-		//					ReporterConfig: &v1.ReporterConfig{
-		//						Slack: &v1.SlackReporterConfig{
-		//							JobStatesToReport: []v1.ProwJobState{},
-		//						},
-		//					},
-		//					Spec: &corev1.PodSpec{
-		//						Containers: []corev1.Container{
-		//							{
-		//								Env: []corev1.EnvVar{},
-		//							},
-		//						},
-		//					},
-		//				},
-		//				Interval: "",
-		//				Cron:     "10 2,10,18 * * *",
-		//				Tags:     nil,
-		//			},
-		//		},
-		//	},
-		//	wantJobStatesToReportInSerialization: true,
-		//},
+		{
+			name: "reporterconfig with empty job states slice is preserved even with no job state to report",
+			args: args{
+				jobConfig: &config.JobConfig{
+					Periodics: []config.Periodic{
+						{
+							JobBase: config.JobBase{
+								Labels: map[string]string{},
+								ReporterConfig: &v1.ReporterConfig{
+									Slack: &v1.SlackReporterConfig{
+										Report: pFalse,
+									},
+								},
+								Name: prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
+								Spec: &corev1.PodSpec{
+									Containers: []corev1.Container{
+										{
+											Env: []corev1.EnvVar{},
+										},
+									},
+								},
+							},
+							Interval: "",
+							Cron:     "0 1,9,17 * * *",
+							Tags:     nil,
+						},
+					},
+				},
+				targetProviderReleaseSemver: semver("1", "22", "0"),
+				sourceProviderReleaseSemver: semver("1", "21", "0"),
+			},
+			wantUpdated: true,
+			wantJobConfig: &config.JobConfig{
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Labels: map[string]string{},
+							Name:   prowjobconfigs.CreatePeriodicJobName(semver("1", "21", "0"), "sig-network"),
+							ReporterConfig: &v1.ReporterConfig{
+								Slack: &v1.SlackReporterConfig{
+									Report: pFalse,
+								},
+							},
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{},
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "0 1,9,17 * * *",
+						Tags:     nil,
+					},
+					{
+						JobBase: config.JobBase{
+							Annotations: map[string]string{},
+							Labels:      map[string]string{},
+							Name:        prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
+							ReporterConfig: &v1.ReporterConfig{
+								Slack: &v1.SlackReporterConfig{
+									Report: pFalse,
+								},
+							},
+							Spec: &corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{},
+									},
+								},
+							},
+						},
+						Interval: "",
+						Cron:     "10 2,10,18 * * *",
+						Tags:     nil,
+					},
+				},
+			},
+			wantJobStatesToReportInSerialization: false,
+		},
 		{
 			name: "extra_refs field exists for new provider job",
 			args: args{
