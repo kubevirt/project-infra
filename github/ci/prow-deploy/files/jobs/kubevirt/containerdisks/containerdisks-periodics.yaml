@@ -33,7 +33,7 @@ periodics:
         value: "true"
       - name: PROMOTE_DRY_RUN
         value: "true"
-      image: quay.io/kubevirtci/golang:v20250502-3eb3b33
+      image: quay.io/kubevirtci/golang:v20250701-f32dbda
       name: ""
       resources:
         requests:
