@@ -56,8 +56,8 @@ func init() {
 	impactScrapeRegex = regexp.MustCompile(`<a target="_blank" href="(https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/[^"]+)">.*[0-9]+% of failures match = ([0-9\.]+)% impact`)
 }
 
-// ScrapeRelevantImpacts scrapes results that are relevant for quarantining from search.ci.kubevirt.io
-func ScrapeRelevantImpacts(testNameSubstring string, timeRange TimeRange) ([]Impact, error) {
+// ScrapeImpacts scrapes results that are relevant for quarantining from search.ci.kubevirt.io
+func ScrapeImpacts(testNameSubstring string, timeRange TimeRange) ([]Impact, error) {
 	scrapeResultURL := NewScrapeURL(testNameSubstring, timeRange)
 	logger.Debugf("scraping search.ci for test %q with URL %q", testNameSubstring, scrapeResultURL)
 	resp, err := http.Get(scrapeResultURL)
@@ -69,7 +69,7 @@ func ScrapeRelevantImpacts(testNameSubstring string, timeRange TimeRange) ([]Imp
 	if err != nil {
 		return nil, fmt.Errorf("failed to read search.ci result from %s: %w", scrapeResultURL, err)
 	}
-	return FilterRelevantImpacts(ScrapeImpact(string(body)), timeRange), nil
+	return FilterImpacts(ScrapeImpact(string(body)), timeRange), nil
 }
 
 func NewScrapeURL(testNameSubstring string, timeRange TimeRange) string {
@@ -109,7 +109,7 @@ func ScrapeImpact(body string) []Impact {
 
 type FilterOpt func(i Impact) bool
 
-func byTimeRange(timeRange TimeRange) func(i Impact) bool {
+func matchingTimeRange(timeRange TimeRange) func(i Impact) bool {
 	switch timeRange {
 	case ThreeDays:
 		return func(i Impact) bool {
@@ -127,24 +127,25 @@ func byTimeRange(timeRange TimeRange) func(i Impact) bool {
 	}
 }
 
-func FilterRelevantImpacts(impacts []Impact, timeRange TimeRange) []Impact {
-	return FilterRelevantImpactsWithOpts(impacts, byTimeRange(timeRange))
+func FilterImpacts(impacts []Impact, timeRange TimeRange) []Impact {
+	return FilterImpactsBy(impacts, matchingTimeRange(timeRange))
 }
 
-func FilterRelevantImpactsWithOpts(impacts []Impact, filterOpts ...FilterOpt) []Impact {
+// FilterImpactsBy filters all impacts for which all filterOpts apply, i.e. each of them returns true
+func FilterImpactsBy(impacts []Impact, filterOpts ...FilterOpt) []Impact {
 	if impacts == nil {
 		return nil
 	}
 	var relevantImpacts []Impact
 	for _, impact := range impacts {
-		shouldNotFilter := true
+		shouldKeep := true
 		for _, filter := range filterOpts {
-			shouldNotFilter = filter(impact)
-			if !shouldNotFilter {
+			shouldKeep = filter(impact)
+			if !shouldKeep {
 				break
 			}
 		}
-		if shouldNotFilter {
+		if shouldKeep {
 			relevantImpacts = append(relevantImpacts, impact)
 		}
 	}
