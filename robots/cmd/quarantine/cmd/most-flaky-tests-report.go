@@ -22,12 +22,15 @@ package cmd
 import (
 	_ "embed"
 	"fmt"
+	"github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"html/template"
+	"io"
 	flakestats "kubevirt.io/project-infra/robots/pkg/flake-stats"
 	"kubevirt.io/project-infra/robots/pkg/options"
 	"kubevirt.io/project-infra/robots/pkg/searchci"
+	"net/http"
 	"os"
 	"regexp"
 	"sort"
@@ -169,6 +172,7 @@ func getQuarantineCandidate(topXTest *flakestats.TopXTest, timeRange searchci.Ti
 		isNotARehearsal(),
 		isNotAFlakeCheckRun(),
 		isNotADeQuarantineCheckRun(),
+		hasNotOnlyClusteredFailures(),
 	)
 	if impacts == nil {
 		log.Infof("search.ci filter left no matches for test %q", topXTest.Name)
@@ -184,6 +188,39 @@ func getQuarantineCandidate(topXTest *flakestats.TopXTest, timeRange searchci.Ti
 		TimeRange:       timeRange,
 	}
 	return newTestToQuarantine, nil
+}
+
+var basePartURLMatcher = regexp.MustCompile(`.*(kubevirt-prow/.*)`)
+
+func hasNotOnlyClusteredFailures() searchci.FilterOpt {
+	return func(i searchci.Impact) bool {
+		for _, buildURL := range i.BuildURLs {
+			basePartURL := basePartURLMatcher.FindStringSubmatch(buildURL.URL)[1]
+			junitXMLURL := fmt.Sprintf("https://storage.googleapis.com/%s/artifacts/junit.functest.xml", basePartURL)
+			junitXMLHTTPResponse, err := http.Get(junitXMLURL)
+			if err != nil {
+				log.Fatalf("failed to get junit xml from %q", junitXMLURL)
+			}
+			if junitXMLHTTPResponse.StatusCode != 200 {
+				log.Fatalf("failed to get junit xml from %q", junitXMLURL)
+			}
+			defer junitXMLHTTPResponse.Body.Close()
+			junitXML, err := io.ReadAll(junitXMLHTTPResponse.Body)
+			if err != nil {
+				log.Fatalf("failed to get junit xml from %q", junitXMLURL)
+			}
+			testSuites, err := junit.Ingest(junitXML)
+			if err != nil {
+				log.Fatalf("failed to get junit xml from %q", junitXMLURL)
+			}
+			for _, suite := range testSuites {
+				if suite.Totals.Failed < 5 {
+					return true
+				}
+			}
+		}
+		return false
+	}
 }
 
 func matchesAnyFailureLane(topXTest *flakestats.TopXTest) func(i searchci.Impact) bool {
