@@ -25,27 +25,69 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"time"
 )
 
 var _ = Describe("searchci", func() {
 
 	const testName = `[test_id:3007] Should force restart a VM with terminationGracePeriodSeconds\u003e0`
 
-	Context("ScrapeImpact extracts", func() {
+	DescribeTable("ScrapeImpact extracts",
 
-		const text = `<td colspan="4"><a target="_blank" href="https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.30-sig-compute">pull-kubevirt-e2e-k8s-1.30-sig-compute</a> <a href="/?context=1&amp;excludeName=&amp;groupByJob=job&amp;maxAge=672h0m0s&amp;maxBytes=20971520&amp;maxMatches=5&amp;mode=text&amp;name=%5Epull-kubevirt-e2e-k8s-1%5C.30-sig-compute%24&amp;search=%5C%5Btest_id%3A3007%5D+Should+force+restart+a+VM+with+terminationGracePeriodSeconds%5Cu003e0&amp;searchType=junit&amp;wrapLines=false">(all)</a> - <em title="115 runs, 8 failures, 6 matching runs">115 runs, 7% failed, 75% of failures match = 5% impact</em></td>`
+		func(text string, expected []Impact) {
+			Expect(ScrapeImpact(text)).To(BeEquivalentTo(expected))
+		},
 
-		It("something", func() {
-			Expect(ScrapeImpact(text)).To(Not(BeNil()))
-		})
-		It("content", func() {
-			Expect(ScrapeImpact(text)[0]).To(BeEquivalentTo(Impact{
-				URL:          "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.30-sig-compute",
-				Percent:      5.0,
-				URLToDisplay: "pull-kubevirt-e2e-k8s-1.30-sig-compute",
-			}))
-		})
-	})
+		Entry("scrape impact with empty",
+			"",
+			nil,
+		),
+		Entry("basic scrape impact, no build urls",
+			`<tr><td colspan="4"><a target="_blank" href="https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.30-sig-compute">pull-kubevirt-e2e-k8s-1.30-sig-compute</a> <a href="/?context=1&amp;excludeName=&amp;groupByJob=job&amp;maxAge=672h0m0s&amp;maxBytes=20971520&amp;maxMatches=5&amp;mode=text&amp;name=%5Epull-kubevirt-e2e-k8s-1%5C.30-sig-compute%24&amp;search=%5C%5Btest_id%3A3007%5D+Should+force+restart+a+VM+with+terminationGracePeriodSeconds%5Cu003e0&amp;searchType=junit&amp;wrapLines=false">(all)</a> - <em title="107 runs, 7 failures, 5 matching runs">107 runs, 7% failed, 71% of failures match = 5% impact</em></td></tr>
+`,
+			[]Impact{
+				{
+					URL:          "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.30-sig-compute",
+					Percent:      5.0,
+					URLToDisplay: "pull-kubevirt-e2e-k8s-1.30-sig-compute",
+				},
+			},
+		),
+		Entry("scrape impact with build urls",
+			`<tr><td colspan="4"><a target="_blank" href="https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.30-sig-compute">pull-kubevirt-e2e-k8s-1.30-sig-compute</a> <a href="/?context=1&amp;excludeName=&amp;groupByJob=job&amp;maxAge=672h0m0s&amp;maxBytes=20971520&amp;maxMatches=5&amp;mode=text&amp;name=%5Epull-kubevirt-e2e-k8s-1%5C.30-sig-compute%24&amp;search=%5C%5Btest_id%3A3007%5D+Should+force+restart+a+VM+with+terminationGracePeriodSeconds%5Cu003e0&amp;searchType=junit&amp;wrapLines=false">(all)</a> - <em title="107 runs, 7 failures, 5 matching runs">107 runs, 7% failed, 71% of failures match = 5% impact</em></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14632/pull-kubevirt-e2e-k8s-1.30-sig-compute/1932345605980426240">#1932345605980426240</a></td><td>junit</td><td class="text-nowrap">36 hours ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14884/pull-kubevirt-e2e-k8s-1.30-sig-compute/1932327352512024576">#1932327352512024576</a></td><td>junit</td><td class="text-nowrap">37 hours ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [sig-compute] [rfe_id:1177][crit:medium] VirtualMachine [test_id:3007] Should force restart a VM with terminationGracePeriodSeconds&gt;0
+tests/compute/vm_lifecycle.go:51
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14802/pull-kubevirt-e2e-k8s-1.30-sig-compute/1930397210671845376">#1930397210671845376</a></td><td>junit</td><td class="text-nowrap">6 days ago</td><td class="col-12"></td></tr>
+`,
+			[]Impact{
+				{
+					URL:          "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.30-sig-compute",
+					Percent:      5.0,
+					URLToDisplay: "pull-kubevirt-e2e-k8s-1.30-sig-compute",
+					BuildURLs: []JobBuildURL{
+						{
+							URL:      "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14632/pull-kubevirt-e2e-k8s-1.30-sig-compute/1932345605980426240",
+							Interval: time.Hour * 36,
+						},
+						{
+							URL:      "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14884/pull-kubevirt-e2e-k8s-1.30-sig-compute/1932327352512024576",
+							Interval: time.Hour * 37,
+						},
+						{
+							URL:      "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14802/pull-kubevirt-e2e-k8s-1.30-sig-compute/1930397210671845376",
+							Interval: time.Hour * 24 * 6,
+						},
+					},
+				},
+			},
+		),
+	)
 	Context("NewScrapeURL", func() {
 
 		It("escapes the test name correctly", func() {
@@ -56,7 +98,7 @@ var _ = Describe("searchci", func() {
 	})
 	DescribeTable("FilterRelevantImpacts",
 		func(impacts []Impact, timeRange TimeRange, relevantimpacts []Impact) {
-			Expect(FilterRelevantImpacts(impacts, timeRange)).To(BeEquivalentTo(relevantimpacts))
+			Expect(FilterImpacts(impacts, timeRange)).To(BeEquivalentTo(relevantimpacts))
 		},
 		Entry("filters a relevant impact for fourteen days",
 			[]Impact{
@@ -102,7 +144,7 @@ var _ = Describe("searchci", func() {
 			},
 		),
 	)
-	Context("ScrapeRelevantImpacts", func() {
+	Context("ScrapeImpacts", func() {
 		var body []byte
 		var server *httptest.Server
 		BeforeEach(func() {
@@ -119,7 +161,7 @@ var _ = Describe("searchci", func() {
 			server.Close()
 		})
 		It("scrapes", func() {
-			impacts, err := ScrapeRelevantImpacts(testName, FourteenDays)
+			impacts, err := ScrapeImpacts(testName, FourteenDays)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(impacts).ToNot(BeNil())
 		})
