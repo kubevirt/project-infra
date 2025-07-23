@@ -28,10 +28,9 @@
     <title>kubevirt/kubevirt: most flaky tests report</title>
     <style>
         body {
-            font-family: 'Segoe UI', 'Roboto', sans-serif; /* Modern sans-serif stack */
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
         }
 
-        /* Layout with Flexbox */
         .container {
             max-width: 1800px;
             margin: 0 auto;
@@ -41,7 +40,7 @@
 
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(800px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 10px;
             margin-bottom: 10px;
         }
@@ -80,47 +79,38 @@
                 </div>
             </div>
         </section>
-        {{ range $timeRange := $.TimeRanges }}
-            {{ $mostFlakyTests := index $.MostFlakyTestsBySig $sig $timeRange }}
-            <section class="container">
-                <div class="card-grid">
-                    <div class="card" id="{{ $sig }}_{{ $timeRange }}">
-                        <h2>Timerange: {{ $timeRange }}</h2>
-                    </div>
-                </div>
-            </section>
-            {{ if $mostFlakyTests }}
-                <section class="container">
-                    <div class="card-grid">
-                        {{ range $mostFlakyTest := $mostFlakyTests }}
-                            <div class="card" id="test_{{ $mostFlakyTest.Test.Name }}">
-                                <a href="#test_{{ $mostFlakyTest.Test.Name }}">#</a>
-                                <code title="{{ $mostFlakyTest.Test.Name }}">{{ $mostFlakyTest.Test.Name }}</code>
-                                <a href="{{ $mostFlakyTest.SearchCIURL }}" title="search.ci">🔎</a><br/>
-                                {{ range $relevantImpact := $mostFlakyTest.RelevantImpacts }}
-                                    <b>{{ if $mostFlakyTest.Test.NoteHasBeenQuarantined }}<span title="Test has been quarantined">Q!</span>{{ end }}
-                                        💥<span title="Test has impact of {{ $relevantImpact.Percent }}%"> {{ $relevantImpact.Percent }}%</span> :</b>
-                                    <a href="{{ $relevantImpact.URL }}" title="{{ $relevantImpact.URL }}">{{ $relevantImpact.URLToDisplay }}</a>
-                                {{ end }}
-                            </div>
-                        {{ end }}
-                    </div>
-                </section>
-            {{ else }}
-                <section class="container">
-                    <div class="card-grid">
-                        No results! 👍
-                    </div>
-                </section>
-            {{ end }}
-        {{ end }}
+        <section class="container">
+            <div class="card-grid">
+                {{ range $testName := $.TestNames }}
+                    {{ $mostFlakyTests := index $.MostFlakyTestsBySig $sig $testName }}
+                    {{ if $mostFlakyTests }}
+                        <div class="card" id="test_{{ $testName }}">
+                            <a href="#test_{{ $testName }}">#</a>
+                            <code title="{{ $testName }}">{{ $testName }}</code><br/>
+                            {{ range $mostFlakyTest := $mostFlakyTests }}
+                                {{ range $relevantImpact := $mostFlakyTest.RelevantImpacts -}}
+                                    <span style="white-space: nowrap;">
+                                        <a href="{{ $mostFlakyTest.SearchCIURL }}" title="execute query on search.ci">🔎</a>
+                                        💥<span title="Test has impact of {{ $relevantImpact.Percent }}%"> <b>{{ $relevantImpact.Percent }}%</b> over <b>{{ $mostFlakyTest.TimeRange }}</b></span> on<br/>
+                                        <a href="{{ $relevantImpact.URL }}">{{ $relevantImpact.URLToDisplay }}</a>:</span> <span
+                                            style="white-space: nowrap;">Failures: {{ range $buildURL := $relevantImpact.BuildURLs -}}
+                                            <a href="{{ $buildURL.URL }}"
+                                               title="{{ $buildURL.URL }}">{{ $buildURL.Interval }}</a> {{ end }}
+                                    </span><br/>
+                                {{- end }}
+                            {{ end }}
+                        </div>
+                    {{ end }}
+                {{ end }}
+            </div>
+        </section>
     {{ end }}
 {{ else }}
-<section class="container">
-    <div class="card-grid">
-        No results for any SIG! 🥳 💃🕺
-    </div>
-</section>
+    <section class="container">
+        <div class="card-grid">
+            No results for any SIG! 🥳 💃🕺
+        </div>
+    </section>
 {{ end }}
 
 <section class="container">

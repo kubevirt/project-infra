@@ -53,7 +53,7 @@ type JobBuildURL struct {
 }
 
 var (
-	impactScrapeRegex = regexp.MustCompile(`(<tr><td.*<a target="_blank" href="(https://[a-z\.]+/job-history/kubevirt-prow/pr-logs/directory/[^"]+)">.*[0-9]+% of (failures|runs) match( = ([0-9\.]+)% impact)?</em></td></tr>|<tr class="row-match"><td[^\r\n]+href="(https://[a-z\.]+/view/[^"]+)">#[0-9]+</a>.*>([0-9]+) (hours|days) ago<.*</td></tr>)`)
+	impactScrapeRegex = regexp.MustCompile(`(<tr><td.*<a target="_blank" href="(https://[a-z\.]+/job-history/kubevirt-prow/pr-logs/directory/[^"]+)">.*[0-9]+% of (failures|runs) match( = ([0-9\.]+)% impact)?</em></td></tr>|<tr class="row-match"><td[^\r\n]+href="(https://[a-z\.]+/view/[^"]+)">#[0-9]+</a>.*>([0-9]+) (minutes|hours|days) ago<.*</td></tr>)`)
 	logger            = log.WithField("module", "searchci")
 	serviceURL        = "https://search.ci.kubevirt.io"
 )
@@ -117,6 +117,8 @@ func ScrapeImpact(body string) []Impact {
 			unitWord := submatch[8]
 			var duration time.Duration
 			switch {
+			case unitWord == "minutes":
+				duration = time.Minute * time.Duration(timeAmount)
 			case unitWord == "hours":
 				duration = time.Hour * time.Duration(timeAmount)
 			case unitWord == "days":

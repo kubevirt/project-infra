@@ -102,7 +102,7 @@ tests/compute/vm_lifecycle.go:51
 					URL:          "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubernetes-nmstate-e2e-operator-k8s",
 					Percent:      0,
 					URLToDisplay: "pull-kubernetes-nmstate-e2e-operator-k8s",
-					BuildURLs:    []JobBuildURL{
+					BuildURLs: []JobBuildURL{
 						{
 							URL:      "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/nmstate_kubernetes-nmstate/1354/pull-kubernetes-nmstate-e2e-operator-k8s/1947282574778830848",
 							Interval: time.Hour * 18,
@@ -110,6 +110,50 @@ tests/compute/vm_lifecycle.go:51
 						{
 							URL:      "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/nmstate_kubernetes-nmstate/1354/pull-kubernetes-nmstate-e2e-operator-k8s/1947235763452121088",
 							Interval: time.Hour * 21,
+						},
+					},
+				},
+			},
+		),
+		Entry("scrape with minutes ago",
+			`<tr><td colspan="4"><a target="_blank" href="https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6">pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6</a> <a href="/?context=1&amp;excludeName=&amp;groupByJob=job&amp;maxAge=672h0m0s&amp;maxBytes=20971520&amp;maxMatches=1&amp;mode=text&amp;name=%5Epull-kubevirt-e2e-k8s-1%5C.32-sig-compute-migrations-1%5C.6%24&amp;search=%5C%5Brfe_id%3A393%5D%5C%5Bcrit%3Ahigh%5D%5C%5Bvendor%3Acnv-qe%40redhat.com%5D%5C%5Blevel%3Asystem%5D%5C%5Bsig-compute%5D+Live+Migration+across+namespaces+container+disk+should+live+migrate+a+container+disk+vm%2C+with+an+additional+PVC+mounted%2C+should+stay+mounted+after+migration&amp;searchType=junit&amp;wrapLines=false">(all)</a> - <em title="14 runs, 7 failures, 4 matching runs">14 runs, 50% failed, 57% of failures match = 29% impact</em></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/15256/pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6/1947961013684932608">#1947961013684932608</a></td><td>junit</td><td class="text-nowrap">34 minutes ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] Live Migration across namespaces container disk should live migrate a container disk vm, with an additional PVC mounted, should stay mounted after migration
+tests/migration/namespace.go:236
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/15246/pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6/1947958310749605888">#1947958310749605888</a></td><td>junit</td><td class="text-nowrap">44 minutes ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] Live Migration across namespaces container disk should live migrate a container disk vm, with an additional PVC mounted, should stay mounted after migration
+tests/migration/namespace.go:236
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/15256/pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6/1947915060424740864">#1947915060424740864</a></td><td>junit</td><td class="text-nowrap">4 hours ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] Live Migration across namespaces container disk should live migrate a container disk vm, with an additional PVC mounted, should stay mounted after migration
+tests/migration/namespace.go:236
+</pre></td></tr>
+<tr class="row-match"><td><a target="_blank" href="https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/15256/pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6/1947746664915668992">#1947746664915668992</a></td><td>junit</td><td class="text-nowrap">15 hours ago</td><td class="col-12"></td></tr>
+<tr class="row-match"><td class="" colspan="4"><pre class="small"># [rfe_id:393][crit:high][vendor:cnv-qe@redhat.com][level:system][sig-compute] Live Migration across namespaces container disk should live migrate a container disk vm, with an additional PVC mounted, should stay mounted after migration
+tests/migration/namespace.go:236
+</pre></td></tr>`,
+			[]Impact{
+				{
+					URL:          "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6",
+					Percent:      29,
+					URLToDisplay: "pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6",
+					BuildURLs:    []JobBuildURL{
+						{
+							URL:      "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/15256/pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6/1947961013684932608",
+							Interval: time.Minute * 34,
+						},
+						{
+							URL:      "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/15246/pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6/1947958310749605888",
+							Interval: time.Minute * 44,
+						},
+						{
+							URL: "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/15256/pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6/1947915060424740864",
+							Interval: time.Hour * 4,
+						},
+						{
+							URL: "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/15256/pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations-1.6/1947746664915668992",
+							Interval: time.Hour * 15,
 						},
 					},
 				},

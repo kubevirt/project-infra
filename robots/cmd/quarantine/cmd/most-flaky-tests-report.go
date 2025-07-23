@@ -89,7 +89,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return fmt.Errorf("error while aggregating data: %w", err)
 	}
-	sigs, mostFlakyTestsBySig, err := aggregateMostFlakyTestsBySIG(topXTests)
+	sigs, testNames, mostFlakyTestsBySig, err := aggregateMostFlakyTestsBySIG(topXTests)
 	if err != nil {
 		return err
 	}
@@ -102,7 +102,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return fmt.Errorf("could not create temp file: %w", err)
 	}
-	err = reportTemplate.Execute(outputFile, NewMostFlakyTestsTemplateData(mostFlakyTestsBySig, sigs))
+	err = reportTemplate.Execute(outputFile, NewMostFlakyTestsTemplateData(mostFlakyTestsBySig, sigs, testNames))
 	if err != nil {
 		return fmt.Errorf("could not execute template: %w", err)
 	}
@@ -112,27 +112,25 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 
 const noSIGKey = "NONE"
 
-func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string, mostFlakyTestsBySIG map[string]map[searchci.TimeRange][]*TestToQuarantine, err error) {
-	mostFlakyTests := make(map[searchci.TimeRange][]*TestToQuarantine)
-	for _, timeRange := range mostFlakyTestsTimeRanges {
-		for _, topXTest := range topXTests {
+func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string, testNames []string, mostFlakyTestsBySIG map[string]map[string][]*TestToQuarantine, err error) {
+	mostFlakyTests := make(map[string][]*TestToQuarantine)
+	for _, topXTest := range topXTests {
+		for _, timeRange := range mostFlakyTestsTimeRanges {
 			candidate, err := getQuarantineCandidate(topXTest, timeRange)
 			if err != nil {
-				return nil, nil, fmt.Errorf("could not scrape results for Test %q: %w", topXTest.Name, err)
+				return nil, nil, nil, fmt.Errorf("could not scrape results for Test %q: %w", topXTest.Name, err)
 			}
 			if candidate == nil {
 				continue
 			}
-			mostFlakyTests[timeRange] = append(mostFlakyTests[timeRange], candidate)
+			mostFlakyTests[topXTest.Name] = append(mostFlakyTests[topXTest.Name], candidate)
 		}
-		sortTestToQuarantineFunc := func(i, j int) bool {
-			return mostFlakyTests[timeRange][i].RelevantImpacts[0].Percent > mostFlakyTests[timeRange][j].RelevantImpacts[0].Percent
-		}
-		sort.Slice(mostFlakyTests[timeRange], sortTestToQuarantineFunc)
 	}
-	mostFlakyTestsBySIG = make(map[string]map[searchci.TimeRange][]*TestToQuarantine)
+	mostFlakyTestsBySIG = make(map[string]map[string][]*TestToQuarantine)
 	mapOfSIGs := make(map[string]struct{})
-	for timeRange, testsToQuarantine := range mostFlakyTests {
+	testNames = make([]string, 0, len(mostFlakyTests))
+	for testName, testsToQuarantine := range mostFlakyTests {
+		testNames = append(testNames, testName)
 		for _, testToQuarantine := range testsToQuarantine {
 			key := noSIGKey
 			if sigMatcher.MatchString(testToQuarantine.Test.Name) {
@@ -141,11 +139,42 @@ func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string
 			}
 			mapOfSIGs[key] = struct{}{}
 			if _, ok := mostFlakyTestsBySIG[key]; !ok {
-				mostFlakyTestsBySIG[key] = make(map[searchci.TimeRange][]*TestToQuarantine)
+				mostFlakyTestsBySIG[key] = make(map[string][]*TestToQuarantine)
 			}
-			mostFlakyTestsBySIG[key][timeRange] = append(mostFlakyTestsBySIG[key][timeRange], testToQuarantine)
+			mostFlakyTestsBySIG[key][testName] = append(mostFlakyTestsBySIG[key][testName], testToQuarantine)
 		}
 	}
+	sort.Slice(testNames, func(i, j int) bool {
+		maxImpactI, maxImpactJ := 0.0, 0.0
+		quarantinedI, quarantinedJ := false, false
+		for _, candidateI := range mostFlakyTests[testNames[i]] {
+			if candidateI.Test.NoteHasBeenQuarantined {
+				quarantinedI = true
+			}
+			for _, impactI := range candidateI.RelevantImpacts {
+				if maxImpactI < impactI.Percent {
+					maxImpactI = impactI.Percent
+				}
+			}
+		}
+		for _, candidateJ := range mostFlakyTests[testNames[j]] {
+			if candidateJ.Test.NoteHasBeenQuarantined {
+				quarantinedJ = true
+			}
+			for _, impactJ := range candidateJ.RelevantImpacts {
+				if maxImpactJ < impactJ.Percent {
+					maxImpactJ = impactJ.Percent
+				}
+			}
+		}
+		if quarantinedI != quarantinedJ {
+			return quarantinedJ
+		}
+		if maxImpactI > maxImpactJ {
+			return true
+		}
+		return testNames[i] < testNames[j]
+	})
 	for sig := range mapOfSIGs {
 		sigs = append(sigs, sig)
 	}
@@ -155,7 +184,7 @@ func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string
 		}
 		return sigs[i] < sigs[j]
 	})
-	return sigs, mostFlakyTestsBySIG, nil
+	return sigs, testNames, mostFlakyTestsBySIG, nil
 }
 
 func getQuarantineCandidate(topXTest *flakestats.TopXTest, timeRange searchci.TimeRange) (*TestToQuarantine, error) {
