@@ -257,7 +257,7 @@ func matchesAnyFailureLane(topXTest *flakestats.TopXTest) func(i searchci.Impact
 	for l := range topXTest.FailuresPerLane {
 		lanes = append(lanes, l)
 	}
-	laneMatcher := regexp.MustCompile(fmt.Sprintf(`http.*/(%s)[^/]+[^/]+$`, strings.Join(lanes, "|")))
+	laneMatcher := regexp.MustCompile(fmt.Sprintf(`http.*/(%s)[^/]*$`, strings.Join(lanes, "|")))
 	laneMatcherOpt := func(i searchci.Impact) bool {
 		return laneMatcher.MatchString(i.URL)
 	}
