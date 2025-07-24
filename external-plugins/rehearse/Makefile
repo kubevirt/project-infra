@@ -1,4 +1,4 @@
-CONTAINER_IMAGE := referee
+CONTAINER_IMAGE := rehearse
 CONTAINER_REPO := quay.io/kubevirtci/$(CONTAINER_IMAGE)
 
 .PHONY: all clean format test push
