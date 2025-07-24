@@ -13,7 +13,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/common-instancetypes-builder:v20250408-8288bbf
+      - image: quay.io/kubevirtci/common-instancetypes-builder:v20250724-df773ff
         command:
         - /usr/local/bin/runner.sh
         - "/bin/sh"
@@ -49,7 +49,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: "1.23.7"
+          value: 1.24.5
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -90,7 +90,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.23.7
+          value: 1.24.5
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -130,7 +130,7 @@ presubmits:
           make kubevirt-up && make kubevirt-sync && make kubevirt-functest
         env:
         - name: GIMME_GO_VERSION
-          value: 1.23.7
+          value: 1.24.5
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: KUBEVIRT_ONLY_USE_TAGS
@@ -173,7 +173,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.23.7
+          value: 1.24.5
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -214,7 +214,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.23.7
+          value: 1.24.5
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -255,7 +255,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.23.7
+          value: 1.24.5
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -296,7 +296,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.23.7
+          value: 1.24.5
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -337,7 +337,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.23.7
+          value: 1.24.5
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -378,7 +378,7 @@ presubmits:
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: 1.23.7
+          value: 1.24.5
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -422,7 +422,7 @@ presubmits:
           make kubevirt-up && make kubevirt-sync && make kubevirt-sync-containerdisks && make kubevirt-functest
         env:
         - name: GIMME_GO_VERSION
-          value: 1.23.7
+          value: 1.24.5
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -463,7 +463,7 @@ presubmits:
             - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
           env:
             - name: GIMME_GO_VERSION
-              value: 1.23.7
+              value: 1.24.5
             - name: KUBEVIRT_MEMORY_SIZE
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
@@ -504,7 +504,7 @@ presubmits:
             - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
           env:
             - name: GIMME_GO_VERSION
-              value: 1.23.7
+              value: 1.24.5
             - name: KUBEVIRT_MEMORY_SIZE
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
@@ -581,7 +581,7 @@ presubmits:
               make kubevirt-up && make kubevirt-sync && make kubevirt-sync-containerdisks && make kubevirt-functest
           env:
             - name: GIMME_GO_VERSION
-              value: 1.23.7
+              value: 1.24.5
             - name: KUBEVIRT_MEMORY_SIZE
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
@@ -625,7 +625,7 @@ presubmits:
               make kubevirt-up && make kubevirt-sync && make kubevirt-sync-containerdisks && make kubevirt-functest
           env:
             - name: GIMME_GO_VERSION
-              value: 1.23.7
+              value: 1.24.5
             - name: KUBEVIRT_MEMORY_SIZE
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
