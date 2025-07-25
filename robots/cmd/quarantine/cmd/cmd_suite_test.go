@@ -20,28 +20,13 @@
 package cmd
 
 import (
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-	"os"
+	"testing"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
-var rootCmd = &cobra.Command{
-	Use: "quarantine",
-}
-
-var quarantineOpts quarantineOptions
-
-func init() {
-	rootCmd.PersistentFlags().StringVar(&quarantineOpts.testSourcePath, "Test-source-path", "../kubevirt/tests/", "the path to the Test source")
-
-	rootCmd.AddCommand(mostFlakyTestsReportCmd)
-	rootCmd.AddCommand(quarantineTestCmd)
-	rootCmd.AddCommand(autoQuarantineCmd)
-}
-
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		logrus.WithError(err).Error("failed to run command")
-		os.Exit(1)
-	}
+func TestCmd(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "cmd suite")
 }
