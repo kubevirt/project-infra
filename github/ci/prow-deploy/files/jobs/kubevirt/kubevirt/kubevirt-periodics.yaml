@@ -157,7 +157,7 @@ periodics:
       - |
         report_dir="/tmp/per-test-results/last-six-months"
         mkdir -p "${report_dir}"
-        go run ./robots/cmd/per-test-execution --kubernetes-version 1.31 --months 6 --output-directory "${report_dir}"
+        go run ./robots/cmd/per-test-execution --months 6 --output-directory "${report_dir}"
         gsutil cp "${report_dir}/*" "gs://kubevirt-prow/reports/per-test-results/kubevirt/kubevirt/last-six-months/"
       command:
       - /usr/local/bin/runner.sh
