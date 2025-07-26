@@ -1375,9 +1375,7 @@ periodics:
       - /bin/sh
       - -c
       - |
-        # Set cluster-up to not deploy Multus V3 from manifests, instead CNAO will deploy Multus V4,
-        # and make the test suite run the hotplug NICs tests.
-        export KUBEVIRT_WITH_MULTUS_V3='false'
+        # make the test suite run the hotplug NICs tests.
         export KUBEVIRT_WITH_DYN_NET_CTRL=true
         automation/test.sh
       env:
