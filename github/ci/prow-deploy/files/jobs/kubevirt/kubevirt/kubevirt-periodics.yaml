@@ -1364,7 +1364,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.32-sig-network-multus-v4
+  name: periodic-kubevirt-e2e-k8s-1.33-sig-network-multus-v4
   reporter_config:
     slack:
       report: false
@@ -1384,7 +1384,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.32-sig-network
+        value: k8s-1.33-sig-network
       image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
       name: ""
       resources:
@@ -2035,7 +2035,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.32-ipv6-sig-network
+  name: periodic-kubevirt-e2e-k8s-1.33-ipv6-sig-network
   reporter_config:
     slack:
       report: false
@@ -2052,7 +2052,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.32-sig-network
+        value: k8s-1.33-sig-network
       - name: KUBEVIRT_SINGLE_STACK
         value: "true"
       image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
