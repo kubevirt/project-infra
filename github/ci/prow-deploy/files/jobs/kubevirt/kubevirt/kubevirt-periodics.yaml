@@ -1364,7 +1364,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.33-sig-network-multus-v4
+  name: periodic-kubevirt-e2e-k8s-1.33-sig-network-with-dnc
   reporter_config:
     slack:
       report: false
