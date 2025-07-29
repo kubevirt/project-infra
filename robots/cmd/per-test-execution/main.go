@@ -26,6 +26,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"github.com/Masterminds/semver"
 	junit2 "github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
 	"html/template"
@@ -96,9 +97,11 @@ func (o options) loadDefaults() error {
 		if err != nil {
 			return fmt.Errorf("failed to fetch stable k8s version: %v", err)
 		}
-		if err := resp.Body.Close(); err != nil {
-			return fmt.Errorf("failed to close response body: %v", err)
-		}
+		defer func() {
+			if err := resp.Body.Close(); err != nil {
+				log.Errorf("failed to close response body: %v", err)
+			}
+		}()
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return err
@@ -107,7 +110,29 @@ func (o options) loadDefaults() error {
 		if !k8sStableReleaseVersionRegex.MatchString(k8sStableReleaseVersion) {
 			return fmt.Errorf("Kubernetes stable version %q doesn't match regex", k8sStableReleaseVersion)
 		}
-		opts.K8sVersion = k8sStableReleaseVersionRegex.FindAllStringSubmatch(k8sStableReleaseVersion, -1)[0][1]
+
+		// Align the report to k8s version used in current sig-compute-migrations lane
+		// since that lane might not be on the latest version, start from the latest and try earlier k8s versions
+		exitCounter := 0
+		defaultK8sVersion := k8sStableReleaseVersionRegex.FindAllStringSubmatch(k8sStableReleaseVersion, -1)[0][1]
+		for {
+			migrationsJobURL := fmt.Sprintf("https://prow.ci.kubevirt.io/job-history/gs/kubevirt-prow/logs/periodic-kubevirt-e2e-k8s-%s-sig-compute-migrations", defaultK8sVersion)
+			log.Infof("checking whether %q exists", migrationsJobURL)
+			head, err := http.Head(migrationsJobURL)
+			if err != nil {
+				return fmt.Errorf("head request to %q failed: %+v", migrationsJobURL, err)
+			}
+			if head.StatusCode == 200 {
+				break
+			}
+			exitCounter++
+			if exitCounter >= 3 {
+				return fmt.Errorf("determining default k8s version for reports failed: no migration lane found, stopped at %q", migrationsJobURL)
+			}
+			version := semver.MustParse(defaultK8sVersion)
+			defaultK8sVersion = fmt.Sprintf("%d.%d", version.Major(), version.Minor()-1)
+		}
+		opts.K8sVersion = defaultK8sVersion
 	}
 	return nil
 }
