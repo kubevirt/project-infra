@@ -134,8 +134,8 @@ periodics:
       - name: GITHUB_TOKEN
         valueFrom:
           secretKeyRef:
-            name: oauth-token
             key: oauth
+            name: oauth-token
       image: quay.io/kubevirtci/golang:v20250701-f32dbda
       name: ""
       resources: {}
@@ -607,7 +607,8 @@ periodics:
       - /bin/bash
       - -c
       - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
-        -p ../kubevirt -T main -R -L skip-review -B $'Run of `cd ../kubevirt && make rpm-deps`\n\n/release-blocker main'
+        -p ../kubevirt -T main -R -L skip-review -B $'Run of `cd ../kubevirt && make
+        rpm-deps`\n\n/release-blocker main'
       image: quay.io/kubevirtci/pr-creator:v20240913-6773146
       name: ""
       resources:
@@ -2399,6 +2400,202 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.33-sig-operator
+      image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
+      name: ""
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 10 0,8,16 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-etcd-in-mem: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-network
+  reporter_config:
+    slack:
+      report: false
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.34-sig-network
+      image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
+      name: ""
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 40 7,15,23 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-etcd-in-mem: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-storage
+  reporter_config:
+    slack:
+      report: false
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.34-sig-storage
+      image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
+      name: ""
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 50 2,10,18 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 5h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-etcd-in-mem: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-compute
+  reporter_config:
+    slack:
+      report: false
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.34-sig-compute
+      - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+        value: --usb 30M --usb 40M
+      - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
+        value: 4h45m
+      image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
+      name: ""
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 0 3,11,19 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-bazel-unnested: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-etcd-in-mem: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-operator
+  reporter_config:
+    slack:
+      report: false
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.34-sig-operator
       image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
       name: ""
       resources:
