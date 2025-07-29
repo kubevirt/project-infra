@@ -1005,7 +1005,7 @@ presubmits:
       preset-shared-images: "true"
       rehearsal.allowed: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-sig-network-multus-v4
+    name: pull-kubevirt-e2e-k8s-1.33-sig-network-with-dnc
     optional: true
     skip_branches:
     - release-\d+\.\d+
