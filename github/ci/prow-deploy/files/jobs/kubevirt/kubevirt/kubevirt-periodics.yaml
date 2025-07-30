@@ -1339,6 +1339,10 @@ periodics:
         value: kind-1.33
       image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
       name: ""
+      dnsConfig:
+          nameservers:
+          - 8.8.8.8
+      dnsPolicy: None
       resources:
         requests:
           memory: 18Gi
