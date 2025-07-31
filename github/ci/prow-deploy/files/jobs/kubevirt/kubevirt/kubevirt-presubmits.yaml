@@ -212,6 +212,10 @@ presubmits:
           name: cgroup
         - mountPath: /dev/vfio/
           name: vfio
+      dnsConfig:
+        nameservers:
+        - 8.8.8.8
+      dnsPolicy: None
       volumes:
       - hostPath:
           path: /sys/fs/cgroup
