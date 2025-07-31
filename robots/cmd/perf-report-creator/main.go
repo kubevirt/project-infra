@@ -332,9 +332,9 @@ func getDateForJob(ctx context.Context, client *storage.Client, jobID string, pe
 func getVMIResult(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (*Result, error) {
 	prefixedFileName := ""
 	if strings.Contains(performanceJobName, "density") {
-		prefixedFileName = "performance-density/perfscale-audit-results.json"
+		prefixedFileName = "perfscale-audit-results.json"
 	} else {
-		prefixedFileName = "performance/VMI-perf-audit-results.json"
+		prefixedFileName = "VMI-perf-audit-results.json"
 	}
 	reader, err := getAuditFileReaderForJob(ctx, client, jobID, performanceJobName, prefixedFileName)
 	if err != nil {
