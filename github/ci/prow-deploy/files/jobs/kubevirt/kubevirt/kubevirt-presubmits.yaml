@@ -185,7 +185,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 5
     name: pull-kubevirt-e2e-kind-1.33-sev
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
