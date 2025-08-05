@@ -516,7 +516,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-check-provision-env: "true"
       preset-podman-in-container-enabled: "true"
-    max_concurrency: 1
+    max_concurrency: 3
     name: check-provision-k8s-1.33
     spec:
       containers:
@@ -543,7 +543,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-check-provision-env: "true"
       preset-podman-in-container-enabled: "true"
-    max_concurrency: 1
+    max_concurrency: 3
     name: check-provision-k8s-1.34
     spec:
       containers:
