@@ -1077,7 +1077,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-arm64-workloads
+    cluster: eu-west-1-kubevirtci-dev
     decorate: true
     decoration_config:
       grace_period: 5m0s
@@ -1098,7 +1098,7 @@ presubmits:
         - /bin/sh
         - -ce
         - |
-          automation/test.sh
+          automation/test.sh 
         env:
         - name: TARGET
           value: kind-1.31-wg-arm64
