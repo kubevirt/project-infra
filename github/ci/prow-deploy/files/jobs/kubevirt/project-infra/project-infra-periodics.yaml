@@ -231,6 +231,7 @@ periodics:
       - --config-subdir=jobs
       - --github-token-path=/etc/github/oauth
       - --git-signoff=true
+      - --skip-review=true
 - name: periodic-update-flakefinder-indexpage
   interval: 24h
   annotations:
