@@ -38,7 +38,9 @@ type weeklyGraphOpts struct {
 	resource         string
 	weeklyReportsDir string
 	plotlyHTML       bool
+	isDuringRelease  bool
 	since            string
+	shapeYamlFile    string
 }
 
 func resultsFlagOpts(subcommands []string) resultOpts {
@@ -76,6 +78,8 @@ func weeklyGraphFlagOpts(subcommands []string) weeklyGraphOpts {
 	w := weeklyGraphOpts{}
 	fs := flag.NewFlagSet("weekly-graph", flag.ExitOnError)
 	fs.StringVar(&w.metricList, "metrics-list", string(ResultTypeVMICreationToRunningP95), "comma separated list of metrics to be plotted")
+	fs.BoolVar(&w.isDuringRelease, "is-during-release", false, "boolean for selecting if the graph is plotted during a release")
+	fs.StringVar(&w.shapeYamlFile, "shape-yaml-file", "./robots/cmd/perf-report-creator/shape.yaml", "the file containing the shape data for the release")
 	fs.StringVar(&w.resource, "resource", "vmi", "resource for which the graph will be plotted")
 	fs.StringVar(&w.weeklyReportsDir, "weekly-reports-dir", "output/weekly", "the output directory from which weekly json data will be read")
 	fs.BoolVar(&w.plotlyHTML, "plotly-html", true, "boolean for selecting what kind of graph will be plotted")
