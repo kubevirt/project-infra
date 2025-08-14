@@ -162,6 +162,42 @@ presubmits:
           type: Directory
         name: cgroup
   - always_run: false
+    cluster: prow-arm64-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    max_concurrency: 1
+    name: check-up-kind-1.33-arm64
+    optional: true
+    run_if_changed: cluster-up/cluster/kind(-1\.33)?
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        - make cluster-up
+        env:
+        - name: KUBEVIRT_PROVIDER
+          value: kind-1.33
+        - name: KUBEVIRT_DEPLOY_CDI
+          value: "true"
+        image: quay.io/kubevirtci/golang:v20250701-f32dbda
+        name: ""
+        resources:
+          requests:
+            memory: 24Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+  - always_run: false
     cluster: prow-workloads
     decorate: true
     decoration_config:
