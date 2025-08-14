@@ -1099,7 +1099,7 @@ presubmits:
           automation/test.sh
         env:
         - name: TARGET
-          value: kind-1.31-wg-arm64
+          value: kind-1.33-wg-arm64
         - name: KUBEVIRT_NUM_NODES
           value: "2"
         image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
@@ -1143,9 +1143,9 @@ presubmits:
           automation/conformance.sh
         env:
         - name: TARGET
-          value: kind-1.31
+          value: kind-1.33
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.31
+          value: kind-1.33
         - name: KUBEVIRT_NUM_NODES
           value: "3"
         - name: IPFAMILY
