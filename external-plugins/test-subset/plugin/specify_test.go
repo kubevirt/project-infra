@@ -26,17 +26,111 @@ const (
 	baseRef  = "main"
 	orgRepo  = org + "/" + repo
 	prNumber = 17
+	testuser = "testuser"
 )
 
 var _ = Describe("Test-subset", func() {
 	Context("A valid pull request comment event", func() {
 		var gitrepo *localgit.LocalGit
 		var gitClientFactory git2.ClientFactory
+		var eventsHandler *handler.GitHubEventsHandler
+		var prowc *fake.FakeProwV1
 
 		BeforeEach(func() {
 			var err error
 			gitrepo, gitClientFactory, err = localgit.NewV2()
 			Expect(err).ShouldNot(HaveOccurred())
+
+			// Create a fake git repo
+			makeRepoWithEmptyProwConfig(gitrepo, org, repo)
+
+			// Generate a base commit with jobs
+			baseConfig, err := json.Marshal(&config.Config{
+				JobConfig: config.JobConfig{
+					PresubmitsStatic: map[string][]config.Presubmit{
+						orgRepo: {
+							{
+								JobBase: config.JobBase{
+									Name: "job1",
+									Spec: &v1.PodSpec{
+										Containers: []v1.Container{
+											{
+												Image: "image1",
+											},
+										},
+									},
+								},
+							},
+							{
+								JobBase: config.JobBase{
+									Name: "job2",
+									Spec: &v1.PodSpec{
+										Containers: []v1.Container{
+											{
+												Image: "image2",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			})
+			Expect(err).ShouldNot(HaveOccurred())
+			err = gitrepo.AddCommit(org, repo, map[string][]byte{
+				"jobs-config.yaml": baseConfig,
+			})
+			Expect(err).ShouldNot(HaveOccurred())
+			baseref, err := gitrepo.RevParse(org, repo, "HEAD")
+			Expect(err).ShouldNot(HaveOccurred())
+
+			// Setup fake GitHub client
+			gh := fakegithub.NewFakeClient()
+			gh.OrgMembers = map[string][]string{
+				repo: {testuser},
+			}
+
+			// Setup PR
+			gh.PullRequests = map[int]*github.PullRequest{
+				prNumber: {
+					Number: prNumber,
+					State:  "open",
+					Base: github.PullRequestBranch{
+						Repo: github.Repo{
+							Name:     repo,
+							FullName: orgRepo,
+						},
+						Ref: baseRef,
+						SHA: baseref,
+					},
+					Head: github.PullRequestBranch{
+						Repo: github.Repo{
+							Name:     repo,
+							FullName: orgRepo,
+						},
+						Ref: baseRef,
+						SHA: baseref,
+					},
+				},
+			}
+
+			// Setup events handler
+			fakelog := logrus.New()
+			eventsChan := make(chan *handler.GitHubEvent)
+			prowc = &fake.FakeProwV1{
+				Fake: &testing.Fake{},
+			}
+			eventsHandler = handler.NewGitHubEventsHandler(
+				eventsChan,
+				fakelog,
+				prowc.ProwJobs("test-ns"),
+				gh,
+				"prowconfig.yaml",
+				"jobs-config.yaml",
+				"",
+				gitClientFactory)
+			eventsHandler.SetLocalConfLoad()
 		})
 
 		AfterEach(func() {
@@ -47,136 +141,37 @@ var _ = Describe("Test-subset", func() {
 
 		Context("a member comments a test-subset command", func() {
 			It("Should run the specified prow jobs", func() {
-				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, org, repo)
-				})
-
-				var baseref string
-				By("Generating a base commit with jobs", func() {
-					baseConfig, err := json.Marshal(&config.Config{
-						JobConfig: config.JobConfig{
-							PresubmitsStatic: map[string][]config.Presubmit{
-								orgRepo: {
-									{
-										JobBase: config.JobBase{
-											Name: "job1",
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "image1",
-													},
-												},
-											},
-										},
-									},
-									{
-										JobBase: config.JobBase{
-											Name: "job2",
-											Spec: &v1.PodSpec{
-												Containers: []v1.Container{
-													{
-														Image: "image2",
-													},
-												},
-											},
-										},
-									},
-								},
-							},
+				// Create the exact same event as the original test
+				event := &github.IssueCommentEvent{
+					Action: github.IssueCommentActionCreated,
+					Comment: github.IssueComment{
+						Body: `/test-subset job1 "(label1)"`,
+						User: github.User{
+							Login: testuser,
 						},
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					err = gitrepo.AddCommit(org, repo, map[string][]byte{
-						"jobs-config.yaml": baseConfig,
-					})
-					Expect(err).ShouldNot(HaveOccurred())
-					baseref, err = gitrepo.RevParse(org, repo, "HEAD")
-					Expect(err).ShouldNot(HaveOccurred())
-				})
-
-				gh := fakegithub.NewFakeClient()
-				testuser := "testuser"
-
-				By("Registering a user to the fake github client", func() {
-					gh.OrgMembers = map[string][]string{
-						repo: {testuser},
-					}
-				})
-
-				var event *github.IssueCommentEvent
-				By("Generating a fake pull request event and registering it to the github client", func() {
-					event = &github.IssueCommentEvent{
-						Action: github.IssueCommentActionCreated,
-						Comment: github.IssueComment{
-							Body: `/test-subset job1 "(label1)"`,
-							User: github.User{
-								Login: testuser,
-							},
+					},
+					GUID: "guid",
+					Repo: github.Repo{
+						FullName: orgRepo,
+					},
+					Issue: github.Issue{
+						Number: prNumber,
+						State:  "open",
+						User: github.User{
+							Login: testuser,
 						},
-						GUID: "guid",
-						Repo: github.Repo{
-							FullName: orgRepo,
-						},
-						Issue: github.Issue{
-							Number: prNumber,
-							State:  "open",
-							User: github.User{
-								Login: testuser,
-							},
-							PullRequest: &struct{}{},
-						},
-					}
+						PullRequest: &struct{}{},
+					},
+				}
 
-					gh.PullRequests = map[int]*github.PullRequest{
-						prNumber: {
-							Number: prNumber,
-							State:  "open",
-							Base: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: baseRef,
-								SHA: baseref,
-							},
-							Head: github.PullRequestBranch{
-								Repo: github.Repo{
-									Name:     repo,
-									FullName: orgRepo,
-								},
-								Ref: baseRef,
-								SHA: baseref,
-							},
-						},
-					}
-				})
+				handlerEvent, err := makeHandlerIssueCommentEvent(event)
+				Expect(err).ShouldNot(HaveOccurred())
 
-				By("Sending the event to the test-subset plugin server", func() {
-					fakelog := logrus.New()
-					eventsChan := make(chan *handler.GitHubEvent)
-					prowc := &fake.FakeProwV1{
-						Fake: &testing.Fake{},
-					}
-					eventsHandler := handler.NewGitHubEventsHandler(
-						eventsChan,
-						fakelog,
-						prowc.ProwJobs("test-ns"),
-						gh,
-						"prowconfig.yaml",
-						"jobs-config.yaml",
-						"",
-						gitClientFactory)
+				eventsHandler.Handle(handlerEvent)
 
-					handlerEvent, err := makeHandlerIssueCommentEvent(event)
-					Expect(err).ShouldNot(HaveOccurred())
-
-					eventsHandler.SetLocalConfLoad()
-					eventsHandler.Handle(handlerEvent)
-
-					Expect(prowc.Actions()).Should(HaveLen(1))
-					pjAction := prowc.Actions()[0].GetResource()
-					Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
-				})
+				Expect(prowc.Actions()).Should(HaveLen(1))
+				pjAction := prowc.Actions()[0].GetResource()
+				Expect(pjAction).To(Equal(prowapi.SchemeGroupVersion.WithResource("prowjobs")))
 			})
 		})
 	})
