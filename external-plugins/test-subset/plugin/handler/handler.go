@@ -11,7 +11,10 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/google/shlex"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/pflag"
+
 	k8s_v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "sigs.k8s.io/prow/pkg/client/clientset/versioned/typed/prowjobs/v1"
@@ -24,13 +27,54 @@ import (
 )
 
 var log *logrus.Logger
-var testSubsetCommentRe = regexp.MustCompile(`^/test-subset (\S+) (\S+|\(.*\))$`)
+var testSubsetCommentRe = regexp.MustCompile(`^/test-subset (\S+) (.+)$`)
 
 func init() {
 	log = logrus.New()
 	log.SetOutput(os.Stdout)
 	log.SetFormatter(&logrus.JSONFormatter{})
 	log.SetLevel(logrus.DebugLevel)
+}
+
+type TestSubsetParams struct {
+	filter    string
+	focus     string
+	verbosity string
+}
+
+// parseTestSubsetParameters parses the test-subset command parameters using pflag
+func parseTestSubsetParameters(parameters string) (*TestSubsetParams, error) {
+	params := &TestSubsetParams{}
+
+	flagSet := pflag.NewFlagSet("test-subset", pflag.ContinueOnError)
+	flagSet.Usage = func() {}
+
+	var filter, focus, verbosity string
+	flagSet.StringVar(&filter, "filter", "", "Filter expression for test selection")
+	flagSet.StringVar(&focus, "focus", "", "Focus expression for test selection")
+	flagSet.StringVar(&verbosity, "verbosity", "", "Verbosity settings")
+
+	// Split parameters into args for pflag parsing using shlex (shell-like parsing)
+	args, err := shlex.Split(parameters)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse arguments: %w", err)
+	}
+
+	if err := flagSet.Parse(args); err != nil {
+		return nil, fmt.Errorf("failed to parse flags: %w", err)
+	}
+
+	if filter != "" {
+		if !strings.HasPrefix(filter, "(") {
+			filter = "(" + filter + ")"
+		}
+		params.filter = filter
+	}
+
+	params.focus = focus
+	params.verbosity = verbosity
+
+	return params, nil
 }
 
 type GitHubEvent struct {
@@ -135,12 +179,14 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, event *g
 		return
 	}
 
-	if !testSubsetCommentRe.MatchString(event.Comment.Body) {
-		log.Errorf("comment does not match the expected syntax, %s", event.Comment.Body)
+	commentBody := strings.TrimSpace(event.Comment.Body)
+
+	if !testSubsetCommentRe.MatchString(commentBody) {
+		log.Errorf("comment does not match the expected syntax, %s", commentBody)
 		return
 	}
 
-	matches := testSubsetCommentRe.FindStringSubmatch(event.Comment.Body)
+	matches := testSubsetCommentRe.FindStringSubmatch(commentBody)
 	// extra precaution, not mandatory due to the regex
 	if len(matches) < 3 {
 		log.WithField("matches", fmt.Sprintf("%v", matches)).Debug("no match - aborting")
@@ -148,9 +194,12 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, event *g
 	}
 
 	jobName := matches[1]
-	labels := matches[2]
-	if !strings.HasPrefix(labels, "(") {
-		labels = "(" + labels + ")"
+	parameters := matches[2]
+
+	params, err := parseTestSubsetParameters(parameters)
+	if err != nil {
+		log.WithError(err).Errorf("failed to parse test-subset parameters: %s", parameters)
+		return
 	}
 
 	presubmits, err := h.loadPresubmits(*pr)
@@ -178,8 +227,34 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, event *g
 		return
 	}
 
-	presubmit.Spec.Containers[0].Env = append(presubmit.Spec.Containers[0].Env,
-		k8s_v1.EnvVar{Name: "KUBEVIRT_LABEL_FILTER", Value: labels})
+	paramMappings := []struct {
+		value   string
+		envName string
+	}{
+		{params.filter, "KUBEVIRT_LABEL_FILTER"},
+		{params.focus, "KUBEVIRT_LABEL_FOCUS"},
+		{params.verbosity, "KUBEVIRT_VERBOSITY"},
+	}
+
+	hasParams := false
+	for _, mapping := range paramMappings {
+		if mapping.value != "" {
+			hasParams = true
+			break
+		}
+	}
+
+	if !hasParams {
+		log.Errorf("at least one of the parameters must be specified")
+		return
+	}
+
+	for _, mapping := range paramMappings {
+		if mapping.value != "" {
+			presubmit.Spec.Containers[0].Env = append(presubmit.Spec.Containers[0].Env,
+				k8s_v1.EnvVar{Name: mapping.envName, Value: mapping.value})
+		}
+	}
 
 	job := pjutil.NewPresubmit(*pr, pr.Base.SHA, presubmit, event.GUID, map[string]string{})
 	if job.Labels == nil {
