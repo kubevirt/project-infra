@@ -69,7 +69,9 @@ func gatherOptions() options {
 	for _, group := range []flagutil.OptionGroup{&o.github} {
 		group.AddFlags(fs)
 	}
-	fs.Parse(os.Args[1:])
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		logrus.Fatalf("failed to parse: %v", err)
+	}
 	return o
 }
 
