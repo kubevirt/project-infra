@@ -202,6 +202,38 @@ var _ = Describe("Test-subset", func() {
 					"KUBEVIRT_VERBOSITY":    "virtLauncher:3",
 				})
 			})
+
+			It("Should not create job for unauthorized user", func() {
+				event := &github.IssueCommentEvent{
+					Action: github.IssueCommentActionCreated,
+					Comment: github.IssueComment{
+						Body: `/test-subset job1 --filter "USB"`,
+						User: github.User{
+							Login: "unauthorized-user",
+						},
+					},
+					GUID: "guid",
+					Repo: github.Repo{
+						FullName: orgRepo,
+					},
+					Issue: github.Issue{
+						Number: prNumber,
+						State:  "open",
+						User: github.User{
+							Login: "unauthorized-user",
+						},
+						PullRequest: &struct{}{},
+					},
+				}
+
+				handlerEvent, err := makeHandlerIssueCommentEvent(event)
+				Expect(err).ShouldNot(HaveOccurred())
+
+				eventsHandler.Handle(handlerEvent)
+
+				// Verify no job was created
+				Expect(prowc.Actions()).Should(HaveLen(0))
+			})
 		})
 	})
 })
