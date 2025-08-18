@@ -130,7 +130,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: check-up-kind-1.33
-    optional: true
     run_if_changed: cluster-up/cluster/kind(-1\.33)?
     spec:
       containers:
@@ -168,7 +167,6 @@ presubmits:
       timeout: 3h0m0s
     max_concurrency: 1
     name: check-up-kind-1.33-arm64
-    optional: true
     run_if_changed: cluster-up/cluster/kind(-1\.33)?
     spec:
       containers:
@@ -207,7 +205,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: check-up-kind-1.31
-    optional: true
     run_if_changed: cluster-up/cluster/kind(-1\.31)?
     spec:
       containers:
