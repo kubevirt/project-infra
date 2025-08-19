@@ -922,7 +922,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 16Gi
+            memory: 52Gi
         securityContext:
           privileged: true
         volumeMounts:
