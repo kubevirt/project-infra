@@ -130,7 +130,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: check-up-kind-1.33
-    optional: true
     run_if_changed: cluster-up/cluster/kind(-1\.33)?
     spec:
       containers:
@@ -168,7 +167,6 @@ presubmits:
       timeout: 3h0m0s
     max_concurrency: 1
     name: check-up-kind-1.33-arm64
-    optional: true
     run_if_changed: cluster-up/cluster/kind(-1\.33)?
     spec:
       containers:
@@ -187,47 +185,6 @@ presubmits:
         resources:
           requests:
             memory: 24Gi
-        securityContext:
-          privileged: true
-        volumeMounts:
-        - mountPath: /sys/fs/cgroup
-          name: cgroup
-      volumes:
-      - hostPath:
-          path: /sys/fs/cgroup
-          type: Directory
-        name: cgroup
-  - always_run: false
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      timeout: 3h0m0s
-    labels:
-      preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-    max_concurrency: 3
-    name: check-up-kind-1.31
-    optional: true
-    run_if_changed: cluster-up/cluster/kind(-1\.31)?
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/bash
-        - -ce
-        - make cluster-up
-        env:
-        - name: KUBEVIRT_PROVIDER
-          value: kind-1.31
-        - name: KUBEVIRT_NUM_NODES
-          value: "2"
-        - name: KUBEVIRT_MEMORY_SIZE
-          value: 11264M
-        image: quay.io/kubevirtci/golang:v20250701-f32dbda
-        name: ""
-        resources:
-          requests:
-            memory: 52Gi
         securityContext:
           privileged: true
         volumeMounts:
