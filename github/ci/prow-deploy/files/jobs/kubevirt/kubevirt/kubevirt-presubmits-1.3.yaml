@@ -810,7 +810,7 @@ presubmits:
     labels:
       preset-bazel-unnested: "false"
       preset-podman-in-container-enabled: "true"
-    max_concurrency: 5
+    max_concurrency: 1
     name: pull-kubevirt-e2e-arm64-1.3
     optional: true
     spec:
@@ -832,7 +832,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 16Gi
+            memory: 52Gi
         securityContext:
           privileged: true
         volumeMounts:
@@ -861,7 +861,7 @@ presubmits:
     labels:
       preset-bazel-unnested: "false"
       preset-dind-enabled: "true"
-    max_concurrency: 4
+    max_concurrency: 1
     name: pull-kubevirt-conformance-arm64-1.3
     optional: true
     spec:
