@@ -867,7 +867,7 @@ presubmits:
     labels:
       preset-bazel-unnested: "false"
       preset-podman-in-container-enabled: "true"
-    max_concurrency: 5
+    max_concurrency: 1
     name: pull-kubevirt-e2e-arm64-1.4
     optional: true
     spec:
@@ -918,7 +918,7 @@ presubmits:
     labels:
       preset-bazel-unnested: "false"
       preset-dind-enabled: "true"
-    max_concurrency: 4
+    max_concurrency: 1
     name: pull-kubevirt-conformance-arm64-1.4
     optional: true
     skip_report: true
