@@ -148,10 +148,10 @@ var _ = Describe("Test-subset", func() {
 				})
 			})
 
-			It("Should set KUBEVIRT_LABEL_FOCUS for --focus parameter", func() {
+			It("Should set KUBEVIRT_E2E_FOCUS for --focus parameter", func() {
 				handleTestSubsetCommand(eventsHandler, `/test-subset job1 --focus "FocusString"`)
 				validateJobEnvironmentVars(prowc, map[string]string{
-					"KUBEVIRT_LABEL_FOCUS": "FocusString",
+					"KUBEVIRT_E2E_FOCUS": "FocusString",
 				})
 			})
 
@@ -166,7 +166,7 @@ var _ = Describe("Test-subset", func() {
 				handleTestSubsetCommand(eventsHandler, `/test-subset job1 --filter "(USB)" --focus "FocusString" --verbosity=virtLauncher:2`)
 				validateJobEnvironmentVars(prowc, map[string]string{
 					"KUBEVIRT_LABEL_FILTER": "(USB)",
-					"KUBEVIRT_LABEL_FOCUS":  "FocusString",
+					"KUBEVIRT_E2E_FOCUS":    "FocusString",
 					"KUBEVIRT_VERBOSITY":    "virtLauncher:2",
 				})
 			})
@@ -182,7 +182,7 @@ var _ = Describe("Test-subset", func() {
 				handleTestSubsetCommand(eventsHandler, `/test-subset job1 --filter='(USB)' --verbosity="virtLauncher:2" --focus "Focus String"`)
 				validateJobEnvironmentVars(prowc, map[string]string{
 					"KUBEVIRT_LABEL_FILTER": "(USB)",
-					"KUBEVIRT_LABEL_FOCUS":  "Focus String",
+					"KUBEVIRT_E2E_FOCUS":    "Focus String",
 					"KUBEVIRT_VERBOSITY":    "virtLauncher:2",
 				})
 			})
@@ -296,7 +296,7 @@ func validateJobEnvironmentVars(prowc *fake.FakeProwV1, expectedEnvVars map[stri
 	}
 
 	// Ensure no unexpected environment variables are set
-	expectedNames := []string{"KUBEVIRT_LABEL_FILTER", "KUBEVIRT_LABEL_FOCUS", "KUBEVIRT_VERBOSITY"}
+	expectedNames := []string{"KUBEVIRT_LABEL_FILTER", "KUBEVIRT_E2E_FOCUS", "KUBEVIRT_VERBOSITY"}
 	for _, env := range envVars {
 		for _, expectedName := range expectedNames {
 			if env.Name == expectedName {
