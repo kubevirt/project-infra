@@ -653,7 +653,7 @@ periodics:
       name: ""
       resources:
         requests:
-          memory: 24Gi
+          memory: 52Gi
       securityContext:
         privileged: true
       volumeMounts:
@@ -664,6 +664,61 @@ periodics:
         path: /sys/fs/cgroup
         type: Directory
       name: cgroup
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-arm64-workloads
+  cron: 40 4,12,20 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-unnested: "false"
+    preset-podman-in-container-enabled: "true"
+  max_concurrency: 1
+  name: periodic-kubevirt-kind-conformance-test-ARM64
+  reporter_config:
+    slack:
+      report: false
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -ce
+      - |
+        automation/conformance.sh
+      env:
+      - name: TARGET
+        value: kind-1.33
+      - name: KUBEVIRT_PROVIDER
+        value: kind-1.33
+      - name: KUBEVIRT_NUM_NODES
+        value: "3"
+      - name: IPFAMILY
+        value: dual
+      - name: RUN_ON_ARM64_INFRA
+        value: "true"
+      image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
+      name: ""
+      resources:
+       requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: /sys/fs/cgroup
+        name: cgroup
+    volumes:
+      - hostPath:
+        path: /sys/fs/cgroup
+        type: Directory
+        name: cgroup
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
