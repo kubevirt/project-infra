@@ -232,7 +232,7 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, event *g
 		envName string
 	}{
 		{params.filter, "KUBEVIRT_LABEL_FILTER"},
-		{params.focus, "KUBEVIRT_LABEL_FOCUS"},
+		{params.focus, "KUBEVIRT_E2E_FOCUS"},
 		{params.verbosity, "KUBEVIRT_VERBOSITY"},
 	}
 
