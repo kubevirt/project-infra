@@ -182,15 +182,21 @@ func helpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	pluginHelp := &pluginhelp.PluginHelp{
 		Description: `The Test-subset plugin is used to trigger a job that runs custom subset of the tests.
 		<br>A pull request is considered trusted if the author is a member of the 'trusted organization' for the repository.
-        <br>The arguments are the job name and the requested filter.
-		<br>This allows runnign subset of the tests without changing the code.`,
+        <br>The arguments are the job name and the requested filter and/or focus parameters.
+		<br>This allows running subset of the tests without changing the code.`,
 	}
 	pluginHelp.AddCommand(pluginhelp.Command{
-		Usage:       "/test-subset <job_name> <filter>",
-		Description: "Triggering job with the selected filter.",
+		Usage:       "/test-subset <job_name> [--filter <filter_expression>] [--focus <focus_expression>] [--verbosity <verbosity_settings>]",
+		Description: "Triggering job with the selected filter, focus, and/or verbosity. At least one parameter must be specified.",
 		Featured:    true,
 		WhoCanUse:   "Members of the trusted organization for the repo.",
-		Examples:    []string{"/test-subset pull-kubevirt-e2e-k8s-1.30-sig-network (USB)"},
+		Examples: []string{
+			"/test-subset pull-kubevirt-e2e-k8s-1.30-sig-network --filter USB",
+			"/test-subset pull-kubevirt-e2e-k8s-1.30-sig-network --focus SomeString",
+			"/test-subset pull-kubevirt-e2e-k8s-1.30-sig-network --verbosity=virtLauncher:3,virtHandler:3",
+			"/test-subset pull-kubevirt-e2e-k8s-1.30-sig-network --filter (Storage) --focus SomeString",
+			"/test-subset pull-kubevirt-e2e-k8s-1.30-sig-network --filter=Storage --verbosity=virtLauncher:2",
+		},
 	})
 	return pluginHelp, nil
 }
