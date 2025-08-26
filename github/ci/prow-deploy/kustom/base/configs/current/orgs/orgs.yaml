@@ -150,6 +150,7 @@ orgs:
       client-python:
         description: An auto-generated python SDK to interact with KubeVirt resources
         has_projects: false
+        archived: true
       cloud-image-builder:
         archived: true
         description: Scripts and playbooks for creating and testing cloud images containing Kubernetes and KubeVirt
