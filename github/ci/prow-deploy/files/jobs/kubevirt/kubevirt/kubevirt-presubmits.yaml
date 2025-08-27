@@ -889,7 +889,7 @@ presubmits:
             memory: 12Gi
         securityContext:
           privileged: true
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane
@@ -901,6 +901,7 @@ presubmits:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-prom-rules-verify
+    run_if_changed: "hack/prom-rule-ci/.*"
     skip_branches:
     - release-\d+\.\d+
     spec:
