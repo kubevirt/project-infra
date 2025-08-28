@@ -518,6 +518,47 @@ presubmits:
             privileged: true
       nodeSelector:
         type: bare-metal-external
+  - name: pull-common-instancetypes-kubevirt-functest-debian-13
+    branches:
+      - main
+    always_run: false
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/debian/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 1
+    spec:
+      containers:
+        - command:
+            - /usr/local/bin/runner.sh
+            - "/bin/sh"
+            - "-c"
+            - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
+          env:
+            - name: GIMME_GO_VERSION
+              value: 1.24.5
+            - name: KUBEVIRT_MEMORY_SIZE
+              value: 16G
+            - name: FUNCTEST_EXTRA_ARGS
+              value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Debian 13"'
+          image: quay.io/kubevirtci/golang:v20250701-f32dbda
+          name: ""
+          resources:
+            requests:
+              memory: 20Gi
+          securityContext:
+            privileged: true
+      nodeSelector:
+        type: bare-metal-external
   - name: pull-build-common-instancetypes-builder
     always_run: false
     run_if_changed: "image/.*"
