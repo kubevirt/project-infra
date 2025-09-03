@@ -553,6 +553,7 @@ presubmits:
       timeout: 2h0m0s
     labels:
       preset-bazel-unnested: "false"
+      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-unit-test-arm64
     optional: true
     skip_branches:
