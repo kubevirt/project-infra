@@ -11,3 +11,4 @@ github/ci/*.retry
 testaccount.json
 .idea
 images/autoowners/autoowners
+CLAUDE.md

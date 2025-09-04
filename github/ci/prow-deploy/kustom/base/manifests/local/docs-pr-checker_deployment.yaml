@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docs-pr-checker
+  labels:
+    app: docs-pr-checker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docs-pr-checker
+  template:
+    metadata:
+      labels:
+        app: docs-pr-checker
+    spec:
+      terminationGracePeriodSeconds: 180
+      containers:
+      - name: docs-pr-checker
+        image: quay.io/kubevirtci/docs-pr-checker:latest
+        imagePullPolicy: IfNotPresent
+        args:
+        - --dry-run=false
+        - --github-endpoint=http://ghproxy
+        - --github-endpoint=https://api.github.com
+        - --github-token-path=/etc/github/oauth
+        ports:
+          - name: http
+            containerPort: 8888
+        volumeMounts:
+        - name: hmac
+          mountPath: /etc/webhook
+          readOnly: true
+        - name: oauth
+          mountPath: /etc/github
+          readOnly: true
+        - name: plugins
+          mountPath: /etc/plugins
+          readOnly: true
+      volumes:
+      - name: hmac
+        secret:
+          secretName: hmac-token
+      - name: oauth
+        secret:
+          secretName: oauth-token
+      - name: plugins
+        configMap:
+          name: plugins
+

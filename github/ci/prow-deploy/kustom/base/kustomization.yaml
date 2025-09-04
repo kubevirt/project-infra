@@ -5,6 +5,8 @@ resources:
   - manifests/local/cherrypicker_deployment.yaml
   - manifests/local/cherrypicker_service.yaml
   - manifests/local/deck-ingress.yaml
+  - manifests/local/docs-pr-checker_deployment.yaml
+  - manifests/local/docs-pr-checker_service.yaml
   - manifests/local/gcsweb-deployment.yaml
   - manifests/local/gcsweb-ingress.yaml
   - manifests/local/gcsweb-service.yaml
