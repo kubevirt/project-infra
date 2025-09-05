@@ -6,5 +6,5 @@ spec:
   selector:
     app: docs-pr-checker
   ports:
-  - port: 80
+  - port: 9900
     targetPort: 8888
