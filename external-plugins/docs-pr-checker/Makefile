@@ -19,3 +19,4 @@ push:
 
 clean:
 	go clean
+

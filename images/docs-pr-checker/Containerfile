@@ -16,3 +16,4 @@ RUN mkdir kubevirt && \
 FROM gcr.io/k8s-prow/git:v20240729-4f255edb07
 COPY --from=builder /go/bin/docs-pr-checker /usr/bin/docs-pr-checker
 ENTRYPOINT ["/usr/bin/docs-pr-checker"]
+

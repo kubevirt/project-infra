@@ -238,3 +238,4 @@ func (s *Server) hasLabel(labels []github.Label, labelName string) bool {
 	}
 	return false
 }
+

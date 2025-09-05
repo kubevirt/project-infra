@@ -8,3 +8,4 @@ spec:
   ports:
   - port: 9900
     targetPort: 8888
+
