@@ -1,6 +1,7 @@
 run:
   modules-download-mode: readonly
   timeout: 5m
+  go: '1.25'
 output:
   show-stats: true
 linters:
