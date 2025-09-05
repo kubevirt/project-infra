@@ -2,7 +2,6 @@ orgs:
   kubevirt:
     admins:
       - brianmcarey
-      - davidvossel
       - dhiller
       - fabiand
       - kubevirt-bot
@@ -45,6 +44,7 @@ orgs:
       - cwilkers
       - dankenigsberg
       - dasionov
+      - davidvossel
       - davo911
       - dollierp
       - dominikholler
