@@ -51,7 +51,7 @@ func Test(t *testing.T) {
 				t.Fatalf("service account should have been removed: %v", user)
 			}
 
-			if "allUsers" == user {
+			if user == "allUsers" {
 				t.Fatalf("allUsers should have been removed: %v", user)
 			}
 		}

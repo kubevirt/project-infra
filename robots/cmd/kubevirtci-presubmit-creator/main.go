@@ -25,7 +25,6 @@ import (
 	"golang.org/x/oauth2"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	prowapi "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
 	prowjobs "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
 	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/yaml"
@@ -184,7 +183,7 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 		JobBase: config.JobBase{
 			UtilityConfig: config.UtilityConfig{
 				Decorate: &yes,
-				DecorationConfig: &prowapi.DecorationConfig{
+				DecorationConfig: &prowjobs.DecorationConfig{
 					Timeout: &prowjobs.Duration{Duration: 3 * time.Hour},
 				},
 			},
