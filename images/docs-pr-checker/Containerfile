@@ -1,5 +1,5 @@
 FROM quay.io/kubevirtci/golang:v20241213-57bd934 as builder
-ENV GOPROXY=https://proxy.golang.org|direct \
+ENV GOPROXY=https://proxy.golang.org,direct \
     GOFLAGS="-mod=vendor -ldflags=-extldflags=\"-static\"" \
     CGO_ENABLED=0 \
     GOOS=linux \
