@@ -2019,8 +2019,14 @@ presubmits:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
-        - -c
-        - automation/test.sh
+        - -ce
+        - |
+          modprobe br_netfilter
+          cat /proc/sys/net/bridge/bridge-nf-call-iptables
+          cat /proc/sys/net/bridge/bridge-nf-call-ip6tables
+          cat /proc/sys/net/ipv4/ip_forward
+          curl -L https://github.com/kubevirt/kubevirt/pull/15587.patch | git apply -3
+          automation/test.sh
         env:
         - name: TARGET
           value: k8s-1.33-sig-network
@@ -2031,6 +2037,14 @@ presubmits:
             memory: 52Gi
         securityContext:
           privileged: true
+        volumeMounts:
+        - mountPath: /dev
+          name: dev
+      volumes:
+      - name: dev
+        hostPath:
+          path: /dev
+          type: Directory
       nodeSelector:
         type: bare-metal-external
   - always_run: true
