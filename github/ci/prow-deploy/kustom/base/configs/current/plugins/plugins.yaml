@@ -271,7 +271,6 @@ plugins:
   kubevirt/kubevirt:
     plugins:
     - approve
-    - docs-pr
     - lgtm
     - owners-label
     - release-note
@@ -391,7 +390,6 @@ plugins:
     plugins:
     - approve
     - config-updater
-    - docs-pr
     - lgtm
     - trigger
     - help
