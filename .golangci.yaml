@@ -1,20 +1,15 @@
+version: "2"
 run:
+  go: "1.25"
   modules-download-mode: readonly
-  timeout: 5m
-  go: '1.25'
-output:
-  show-stats: true
 linters:
-  # initially we disable all linters, since this is an old code base with quite a lot of issues
-  disable-all: true
+  default: none
   enable:
-  - gocyclo
-  - staticcheck
-  - unused
-  - govet
-  - ineffassign
-  - gosimple
-#  - errcheck
-#linters-settings:
-#  gocyclo:
-#    min-complexity: 10
+    - gocyclo
+    - govet
+    - ineffassign
+#    - staticcheck
+    - unused
+#  settings:
+#    gocyclo:
+#      min-complexity: 10
