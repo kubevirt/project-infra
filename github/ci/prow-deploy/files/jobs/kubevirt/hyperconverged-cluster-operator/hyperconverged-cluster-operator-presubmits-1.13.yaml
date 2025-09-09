@@ -1,6 +1,6 @@
 presubmits:
   kubevirt/hyperconverged-cluster-operator:
-  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.30
+  - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.31
     branches:
       - release-1.13
     always_run: true
@@ -19,15 +19,15 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20240923-918320b
+        - image: quay.io/kubevirtci/golang:v20241213-57bd934
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "export TARGET=k8s-1.30 && automation/test.sh"
+            - "export TARGET=k8s-1.31 && automation/test.sh"
           env:
             - name: GIMME_GO_VERSION
-              value: "1.22.6"
+              value: "1.22.10"
             - name: GINKGO_LABELS
               value: '!OpenShift && !SINGLE_NODE_ONLY'
           # docker-in-docker needs privileged mode
