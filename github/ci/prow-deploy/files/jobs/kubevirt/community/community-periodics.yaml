@@ -59,7 +59,7 @@ periodics:
         COMMUNITY_DIR=$(cd ../community && pwd)
         ALUMNI_YAML=${COMMUNITY_DIR}/alumni.yaml
         for githubUser in $(yq '.result.inactiveUsers[]' < ${CONTRIBUTIONS_OUTPUT_FILE_NAME}); do
-          echo '- github: '"$githubUser" >> ${ALUMNI_YAML}
+          echo '  - github: '"$githubUser" >> ${ALUMNI_YAML}
         done
         yq -i '.alumni |= sort_by(.github)' ${ALUMNI_YAML}
 
