@@ -678,7 +678,6 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
-    preset-bazel-unnested: "false"
     preset-podman-in-container-enabled: "true"
   max_concurrency: 1
   name: periodic-kubevirt-kind-conformance-test-ARM64
@@ -716,8 +715,8 @@ periodics:
         name: cgroup
     volumes:
       - hostPath:
-        path: /sys/fs/cgroup
-        type: Directory
+          path: /sys/fs/cgroup
+          type: Directory
         name: cgroup
 - annotations:
     testgrid-dashboards: kubevirt-periodics
