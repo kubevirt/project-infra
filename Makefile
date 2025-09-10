@@ -20,8 +20,10 @@ endif
 .PHONY: all clean deps-update update-labels install-metrics-binaries lint $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
 all: deps-update $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator)
 
-clean: install-metrics-binaries
+lint-clean:
 	golangci-lint cache clean
+
+clean: install-metrics-binaries lint-clean
 	go clean -cache -modcache
 
 $(limiter) $(flake-report-writer) $(querier) $(kubevirtci) $(flake-issue-creator): deps-update

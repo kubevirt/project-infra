@@ -161,7 +161,7 @@ func runDequarantineExecution() error {
 
 	quarantinedTestsRunDataValues := generateDequarantineBaseData(jenkins, ctx, jobs, startOfReport, quarantinedTestEntriesFromFile)
 
-	err, remainingQuarantinedTestRecords := filterUnstableTestRecords(dequarantineExecOptions, quarantinedTestsRunDataValues)
+	remainingQuarantinedTestRecords, err := filterUnstableTestRecords(dequarantineExecOptions, quarantinedTestsRunDataValues)
 	if err != nil {
 		return fmt.Errorf("could not create data for output file %s: %v", dequarantineExecOptions.outputFile, err)
 	}
@@ -187,9 +187,9 @@ func runDequarantineExecution() error {
 	return nil
 }
 
-func filterUnstableTestRecords(options dequarantineExecuteOpts, values []*quarantinedTestsRunData) (err error, remainingQuarantinedTests []*test_report.FilterTestRecord) {
+func filterUnstableTestRecords(options dequarantineExecuteOpts, values []*quarantinedTestsRunData) (remainingQuarantinedTests []*test_report.FilterTestRecord, err error) {
 	if len(values) == 0 {
-		return fmt.Errorf("no input data?"), nil
+		return nil, fmt.Errorf("no input data")
 	}
 	for _, value := range values {
 		filterLogger := logger.WithField("record_id", value.Id)
@@ -219,7 +219,7 @@ func filterUnstableTestRecords(options dequarantineExecuteOpts, values []*quaran
 			filterLogger.WithField("result", "STABLE").WithField("test_name", test.TestName).Info("test is stable")
 		}
 	}
-	return nil, remainingQuarantinedTests
+	return remainingQuarantinedTests, nil
 }
 
 func isTestFailing(result *quarantinedTestRunData) bool {

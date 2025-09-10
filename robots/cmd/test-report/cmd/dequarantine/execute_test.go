@@ -46,7 +46,7 @@ func Test_applyData(t *testing.T) {
 				options: dequarantineExecuteOpts{},
 				values:  loadTestFileOrPanic("testdata/no-results.json"),
 			},
-			wantErr:                       fmt.Errorf("no input data?"),
+			wantErr:                       fmt.Errorf("no input data"),
 			wantRemainingQuarantinedTests: nil,
 		},
 		{
@@ -166,7 +166,7 @@ func Test_applyData(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotErr, gotRemainingQuarantinedTests := filterUnstableTestRecords(tt.args.options, tt.args.values)
+			gotRemainingQuarantinedTests, gotErr := filterUnstableTestRecords(tt.args.options, tt.args.values)
 			if !reflect.DeepEqual(gotErr, tt.wantErr) {
 				t.Errorf("filterUnstableTestRecords() gotErr = %v, want %v", gotErr, tt.wantErr)
 			}

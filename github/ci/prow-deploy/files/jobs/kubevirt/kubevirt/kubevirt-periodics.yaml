@@ -95,7 +95,7 @@ periodics:
       - -ce
       env:
       - name: GIMME_GO_VERSION
-        value: 1.24.4
+        value: 1.25.1
       image: quay.io/kubevirtci/golang:v20250701-f32dbda
       name: ""
       resources: {}
@@ -130,7 +130,7 @@ periodics:
       - -ce
       env:
       - name: GIMME_GO_VERSION
-        value: 1.24.4
+        value: 1.25.1
       - name: GITHUB_TOKEN
         valueFrom:
           secretKeyRef:
@@ -165,7 +165,7 @@ periodics:
       - -ce
       env:
       - name: GIMME_GO_VERSION
-        value: 1.24.4
+        value: 1.25.1
       image: quay.io/kubevirtci/golang:v20250701-f32dbda
       name: ""
       resources: {}
@@ -221,7 +221,7 @@ periodics:
       - -ce
       env:
       - name: GIMME_GO_VERSION
-        value: 1.24.4
+        value: 1.25.1
       image: quay.io/kubevirtci/golang:v20250701-f32dbda
       name: ""
       resources: {}
@@ -1703,7 +1703,7 @@ periodics:
       - /bin/sh
       env:
       - name: GIMME_GO_VERSION
-        value: 1.24.4
+        value: 1.25.1
       image: quay.io/kubevirtci/golang:v20250701-f32dbda
       name: ""
       resources: {}
@@ -1744,7 +1744,7 @@ periodics:
       - /bin/sh
       env:
       - name: GIMME_GO_VERSION
-        value: 1.24.4
+        value: 1.25.1
       image: quay.io/kubevirtci/golang:v20250701-f32dbda
       name: ""
       resources: {}

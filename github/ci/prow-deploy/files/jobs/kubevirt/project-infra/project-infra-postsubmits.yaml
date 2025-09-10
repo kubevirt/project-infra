@@ -683,7 +683,7 @@ postsubmits:
               ./github/ci/services/grafana/hack/deploy.sh "${environment}"
           env:
           - name: GIMME_GO_VERSION
-            value: "1.24.4"
+            value: "1.25.1"
           image: quay.io/kubevirtci/golang:v20250701-f32dbda
           resources:
             requests:
@@ -853,7 +853,7 @@ postsubmits:
         - image: quay.io/kubevirtci/golang:v20250701-f32dbda
           env:
           - name: GIMME_GO_VERSION
-            value: "1.24.4"
+            value: "1.25.1"
           command:
           - /usr/local/bin/runner.sh
           - /bin/sh
