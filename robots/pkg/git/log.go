@@ -25,8 +25,9 @@ import (
 )
 
 type FileChange struct {
-	ChangeType DiffFilterModifier
-	Filename   string
+	ChangeType  DiffFilterModifier
+	Filename    string
+	OldFilename string
 }
 type LogCommit struct {
 	Hash        string
@@ -34,7 +35,7 @@ type LogCommit struct {
 }
 
 var commitHashRegex = regexp.MustCompile(`^[a-z0-9]+$`)
-var fileChangeRegex = regexp.MustCompile(`^([ACDMRTUXB])\s+(.*)$`)
+var fileChangeRegex = regexp.MustCompile(`^([ACDMRTUXB])([0-9]{3})?\s+(\S*)(\s+(.*))?$`)
 
 type DiffFilterModifier string
 
@@ -64,9 +65,16 @@ func LogCommits(revisionRange string, path string, subDirectory string) ([]*LogC
 			logCommit := logCommits[len(logCommits)-1]
 			submatch := fileChangeRegex.FindStringSubmatch(outputLine)
 			diffFilterModifier := DiffFilterModifier(submatch[1])
+			fileName := submatch[3]
+			oldFileName := ""
+			if submatch[5] != "" {
+				fileName = submatch[5]
+				oldFileName = submatch[3]
+			}
 			fileChange := FileChange{
-				ChangeType: diffFilterModifier,
-				Filename:   submatch[2],
+				ChangeType:  diffFilterModifier,
+				Filename:    fileName,
+				OldFilename: oldFileName,
 			}
 			logCommit.FileChanges = append(logCommit.FileChanges, &fileChange)
 		}

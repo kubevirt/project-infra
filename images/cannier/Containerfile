@@ -5,7 +5,7 @@ ENV GOPROXY=https://proxy.golang.org|direct \
     GOOS=linux \
     GOARCH=amd64
 ENV GIMME_GO_VERSION=1.23.4
-ENV COMMIT_ID=d3d2c49d62caa4454c1529f192463acc2648d382
+ENV COMMIT_ID=9d5a17daa6cb4d8fa897c6f49b619416816dc778
 RUN mkdir -p kubevirt/project-infra && \
     cd kubevirt/project-infra && \
     git init && \

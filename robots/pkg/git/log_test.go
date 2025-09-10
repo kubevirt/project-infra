@@ -56,4 +56,46 @@ var _ = Describe("git log", func() {
 		})
 
 	})
+
+	When("parsing git output", func() {
+		DescribeTable("fileChangeRegex matches",
+			func(outputLineToMatch string) {
+				Expect(fileChangeRegex.MatchString(outputLineToMatch)).To(BeTrue())
+			},
+			Entry("matches M", "M\ttests/virtctl/BUILD.bazel"),
+			Entry("matches D", "D\ttests/virtctl/ssh.go"),
+			Entry("matches R", "R066\ttests/virtctl/scp.go\ttests/virtctl/ssh_scp.go"),
+		)
+		DescribeTable("fileChangeRegex captures",
+			func(outputLineToMatch, expectedModifier, expectedSimilarity, expectedFilename, expectedFilename2 string) {
+				submatches := fileChangeRegex.FindStringSubmatch(outputLineToMatch)
+				Expect(submatches[1]).To(BeEquivalentTo(expectedModifier))
+				Expect(submatches[2]).To(BeEquivalentTo(expectedSimilarity))
+				Expect(submatches[3]).To(BeEquivalentTo(expectedFilename))
+				// submatches[4] is a match containing the whitespace also, so we don't use it
+				Expect(submatches[5]).To(BeEquivalentTo(expectedFilename2))
+			},
+			Entry("captures M",
+				"M\ttests/virtctl/BUILD.bazel",
+				"M",
+				"",
+				"tests/virtctl/BUILD.bazel",
+				"",
+			),
+			Entry("captures D",
+				"D\ttests/virtctl/ssh.go",
+				"D",
+				"",
+				"tests/virtctl/ssh.go",
+				"",
+			),
+			Entry("captures R",
+				"R066\ttests/virtctl/scp.go\ttests/virtctl/ssh_scp.go",
+				"R",
+				"066",
+				"tests/virtctl/scp.go",
+				"tests/virtctl/ssh_scp.go",
+			),
+		)
+	})
 })
