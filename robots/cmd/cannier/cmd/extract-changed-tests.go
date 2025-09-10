@@ -21,6 +21,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -100,6 +101,14 @@ func extractChangedTests(debug bool, revisionRange string, testDirectory string,
 			default:
 				testfileContent, err := os.ReadFile(testfileFullPath)
 				if err != nil {
+					// edge case:
+					// commit a(n) changes file
+					// commit a(n+c) renames file
+					// outcome: old file is non-existent after all changes have
+					// been applied, thus let's skip a file that doesn't exist
+					if errors.Is(err, os.ErrNotExist) {
+						continue
+					}
 					return err
 				}
 				outline, err := ginkgo.OutlineFromFile(testfileFullPath)
