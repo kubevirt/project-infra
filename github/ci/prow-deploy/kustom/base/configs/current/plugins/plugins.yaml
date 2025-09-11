@@ -221,6 +221,7 @@ plugins:
     - owners-label
     - release-note
     - trigger
+    - verify-owners
 
   kubevirt/hostpath-provisioner-operator:
     plugins:
