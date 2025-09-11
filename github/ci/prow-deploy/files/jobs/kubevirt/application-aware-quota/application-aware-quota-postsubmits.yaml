@@ -41,7 +41,7 @@ postsubmits:
   - name: push-latest-aaq-images
     branches:
     - main
-    cluster: kubevirt-prow-control-plane
+    cluster: prow-workloads
     always_run: true
     optional: false
     skip_report: true
@@ -66,7 +66,7 @@ postsubmits:
         - "-c"
         - |
           cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
-          DOCKER_TAG="latest" make push
+          DOCKER_TAG="latest" make push-multi-arch
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
