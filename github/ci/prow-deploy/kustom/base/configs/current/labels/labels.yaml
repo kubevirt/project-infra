@@ -86,6 +86,18 @@ default:
       target: prs
       addedBy: prow
       prowPlugin: release-note
+    - color: e11d21
+      description: Indicates that a PR should not merge because it has an invalid commit message.
+      name: do-not-merge/invalid-commit-message
+      target: prs
+      prowPlugin: invalidcommitmsg
+      addedBy: prow
+    - color: e11d21
+      description: Indicates that a PR should not merge because it has an invalid OWNERS file in it.
+      name: do-not-merge/invalid-owners-file
+      target: prs
+      prowPlugin: verify-owners
+      addedBy: prow
     - name: kind/blocker
       color: b60205
       target: both

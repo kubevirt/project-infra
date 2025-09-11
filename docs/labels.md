@@ -110,9 +110,12 @@ larger set of contributors to apply/remove them.
 | Name | Description | Added By | Prow Plugin |
 | ---- | ----------- | -------- | --- |
 | <a id="approved" href="#approved">`approved`</a> | Indicates a PR has been approved by an approver from all required OWNERS files.| approvers |  [approve](https://prow.ci.kubevirt.io/command-help#approve) |
+| <a id="approved-vep" href="#approved-vep">`approved-vep`</a> | Indicates that a PR is tied to an approved VEP and is prioritized.| approvers |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="dco-signoff  no" href="#dco-signoff  no">`dco-signoff: no`</a> | Indicates the PR's author has not DCO signed all their commits.| prow |  [dco](https://prow.ci.kubevirt.io/command-help#dco) |
 | <a id="dco-signoff  yes" href="#dco-signoff  yes">`dco-signoff: yes`</a> | Indicates the PR's author has DCO signed all their commits.| prow |  [dco](https://prow.ci.kubevirt.io/command-help#dco) |
 | <a id="do-not-merge/hold" href="#do-not-merge/hold">`do-not-merge/hold`</a> | Indicates that a PR should not merge because someone has issued a /hold command.| anyone |  [hold](https://prow.ci.kubevirt.io/command-help#hold) |
+| <a id="do-not-merge/invalid-commit-message" href="#do-not-merge/invalid-commit-message">`do-not-merge/invalid-commit-message`</a> | Indicates that a PR should not merge because it has an invalid commit message.| prow |  [invalidcommitmsg](https://prow.ci.kubevirt.io/command-help#invalidcommitmsg) |
+| <a id="do-not-merge/invalid-owners-file" href="#do-not-merge/invalid-owners-file">`do-not-merge/invalid-owners-file`</a> | Indicates that a PR should not merge because it has an invalid OWNERS file in it.| prow |  [verify-owners](https://prow.ci.kubevirt.io/command-help#verify-owners) |
 | <a id="do-not-merge/release-note-label-needed" href="#do-not-merge/release-note-label-needed">`do-not-merge/release-note-label-needed`</a> | Indicates that a PR should not merge because it's missing one of the release note labels. <br><br> This was previously `needs/release-note`, | prow |  [release-note](https://prow.ci.kubevirt.io/command-help#release-note) |
 | <a id="do-not-merge/work-in-progress" href="#do-not-merge/work-in-progress">`do-not-merge/work-in-progress`</a> | Indicates that a PR should not merge because it is a work in progress.| prow |  [wip](https://prow.ci.kubevirt.io/command-help#wip) |
 | <a id="lgtm" href="#lgtm">`lgtm`</a> | Indicates that a PR is ready to be merged.| reviewers or members |  [lgtm](https://prow.ci.kubevirt.io/command-help#lgtm) |
@@ -123,7 +126,6 @@ larger set of contributors to apply/remove them.
 | <a id="release-note" href="#release-note">`release-note`</a> | Denotes a PR that will be considered when it comes time to generate release notes.| prow |  [release-note](https://prow.ci.kubevirt.io/command-help#release-note) |
 | <a id="release-note-action-required" href="#release-note-action-required">`release-note-action-required`</a> | Denotes a PR that introduces potentially breaking changes that require user action.| prow |  [releasenote](https://prow.ci.kubevirt.io/command-help#releasenote) |
 | <a id="release-note-none" href="#release-note-none">`release-note-none`</a> | Denotes a PR that doesn't merit a release note.| prow |  [release-note](https://prow.ci.kubevirt.io/command-help#release-note) |
-| <a id="approved-vep" href="#approved-vep">`approved-vep`</a> | Indicates that a PR is tied to an approved VEP and is prioritized.| approvers |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 
 ## Labels that apply to kubevirt/containerized-data-importer, only for PRs
 
