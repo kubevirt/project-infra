@@ -340,7 +340,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
         - name: CANNIER_IMAGE
-          value: quay.io/kubevirtci/cannier:v20250428-dc1823e
+          value: quay.io/kubevirtci/cannier:v20250910-9d5a17d
         image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
         name: ""
         resources:
@@ -387,7 +387,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
         - name: CANNIER_IMAGE
-          value: quay.io/kubevirtci/cannier:v20250428-dc1823e
+          value: quay.io/kubevirtci/cannier:v20250910-9d5a17d
         image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
         name: ""
         resources:
