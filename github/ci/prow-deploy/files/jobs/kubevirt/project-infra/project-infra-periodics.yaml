@@ -420,6 +420,9 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
+  - org: kubevirt
+    repo: kubevirtci
+    base_ref: main
   cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
@@ -430,6 +433,7 @@ periodics:
         args:
           - "-c"
           - git-pr.sh -c "./hack/bump-crio-mirror-versions.sh" -p ./ -r project-infra -b crio-version-bump -T main
+          - git-pr.sh -p ../kubevirtci -r kubevirtci -b crio-version-bump -s "Bump cri-o version to match provider version" -T main
         resources:
           requests:
             memory: "200Mi"

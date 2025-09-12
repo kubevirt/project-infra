@@ -11,4 +11,7 @@ if [[ $(echo "$CURRENT_VERSIONS" | grep $LATEST_VERSION) ]]; then
 else
     echo "Mirror does not include latest cri-o version $LATEST_VERSION"
     sed -i "s/${CURRENT_VERSIONS}/${CURRENT_VERSIONS},${LATEST_VERSION}/" $KUBEVIRTCI_PERIODICS
+    if [ -d "$PROJECT_INFRA_ROOT/../kubevirtci/cluster-provision/k8s/$LATEST_VERSION" ]; then
+        sed -i "s/CRIO_VERSION=1\.[0-9][0-9]/CRIO_VERSION=$LATEST_VERSION/" $PROJECT_INFRA_ROOT/../kubevirtci/cluster-provision/k8s/$LATEST_VERSION/k8s_provision.sh
+    fi
 fi
