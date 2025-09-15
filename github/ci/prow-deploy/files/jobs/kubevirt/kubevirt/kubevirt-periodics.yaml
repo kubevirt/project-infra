@@ -1311,7 +1311,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 10 7,15,23 * * *
+  cron: 10 3,7,15,23 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1866,7 +1866,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 50 6,14,22 * * *
+  cron: 50 2,6,14,22 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1914,7 +1914,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 50 6,14,22 * * *
+  cron: 50 1,6,14,22 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1964,7 +1964,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 20 5,13,21 * * *
+  cron: 20 2,5,13,21 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2012,7 +2012,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 30 0,8,16 * * *
+  cron: 30 0,4,8,16 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2064,7 +2064,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 40 1,9,17 * * *
+  cron: 40 1,5,9,17 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2112,7 +2112,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 7,15,23 * * *
+  cron: 0 2,7,15,23 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2160,7 +2160,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 30 6,14,22 * * *
+  cron: 30 3,6,14,22 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2208,7 +2208,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 40 1,9,17 * * *
+  cron: 40 1,4,9,17 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2260,7 +2260,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 50 2,10,18 * * *
+  cron: 50 2,5,10,18 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2308,7 +2308,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 10 0,8,16 * * *
+  cron: 10 0,3,8,16 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2356,7 +2356,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 40 7,15,23 * * *
+  cron: 40 2,7,15,23 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2404,7 +2404,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 50 2,10,18 * * *
+  cron: 50 2,6,10,18 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2456,7 +2456,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 3,11,19 * * *
+  cron: 0 3,7,11,19 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
