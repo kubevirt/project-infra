@@ -883,4 +883,64 @@ postsubmits:
           resources:
             requests:
               memory: "200Mi"
+    - name: post-project-infra-kubevirt-releasegraph
+      always_run: false
+      annotations:
+        testgrid-create-test-group: "false"
+      cluster: kubevirt-prow-control-plane
+      decorate: true
+      extra_refs:
+      - org: kubevirt
+        repo: project-infra
+        base_ref: main
+        workdir: true
+      labels:
+        preset-github-credentials: "true"
+      run_if_changed: "robots/cmd/perf-report-creator/shape.yaml"
+      spec:
+        containers:
+        - image: quay.io/kubevirtci/pr-creator:v20250320-f6c439c
+          env:
+          - name: GIMME_GO_VERSION
+            value: "1.25.1"
+          - name: TARGET_GITHUB_REPO
+            value: kubevirt/ci-performance-benchmarks
+          - name: GITHUB_TOKEN_PATH
+            value: /etc/github/oauth
+          command:
+          - /usr/local/bin/runner.sh
+          - /bin/sh
+          - -c
+          args:
+          - |
+            go build -o /usr/local/bin/perf-report-creator ./robots/cmd/perf-report-creator/...
 
+            RELEASE_VERSION=$(grep "releaseVersion:" robots/cmd/perf-report-creator/shape.yaml | awk '{print $2}' | tr -d '"')
+            BRANCH="add-$RELEASE_VERSION"
+            RELEASE_DIR="release-$RELEASE_VERSION"
+
+            (
+              cd ..
+              git clone "https://kubevirt-bot@github.com/$TARGET_GITHUB_REPO.git"
+              cd ci-performance-benchmarks
+              git checkout -b $BRANCH
+            )
+            CI_PERF_REPO_DIR=$(cd ../ci-performance-benchmarks && pwd)
+
+            robots/cmd/perf-report-creator/release-graph.sh "$CI_PERF_REPO_DIR"
+
+            cd "$CI_PERF_REPO_DIR"
+            mkdir -p "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance
+            mkdir -p "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance/vmi "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance/vm
+            mv "$CI_PERF_REPO_DIR"/weekly/vmi/release-index.html "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance/vmi
+            mv "$CI_PERF_REPO_DIR"/weekly/vm/release-index.html "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance/vm
+            
+            git-pr.sh -c "git clean -fd weekly && git add $RELEASE_DIR" -T main -r ci-performance-benchmarks -m "$CI_PERF_REPO_DIR" -b $BRANCH -d "echo 'Add release $RELEASE_VERSION performance benchmarks data'" -B "Add release $RELEASE_VERSION performance benchmarks data via automation" -D true
+
+            echo "PR created successfully"
+            echo "Process completed successfully." 
+          resources:
+            requests:
+              memory: "200Mi"
+            limits:
+              memory: "200Mi"
