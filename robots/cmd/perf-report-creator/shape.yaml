@@ -1,34 +1,6 @@
-releaseVersion: "v1-5"
-sinceDate: "2024-01-01"
+releaseVersion: "v1-6"
+sinceDate: "2024-06-01"
 lineShapes:
-  - type: line
-    x0: "2024-03-05"
-    x1: "2024-03-05"
-    y0: 0
-    y1: 1
-    yref: paper
-    editable: true
-    line:
-      color: grey
-      width: 2
-      dash: dot
-    label:
-      text: v1.2.0
-      xanchor: right
-  - type: line
-    x0: "2024-03-25"
-    x1: "2024-03-25"
-    y0: 0
-    y1: 1
-    yref: paper
-    editable: true
-    line:
-      color: blue
-      width: 2
-      dash: dot
-    label:
-      text: k8s-1.29
-      xanchor: right
   - type: line
     x0: "2024-07-17"
     x1: "2024-07-17"
@@ -70,4 +42,18 @@ lineShapes:
       dash: dot
     label:
       text: k8s-1.31
+      xanchor: right
+  - type: line
+    x0: "2025-03-25"
+    x1: "2025-03-25"
+    y0: 0
+    y1: 1
+    yref: paper
+    editable: true
+    line:
+      color: grey
+      width: 2
+      dash: dot
+    label:
+      text: v1.5.0
       xanchor: right
