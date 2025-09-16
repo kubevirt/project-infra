@@ -30,3 +30,6 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/run-tests.sh --test-type integ_tier1 --centos-stream --k8s --artifacts-dir $ARTIFACTS"
+            env:
+            - name: KUBEVIRT_MEMORY_SIZE
+              value: 16G
