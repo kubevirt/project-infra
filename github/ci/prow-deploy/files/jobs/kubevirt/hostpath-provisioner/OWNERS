@@ -8,10 +8,12 @@ filters:
   .*:
     approvers:
     - aglitke
+    - akalenyu
     - awels
     - mhenriks
     reviewers:
     - aglitke
+    - akalenyu
     - awels
     - mhenriks
 options: {}
