@@ -889,11 +889,6 @@ postsubmits:
         testgrid-create-test-group: "false"
       cluster: kubevirt-prow-control-plane
       decorate: true
-      extra_refs:
-      - org: kubevirt
-        repo: project-infra
-        base_ref: main
-        workdir: true
       labels:
         preset-github-credentials: "true"
       run_if_changed: "robots/cmd/perf-report-creator/shape.yaml"
