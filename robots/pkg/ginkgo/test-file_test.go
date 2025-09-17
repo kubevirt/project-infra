@@ -53,6 +53,13 @@ var _ = Describe("test-file", func() {
 			_, err := FindTestFileByName("simple does something is executed does check for something else", "testdata")
 			Expect(err).To(HaveOccurred())
 		})
+		It("finds a file with complex naming scheme", func() {
+			actualFilepath, err := FindTestFileByName("[sig-network]SRIOV externalized was previously part of the latter node is still found", "testdata")
+			Expect(err).ToNot(HaveOccurred())
+			stat, err := os.Stat(actualFilepath)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(filepath.Base(stat.Name())).To(BeEquivalentTo("externalized_test.go"))
+		})
 	})
 	When("FindTestFileById", func() {
 		It("finds file if node was moved inside a file but test_id is present", func() {

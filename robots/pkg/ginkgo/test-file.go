@@ -21,6 +21,7 @@ package ginkgo
 
 import (
 	"fmt"
+	"github.com/onsi/ginkgo/v2/types"
 	log "github.com/sirupsen/logrus"
 	"os"
 	osexec "os/exec"
@@ -41,18 +42,23 @@ func init() {
 	}
 }
 
-func QuarantineTestInFile(descriptor *SourceTestDescriptor) error {
-	code, err := quarantine(descriptor.FileCode(), descriptor.OutlineNode().Text)
+func QuarantineTestInFile(report *types.SpecReport) error {
+	content, err := os.ReadFile(report.LeafNodeLocation.FileName)
 	if err != nil {
-		return fmt.Errorf("could not quarantine test %q: %w", descriptor.TestName(), err)
+		return fmt.Errorf("could not read file for quarantine test %q: %w", report.FullText(), err)
 	}
-	err = os.WriteFile(descriptor.Filename(), []byte(code), os.ModePerm)
+	code, err := quarantine(string(content), report.LeafNodeText)
 	if err != nil {
-		return fmt.Errorf("could not write file for quarantined test %q: %w", descriptor.TestName(), err)
+		return fmt.Errorf("could not quarantine test %q: %w", report.FullText(), err)
+	}
+	err = os.WriteFile(report.LeafNodeLocation.FileName, []byte(code), os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("could not write file for quarantined test %q: %w", report.FullText(), err)
 	}
 	return nil
 }
 
+// WARNING: this function will not work on every case!
 func FindFileAndDescriptor(testSourcePath, testName string) (testDescriptor *SourceTestDescriptor, testFileName string, err error) {
 	if HasTestId(testName) {
 		testFileName, err = FindTestFileById(testName, testSourcePath)
@@ -66,7 +72,18 @@ func FindFileAndDescriptor(testSourcePath, testName string) (testDescriptor *Sou
 	} else {
 		testFileName, err = FindTestFileByName(testName, testSourcePath)
 		if err != nil {
-			return nil, "", fmt.Errorf("could not find test file by name: %w", err)
+			reports, _, err2 := DryRun(testSourcePath)
+			if err2 != nil {
+				return nil, "", fmt.Errorf("could not find test file by name: %w", err2)
+			}
+			if reports == nil {
+				return nil, "", fmt.Errorf("could not find test file by name: %w", err)
+			}
+			matchingSpecReport := GetMatchingSpecReport(reports, testName)
+			if matchingSpecReport == nil {
+				return nil, "", fmt.Errorf("could not find test file by name: %w", err)
+			}
+			testFileName = matchingSpecReport.FileName()
 		}
 		testDescriptor, err = NewTestDescriptorForName(testName, testFileName)
 		if err != nil {

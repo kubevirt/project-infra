@@ -21,6 +21,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/onsi/ginkgo/v2/types"
 	flakestats "kubevirt.io/project-infra/robots/pkg/flake-stats"
 	"kubevirt.io/project-infra/robots/pkg/searchci"
 	"time"
@@ -34,7 +35,7 @@ type quarantineOptions struct {
 
 	filterPeriodicJobRunResults bool
 
-	testName                    string
+	testName string
 }
 
 type TestToQuarantine struct {
@@ -42,6 +43,7 @@ type TestToQuarantine struct {
 	TimeRange       searchci.TimeRange
 	SearchCIURL     string
 	RelevantImpacts []searchci.Impact
+	SpecReport      *types.SpecReport
 }
 
 var (

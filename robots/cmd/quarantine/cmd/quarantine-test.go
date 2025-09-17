@@ -24,6 +24,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"kubevirt.io/project-infra/robots/pkg/ginkgo"
+	"os"
+	"path/filepath"
 )
 
 const (
@@ -31,9 +33,9 @@ const (
 )
 
 var quarantineTestCmd = &cobra.Command{
-	Use:  "test",
+	Use:   "test",
 	Short: short,
-	Long: short+`, i.o.w.
+	Long: short + `, i.o.w.
 modify a test by attaching the label and decorator
 as defined in KubeVirt docs. This prepares it to be recognized by CI automation
 that the test is to be excluded from e2e presubmit lane runs and only run in
@@ -50,17 +52,25 @@ func init() {
 
 func QuarantineTest(cmd *cobra.Command, args []string) error {
 
-	descriptor, _, err := ginkgo.FindFileAndDescriptor(quarantineOpts.testSourcePath, quarantineOpts.testName)
+	reports, _, err := ginkgo.DryRun(quarantineOpts.testSourcePath)
+	defer os.Remove(filepath.Join(quarantineOpts.testSourcePath, "junit.functest.xml"))
 	if err != nil {
-		return fmt.Errorf("could not find file or descriptor for test %q: %w", quarantineOpts.testName, err)
+		return fmt.Errorf("could not find test file for %q by name: %w", quarantineOpts.testName, err)
+	}
+	if reports == nil {
+		return fmt.Errorf("could not generate test file reports for %q", quarantineOpts.testName)
+	}
+	matchingSpecReport := ginkgo.GetMatchingSpecReport(reports, quarantineOpts.testName)
+	if matchingSpecReport == nil {
+		return fmt.Errorf("could not find test file for %q by name", quarantineOpts.testName)
 	}
 
-	err = ginkgo.QuarantineTestInFile(descriptor)
+	err = ginkgo.QuarantineTestInFile(matchingSpecReport)
 	if err != nil {
-		return fmt.Errorf("could not quarantine test %q: %w", quarantineOpts.testName, err)
+		return err
 	}
 
-	log.Infof("test %q quarantined in file %q", descriptor.OutlineNode().Text, descriptor.Filename())
+	log.Infof("test %q quarantined in file %q", matchingSpecReport.FullText(), matchingSpecReport.LeafNodeLocation.FileName)
 
 	return nil
 }

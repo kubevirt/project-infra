@@ -29,6 +29,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"io"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -113,4 +114,41 @@ func DryRun(path string) (reports []types.Report, output []byte, err error) {
 	}()
 
 	return []types.Report{}, nil, nil
+}
+
+var multipleSpacesMatcher = regexp.MustCompile(`\s{2,}`)
+
+func GetMatchingSpecReport(reports []types.Report, testName string) *types.SpecReport {
+	for _, report := range reports {
+	specReportLoop:
+		for _, specReport := range report.SpecReports {
+			if specReport.LeafNodeText == "" {
+				continue specReportLoop
+			}
+			if !containsMultiSpaceNormalized(testName, specReport.LeafNodeText) {
+				continue specReportLoop
+			}
+			for _, text := range specReport.ContainerHierarchyTexts {
+				if !containsMultiSpaceNormalized(testName, text) {
+					continue specReportLoop
+				}
+			}
+			return &specReport
+		}
+	}
+	return nil
+}
+
+func containsMultiSpaceNormalized(fullText, substring string) bool {
+	if strings.Contains(fullText, substring) {
+		return true
+	}
+	if multipleSpacesMatcher.MatchString(substring) {
+		// retry with spaces normalized
+		normalized := multipleSpacesMatcher.ReplaceAllString(substring, " ")
+		if strings.Contains(fullText, normalized) {
+			return true
+		}
+	}
+	return false
 }

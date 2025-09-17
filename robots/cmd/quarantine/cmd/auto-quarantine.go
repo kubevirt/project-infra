@@ -23,9 +23,13 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"k8s.io/utils/strings/slices"
 	flakestats "kubevirt.io/project-infra/robots/pkg/flake-stats"
 	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 	"kubevirt.io/project-infra/robots/pkg/searchci"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 var autoQuarantineCmd = &cobra.Command{
@@ -37,7 +41,7 @@ func init() {
 	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.daysInThePast, "days-in-the-past", 14, "the number of days in the past")
 }
 
-func AutoQuarantine(cmd *cobra.Command, args []string) error {
+func AutoQuarantine(_ *cobra.Command, _ []string) error {
 	reportOpts := flakestats.NewDefaultReportOpts(
 		flakestats.DaysInThePast(quarantineOpts.daysInThePast),
 		flakestats.FilterPeriodicJobRunResults(true),
@@ -47,32 +51,57 @@ func AutoQuarantine(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("error while aggregating data: %w", err)
 	}
 	var testsToQuarantine []*TestToQuarantine
+	reports, _, err := ginkgo.DryRun(quarantineOpts.testSourcePath)
+	defer os.Remove(filepath.Join(quarantineOpts.testSourcePath, "junit.functest.xml"))
+	if err != nil {
+		return fmt.Errorf("could not fetch ginkgo test reports: %w", err)
+	}
+	if reports == nil {
+		return fmt.Errorf("could not find ginkgo test reports: %w", err)
+	}
+
+	testsToIgnore := []string{"AfterSuite"}
 	for _, topXTest := range topXTests {
 		log.Infof("%s{Count: %d, Sum: %d, Avg: %f, Max: %d}", topXTest.Name, topXTest.AllFailures.Count, topXTest.AllFailures.Sum, topXTest.AllFailures.Avg, topXTest.AllFailures.Max)
 
-		// Prepare to find the required data to modify the Test
-		descriptor, _, err := ginkgo.FindFileAndDescriptor(quarantineOpts.testSourcePath, topXTest.Name)
-		if err != nil {
-			return fmt.Errorf("could not find file or descriptor for Test %q: %w", topXTest.Name, err)
+		if slices.Contains(testsToIgnore, topXTest.Name) {
+			log.Infof("Ignoring %q", topXTest.Name)
+			continue
 		}
 
-		testSubstring := descriptor.OutlineNode().Text
+		// Prepare to find the required data to modify the Test
+		matchingSpecReport := ginkgo.GetMatchingSpecReport(reports, topXTest.Name)
+		if matchingSpecReport == nil {
+			log.Warnf("could not find file for %q by name", topXTest.Name)
+			continue
+		}
 
 		// scrape impact from search.ci.kubevirt.io
-		relevantImpacts, err := searchci.ScrapeImpacts(testSubstring, searchci.FourteenDays)
+		relevantImpacts, err := searchci.ScrapeImpacts(topXTest.Name, searchci.FourteenDays)
 		if err != nil {
 			return fmt.Errorf("could not scrape results for Test %q: %w", topXTest.Name, err)
 		}
 		if relevantImpacts == nil {
-			log.Infof("search.ci found no matches for %q", testSubstring)
+			log.Infof("search.ci found no matches for %q", topXTest.Name)
 			continue
 		}
+
 		newTestToQuarantine := &TestToQuarantine{
 			Test:            topXTest,
 			RelevantImpacts: relevantImpacts,
+			SpecReport:      matchingSpecReport,
 		}
 		testsToQuarantine = append(testsToQuarantine, newTestToQuarantine)
 	}
-	log.Infof("testsToQuarantine: %+v", testsToQuarantine)
-	return fmt.Errorf("TODO")
+
+	var testsQuarantined []string
+	for _, testToQuarantine := range testsToQuarantine {
+		err = ginkgo.QuarantineTestInFile(testToQuarantine.SpecReport)
+		if err != nil {
+			return fmt.Errorf("could not quarantine test %q: %w", testToQuarantine.SpecReport.FullText(), err)
+		}
+		testsQuarantined = append(testsQuarantined, testToQuarantine.SpecReport.FullText())
+	}
+	log.Infof("Tests quarantined:\n%s", strings.Join(testsQuarantined, "\n"))
+	return nil
 }
