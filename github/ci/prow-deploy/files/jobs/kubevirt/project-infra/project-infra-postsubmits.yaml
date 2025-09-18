@@ -936,6 +936,6 @@ postsubmits:
             echo "Process completed successfully." 
           resources:
             requests:
-              memory: "200Mi"
+              memory: "1Gi"
             limits:
-              memory: "200Mi"
+              memory: "1Gi"
