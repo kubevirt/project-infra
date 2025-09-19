@@ -1325,7 +1325,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.33-sig-compute-migrations
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-compute-migrations
   spec:
     containers:
     - command:
@@ -1339,7 +1339,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.33-sig-compute-migrations
+        value: k8s-1.34-sig-compute-migrations
       image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
       name: ""
       resources:
@@ -1509,7 +1509,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.33-sig-compute-root
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-compute-root
   spec:
     containers:
     - command:
@@ -1523,7 +1523,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.33-sig-compute
+        value: k8s-1.34-sig-compute
       - name: FEATURE_GATES
         value: Root
       - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
