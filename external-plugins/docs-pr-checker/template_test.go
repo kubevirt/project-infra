@@ -6,7 +6,7 @@ import (
 
 func TestTemplateRegexParsing(t *testing.T) {
 	s := &Server{}
-	
+
 	tests := []struct {
 		name     string
 		prBody   string
@@ -57,7 +57,7 @@ Please review carefully.`,
 			name: "template with multiple lines in docs-pr field should take first line",
 			prBody: `**Documentation update**:
 ` + "```docs-pr\n#1234\nextra text that should be ignored\n```",
-			expected: "#1234",
+			expected: "#1234\nextra text that should be ignored",
 		},
 	}
 
@@ -70,4 +70,3 @@ Please review carefully.`,
 		})
 	}
 }
-

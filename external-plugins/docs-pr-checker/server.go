@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/sirupsen/logrus"
-	"sigs.k8s.io/prow/pkg/config/secret"
+	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/prow/pkg/github"
-	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
+	"sigs.k8s.io/prow/pkg/pluginhelp"
 )
 
 const pluginName = "docs-pr-checker"
@@ -19,7 +18,10 @@ const pluginName = "docs-pr-checker"
 var (
 	// Matches a docs-pr code block, capturing everything between the opening and closing triple backticks.
 	// Handles optional whitespace/newlines and any content inside.
-	docsPRRegex = regexp.MustCompile(`(?is)```docs-pr\s*\n(.*?)\n?```)`)
+	docsPRRegex = regexp.MustCompile("(?is)" + "```" + `docs-pr\s*\n(.*?)\n?` + "```")
+
+	// isValidDocsPRReference matches valid references, like #123, repo#123, org/repo#123, or NONE (case-insensitive).
+	isValidDocsPRReference = regexp.MustCompile(`(?i)^(NONE|([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+)?#\d+)$`)
 )
 
 const (
@@ -29,11 +31,11 @@ const (
 )
 
 // HelpProvider constructs the PluginHelp for this plugin.
-func HelpProvider(config []byte) (*externalplugins.PluginHelp, error) {
-	pluginHelp := &externalplugins.PluginHelp{
+func HelpProvider(enabledRepos []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
+	pluginHelp := &pluginhelp.PluginHelp{
 		Description: "The docs-pr-checker plugin ensures that PRs include documentation updates when required.",
 	}
-	pluginHelp.AddCommand(externalplugins.PluginCommand{
+	pluginHelp.AddCommand(pluginhelp.Command{
 		Usage:       "/docs-pr <PR-number|NONE>",
 		Description: "Updates the docs-pr status of a pull request.",
 		Featured:    false,
@@ -48,8 +50,17 @@ func HelpProvider(config []byte) (*externalplugins.PluginHelp, error) {
 type Server struct {
 	tokenGenerator func() []byte
 	botName        string
-	ghc            github.Client
+	ghc            prClient
 	log            *logrus.Entry
+}
+
+type prClient interface {
+	GetPullRequest(org, repo string, number int) (*github.PullRequest, error)
+	EditPullRequest(org, repo string, number int, pr *github.PullRequest) (*github.PullRequest, error)
+	GetIssueLabels(org, repo string, number int) ([]github.Label, error)
+	AddLabel(org, repo string, number int, label string) error
+	RemoveLabel(org, repo string, number int, label string) error
+	CreateComment(org, repo string, number int, comment string) error
 }
 
 // ServeHTTP validates an incoming webhook and puts it into the event channel.
@@ -142,71 +153,89 @@ func (s *Server) processDocsPRCommand(l *logrus.Entry, org, repo string, pr *git
 	}
 
 	docsPRValue := strings.Join(parts[1:], " ")
-	
+
 	// Update PR body with the new docs-pr value
 	newBody := s.updateDocsPRInBody(pr.Body, docsPRValue)
-	
+
 	// Update the PR description
 	update := github.PullRequest{
-		Body: &newBody,
+		Body: newBody,
 	}
-	
-	if err := s.ghc.EditPullRequest(org, repo, pr.Number, &update); err != nil {
+
+	if _, err := s.ghc.EditPullRequest(org, repo, pr.Number, &update); err != nil {
 		return fmt.Errorf("failed to update PR body: %w", err)
 	}
 
 	// Update the labels based on the new value
 	updatedPR := *pr
 	updatedPR.Body = newBody
-	
+
 	return s.checkAndUpdateDocsPRStatus(l, org, repo, &updatedPR)
 }
-
 func (s *Server) updateDocsPRInBody(body, newValue string) string {
 	// Remove any existing docs-pr blocks
 	cleanBody := docsPRRegex.ReplaceAllString(body, "")
 	// Trim any trailing whitespace after removal
 	cleanBody = strings.TrimSpace(cleanBody)
+	// Remove extra newlines
+	cleanBody = strings.ReplaceAll(cleanBody, "\n\n", "\n")
 	// Append a single docs-pr block at the end
-	return cleanBody + fmt.Sprintf("\n\n```docs-pr\n%s\n```", newValue)
+	result := cleanBody + fmt.Sprintf("\n```docs-pr\n%s\n```", newValue)
+	s.log.Infof("updateDocsPRInBody: body=%q, newValue=%q, result=%q", body, newValue, result)
+	return result
+}
+
+func (s *Server) extractDocsPRValue(body string) string {
+	if m := docsPRRegex.FindStringSubmatch(body); len(m) > 1 {
+		return strings.TrimSpace(m[1])
+	}
+	return ""
+}
+
+func (s *Server) hasLabel(labels []github.Label, label string) bool {
+	for _, l := range labels {
+		if l.Name == label {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *Server) checkAndUpdateDocsPRStatus(l *logrus.Entry, org, repo string, pr *github.PullRequest) error {
-	current, err := s.ghc.GetIssueLabels(org, repo, pr.Number)
+	currentIssueLabels, err := s.ghc.GetIssueLabels(org, repo, pr.Number)
 	if err != nil {
 		return fmt.Errorf("failed to get current labels: %w", err)
 	}
 
-	// inline extractDocsPRValue
-	var val string
-	if m := docsPRRegex.FindStringSubmatch(pr.Body); len(m) > 1 {
-		val = strings.TrimSpace(m[1])
-	}
+	val := s.extractDocsPRValue(pr.Body)
+	isValid := val != "" && isValidDocsPRReference.MatchString(val)
 
 	// compute desired state for each label
-	desired := map[string]bool{
-		labelDocsPRRequired: val == "",
-		labelDocsPRNone:     strings.EqualFold(val, "NONE"),
-		labelDocsPR:         val != "" && !strings.EqualFold(val, "NONE"),
+	desiredLabels := map[string]bool{
+		labelDocsPRRequired: !isValid,
+		labelDocsPRNone:     isValid && strings.EqualFold(val, "NONE"),
+		labelDocsPR:         isValid && !strings.EqualFold(val, "NONE"),
+	}
+
+	// Add a comment if the docs-pr value is invalid
+	if val != "" && !isValid {
+		comment := fmt.Sprintf("Invalid `docs-pr` value: `%s`. Please use `NONE` or a valid PR reference (e.g., `#123`, `repo#123`, `org/repo#123`).", val)
+		if err := s.ghc.CreateComment(org, repo, pr.Number, comment); err != nil {
+			l.WithError(err).Warn("failed to create comment")
+		}
 	}
 
 	// sync labels in one pass
 	for _, target := range []string{labelDocsPRRequired, labelDocsPR, labelDocsPRNone} {
-		present := false
-		for _, lbl := range current {
-			if lbl.Name == target {
-				present = true
-				break
-			}
-		}
-		if desired[target] && !present {
+		present := s.hasLabel(currentIssueLabels, target)
+		if desiredLabels[target] && !present {
 			if err := s.ghc.AddLabel(org, repo, pr.Number, target); err != nil {
 				l.WithError(err).Warnf("failed to add label %s", target)
 			} else {
 				l.Infof("added label %s", target)
 			}
 		}
-		if !desired[target] && present {
+		if !desiredLabels[target] && present {
 			if err := s.ghc.RemoveLabel(org, repo, pr.Number, target); err != nil {
 				l.WithError(err).Warnf("failed to remove label %s", target)
 			} else {
@@ -216,5 +245,3 @@ func (s *Server) checkAndUpdateDocsPRStatus(l *logrus.Entry, org, repo string, p
 	}
 	return nil
 }
-
-
