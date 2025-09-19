@@ -183,9 +183,6 @@ postsubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
-    reporter_config:
-      slack:
-        job_states_to_report: []
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
@@ -228,9 +225,6 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     annotations:
       testgrid-create-test-group: "false"
-    reporter_config:
-      slack:
-        job_states_to_report: []
     cluster: prow-workloads
     spec:
       nodeSelector:
