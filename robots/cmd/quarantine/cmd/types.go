@@ -33,6 +33,8 @@ type quarantineOptions struct {
 	daysInThePast int
 
 	filterPeriodicJobRunResults bool
+
+	testName                    string
 }
 
 type TestToQuarantine struct {

@@ -17,31 +17,20 @@
  *
  */
 
-package cmd
+package ginkgo
 
 import (
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-	"os"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
-var rootCmd = &cobra.Command{
-	Use: "quarantine",
-}
-
-var quarantineOpts quarantineOptions
-
-func init() {
-	rootCmd.PersistentFlags().StringVar(&quarantineOpts.testSourcePath, "Test-source-path", "../kubevirt/tests/", "the path to the Test source")
-
-	rootCmd.AddCommand(mostFlakyTestsReportCmd)
-	rootCmd.AddCommand(quarantineTestCmd)
-	rootCmd.AddCommand(autoQuarantineCmd)
-}
-
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		logrus.WithError(err).Error("failed to run command")
-		os.Exit(1)
-	}
-}
+var _ = Describe("dry-run", func() {
+	Context("from directory", func() {
+		It("returns report", func() {
+			report, output, err := DryRun("testdata")
+			Expect(err).ToNot(HaveOccurred())
+			Expect(report).ToNot(BeEmpty())
+			Expect(output).ToNot(BeNil())
+		})
+	})
+})
