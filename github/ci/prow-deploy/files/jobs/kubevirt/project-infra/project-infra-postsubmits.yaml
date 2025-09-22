@@ -930,7 +930,7 @@ postsubmits:
             mv "$CI_PERF_REPO_DIR"/weekly/vmi/release-index.html "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance/vmi
             mv "$CI_PERF_REPO_DIR"/weekly/vm/release-index.html "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance/vm
             
-            git-pr.sh -c "git clean -fd weekly && git add $RELEASE_DIR" -T main -r ci-performance-benchmarks -m "$CI_PERF_REPO_DIR" -b $BRANCH -d "echo 'Add release $RELEASE_VERSION performance benchmarks data'" -B "Add release $RELEASE_VERSION performance benchmarks data via automation" -D true
+            git-pr.sh -c "git clean -fd weekly && git add $RELEASE_DIR" -T main -r ci-performance-benchmarks -m "$CI_PERF_REPO_DIR" -b $BRANCH -d "echo 'Add release $RELEASE_VERSION performance benchmarks data'" -B "Add release $RELEASE_VERSION performance benchmarks data via automation"
 
             echo "PR created successfully"
             echo "Process completed successfully." 
