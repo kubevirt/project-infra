@@ -140,6 +140,7 @@ func updatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, lat
 	for _, sigName := range prowjobconfigs.SigNames {
 		jobsToCheck[prowjobconfigs.CreatePresubmitJobName(latestReleaseSemver, sigName)] = ""
 	}
+	jobsToCheck[prowjobconfigs.CreatePresubmitJobName(latestReleaseSemver, "sig-compute-serial")] = ""
 
 	for index := range jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] {
 		job := &jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig][index]
