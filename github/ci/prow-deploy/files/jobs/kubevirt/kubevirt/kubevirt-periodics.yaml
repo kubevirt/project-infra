@@ -1114,7 +1114,10 @@ periodics:
       name: ""
       resources:
         requests:
-          cpu: "12"
+          cpu: "24"
+          memory: 73Gi
+        limits:
+          cpu: "24"
           memory: 73Gi
       securityContext:
         privileged: true
