@@ -1695,7 +1695,7 @@ periodics:
         # generate flake stats daily report for today
         output_file=/tmp/flake-stats-14days-$(date +%Y-%m-%d).html
         go run ./robots/cmd/flake-stats \
-          '--filter-lane-regex=.*-(root|arm64)$' \
+          '--filter-lane-regex=.*-root$' \
           --output-file ${output_file} \
           --overwrite-output-file=true
         gsutil cp ${output_file} gs://kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/
