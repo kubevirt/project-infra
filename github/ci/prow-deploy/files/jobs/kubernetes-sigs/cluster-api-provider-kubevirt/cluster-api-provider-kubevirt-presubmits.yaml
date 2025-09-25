@@ -33,6 +33,6 @@ presubmits:
           privileged: true
         env:
           - name: GIMME_GO_VERSION
-            value: "1.22.3"
+            value: "1.24.7"
       nodeSelector:
         type: bare-metal-external
