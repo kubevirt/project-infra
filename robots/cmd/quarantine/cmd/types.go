@@ -27,7 +27,7 @@ import (
 	"time"
 )
 
-const filterLaneRegexDefault = "rehearsal|e2e.*arm"
+const filterLaneRegexDefault = "rehearsal"
 
 type quarantineOptions struct {
 	testSourcePath string
