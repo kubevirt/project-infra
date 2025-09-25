@@ -26,6 +26,8 @@ import (
 	"time"
 )
 
+const filterLaneRegexDefault = "rehearsal|e2e.*arm"
+
 type quarantineOptions struct {
 	testSourcePath string
 
@@ -33,6 +35,7 @@ type quarantineOptions struct {
 	daysInThePast int
 
 	filterPeriodicJobRunResults bool
+	filterLaneRegex             string
 }
 
 type TestToQuarantine struct {
