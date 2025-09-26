@@ -24,7 +24,7 @@ project_infra_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
 
 podman run --rm \
     -v "${project_infra_dir}:/project-infra" \
-    us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20250914-6845c9a4c \
+    us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20250924-cb620e94f \
     --config-path /project-infra/github/ci/prow-deploy/files/config.yaml \
     --job-config-path /project-infra/github/ci/prow-deploy/files/jobs \
     --plugin-config /project-infra/github/ci/prow-deploy/files/plugins.yaml \
