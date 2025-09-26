@@ -969,7 +969,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-ipv6-sig-network
+    name: pull-kubevirt-e2e-k8s-1.34-ipv6-sig-network
     run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
@@ -982,7 +982,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.33-sig-network
+          value: k8s-1.34-sig-network
         - name: KUBEVIRT_SINGLE_STACK
           value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
@@ -1013,7 +1013,7 @@ presubmits:
       preset-shared-images: "true"
       rehearsal.allowed: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-sig-network-with-dnc
+    name: pull-kubevirt-e2e-k8s-1.34-sig-network-with-dnc
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1026,7 +1026,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.33-sig-network
+          value: k8s-1.34-sig-network
         - name: KUBEVIRT_WITH_DYN_NET_CTRL
           value: "true"
         image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
@@ -1807,7 +1807,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-sig-network
+    name: pull-kubevirt-e2e-k8s-1.34-sig-network
     run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
@@ -1820,7 +1820,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.33-sig-network
+          value: k8s-1.34-sig-network
         image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
         name: ""
         resources:

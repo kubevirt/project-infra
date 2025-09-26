@@ -1417,7 +1417,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.33-sig-network-with-dnc
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-network-with-dnc
   spec:
     containers:
     - command:
@@ -1434,7 +1434,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.33-sig-network
+        value: k8s-1.34-sig-network
       image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
       name: ""
       resources:
@@ -1907,7 +1907,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.33-ipv6-sig-network
+  name: periodic-kubevirt-e2e-k8s-1.34-ipv6-sig-network
   spec:
     containers:
     - command:
@@ -1921,7 +1921,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.33-sig-network
+        value: k8s-1.34-sig-network
       - name: KUBEVIRT_SINGLE_STACK
         value: "true"
       image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
@@ -2093,7 +2093,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.33-sig-network
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-network
   spec:
     containers:
     - command:
@@ -2107,7 +2107,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.33-sig-network
+        value: k8s-1.34-sig-network
       image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
       name: ""
       resources:
