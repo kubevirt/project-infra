@@ -270,12 +270,11 @@ slack_reporter_configs:
     # The template shown below is the default
     report_template: 'Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>'
 
-  # default is to not report for kubevirt/kubevirt periodics,
+  # default is to not report for kubevirt/kubevirt periodics and batch,
   # except if explicitly stated in the job config
   'kubevirt/kubevirt':
     job_types_to_report:
       - postsubmit
-      - batch
     job_states_to_report:
       - failure
       - error
