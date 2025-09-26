@@ -67,6 +67,7 @@ func init() {
 	mostFlakyTestsReportCmd.PersistentFlags().StringVar(&outputFileOpts.OutputFile, "output-file", "", "the name of the output file, or empty string to create a temp file")
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&outputFileOpts.OverwriteOutputFile, "overwrite-output-file", false, "whether to overwrite the output file")
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&quarantineOpts.filterPeriodicJobRunResults, "filter-periodic-job-run-results", true, "whether to filter the results for periodics")
+	mostFlakyTestsReportCmd.PersistentFlags().StringVar(&quarantineOpts.filterLaneRegex, "filter-lane-regex", filterLaneRegexDefault, "the regular expression to use to filter test lanes with")
 }
 
 var sigMatcher = regexp.MustCompile(`\[(sig-[^]]+)]`)
@@ -75,7 +76,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 	reportOpts := flakestats.NewDefaultReportOpts(
 		flakestats.DaysInThePast(quarantineOpts.daysInThePast),
 		flakestats.FilterPeriodicJobRunResults(quarantineOpts.filterPeriodicJobRunResults),
-		flakestats.FilterLaneRegex("rehearsal|e2e.*arm"),
+		flakestats.FilterLaneRegex(quarantineOpts.filterLaneRegex),
 	)
 	err := reportOpts.Validate()
 	if err != nil {
