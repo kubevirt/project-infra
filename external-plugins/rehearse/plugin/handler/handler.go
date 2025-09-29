@@ -31,6 +31,9 @@ import (
 )
 
 const basicHelpCommentText = `
+<details>
+<summary>Further information on rehearsals</summary>
+
 A rehearsal can be triggered for all jobs by commenting either ` + "`/rehearse`" + ` or ` + "`/rehearse all`" + ` on this PR.
 
 A rehearsal for a specific job can be triggered by commenting ` + "`/rehearse {job-name}`" + `.
@@ -45,6 +48,7 @@ organization AND either are approvers[1] for all files in the pull request or ar
 top-level approvers[1] in the ` + "`project-infra`" + ` project.
 
 [1]: see [OWNERS](https://www.kubernetes.dev/docs/guide/owners/#owners) file definition for reference.
+</details>
 `
 
 var log *logrus.Logger
