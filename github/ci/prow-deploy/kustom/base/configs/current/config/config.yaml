@@ -617,7 +617,7 @@ presets:
     preset-bazel-cache: "true"
   env:
     - name: BAZEL_VERSION
-      value: "5.4.1"
+      value: "6.5.0"
     - name: CACHE_HOST
       value: bazel-cache.kubevirt-prow
     - name: CACHE_PORT
