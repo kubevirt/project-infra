@@ -35,13 +35,12 @@ deck:
         name: buildlog
         config:
           highlight_regexes:
-          # default patterns, see https://github.com/kubernetes/test-infra/blob/e7ccf79861d3c53dfaa6c784c0c8537922c4c0cc/prow/spyglass/lenses/buildlog/lens.go#L95
+          # see default patterns https://github.com/kubernetes-sigs/prow/blob/269d4b273f64d1a4371bc6c0bebc4d452320a649/pkg/spyglass/lenses/buildlog/lens.go#L98
           - ^E\d{4} \d\d:\d\d:\d\d\.\d+
           - "(Error|ERROR|error)s?:"
           - (FAIL|Failure \[)\b
-          - "timed out"
+          - "(timed out|TIMEOUT)"
           - panic\b
-          # own patterns
           - \[FAILED\]
           - "fatal: "
       required_files:
