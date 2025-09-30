@@ -11,7 +11,6 @@ presubmits:
       timeout: 2h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -75,7 +74,6 @@ presubmits:
       timeout: 2h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -117,7 +115,6 @@ presubmits:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       vgpu: "true"
@@ -181,7 +178,6 @@ presubmits:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-unnested: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 5
     name: pull-kubevirt-e2e-kind-1.33-sev
@@ -235,7 +231,6 @@ presubmits:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-shared-images: "true"
@@ -552,7 +547,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     labels:
-      preset-bazel-unnested: "false"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-unit-test-arm64
     optional: true
@@ -676,8 +670,8 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-unit-test
     skip_branches:
     - release-\d+\.\d+
@@ -706,8 +700,8 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-fuzz
     optional: true
     skip_branches:
@@ -928,8 +922,8 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-check-unassigned-tests
     skip_branches:
     - release-\d+\.\d+
@@ -958,7 +952,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1001,7 +994,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1045,7 +1037,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1084,7 +1075,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-unnested: "false"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 4
     name: pull-kubevirt-e2e-k8s-1.33-sig-compute-arm64
@@ -1180,7 +1170,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: build-kubevirt-builder
@@ -1243,7 +1232,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1324,7 +1312,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1374,7 +1361,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1416,7 +1402,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1461,7 +1446,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1534,7 +1518,6 @@ presubmits:
       timeout: 2h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1576,7 +1559,6 @@ presubmits:
     labels:
       ci.kubevirt.io/prometheus: ""
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1630,7 +1612,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1671,7 +1652,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1712,7 +1692,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1755,7 +1734,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1796,7 +1774,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1837,7 +1814,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1878,7 +1854,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1921,7 +1896,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1962,7 +1936,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -2002,7 +1975,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -2042,7 +2014,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -2084,7 +2055,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -2124,7 +2094,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"

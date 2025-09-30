@@ -660,7 +660,6 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
-    preset-bazel-unnested: "false"
     preset-podman-in-container-enabled: "true"
   max_concurrency: 5
   name: periodic-kubevirt-kind-e2e-test-ARM64
@@ -909,7 +908,6 @@ periodics:
     repo: project-infra
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-pgp-bot-key: "true"
@@ -986,7 +984,6 @@ periodics:
     repo: project-infra
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-pgp-bot-key: "true"
@@ -1072,7 +1069,6 @@ periodics:
   labels:
     ci.kubevirt.io/prometheus: ""
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -1136,7 +1132,6 @@ periodics:
   labels:
     ci.kubevirt.io/prometheus: ""
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1195,7 +1190,6 @@ periodics:
   labels:
     ci.kubevirt.io/prometheus: ""
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1256,7 +1250,6 @@ periodics:
   labels:
     ci.kubevirt.io/prometheus: ""
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1319,7 +1312,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -1363,7 +1355,6 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
-    preset-bazel-unnested: "true"
     preset-podman-in-container-enabled: "true"
   name: periodic-kubevirt-e2e-kind-1.33-sev
   spec:
@@ -1408,7 +1399,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -1456,7 +1446,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -1503,7 +1492,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -1552,7 +1540,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -1808,7 +1795,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -1853,7 +1839,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -1898,7 +1883,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -1945,7 +1929,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -1990,7 +1973,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -2039,7 +2021,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -2084,7 +2065,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -2129,7 +2109,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -2174,7 +2153,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -2223,7 +2201,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -2268,7 +2245,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -2313,7 +2289,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -2358,7 +2333,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
@@ -2407,7 +2381,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-unnested: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-etcd-in-mem: "true"
     preset-podman-in-container-enabled: "true"
