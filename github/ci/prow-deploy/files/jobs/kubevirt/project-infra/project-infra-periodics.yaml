@@ -736,7 +736,7 @@ periodics:
         - -ce
         args:
           - |
-            git-pr.sh -c "go run ./robots/cmd/kubevirt require presubmits --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false && go run ./robots/cmd/kubevirt remove always_run -- --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" \
+            git-pr.sh -c "go run ./robots/cmd/kubevirt require presubmits --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false && go run ./robots/cmd/kubevirt remove always_run --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" \
               -r project-infra \
               -b require-kubevirt-presubmits \
               -T main \
