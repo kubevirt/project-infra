@@ -24,6 +24,7 @@ import (
 	"context"
 	_ "embed"
 	"encoding/csv"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/Masterminds/semver"
@@ -338,6 +339,9 @@ func fetchTopXLaneTestExecutions(reportFilenames []string, topX int) (map[string
 		for i := 0; i < topX+1; i++ {
 			record, err := csvReader.Read()
 			if err != nil {
+				if errors.Is(err, io.EOF) {
+					break
+				}
 				return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
 			}
 			if i == 0 {
