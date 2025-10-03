@@ -93,6 +93,9 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "automation/check-patch.e2e-workflow-k8s.sh"
+            env:
+            - name: KUBEVIRT_PROVIDER
+              value: "k8s-1.34"
     - name: pull-e2e-cluster-network-addons-operator-monitoring-k8s
       skip_branches:
         - release-\d+\.\d+
