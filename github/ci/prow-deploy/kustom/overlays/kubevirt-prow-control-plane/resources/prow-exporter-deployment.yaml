@@ -20,7 +20,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: prow-exporter
-        image: us-docker.pkg.dev/k8s-infra-prow/images/exporter:v20250924-cb620e94f
+        image: us-docker.pkg.dev/k8s-infra-prow/images/exporter:v20250927-87810a762
         imagePullPolicy: Always
         ports:
         - name: metrics
