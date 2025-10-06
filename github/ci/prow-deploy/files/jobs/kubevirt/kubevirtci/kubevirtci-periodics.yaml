@@ -178,7 +178,7 @@ periodics:
       # docker-in-docker needs privileged mode
       env:
       - name: GIMME_GO_VERSION
-        value: "1.22.5"
+        value: "1.24.7"
       securityContext:
         privileged: true
       resources:
@@ -237,7 +237,7 @@ periodics:
         rm_gcs_file kubevirt-prow "$GCS_FILE_PATH"
       env:
       - name: GIMME_GO_VERSION
-        value: "1.22.5"
+        value: "1.24.7"
       securityContext:
         privileged: true
       resources:
