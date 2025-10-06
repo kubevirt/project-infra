@@ -357,6 +357,9 @@ presubmits:
         - cd cluster-provision/gocli/ && make all container
         image: quay.io/kubevirtci/golang:v20250930-85e32e0
         name: ""
+        env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
         resources:
           requests:
             memory: 1Gi
@@ -430,6 +433,9 @@ presubmits:
           podman run --rm -v $(pwd):/workdir:Z quay.io/kubevirtci/gocli provision-manager --debug
         image: quay.io/kubevirtci/golang:v20250930-85e32e0
         name: ""
+        env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
         resources:
           requests:
             memory: 1Gi
@@ -455,6 +461,8 @@ presubmits:
         - cd cluster-provision/k8s/1.32 && ../provision.sh
         image: quay.io/kubevirtci/golang:v20250930-85e32e0
         env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
         - name: SLIM
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
@@ -485,6 +493,9 @@ presubmits:
         - cd cluster-provision/k8s/1.32 && ../provision.sh
         image: quay.io/kubevirtci/golang:v20250930-85e32e0
         name: ""
+        env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
         resources:
           requests:
             memory: 16Gi
@@ -512,6 +523,8 @@ presubmits:
         - cd cluster-provision/k8s/1.33 && ../provision.sh
         image: quay.io/kubevirtci/golang:v20250930-85e32e0
         env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
         - name: SLIM
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
@@ -542,6 +555,9 @@ presubmits:
         - cd cluster-provision/k8s/1.33 && ../provision.sh
         image: quay.io/kubevirtci/golang:v20250930-85e32e0
         name: ""
+        env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
         resources:
           requests:
             memory: 16Gi
@@ -569,6 +585,8 @@ presubmits:
         - cd cluster-provision/k8s/1.34 && ../provision.sh
         image: quay.io/kubevirtci/golang:v20250930-85e32e0
         env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
         - name: SLIM
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
@@ -599,6 +617,9 @@ presubmits:
         - cd cluster-provision/k8s/1.34 && ../provision.sh
         image: quay.io/kubevirtci/golang:v20250930-85e32e0
         name: ""
+        env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
         resources:
           requests:
             memory: 16Gi
@@ -624,6 +645,8 @@ presubmits:
         - -c
         - cd $(find ./cluster-provision/k8s -name '1.*' | sort -rV | head -1) && ../provision.sh
         env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
         - name: PHASES
           value: linux
         - name: BYPASS_PMAN_CHANGE_CHECK
