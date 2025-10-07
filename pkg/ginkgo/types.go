@@ -19,6 +19,8 @@
 
 package ginkgo
 
+import "github.com/onsi/ginkgo/v2/types"
+
 // Node is the basic structure that is compatible with the output of the command `ginkgo outline --format json`
 type Node struct {
 
@@ -51,3 +53,10 @@ type Node struct {
 	// Nodes holds the child nodes of this node
 	Nodes []*Node `json:"nodes"`
 }
+
+// NodeFilter describes the interface for a positive filter, meaning that a
+// filter that returns true will let the node pass.
+type NodeFilter func(*Node) bool
+
+// SpecReportFilter defines the signature of filters for types.SpecReport
+type SpecReportFilter func(r types.SpecReport) bool

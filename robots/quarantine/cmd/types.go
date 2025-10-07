@@ -30,6 +30,10 @@ import (
 
 const filterLaneRegexDefault = "rehearsal"
 
+type autoQuarantineOptions struct {
+	maxTestsToQuarantine int
+}
+
 type quarantineOptions struct {
 	testSourcePath string
 
@@ -49,6 +53,8 @@ type TestToQuarantine struct {
 	RelevantImpacts []searchci.Impact
 	SpecReport      *types.SpecReport
 }
+
+type TestsPerSIG map[string][]*TestToQuarantine
 
 var (
 	mostFlakyTestsTimeRanges = []searchci.TimeRange{searchci.ThreeDays, searchci.FourteenDays}
