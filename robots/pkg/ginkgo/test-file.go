@@ -41,33 +41,19 @@ func init() {
 	}
 }
 
-func FindFileAndDescriptor(testSourcePath, testName string) (testDescriptor *SourceTestDescriptor, testFileName string, err error) {
-	if HasTestId(testName) {
-		testFileName, err = FindTestFileById(testName, testSourcePath)
-		if err != nil {
-			return nil, "", fmt.Errorf("could not find test file by id: %w", err)
-		}
-		testDescriptor, err = NewTestDescriptorForID(testName, testFileName)
-		if err != nil {
-			return nil, "", fmt.Errorf("could not find test descriptor by id: %w", err)
-		}
-	} else {
-		testFileName, err = FindTestFileByName(testName, testSourcePath)
-		if err != nil {
-			return nil, "", fmt.Errorf("could not find test file by name: %w", err)
-		}
-		testDescriptor, err = NewTestDescriptorForName(testName, testFileName)
-		if err != nil {
-			return nil, "", fmt.Errorf("could not find test descriptor by name: %w", err)
-		}
-	}
-	return
-}
-
 func FindTestFileByName(name string, directoryPath string) (string, error) {
-	command := osexec.Command("rg", "--multiline", "--multiline-dotall", byTestName(name))
-	command.Dir = directoryPath
-	return findTestFile(command)
+	reports, _, err := DryRun(directoryPath)
+	if err != nil {
+		return "", fmt.Errorf("could not find test file with name %q: %w", name, err)
+	}
+	if reports == nil {
+		return "", fmt.Errorf("could not find test file with name %q", name)
+	}
+	matchingSpecReport := GetSpecReportByTestName(reports, name)
+	if matchingSpecReport == nil {
+		return "", fmt.Errorf("could not find test file with name %q", name)
+	}
+	return matchingSpecReport.FileName(), nil
 }
 
 func FindTestFileById(name string, directoryPath string) (string, error) {
@@ -107,10 +93,4 @@ func findTestFile(command *osexec.Cmd) (string, error) {
 		return filepath.Join(command.Dir, fileName), nil
 	}
 	return "", nil
-}
-
-func byTestName(name string) string {
-	regex := fmt.Sprintf(`"%s"`, strings.ReplaceAll(regexp.QuoteMeta(name), " ", ".*"))
-	regexp.MustCompile(regex)
-	return regex
 }

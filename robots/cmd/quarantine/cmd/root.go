@@ -20,8 +20,11 @@
 package cmd
 
 import (
+	"fmt"
+	"github.com/onsi/ginkgo/v2/types"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"kubevirt.io/project-infra/robots/pkg/ginkgo"
 	"os"
 )
 
@@ -32,9 +35,11 @@ var rootCmd = &cobra.Command{
 var quarantineOpts quarantineOptions
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&quarantineOpts.testSourcePath, "Test-source-path", "../kubevirt/tests/", "the path to the Test source")
+	rootCmd.PersistentFlags().StringVar(&quarantineOpts.testSourcePath, "test-source-path", "../kubevirt/tests/", "the path to the Test source")
 
 	rootCmd.AddCommand(mostFlakyTestsReportCmd)
+	rootCmd.AddCommand(quarantineTestCmd)
+	rootCmd.AddCommand(infoTestCmd)
 }
 
 func Execute() {
@@ -42,4 +47,19 @@ func Execute() {
 		logrus.WithError(err).Error("failed to run command")
 		os.Exit(1)
 	}
+}
+
+func getDryRunSpecReport(quarantineOpts *quarantineOptions) (*types.SpecReport, error) {
+	reports, _, err := ginkgo.DryRun(quarantineOpts.testSourcePath)
+	if err != nil {
+		return nil, fmt.Errorf("could not locate test named %q: %w", quarantineOpts.testName, err)
+	}
+	if reports == nil {
+		return nil, fmt.Errorf("could not generate test file reports for test named %q", quarantineOpts.testName)
+	}
+	matchingSpecReport := ginkgo.GetSpecReportByTestName(reports, quarantineOpts.testName)
+	if matchingSpecReport == nil {
+		return nil, fmt.Errorf("could not locate test named %q ", quarantineOpts.testName)
+	}
+	return matchingSpecReport, nil
 }
