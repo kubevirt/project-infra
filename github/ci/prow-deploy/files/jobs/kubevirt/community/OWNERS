@@ -6,11 +6,13 @@
 
 approvers:
 - aburdenthehand
-- davidvossel
 - fabiand
 - jean-edouard
 - rmohr
+- rthallisey
+- stu-gott
 - vladikr
+- xpivarc
 options: {}
 reviewers:
 - aburdenthehand
