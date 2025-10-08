@@ -159,7 +159,7 @@ postsubmits:
             privileged: true
           resources:
             requests:
-              memory: "12Gi"
+              memory: "16Gi"
           volumeMounts:
             - name: kubevirtci-coveralls
               mountPath: /root/.docker/secrets/coveralls
@@ -198,7 +198,7 @@ postsubmits:
             privileged: true
           resources:
             requests:
-              memory: "12Gi"
+              memory: "16Gi"
           volumeMounts:
             - name: kubevirtci-fossa
               mountPath: /root/.docker/secrets/fossa
