@@ -19,31 +19,28 @@
 package git
 
 import (
-	"os"
-	"testing"
-
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
-	log "github.com/sirupsen/logrus"
+	"fmt"
+	"os/exec"
 )
 
-func TestGit(t *testing.T) {
-	RegisterFailHandler(Fail)
-
-	stat, err := os.Stat("testdata/repo")
-	if os.IsNotExist(err) || !stat.IsDir() {
-		execGitPanickingOnError("testdata", "clone", "repo.gitbundle", "repo")
-		execGitPanickingOnError("testdata/repo", "checkout", "main")
-		execGitPanickingOnError("testdata/repo", "checkout", "change-test")
-	}
-
-	RunSpecs(t, "Git Main Suite")
+func execGit(sourceFilepath string, args []string) ([]byte, error) {
+	command := exec.Command("git", args...)
+	command.Dir = sourceFilepath
+	output, err := handleOutput(command)
+	return output, err
 }
 
-func execGitPanickingOnError(sourceFilepath string, args ...string) {
-	output, err := execGit(sourceFilepath, args)
+func handleOutput(command *exec.Cmd) ([]byte, error) {
+	output, err := command.Output()
 	if err != nil {
-		panic(err)
+		switch e := err.(type) {
+		case *exec.ExitError:
+			return nil, fmt.Errorf("exec %s failed: %s", command, e.Stderr)
+		case *exec.Error:
+			return nil, fmt.Errorf("exec %s failed: %s", command, e)
+		default:
+			return nil, fmt.Errorf("exec %s failed: %s", command, err)
+		}
 	}
-	log.Infoln(string(output))
+	return output, nil
 }
