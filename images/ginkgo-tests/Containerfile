@@ -1,0 +1,9 @@
+FROM quay.io/kubevirtci/golang:v20250930-85e32e0 as builder
+RUN cd /project-infra && \
+    /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/ginkgo-tests ./robots/cmd/ginkgo-tests"
+RUN dnf install -y \
+    ripgrep
+FROM gcr.io/k8s-prow/git:v20240729-4f255edb07
+COPY --from=builder /go/bin/ginkgo-tests /usr/bin/ginkgo-tests
+COPY --from=builder /usr/bin/rg /usr/bin/rg
+ENTRYPOINT ["/usr/bin/ginkgo-tests"]
