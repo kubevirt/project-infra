@@ -1,7 +1,7 @@
 OUTPUT_DIR=${1}
 
 for dir in ${OUTPUT_DIR}/results/*; do
-    if [ -d "$dir" ] && [[ ! "$dir" =~ "cluster-100-density-test" ]]; then
+    if [ -d "$dir" ] && [[ ! "$dir" =~ "cluster-100-density-test" && ! "$dir" =~ "kwok" ]]; then
         dir_name=$(basename $dir)
 
         perf-report-creator weekly-report --output-dir=${OUTPUT_DIR}/weekly \
