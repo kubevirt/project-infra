@@ -29,6 +29,9 @@ import (
 var _ = Describe("test-file", func() {
 	When("FindTestFileByName", func() {
 		It("finds a file if exact test name is given", func() {
+			// Note: this test is contained in a When node which has the speciality
+			// adding the when to the node test, therefore we have to handle that internally by adjusting the normalization
+			// accordingly
 			actualFilepath, err := FindTestFileByName("simple does something is executed does not return an error", "testdata")
 			Expect(err).ToNot(HaveOccurred())
 			stat, err := os.Stat(actualFilepath)
@@ -52,6 +55,13 @@ var _ = Describe("test-file", func() {
 		It("doesn't find a file if a non existing match is given", func() {
 			_, err := FindTestFileByName("simple does something is executed does check for something else", "testdata")
 			Expect(err).To(HaveOccurred())
+		})
+		It("finds a file with complex naming scheme", func() {
+			actualFilepath, err := FindTestFileByName("[sig-network]SRIOV externalized was previously part of the latter node is still found", "testdata")
+			Expect(err).ToNot(HaveOccurred())
+			stat, err := os.Stat(actualFilepath)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(filepath.Base(stat.Name())).To(BeEquivalentTo("externalized_test.go"))
 		})
 	})
 	When("FindTestFileById", func() {
