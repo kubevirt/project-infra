@@ -463,6 +463,9 @@ orgs:
         description: VM monitoring application based on WSGI, libvirt, flask and gevent, inspired by cAdvisor.
         has_projects: false
         has_wiki: false
+      virt-template:
+        description: A KubeVirt add-on providing native, user-friendly templating workflows for KubeVirt virtual machines.
+        has_projects: true
       vm-console-proxy:
         allow_rebase_merge: false
         allow_squash_merge: false
@@ -981,3 +984,11 @@ orgs:
           - lerrigatto
         repos:
           charts: write
+      virt-template-maintainers:
+        description: "Maintainers of virt-template"
+        privacy: closed
+        maintainers:
+          - 0xFelix
+          - lyarwood
+        repos:
+          virt-template: admin
