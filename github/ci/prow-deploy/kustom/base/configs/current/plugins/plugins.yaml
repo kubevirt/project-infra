@@ -462,6 +462,15 @@ plugins:
     - owners-label
     - trigger
 
+  kubevirt/virt-template:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+    - help
+
   kubevirt/vm-console-proxy:
     plugins:
     - approve
@@ -621,6 +630,7 @@ approve:
   - kubevirt/dra-pci-driver
   - kubevirt/enhancements
   - kubevirt/irsa-mutation-webhook
+  - kubevirt/virt-template
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -758,6 +768,7 @@ lgtm:
   - kubevirt/dra-pci-driver
   - kubevirt/enhancements
   - kubevirt/irsa-mutation-webhook
+  - kubevirt/virt-template
   review_acts_as_lgtm: true
 
 override:
@@ -812,6 +823,7 @@ triggers:
   - kubevirt/application-aware-quota
   - kubevirt/enhancements
   - kubevirt/irsa-mutation-webhook
+  - kubevirt/virt-template
   ignore_ok_to_test: true
 - repos:
   - virtblocks/virtblocks
