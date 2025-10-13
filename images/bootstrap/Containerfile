@@ -54,17 +54,21 @@ RUN dnf install -y \
     protobuf-compiler \
     python3-devel \
     python3-jinja2 \
+    python3-pip \
     python-unversioned-command \
     qemu-user-static \
     redhat-rpm-config \
     ripgrep \
     rsync \
     rsync-daemon \
+    ShellCheck \
     skopeo \
     sudo \
     wget \
     which && \
-  dnf -y clean all
+  dnf -y clean all && \
+  pip install yamllint && \
+  pip cache purge
 
 
 RUN if test "${ARCH}" != s390x; then \
