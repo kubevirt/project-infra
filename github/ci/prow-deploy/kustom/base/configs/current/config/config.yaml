@@ -139,6 +139,7 @@ tide:
     kubevirt/kubevirt.core: merge
     kubevirt/enhancements: squash
     kubevirt/irsa-mutation-webhook: squash
+    kubevirt/virt-template: merge
 
   queries:
   - repos:
@@ -209,6 +210,7 @@ tide:
     - kubevirt/vm-console-proxy
     - kubevirt/kubevirt.core
     - kubevirt/irsa-mutation-webhook
+    - kubevirt/virt-template
     labels:
     - lgtm
     - approved
@@ -490,6 +492,8 @@ branch-protection:
           branches:
             main:
               protect: true
+        virt-template:
+          protect: true
     k8snetworkplumbingwg:
       repos:
         kubemacpool:
