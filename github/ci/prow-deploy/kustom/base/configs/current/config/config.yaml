@@ -494,6 +494,10 @@ branch-protection:
               protect: true
         virt-template:
           protect: true
+        virt-template-api:
+          protect: true
+        virt-template-client-go:
+          protect: true
     k8snetworkplumbingwg:
       repos:
         kubemacpool:
