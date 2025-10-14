@@ -1,0 +1,30 @@
+periodics:
+- name: periodic-virt-template-publish-staging-main-nightly
+  cron: 2 1 * * *
+  cluster: kubevirt-prow-control-plane
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 1h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: virt-template
+    workdir: true
+  spec:
+    containers:
+    - command: ["/bin/bash", "-ce"]
+      args:
+      - |
+        export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+        export PULL_BASE_REF=main
+        hack/publish-staging.sh
+      image: quay.io/kubevirtci/pr-creator:v20240913-6773146
+      resources:
+        requests:
+          memory: 200Mi
