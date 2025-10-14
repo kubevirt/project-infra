@@ -470,7 +470,7 @@ presubmits:
             memory: 8Gi
         securityContext:
           privileged: true
-  - always_run: false
+  - always_run: true 
     branches:
     - release-1.6
     cluster: prow-arm64-workloads
@@ -481,9 +481,9 @@ presubmits:
       timeout: 2h0m0s
     labels:
       preset-bazel-unnested: "false"
+      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-unit-test-arm64-1.6
     optional: true
-    skip_report: true
     spec:
       containers:
       - command:
@@ -495,7 +495,7 @@ presubmits:
         name: ""
         resources:
           requests:
-            memory: 8Gi
+            memory: 12Gi
         securityContext:
           privileged: true
   - always_run: true
@@ -889,7 +889,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     branches:
     - release-1.6
     cluster: prow-arm64-workloads
@@ -904,7 +904,6 @@ presubmits:
     max_concurrency: 1
     name: pull-kubevirt-e2e-arm64-1.6
     optional: true
-    skip_report: true
     spec:
       containers:
       - command:
