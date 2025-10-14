@@ -466,6 +466,12 @@ orgs:
       virt-template:
         description: A KubeVirt add-on providing native, user-friendly templating workflows for KubeVirt virtual machines.
         has_projects: true
+      virt-template-api:
+        description: api package for kubevirt.io/virt-template
+        has_projects: true
+      virt-template-client-go:
+        description: client-go package for kubevirt.io/virt-template
+        has_projects: true
       vm-console-proxy:
         allow_rebase_merge: false
         allow_squash_merge: false
@@ -992,3 +998,5 @@ orgs:
           - lyarwood
         repos:
           virt-template: admin
+          virt-template-api: admin
+          virt-template-client-go: admin
