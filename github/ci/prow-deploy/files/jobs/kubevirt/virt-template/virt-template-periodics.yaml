@@ -14,17 +14,22 @@ periodics:
   extra_refs:
   - base_ref: main
     org: kubevirt
+    repo: project-infra
+  - base_ref: main
+    org: kubevirt
     repo: virt-template
     workdir: true
   spec:
     containers:
-    - command: ["/bin/bash", "-ce"]
-      args:
-      - |
-        export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
-        export PULL_BASE_REF=main
-        hack/publish-staging.sh
-      image: quay.io/kubevirtci/pr-creator:v20240913-6773146
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - hack/publish-staging.sh
+      env:
+      - name: PULL_BASE_REF
+        value: main
+      image: quay.io/kubevirtci/golang:v20251013-a2c948e
       resources:
         requests:
           memory: 200Mi
