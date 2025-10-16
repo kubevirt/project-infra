@@ -39,7 +39,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20251013-a2c948e
+        - image: quay.io/kubevirtci/golang:v20251015-5720d72
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
@@ -92,7 +92,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20251013-a2c948e
+        - image: quay.io/kubevirtci/golang:v20251015-5720d72
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
