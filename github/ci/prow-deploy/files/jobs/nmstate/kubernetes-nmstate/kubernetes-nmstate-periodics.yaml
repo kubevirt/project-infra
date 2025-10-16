@@ -107,3 +107,35 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
+- name: periodic-knmstate-e2e-handler-k8s-future
+  cron: "0 2 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 3h
+    grace_period: 5m
+  max_concurrency: 6
+  labels:
+    preset-podman-in-container-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-shared-images: "true"
+  cluster: prow-workloads
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+      - image: quay.io/kubevirtci/golang:v20251015-5720d72
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "52Gi"
+        env:
+          - name: NMSTATE_PIN
+            value: "future"
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - "automation/check-patch.e2e-k8s.sh"
