@@ -1042,41 +1042,6 @@ periodics:
   interval: 168h
   labels:
     preset-bazel-cache: "true"
-    preset-github-credentials: "true"
-  max_concurrency: 1
-  name: periodic-project-infra-dependabot-update
-  spec:
-    containers:
-    - image: quay.io/kubevirtci/pr-creator:v20240913-6773146
-      env:
-      command:
-      - /usr/local/bin/runner.sh
-      - /bin/bash
-      - -ce
-      args:
-      - |
-        ./hack/git-pr.sh -c "go run ./robots/cmd/dependabot --github-token-path /etc/github/oauth --repo project-infra --org kubevirt --repo-dir $(pwd) && make gazelle test" \
-          -b dependabot-update \
-          -r project-infra \
-          -T main
-      resources:
-        requests:
-          memory: "1Gi"
-- annotations:
-    testgrid-create-test-group: "false"
-  cluster: kubevirt-prow-control-plane
-  decorate: true
-  decoration_config:
-    timeout: 1h
-    grace_period: 5m
-  extra_refs:
-  - org: kubevirt
-    repo: project-infra
-    base_ref: main
-    workdir: true
-  interval: 168h
-  labels:
-    preset-bazel-cache: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   max_concurrency: 1
