@@ -37,7 +37,7 @@ var cronRegex *regexp.Regexp
 
 func init() {
 	var err error
-	cronRegex, err = regexp.Compile(`[0-9] [0-9]+,[0-9]+,[0-9]+ \*\ \*\ \*`)
+	cronRegex, err = regexp.Compile(`[0-9] [0-9]+,[0-9]+,[0-9]+,[0-9]+ \*\ \*\ \*`)
 	if err != nil {
 		panic(err)
 	}
@@ -71,6 +71,6 @@ func AdvanceCronExpression(sourceCronExpr string) string {
 	if err != nil {
 		panic(err)
 	}
-	firstHour = (firstHour + 1) % 8
-	return fmt.Sprintf("%d %d,%d,%d * * *", mins, firstHour, firstHour+8, firstHour+16)
+	firstHour = (firstHour + 1) % 6
+	return fmt.Sprintf("%d %d,%d,%d,%d * * *", mins, firstHour, firstHour+6, firstHour+12, firstHour+18)
 }
