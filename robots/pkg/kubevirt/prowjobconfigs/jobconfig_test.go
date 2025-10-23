@@ -26,32 +26,32 @@ func Test_AdvanceCronExpression(t *testing.T) {
 		want string
 	}{
 		{
-			name: "zero one nine seventeen",
+			name: "zero one seven thirteen nineteen",
 			args: args{
-				sourceCronExpr: "0 1,9,17 * * *",
+				sourceCronExpr: "0 1,7,13,19 * * *",
 			},
-			want: "10 2,10,18 * * *",
+			want: "10 2,8,14,20 * * *",
 		},
 		{
-			name: "fifty one nine seventeen",
+			name: "fifty one seven thirteen nineteen",
 			args: args{
-				sourceCronExpr: "50 1,9,17 * * *",
+				sourceCronExpr: "50 1,7,13,19 * * *",
 			},
-			want: "0 2,10,18 * * *",
+			want: "0 2,8,14,20 * * *",
 		},
 		{
-			name: "zero eight sixteen twentyfour",
+			name: "zero five eleven seventeen twentythree",
 			args: args{
-				sourceCronExpr: "0 8,16,24 * * *",
+				sourceCronExpr: "0 5,11,17,23 * * *",
 			},
-			want: "10 1,9,17 * * *",
+			want: "10 0,6,12,18 * * *",
 		},
 		{
-			name: "zero seven fifteen twentythree",
+			name: "zero zero six twelve eighteen",
 			args: args{
-				sourceCronExpr: "0 7,15,23 * * *",
+				sourceCronExpr: "0 0,6,12,18 * * *",
 			},
-			want: "10 0,8,16 * * *",
+			want: "10 1,7,13,19 * * *",
 		},
 	}
 	for _, tt := range tests {
