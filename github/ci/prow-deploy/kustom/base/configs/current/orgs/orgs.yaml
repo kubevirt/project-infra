@@ -104,6 +104,7 @@ orgs:
       - victortoso
       - vladikr
       - xpivarc
+      - zhencliu
       - zhlhahaha
     members_can_create_repositories: false
     name: KubeVirt
