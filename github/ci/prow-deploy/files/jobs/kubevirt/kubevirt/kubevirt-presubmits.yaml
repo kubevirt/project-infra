@@ -2331,3 +2331,82 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - annotations:
+      testgrid-dashboards: kubevirt-periodics
+      testgrid-days-of-results: "60"
+    cluster: kubevirt-prow-control-plane
+    max_concurrency: 1
+    always_run: false
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-shared-images: "true"
+    name: periodic-kubevirt-e2e-test-secure-execution-s390x-tmp
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          curl -SLO https://raw.githubusercontent.com/kubevirt/project-infra/refs/heads/main/hack/manage-secrets.sh
+          chmod +x ./manage-secrets.sh
+          source ./manage-secrets.sh
+
+          git remote add jschinta https://github.com/jschintag/kubevirt.git
+          git fetch jschinta
+          git checkout se-e2e
+
+          # get kubeconfig
+          #source ../project-infra/hack/manage-secrets.sh
+          decrypt_secrets
+          extract_secret 'kubeconfigS390xSecureExecution' /kubeconfig
+
+          # login quay.io
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+
+          # run the test
+          automation/test.sh
+        env:
+        - name: TARGET
+          value: external-secure-execution
+        - name: KUBEVIRT_PROVIDER
+          value: external
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirtci
+        - name: DOCKER_TAG
+          value: s390x_se_test
+        - name: KUBECONFIG
+          value: /kubeconfig
+        - name: IMAGE_PULL_POLICY
+          value: Always
+        - name: BUILD_ARCH
+          value: amd64,crossbuild-s390x
+        - name: GIT_ASKPASS
+          value: ../project-infra/hack/git-askpass.sh
+        image: quay.io/kubevirtci/bootstrap:v20251015-5720d72
+        name: ""
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /etc/github
+          name: token
+        - mountPath: /etc/pgp
+          name: pgp-bot-key
+          readOnly: true
+      volumes:
+      - name: token
+        secret:
+          secretName: oauth-token
+      - name: pgp-bot-key
+        secret:
+          secretName: pgp-bot-key
