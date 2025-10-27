@@ -1492,7 +1492,7 @@ presubmits:
     max_concurrency: 11
     name: pull-kubevirt-metrics-lint
     optional: true
-    run_if_changed: docs/metrics.md
+    run_if_changed: docs/observability/metrics.md
     skip_branches:
     - release-\d+\.\d+
     spec:
