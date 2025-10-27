@@ -23,6 +23,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
 	"strings"
@@ -46,7 +47,8 @@ type Item struct {
 }
 
 type SearchResult struct {
-	Items []Item `json:"items"`
+	TotalCount int    `json:"total_count"`
+	Items      []Item `json:"items"`
 }
 
 func main() {
@@ -54,36 +56,56 @@ func main() {
 	authors := flag.String("authors", "dhiller,brianmcarey", "Comma-separated list of GitHub author handles")
 	flag.Parse()
 
+	query, totalCount, searchResults, err := queryMergedPRsForAuthors(authors, startDate)
+	if err != nil {
+		log.WithError(err).Fatal()
+	}
+
+	generateMarkdownForMergedPRs(query, totalCount, searchResults)
+}
+
+func queryMergedPRsForAuthors(authors *string, startDate *string) (query string, totalCount int, searchResults []SearchResult, err error) {
 	authorQueries := []string{}
 	for _, author := range strings.Split(*authors, ",") {
 		authorQueries = append(authorQueries, "author:"+strings.TrimSpace(author))
 	}
 
-	query := fmt.Sprintf("is:pr is:merged merged:>=%s %s org:kubevirt", *startDate, strings.Join(authorQueries, " "))
-	reqURL := fmt.Sprintf("%s?q=%s", githubAPIURL, url.QueryEscape(query))
+	query = fmt.Sprintf("is:pr is:merged merged:>=%s %s org:kubevirt", *startDate, strings.Join(authorQueries, " "))
+	perPage := 20
+	totalCount = perPage + 1
+	page := 0
 
-	resp, err := http.Get(reqURL)
-	if err != nil {
-		fmt.Printf("Error making request to GitHub API: %v\n", err)
-		return
+	for totalCount > page*perPage {
+		page++
+		reqURL := fmt.Sprintf("%s?page=%d&per_page=%d&q=%s", githubAPIURL, page, perPage, url.QueryEscape(query))
+
+		log.Debugf("GitHub query: %q", reqURL)
+		resp, err := http.Get(reqURL)
+		if err != nil {
+			return "", 0, nil, err
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return "", 0, nil, fmt.Errorf("GitHub API returned status code %d", resp.StatusCode)
+		}
+
+		var result SearchResult
+		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+			return "", 0, nil, fmt.Errorf("error decoding JSON response: %v", err)
+		}
+		totalCount = result.TotalCount
+		searchResults = append(searchResults, result)
 	}
-	defer resp.Body.Close()
+	return
+}
 
-	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Error: GitHub API returned status code %d\n", resp.StatusCode)
-		return
-	}
-
-	var result SearchResult
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		fmt.Printf("Error decoding JSON response: %v\n", err)
-		return
-	}
-
-	fmt.Printf("recently merged PRs authored by SIG CI (query: “is:pr is:merged merged:>=%s %s”)\n\n", *startDate, strings.Join(authorQueries, " "))
-
-	for _, item := range result.Items {
-		repoPath := strings.TrimPrefix(item.RepositoryURL, "https://api.github.com/repos/")
-		fmt.Printf("* [%s#%d](%s): %s (by @%s)\n", repoPath, item.Number, item.HTMLURL, item.Title, item.User.Login)
+func generateMarkdownForMergedPRs(query string, totalCount int, searchResults []SearchResult) {
+	fmt.Printf("* %d recently merged PRs authored by SIG CI (query: %s”)\n\n", totalCount, query)
+	for _, result := range searchResults {
+		for _, item := range result.Items {
+			repoPath := strings.TrimPrefix(item.RepositoryURL, "https://api.github.com/repos/")
+			fmt.Printf("  * [%s#%d](%s): %s (by @%s)\n", repoPath, item.Number, item.HTMLURL, item.Title, item.User.Login)
+		}
 	}
 }
