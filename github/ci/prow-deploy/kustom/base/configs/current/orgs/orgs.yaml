@@ -536,6 +536,16 @@ orgs:
         has_projects: true
         has_wiki: true
         has_issues: true
+      kubevirt-migration-operator:
+        default_branch: main
+        has_projects: true
+        has_wiki: true
+        has_issues: true
+      kubevirt-migration-controller:
+        default_branch: main
+        has_projects: true
+        has_wiki: true
+        has_issues: true
     teams:
       QE:
         description: ""
@@ -967,6 +977,15 @@ orgs:
           - vladikr
         repos:
           application-aware-quota: admin
+      kubevirt-migration-controller-maintainers:
+        description: Maintainers of kubevirt migrations controller project
+        members:
+          - akalenyu
+          - awels
+          - aglitke
+        repos:
+          kubevirt-migration-controller: admin
+          kubevirt-migration-operator: admin
       kubevirt.core-maintainers:
         description: Maintainers of kubevirt.core
         privacy: closed
