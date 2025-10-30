@@ -190,7 +190,9 @@ var _ = Describe("PR filtering", func() {
 		var pr *github.PullRequest
 
 		BeforeEach(func() {
-			handler = &GitHubEventsHandler{}
+			handler = &GitHubEventsHandler{
+				logger: logrus.New(),
+			}
 			headConfigPresubmit = config.Presubmit{
 				JobBase: config.JobBase{
 					Name: "testJob",
@@ -289,7 +291,9 @@ var _ = Describe("PR filtering", func() {
 		var handler *GitHubEventsHandler
 
 		BeforeEach(func() {
-			handler = &GitHubEventsHandler{}
+			handler = &GitHubEventsHandler{
+				logger: logrus.New(),
+			}
 		})
 
 		It("extracts job names from comment body", func() {
@@ -354,7 +358,9 @@ Gna meh whatever
 		var prowJobs []prowapi.ProwJob
 
 		BeforeEach(func() {
-			handler = &GitHubEventsHandler{}
+			handler = &GitHubEventsHandler{
+				logger: logrus.New(),
+			}
 			prowJobs = []prowapi.ProwJob{
 				{
 					Spec: prowapi.ProwJobSpec{
@@ -700,3 +706,293 @@ func newPodSpec() *v1.PodSpec {
 		},
 	}
 }
+
+var _ = Describe("Periodic jobs", func() {
+
+	Context("hashPeriodicsConfig", func() {
+		It("should hash periodic jobs correctly", func() {
+			periodics := []config.Periodic{
+				{
+					JobBase: config.JobBase{
+						Name: "periodic-job-1",
+						Spec: newPodSpec(),
+					},
+				},
+				{
+					JobBase: config.JobBase{
+						Name: "periodic-job-2",
+						Spec: newPodSpec(),
+					},
+				},
+			}
+
+			result := hashPeriodicsConfig(periodics)
+
+			Expect(result).To(HaveLen(2))
+			Expect(result).To(HaveKey("periodic-job-1"))
+			Expect(result).To(HaveKey("periodic-job-2"))
+			Expect(result["periodic-job-1"].Name).To(Equal("periodic-job-1"))
+			Expect(result["periodic-job-2"].Name).To(Equal("periodic-job-2"))
+		})
+
+		It("should handle empty periodic jobs list", func() {
+			periodics := []config.Periodic{}
+
+			result := hashPeriodicsConfig(periodics)
+
+			Expect(result).To(BeEmpty())
+		})
+
+		It("should handle nil periodic jobs list", func() {
+			var periodics []config.Periodic
+
+			result := hashPeriodicsConfig(periodics)
+
+			Expect(result).To(BeEmpty())
+		})
+	})
+
+	Context("generatePeriodics", func() {
+		var handler *GitHubEventsHandler
+		var headConfig *config.Config
+		var headConfigPeriodic config.Periodic
+		var baseConfig *config.Config
+		var baseConfigPeriodic config.Periodic
+		var pr *github.PullRequest
+
+		BeforeEach(func() {
+			handler = &GitHubEventsHandler{
+				logger: logrus.New(),
+			}
+			headConfigPeriodic = config.Periodic{
+				JobBase: config.JobBase{
+					Name: "testPeriodicJob",
+					Spec: newPodSpec(),
+				},
+			}
+			headConfig = &config.Config{
+				JobConfig: config.JobConfig{
+					Periodics: []config.Periodic{
+						headConfigPeriodic,
+					},
+				},
+			}
+			baseConfigPeriodic = config.Periodic{
+				JobBase: config.JobBase{
+					Name: "testPeriodicJob",
+					Spec: newPodSpec(),
+				},
+			}
+			baseConfig = &config.Config{
+				JobConfig: config.JobConfig{
+					Periodics: []config.Periodic{
+						baseConfigPeriodic,
+					},
+				},
+			}
+			pr = &github.PullRequest{
+				Base: github.PullRequestBranch{
+					Repo: github.Repo{
+						FullName: "kubevirt/project-infra",
+					},
+				},
+			}
+		})
+
+		It("doesn't generate a prowjob without changes", func() {
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			Expect(periodics).To(BeEmpty())
+		})
+
+		It("generates a prowjob if spec changes", func() {
+			headConfig.Periodics[0].Spec.Containers[0].Image = "v2/test37"
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			Expect(periodics).ToNot(BeEmpty())
+			Expect(periodics).To(HaveLen(1))
+			Expect(periodics[0].Spec.Job).To(Equal("testPeriodicJob"))
+		})
+
+		It("generates a prowjob if interval changes", func() {
+			headConfig.Periodics[0].Interval = "1h"
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			Expect(periodics).ToNot(BeEmpty())
+		})
+
+		It("generates a prowjob if cron changes", func() {
+			headConfig.Periodics[0].Cron = "0 0 * * *"
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			Expect(periodics).ToNot(BeEmpty())
+		})
+
+		It("generates a prowjob for new periodic job", func() {
+			newPeriodic := config.Periodic{
+				JobBase: config.JobBase{
+					Name: "newPeriodicJob",
+					Spec: newPodSpec(),
+				},
+			}
+			headConfig.Periodics = append(headConfig.Periodics, newPeriodic)
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			Expect(periodics).ToNot(BeEmpty())
+			Expect(periodics).To(HaveLen(1))
+			Expect(periodics[0].Spec.Job).To(Equal("newPeriodicJob"))
+		})
+
+		It("doesn't generate a prowjob for rehearsal-restricted periodic job", func() {
+			headConfig.Periodics[0].Spec.Containers[0].Image = "v2/test37"
+			headConfig.Periodics[0].Annotations = map[string]string{
+				rehearsalRestrictedAnnotation: "true",
+			}
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			Expect(periodics).To(BeEmpty())
+		})
+	})
+
+	Context("With a git repo - periodic jobs", func() {
+		var gitrepo *localgit.LocalGit
+		var gitClientFactory gitv2.ClientFactory
+		var eventsServer *GitHubEventsHandler
+		var dummyLog *logrus.Logger
+
+		BeforeEach(func() {
+
+			var err error
+			gitrepo, gitClientFactory, err = localgit.NewV2()
+			Expect(err).ShouldNot(HaveOccurred(), "Could not create local git repo and client factory")
+			dummyLog = logrus.New()
+			foc := &testutils.FakeOwnersClient{
+				ExistingTopLevelApprovers: sets.New[string]("testuser"),
+			}
+			froc := &testutils.FakeRepoownersClient{
+				Foc: foc,
+			}
+			eventsServer = NewGitHubEventsHandler(nil, dummyLog, nil, nil, "prow-config.yaml", "", true, gitClientFactory, froc)
+		})
+
+		AfterEach(func() {
+			if gitClientFactory != nil {
+				gitClientFactory.Clean()
+			}
+		})
+
+		It("Should load periodic jobs from git refspec", func() {
+			prowConfig := config.ProwConfig{}
+			jobsConfig := config.JobConfig{
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Name: "a-periodic",
+							Spec: &v1.PodSpec{
+								Containers: []v1.Container{
+									{
+										Image:   "foo/var",
+										Command: []string{"/bin/foo"},
+									},
+								},
+							},
+						},
+						Interval: "1h",
+					},
+				},
+			}
+
+			Expect(gitrepo.MakeFakeRepo("foo", "bar")).Should(Succeed())
+			prowConfigBytes, err := json.Marshal(prowConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			jobsConfigBytes, err := json.Marshal(jobsConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			files := map[string][]byte{
+				"prow-config.yaml": prowConfigBytes,
+				"jobs-config.yaml": jobsConfigBytes,
+			}
+			Expect(gitrepo.AddCommit("foo", "bar", files)).Should(Succeed())
+			headref, err := gitrepo.RevParse("foo", "bar", "HEAD")
+			Expect(err).ShouldNot(HaveOccurred())
+			gitClient, err := gitClientFactory.ClientFor("foo", "bar")
+			Expect(err).ShouldNot(HaveOccurred())
+			out, err := eventsServer.loadConfigsAtRef([]string{"jobs-config.yaml"}, gitClient, headref)
+			Expect(err).ShouldNot(HaveOccurred())
+			outConfig, exists := out["jobs-config.yaml"]
+			Expect(exists).To(BeTrue())
+			Expect(outConfig.Periodics).To(HaveLen(1))
+			Expect(outConfig.Periodics[0].Name).To(Equal(jobsConfig.Periodics[0].Name))
+			Expect(outConfig.Periodics[0].Interval).To(Equal(jobsConfig.Periodics[0].Interval))
+		})
+
+		It("Should generate prowjobs for changed periodic jobs", func() {
+			prowConfig := config.ProwConfig{}
+			baseJobsConfig := config.JobConfig{
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Name: "a-periodic",
+							Spec: &v1.PodSpec{
+								Containers: []v1.Container{
+									{
+										Image:   "foo/var",
+										Command: []string{"/bin/foo"},
+									},
+								},
+							},
+						},
+						Interval: "1h",
+					},
+				},
+			}
+
+			headJobsConfig := config.JobConfig{
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Name: "a-periodic",
+							Spec: &v1.PodSpec{
+								Containers: []v1.Container{
+									{
+										Image:   "foo/var-v2",
+										Command: []string{"/bin/foo"},
+									},
+								},
+							},
+						},
+						Interval: "1h",
+					},
+				},
+			}
+
+			pr := &github.PullRequest{
+				Base: github.PullRequestBranch{
+					Repo: github.Repo{
+						FullName: "kubevirt/project-infra",
+					},
+				},
+			}
+
+			prowConfigBytes, err := json.Marshal(prowConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			baseJobsConfigBytes, err := json.Marshal(baseJobsConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			headJobsConfigBytes, err := json.Marshal(headJobsConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+
+			baseConfig := &config.Config{
+				JobConfig: baseJobsConfig,
+			}
+			headConfig := &config.Config{
+				JobConfig: headJobsConfig,
+			}
+			headConfig.Periodics[0].SourcePath = "jobs-config.yaml"
+			baseConfig.Periodics[0].SourcePath = "jobs-config.yaml"
+
+			jobs := eventsServer.generatePeriodics(headConfig, baseConfig, pr, "42")
+
+			Expect(jobs).To(HaveLen(1))
+			Expect(jobs[0].Spec.Job).To(Equal("a-periodic"))
+			Expect(jobs[0].Spec.PodSpec.Containers[0].Image).To(Equal("foo/var-v2"))
+
+			_ = prowConfigBytes
+			_ = baseJobsConfigBytes
+			_ = headJobsConfigBytes
+		})
+	})
+
+})

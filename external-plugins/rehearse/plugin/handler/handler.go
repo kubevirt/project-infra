@@ -536,6 +536,7 @@ func (h *GitHubEventsHandler) generateProwJobs(
 			log.Errorf("Path %s not found in base configs", path)
 		}
 		jobs = append(jobs, h.generatePresubmits(headConfig, baseConfig, pr, eventGUID)...)
+		jobs = append(jobs, h.generatePeriodics(headConfig, baseConfig, pr, eventGUID)...)
 	}
 
 	return jobs
@@ -557,12 +558,12 @@ func (h *GitHubEventsHandler) generatePresubmits(
 		if exists && reflect.DeepEqual(basePresubmit, headPresubmit) {
 			continue
 		}
-		log.Infof("Detected modified or new presubmit: %s.", headPresubmit.Name)
+		h.logger.Infof("Detected modified or new presubmit: %s.", headPresubmit.Name)
 		changelog, err := diff.Diff(basePresubmit, headPresubmit)
 		if err != nil {
-			log.Errorf("could not diff presubmits: %v", err)
+			h.logger.Errorf("could not diff presubmits: %v", err)
 		}
-		log.Infof("differences detected:/n%v", changelog)
+		h.logger.Infof("differences detected:\n%v", changelog)
 
 		// respect the Branches configuration for the job, i.e. avoid always running against HEAD
 		branches := headPresubmit.Branches
@@ -602,6 +603,42 @@ func (h *GitHubEventsHandler) generatePresubmits(
 			}
 			jobs = append(jobs, job)
 		}
+	}
+	return jobs
+}
+
+func (h *GitHubEventsHandler) generatePeriodics(
+	headConfig, baseConfig *config.Config, pr *github.PullRequest, eventGUID string) []prowapi.ProwJob {
+	var jobs []prowapi.ProwJob
+
+	// We need to flatten the jobs because later on we need
+	// to calculate the modified jobs and it will make the lookup
+	// much more efficient.
+	headPeriodics := hashPeriodicsConfig(headConfig.Periodics)
+	basePeriodics := hashPeriodicsConfig(baseConfig.Periodics)
+
+	for periodicKey, headPeriodic := range headPeriodics {
+		basePeriodic, exists := basePeriodics[periodicKey]
+
+		if exists && reflect.DeepEqual(basePeriodic, headPeriodic) {
+			continue
+		}
+		h.logger.Infof("Detected modified or new periodic: %s.", headPeriodic.Name)
+		changelog, err := diff.Diff(basePeriodic, headPeriodic)
+		if err != nil {
+			h.logger.Errorf("could not diff periodics: %v", err)
+		}
+		h.logger.Infof("differences detected:\n%v", changelog)
+
+		spec := pjutil.PeriodicSpec(headPeriodic)
+		job := pjutil.NewProwJob(spec, headPeriodic.Labels, headPeriodic.Annotations)
+
+		if rehearsalRestricted(job) {
+			h.logger.Infof("Skipping rehearsal job for: %s because it is restricted", job.Name)
+			continue
+		}
+
+		jobs = append(jobs, job)
 	}
 	return jobs
 }
@@ -663,6 +700,9 @@ func (h *GitHubEventsHandler) loadConfigsAtRef(
 				presubmits[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
 			}
 		}
+		for index := range pc.Periodics {
+			pc.Periodics[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
+		}
 		configs[changedJobConfig] = pc
 	}
 
@@ -694,14 +734,36 @@ func repoFromJobKey(jobKey string) string {
 	return strings.Join(r, "/")
 }
 
-func hashPresubmitsConfig(presubmits map[string][]config.Presubmit) map[string]config.Presubmit {
-	presubmitsFlat := map[string]config.Presubmit{}
-	for repo, presubmitsForRepo := range presubmits {
-		for _, presubmit := range presubmitsForRepo {
-			presubmitsFlat[jobKeyFunc(repo, presubmit.JobBase)] = presubmit
+// flattenToMap converts a slice of items into a map using the provided key function
+func flattenToMap[T any](items []T, keyFunc func(T) string) map[string]T {
+	result := map[string]T{}
+	for _, item := range items {
+		result[keyFunc(item)] = item
+	}
+	return result
+}
+
+// flattenNestedToMap converts a nested map structure into a flat map using the provided key function
+func flattenNestedToMap[T any](nested map[string][]T, keyFunc func(string, T) string) map[string]T {
+	result := map[string]T{}
+	for key, items := range nested {
+		for _, item := range items {
+			result[keyFunc(key, item)] = item
 		}
 	}
-	return presubmitsFlat
+	return result
+}
+
+func hashPresubmitsConfig(presubmits map[string][]config.Presubmit) map[string]config.Presubmit {
+	return flattenNestedToMap(presubmits, func(repo string, presubmit config.Presubmit) string {
+		return jobKeyFunc(repo, presubmit.JobBase)
+	})
+}
+
+func hashPeriodicsConfig(periodics []config.Periodic) map[string]config.Periodic {
+	return flattenToMap(periodics, func(p config.Periodic) string {
+		return p.Name
+	})
 }
 
 // catFile executes a git cat-file command in the specified git dir and returns bytes representation of the file
