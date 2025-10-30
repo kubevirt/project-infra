@@ -665,9 +665,6 @@ presubmits:
             memory: "8Gi"
           limits:
             memory: "8Gi"
-        env:
-        - name: GIMME_GO_VERSION
-          value: "1.20"
   - name: pull-kubevirt-org-github-config-updater
     run_if_changed: '^github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs\.yaml$'
     annotations:
