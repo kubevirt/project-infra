@@ -43,6 +43,7 @@ deck:
           - panic\b
           - \[FAILED\]
           - "fatal: "
+          - /logs/artifacts/k8s-reporter/.*\*
       required_files:
         - build-log.txt
     - lens:
