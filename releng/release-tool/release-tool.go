@@ -9,12 +9,13 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"sigs.k8s.io/prow/pkg/config"
-	"sigs.k8s.io/yaml"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"sigs.k8s.io/prow/pkg/config"
+	"sigs.k8s.io/yaml"
 
 	"golang.org/x/oauth2"
 
@@ -425,7 +426,7 @@ func (r *releaseData) forkProwJobs() error {
 			return err
 		}
 		tempPresubmitsConfigPath := filepath.Join(temp, "presubmits.yaml")
-		cmd := exec.Command("/usr/bin/config-forker", "--job-config", fullJobConfig, "--version", version, "--output", tempPresubmitsConfigPath)
+		cmd := exec.Command("/usr/bin/config-forker", "--job-config", fullJobConfig, "--go-version", "1.24", "--version", version, "--output", tempPresubmitsConfigPath)
 		bytes, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Printf("ERROR: config-forker command output: %s : %s ", string(bytes), err)
