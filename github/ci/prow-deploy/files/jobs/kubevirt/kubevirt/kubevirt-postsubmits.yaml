@@ -242,7 +242,7 @@ postsubmits:
             privileged: true
           resources:
             requests:
-              memory: "8Gi"
+              memory: "16Gi"
   - name: push-kubevirt-update-support-matrix
     branches:
     # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
