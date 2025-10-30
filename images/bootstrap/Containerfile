@@ -57,6 +57,7 @@ RUN dnf install -y \
     python3-pip \
     python-unversioned-command \
     qemu-user-static \
+    qemu-img \
     redhat-rpm-config \
     ripgrep \
     rsync \
