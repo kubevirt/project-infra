@@ -26,6 +26,13 @@ periodics:
           -label:needs-rebase
           repo:kubevirt/kubevirt
           repo:kubevirt/kubevirtci
+          OR (is:pr
+          is:open
+          label:skip-review
+          status:failure
+          -label:needs-rebase
+          repo:kubevirt/kubevirt
+          repo:kubevirt/kubevirtci)
       - --token=/etc/github/oauth
       - |-
         --comment=/retest-required
