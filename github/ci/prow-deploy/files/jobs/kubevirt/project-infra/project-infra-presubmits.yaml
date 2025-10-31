@@ -469,6 +469,222 @@ presubmits:
               memory: "4Gi"
             limits:
               memory: "4Gi"
+  - name: build-botreview-image
+    always_run: false
+    run_if_changed: "images/botreview/.*|external-plugins/botreview/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b botreview quay.io kubevirtci"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
+  - name: build-test-report-image
+    always_run: false
+    run_if_changed: "images/test-report/.*|robots/cmd/test-report/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b test-report quay.io kubevirtci"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
+  - name: build-release-blocker-image
+    always_run: false
+    run_if_changed: "images/release-blocker/.*|robots/cmd/release-blocker/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b release-blocker quay.io kubevirtci"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
+  - name: build-referee-image
+    always_run: false
+    run_if_changed: "images/referee/.*|robots/cmd/referee/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b referee quay.io kubevirtci"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
+  - name: build-indexpagecreator-image
+    always_run: false
+    run_if_changed: "images/indexpagecreator/.*|robots/cmd/indexpagecreator/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b indexpagecreator quay.io kubevirtci"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
+  - name: build-flakefinder-image
+    always_run: false
+    run_if_changed: "images/flakefinder/.*|robots/cmd/flakefinder/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b flakefinder quay.io kubevirtci"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
+  - name: build-flake-report-creator-image
+    always_run: false
+    run_if_changed: "images/flake-report-creator/.*|robots/cmd/flake-report-creator/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b flake-report-creator quay.io kubevirtci"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
+  - name: build-rehearse-image
+    always_run: false
+    run_if_changed: "images/rehearse/.*|external-plugins/rehearse/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b rehearse quay.io kubevirtci"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
+  - name: build-phased-image
+    always_run: false
+    run_if_changed: "images/phased/.*|external-plugins/phased/.*"
+    decorate: true
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-ce"
+            - "cd images && ./publish_image.sh -b phased quay.io kubevirtci"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "1Gi"
   - name: build-test-label-analyzer-image
     always_run: false
     run_if_changed: "images/test-label-analyzer/.*|robots/.*/test-label-analyzer/.*"
