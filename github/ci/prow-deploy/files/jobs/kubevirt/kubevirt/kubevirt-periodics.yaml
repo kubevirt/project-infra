@@ -2647,7 +2647,7 @@ periodics:
         value: amd64,crossbuild-s390x
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
-      image: quay.io/kubevirtci/bootstrap:v20251015-5720d72
+      image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
       name: ""
       resources:
         requests:
