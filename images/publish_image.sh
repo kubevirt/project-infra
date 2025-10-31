@@ -3,10 +3,18 @@
 
 main() {
     local build_only
-    while getopts "bh" opt; do
+    local no_cache
+    local project_infra_dir
+    project_infra_dir="$(readlink --canonicalize "$(pwd)/../")"
+    while getopts "bcp:h" opt; do
         case "$opt" in
             b)
                 build_only=true
+                ;;
+            c)
+                no_cache=true
+                ;;
+            p)  project_infra_dir="$OPTARG"
                 ;;
             h)
                 help
@@ -36,7 +44,7 @@ main() {
     (
         cd "$build_target"
 
-        build_image "$build_target" "$full_image_name"
+        build_image "$no_cache" "$build_target" "$full_image_name" "$project_infra_dir"
     )
     [[ $build_only ]] && return
     publish_image "$full_image_name"
@@ -52,6 +60,7 @@ help() {
     OPTIONS
         -h  Show this help message and exit.
         -b  Only build the image and exit. Do not publish the built image.
+        -p  Local project-infra directory
 EOF
 }
 
@@ -63,9 +72,18 @@ get_image_tag() {
 }
 
 build_image() {
-    local build_target="${1:?}"
-    local image_name="${2:?}"
-    podman build . -t "$image_name" -t "$build_target"
+    local no_cache="${1:-}"
+    local build_target="${2:?}"
+    local image_name="${3:?}"
+    local project_infra_dir="${4:-}"
+    build_args=""
+    if [ -d "$project_infra_dir" ]; then
+        build_args="-v $project_infra_dir:/project-infra"
+    fi
+    if [ "$no_cache" = "true" ]; then
+        build_args="$build_args --no-cache"
+    fi
+    podman build $build_args . -t "$image_name" -t "$build_target"
 }
 
 publish_image() {
