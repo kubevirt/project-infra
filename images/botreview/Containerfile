@@ -1,10 +1,4 @@
 FROM quay.io/kubevirtci/golang:v20250701-f32dbda as builder
-ENV GOPROXY=https://proxy.golang.org|direct \
-    GOFLAGS="-mod=vendor -ldflags=-extldflags=\"-static\"" \
-    CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64
-ENV GIMME_GO_VERSION=1.25.1
 RUN if [ ! -d /project-infra ]; then git clone https://github.com/kubevirt/project-infra.git /project-infra; fi && \
     cd /project-infra/ && \
     /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/botreview ./external-plugins/botreview/main.go"

@@ -1,17 +1,6 @@
-FROM quay.io/kubevirtci/golang:v20241213-57bd934 as builder
-ENV GOPROXY=https://proxy.golang.org|direct \
-    GOFLAGS="-mod=vendor -ldflags=-extldflags=\"-static\"" \
-    CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64
-ENV GIMME_GO_VERSION=1.23.4
-RUN mkdir kubevirt && \
-    cd kubevirt && \
-    git clone https://github.com/kubevirt/project-infra.git && \
-    cd project-infra && \
-    /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/test-report ./robots/cmd/test-report" && \
-    /usr/local/bin/runner.sh /bin/sh -ce "go clean -cache -modcache" && \
-    cd .. && rm -rf ./project-infra
+FROM quay.io/kubevirtci/golang:v20250701-f32dbda as builder
+RUN cd /project-infra/ && \
+    /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/test-report ./robots/cmd/test-report"
 
 FROM gcr.io/k8s-prow/git:v20240729-4f255edb07
 COPY --from=builder /go/bin/test-report /usr/bin/test-report
