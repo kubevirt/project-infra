@@ -744,6 +744,19 @@ presets:
   - name: pgp-bot-key
     secret:
       secretName: pgp-bot-key
+- labels:
+    preset-project-infra-image-build-linux: "true"
+  env:
+    - name: GIMME_GO_VERSION
+      value: "1.25.1"
+    - name: GOFLAGS
+      value: "-mod=vendor -ldflags=-extldflags=\"-static\""
+    - name: CGO_ENABLED
+      value: "0"
+    - name: GOOS
+      value: linux
+    - name: GOARCH
+      value: amd64
 
 # default preset with no labels, settings common to all jobs
 - env:
