@@ -6,7 +6,9 @@ main() {
     local no_cache
     local project_infra_dir
     project_infra_dir="$(readlink --canonicalize "$(pwd)/../")"
-    while getopts "bcp:h" opt; do
+    local env_vars
+    env_vars=()
+    while getopts "bcp:he" opt; do
         case "$opt" in
             b)
                 build_only=true
@@ -15,6 +17,16 @@ main() {
                 no_cache=true
                 ;;
             p)  project_infra_dir="$OPTARG"
+                ;;
+            e)
+                env_vars=(
+                    "--env=GOPROXY=${GOPROXY}"
+                    "--env=GOFLAGS=${GOFLAGS}"
+                    "--env=CGO_ENABLED=${CGO_ENABLED}"
+                    "--env=GOOS=${GOOS}"
+                    "--env=GOARCH=${GOARCH}"
+                    "--env=GIMME_GO_VERSION=${GIMME_GO_VERSION}"
+                )
                 ;;
             h)
                 help
@@ -60,6 +72,8 @@ help() {
     OPTIONS
         -h  Show this help message and exit.
         -b  Only build the image and exit. Do not publish the built image.
+        -c  TODO
+        -e  Set environment variables for go builds
         -p  Local project-infra directory
 EOF
 }
@@ -83,7 +97,7 @@ build_image() {
     if [ "$no_cache" = "true" ]; then
         build_args="$build_args --no-cache"
     fi
-    podman build $build_args . -t "$image_name" -t "$build_target"
+    podman build "${env_vars[@]}" $build_args . -t "$image_name" -t "$build_target"
 }
 
 publish_image() {
