@@ -34,6 +34,7 @@ import (
 	"regexp"
 	"sigs.k8s.io/prow/pkg/config"
 	"strconv"
+	"strings"
 	"time"
 
 	"sigs.k8s.io/prow/pkg/config/secret"
@@ -43,41 +44,57 @@ import (
 
 const (
 	baseQuery = `
-				is:pr
-				archived:false
-				is:open
-				is:unlocked
-				-label:do-not-merge
-				-label:do-not-merge/blocked-paths
-				-label:do-not-merge/cherry-pick-not-approved
-				-label:do-not-merge/hold
-				-label:do-not-merge/invalid-owners-file
-				-label:do-not-merge/release-note-label-needed
-				-label:do-not-merge/work-in-progress
-				-label:needs-rebase
-				%s
-				status:failure
-				repo:kubevirt/kubevirt
-				repo:kubevirt/kubevirtci
-				repo:kubevirt/project-infra
+		is:pr
+		archived:false
+		is:open
+		is:unlocked
+		-label:do-not-merge
+		-label:do-not-merge/blocked-paths
+		-label:do-not-merge/cherry-pick-not-approved
+		-label:do-not-merge/hold
+		-label:do-not-merge/invalid-owners-file
+		-label:do-not-merge/release-note-label-needed
+		-label:do-not-merge/work-in-progress
+		-label:needs-rebase
+		%s
+		status:failure
+		%s
 `
 )
 
 var (
-	fullQueries = []string{
-		fmt.Sprintf(baseQuery, "label:lgtm label:approved"),
-		fmt.Sprintf(baseQuery, "label:skip-review"),
+	repos = []string{
+		"kubevirt",
+		"kubevirtci",
+		"project-infra",
 	}
 
+	labelSets = []string{
+		"label:lgtm label:approved",
+		"label:skip-review",
+	}
+
+	fullQueries []string
+
 	comment = `/retest-required
-        This bot automatically retries required jobs that failed/flaked on 
-		required test lanes of PRs.
-        Silence the bot with an ` + "`" + `/lgtm cancel` + "`" + ` or ` + "`" + `/hold` + "`" + ` comment for consistent failures.`
+This bot automatically retries required jobs that failed/flaked on 
+required test lanes of PRs.
+Silence the bot with an ` + "`" + `/lgtm cancel` + "`" + ` or ` + "`" + `/hold` + "`" + ` comment for consistent failures.`
 
 	jobContextMatcher = regexp.MustCompile(`.*/([^/]+)/[0-9]+$`)
 
 	presubmitRequiredMap = map[string]struct{}{}
 )
+
+func init() {
+	var repoQueries []string
+	for _, r := range repos {
+		repoQueries = append(repoQueries, fmt.Sprintf("repo:kubevirt/%s", r))
+	}
+	for _, labelSet := range labelSets {
+		fullQueries = append(fullQueries, fmt.Sprintf(baseQuery, labelSet, strings.Join(repoQueries, " ")))
+	}
+}
 
 func flagOptions() options {
 	o := options{
@@ -121,7 +138,9 @@ func main() {
 		log.Fatalf("Error starting secrets agent: %v", err)
 	}
 
-	initPresubmitRequiredMap()
+	if err := initPresubmitRequiredMap(); err != nil {
+		log.Fatalf("Error reading required presubmits: %v", err)
+	}
 
 	var err error
 	for _, ep := range o.endpoint.Strings() {
@@ -155,21 +174,14 @@ func main() {
 	}
 }
 
-func initPresubmitRequiredMap() {
+func initPresubmitRequiredMap() error {
 	presubmitFileNameRegexp := regexp.MustCompile(`.*-presubmits.*.yaml`)
 	orgDirName := "github/ci/prow-deploy/files/jobs/kubevirt"
-	dirs, err := os.ReadDir(orgDirName)
-	if err != nil {
-		log.Fatalf("error reading kubevirt job dir: %v", err)
-	}
-	for _, dir := range dirs {
-		if !dir.IsDir() {
-			continue
-		}
-		jobDirName := filepath.Join(orgDirName, dir.Name())
+	for _, dir := range repos {
+		jobDirName := filepath.Join(orgDirName, dir)
 		subDirs, err := os.ReadDir(jobDirName)
 		if err != nil {
-			log.Fatalf("error reading kubevirt job dir: %v", err)
+			return fmt.Errorf("error reading job dir: %v", err)
 		}
 		for _, file := range subDirs {
 			if file.IsDir() {
@@ -182,7 +194,7 @@ func initPresubmitRequiredMap() {
 			log.Printf("reading file %q", fileName)
 			jobConfig, err := config.ReadJobConfig(fileName)
 			if err != nil {
-				log.Fatalf("error parsing kubevirt job file: %v", err)
+				return fmt.Errorf("error parsing kubevirt job file: %v", err)
 			}
 			for _, presubmits := range jobConfig.PresubmitsStatic {
 				for _, presubmit := range presubmits {
@@ -197,6 +209,7 @@ func initPresubmitRequiredMap() {
 			}
 		}
 	}
+	return nil
 }
 
 func makeQuery(query string, minUpdated time.Duration) string {
@@ -257,7 +270,9 @@ func run(c client, query, sort string, asc bool, comment string, ceiling int) er
 				log.Printf("skipping non-required status for %s", presubmitName)
 				continue
 			}
+			log.Printf("found required status for %s", presubmitName)
 			requiredStatusFailed = true
+			break
 		}
 		if !requiredStatusFailed {
 			log.Printf("no failure on a required status detected for %s", i.HTMLURL)

@@ -1,89 +1,32 @@
 periodics:
-#- name: periodic-project-infra-approved-retester
-#  interval: 1h  # Retest at most 1 PR every hour, which should not DOS the queue.
-#  decorate: true
-#  annotations:
-#    testgrid-create-test-group: "false"
-#  cluster: kubevirt-prow-control-plane
-#  spec:
-#    containers:
-#    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
-#      command:
-#      - /ko-app/commenter
-#      args:
-#      - |-
-#        --query=is:pr
-#          is:open
-#          -label:do-not-merge
-#          -label:do-not-merge/blocked-paths
-#          -label:do-not-merge/cherry-pick-not-approved
-#          -label:do-not-merge/hold
-#          -label:do-not-merge/invalid-owners-file
-#          -label:do-not-merge/release-note-label-needed
-#          -label:do-not-merge/work-in-progress
-#          label:lgtm label:approved
-#          status:failure
-#          -label:needs-rebase
-#          repo:kubevirt/kubevirt
-#          repo:kubevirt/kubevirtci
-#      - --token=/etc/github/oauth
-#      - |-
-#        --comment=/retest-required
-#        This bot automatically retries required jobs that failed/flaked on approved PRs.
-#        Silence the bot with an `/lgtm cancel` or `/hold` comment for consistent failures.
-#      - --template
-#      - --ceiling=1
-#      - --confirm
-#      volumeMounts:
-#      - name: token
-#        mountPath: /etc/github
-#    volumes:
-#    - name: token
-#      secret:
-#        secretName:  commenter-oauth-token
-#- name: periodic-project-infra-skip-review-retester
-#  interval: 1h  # Retest at most 1 PR every hour, which should not DOS the queue.
-#  decorate: true
-#  annotations:
-#    testgrid-create-test-group: "false"
-#  cluster: kubevirt-prow-control-plane
-#  spec:
-#    containers:
-#    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
-#      command:
-#      - /ko-app/commenter
-#      args:
-#      - |-
-#        --query=is:pr
-#          is:open
-#          -label:do-not-merge
-#          -label:do-not-merge/blocked-paths
-#          -label:do-not-merge/cherry-pick-not-approved
-#          -label:do-not-merge/hold
-#          -label:do-not-merge/invalid-owners-file
-#          -label:do-not-merge/release-note-label-needed
-#          -label:do-not-merge/work-in-progress
-#          label:skip-review
-#          status:failure
-#          -label:needs-rebase
-#          repo:kubevirt/kubevirt
-#          repo:kubevirt/kubevirtci
-#          repo:kubevirt/project-infra
-#      - --token=/etc/github/oauth
-#      - |-
-#        --comment=/retest-required
-#        This bot automatically retries required jobs that failed/flaked on `skip-review` PRs.
-#        Silence the bot with a `/hold` comment for consistent failures.
-#      - --template
-#      - --ceiling=1
-#      - --confirm
-#      volumeMounts:
-#      - name: token
-#        mountPath: /etc/github
-#    volumes:
-#    - name: token
-#      secret:
-#        secretName:  commenter-oauth-token
+- name: periodic-project-infra-retester
+  interval: 1h  # Retest at most 1 PR every hour, which should not DOS the queue.
+  decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  cluster: kubevirt-prow-control-plane
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    work_dir: true
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      command:
+      - "/usr/local/bin/runner.sh"
+      - "/bin/sh"
+      - "-ce"
+      - >
+        go run ./robots/cmd/retester
+        --token=/etc/github/oauth
+        --ceiling=1
+        --confirm
+      env:
+      - name: GIMME_GO_VERSION
+        value: "1.25.1"
 - name: periodic-project-infra-close
   interval: 1h
   annotations:
