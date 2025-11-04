@@ -2950,7 +2950,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 1,
-      "id": 11,
+      "id": 4,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -3149,6 +3149,21 @@ data:
               "queryType": "randomWalk",
               "range": true,
               "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*sig-monitoring.*\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*sig-monitoring.*\"}[1h]))\n* 100",
+              "hide": false,
+              "interval": "1h",
+              "legendFormat": "SIG Monitoring",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "E"
             }
           ],
           "thresholds": [],
@@ -3380,6 +3395,21 @@ data:
               "queryType": "randomWalk",
               "range": true,
               "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*sig-monitoring.*\", base_ref=\"main\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*sig-monitoring.*\", base_ref=\"main\"}[1h]))\n* 100",
+              "hide": false,
+              "interval": "1h",
+              "legendFormat": "SIG Monitoring",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "E"
             }
           ],
           "thresholds": [],
@@ -3624,6 +3654,21 @@ data:
               "queryType": "randomWalk",
               "range": true,
               "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*sig-monitoring.*\", base_ref=~\"release-.*\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*sig-monitoring.*\", base_ref=~\"release-.*\"}[1h]))\n* 100",
+              "hide": false,
+              "interval": "1h",
+              "legendFormat": "SIG Monitoring",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "E"
             }
           ],
           "thresholds": [],
@@ -3955,9 +4000,9 @@ data:
         "list": [
           {
             "current": {
-              "selected": false,
-              "text": "pull-kubevirt-e2e-.*",
-              "value": "pull-kubevirt-e2e-.*"
+              "selected": true,
+              "text": "pull-kubevirt-e2e-k8s-.*",
+              "value": "pull-kubevirt-e2e-k8s-.*"
             },
             "hide": 0,
             "includeAll": false,
@@ -3965,7 +4010,7 @@ data:
             "name": "job_name",
             "options": [
               {
-                "selected": true,
+                "selected": false,
                 "text": ".*-e2e-.*",
                 "value": ".*-e2e-.*"
               },
@@ -4005,7 +4050,7 @@ data:
                 "value": "periodic-kubevirt-e2e-k8s-.*"
               },
               {
-                "selected": false,
+                "selected": true,
                 "text": "pull-kubevirt-e2e-k8s-.*",
                 "value": "pull-kubevirt-e2e-k8s-.*"
               },
@@ -4065,7 +4110,7 @@ data:
       "timezone": "",
       "title": "e2e jobs overview V2",
       "uid": "efpTS3t4z",
-      "version": 2,
+      "version": 1,
       "weekStart": ""
     }
   merge-queue.json: |
