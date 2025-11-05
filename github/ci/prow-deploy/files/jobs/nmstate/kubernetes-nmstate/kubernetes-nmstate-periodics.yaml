@@ -107,7 +107,7 @@ periodics:
     - name: gcs
       secret:
         secretName: gcs
-- name: periodic-knmstate-e2e-handler-k8s-future
+- name: periodic-knmstate-e2e-handler-k8s-latest
   cron: "0 2 * * *"
   annotations:
     testgrid-create-test-group: "false"
@@ -137,8 +137,10 @@ periodics:
           requests:
             memory: "52Gi"
         env:
-          - name: NMSTATE_PIN
-            value: "future"
+          - name: NMSTATE_VERSION
+            value: "latest"
+          - name: NM_VERSION
+            value: "latest"
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
