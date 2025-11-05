@@ -275,6 +275,11 @@ default:
           color: c5def5
         - name: sig/virtualization
           color: c5def5
+    - name: sig/control-plane
+      color: c5def5
+      target: both
+      prowPlugin: label
+      addedBy: anyone
     - name: sig/release
       color: 2943CF
       target: both
