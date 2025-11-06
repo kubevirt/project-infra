@@ -21,7 +21,7 @@ spec:
       terminationGracePeriodSeconds: 1
       containers:
       - name: shared-images-controller
-        image: quay.io/kubevirtci/shared-images-controller:v20250910-b60a3ad
+        image: quay.io/kubevirtci/shared-images-controller:v20251105-18e9e04
         command: [ "/usr/local/bin/runner.sh", "/shared-images-controller"]
         resources:
           requests:
