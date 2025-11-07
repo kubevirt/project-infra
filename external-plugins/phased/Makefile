@@ -14,5 +14,5 @@ test:
 	go test ./plugin/...
 
 push:
-	cd ../../images && ./publish_image.sh $(CONTAINER_IMAGE) quay.io kubevirtci
+	cd ../../images && ./publish_image.sh -e $(CONTAINER_IMAGE) quay.io kubevirtci
 	bash -x ../../hack/update-deployments-with-latest-image.sh $(CONTAINER_REPO)

@@ -12,6 +12,7 @@ postsubmits:
         preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-podman-in-container-enabled: "true"
+        preset-project-infra-image-build-linux: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
@@ -41,6 +42,7 @@ postsubmits:
         preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-podman-in-container-enabled: "true"
+        preset-project-infra-image-build-linux: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
@@ -70,6 +72,7 @@ postsubmits:
         preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-podman-in-container-enabled: "true"
+        preset-project-infra-image-build-linux: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
@@ -99,6 +102,7 @@ postsubmits:
         preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-podman-in-container-enabled: "true"
+        preset-project-infra-image-build-linux: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
@@ -127,6 +131,7 @@ postsubmits:
       labels:
         preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
+        preset-project-infra-image-build-linux: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
@@ -156,6 +161,7 @@ postsubmits:
         preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-podman-in-container-enabled: "true"
+        preset-project-infra-image-build-linux: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
@@ -185,6 +191,7 @@ postsubmits:
         preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-podman-in-container-enabled: "true"
+        preset-project-infra-image-build-linux: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
@@ -758,6 +765,7 @@ postsubmits:
         preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-bazel-cache: "true"
+        preset-project-infra-image-build-linux: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
@@ -787,6 +795,7 @@ postsubmits:
         preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-bazel-cache: "true"
+        preset-project-infra-image-build-linux: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
@@ -795,9 +804,9 @@ postsubmits:
               - "/bin/bash"
               - "-c"
               - |
-                cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd images
-                ./publish_image.sh test-label-analyzer quay.io kubevirtci
+                ./publish_image.sh -e test-label-analyzer quay.io kubevirtci
             securityContext:
               privileged: true
             resources:
