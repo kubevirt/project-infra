@@ -1,0 +1,80 @@
+presubmits:
+  kubevirt/kubevirt:
+    - always_run: false
+      annotations:
+        fork-per-release: "true"
+        k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
+        testgrid-dashboards: kubevirt-presubmits
+      cluster: prow-workloads
+      decorate: true
+      decoration_config:
+        grace_period: 30m0s
+        timeout: 4h0m0s
+      labels:
+        preset-docker-mirror-proxy: "true"
+        preset-podman-in-container-enabled: "true"
+        preset-shared-images: "true"
+        rehearsal.allowed: "true"
+        sriov-pod: "true"
+      max_concurrency: 10
+      name: pull-kubevirt-e2e-kind-sriov
+      run_before_merge: true
+      skip_branches:
+        - release-\d+\.\d+
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                    - key: sriov-pod
+                      operator: In
+                      values:
+                        - "true"
+                topologyKey: kubernetes.io/hostname
+              - labelSelector:
+                  matchExpressions:
+                    - key: sriov-pod-multi
+                      operator: In
+                      values:
+                        - "true"
+                topologyKey: kubernetes.io/hostname
+        containers:
+          - command:
+              - /usr/local/bin/runner.sh
+              - /bin/bash
+              - -ce
+              - automation/test.sh
+            env:
+              - name: TARGET
+                value: kind-sriov
+            image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+            name: ""
+            resources:
+              requests:
+                memory: 52Gi
+            securityContext:
+              privileged: true
+            volumeMounts:
+              - mountPath: /var/log/audit
+                name: audit
+              - mountPath: /sys/fs/cgroup
+                name: cgroup
+              - mountPath: /dev/vfio/
+                name: vfio
+        nodeSelector:
+          hardwareSupport: sriov-nic
+        priorityClassName: sriov
+        volumes:
+          - hostPath:
+              path: /var/log/audit
+              type: Directory
+            name: audit
+          - hostPath:
+              path: /sys/fs/cgroup
+              type: Directory
+            name: cgroup
+          - hostPath:
+              path: /dev/vfio/
+              type: Directory
+            name: vfio

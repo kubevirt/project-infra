@@ -1,0 +1,33 @@
+presubmits:
+  kubevirt/kubevirt:
+    - always_run: true
+      annotations:
+        fork-per-release: "true"
+        testgrid-dashboards: kubevirt-presubmits
+      cluster: prow-workloads
+      decorate: true
+      decoration_config:
+        grace_period: 5m0s
+        timeout: 1h0m0s
+      labels:
+        preset-bazel-cache: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-podman-in-container-enabled: "true"
+      name: pull-kubevirt-fuzz
+      optional: true
+      skip_branches:
+        - release-\d+\.\d+
+      spec:
+        containers:
+          - command:
+              - /usr/local/bin/runner.sh
+              - /bin/sh
+              - -c
+              - make fuzz
+            image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+            name: ""
+            resources:
+              requests:
+                memory: 8Gi
+            securityContext:
+              privileged: true

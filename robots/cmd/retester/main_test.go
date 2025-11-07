@@ -138,3 +138,35 @@ func TestMakeQuery(t *testing.T) {
 		}
 	}
 }
+
+func TestInitRequiredPresubmits(t *testing.T) {
+	cases := []struct {
+		name     string
+		required bool
+	}{
+		{
+			"pull-kubevirt-e2e-kind-sriov",
+			true,
+		},
+		{
+			"pull-kubevirt-fuzz",
+			false,
+		},
+	}
+
+	err := initPresubmitRequiredMap("testdata")
+	if err != nil {
+		t.Errorf("failed to init map: %v", err)
+	}
+
+	for _, tc := range cases {
+		_, actual := presubmitRequiredMap[tc.name]
+		if tc.required != actual {
+			if tc.required {
+				t.Errorf("%s should be required but isn't", tc.name)
+			} else {
+				t.Errorf("%s should NOT be required but is", tc.name)
+			}
+		}
+	}
+}
