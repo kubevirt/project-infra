@@ -15,5 +15,5 @@ format:
 	gofmt -w .
 
 push:
-	podman build -f ../../images/$(CONTAINER_IMAGE)/Containerfile -t $(CONTAINER_REPO):$(CONTAINER_TAG) && podman push $(CONTAINER_REPO):$(CONTAINER_TAG)
-	bash -x ../../hack/update-deployments-with-latest-image.sh $(CONTAINER_REPO) $(CONTAINER_TAG)
+	cd ../../images && ./publish_image.sh -e $(CONTAINER_IMAGE) quay.io kubevirtci
+	bash -x ../../hack/update-deployments-with-latest-image.sh $(CONTAINER_REPO)
