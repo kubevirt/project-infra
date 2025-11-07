@@ -138,7 +138,7 @@ func main() {
 		log.Fatalf("Error starting secrets agent: %v", err)
 	}
 
-	if err := initPresubmitRequiredMap(); err != nil {
+	if err := initPresubmitRequiredMap("github/ci/prow-deploy/files/jobs/kubevirt/"); err != nil {
 		log.Fatalf("Error reading required presubmits: %v", err)
 	}
 
@@ -174,23 +174,22 @@ func main() {
 	}
 }
 
-func initPresubmitRequiredMap() error {
+func initPresubmitRequiredMap(orgJobConfigDir string) error {
 	presubmitFileNameRegexp := regexp.MustCompile(`.*-presubmits.*.yaml`)
-	orgDirName := "github/ci/prow-deploy/files/jobs/kubevirt"
 	for _, dir := range repos {
-		jobDirName := filepath.Join(orgDirName, dir)
-		subDirs, err := os.ReadDir(jobDirName)
+		repoJobConfigDirName := filepath.Join(orgJobConfigDir, dir)
+		repoJobConfigFiles, err := os.ReadDir(repoJobConfigDirName)
 		if err != nil {
 			return fmt.Errorf("error reading job dir: %v", err)
 		}
-		for _, file := range subDirs {
+		for _, file := range repoJobConfigFiles {
 			if file.IsDir() {
 				continue
 			}
 			if !presubmitFileNameRegexp.MatchString(file.Name()) {
 				continue
 			}
-			fileName := filepath.Join(jobDirName, file.Name())
+			fileName := filepath.Join(repoJobConfigDirName, file.Name())
 			log.Printf("reading file %q", fileName)
 			jobConfig, err := config.ReadJobConfig(fileName)
 			if err != nil {
@@ -198,7 +197,7 @@ func initPresubmitRequiredMap() error {
 			}
 			for _, presubmits := range jobConfig.PresubmitsStatic {
 				for _, presubmit := range presubmits {
-					if !presubmit.AlwaysRun ||
+					if !(presubmit.AlwaysRun || presubmit.RunBeforeMerge) ||
 						presubmit.Optional ||
 						presubmit.RunIfChanged != "" ||
 						presubmit.SkipIfOnlyChanged != "" {
