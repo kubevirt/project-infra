@@ -1634,7 +1634,7 @@ periodics:
       - --output-gcs-url=gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/index.html
       command:
       - /usr/bin/test-label-analyzer
-      image: quay.io/kubevirtci/test-label-analyzer:v20250504-07155f8
+      image: quay.io/kubevirtci/test-label-analyzer:v20251107-65f39af
       name: ""
       resources: {}
 - annotations:
