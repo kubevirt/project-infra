@@ -33,3 +33,36 @@ postsubmits:
                 memory: "1Gi"
               limits:
                 memory: "1Gi"
+    - name: publish-hco-builder-image
+      always_run: false
+      run_if_changed: ^hack/builder/.*|^go\.mod$
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      max_concurrency: 1
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-github-credentials: "true"
+        preset-kubevirtci-quay-credential: "true"
+      cluster: kubevirt-prow-control-plane
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+            env:
+              - name: GIMME_GO_VERSION
+                value: "1.24.3"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io && \
+                REGISTRY_NAMESPACE=kubevirtci make create-builder-image push-builder-image
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "1Gi"
+              limits:
+                memory: "1Gi"
