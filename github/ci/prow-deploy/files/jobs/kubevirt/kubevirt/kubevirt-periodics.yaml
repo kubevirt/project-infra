@@ -1158,7 +1158,7 @@ periodics:
       - name: KUBEVIRT_PROVIDER
         value: k8s-1.34
       - name: KUBEVIRT_MEMORY_SIZE
-        value: 30G
+        value: 35G
       - name: KUBEVIRT_DEPLOY_KWOK
         value: "true"
       - name: KUBEVIRT_DEPLOY_PROMETHEUS
@@ -1194,7 +1194,7 @@ periodics:
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.32-sig-performance-kwok-100
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-performance-kwok-100
   spec:
     containers:
     - command:
@@ -1214,7 +1214,7 @@ periodics:
         FUNC_TEST_ARGS="--no-color --seed=42" make kwok-perftest
       env:
       - name: KUBEVIRT_PROVIDER
-        value: k8s-1.32
+        value: k8s-1.34
       - name: KUBEVIRT_MEMORY_SIZE
         value: 10G
       - name: KUBEVIRT_DEPLOY_KWOK
