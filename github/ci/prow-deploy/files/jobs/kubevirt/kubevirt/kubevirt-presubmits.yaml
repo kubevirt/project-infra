@@ -1563,7 +1563,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
-    name: pull-kubevirt-e2e-k8s-1.32-sig-performance-kwok
+    name: pull-kubevirt-e2e-k8s-1.34-sig-performance-kwok
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1583,9 +1583,9 @@ presubmits:
           FUNC_TEST_ARGS="--no-color --seed=42" make kwok-perftest
         env:
         - name: KUBEVIRT_PROVIDER
-          value: k8s-1.32
+          value: k8s-1.34
         - name: KUBEVIRT_MEMORY_SIZE
-          value: 10G
+          value: 35G
         - name: KUBEVIRT_DEPLOY_KWOK
           value: "true"
         - name: KUBEVIRT_DEPLOY_PROMETHEUS
