@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Copyright 2023 Red Hat, Inc.
+ * Copyright The KubeVirt Authors.
  */
 
 package git
@@ -24,11 +24,11 @@ import (
 	"time"
 )
 
-var _ = Describe("Extract git info", func() {
+var _ = Describe("git blame", func() {
 
-	DescribeTable("parse regex",
+	DescribeTable("blameRegex parses",
 		func(valueToParse string) {
-			strings := gitBlameRegex.FindAllStringSubmatch(valueToParse, -1)
+			strings := blameRegex.FindAllStringSubmatch(valueToParse, -1)
 			Expect(strings).To(HaveLen(1))
 			Expect(strings[0]).To(HaveLen(7))
 		},
@@ -122,6 +122,18 @@ var _ = Describe("Extract git info", func() {
 				`ba2fdf5f25a (João Vilaça 2023-05-11 10:45:18 +0100 64) 		It("kubevirt_number_of_vms should reflect the number of VMs", func() {`),
 		)
 
+	})
+
+	When("blame lines", Ordered, func() {
+		var blameLines []*BlameLine
+		BeforeAll(func() {
+			var err error
+			blameLines, err = GetBlameLinesForFile("testdata/repo/tests/test.go")
+			Expect(err).ToNot(HaveOccurred())
+		})
+		It("works", func() {
+			Expect(len(blameLines)).ToNot(BeEquivalentTo(0))
+		})
 	})
 })
 

@@ -14,36 +14,30 @@
  * limitations under the License.
  *
  * Copyright The KubeVirt Authors.
+ *
  */
 
-package git
+package cmd
 
 import (
+	"fmt"
+	"github.com/spf13/cobra"
 	"os"
-	"testing"
-
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
-	log "github.com/sirupsen/logrus"
 )
 
-func TestGit(t *testing.T) {
-	RegisterFailHandler(Fail)
+const (
+	rootShortUsage = "ginkgo-tests is the cli to execute operations for tests created with ginkgo framework"
+)
 
-	stat, err := os.Stat("testdata/repo")
-	if os.IsNotExist(err) || !stat.IsDir() {
-		execGitPanickingOnError("testdata", "clone", "repo.gitbundle", "repo")
-		execGitPanickingOnError("testdata/repo", "checkout", "main")
-		execGitPanickingOnError("testdata/repo", "checkout", "change-test")
-	}
-
-	RunSpecs(t, "Git Main Suite")
+var rootCmd = &cobra.Command{
+	Use:   "ginkgo",
+	Short: rootShortUsage,
+	Long:  rootShortUsage + `.`,
 }
 
-func execGitPanickingOnError(sourceFilepath string, args ...string) {
-	output, err := execGit(sourceFilepath, args)
-	if err != nil {
-		panic(err)
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	log.Infoln(string(output))
 }
