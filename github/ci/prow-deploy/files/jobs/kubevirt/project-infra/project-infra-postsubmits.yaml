@@ -2,6 +2,8 @@ postsubmits:
   kubevirt/project-infra:
     - name: publish-rehearse-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "external-plugins/rehearse/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -32,6 +34,8 @@ postsubmits:
               privileged: true
     - name: publish-phased-plugin-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "external-plugins/phased/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -62,6 +66,8 @@ postsubmits:
               privileged: true
     - name: publish-test-subset-plugin-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "external-plugins/test-subset/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -92,6 +98,8 @@ postsubmits:
               privileged: true
     - name: publish-release-blocker-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "external-plugins/release-blocker/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -122,6 +130,8 @@ postsubmits:
               privileged: true
     - name: publish-release-tool-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "releng/release-tool/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -151,6 +161,8 @@ postsubmits:
               privileged: true
     - name: publish-botreview-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "external-plugins/botreview/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -181,6 +193,8 @@ postsubmits:
               privileged: true
     - name: publish-referee-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "^(external-plugins|images)/referee/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -211,6 +225,8 @@ postsubmits:
               privileged: true
     - name: publish-kubevirt-infra-bootstrap-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "images/kubevirt-infra-bootstrap/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -241,6 +257,8 @@ postsubmits:
                 memory: "1Gi"
     - name: publish-bootstrap-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "images/golang/.*|images/bootstrap/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -274,6 +292,8 @@ postsubmits:
                 memory: "52Gi"
     - name: publish-shared-images-controller-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "images/shared-images-controller/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -303,6 +323,8 @@ postsubmits:
                 memory: "4Gi"
     - name: publish-kubekins-e2e-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "images/kubekins-e2e/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -333,6 +355,8 @@ postsubmits:
                 memory: "1Gi"
     - name: publish-kubevirt-kubevirt.github.io-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "images/kubevirt-kubevirt.github.io/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -368,6 +392,8 @@ postsubmits:
                 memory: "1Gi"
     - name: publish-kubevirt-user-guide-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "images/kubevirt-user-guide/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -398,6 +424,8 @@ postsubmits:
                 memory: "1Gi"
     - name: publish-prow-deploy-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "images/prow-deploy/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -427,6 +455,8 @@ postsubmits:
                 memory: "8Gi"
     - name: publish-autoowners-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "images/autoowners/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -456,6 +486,8 @@ postsubmits:
                 memory: "4Gi"
     - name: publish-pr-creator-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "images/pr-creator/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -485,6 +517,8 @@ postsubmits:
                 memory: "52Gi"
     - name: publish-vm-image-builder-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "images/vm-image-builder/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -517,6 +551,8 @@ postsubmits:
                 memory: "52Gi"
     - name: publish-fedora-coreos-kubevirt-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "images/fedora-coreos-kubevirt/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -755,6 +791,8 @@ postsubmits:
               privileged: true
     - name: publish-test-report-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "robots/.*/test-report/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -785,6 +823,8 @@ postsubmits:
                 memory: "8Gi"
     - name: publish-test-label-analyzer-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "images/test-label-analyzer/.*|robots/.*/test-label-analyzer/.*"
       annotations:
         testgrid-create-test-group: "false"
