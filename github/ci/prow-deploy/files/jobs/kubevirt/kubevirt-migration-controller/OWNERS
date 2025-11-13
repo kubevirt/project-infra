@@ -1,0 +1,10 @@
+filters:
+  .*:
+    approvers:
+    - akalenyu
+    - awels
+    reviewers:
+    - akalenyu
+    - awels
+options: {}
+
