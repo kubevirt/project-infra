@@ -29,3 +29,18 @@ function kubevirtci_images_used_in_manifests() {
         sort -u | \
         cut -d'/' -f3
 }
+
+# Returns the latest tag for a given image from quay.io
+function latest_image_tag() {
+    local image_name="$1"
+    local latest_tag
+    latest_tag=$(curl -s "https://quay.io/api/v1/repository/${image_name#quay.io/}/tag/?limit=1" | \
+        jq -r '.tags[] | select(.name != "latest") | .name' | head -n1)
+
+    if [[ -z "$latest_tag" ]]; then
+        echo "[WARN] Could not determine latest tag for $image_name" >&2
+        return 1
+    fi
+
+    echo "$latest_tag"
+}
