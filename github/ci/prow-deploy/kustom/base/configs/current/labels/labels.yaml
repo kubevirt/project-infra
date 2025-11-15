@@ -59,6 +59,18 @@ default:
       target: prs
       prowPlugin: release-note
       addedBy: prow
+    - color: c2e0c6
+      name: docs-pr
+      target: prs
+      description: Denotes a PR that includes a documentation update.
+      prowPlugin: docs-pr
+      addedBy: prow
+    - color: c2e0c6
+      description: Denotes a PR that doesn't require documentation updates.
+      name: docs-pr-none
+      target: prs
+      prowPlugin: docs-pr
+      addedBy: prow
     - color: e11d21
       description: Indicates that a PR should not merge because someone has issued a /hold command.
       name: do-not-merge/hold
@@ -98,6 +110,11 @@ default:
       target: prs
       prowPlugin: verify-owners
       addedBy: prow
+      description: Indicates that a PR should not merge because it's missing documentation PR reference.
+      name: do-not-merge/docs-pr-required
+      target: prs
+      addedBy: prow
+      prowPlugin: docs-pr
     - name: kind/blocker
       color: b60205
       target: both
