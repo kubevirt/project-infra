@@ -23,13 +23,14 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"net/http"
 	"os"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/sirupsen/logrus"
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
 //go:embed flake-stats.gohtml

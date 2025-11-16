@@ -21,6 +21,7 @@ package flakestats
 
 import (
 	"fmt"
+	"sort"
 	"time"
 )
 
@@ -191,6 +192,22 @@ func (t *TopXTest) CalculateShareFromTotalFailures(totalFailures int) {
 	for key := range t.FailuresPerDay {
 		t.FailuresPerDay[key].setShare(totalFailures)
 	}
+}
+
+func (t *TopXTest) GetSortedFailuresPerLane() []*FailureCounter {
+	lanes := make([]*FailureCounter, 0, len(t.FailuresPerLane))
+	for _, fc := range t.FailuresPerLane {
+		lanes = append(lanes, fc)
+	}
+
+	sort.Slice(lanes, func(i, j int) bool {
+		if lanes[i].Sum == lanes[j].Sum {
+			return lanes[i].Name < lanes[j].Name
+		}
+		return lanes[i].Sum > lanes[j].Sum
+	})
+
+	return lanes
 }
 
 type FailureCounter struct {
