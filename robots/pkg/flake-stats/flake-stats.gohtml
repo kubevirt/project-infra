@@ -35,8 +35,8 @@
             </span>
         <span class="failureBlock">
             <span class="failureBlockHeader">Per Lane</span><br/>
-                {{ range $key, $value := .FailuresPerLane }}
-                    {{ template "failure" $value }}
+                {{ range .GetSortedFailuresPerLane }}
+                    {{ template "failure" . }}
                 {{ end }}
             </span>
         <hr/>
