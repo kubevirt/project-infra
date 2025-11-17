@@ -1,0 +1,95 @@
+presubmits:
+  kubevirt/kubevirt-migration-operator:
+  - name: pull-kubevirt-migration-operator-e2e
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - export KUBEVIRT_NUM_NODES=2 && export KUBEVIRT_STORAGE=rook-ceph-default && "./hack/test-e2e.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "52Gi"
+  - name: pull-kubevirt-migration-operator-unit-test
+    cluster: kubevirt-prow-control-plane
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-kubevirt-migration-operator-lint
+    cluster: kubevirt-prow-control-plane
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make lint"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"

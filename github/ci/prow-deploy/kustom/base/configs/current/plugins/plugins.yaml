@@ -495,6 +495,14 @@ plugins:
     - owners-label
     - release-note
     - trigger
+    
+  kubevirt/kubevirt-migration-operator:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
 
   nmstate/kubernetes-nmstate:
     plugins:
@@ -639,6 +647,7 @@ approve:
   - kubevirt/irsa-mutation-webhook
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
+  - kubevirt/kubevirt-migration-operator
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -778,6 +787,7 @@ lgtm:
   - kubevirt/irsa-mutation-webhook
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
+  - kubevirt/kubevirt-migration-operator
   review_acts_as_lgtm: true
 
 override:
@@ -834,6 +844,7 @@ triggers:
   - kubevirt/irsa-mutation-webhook
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
+  - kubevirt/kubevirt-migration-operator
   ignore_ok_to_test: true
 - repos:
   - virtblocks/virtblocks
