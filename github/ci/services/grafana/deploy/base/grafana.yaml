@@ -9415,7 +9415,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 2,
+      "id": 10,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -9478,7 +9478,7 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 7,
+            "h": 15,
             "w": 24,
             "x": 0,
             "y": 0
@@ -9575,10 +9575,10 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 6,
+            "h": 15,
             "w": 24,
             "x": 0,
-            "y": 7
+            "y": 15
           },
           "id": 3,
           "options": {
@@ -9611,103 +9611,6 @@ data:
             }
           ],
           "title": "k/kubevirt - ARCH lanes",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
-          },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 6,
-            "w": 24,
-            "x": 0,
-            "y": 13
-          },
-          "id": 4,
-          "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true,
-              "sortBy": "Last *",
-              "sortDesc": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
-              },
-              "editorMode": "code",
-              "expr": "avg(\n  prow_job_runtime_seconds_sum{org=\"kubevirt\", repo=\"kubevirt\", state=~\"${status}\", type=~\"${jobtype}\", job_name=~\"pull-kubevirt-check-tests-for-flakes|pull-kubevirt-check-dequarantine-test\"}\n  /\n  prow_job_runtime_seconds_count{org=\"kubevirt\", repo=\"kubevirt\", state=~\"${status}\", type=~\"${jobtype}\", job_name=~\"pull-kubevirt-check-tests-for-flakes|pull-kubevirt-check-dequarantine-test\"}\n) by (job_name,state)\n/ 3600",
-              "legendFormat": "{{job_name}}({{state}})",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "k/kubevirt - check-flakes / dequarantine",
           "type": "timeseries"
         }
       ],
@@ -9873,7 +9776,7 @@ data:
       "timezone": "",
       "title": "e2e lane runtimes",
       "uid": "tuG1kd-Hz",
-      "version": 1,
+      "version": 6,
       "weekStart": ""
     }
 ---
