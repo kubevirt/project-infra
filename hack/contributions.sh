@@ -55,8 +55,8 @@ temp_dir=$(mktemp -d /tmp/contributions-XXXXXX)
 
 podman run \
     -v "${temp_dir}:/tmp:z" \
-    -v "$(dirname "${oauth_token}"):/etc/github" \
-    -v "${project_infra_dir}:/project-infra" \
+    -v "$(dirname "${oauth_token}"):/etc/github:Z" \
+    -v "${project_infra_dir}:/project-infra:z" \
     --rm \
     quay.io/kubevirtci/contributions:v20250417-cd6921f \
     --github-token "/etc/github/$(basename "${oauth_token}")" \
