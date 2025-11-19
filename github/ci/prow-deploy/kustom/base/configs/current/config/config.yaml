@@ -142,6 +142,7 @@ tide:
     kubevirt/irsa-mutation-webhook: squash
     kubevirt/virt-template: merge
     kubevirt/kubevirt-migration-controller: squash
+    kubevirt/kubevirt-migration-operator: squash
 
   queries:
   - repos:
@@ -214,6 +215,8 @@ tide:
     - kubevirt/irsa-mutation-webhook
     - kubevirt/virt-template
     - kubevirt/kubevirt-migration-controller
+    - kubevirt/kubevirt-migration-operator
+
     labels:
     - lgtm
     - approved
