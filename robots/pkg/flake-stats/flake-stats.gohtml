@@ -143,12 +143,14 @@
         function enableFilterFields() {
             document.getElementById("filterByName").disabled = false;
             document.getElementById("excludeByName").disabled = false;
+            document.getElementById("filterByLane").disabled = false;
         }
 
         function updateFilteredRows() {
-            let filterTerms, excludeTerms, reportDiv, divs, i, testName, shouldShow, rowsShown;
+            let filterTerms, excludeTerms, laneTerms, reportDiv, divs, i, testName, shouldShow, rowsShown;
             filterTerms = document.getElementById("filterByName").value.toUpperCase().split("|");
             excludeTerms = document.getElementById("excludeByName").value.toUpperCase().split("|");
+            laneTerms = document.getElementById("filterByLane").value.toUpperCase().split("|");
             reportDiv = document.getElementById("report");
             divs = reportDiv.getElementsByTagName("div");
 
@@ -175,6 +177,33 @@
                         }
                         if (found !== true) {
                             shouldShow = false
+                        }
+                    }
+                    // Lane filtering logic
+                    if (shouldShow === true && laneTerms.length > 0 && laneTerms[0] !== "") {
+                        let failedOnMatchingLane = false;
+                        let laneBlocks = Array.from(divs[i].getElementsByClassName("failureBlock"))
+                             .find(block => block.querySelector(".failureBlockHeader")?.innerText === "Per Lane");
+                        if (laneBlocks) {
+                            let tables = laneBlocks.getElementsByTagName("table");
+
+                            for (let t = 0; t < tables.length; t++) {
+                                let laneHeader = tables[t].querySelector(".failureHeader");
+                                if (!laneHeader) continue;
+
+                                let laneName = laneHeader.innerText.toUpperCase();
+
+                                for (let k = 0; k < laneTerms.length; k++) {
+                                    if (laneName.indexOf(laneTerms[k]) !== -1) {
+                                        failedOnMatchingLane = true;
+                                        break;
+                                    }
+                                }
+                                if (failedOnMatchingLane) break;
+                            }
+                        }
+                        if (!failedOnMatchingLane) {
+                            shouldShow = false;
                         }
                     }
                     if (shouldShow === true) {
@@ -231,6 +260,15 @@
             <td class="no_border">
                 <input type="text" id="excludeByName" onkeyup="updateFilteredRows()" placeholder="term1|term2|..."
                        disabled>
+            </td>
+        </tr>
+        <tr>
+            <td class="no_border">
+                <label for="filterByLane">Show only tests that failed on lanes containing</label>
+            </td>
+            <td class="no_border">
+                <input type="text" id="filterByLane" onkeyup="updateFilteredRows()" placeholder="lane1|lane2|..."
+                    disabled>
             </td>
         </tr>
     </table>
