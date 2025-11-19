@@ -35,6 +35,8 @@ postsubmits:
                 memory: "1Gi"
     - name: publish-hco-builder-image
       always_run: false
+      branches:
+        - main
       run_if_changed: ^hack/builder/.*|^go\.mod$
       annotations:
         testgrid-create-test-group: "false"
