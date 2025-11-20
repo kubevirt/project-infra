@@ -1,0 +1,85 @@
+postsubmits:
+  kubevirt/kubevirt-migration-controller:
+  - name: push-release-kubevirt-migration-controller-images
+    branches:
+    - release-v\d+\.\d+
+    cluster: prow-workloads
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 15m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        env:
+        - name: DOCKER_REPO
+          value: quay.io/kubevirt
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          make clean &&
+          GOARCH=arm64 make buildah-manifest &&
+          GOARCH=amd64 make buildah-manifest &&
+          GOARCH=ppc64le make buildah-manifest &&
+          # Only push images on tags
+          [ -z "$(git tag --points-at HEAD | head -1)" ] ||
+          TAG="$(git tag --points-at HEAD | head -1)" make buildah-manifest-push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: push-release-kubevirt-migration-controller-provisioner-tag
+    branches:
+    - release-v\d+\.\d+
+    cluster: kubevirt-prow-control-plane
+    always_run: true
+    optional: false
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-github-credentials: "true"
+      preset-kubevirtci-quay-credential: "false"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        env:
+        - name: DOCKER_REPO
+          value: quay.io/kubevirt
+        - name: GH_CLI_VERSION
+          value: "1.5.0"
+        - name: GITHUB_TOKEN_PATH
+          value: /etc/github/oauth
+        - name: GITHUB_REPOSITORY
+          value: kubevirt/hostpath-provisioner
+        - name: GIT_USER_NAME
+          value: kubevirt-bot
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
+        - ./hack/release.sh
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
