@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20240814-9b6c4af
+FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1
 
 ENV GIMME_GO_VERSION=1.22.6
 
