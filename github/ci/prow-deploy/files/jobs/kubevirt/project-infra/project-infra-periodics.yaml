@@ -4,8 +4,6 @@ periodics:
   decorate: true
   annotations:
     testgrid-create-test-group: "false"
-  labels:
-    preset-github-credentials: "true"
   cluster: kubevirt-prow-control-plane
   extra_refs:
   - org: kubevirt
@@ -27,6 +25,13 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: "1.25.1"
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+    volumes:
+    - name: token
+      secret:
+        secretName:  commenter-oauth-token
 - name: periodic-project-infra-close
   interval: 1h
   annotations:
