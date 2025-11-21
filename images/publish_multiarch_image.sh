@@ -4,7 +4,9 @@ archs=(amd64 arm64 s390x)
 main() {
     local build_only local_base_image
     local_base_image=false
-    while getopts "ablh" opt; do
+    local project_infra_dir
+    project_infra_dir="$(readlink --canonicalize "$(pwd)/../")"
+    while getopts "ablp:h" opt; do
         case "$opt" in
 	    a)
 		archs=(amd64)
@@ -14,6 +16,8 @@ main() {
                 ;;
             l)
                 local_base_image=true
+                ;;
+            p)  project_infra_dir="$OPTARG"
                 ;;
             h)
                 help
@@ -44,7 +48,7 @@ main() {
         cd "$build_target"
 	base_image="$(get_base_image)"
 
-        build_image $local_base_image "$build_target" "$full_image_name" "$base_image"
+        build_image $local_base_image "$build_target" "$full_image_name" "$base_image" "$project_infra_dir"
     )
     [[ $build_only ]] && return
     publish_image "$full_image_name"
@@ -83,14 +87,19 @@ build_image() {
     local build_target="${2:?}"
     local image_name="${3:?}"
     local base_image="${4:?}"
+    local project_infra_dir="${5:-}"
+    build_args=()
+    if [ -d "$project_infra_dir" ]; then
+        build_args=( "-v" "$project_infra_dir:/project-infra" )
+    fi
     # add qemu-user-static
     podman run --rm --privileged docker.io/multiarch/qemu-user-static --reset -p yes
     # build multi-arch images
     for arch in ${archs[*]};do
         if [[ $local_base_image == false ]]; then
-	    podman pull --platform="linux/${arch}" ${base_image}
+	        podman pull --platform="linux/${arch}" ${base_image}
         fi
-        podman build --platform="linux/${arch}" --build-arg ARCH=${arch} --build-arg IMAGE_ARG=${build_target} . -t "${image_name}-${arch}" -t "${build_target}-${arch}"
+        podman build --platform="linux/${arch}" "${build_args[@]}" --build-arg ARCH=${arch} --build-arg IMAGE_ARG=${build_target} . -t "${image_name}-${arch}" -t "${build_target}-${arch}"
     done
 }
 
