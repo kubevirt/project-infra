@@ -1,16 +1,16 @@
-FROM quay.io/kubevirtci/golang:v20231115-51a244f as builder
+FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1 as builder
 
-RUN git clone https://github.com/kubernetes/test-infra.git && \
+RUN git clone --depth 1 --revision 3815e13b727dd09738bf9bd7e8a06ab616cb0d62 https://github.com/kubernetes/test-infra.git && \
   cd test-infra && \
-  git checkout 3815e13b727dd09738bf9bd7e8a06ab616cb0d62 && \
+  /usr/local/bin/runner.sh /bin/sh -ce 'go mod vendor' && \
   /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/config-bootstrapper ./prow/cmd/config-bootstrapper/...' && \
-  config-bootstrapper --help && \
+  /usr/local/bin/config-bootstrapper --help && \
   /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/phony ./prow/cmd/phony' && \
-  phony --help && \
+  /usr/local/bin/phony --help && \
   /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/hmac ./prow/cmd/hmac' && \
-  hmac --help
+  /usr/local/bin/hmac --help
 
-FROM quay.io/kubevirtci/bootstrap:v20231115-51a244f
+FROM quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
 
 COPY --from=builder /usr/local/bin/config-bootstrapper /usr/local/bin/phony /usr/local/bin/hmac /usr/local/bin/
 
@@ -26,7 +26,7 @@ RUN curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_lin
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
   chmod a+x ./kubectl && \
   mv ./kubectl /google-cloud-sdk/bin/ && \
-  kubectl version --client=true
+  /google-cloud-sdk/bin/kubectl version --client=true
 
 COPY requirements.txt .
 
