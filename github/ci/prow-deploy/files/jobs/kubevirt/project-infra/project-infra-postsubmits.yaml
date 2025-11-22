@@ -191,6 +191,35 @@ postsubmits:
                 memory: "8Gi"
             securityContext:
               privileged: true
+    - name: publish-docs-pr-checker-image
+      always_run: false
+      run_if_changed: "^(external-plugins|images)/docs-pr-checker/.*"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      cluster: kubevirt-prow-control-plane
+      max_concurrency: 1
+      labels:
+        preset-bazel-cache: "true"
+        preset-kubevirtci-quay-credential: "true"
+        preset-podman-in-container-enabled: "true"
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20250701-f32dbda
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                make -C ./external-plugins/docs-pr-checker push
+            resources:
+              requests:
+                memory: "8Gi"
+              limits:
+                memory: "8Gi"
+            securityContext:
+              privileged: true
     - name: publish-referee-image
       always_run: false
       branches:
