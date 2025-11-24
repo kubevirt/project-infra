@@ -219,6 +219,7 @@ type FailureCounter struct {
 	SharePercent  float64
 	ShareCategory ShareCategory
 	URL           string
+	PrCount       int
 }
 
 func (f *FailureCounter) add(value int) {

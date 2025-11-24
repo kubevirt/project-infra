@@ -58,6 +58,12 @@
                 {{ .Sum }}
             </td>
         </tr>
+        {{ if gt .PrCount 0 }}
+        <tr>
+            <td>PRs merged</td>
+            <td class="failureValue">{{ .PrCount }}</td>
+        </tr>
+        {{ end }}
     </table>
 {{ end }}
 

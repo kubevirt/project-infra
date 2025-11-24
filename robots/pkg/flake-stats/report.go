@@ -210,15 +210,19 @@ func (r FlakeStats) aggregateAllFailuresPerTest(currentTopXTest *TopXTest, jobFa
 }
 
 func (r FlakeStats) aggregateFailuresPerTestPerDay(currentTopXTest *TopXTest, reportData *flakefinder.Params, jobFailures *flakefinder.Details) {
-	_, failuresPerDayExists := currentTopXTest.FailuresPerDay[reportData.StartOfReport]
-	if !failuresPerDayExists {
+	fc, exists := currentTopXTest.FailuresPerDay[reportData.StartOfReport]
+	if !exists {
 		date := formatFromRFC3339ToRFCDate(reportData.StartOfReport)
-		currentTopXTest.FailuresPerDay[reportData.StartOfReport] = &FailureCounter{
-			Name: formatFromSourceToTargetFormat(reportData.StartOfReport, time.RFC3339, dayFormat),
-			URL:  fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html", date),
+		fc = &FailureCounter{
+			Name:    formatFromSourceToTargetFormat(reportData.StartOfReport, time.RFC3339, dayFormat),
+			URL:     fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/flakefinder-%s-024h.html", date),
+			PrCount: len(reportData.PrNumbers),
 		}
+		currentTopXTest.FailuresPerDay[reportData.StartOfReport] = fc
+	} else {
+		fc.PrCount += len(reportData.PrNumbers)
 	}
-	currentTopXTest.FailuresPerDay[reportData.StartOfReport].add(jobFailures.Failed)
+	fc.add(jobFailures.Failed)
 }
 
 func (r FlakeStats) aggregateFailuresPerTestPerLane(currentTopXTest *TopXTest, jobName string, jobFailures *flakefinder.Details) {
