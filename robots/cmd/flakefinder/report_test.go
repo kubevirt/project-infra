@@ -3,11 +3,12 @@ package main_test
 import (
 	"bytes"
 	"fmt"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	"kubevirt.io/project-infra/robots/pkg/validation"
 	"log"
 	"os"
 	"time"
+
+	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"kubevirt.io/project-infra/robots/pkg/validation"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -43,6 +44,7 @@ var _ = Describe("report.go", func() {
 		jobNameA  = "a"
 		jobNameB  = "b"
 		jobNameC  = "c"
+		commitID1 = "d66cb1c"
 	)
 
 	When("rendering report data", func() {
@@ -64,11 +66,23 @@ var _ = Describe("report.go", func() {
 				Data: map[string]map[string]*flakefinder.Details{
 					testName1: {
 						jobNameA: &flakefinder.Details{
-							Failed:    4,
-							Succeeded: 1,
-							Skipped:   2,
-							Severity:  "red",
-							Jobs:      []*flakefinder.Job{}},
+							Failed:           4,
+							Succeeded:        1,
+							Skipped:          2,
+							Severity:         "red",
+							NonDeterministic: true,
+							Jobs: []*flakefinder.Job{
+								{
+									BuildNumber: 1,
+									Severity:    "red",
+									CommitID:    commitID1,
+								},
+								{
+									BuildNumber: 2,
+									Severity:    "green",
+									CommitID:    commitID1,
+								},
+							}},
 					},
 					testName2: {
 						jobNameB: &flakefinder.Details{
@@ -141,7 +155,7 @@ var _ = Describe("report.go", func() {
 
 		It("has one filled test cell", func() {
 			prepareWithDefaultParams()
-			Expect(buffer.String()).To(ContainSubstring("<td class=\"red center\""))
+			Expect(buffer.String()).To(ContainSubstring("<td class=\"red nondeterministic center\""))
 			Expect(buffer.String()).To(MatchRegexp("(?s)4.*1.*2"))
 		})
 
