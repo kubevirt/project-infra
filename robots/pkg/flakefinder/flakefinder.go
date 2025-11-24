@@ -140,6 +140,7 @@ type JobResult struct {
 	BuildNumber int
 	PR          int
 	BatchPRs    []int
+	CommitID    string
 }
 
 type ReportBaseDataOptions struct {
