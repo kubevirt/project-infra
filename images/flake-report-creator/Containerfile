@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20250701-f32dbda as builder
+FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1 as builder
 RUN cd /project-infra/ && \
     /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/flake-report-creator ./robots/cmd/flake-report-creator"
 

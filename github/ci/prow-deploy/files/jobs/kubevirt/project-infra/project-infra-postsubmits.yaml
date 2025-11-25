@@ -543,9 +543,7 @@ postsubmits:
               privileged: true
             resources:
               requests:
-                memory: "52Gi"
-              limits:
-                memory: "52Gi"
+                memory: "60Gi"
     - name: publish-vm-image-builder-image
       always_run: false
       branches:
