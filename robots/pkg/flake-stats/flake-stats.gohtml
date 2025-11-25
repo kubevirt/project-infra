@@ -158,8 +158,8 @@
             excludeTerms = document.getElementById("excludeByName").value.toUpperCase().split("|");
             laneTerms = document.getElementById("filterByLane").value.toUpperCase().split("|");
             reportDiv = document.getElementById("report");
-            divs = reportDiv.getElementsByTagName("div");
-
+            divs = Array.from(reportDiv.getElementsByTagName("div"))
+                .filter(d => d.id && !d.id.startsWith("total"));
             rowsShown = 0;
             for (i = 0; i < divs.length; i++) {
                 if (divs[i]) {
@@ -223,12 +223,18 @@
             updateRowsShown(rowsShown);
         }
 
+        function countTestDivs() {
+            return Array.from(document.getElementById("report").getElementsByTagName("div"))
+                .filter(d => d.id && !d.id.startsWith("total")).length;
+        }
+
         function initRowsShown() {
-            updateRowsShown(document.getElementById("report").getElementsByTagName("div").length);
+            let total = countTestDivs();
+            document.getElementById("totalRowsShown").innerText = "Showing " + total + " of " + total + " flaky tests";
         }
 
         function updateRowsShown(rowsShown) {
-            let rowsTotal = document.getElementById("report").getElementsByTagName("div").length;
+            let rowsTotal = countTestDivs();
             document.getElementById("totalRowsShown").innerText = "Showing " + rowsShown + " of " + rowsTotal + " flaky tests";
         }
     </script>
