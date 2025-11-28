@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"kubevirt.io/project-infra/pkg/mirror"
 	"log"
 	"net/http"
 	"os"
@@ -12,8 +13,6 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/bazelbuild/buildtools/build"
 	"google.golang.org/api/option"
-
-	"kubevirt.io/project-infra/robots/pkg/mirror"
 )
 
 var targetMirrorURLPattern = regexp.MustCompile(`^https://storage.googleapis.com/.+`)

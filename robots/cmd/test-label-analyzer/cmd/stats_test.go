@@ -22,8 +22,8 @@ package cmd
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"kubevirt.io/project-infra/robots/pkg/git"
-	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
+	"kubevirt.io/project-infra/pkg/git"
+	test_label_analyzer2 "kubevirt.io/project-infra/pkg/test-label-analyzer"
 	"time"
 )
 
@@ -53,15 +53,15 @@ var _ = Describe("stats", func() {
 	Context("NewStatsHTMLData", func() {
 
 		const remoteURL = "http://github.com/dhiller/test"
-		var simpleQuarantineConfig = test_label_analyzer.NewTestNameDefaultConfig("[QUARANTINE]")
+		var simpleQuarantineConfig = test_label_analyzer2.NewTestNameDefaultConfig("[QUARANTINE]")
 
 		It("returns data from file stats", func() {
 			// t.MatchingPath.MatchingCategory
-			Expect(NewStatsHTMLData([]*test_label_analyzer.FileStats{
+			Expect(NewStatsHTMLData([]*test_label_analyzer2.FileStats{
 				{
-					TestStats: &test_label_analyzer.TestStats{
+					TestStats: &test_label_analyzer2.TestStats{
 						SpecsTotal: 2,
-						MatchingSpecPaths: []*test_label_analyzer.PathStats{
+						MatchingSpecPaths: []*test_label_analyzer2.PathStats{
 							{
 								Lines: nil,
 								GitBlameLines: []*git.BlameLine{
@@ -74,7 +74,7 @@ var _ = Describe("stats", func() {
 									},
 								},
 								Path:             nil,
-								MatchingCategory: &test_label_analyzer.LabelCategory{},
+								MatchingCategory: &test_label_analyzer2.LabelCategory{},
 							},
 						},
 					},
@@ -84,11 +84,11 @@ var _ = Describe("stats", func() {
 		})
 
 		PIt("sorts data by date for matching line", func() { // TODO: need to repair the comparison, seems the regexp has state that hinders it
-			Expect(NewStatsHTMLData([]*test_label_analyzer.FileStats{
+			Expect(NewStatsHTMLData([]*test_label_analyzer2.FileStats{
 				{
-					TestStats: &test_label_analyzer.TestStats{
+					TestStats: &test_label_analyzer2.TestStats{
 						SpecsTotal: 2,
-						MatchingSpecPaths: []*test_label_analyzer.PathStats{
+						MatchingSpecPaths: []*test_label_analyzer2.PathStats{
 							{
 								Lines: nil,
 								GitBlameLines: []*git.BlameLine{
@@ -112,7 +112,7 @@ var _ = Describe("stats", func() {
 					TestHTMLData: []*TestHTMLData{
 						{
 							Config: simpleQuarantineConfig,
-							MatchingPath: &test_label_analyzer.PathStats{
+							MatchingPath: &test_label_analyzer2.PathStats{
 								GitBlameLines: []*git.BlameLine{
 									newGitBlameInfo(parseTime("2023-02-02T17:42:37Z"), "[QUARANTINE]"),
 								},
@@ -121,7 +121,7 @@ var _ = Describe("stats", func() {
 						},
 						{
 							Config: simpleQuarantineConfig,
-							MatchingPath: &test_label_analyzer.PathStats{
+							MatchingPath: &test_label_analyzer2.PathStats{
 								GitBlameLines: []*git.BlameLine{
 									newGitBlameInfo(parseTime("2023-03-02T17:42:37Z"), "[QUARANTINE]"),
 								},

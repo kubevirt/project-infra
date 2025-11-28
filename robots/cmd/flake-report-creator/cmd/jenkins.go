@@ -25,7 +25,10 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
+	flakefinder2 "kubevirt.io/project-infra/pkg/flakefinder"
+	"kubevirt.io/project-infra/pkg/flakefinder/build"
+	junitMerge "kubevirt.io/project-infra/pkg/flakefinder/junit-merge"
+	flakejenkins "kubevirt.io/project-infra/pkg/jenkins"
 	"net/http"
 	"os"
 	"regexp"
@@ -38,9 +41,6 @@ import (
 	"github.com/bndr/gojenkins"
 	"github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	junitMerge "kubevirt.io/project-infra/robots/pkg/flakefinder/junit-merge"
-	flakejenkins "kubevirt.io/project-infra/robots/pkg/jenkins"
 )
 
 const (
@@ -101,13 +101,13 @@ type jenkinsOptions struct {
 }
 
 type JenkinsReportParams struct {
-	flakefinder.Params
+	flakefinder2.Params
 	JenkinsBaseURL    string
 	JobNamesToRatings map[string]build.Rating
 }
 
 type JSONParams struct {
-	Data map[string]map[string]*flakefinder.Details `json:"data"`
+	Data map[string]map[string]*flakefinder2.Details `json:"data"`
 }
 
 func JenkinsCommand() *cobra.Command {
@@ -184,7 +184,7 @@ func runJenkinsReport(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, startOfReportsForRatings time.Time, innerJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) ([]*flakefinder.JobResult, []build.Rating) {
+func fetchJunitReportsFromMatchingJobs(startOfReport time.Time, startOfReportsForRatings time.Time, innerJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) ([]*flakefinder2.JobResult, []build.Rating) {
 	filteredJobs := filterMatchingJobs(innerJobs)
 	return fetchJobReports(startOfReport, startOfReportsForRatings, filteredJobs, jenkins, ctx)
 }
@@ -204,13 +204,13 @@ func filterMatchingJobs(innerJobs []gojenkins.InnerJob) []gojenkins.InnerJob {
 	return filteredJobs
 }
 
-func fetchJobReports(startOfReport time.Time, startOfReportForRatings time.Time, filteredJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) ([]*flakefinder.JobResult, []build.Rating) {
+func fetchJobReports(startOfReport time.Time, startOfReportForRatings time.Time, filteredJobs []gojenkins.InnerJob, jenkins *gojenkins.Jenkins, ctx context.Context) ([]*flakefinder2.JobResult, []build.Rating) {
 	resultChan := make(chan result)
 
 	go runReportDataFetches(filteredJobs, jenkins, ctx, startOfReport, startOfReportForRatings, resultChan)
 
 	buildRatings := []build.Rating{}
-	reports := []*flakefinder.JobResult{}
+	reports := []*flakefinder2.JobResult{}
 	for result := range resultChan {
 		reports = append(reports, result.jobResults...)
 		buildRatings = append(buildRatings, result.buildRating)
@@ -231,7 +231,7 @@ func runReportDataFetches(filteredJobs []gojenkins.InnerJob, jenkins *gojenkins.
 }
 
 type result struct {
-	jobResults  []*flakefinder.JobResult
+	jobResults  []*flakefinder2.JobResult
 	buildRating build.Rating
 }
 
@@ -290,7 +290,7 @@ func fetchJunitFilesFromArtifacts(completedBuilds []*gojenkins.Build, fLog *log.
 	return artifacts
 }
 
-func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, ctx context.Context, job *gojenkins.Job, fLog *log.Entry) []*flakefinder.JobResult {
+func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, ctx context.Context, job *gojenkins.Job, fLog *log.Entry) []*flakefinder2.JobResult {
 
 	// problem: we might encounter multiple junit artifacts per job run, we need to merge them into
 	// 			one so the report builder can handle the results
@@ -313,18 +313,18 @@ func convertJunitFileDataToReport(junitFilesFromArtifacts []gojenkins.Artifact, 
 
 	// step 2: merge all the suites for a build into one suite per build
 	fLog.Printf("Merge reports for %d builds", len(artifactsPerBuild))
-	reportsPerJob := []*flakefinder.JobResult{}
+	reportsPerJob := []*flakefinder2.JobResult{}
 	for buildNumber, artifacts := range artifactsPerBuild {
 		// TODO: evaluate conflicts somehow
 		mergedResult, _ := junitMerge.Merge(artifacts)
-		reportsPerJob = append(reportsPerJob, &flakefinder.JobResult{Job: job.GetName(), JUnit: mergedResult, BuildNumber: int(buildNumber)})
+		reportsPerJob = append(reportsPerJob, &flakefinder2.JobResult{Job: job.GetName(), JUnit: mergedResult, BuildNumber: int(buildNumber)})
 	}
 
 	return reportsPerJob
 }
 
-func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports []*flakefinder.JobResult, outputFile string, ratings []build.Rating) {
-	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, endOfReport, "kubevirt", "kubevirt", startOfReport)
+func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports []*flakefinder2.JobResult, outputFile string, ratings []build.Rating) {
+	parameters := flakefinder2.CreateFlakeReportData(reports, []int{}, endOfReport, "kubevirt", "kubevirt", startOfReport)
 	jLog.Printf("writing output to %s", outputFile)
 
 	jobNamesToRatings := map[string]build.Rating{}
@@ -341,13 +341,13 @@ func writeHTMLReportToOutputFile(outputFile string, reportTemplate string, param
 	reportOutputWriter := createReportOutputWriter(outputFile)
 	defer reportOutputWriter.Close()
 
-	err := flakefinder.WriteTemplateToOutput(reportTemplate, params, reportOutputWriter)
+	err := flakefinder2.WriteTemplateToOutput(reportTemplate, params, reportOutputWriter)
 	if err != nil {
 		jLog.Fatalf("failed to write report: %v", err)
 	}
 }
 
-func writeJSONToOutputFile(jsonOutputFile string, parameters flakefinder.Params) {
+func writeJSONToOutputFile(jsonOutputFile string, parameters flakefinder2.Params) {
 	reportOutputWriter := createReportOutputWriter(jsonOutputFile)
 	defer reportOutputWriter.Close()
 

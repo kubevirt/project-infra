@@ -27,7 +27,7 @@ import (
 	"fmt"
 	"github.com/bndr/gojenkins"
 	"github.com/spf13/cobra"
-	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
+	"kubevirt.io/project-infra/pkg/test-report"
 	"net/http"
 	"os"
 	"regexp"

@@ -25,8 +25,8 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	"github.com/onsi/ginkgo/v2/types"
 	. "github.com/onsi/gomega"
-	"kubevirt.io/project-infra/robots/pkg/ginkgo"
-	"kubevirt.io/project-infra/robots/pkg/git"
+	ginkgo2 "kubevirt.io/project-infra/pkg/ginkgo"
+	git2 "kubevirt.io/project-infra/pkg/git"
 	"os"
 	osexec "os/exec"
 	"path/filepath"
@@ -35,9 +35,9 @@ import (
 )
 
 type TestDataContainer struct {
-	commits          []*git.LogCommit
-	outlines         map[string][]*ginkgo.Node
-	blameLines       map[string][]*git.BlameLine
+	commits          []*git2.LogCommit
+	outlines         map[string][]*ginkgo2.Node
+	blameLines       map[string][]*git2.BlameLine
 	testfileContents map[string]string
 }
 
@@ -64,7 +64,7 @@ func (c *TestDataContainer) deserialize() {
 	Expect(c.testfileContents).ToNot(BeNil())
 }
 
-func (c *TestDataContainer) data() (commits []*git.LogCommit, outlines map[string][]*ginkgo.Node, blameLines map[string][]*git.BlameLine, testfileContents map[string]string) {
+func (c *TestDataContainer) data() (commits []*git2.LogCommit, outlines map[string][]*ginkgo2.Node, blameLines map[string][]*git2.BlameLine, testfileContents map[string]string) {
 	return c.commits, c.outlines, c.blameLines, c.testfileContents
 }
 
@@ -72,7 +72,7 @@ var _ = Describe("extract testnames", func() {
 
 	When("asking for blame lines", Ordered, func() {
 
-		var filenamesToBlamelines map[string][]*git.BlameLine
+		var filenamesToBlamelines map[string][]*git2.BlameLine
 
 		BeforeAll(func() {
 			container := &TestDataContainer{}
@@ -123,7 +123,7 @@ var _ = Describe("extract testnames", func() {
 
 		BeforeAll(func() {
 			var err error
-			var outline []*ginkgo.Node
+			var outline []*ginkgo2.Node
 
 			file, err := os.Open("testdata/simple_test_outline.json")
 			Expect(err).ToNot(HaveOccurred())
@@ -185,10 +185,10 @@ var _ = Describe("extract testnames", func() {
 		)
 
 		var (
-			outlines         map[string][]*ginkgo.Node
-			blameLines       map[string][]*git.BlameLine
+			outlines         map[string][]*ginkgo2.Node
+			blameLines       map[string][]*git2.BlameLine
 			testfileContents map[string]string
-			testPaths        [][]*ginkgo.Node
+			testPaths        [][]*ginkgo2.Node
 			changedTestNames []string
 		)
 
@@ -211,18 +211,18 @@ var _ = Describe("extract testnames", func() {
 			commitID = strings.TrimSuffix(commitID, "\n")
 			Expect(commitID).ToNot(BeEquivalentTo(""))
 
-			commits, err := git.LogCommits(fmt.Sprintf("%s^1..%s", commitID, commitID), absBasePath, testfilePath)
+			commits, err := git2.LogCommits(fmt.Sprintf("%s^1..%s", commitID, commitID), absBasePath, testfilePath)
 			Expect(err).ToNot(HaveOccurred())
 
-			testOutline, err := ginkgo.OutlineFromFile(absTestFile)
+			testOutline, err := ginkgo2.OutlineFromFile(absTestFile)
 			Expect(err).ToNot(HaveOccurred())
-			outlines = map[string][]*ginkgo.Node{
+			outlines = map[string][]*ginkgo2.Node{
 				relTestFile: testOutline,
 			}
 
-			blameLinesForFile, err := git.GetBlameLinesForFile(absTestFile)
+			blameLinesForFile, err := git2.GetBlameLinesForFile(absTestFile)
 			Expect(err).ToNot(HaveOccurred())
-			blameLines = map[string][]*git.BlameLine{
+			blameLines = map[string][]*git2.BlameLine{
 				relTestFile: blameLinesForFile,
 			}
 

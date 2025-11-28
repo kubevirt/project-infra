@@ -23,20 +23,19 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"kubevirt.io/project-infra/pkg/flakefinder"
+	ghapi "kubevirt.io/project-infra/pkg/flakefinder/github"
 	"log"
 	"net/url"
 	"path/filepath"
 	"time"
 
-	ghapi "kubevirt.io/project-infra/robots/pkg/flakefinder/github"
 	"sigs.k8s.io/prow/pkg/config/secret"
 
 	"cloud.google.com/go/storage"
 	"github.com/google/go-github/v28/github"
 	"golang.org/x/oauth2"
 	"sigs.k8s.io/prow/pkg/flagutil"
-
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
 func flagOptions() options {

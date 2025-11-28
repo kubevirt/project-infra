@@ -1,10 +1,9 @@
 package main
 
 import (
+	"kubevirt.io/project-infra/pkg/kubevirt"
+	"kubevirt.io/project-infra/pkg/kubevirt/log"
 	"os"
-
-	"kubevirt.io/project-infra/robots/pkg/kubevirt"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
 )
 
 func main() {

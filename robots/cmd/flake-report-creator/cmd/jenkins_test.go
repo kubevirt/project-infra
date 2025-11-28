@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"kubevirt.io/project-infra/pkg/flakefinder"
+	"kubevirt.io/project-infra/pkg/flakefinder/build"
+	"kubevirt.io/project-infra/pkg/validation"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -10,9 +13,6 @@ import (
 	"github.com/bndr/gojenkins"
 	"github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
-	"kubevirt.io/project-infra/robots/pkg/validation"
 )
 
 func Test_fetchJunitFilesFromArtifacts(t *testing.T) {

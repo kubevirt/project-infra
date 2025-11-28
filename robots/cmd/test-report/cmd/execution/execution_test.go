@@ -22,7 +22,7 @@ package execution
 import (
 	"github.com/sirupsen/logrus"
 	"io"
-	"kubevirt.io/project-infra/robots/pkg/test-report"
+	"kubevirt.io/project-infra/pkg/test-report"
 	"os"
 	"testing"
 )

@@ -26,7 +26,7 @@ import (
 	"google.golang.org/api/iterator"
 	"html/template"
 	"io"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"kubevirt.io/project-infra/pkg/flakefinder"
 	"os"
 	"path"
 	"sort"

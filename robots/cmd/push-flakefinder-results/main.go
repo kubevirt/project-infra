@@ -23,7 +23,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"kubevirt.io/project-infra/pkg/flakefinder"
 	"log"
 	"net/http"
 	"strconv"

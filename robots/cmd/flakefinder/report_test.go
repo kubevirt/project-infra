@@ -3,8 +3,8 @@ package main_test
 import (
 	"bytes"
 	"fmt"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	"kubevirt.io/project-infra/robots/pkg/validation"
+	flakefinder2 "kubevirt.io/project-infra/pkg/flakefinder"
+	"kubevirt.io/project-infra/pkg/validation"
 	"log"
 	"os"
 	"time"
@@ -49,9 +49,9 @@ var _ = Describe("report.go", func() {
 
 		var buffer bytes.Buffer
 
-		prepareBuffer := func(parameters flakefinder.Params) {
+		prepareBuffer := func(parameters flakefinder2.Params) {
 			buffer = bytes.Buffer{}
-			err := flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, &buffer)
+			err := flakefinder2.WriteTemplateToOutput(ReportTemplate, parameters, &buffer)
 			Expect(err).ToNot(HaveOccurred())
 			if testOptions.printTestOutput {
 				logger := log.New(os.Stdout, "report_test.go:", log.Flags())
@@ -60,44 +60,44 @@ var _ = Describe("report.go", func() {
 		}
 
 		prepareWithDefaultParams := func() {
-			parameters := flakefinder.Params{
-				Data: map[string]map[string]*flakefinder.Details{
+			parameters := flakefinder2.Params{
+				Data: map[string]map[string]*flakefinder2.Details{
 					testName1: {
-						jobNameA: &flakefinder.Details{
+						jobNameA: &flakefinder2.Details{
 							Failed:    4,
 							Succeeded: 1,
 							Skipped:   2,
 							Severity:  "red",
-							Jobs:      []*flakefinder.Job{}},
+							Jobs:      []*flakefinder2.Job{}},
 					},
 					testName2: {
-						jobNameB: &flakefinder.Details{
+						jobNameB: &flakefinder2.Details{
 							Failed:    1,
 							Succeeded: 5,
 							Skipped:   1,
 							Severity:  "red",
-							Jobs:      []*flakefinder.Job{}},
+							Jobs:      []*flakefinder2.Job{}},
 					},
 					testName3: {
-						jobNameC: &flakefinder.Details{
+						jobNameC: &flakefinder2.Details{
 							Failed:    9,
 							Succeeded: 3,
 							Skipped:   1,
 							Severity:  "red",
-							Jobs:      []*flakefinder.Job{}},
+							Jobs:      []*flakefinder2.Job{}},
 					},
 				},
 				Headers: []string{jobNameA, jobNameB, jobNameC},
 				Tests:   []string{testName1, testName2, testName3},
-				TestAttributes: map[string]flakefinder.TestAttributes{
-					testName1: flakefinder.NewTestAttributes(testName1),
-					testName2: flakefinder.NewTestAttributes(testName2),
-					testName3: flakefinder.NewTestAttributes(testName3),
+				TestAttributes: map[string]flakefinder2.TestAttributes{
+					testName1: flakefinder2.NewTestAttributes(testName1),
+					testName2: flakefinder2.NewTestAttributes(testName2),
+					testName3: flakefinder2.NewTestAttributes(testName3),
 				},
 				BareTestNames: map[string]string{
-					testName1: flakefinder.GetBareTestName(testName1),
-					testName2: flakefinder.GetBareTestName(testName2),
-					testName3: flakefinder.GetBareTestName(testName3),
+					testName1: flakefinder2.GetBareTestName(testName1),
+					testName2: flakefinder2.GetBareTestName(testName2),
+					testName3: flakefinder2.GetBareTestName(testName3),
 				},
 				EndOfReport: "2019-08-23",
 				Org:         Org,
@@ -109,7 +109,7 @@ var _ = Describe("report.go", func() {
 		}
 
 		prepareWithNoFailingTests := func() {
-			parameters := flakefinder.Params{Data: map[string]map[string]*flakefinder.Details{},
+			parameters := flakefinder2.Params{Data: map[string]map[string]*flakefinder2.Details{},
 				Headers: []string{}, Tests: []string{}, EndOfReport: "2019-08-23",
 				Org: Org, Repo: Repo,
 				PrNumbers: []int{17, 42},
@@ -125,7 +125,7 @@ var _ = Describe("report.go", func() {
 
 		It("has rows", func() {
 			prepareWithDefaultParams()
-			Expect(buffer.String()).To(ContainSubstring(flakefinder.NewTestAttributes(testName1)[0].Name))
+			Expect(buffer.String()).To(ContainSubstring(flakefinder2.NewTestAttributes(testName1)[0].Name))
 			Expect(buffer.String()).To(ContainSubstring("<div class=\"testAttribute\""))
 			Expect(buffer.String()).To(ContainSubstring(testName1))
 			Expect(buffer.String()).To(ContainSubstring(testName2))
@@ -173,8 +173,8 @@ var _ = Describe("report.go", func() {
 		})
 
 		DescribeTable("title contains repo and org", func(org, repo string) {
-			parameters := flakefinder.Params{Data: map[string]map[string]*flakefinder.Details{
-				"t1": {jobNameA: &flakefinder.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder.Job{}}},
+			parameters := flakefinder2.Params{Data: map[string]map[string]*flakefinder2.Details{
+				"t1": {jobNameA: &flakefinder2.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder2.Job{}}},
 			}, Headers: []string{jobNameA, "b", "c"}, Tests: []string{"t1", "t2", testName3}, EndOfReport: "2019-08-23", Org: org, Repo: repo}
 
 			prepareBuffer(parameters)
@@ -187,8 +187,8 @@ var _ = Describe("report.go", func() {
 		)
 
 		DescribeTable("prow link contains repo and org", func(org, repo string) {
-			parameters := flakefinder.Params{Data: map[string]map[string]*flakefinder.Details{
-				"t1": {jobNameA: &flakefinder.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder.Job{
+			parameters := flakefinder2.Params{Data: map[string]map[string]*flakefinder2.Details{
+				"t1": {jobNameA: &flakefinder2.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder2.Job{
 					{BuildNumber: 1742, Severity: "red", PR: 1427, Job: "testblah"},
 				}}},
 			}, Headers: []string{jobNameA, "b", "c"}, Tests: []string{"t1", "t2", testName3}, EndOfReport: "2019-08-23", Org: org, Repo: repo}
@@ -203,8 +203,8 @@ var _ = Describe("report.go", func() {
 		)
 
 		DescribeTable("GitHub link contains repo and org", func(org, repo string) {
-			parameters := flakefinder.Params{Data: map[string]map[string]*flakefinder.Details{
-				"t1": {jobNameA: &flakefinder.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder.Job{
+			parameters := flakefinder2.Params{Data: map[string]map[string]*flakefinder2.Details{
+				"t1": {jobNameA: &flakefinder2.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder2.Job{
 					{BuildNumber: 1742, Severity: "red", PR: 1427, Job: "testblah"},
 				}}},
 			}, Headers: []string{jobNameA, "b", "c"}, Tests: []string{"t1", "t2", testName3}, EndOfReport: "2019-08-23", Org: org, Repo: repo}
@@ -219,12 +219,12 @@ var _ = Describe("report.go", func() {
 		)
 
 		It("shows job header table", func() {
-			parameters := flakefinder.Params{Data: map[string]map[string]*flakefinder.Details{
-				"t1": {jobNameA: &flakefinder.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder.Job{
+			parameters := flakefinder2.Params{Data: map[string]map[string]*flakefinder2.Details{
+				"t1": {jobNameA: &flakefinder2.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder2.Job{
 					{BuildNumber: 1742, Severity: "red", PR: 1427, Job: "testblah"},
 				}}},
 			}, Headers: []string{jobNameA, "b", "c"}, Tests: []string{"t1", "t2", testName3}, EndOfReport: "2019-08-23", Org: "kubevirt", Repo: "kubevirt",
-				FailuresForJobs: map[string]*flakefinder.JobFailures{
+				FailuresForJobs: map[string]*flakefinder2.JobFailures{
 					"1742": {
 						BuildNumber: 1742,
 						PR:          17,
@@ -248,12 +248,12 @@ var _ = Describe("report.go", func() {
 		})
 
 		It("shows batch job PRs", func() {
-			parameters := flakefinder.Params{Data: map[string]map[string]*flakefinder.Details{
-				"t1": {jobNameA: &flakefinder.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder.Job{
+			parameters := flakefinder2.Params{Data: map[string]map[string]*flakefinder2.Details{
+				"t1": {jobNameA: &flakefinder2.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder2.Job{
 					{BuildNumber: 1742, Severity: "red", BatchPRs: []int{1427, 1737}, Job: "testblah"},
 				}}},
 			}, Headers: []string{jobNameA, "b", "c"}, Tests: []string{"t1", "t2", testName3}, EndOfReport: "2019-08-23", Org: "kubevirt", Repo: "kubevirt",
-				FailuresForJobs: map[string]*flakefinder.JobFailures{
+				FailuresForJobs: map[string]*flakefinder2.JobFailures{
 					"1742": {
 						BuildNumber: 1742,
 						BatchPRs:    []int{1427, 1737},
@@ -286,24 +286,24 @@ var _ = Describe("report.go", func() {
 		prepareBuffer := func() {
 			buffer = bytes.Buffer{}
 			data := CSVParams{
-				Data: map[string]map[string]*flakefinder.Details{
+				Data: map[string]map[string]*flakefinder2.Details{
 					"t1": {
-						jobNameA: &flakefinder.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder.Job{
+						jobNameA: &flakefinder2.Details{Failed: 4, Succeeded: 1, Skipped: 2, Severity: "red", Jobs: []*flakefinder2.Job{
 							{
 								BuildNumber: 1742,
 								Severity:    "red",
 								PR:          4217,
 								Job:         "testJob",
 							}}},
-						"b": &flakefinder.Details{Failed: 5, Succeeded: 2, Skipped: 3, Severity: "yellow", Jobs: []*flakefinder.Job{}},
+						"b": &flakefinder2.Details{Failed: 5, Succeeded: 2, Skipped: 3, Severity: "yellow", Jobs: []*flakefinder2.Job{}},
 					},
 					"t2": {
-						jobNameA: &flakefinder.Details{Failed: 8, Succeeded: 2, Skipped: 4, Severity: "cyan", Jobs: []*flakefinder.Job{}},
-						"b":      &flakefinder.Details{Failed: 9, Succeeded: 3, Skipped: 5, Severity: "blue", Jobs: []*flakefinder.Job{}},
+						jobNameA: &flakefinder2.Details{Failed: 8, Succeeded: 2, Skipped: 4, Severity: "cyan", Jobs: []*flakefinder2.Job{}},
+						"b":      &flakefinder2.Details{Failed: 9, Succeeded: 3, Skipped: 5, Severity: "blue", Jobs: []*flakefinder2.Job{}},
 					},
 				},
 			}
-			err := flakefinder.WriteTemplateToOutput(ReportCSVTemplate, data, &buffer)
+			err := flakefinder2.WriteTemplateToOutput(ReportCSVTemplate, data, &buffer)
 			Expect(err).ToNot(HaveOccurred())
 			if testOptions.printTestOutput {
 				logger := log.New(os.Stdout, "reportCSV:", log.Flags())

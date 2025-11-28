@@ -22,7 +22,7 @@ package main
 import (
 	_ "embed"
 	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flake-stats"
+	"kubevirt.io/project-infra/pkg/flake-stats"
 )
 
 func init() {

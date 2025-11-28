@@ -24,7 +24,7 @@ import (
 	"github.com/onsi/ginkgo/v2/types"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"kubevirt.io/project-infra/robots/pkg/ginkgo"
+	"kubevirt.io/project-infra/pkg/ginkgo"
 	"os"
 )
 

@@ -17,6 +17,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"kubevirt.io/project-infra/pkg/querier"
 	"os"
 	"time"
 
@@ -28,8 +29,6 @@ import (
 	prowjobs "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
 	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/yaml"
-
-	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
 const OrgAndRepoForJobConfig = "kubevirt/kubevirtci"

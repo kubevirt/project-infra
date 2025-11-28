@@ -17,6 +17,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"kubevirt.io/project-infra/pkg/querier"
 	"os"
 	"strconv"
 	"text/template"
@@ -24,7 +25,6 @@ import (
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
 type options struct {

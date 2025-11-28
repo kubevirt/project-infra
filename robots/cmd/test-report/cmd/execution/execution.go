@@ -28,6 +28,8 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"kubevirt.io/project-infra/pkg/flakefinder"
+	"kubevirt.io/project-infra/pkg/test-report"
 	"net/http"
 	"os"
 	"regexp"
@@ -36,8 +38,6 @@ import (
 
 	"github.com/bndr/gojenkins"
 	"github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
 	"sigs.k8s.io/yaml"
 
 	"github.com/spf13/cobra"

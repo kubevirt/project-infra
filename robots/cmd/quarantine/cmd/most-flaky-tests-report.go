@@ -27,9 +27,9 @@ import (
 	"github.com/spf13/cobra"
 	"html/template"
 	"io"
-	flakestats "kubevirt.io/project-infra/robots/pkg/flake-stats"
-	"kubevirt.io/project-infra/robots/pkg/options"
-	"kubevirt.io/project-infra/robots/pkg/searchci"
+	flakestats2 "kubevirt.io/project-infra/pkg/flake-stats"
+	"kubevirt.io/project-infra/pkg/options"
+	"kubevirt.io/project-infra/pkg/searchci"
 	"net/http"
 	"os"
 	"regexp"
@@ -73,10 +73,10 @@ func init() {
 var sigMatcher = regexp.MustCompile(`\[(sig-[^]]+)]`)
 
 func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
-	reportOpts := flakestats.NewDefaultReportOpts(
-		flakestats.DaysInThePast(quarantineOpts.daysInThePast),
-		flakestats.FilterPeriodicJobRunResults(quarantineOpts.filterPeriodicJobRunResults),
-		flakestats.FilterLaneRegex(quarantineOpts.filterLaneRegex),
+	reportOpts := flakestats2.NewDefaultReportOpts(
+		flakestats2.DaysInThePast(quarantineOpts.daysInThePast),
+		flakestats2.FilterPeriodicJobRunResults(quarantineOpts.filterPeriodicJobRunResults),
+		flakestats2.FilterLaneRegex(quarantineOpts.filterLaneRegex),
 	)
 	err := reportOpts.Validate()
 	if err != nil {
@@ -86,7 +86,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
-	topXTests, err := flakestats.NewFlakeStatsAggregate(reportOpts).AggregateData()
+	topXTests, err := flakestats2.NewFlakeStatsAggregate(reportOpts).AggregateData()
 	if err != nil {
 		return fmt.Errorf("error while aggregating data: %w", err)
 	}
@@ -113,7 +113,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 
 const noSIGKey = "NONE"
 
-func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string, testNames []string, mostFlakyTestsBySIG map[string]map[string][]*TestToQuarantine, err error) {
+func aggregateMostFlakyTestsBySIG(topXTests flakestats2.TopXTests) (sigs []string, testNames []string, mostFlakyTestsBySIG map[string]map[string][]*TestToQuarantine, err error) {
 	mostFlakyTests := make(map[string][]*TestToQuarantine)
 	for _, topXTest := range topXTests {
 		for _, timeRange := range mostFlakyTestsTimeRanges {
@@ -188,7 +188,7 @@ func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string
 	return sigs, testNames, mostFlakyTestsBySIG, nil
 }
 
-func getQuarantineCandidate(topXTest *flakestats.TopXTest, timeRange searchci.TimeRange) (*TestToQuarantine, error) {
+func getQuarantineCandidate(topXTest *flakestats2.TopXTest, timeRange searchci.TimeRange) (*TestToQuarantine, error) {
 	impacts, err := searchci.ScrapeImpacts(topXTest.Name, timeRange)
 	if err != nil {
 		return nil, fmt.Errorf("could not scrape results for test %q: %w", topXTest.Name, err)
@@ -253,7 +253,7 @@ func hasNotOnlyClusteredFailures() searchci.FilterOpt {
 	}
 }
 
-func matchesAnyFailureLane(topXTest *flakestats.TopXTest) func(i searchci.Impact) bool {
+func matchesAnyFailureLane(topXTest *flakestats2.TopXTest) func(i searchci.Impact) bool {
 	var lanes []string
 	for l := range topXTest.FailuresPerLane {
 		lanes = append(lanes, l)

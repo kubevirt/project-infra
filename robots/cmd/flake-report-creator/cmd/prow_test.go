@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/joshdk/go-junit"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	"kubevirt.io/project-infra/robots/pkg/validation"
+	"kubevirt.io/project-infra/pkg/flakefinder"
+	"kubevirt.io/project-infra/pkg/validation"
 	"os"
 	"path/filepath"
 	"testing"

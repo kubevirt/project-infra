@@ -25,13 +25,12 @@ import (
 	"flag"
 	"fmt"
 	"github.com/sirupsen/logrus"
+	"kubevirt.io/project-infra/pkg/flakefinder"
 	"log"
 	"os"
 	"path/filepath"
 	"sort"
 	"time"
-
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
 const template = `

@@ -27,8 +27,8 @@ import (
 	"fmt"
 	"github.com/bndr/gojenkins"
 	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
-	flakejenkins "kubevirt.io/project-infra/robots/pkg/jenkins"
+	"kubevirt.io/project-infra/pkg/flakefinder/build"
+	flakejenkins "kubevirt.io/project-infra/pkg/jenkins"
 	"net/http"
 	"time"
 )

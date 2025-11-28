@@ -4,12 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	pi_github "kubevirt.io/project-infra/pkg/github"
+	kubeVirtLabels "kubevirt.io/project-infra/pkg/github/labels"
 	"net/http"
 	"os"
 	"os/exec"
-
-	pi_github "kubevirt.io/project-infra/robots/pkg/github"
-	kubeVirtLabels "kubevirt.io/project-infra/robots/pkg/github/labels"
 
 	"github.com/sirupsen/logrus"
 	"sigs.k8s.io/prow/pkg/config"

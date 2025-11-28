@@ -21,6 +21,9 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"kubevirt.io/project-infra/pkg/git"
+	testlabelanalyzer "kubevirt.io/project-infra/pkg/test-label-analyzer"
+	"kubevirt.io/project-infra/pkg/test-report"
 	"os"
 	"os/exec"
 	"regexp"
@@ -28,9 +31,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"kubevirt.io/project-infra/robots/cmd/test-label-analyzer/cmd/filter"
-	"kubevirt.io/project-infra/robots/pkg/git"
-	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
-	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
 )
 
 // ConfigOptions contains the set of options that the stats command provides

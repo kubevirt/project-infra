@@ -1,7 +1,7 @@
 package main
 
 import (
-	"kubevirt.io/project-infra/robots/pkg/querier"
+	"kubevirt.io/project-infra/pkg/querier"
 	"reflect"
 	"sigs.k8s.io/prow/pkg/config"
 	"testing"

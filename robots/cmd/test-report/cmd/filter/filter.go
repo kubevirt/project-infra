@@ -24,7 +24,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
+	"kubevirt.io/project-infra/pkg/test-report"
 	"os"
 	"path/filepath"
 	"regexp"

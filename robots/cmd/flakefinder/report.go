@@ -24,13 +24,13 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	flakefinder2 "kubevirt.io/project-infra/pkg/flakefinder"
 	"log"
 	"os"
 	"path"
 	"time"
 
 	"cloud.google.com/go/storage"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
 //go:embed report.gohtml
@@ -40,16 +40,16 @@ var ReportTemplate string
 var ReportCSVTemplate string
 
 // WriteReportToBucket creates the actual formatted report file from the report data and writes it to the bucket
-func WriteReportToBucket(ctx context.Context, client *storage.Client, merged time.Duration, org, repo string, isDryRun bool, reportBaseData flakefinder.ReportBaseData) (err error) {
+func WriteReportToBucket(ctx context.Context, client *storage.Client, merged time.Duration, org, repo string, isDryRun bool, reportBaseData flakefinder2.ReportBaseData) (err error) {
 	var reportOutputWriter *storage.Writer
 	var reportCSVOutputWriter *storage.Writer
 	var reportJSONOutputWriter *storage.Writer
 	if !isDryRun {
-		reportObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileNameWithEnding(reportBaseData.EndOfReport, merged, "html")))
+		reportObject := client.Bucket(flakefinder2.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileNameWithEnding(reportBaseData.EndOfReport, merged, "html")))
 		log.Printf("Report will be written to gs://%s/%s", reportObject.BucketName(), reportObject.ObjectName())
-		reportCSVObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileNameWithEnding(reportBaseData.EndOfReport, merged, "csv")))
+		reportCSVObject := client.Bucket(flakefinder2.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileNameWithEnding(reportBaseData.EndOfReport, merged, "csv")))
 		log.Printf("Report CSV will be written to gs://%s/%s", reportCSVObject.BucketName(), reportCSVObject.ObjectName())
-		reportJSONObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileNameWithEnding(reportBaseData.EndOfReport, merged, "json")))
+		reportJSONObject := client.Bucket(flakefinder2.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileNameWithEnding(reportBaseData.EndOfReport, merged, "json")))
 		log.Printf("Report JSON will be written to gs://%s/%s", reportJSONObject.BucketName(), reportJSONObject.ObjectName())
 		reportOutputWriter = reportObject.NewWriter(ctx)
 		defer reportOutputWriter.Close()
@@ -66,23 +66,23 @@ func WriteReportToBucket(ctx context.Context, client *storage.Client, merged tim
 }
 
 func CreateReportFileNameWithEnding(reportTime time.Time, merged time.Duration, fileEnding string) string {
-	return fmt.Sprintf(flakefinder.ReportFilePrefix+"%s-%03dh.%s", reportTime.Format("2006-01-02"), int(merged.Hours()), fileEnding)
+	return fmt.Sprintf(flakefinder2.ReportFilePrefix+"%s-%03dh.%s", reportTime.Format("2006-01-02"), int(merged.Hours()), fileEnding)
 }
 
 type CSVParams struct {
-	Data map[string]map[string]*flakefinder.Details
+	Data map[string]map[string]*flakefinder2.Details
 }
 
-func DoReport(results []*flakefinder.JobResult, reportOutputWriter, reportCSVOutputWriter, reportJSONOutputWriter *storage.Writer, org, repo string, prNumbers []int, isDryRun bool, startOfReport, endOfReport time.Time) error {
-	parameters := flakefinder.CreateFlakeReportData(results, prNumbers, endOfReport, org, repo, startOfReport)
+func DoReport(results []*flakefinder2.JobResult, reportOutputWriter, reportCSVOutputWriter, reportJSONOutputWriter *storage.Writer, org, repo string, prNumbers []int, isDryRun bool, startOfReport, endOfReport time.Time) error {
+	parameters := flakefinder2.CreateFlakeReportData(results, prNumbers, endOfReport, org, repo, startOfReport)
 	csvParams := CSVParams{Data: parameters.Data}
 	var err error
 	if !isDryRun {
-		err = flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, reportOutputWriter)
+		err = flakefinder2.WriteTemplateToOutput(ReportTemplate, parameters, reportOutputWriter)
 		if err != nil {
 			return fmt.Errorf("failed to write report: %v", err)
 		}
-		err = flakefinder.WriteTemplateToOutput(ReportCSVTemplate, csvParams, reportCSVOutputWriter)
+		err = flakefinder2.WriteTemplateToOutput(ReportCSVTemplate, csvParams, reportCSVOutputWriter)
 		if err != nil {
 			return fmt.Errorf("failed to write report csv: %v", err)
 		}
@@ -91,11 +91,11 @@ func DoReport(results []*flakefinder.JobResult, reportOutputWriter, reportCSVOut
 			return fmt.Errorf("failed to write report json: %v", err)
 		}
 	} else {
-		err = flakefinder.WriteTemplateToOutput(ReportTemplate, parameters, os.Stdout)
+		err = flakefinder2.WriteTemplateToOutput(ReportTemplate, parameters, os.Stdout)
 		if err != nil {
 			return fmt.Errorf("failed to render report template: %v", err)
 		}
-		err = flakefinder.WriteTemplateToOutput(ReportCSVTemplate, csvParams, os.Stdout)
+		err = flakefinder2.WriteTemplateToOutput(ReportCSVTemplate, csvParams, os.Stdout)
 		if err != nil {
 			return fmt.Errorf("failed to write report csv: %v", err)
 		}

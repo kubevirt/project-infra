@@ -28,7 +28,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/html"
 	"io"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"kubevirt.io/project-infra/pkg/flakefinder"
 	"net/http"
 	"os"
 	"os/exec"

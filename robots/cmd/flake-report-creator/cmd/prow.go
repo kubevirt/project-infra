@@ -23,6 +23,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	flakefinder2 "kubevirt.io/project-infra/pkg/flakefinder"
 	"os"
 	"path"
 	"regexp"
@@ -34,8 +35,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"cloud.google.com/go/storage"
-
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
 const (
@@ -204,7 +203,7 @@ $ flake-report-creator prow --ci-system=kubevirt --periodics 1.21,1.22
 )
 
 type SimpleReportParams struct {
-	flakefinder.Params
+	flakefinder2.Params
 	BucketName    string
 	JobDataPathes []string
 }
@@ -249,14 +248,14 @@ func runProwReport(cmd *cobra.Command, args []string) error {
 
 	startOfReport := time.Now().Add(-1 * prowOpts.startFrom)
 
-	reports := []*flakefinder.JobResult{}
+	reports := []*flakefinder2.JobResult{}
 	var subDirRegExp *regexp.Regexp
 	if prowOpts.matchingSubDirRegExp != "" {
 		subDirRegExp = regexp.MustCompile(prowOpts.matchingSubDirRegExp)
 	}
 	if prowOpts.periodics != "" {
 		basePath := path.Dir(prowOpts.jobDataPathes[0])
-		dirs, err := flakefinder.ListGcsObjects(ctx, storageClient, prowOpts.bucketName, basePath+"/", "/")
+		dirs, err := flakefinder2.ListGcsObjects(ctx, storageClient, prowOpts.bucketName, basePath+"/", "/")
 		if err != nil {
 			log.Printf("failed to list objects for dataPath %v: %v", path.Base(prowOpts.jobDataPathes[0])+"/", err)
 		}
@@ -266,7 +265,7 @@ func runProwReport(cmd *cobra.Command, args []string) error {
 				if !strings.HasPrefix(path.Join(basePath, dir), dataPath) {
 					continue
 				}
-				results, err := flakefinder.FindUnitTestFilesForPeriodicJob(ctx, storageClient, prowOpts.bucketName, []string{basePath, dir}, startOfReport, maxTime)
+				results, err := flakefinder2.FindUnitTestFilesForPeriodicJob(ctx, storageClient, prowOpts.bucketName, []string{basePath, dir}, startOfReport, maxTime)
 				if err != nil {
 					log.Printf("failed to load JUnit files for job %v: %v", dataPath, err)
 				}
@@ -278,7 +277,7 @@ func runProwReport(cmd *cobra.Command, args []string) error {
 	} else {
 		for _, dataPath := range prowOpts.jobDataPathes {
 			if prowOpts.useSubDirs {
-				subDirs, err := flakefinder.ListGcsObjects(ctx, storageClient, prowOpts.bucketName, dataPath+"/", "/")
+				subDirs, err := flakefinder2.ListGcsObjects(ctx, storageClient, prowOpts.bucketName, dataPath+"/", "/")
 				if err != nil {
 					log.Printf("failed to list objects for dataPath %v: %v", dataPath, err)
 				}
@@ -286,14 +285,14 @@ func runProwReport(cmd *cobra.Command, args []string) error {
 					if subDirRegExp != nil && !subDirRegExp.MatchString(subDir) {
 						continue
 					}
-					results, err := flakefinder.FindUnitTestFilesForPeriodicJob(ctx, storageClient, prowOpts.bucketName, []string{dataPath, subDir}, startOfReport, maxTime)
+					results, err := flakefinder2.FindUnitTestFilesForPeriodicJob(ctx, storageClient, prowOpts.bucketName, []string{dataPath, subDir}, startOfReport, maxTime)
 					if err != nil {
 						log.Printf("failed to load JUnit files for job %v: %v", path.Join(dataPath, subDir), err)
 					}
 					reports = append(reports, results...)
 				}
 			} else {
-				results, err := flakefinder.FindUnitTestFilesForPeriodicJob(ctx, storageClient, prowOpts.bucketName, []string{dataPath}, startOfReport, maxTime)
+				results, err := flakefinder2.FindUnitTestFilesForPeriodicJob(ctx, storageClient, prowOpts.bucketName, []string{dataPath}, startOfReport, maxTime)
 				if err != nil {
 					log.Printf("failed to load JUnit files for job %v: %v", dataPath, err)
 				}
@@ -309,10 +308,10 @@ func runProwReport(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func writeProwReportToFile(startOfReport time.Time, reports []*flakefinder.JobResult, reportOutputWriter *os.File) error {
-	parameters := flakefinder.CreateFlakeReportData(reports, []int{}, maxTime, prowOpts.org, prowOpts.repo, startOfReport)
+func writeProwReportToFile(startOfReport time.Time, reports []*flakefinder2.JobResult, reportOutputWriter *os.File) error {
+	parameters := flakefinder2.CreateFlakeReportData(reports, []int{}, maxTime, prowOpts.org, prowOpts.repo, startOfReport)
 
 	log.Printf("writing output file to %s", globalOpts.outputFile)
 
-	return flakefinder.WriteTemplateToOutput(ProwReportTemplate, SimpleReportParams{parameters, prowOpts.bucketName, prowOpts.jobDataPathes}, reportOutputWriter)
+	return flakefinder2.WriteTemplateToOutput(ProwReportTemplate, SimpleReportParams{parameters, prowOpts.bucketName, prowOpts.jobDataPathes}, reportOutputWriter)
 }

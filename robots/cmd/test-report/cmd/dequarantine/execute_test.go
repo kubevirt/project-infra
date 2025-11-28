@@ -23,7 +23,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
+	"kubevirt.io/project-infra/pkg/test-report"
 	"os"
 	"reflect"
 	"testing"
