@@ -31,7 +31,7 @@ $ ./hack/flake-report-creator.sh prow --ci-system=openshift --presubmits 22352,2
 2021/10/29 12:57:54 main.go:216: writing output file to /tmp/flakefinder-3764038013.html
 ```
 
-Result: ![Example 1 Report](./example_1.png)
+Result: ![Example 1 Report](example_1.png)
 
 **Example 2:** we want to create a report over a set of selected pull requests for kubevirtci,
 but we only want to see the e2e jobs.
@@ -44,7 +44,7 @@ $ ./hack/flake-report-creator.sh prow --ci-system=kubevirt --presubmits 6812,681
 2021/10/29 17:24:49 main.go:242: writing output file to /tmp/flakefinder-3053258374.html
 ```
 
-Result: ![Example 2 Report](./example_2.png)
+Result: ![Example 2 Report](example_2.png)
 
 **Example 3:** we want to create a report over a set of periodics on openshift-ci.
 
@@ -56,7 +56,7 @@ $  ./hack/flake-report-creator.sh prow --ci-system=openshift --periodics 0.34,0.
 2021/10/29 16:39:54 main.go:241: writing output file to /tmp/flakefinder-1095073378.html
 ```
 
-Result: ![Example 3 Report](./example_3.png)
+Result: ![Example 3 Report](example_3.png)
 
 **Example 4:** we want to create a report over a set of selected periodics for kubevirtci.
 
@@ -70,7 +70,7 @@ INFO[0118] Skipping test results before 2021-10-15 17:22:50.286379347 +0200 CEST
 2021/10/29 17:24:49 main.go:242: writing output file to /tmp/flakefinder-3053258374.html
 ```
 
-Result: ![Example 4 Report](./example_4.png)
+Result: ![Example 4 Report](example_4.png)
 
 Usage for Jenkins
 -----------------

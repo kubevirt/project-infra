@@ -85,7 +85,7 @@ Prerequisites:
 
 #### Create a job definition using [`mkpj`](https://github.com/kubernetes/test-infra/tree/master/prow/cmd/mkpj)
 
-See job configurations [here](../../../github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml), use one of the job names from that file.
+See job configurations [here](../../github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml), use one of the job names from that file.
 
     mkpj --config-path config.yaml --job-config-path jobs/kubevirt/kubevirt-periodics.yaml --job periodic-publish-flakefinder-xxx-report > /tmp/prowjob.yaml
 

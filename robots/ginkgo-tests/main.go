@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Copyright the KubeVirt Authors.
- *
+ * Copyright The KubeVirt Authors.
  */
 
 package main
 
 import (
 	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/cmd/quarantine/cmd"
+	"kubevirt.io/project-infra/robots/ginkgo-tests/cmd"
 )
 
 func init() {

@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Copyright The KubeVirt Authors.
+ * Copyright 2022 Red Hat, Inc.
+ *
  */
 
 package main
 
 import (
+	_ "embed"
+	"os"
+
 	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/cmd/ginkgo-tests/cmd"
+	"kubevirt.io/project-infra/robots/test-report/cmd"
 )
 
-func init() {
-	log.SetFormatter(&log.JSONFormatter{})
-	log.SetLevel(log.DebugLevel)
-}
-
 func main() {
-	cmd.Execute()
+	if err := cmd.Execute(); err != nil {
+		log.Fatal(err)
+	}
+	os.Exit(0)
 }
