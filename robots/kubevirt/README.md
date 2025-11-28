@@ -1,4 +1,4 @@
-# robots/cmd/kubevirt
+# robots/kubevirt
 
 Provides commands to manipulate the SIG testing job definitions that execute the functional tests for kubevirt/kubevirt.
 

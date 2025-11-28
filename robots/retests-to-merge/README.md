@@ -8,6 +8,6 @@ For each of these it logs to stdout the pull request url, the number of retests 
 ## how to run
 
 ```bash
-go run ./robots/cmd/retests-to-merge/main.go \
+go run ./robots/retests-to-merge/main.go \
     --github-token-path=/path/to/your/token
 ```
