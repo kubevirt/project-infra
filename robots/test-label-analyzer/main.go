@@ -13,23 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Copyright 2022 Red Hat, Inc.
- *
+ * Copyright 2023 Red Hat, Inc.
  */
 
 package main
 
 import (
-	_ "embed"
-	"os"
-
-	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/cmd/test-report/cmd"
+	"kubevirt.io/project-infra/robots/test-label-analyzer/cmd"
 )
 
 func main() {
-	if err := cmd.Execute(); err != nil {
-		log.Fatal(err)
-	}
-	os.Exit(0)
+	cmd.Execute()
 }

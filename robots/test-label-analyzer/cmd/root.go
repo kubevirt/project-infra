@@ -26,12 +26,13 @@ import (
 	"regexp"
 	"strings"
 
+	"kubevirt.io/project-infra/robots/test-label-analyzer/cmd/filter"
+
 	"kubevirt.io/project-infra/pkg/git"
 	testlabelanalyzer "kubevirt.io/project-infra/pkg/test-label-analyzer"
 	test_report "kubevirt.io/project-infra/pkg/test-report"
 
 	"github.com/spf13/cobra"
-	"kubevirt.io/project-infra/robots/cmd/test-label-analyzer/cmd/filter"
 )
 
 // ConfigOptions contains the set of options that the stats command provides

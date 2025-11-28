@@ -113,7 +113,7 @@ Global Flags:
 
 ### using shell wrapper script with podman
 
-The easiest way for running `test-report` is using the shell script. You can find it [here](../../../hack/test-report.sh)
+The easiest way for running `test-report` is using the shell script. You can find it [here](../../hack/test-report.sh)
 
 **Note: Since the app is containerized, [`podman`](https://podman.io/) is required for the script!** 
 
