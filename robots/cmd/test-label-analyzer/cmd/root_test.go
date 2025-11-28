@@ -20,15 +20,16 @@ package cmd
 
 import (
 	"fmt"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
-	"kubevirt.io/project-infra/robots/pkg/git"
-	test_label_analyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
 	"regexp"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+	"kubevirt.io/project-infra/pkg/git"
+	test_label_analyzer "kubevirt.io/project-infra/pkg/test-label-analyzer"
 )
 
 var _ = Describe("root tests", func() {

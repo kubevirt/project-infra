@@ -32,10 +32,11 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"sigs.k8s.io/prow/pkg/config"
 	"strconv"
 	"strings"
 	"time"
+
+	"sigs.k8s.io/prow/pkg/config"
 
 	"sigs.k8s.io/prow/pkg/config/secret"
 	"sigs.k8s.io/prow/pkg/flagutil"

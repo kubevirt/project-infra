@@ -21,10 +21,11 @@ import (
 	"strconv"
 	"text/template"
 
+	"kubevirt.io/project-infra/pkg/querier"
+
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
 type options struct {

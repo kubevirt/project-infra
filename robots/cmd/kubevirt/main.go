@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"kubevirt.io/project-infra/robots/pkg/kubevirt"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/log"
+	"kubevirt.io/project-infra/pkg/kubevirt"
+	"kubevirt.io/project-infra/pkg/kubevirt/log"
 )
 
 func main() {

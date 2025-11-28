@@ -29,8 +29,9 @@ import (
 	"path"
 	"time"
 
+	"kubevirt.io/project-infra/pkg/flakefinder"
+
 	"cloud.google.com/go/storage"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
 //go:embed report.gohtml

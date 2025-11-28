@@ -20,13 +20,14 @@ package review
 
 import (
 	"encoding/json"
+	"os"
+	"reflect"
+	"testing"
+
 	testdiff "github.com/andreyvit/diff"
 	"github.com/sirupsen/logrus"
 	"github.com/sourcegraph/go-diff/diff"
-	"os"
-	"reflect"
 	"sigs.k8s.io/prow/pkg/github"
-	"testing"
 )
 
 func TestGuessReviewTypes(t *testing.T) {

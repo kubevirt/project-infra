@@ -1,13 +1,14 @@
 package cmd
 
 import (
-	"github.com/joshdk/go-junit"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	"kubevirt.io/project-infra/robots/pkg/validation"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/joshdk/go-junit"
+	"kubevirt.io/project-infra/pkg/flakefinder"
+	"kubevirt.io/project-infra/pkg/validation"
 )
 
 func Test_writeProwReportToFileProducesValidOutput(t *testing.T) {

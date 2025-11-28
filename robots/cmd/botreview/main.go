@@ -22,10 +22,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+
 	"github.com/sirupsen/logrus"
 	"k8s.io/test-infra/pkg/flagutil"
 	"kubevirt.io/project-infra/external-plugins/botreview/review"
-	"os"
 	"sigs.k8s.io/prow/pkg/config/secret"
 	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/github"

@@ -20,17 +20,18 @@
 package main
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
 	"fmt"
-	"google.golang.org/api/iterator"
 	"html/template"
 	"io"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"os"
 	"path"
 	"sort"
 	"strings"
+
+	"cloud.google.com/go/storage"
+	"google.golang.org/api/iterator"
+	"kubevirt.io/project-infra/pkg/flakefinder"
 )
 
 const indexTpl = `

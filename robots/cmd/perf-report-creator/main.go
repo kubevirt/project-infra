@@ -12,10 +12,11 @@ import (
 	"strings"
 	"time"
 
+	. "kubevirt.io/project-infra/pkg/flakefinder"
+
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
 	"k8s.io/apimachinery/pkg/util/errors"
-	. "kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
 type resultOpts struct {

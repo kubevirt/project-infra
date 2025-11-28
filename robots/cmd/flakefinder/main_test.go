@@ -3,7 +3,7 @@ package main
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"kubevirt.io/project-infra/pkg/flakefinder"
 )
 
 var _ = Describe("main.go", func() {

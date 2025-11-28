@@ -21,10 +21,11 @@ package review
 
 import (
 	"fmt"
-	"github.com/sourcegraph/go-diff/diff"
 	"os"
 	"reflect"
 	"testing"
+
+	"github.com/sourcegraph/go-diff/diff"
 )
 
 func TestKubeVirtUploader_Review(t1 *testing.T) {

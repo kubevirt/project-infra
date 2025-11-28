@@ -9,11 +9,11 @@ import (
 	"os"
 	"regexp"
 
+	"kubevirt.io/project-infra/pkg/mirror"
+
 	"cloud.google.com/go/storage"
 	"github.com/bazelbuild/buildtools/build"
 	"google.golang.org/api/option"
-
-	"kubevirt.io/project-infra/robots/pkg/mirror"
 )
 
 var targetMirrorURLPattern = regexp.MustCompile(`^https://storage.googleapis.com/.+`)

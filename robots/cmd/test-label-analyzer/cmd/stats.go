@@ -20,26 +20,27 @@ package cmd
 
 import (
 	"bytes"
-	"cloud.google.com/go/storage"
 	"context"
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"github.com/onsi/ginkgo/v2/ginkgo/command"
-	"github.com/onsi/ginkgo/v2/ginkgo/outline"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"html/template"
 	"io"
 	"io/fs"
-	"kubevirt.io/project-infra/robots/pkg/git"
-	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
+
+	"cloud.google.com/go/storage"
+	"github.com/onsi/ginkgo/v2/ginkgo/command"
+	"github.com/onsi/ginkgo/v2/ginkgo/outline"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	"kubevirt.io/project-infra/pkg/git"
+	test_label_analyzer "kubevirt.io/project-infra/pkg/test-label-analyzer"
 )
 
 const shortStatsDescription = "Generates stats over test categories"
@@ -65,10 +66,10 @@ func init() {
 }
 
 type TestHTMLData struct {
-	*testlabelanalyzer.Config `json:"config"`
+	*test_label_analyzer.Config `json:"config"`
 
 	// MatchingPath holds the test_label_analyzer.PathStats that matched the node
-	MatchingPath *testlabelanalyzer.PathStats
+	MatchingPath *test_label_analyzer.PathStats
 
 	// RemoteURL is the absolute path to the file, most certainly an absolute URL inside a version control repository
 	// containing a commit ID in order to exactly define the state of the file that was traversed
@@ -128,7 +129,7 @@ func (t *TestHTMLData) initAge() {
 		if t.MatchingPath.MatchingCategory.BlameLine != nil {
 			date = t.MatchingPath.MatchingCategory.BlameLine.Date
 		}
-		t.Age = append(t.Age, testlabelanalyzer.Since(date))
+		t.Age = append(t.Age, test_label_analyzer.Since(date))
 	}
 }
 
@@ -172,7 +173,7 @@ func (s *StatsHTMLData) Swap(i, k int) {
 	s.TestHTMLData[i], s.TestHTMLData[k] = s.TestHTMLData[k], s.TestHTMLData[i]
 }
 
-func NewStatsHTMLData(stats []*testlabelanalyzer.FileStats, configurationOptions ConfigOptions) *StatsHTMLData {
+func NewStatsHTMLData(stats []*test_label_analyzer.FileStats, configurationOptions ConfigOptions) *StatsHTMLData {
 	statsHTMLData := &StatsHTMLData{
 		Date:                 time.Now(),
 		ConfigurationOptions: configurationOptions,
@@ -186,7 +187,7 @@ func NewStatsHTMLData(stats []*testlabelanalyzer.FileStats, configurationOptions
 	return statsHTMLData
 }
 
-func newTestHTMLData(fileStats *testlabelanalyzer.FileStats, path *testlabelanalyzer.PathStats) *TestHTMLData {
+func newTestHTMLData(fileStats *test_label_analyzer.FileStats, path *test_label_analyzer.PathStats) *TestHTMLData {
 	testHTMLData := &TestHTMLData{
 		MatchingPath: path,
 		RemoteURL:    fileStats.RemoteURL,
@@ -233,7 +234,7 @@ func runStatsCommand(configurationOptions ConfigOptions) error {
 		}
 
 		if !configurationOptions.outputHTML {
-			testFilesStats := testlabelanalyzer.TestFilesStats{
+			testFilesStats := test_label_analyzer.TestFilesStats{
 				FilesStats: filesStats,
 				Config:     config,
 			}
@@ -273,10 +274,10 @@ func runStatsCommand(configurationOptions ConfigOptions) error {
 	return fmt.Errorf("not implemented")
 }
 
-func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions ConfigOptions, testFileOutlines map[string][]*testlabelanalyzer.GinkgoNode, config *testlabelanalyzer.Config) ([]*testlabelanalyzer.FileStats, error) {
-	var testFilesStats []*testlabelanalyzer.FileStats
+func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions ConfigOptions, testFileOutlines map[string][]*test_label_analyzer.GinkgoNode, config *test_label_analyzer.Config) ([]*test_label_analyzer.FileStats, error) {
+	var testFilesStats []*test_label_analyzer.FileStats
 	for testFilePath, testFileOutline := range testFileOutlines {
-		testStatsForFile := testlabelanalyzer.GetStatsFromGinkgoOutline(config, testFileOutline)
+		testStatsForFile := test_label_analyzer.GetStatsFromGinkgoOutline(config, testFileOutline)
 		file, err := os.ReadFile(testFilePath)
 		if err != nil {
 			// Should only happen if the file has been deleted after the outline has been retrieved
@@ -304,7 +305,7 @@ func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions ConfigOption
 				return nil, fmt.Errorf("git blame lines extraction failed!")
 			}
 		}
-		testFilesStats = append(testFilesStats, &testlabelanalyzer.FileStats{
+		testFilesStats = append(testFilesStats, &test_label_analyzer.FileStats{
 			RemoteURL: fmt.Sprintf("%s/%s", strings.TrimSuffix(configurationOptions.remoteURL, "/"), strings.TrimPrefix(strings.TrimPrefix(testFilePath, configurationOptions.testFilePath), "/")),
 			TestStats: testStatsForFile,
 		})
@@ -312,8 +313,8 @@ func generateStatsFromOutlinesWithGitBlameInfo(configurationOptions ConfigOption
 	return testFilesStats, nil
 }
 
-func getTestFileOutlines(configurationOptions ConfigOptions) (map[string][]*testlabelanalyzer.GinkgoNode, error) {
-	testFileOutlines := map[string][]*testlabelanalyzer.GinkgoNode{}
+func getTestFileOutlines(configurationOptions ConfigOptions) (map[string][]*test_label_analyzer.GinkgoNode, error) {
+	testFileOutlines := map[string][]*test_label_analyzer.GinkgoNode{}
 	err := filepath.Walk(configurationOptions.testFilePath, func(path string, info fs.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
@@ -344,7 +345,7 @@ func newlineCount(s string, start int, end int) int {
 	return n
 }
 
-func getGinkgoOutlineFromFile(path string) (testOutline []*testlabelanalyzer.GinkgoNode, err error) {
+func getGinkgoOutlineFromFile(path string) (testOutline []*test_label_analyzer.GinkgoNode, err error) {
 
 	// since there's no output catchable from the command, we need to use pipe
 	// and redirect the output
@@ -411,7 +412,7 @@ func getGinkgoOutlineFromFile(path string) (testOutline []*testlabelanalyzer.Gin
 func collectStatsFromGinkgoOutlines(configurationOptions ConfigOptions) (string, error) {
 
 	// collect the test outline data from the files and merge it into one slice
-	var testOutlines []*testlabelanalyzer.GinkgoNode
+	var testOutlines []*test_label_analyzer.GinkgoNode
 	for _, path := range configurationOptions.ginkgoOutlinePaths {
 		fileData, err := os.ReadFile(path)
 		if err != nil {
@@ -428,7 +429,7 @@ func collectStatsFromGinkgoOutlines(configurationOptions ConfigOptions) (string,
 	if err != nil {
 		return "", err
 	}
-	testStats := testlabelanalyzer.GetStatsFromGinkgoOutline(config, testOutlines)
+	testStats := test_label_analyzer.GetStatsFromGinkgoOutline(config, testOutlines)
 	marshal, err := json.Marshal(testStats)
 	if err != nil {
 		return "", err
@@ -438,7 +439,7 @@ func collectStatsFromGinkgoOutlines(configurationOptions ConfigOptions) (string,
 	return jsonOutput, nil
 }
 
-func toOutline(fileData []byte) (testOutline []*testlabelanalyzer.GinkgoNode, err error) {
+func toOutline(fileData []byte) (testOutline []*test_label_analyzer.GinkgoNode, err error) {
 	err = json.Unmarshal(fileData, &testOutline)
 	return testOutline, err
 }

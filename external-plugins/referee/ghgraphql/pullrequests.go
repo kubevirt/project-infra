@@ -22,6 +22,7 @@ package ghgraphql
 import (
 	"context"
 	"fmt"
+
 	"github.com/shurcooL/githubv4"
 )
 

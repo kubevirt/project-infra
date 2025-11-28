@@ -22,8 +22,8 @@ package cmd
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	flakestats "kubevirt.io/project-infra/robots/pkg/flake-stats"
-	"kubevirt.io/project-infra/robots/pkg/searchci"
+	flakestats "kubevirt.io/project-infra/pkg/flake-stats"
+	"kubevirt.io/project-infra/pkg/searchci"
 )
 
 var _ = Describe("most-flaky-tests", func() {

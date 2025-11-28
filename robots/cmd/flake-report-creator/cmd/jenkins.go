@@ -25,7 +25,6 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder/build"
 	"net/http"
 	"os"
 	"regexp"
@@ -33,14 +32,16 @@ import (
 	"sync"
 	"time"
 
+	"kubevirt.io/project-infra/pkg/flakefinder"
+	"kubevirt.io/project-infra/pkg/flakefinder/build"
+	junitMerge "kubevirt.io/project-infra/pkg/flakefinder/junit-merge"
+	flakejenkins "kubevirt.io/project-infra/pkg/jenkins"
+
 	"github.com/spf13/cobra"
 
 	"github.com/bndr/gojenkins"
 	"github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	junitMerge "kubevirt.io/project-infra/robots/pkg/flakefinder/junit-merge"
-	flakejenkins "kubevirt.io/project-infra/robots/pkg/jenkins"
 )
 
 const (

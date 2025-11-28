@@ -21,9 +21,10 @@ package main
 
 import (
 	_ "embed"
+	"os"
+
 	log "github.com/sirupsen/logrus"
 	"kubevirt.io/project-infra/robots/cmd/test-report/cmd"
-	"os"
 )
 
 func main() {
