@@ -15,7 +15,7 @@
 
   Copyright 2023 Red Hat, Inc.
 */ -}}
-{{- /* gotype: kubevirt.io/project-infra/robots/pkg/kubevirt/cmd/get.SupportMatrixTemplateData */ -}}
+{{- /* gotype: kubevirt.io/project-infra/pkg/kubevirt/cmd/get.SupportMatrixTemplateData */ -}}
 # KubeVirt to Kubernetes version support matrix
 
 | KubeVirt version |
