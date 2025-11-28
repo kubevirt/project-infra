@@ -2,7 +2,7 @@ package main
 
 import (
 	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/cmd/flake-report-creator/cmd"
+	"kubevirt.io/project-infra/robots/flake-report-creator/cmd"
 	"os"
 )
 

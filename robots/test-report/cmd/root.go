@@ -24,9 +24,9 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"kubevirt.io/project-infra/robots/cmd/test-report/cmd/dequarantine"
-	"kubevirt.io/project-infra/robots/cmd/test-report/cmd/execution"
-	"kubevirt.io/project-infra/robots/cmd/test-report/cmd/filter"
+	"kubevirt.io/project-infra/robots/test-report/cmd/dequarantine"
+	"kubevirt.io/project-infra/robots/test-report/cmd/execution"
+	"kubevirt.io/project-infra/robots/test-report/cmd/filter"
 )
 
 var rootCmd *cobra.Command

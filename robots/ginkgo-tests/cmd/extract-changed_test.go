@@ -181,7 +181,7 @@ var _ = Describe("extract testnames", func() {
 		const (
 			testfileName        = "simple_test.go"
 			testfilePartialPath = "testdata"
-			testfilePath        = "robots/cmd/ginkgo-tests/cmd/testdata"
+			testfilePath        = "robots/ginkgo-tests/cmd/testdata"
 		)
 
 		var (
@@ -194,7 +194,7 @@ var _ = Describe("extract testnames", func() {
 
 		BeforeAll(func() {
 
-			absBasePath, err := filepath.Abs("./../../../..")
+			absBasePath, err := filepath.Abs("./../../..")
 			Expect(err).ToNot(HaveOccurred())
 			absTestPath := filepath.Join(absBasePath, testfilePath)
 			absTestFile := filepath.Join(absTestPath, testfileName)

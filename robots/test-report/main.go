@@ -22,7 +22,7 @@ package main
 import (
 	_ "embed"
 	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/cmd/test-report/cmd"
+	"kubevirt.io/project-infra/robots/test-report/cmd"
 	"os"
 )
 

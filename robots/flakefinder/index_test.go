@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	. "kubevirt.io/project-infra/robots/cmd/flakefinder"
+	. "kubevirt.io/project-infra/robots/flakefinder"
 )
 
 var _ = Describe("index.go", func() {

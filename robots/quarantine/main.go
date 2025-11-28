@@ -13,12 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Copyright 2023 Red Hat, Inc.
+ * Copyright the KubeVirt Authors.
+ *
  */
 
 package main
 
-import "kubevirt.io/project-infra/robots/cmd/test-label-analyzer/cmd"
+import (
+	log "github.com/sirupsen/logrus"
+	"kubevirt.io/project-infra/robots/quarantine/cmd"
+)
+
+func init() {
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetLevel(log.DebugLevel)
+}
 
 func main() {
 	cmd.Execute()

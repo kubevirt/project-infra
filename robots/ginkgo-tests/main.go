@@ -20,7 +20,7 @@ package main
 
 import (
 	log "github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/cmd/ginkgo-tests/cmd"
+	"kubevirt.io/project-infra/robots/ginkgo-tests/cmd"
 )
 
 func init() {

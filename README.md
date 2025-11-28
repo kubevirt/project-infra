@@ -37,18 +37,18 @@ depending on billing alerts. See [README](limiter/README.md)
   * `robots/cmd/dependabot`: Tool to create PRs to resolve Github dependabot alerts in kubevirt org repositories
 
   * `robots/cmd/flakefinder`: Tool to create statistics from failed tests of PRs.
-  See [README](robots/cmd/flakefinder/README.md)
+  See [README](robots/flakefinder/README.md)
 
-  * `robots/cmd/flake-stats`: Provides a more condensed view on where flakes are causing the most impact. See [README](robots/cmd/flake-stats/README.md)
+  * `robots/cmd/flake-stats`: Provides a more condensed view on where flakes are causing the most impact. See [README](robots/flake-stats/README.md)
 
   * `robots/cmd/indexpagecreator`: Creates flakefinder index page
 
   * `robots/cmd/kubevirt`: Provides commands to manipulate the SIG jobs (periodic and presubmit) that are testing kubevirt with kubevirtci
 
-    See [README](robots/cmd/kubevirt/README.md)
+    See [README](robots/kubevirt/README.md)
 
   * `robots/cmd/kubevirtci-bumper`: Tool to automatically bump kubevirtci providers.
-  See [README](robots/cmd/kubevirtci-bumper/README.md)
+  See [README](robots/kubevirtci-bumper/README.md)
 
   * `robots/cmd/kubevirtci-presubmit-creator`: Creates kubevirtci presubmit job
   definitions for new providers
@@ -56,10 +56,10 @@ depending on billing alerts. See [README](limiter/README.md)
   * `robots/cmd/labels-checker`: Checks whether a PR has certain labels
 
   * `robots/cmd/retests-to-merge`: Tool to check recent approved PRs for retest comments. See
-  [README](robots/cmd/retests-to-merge/README.md)
+  [README](robots/retests-to-merge/README.md)
 
   * `robots/cmd/uploader`: Tool to mirror bazel dependencies on GCS. See
-  [README](robots/cmd/uploader/README.md)
+  [README](robots/uploader/README.md)
 
 ## Contributing
 
