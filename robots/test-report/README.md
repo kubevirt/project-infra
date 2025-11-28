@@ -131,7 +131,7 @@ Usage:
 You can also use [`go`](https://go.dev/) to run it:
 
 ```shell
-$ go run ./robots/cmd/test-report/... --help
+$ go run ./robots/test-report/... --help
 test-report creates a report about which tests have been run on what lane
 ...
 ```

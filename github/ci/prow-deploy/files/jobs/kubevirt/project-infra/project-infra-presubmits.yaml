@@ -497,7 +497,7 @@ presubmits:
               memory: "1Gi"
   - name: build-test-report-image
     always_run: false
-    run_if_changed: "images/test-report/.*|robots/cmd/test-report/.*"
+    run_if_changed: "images/test-report/.*|robots/test-report/.*"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
@@ -522,7 +522,7 @@ presubmits:
               memory: "1Gi"
   - name: build-release-blocker-image
     always_run: false
-    run_if_changed: "images/release-blocker/.*|robots/cmd/release-blocker/.*"
+    run_if_changed: "images/release-blocker/.*|robots/release-blocker/.*"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
@@ -547,7 +547,7 @@ presubmits:
               memory: "1Gi"
   - name: build-referee-image
     always_run: false
-    run_if_changed: "images/referee/.*|robots/cmd/referee/.*"
+    run_if_changed: "images/referee/.*|robots/referee/.*"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
@@ -572,7 +572,7 @@ presubmits:
               memory: "1Gi"
   - name: build-ginkgo-tests-image
     always_run: false
-    run_if_changed: "^(images/ginkgo-tests/.*|robots/cmd/ginkgo-tests/.*|pkg/.*)"
+    run_if_changed: "^(images/ginkgo-tests/.*|robots/ginkgo-tests/.*|pkg/.*)"
     annotations:
       testgrid-create-test-group: "false"
     decorate: true
@@ -603,7 +603,7 @@ presubmits:
             privileged: true
   - name: build-indexpagecreator-image
     always_run: false
-    run_if_changed: "images/indexpagecreator/.*|robots/cmd/indexpagecreator/.*"
+    run_if_changed: "images/indexpagecreator/.*|robots/indexpagecreator/.*"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
@@ -628,7 +628,7 @@ presubmits:
               memory: "1Gi"
   - name: build-flakefinder-image
     always_run: false
-    run_if_changed: "images/flakefinder/.*|robots/cmd/flakefinder/.*"
+    run_if_changed: "images/flakefinder/.*|robots/flakefinder/.*"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
@@ -653,7 +653,7 @@ presubmits:
               memory: "1Gi"
   - name: build-flake-report-creator-image
     always_run: false
-    run_if_changed: "images/flake-report-creator/.*|robots/cmd/flake-report-creator/.*"
+    run_if_changed: "images/flake-report-creator/.*|robots/flake-report-creator/.*"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
@@ -1013,7 +1013,7 @@ presubmits:
       timeout: 1h
       grace_period: 5m
     name: pull-project-infra-job-config-validator
-    run_if_changed: 'robots/cmd/job-config-validator/.*|go.mod|go.sum'
+    run_if_changed: 'robots/job-config-validator/.*|go.mod|go.sum'
     spec:
       containers:
       - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
@@ -1025,8 +1025,8 @@ presubmits:
         - "/bin/sh"
         - "-ce"
         - |
-          ( cd robots/cmd/job-config-validator && go build ./... )
-          ./robots/cmd/job-config-validator/job-config-validator --help
+          ( cd robots/job-config-validator && go build ./... )
+          ./robots/job-config-validator/job-config-validator --help
         resources:
           requests:
             memory: "100Mi"

@@ -29,36 +29,36 @@ depending on billing alerts. See [README](limiter/README.md)
 
 * `robots`: Automation tools
 
-  * `robots/cmd/botreview`: Tool to automate reviews of repetitive PRs that are created through automation
+  * `robots/botreview`: Tool to automate reviews of repetitive PRs that are created through automation
 
-  * `robots/cmd/ci-usage-exporter`: Prometheus exporter to expose CI infrastructure
+  * `robots/ci-usage-exporter`: Prometheus exporter to expose CI infrastructure
   information
 
-  * `robots/cmd/dependabot`: Tool to create PRs to resolve Github dependabot alerts in kubevirt org repositories
+  * `robots/dependabot`: Tool to create PRs to resolve Github dependabot alerts in kubevirt org repositories
 
-  * `robots/cmd/flakefinder`: Tool to create statistics from failed tests of PRs.
+  * `robots/flakefinder`: Tool to create statistics from failed tests of PRs.
   See [README](robots/flakefinder/README.md)
 
-  * `robots/cmd/flake-stats`: Provides a more condensed view on where flakes are causing the most impact. See [README](robots/flake-stats/README.md)
+  * `robots/flake-stats`: Provides a more condensed view on where flakes are causing the most impact. See [README](robots/flake-stats/README.md)
 
-  * `robots/cmd/indexpagecreator`: Creates flakefinder index page
+  * `robots/indexpagecreator`: Creates flakefinder index page
 
-  * `robots/cmd/kubevirt`: Provides commands to manipulate the SIG jobs (periodic and presubmit) that are testing kubevirt with kubevirtci
+  * `robots/kubevirt`: Provides commands to manipulate the SIG jobs (periodic and presubmit) that are testing kubevirt with kubevirtci
 
     See [README](robots/kubevirt/README.md)
 
-  * `robots/cmd/kubevirtci-bumper`: Tool to automatically bump kubevirtci providers.
+  * `robots/kubevirtci-bumper`: Tool to automatically bump kubevirtci providers.
   See [README](robots/kubevirtci-bumper/README.md)
 
-  * `robots/cmd/kubevirtci-presubmit-creator`: Creates kubevirtci presubmit job
+  * `robots/kubevirtci-presubmit-creator`: Creates kubevirtci presubmit job
   definitions for new providers
 
-  * `robots/cmd/labels-checker`: Checks whether a PR has certain labels
+  * `robots/labels-checker`: Checks whether a PR has certain labels
 
-  * `robots/cmd/retests-to-merge`: Tool to check recent approved PRs for retest comments. See
+  * `robots/retests-to-merge`: Tool to check recent approved PRs for retest comments. See
   [README](robots/retests-to-merge/README.md)
 
-  * `robots/cmd/uploader`: Tool to mirror bazel dependencies on GCS. See
+  * `robots/uploader`: Tool to mirror bazel dependencies on GCS. See
   [README](robots/uploader/README.md)
 
 ## Contributing

@@ -9,7 +9,7 @@ RUN mkdir kubevirt && \
     cd kubevirt && \
     git clone https://github.com/kubevirt/project-infra.git && \
     cd project-infra && \
-    /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/ci-usage-exporter ./robots/cmd/ci-usage-exporter" && \
+    /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/ci-usage-exporter ./robots/ci-usage-exporter" && \
     /usr/local/bin/runner.sh /bin/sh -ce "go clean -cache -modcache" && \
     cd .. && rm -rf ./project-infra
 

@@ -10,5 +10,5 @@ The binary fetches a list of all flake-stats report files from the GCS bucket, a
 > Setting `GOOGLE_APPLICATION_CREDENTIALS` env var to successfully access GCS storage is required! 
 
 ```bash
-go run ./robots/cmd/flake-stats-index-page
+go run ./robots/flake-stats-index-page
 ```

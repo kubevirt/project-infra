@@ -6,6 +6,6 @@ a fallback download location to the WORKSPACE file.
 
 ```
 export GOOGLE_APPLICATION_CREDENTIALS=credential-path-to.json
-go run ./robots/cmd/uploader -workspace <kubevirt-source-path>/WORKSPACE # you will see a dry-run
-go run ./robots/cmd/uploader -workspace <kubevirt-source-path>/WORKSPACE -dry-run=false # will do the upload and modify WORKSPACE
+go run ./robots/uploader -workspace <kubevirt-source-path>/WORKSPACE # you will see a dry-run
+go run ./robots/uploader -workspace <kubevirt-source-path>/WORKSPACE -dry-run=false # will do the upload and modify WORKSPACE
 ```

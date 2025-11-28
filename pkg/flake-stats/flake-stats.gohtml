@@ -18,7 +18,7 @@
 
 */ -}}
 
-{{- /* gotype: kubevirt.io/project-infra/robots/cmd/flake-stats.TemplateData */ -}}
+{{- /* gotype: kubevirt.io/project-infra/robots/flake-stats.TemplateData */ -}}
 
 {{ define "failures" }}
     <div id="{{ .Name }}" {{ if .NoteHasBeenQuarantined }}class="noteHasBeenQuarantined"{{ end }}>
@@ -242,7 +242,7 @@
 <body onload="initRowsShown();updateFilteredRows();enableFilterFields();">
 
 <h1>Flake stats for {{$.Org}}/{{$.Repo}} - last {{ $.DaysInThePast }} days
-    &nbsp;<a style="text-decoration: none;" href="https://github.com/kubevirt/project-infra/blob/main/robots/cmd/flake-stats/README.md">&#9432;</a></h1>
+    &nbsp;<a style="text-decoration: none;" href="https://github.com/kubevirt/project-infra/blob/main/robots/flake-stats/README.md">&#9432;</a></h1>
 <div id="legend" class="legend">
     Share of overall failures:
     {{ range $index, $value := $.ShareCategories }}

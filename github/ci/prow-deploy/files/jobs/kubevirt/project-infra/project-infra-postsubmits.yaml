@@ -256,7 +256,7 @@ postsubmits:
               privileged: true
     - name: publish-ginkgo-tests-image
       always_run: false
-      run_if_changed: "^(images/ginkgo-tests/.*|robots/cmd/ginkgo-tests/.*|pkg/.*)"
+      run_if_changed: "^(images/ginkgo-tests/.*|robots/ginkgo-tests/.*|pkg/.*)"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -876,7 +876,7 @@ postsubmits:
               - "-c"
               - |
                 cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                make -C ./robots/cmd/test-report push
+                make -C ./robots/test-report push
             securityContext:
               privileged: true
             resources:
@@ -973,20 +973,20 @@ postsubmits:
           args:
           - |
             # we create presubmit documents for kubevirt/kubevirt branches main and latest three release branches
-            go run ./robots/cmd/kubevirt/... get presubmits \
+            go run ./robots/kubevirt/... get presubmits \
               --job-config-path-kubevirt-presubmits $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml \
               --github-token-path '' \
               --output-file /tmp/presubmits.html
 
             for release_branch_config in $(find $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/ -name 'kubevirt-presubmits-*.yaml' | sort -r | head -3); do
               release_branch="$( echo "${release_branch_config}" | sed -E 's/.*kubevirt-presubmits-([0-9]+\.[0-9]+)\.yaml/\1/' )"
-              go run ./robots/cmd/kubevirt/... get presubmits \
+              go run ./robots/kubevirt/... get presubmits \
                 --job-config-path-kubevirt-presubmits "${release_branch_config}" \
                 --github-token-path '' \
                 --output-file "/tmp/presubmits-${release_branch}.html"
             done
 
-            go run ./robots/cmd/kubevirt/... get periodics \
+            go run ./robots/kubevirt/... get periodics \
               --job-config-path-kubevirt-periodics $(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml \
               --github-token-path '' \
               --output-file /tmp/periodics.html
@@ -1003,7 +1003,7 @@ postsubmits:
       decorate: true
       labels:
         preset-github-credentials: "true"
-      run_if_changed: "robots/cmd/perf-report-creator/shape.yaml"
+      run_if_changed: "robots/perf-report-creator/shape.yaml"
       spec:
         containers:
         - image: quay.io/kubevirtci/pr-creator:v20251218-01f83ad
@@ -1020,9 +1020,9 @@ postsubmits:
           - -c
           args:
           - |
-            go build -o /usr/local/bin/perf-report-creator ./robots/cmd/perf-report-creator/...
+            go build -o /usr/local/bin/perf-report-creator ./robots/perf-report-creator/...
 
-            RELEASE_VERSION=$(grep "releaseVersion:" robots/cmd/perf-report-creator/shape.yaml | awk '{print $2}' | tr -d '"')
+            RELEASE_VERSION=$(grep "releaseVersion:" robots/perf-report-creator/shape.yaml | awk '{print $2}' | tr -d '"')
             BRANCH="add-$RELEASE_VERSION"
             RELEASE_DIR="release-$RELEASE_VERSION"
 
@@ -1034,7 +1034,7 @@ postsubmits:
             )
             CI_PERF_REPO_DIR=$(cd ../ci-performance-benchmarks && pwd)
 
-            robots/cmd/perf-report-creator/release-graph.sh "$CI_PERF_REPO_DIR"
+            robots/perf-report-creator/release-graph.sh "$CI_PERF_REPO_DIR"
 
             cd "$CI_PERF_REPO_DIR"
             mkdir -p "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance
