@@ -9,7 +9,7 @@ How to run
 ----------
 
 ```shell
-go run ./robots/cmd/rate-builds/... --help
+go run ./robots/rate-builds/... --help
 Usage of /tmp/go-build1320403461/b001/exe/badbuilds:
   -endpoint string
         jenkins base url (default "https://main-jenkins-csb-cnvqe.apps.ocp-c1.prod.psi.redhat.com/")
@@ -22,7 +22,7 @@ Usage of /tmp/go-build1320403461/b001/exe/badbuilds:
 Simple example:
 
 ```shell
-$ go run ./robots/cmd/rate-builds/... --job-name=test-kubevirt-cnv-4.12-compute-ocs
+$ go run ./robots/rate-builds/... --job-name=test-kubevirt-cnv-4.12-compute-ocs
 {"level":"info","msg":"Creating client for ...","robot":"badbuilds","time":"2022-09-02T15:05:44+02:00"}
 {"job":"test-kubevirt-cnv-4.12-compute-ocs","level":"info","msg":"Fetching completed builds, starting at 57","robot":"badbuilds","time":"2022-09-02T15:05:45+02:00"}
 {"build":57,"job":"test-kubevirt-cnv-4.12-compute-ocs","level":"info","msg":"Fetching build no 57","robot":"badbuilds","time":"2022-09-02T15:05:45+02:00"}
