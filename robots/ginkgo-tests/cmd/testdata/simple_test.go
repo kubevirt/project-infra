@@ -62,9 +62,11 @@ var _ = Describe("simple", func() {
 })
 
 var _ = Describe(ExtendArgs("description of describe", func() {
+
 	It("description of it", func() {
 		Expect(DoesSomething(false)).To(BeNil())
 	})
+
 }))
 
 func ExtendArgs(text string, args ...interface{}) (extendedText string, newArgs []interface{}) {
