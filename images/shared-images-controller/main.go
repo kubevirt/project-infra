@@ -13,7 +13,7 @@ import (
 	"github.com/containers/podman/v5/pkg/bindings/images"
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/querier"
+	"kubevirt.io/project-infra/pkg/querier"
 )
 
 const (
