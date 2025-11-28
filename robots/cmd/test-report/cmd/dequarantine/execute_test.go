@@ -23,10 +23,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
 	"os"
 	"reflect"
 	"testing"
+
+	test_report "kubevirt.io/project-infra/pkg/test-report"
 )
 
 func Test_applyData(t *testing.T) {

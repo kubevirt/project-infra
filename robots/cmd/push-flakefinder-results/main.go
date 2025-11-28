@@ -23,11 +23,12 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"kubevirt.io/project-infra/pkg/flakefinder"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"

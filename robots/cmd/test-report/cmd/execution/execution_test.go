@@ -20,11 +20,12 @@
 package execution
 
 import (
-	"github.com/sirupsen/logrus"
 	"io"
-	"kubevirt.io/project-infra/robots/pkg/test-report"
 	"os"
 	"testing"
+
+	"github.com/sirupsen/logrus"
+	test_report "kubevirt.io/project-infra/pkg/test-report"
 )
 
 func Test_writeHTMLReportToOutput(t *testing.T) {

@@ -21,10 +21,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/onsi/ginkgo/v2/types"
-	flakestats "kubevirt.io/project-infra/robots/pkg/flake-stats"
-	"kubevirt.io/project-infra/robots/pkg/searchci"
 	"time"
+
+	"github.com/onsi/ginkgo/v2/types"
+	flakestats "kubevirt.io/project-infra/pkg/flake-stats"
+	"kubevirt.io/project-infra/pkg/searchci"
 )
 
 const filterLaneRegexDefault = "rehearsal"

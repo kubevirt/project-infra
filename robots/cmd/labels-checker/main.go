@@ -23,8 +23,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"sigs.k8s.io/prow/pkg/config/secret"
 	"strings"
+
+	"sigs.k8s.io/prow/pkg/config/secret"
 
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"

@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"encoding/json"
+
 	"k8s.io/apimachinery/pkg/util/sets"
 	"kubevirt.io/project-infra/external-plugins/testutils"
 

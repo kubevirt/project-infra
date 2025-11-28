@@ -24,14 +24,15 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/bndr/gojenkins"
-	"github.com/spf13/cobra"
-	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/bndr/gojenkins"
+	"github.com/spf13/cobra"
+	test_report "kubevirt.io/project-infra/pkg/test-report"
 )
 
 const shortDequarantineReportUsage = "test-report dequarantine report generates a report of the test status for each entry in the quarantined_tests.json"

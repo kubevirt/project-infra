@@ -30,12 +30,12 @@ import (
 	"strings"
 	"time"
 
+	"kubevirt.io/project-infra/pkg/flakefinder"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
 	"cloud.google.com/go/storage"
-
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 )
 
 const (

@@ -20,19 +20,20 @@
 package main
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/joshdk/go-junit"
-	"github.com/prometheus/client_golang/prometheus"
-	log "github.com/sirupsen/logrus"
-	"google.golang.org/api/iterator"
 	"io"
 	"path"
 	"sort"
 	"strings"
+
+	"cloud.google.com/go/storage"
+	"github.com/joshdk/go-junit"
+	"github.com/prometheus/client_golang/prometheus"
+	log "github.com/sirupsen/logrus"
+	"google.golang.org/api/iterator"
 
 	"github.com/prometheus/client_golang/prometheus/push"
 )

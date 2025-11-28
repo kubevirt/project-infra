@@ -20,6 +20,8 @@ import (
 	"os"
 	"time"
 
+	"kubevirt.io/project-infra/pkg/querier"
+
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
@@ -28,8 +30,6 @@ import (
 	prowjobs "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
 	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/yaml"
-
-	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
 const OrgAndRepoForJobConfig = "kubevirt/kubevirtci"

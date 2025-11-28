@@ -20,10 +20,11 @@ package server
 
 import (
 	"encoding/json"
-	"github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/external-plugins/botreview/review"
 	"net/http"
 	"os"
+
+	"github.com/sirupsen/logrus"
+	"kubevirt.io/project-infra/external-plugins/botreview/review"
 	"sigs.k8s.io/prow/pkg/config"
 	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
 	"sigs.k8s.io/prow/pkg/github"

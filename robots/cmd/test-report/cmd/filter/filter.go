@@ -22,14 +22,15 @@ package filter
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	test_report "kubevirt.io/project-infra/pkg/test-report"
 )
 
 // defaultFileOutputPattern defines the pattern that is used to generate the file names, to be output in target directory.

@@ -23,13 +23,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"net/http"
+	"os"
+	"strings"
+
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"net/http"
-	"os"
 	"sigs.k8s.io/yaml"
-	"strings"
 )
 
 const robotName = "org-access-checker"

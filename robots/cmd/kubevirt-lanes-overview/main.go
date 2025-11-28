@@ -25,8 +25,9 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"sigs.k8s.io/prow/pkg/config"
 	"sort"
+
+	"sigs.k8s.io/prow/pkg/config"
 )
 
 func main() {

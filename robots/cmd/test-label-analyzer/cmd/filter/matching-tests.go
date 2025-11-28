@@ -21,12 +21,13 @@ package filter
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/cobra"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"kubevirt.io/project-infra/robots/pkg/git"
-	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
 	"strings"
+
+	"github.com/spf13/cobra"
+	"k8s.io/apimachinery/pkg/api/errors"
+	"kubevirt.io/project-infra/pkg/git"
+	testlabelanalyzer "kubevirt.io/project-infra/pkg/test-label-analyzer"
 )
 
 const FILEMODE_UGO_READ_WRITE = 0666

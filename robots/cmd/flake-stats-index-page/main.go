@@ -23,13 +23,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"html/template"
 	"os"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/iterator"

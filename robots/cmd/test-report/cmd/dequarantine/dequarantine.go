@@ -21,15 +21,16 @@ package dequarantine
 
 import (
 	"context"
-	"github.com/bndr/gojenkins"
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-	jenkins2 "kubevirt.io/project-infra/robots/pkg/jenkins"
-	"kubevirt.io/project-infra/robots/pkg/test-report"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/bndr/gojenkins"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	jenkins2 "kubevirt.io/project-infra/pkg/jenkins"
+	test_report "kubevirt.io/project-infra/pkg/test-report"
 )
 
 var dequarantineCmd = &cobra.Command{

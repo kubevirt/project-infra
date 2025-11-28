@@ -22,6 +22,7 @@ package cmd
 import (
 	_ "embed"
 	"fmt"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"kubevirt.io/project-infra/robots/cmd/test-report/cmd/dequarantine"

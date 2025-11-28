@@ -19,31 +19,32 @@
 package filter
 
 import (
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
-	"kubevirt.io/project-infra/robots/pkg/git"
-	testlabelanalyzer "kubevirt.io/project-infra/robots/pkg/test-label-analyzer"
 	"os"
 	"path/filepath"
 	"time"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+	"kubevirt.io/project-infra/pkg/git"
+	test_label_analyzer "kubevirt.io/project-infra/pkg/test-label-analyzer"
 )
 
 var _ = Describe("filter", func() {
 	Context("matching tests", func() {
 		DescribeTable("are filtered",
-			func(input testlabelanalyzer.TestFilesStats, expected matchingTests) {
+			func(input test_label_analyzer.TestFilesStats, expected matchingTests) {
 				Expect(filterMatchingTests(input, "")).To(BeEquivalentTo(expected))
 			},
-			Entry("empty input", testlabelanalyzer.TestFilesStats{}, nil),
+			Entry("empty input", test_label_analyzer.TestFilesStats{}, nil),
 			Entry("simple input",
-				testlabelanalyzer.TestFilesStats{
-					FilesStats: []*testlabelanalyzer.FileStats{
+				test_label_analyzer.TestFilesStats{
+					FilesStats: []*test_label_analyzer.FileStats{
 						{
-							TestStats: &testlabelanalyzer.TestStats{
+							TestStats: &test_label_analyzer.TestStats{
 								SpecsTotal: 0,
-								MatchingSpecPaths: []*testlabelanalyzer.PathStats{
+								MatchingSpecPaths: []*test_label_analyzer.PathStats{
 									{
-										Path: []*testlabelanalyzer.GinkgoNode{
+										Path: []*test_label_analyzer.GinkgoNode{
 											{
 												Text: "VM Live Migration",
 											},
@@ -54,9 +55,9 @@ var _ = Describe("filter", func() {
 												Text: "Should migrate over that network",
 											},
 										},
-										MatchingCategory: &testlabelanalyzer.LabelCategory{
+										MatchingCategory: &test_label_analyzer.LabelCategory{
 											Name:            "flaky test - Tracked in https://github.com/kubevirt/kubevirt/issues/37",
-											TestNameLabelRE: testlabelanalyzer.NewRegexp("with a dedicated migration network Should migrate over that network"),
+											TestNameLabelRE: test_label_analyzer.NewRegexp("with a dedicated migration network Should migrate over that network"),
 											BlameLine: &git.BlameLine{
 												CommitID: "",
 												Author:   "Daniel Hiller",

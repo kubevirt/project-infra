@@ -22,16 +22,17 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/onsi/ginkgo/v2/types"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-	"kubevirt.io/project-infra/robots/pkg/ginkgo"
-	"kubevirt.io/project-infra/robots/pkg/git"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/onsi/ginkgo/v2/types"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	ginkgo2 "kubevirt.io/project-infra/pkg/ginkgo"
+	git2 "kubevirt.io/project-infra/pkg/git"
 )
 
 // flag variables
@@ -76,12 +77,12 @@ func extractChangedTests(debug bool, revisionRange string, testDirectory string,
 	if !revisionRangeRegex.MatchString(revisionRange) {
 		return fmt.Errorf("revision range must be a valid git revision range")
 	}
-	commits, err := git.LogCommits(revisionRange, repoPath, testDirectory)
+	commits, err := git2.LogCommits(revisionRange, repoPath, testDirectory)
 	if err != nil {
 		return err
 	}
-	outlines := make(map[string][]*ginkgo.Node)
-	blameLines := make(map[string][]*git.BlameLine)
+	outlines := make(map[string][]*ginkgo2.Node)
+	blameLines := make(map[string][]*git2.BlameLine)
 	testfileContents := make(map[string]string)
 	for _, logCommit := range commits {
 		for _, fileChange := range logCommit.FileChanges {
@@ -94,16 +95,16 @@ func extractChangedTests(debug bool, revisionRange string, testDirectory string,
 			}
 			testfileFullPath := filepath.Join(repoPath, fileChange.Filename)
 			switch fileChange.ChangeType {
-			case git.Deleted:
-				outlines[fileChange.Filename] = []*ginkgo.Node{}
+			case git2.Deleted:
+				outlines[fileChange.Filename] = []*ginkgo2.Node{}
 				testfileContents[fileChange.Filename] = ""
-				blameLines[fileChange.Filename] = []*git.BlameLine{}
+				blameLines[fileChange.Filename] = []*git2.BlameLine{}
 			default:
 				testfileContent, err := os.ReadFile(testfileFullPath)
 				if err != nil {
 					return err
 				}
-				outline, err := ginkgo.OutlineFromFile(testfileFullPath)
+				outline, err := ginkgo2.OutlineFromFile(testfileFullPath)
 				if err != nil {
 					return err
 				}
@@ -112,7 +113,7 @@ func extractChangedTests(debug bool, revisionRange string, testDirectory string,
 				}
 				outlines[fileChange.Filename] = outline
 				testfileContents[fileChange.Filename] = string(testfileContent)
-				blameLinesForFile, err := git.GetBlameLinesForFile(testfileFullPath)
+				blameLinesForFile, err := git2.GetBlameLinesForFile(testfileFullPath)
 				if err != nil {
 					return err
 				}
@@ -200,8 +201,8 @@ func createFile(outputPath string, pattern string) (file *os.File, err error) {
 	return
 }
 
-func generateTestNames(allPaths [][]*ginkgo.Node, testFilePath string) ([]string, error) {
-	reports, _, err := ginkgo.DryRun(testFilePath)
+func generateTestNames(allPaths [][]*ginkgo2.Node, testFilePath string) ([]string, error) {
+	reports, _, err := ginkgo2.DryRun(testFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("could not run ginkgo dry-run in folder %q: %w", testFilePath, err)
 	}
@@ -235,7 +236,7 @@ func generateTestNames(allPaths [][]*ginkgo.Node, testFilePath string) ([]string
 }
 
 func filterMatchingSpecsByPartsContainingTestNames(reports []types.Report, allNodeTexts [][]string) []types.SpecReport {
-	matchingSpecReports := ginkgo.FilterSpecReports(reports, func(r types.SpecReport) bool {
+	matchingSpecReports := ginkgo2.FilterSpecReports(reports, func(r types.SpecReport) bool {
 		var specReportTexts []string
 		specReportTexts = append(specReportTexts, r.ContainerHierarchyTexts...)
 		specReportTexts = append(specReportTexts, r.LeafNodeText)
@@ -284,7 +285,7 @@ func NewHashMap(hashes []string) CommitHashMap {
 	}
 }
 
-func extractChangedTestPaths(commits []*git.LogCommit, outlines map[string][]*ginkgo.Node, blameLines map[string][]*git.BlameLine, testfileContents map[string]string) [][]*ginkgo.Node {
+func extractChangedTestPaths(commits []*git2.LogCommit, outlines map[string][]*ginkgo2.Node, blameLines map[string][]*git2.BlameLine, testfileContents map[string]string) [][]*ginkgo2.Node {
 	filenames := map[string]struct{}{}
 	var commitHashes []string
 	for _, commit := range commits {
@@ -295,7 +296,7 @@ func extractChangedTestPaths(commits []*git.LogCommit, outlines map[string][]*gi
 	}
 	hashMap := NewHashMap(commitHashes)
 
-	var allPaths [][]*ginkgo.Node
+	var allPaths [][]*ginkgo2.Node
 	for filename := range filenames {
 		if outlinesForFilename, ok := outlines[filename]; !ok || len(outlinesForFilename) == 0 {
 			continue
@@ -323,8 +324,8 @@ func extractChangedTestPaths(commits []*git.LogCommit, outlines map[string][]*gi
 	return allPaths
 }
 
-func blameLinesForCommits(commits []*git.LogCommit, blameLines map[string][]*git.BlameLine) (filenamesToBlamelines map[string][]*git.BlameLine) {
-	filenamesToBlamelines = make(map[string][]*git.BlameLine)
+func blameLinesForCommits(commits []*git2.LogCommit, blameLines map[string][]*git2.BlameLine) (filenamesToBlamelines map[string][]*git2.BlameLine) {
+	filenamesToBlamelines = make(map[string][]*git2.BlameLine)
 	commitIDs := make(map[string]struct{})
 	for _, commit := range commits {
 		commitIDs[commit.Hash[:11]] = struct{}{}
@@ -381,10 +382,10 @@ func generateLineModelFromFile(testFilepath string) (*LineModel, error) {
 
 type OutlineMapper struct {
 	lineModel *LineModel
-	outline   []*ginkgo.Node
+	outline   []*ginkgo2.Node
 }
 
-func (m *OutlineMapper) GetPathsForLines(lines ...int) ([][]*ginkgo.Node, error) {
+func (m *OutlineMapper) GetPathsForLines(lines ...int) ([][]*ginkgo2.Node, error) {
 	sort.Ints(lines)
 
 	var charRanges []*CharRange
@@ -398,7 +399,7 @@ func (m *OutlineMapper) GetPathsForLines(lines ...int) ([][]*ginkgo.Node, error)
 	return paths, nil
 }
 
-func expandPaths(parents []*ginkgo.Node, children []*ginkgo.Node) (paths [][]*ginkgo.Node) {
+func expandPaths(parents []*ginkgo2.Node, children []*ginkgo2.Node) (paths [][]*ginkgo2.Node) {
 	for _, child := range children {
 		if len(child.Nodes) > 0 {
 			newParents := append(parents, child.CloneWithoutNodes())
@@ -411,8 +412,8 @@ func expandPaths(parents []*ginkgo.Node, children []*ginkgo.Node) (paths [][]*gi
 	return
 }
 
-func findMatchingChildren(charRanges []*CharRange, nodes []*ginkgo.Node) []*ginkgo.Node {
-	var matchingNodes []*ginkgo.Node
+func findMatchingChildren(charRanges []*CharRange, nodes []*ginkgo2.Node) []*ginkgo2.Node {
+	var matchingNodes []*ginkgo2.Node
 	for _, node := range nodes {
 		foundMatchingCharRange := false
 		for _, charRange := range charRanges {
@@ -427,7 +428,7 @@ func findMatchingChildren(charRanges []*CharRange, nodes []*ginkgo.Node) []*gink
 		}
 		matchingChildren := findMatchingChildren(charRanges, node.Nodes)
 		if matchingChildren == nil {
-			matchingNodes = append(matchingNodes, node.CloneWithNodes(func(n *ginkgo.Node) bool { return n.Name != "By" }))
+			matchingNodes = append(matchingNodes, node.CloneWithNodes(func(n *ginkgo2.Node) bool { return n.Name != "By" }))
 		} else {
 			clone := node.CloneWithoutNodes()
 			clone.Nodes = matchingChildren
@@ -437,7 +438,7 @@ func findMatchingChildren(charRanges []*CharRange, nodes []*ginkgo.Node) []*gink
 	return matchingNodes
 }
 
-func generateOutlineMapperFromFiles(testFilepath string, outline []*ginkgo.Node) (m *OutlineMapper, err error) {
+func generateOutlineMapperFromFiles(testFilepath string, outline []*ginkgo2.Node) (m *OutlineMapper, err error) {
 	var lineModel *LineModel
 	lineModel, err = generateLineModelFromFile(testFilepath)
 	if err != nil {

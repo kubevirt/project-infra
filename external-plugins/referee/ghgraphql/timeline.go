@@ -22,11 +22,12 @@ package ghgraphql
 import (
 	"context"
 	"fmt"
-	"github.com/shurcooL/githubv4"
-	"github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/shurcooL/githubv4"
+	"github.com/sirupsen/logrus"
 )
 
 var (

@@ -21,11 +21,12 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/onsi/ginkgo/v2/types"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"kubevirt.io/project-infra/robots/pkg/ginkgo"
-	"os"
+	"kubevirt.io/project-infra/pkg/ginkgo"
 )
 
 var rootCmd = &cobra.Command{

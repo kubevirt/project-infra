@@ -34,10 +34,11 @@ import (
 	"strings"
 	"time"
 
+	"kubevirt.io/project-infra/pkg/flakefinder"
+	test_report "kubevirt.io/project-infra/pkg/test-report"
+
 	"github.com/bndr/gojenkins"
 	"github.com/sirupsen/logrus"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
-	test_report "kubevirt.io/project-infra/robots/pkg/test-report"
 	"sigs.k8s.io/yaml"
 
 	"github.com/spf13/cobra"

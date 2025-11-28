@@ -20,18 +20,18 @@
 package main
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
 	"flag"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"log"
 	"os"
 	"path/filepath"
 	"sort"
 	"time"
 
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
+	"cloud.google.com/go/storage"
+	"github.com/sirupsen/logrus"
+	"kubevirt.io/project-infra/pkg/flakefinder"
 )
 
 const template = `

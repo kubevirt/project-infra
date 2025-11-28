@@ -24,17 +24,18 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/avast/retry-go"
-	log "github.com/sirupsen/logrus"
-	"golang.org/x/net/html"
 	"io"
-	"kubevirt.io/project-infra/robots/pkg/flakefinder"
 	"net/http"
 	"os"
 	"os/exec"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/avast/retry-go"
+	log "github.com/sirupsen/logrus"
+	"golang.org/x/net/html"
+	"kubevirt.io/project-infra/pkg/flakefinder"
 )
 
 const defaultDaysInThePast = 7

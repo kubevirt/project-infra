@@ -19,14 +19,14 @@ import (
 	"fmt"
 	"os"
 
+	"kubevirt.io/project-infra/pkg/kubevirt/release"
+	"kubevirt.io/project-infra/pkg/querier"
+
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"kubevirt.io/project-infra/robots/pkg/kubevirt/release"
 	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/yaml"
-
-	"kubevirt.io/project-infra/robots/pkg/querier"
 )
 
 const OrgAndRepoForJobConfig = "kubevirt/kubevirtci"

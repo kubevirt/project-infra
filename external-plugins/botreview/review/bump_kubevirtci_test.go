@@ -21,11 +21,12 @@ package review
 
 import (
 	"fmt"
-	"github.com/sourcegraph/go-diff/diff"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
+
+	"github.com/sourcegraph/go-diff/diff"
 )
 
 func TestBumpKubevirtCI_Review(t1 *testing.T) {

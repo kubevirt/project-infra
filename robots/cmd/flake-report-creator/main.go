@@ -1,9 +1,10 @@
 package main
 
 import (
+	"os"
+
 	log "github.com/sirupsen/logrus"
 	"kubevirt.io/project-infra/robots/cmd/flake-report-creator/cmd"
-	"os"
 )
 
 func main() {
