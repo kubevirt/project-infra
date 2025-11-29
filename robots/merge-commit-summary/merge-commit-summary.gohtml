@@ -1,0 +1,92 @@
+{{- /*
+
+    This file is part of the KubeVirt project
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+    Copyright The KubeVirt Authors.
+
+*/ -}}
+
+{{- /* gotype: kubevirt.io/project-infra/robots/merge-commit-summary.TemplateData */ -}}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ $.Org }}/{{ $.Repo }}: merge commit summary for last {{ $.DaysInThePast }} days</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif; /* Modern sans-serif stack */
+        }
+
+        /* Layout with Flexbox */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 5px;
+            width: 100%;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition-speed);
+        }
+    </style>
+</head>
+<body>
+    <section class="container">
+        <h1>{{ $.Org }}/{{ $.Repo }}: merge commit summary for last {{ $.DaysInThePast }} days</h1>
+    </section>
+
+    <section class="container">
+        <div class="card-grid">
+        {{ range $prNumber := $.PrNumbersSortedByFailuresDesc }}
+            <div class="card" id="pr{{ $prNumber }}">
+                <a href="https://github.com/{{ $.Org }}/{{ $.Repo }}/pull/{{ $prNumber }}">#{{ $prNumber }}</a>
+                <a href="https://prow.ci.kubevirt.io/pr-history/?org={{ $.Org }}&repo={{ $.Repo }}&pr={{ $prNumber }}" title="Prow PR history for {{ $prNumber }}">🕛</a>
+                :
+            {{ $jobs := (index $.PrNumbersToJobs $prNumber ) }}
+            {{ if $jobs }}
+                🛑 ( {{ len $jobs }} failures )
+                {{ range $job := $jobs }}
+                    <span id="job{{ $job.BuildNumber }}">
+                        <a href="{{ $job.BuildURL }}" title="Prow job run {{ $job.BuildNumber }}">{{ $job.JobName }} </a>
+                        <a href="{{ $job.ArtifactsURL }}">📝</a>
+                    </span>
+                {{ end }}
+            {{ else }} ✅
+            {{ end }}
+            </div>
+        {{ end }}
+        </div>
+    </section>
+
+    <section class="container">
+        <div style="text-align: right"><i>Last updated: {{ $.Date }}</i></div>
+    </section>
+</body>
+</html>

@@ -13,7 +13,7 @@ RUN set -x && \
     cd /project-infra && \
     cp ./hack/git-askpass.sh ./hack/git-pr.sh /usr/local/bin && \
     chmod +x /usr/local/bin/git-askpass.sh /usr/local/bin/git-pr.sh && \
-    /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/labels-checker ./robots/cmd/labels-checker && go clean -cache -modcache' && \
+    /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/labels-checker ./robots/labels-checker && go clean -cache -modcache' && \
     chmod +x /usr/local/bin/labels-checker
 
 RUN dnf install -y \
