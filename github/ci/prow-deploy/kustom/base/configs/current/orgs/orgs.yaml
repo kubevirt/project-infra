@@ -1,7 +1,6 @@
 orgs:
   kubevirt:
     admins:
-      - brianmcarey
       - dhiller
       - fabiand
       - kubevirt-bot
@@ -39,6 +38,7 @@ orgs:
       - avlitman
       - awels
       - Barakmor1
+      - brianmcarey
       - cfilleke
       - chandramerla
       - codingben
