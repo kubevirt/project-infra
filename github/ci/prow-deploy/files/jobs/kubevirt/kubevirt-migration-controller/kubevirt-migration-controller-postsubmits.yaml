@@ -71,7 +71,7 @@ postsubmits:
         - name: GITHUB_TOKEN_PATH
           value: /etc/github/oauth
         - name: GITHUB_REPOSITORY
-          value: kubevirt/hostpath-provisioner
+          value: kubevirt/kubevirt-migration-controller
         - name: GIT_USER_NAME
           value: kubevirt-bot
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
