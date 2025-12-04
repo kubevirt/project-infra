@@ -52,8 +52,7 @@ var (
 		RunE:  AutoQuarantine,
 	}
 
-	autoQuarantineOpts                        autoQuarantineOptions
-	autoQuarantinePRDescriptionOutputFileOpts *options.OutputFileOptions
+	autoQuarantineOpts autoQuarantineOptions
 
 	//go:embed auto-quarantine-pr-description.gomd
 	autoQuarantinePRDescriptionTemplate string
@@ -64,11 +63,11 @@ var (
 func init() {
 	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.daysInThePast, "days-in-the-past", 14, "the number of days in the past")
 	autoQuarantineCmd.PersistentFlags().IntVar(&autoQuarantineOpts.maxTestsToQuarantine, "max-tests-to-quarantine", 1, "the overall number of tests that are going to be quarantined in one run")
-	autoQuarantinePRDescriptionOutputFileOpts = options.NewOutputFileOptions(
+	autoQuarantineOpts.prDescriptionOutputFileOpts = options.NewOutputFileOptions(
 		"pr-description-*.md",
 		func(o *options.OutputFileOptions) { o.OverwriteOutputFile = true },
 	)
-	autoQuarantineCmd.PersistentFlags().StringVar(&autoQuarantinePRDescriptionOutputFileOpts.OutputFile, "pr-description-output-file", "", "the path to the output file to write the PR description into, or if unset a temp file will be generated")
+	autoQuarantineCmd.PersistentFlags().StringVar(&autoQuarantineOpts.prDescriptionOutputFileOpts.OutputFile, "pr-description-output-file", "", "the path to the output file to write the PR description into, or if unset a temp file will be generated")
 
 	var err error
 	reportTemplate, err = template.New("prDescription").Parse(autoQuarantinePRDescriptionTemplate)
@@ -78,7 +77,7 @@ func init() {
 }
 
 func AutoQuarantine(_ *cobra.Command, _ []string) error {
-	err := autoQuarantinePRDescriptionOutputFileOpts.Validate()
+	err := autoQuarantineOpts.prDescriptionOutputFileOpts.Validate()
 	if err != nil {
 		return err
 	}
@@ -118,7 +117,7 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 
 	testsPerSIG := groupTestsBySIG(testsToQuarantine)
 
-	err = writePRDescriptionToFile(autoQuarantinePRDescriptionOutputFileOpts.OutputFile, testsPerSIG)
+	err = writePRDescriptionToFile(autoQuarantineOpts.prDescriptionOutputFileOpts.OutputFile, testsPerSIG)
 	if err != nil {
 		return err
 	}
