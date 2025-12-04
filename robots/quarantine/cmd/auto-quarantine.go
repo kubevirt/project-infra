@@ -36,10 +36,10 @@ import (
 )
 
 const (
-	shortAutoTest = "Quarantines flaky tests matching criteria for quarantine"
+	shortAutoTest = "Quarantines flaky tests matching the required criteria"
 	longAutoTest  = shortAutoTest + `.
 
-Uses the data about test flakiness from the flake stats, combines that with
+Uses the data from the flake stats, combines that with
 scraped results from search.ci and then modifies all tests matching quarantine
 criteria so that they are recognized by automation as being quarantined.`
 )
@@ -63,7 +63,7 @@ var (
 
 func init() {
 	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.daysInThePast, "days-in-the-past", 14, "the number of days in the past")
-	autoQuarantineCmd.PersistentFlags().IntVar(&autoQuarantineOpts.ceilingForTestsToQuarantine, "ceiling-for-tests-to-quarantine", 1, "the overall number of tests that are going to be quarantined in one run")
+	autoQuarantineCmd.PersistentFlags().IntVar(&autoQuarantineOpts.maxTestsToQuarantine, "max-tests-to-quarantine", 1, "the overall number of tests that are going to be quarantined in one run")
 	autoQuarantinePRDescriptionOutputFileOpts = options.NewOutputFileOptions(
 		"pr-description-*.md",
 		func(o *options.OutputFileOptions) { o.OverwriteOutputFile = true },
@@ -101,7 +101,7 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 	}
 
 	testsToIgnore := []string{"AfterSuite"}
-	testsToQuarantine, err := determineTestsSatisfyingQuarantineRules(topXTests, testsToIgnore, reports, autoQuarantineOpts.ceilingForTestsToQuarantine)
+	testsToQuarantine, err := determineTestsForQuarantine(topXTests, testsToIgnore, reports, autoQuarantineOpts.maxTestsToQuarantine)
 	if err != nil {
 		return err
 	}
@@ -126,7 +126,7 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-func determineTestsSatisfyingQuarantineRules(topXTests flakestats.TopXTests, testsToIgnore []string, reports []types.Report, ceilingForTestsToQuarantine int) ([]*TestToQuarantine, error) {
+func determineTestsForQuarantine(topXTests flakestats.TopXTests, testsToIgnore []string, reports []types.Report, ceilingForTestsToQuarantine int) ([]*TestToQuarantine, error) {
 	var testsToQuarantine []*TestToQuarantine
 	for _, topXTest := range topXTests {
 		log.Infof("%s{Count: %d, Sum: %d, Avg: %f, Max: %d}", topXTest.Name, topXTest.AllFailures.Count, topXTest.AllFailures.Sum, topXTest.AllFailures.Avg, topXTest.AllFailures.Max)
