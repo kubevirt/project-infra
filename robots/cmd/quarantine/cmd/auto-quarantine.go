@@ -36,6 +36,8 @@ import (
 )
 
 const (
+	defaultMatchingLaneRegexString = `^pull-.*-sig-(compute(-serial|-migrations|-arm64)?|network|storage|operator)%s$`
+
 	shortAutoTest = "Quarantines flaky tests matching the required criteria"
 	longAutoTest  = shortAutoTest + `.
 
@@ -63,6 +65,8 @@ var (
 func init() {
 	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.daysInThePast, "days-in-the-past", 14, "the number of days in the past")
 	autoQuarantineCmd.PersistentFlags().IntVar(&autoQuarantineOpts.maxTestsToQuarantine, "max-tests-to-quarantine", 1, "the overall number of tests that are going to be quarantined in one run")
+	autoQuarantineCmd.PersistentFlags().StringVar(&autoQuarantineOpts.releaseLaneSuffix, "release-lane-suffix", "", "the suffix for the release lane to target (i.e. -1.7) or empty for targeting the main branch")
+	autoQuarantineCmd.PersistentFlags().StringVar(&autoQuarantineOpts.matchingLaneRegexString, "matching-lane-regex", defaultMatchingLaneRegexString, "the regular expression that the lanes need to match - note that there's a suffix placeholder required")
 	autoQuarantineOpts.prDescriptionOutputFileOpts = options.NewOutputFileOptions(
 		"pr-description-*.md",
 		func(o *options.OutputFileOptions) { o.OverwriteOutputFile = true },
@@ -85,7 +89,14 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 	reportOpts := flakestats.NewDefaultReportOpts(
 		flakestats.DaysInThePast(quarantineOpts.daysInThePast),
 		flakestats.FilterPeriodicJobRunResults(true),
+		// we only want to look at lanes targeting a specific branch here, so either the main branch (suffix is empty string) or a specific release like 1.7
+		flakestats.MatchingLaneRegex(fmt.Sprintf(defaultMatchingLaneRegexString, autoQuarantineOpts.releaseLaneSuffix)),
 	)
+	err = reportOpts.Validate()
+	if err != nil {
+		return err
+	}
+
 	topXTests, err := flakestats.NewFlakeStatsAggregate(reportOpts).AggregateData()
 	if err != nil {
 		return fmt.Errorf("error while aggregating data: %w", err)

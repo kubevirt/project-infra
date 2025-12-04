@@ -72,6 +72,11 @@ func FilterLaneRegex(s string) func(r *ReportOptions) {
 		r.FilterLaneRegexString = s
 	}
 }
+func MatchingLaneRegex(s string) func(r *ReportOptions) {
+	return func(r *ReportOptions) {
+		r.MatchingLaneRegexString = s
+	}
+}
 
 func NewDefaultReportOpts(opts ...ReportOption) *ReportOptions {
 	r := &ReportOptions{
@@ -80,7 +85,6 @@ func NewDefaultReportOpts(opts ...ReportOption) *ReportOptions {
 		Repo:                        defaultRepo,
 		FilterPeriodicJobRunResults: true,
 		FilterLaneRegexString:       "",
-		filterLaneRegex:             nil,
 	}
 	for _, o := range opts {
 		o(r)
@@ -95,6 +99,8 @@ type ReportOptions struct {
 	FilterPeriodicJobRunResults bool
 	FilterLaneRegexString       string
 	filterLaneRegex             *regexp.Regexp
+	MatchingLaneRegexString     string
+	matchingLaneRegex           *regexp.Regexp
 }
 
 func (o *ReportOptions) Validate() error {
@@ -106,6 +112,13 @@ func (o *ReportOptions) Validate() error {
 		o.filterLaneRegex, err = regexp.Compile(o.FilterLaneRegexString)
 		if err != nil {
 			return fmt.Errorf("failed to compile regex %q for filtering lane: %w", o.FilterLaneRegexString, err)
+		}
+	}
+	if o.MatchingLaneRegexString != "" {
+		var err error
+		o.matchingLaneRegex, err = regexp.Compile(o.MatchingLaneRegexString)
+		if err != nil {
+			return fmt.Errorf("failed to compile regex %q for matching lane: %w", o.MatchingLaneRegexString, err)
 		}
 	}
 	return nil

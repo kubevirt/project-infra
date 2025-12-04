@@ -31,7 +31,9 @@ import (
 const filterLaneRegexDefault = "rehearsal"
 
 type autoQuarantineOptions struct {
-	maxTestsToQuarantine int
+	maxTestsToQuarantine    int
+	releaseLaneSuffix       string
+	matchingLaneRegexString string
 
 	prDescriptionOutputFileOpts *options.OutputFileOptions
 }
