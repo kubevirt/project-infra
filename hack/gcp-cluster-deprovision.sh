@@ -66,4 +66,13 @@ if [[ -n "${FAILED}" ]]; then
   exit 1
 fi
 
+# Prune GCP CSI driver leftovers
+DISK_FILTER="creationTimestamp.date('%Y-%m-%dT%H:%M%z')<${gce_cluster_age_cutoff} AND NOT users:* AND labels.list(show='keys')~'kubernetes-io-cluster-ci-'"
+gcloud --project="${GCP_PROJECT}" compute disks list --filter "${DISK_FILTER}" --uri \
+  | xargs -r --max-procs='10' gcloud --project="${GCP_PROJECT}" compute disks delete --quiet
+
+SNAPSHOT_FILTER="creationTimestamp.date('%Y-%m-%dT%H:%M%z')<${gce_cluster_age_cutoff} AND description:'Snapshot created by GCE-PD CSI Driver' AND sourceDisk.basename():pvc-"
+gcloud --project="${GCP_PROJECT}" compute snapshots list --filter "${SNAPSHOT_FILTER}" --uri \
+  | xargs -r --max-procs='10' gcloud --project="${GCP_PROJECT}" compute snapshots delete --quiet
+
 echo "Deprovision finished successfully"
