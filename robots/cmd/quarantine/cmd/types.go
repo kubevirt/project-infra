@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/onsi/ginkgo/v2/types"
 	flakestats "kubevirt.io/project-infra/robots/pkg/flake-stats"
+	"kubevirt.io/project-infra/robots/pkg/options"
 	"kubevirt.io/project-infra/robots/pkg/searchci"
 	"time"
 )
@@ -31,6 +32,8 @@ const filterLaneRegexDefault = "rehearsal"
 
 type autoQuarantineOptions struct {
 	maxTestsToQuarantine int
+
+	prDescriptionOutputFileOpts *options.OutputFileOptions
 }
 
 type quarantineOptions struct {
