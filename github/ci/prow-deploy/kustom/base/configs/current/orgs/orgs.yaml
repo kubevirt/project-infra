@@ -2,6 +2,7 @@ orgs:
   kubevirt:
     admins:
       - dhiller
+      - dollierp
       - fabiand
       - kubevirt-bot
       - rmohr
@@ -47,7 +48,6 @@ orgs:
       - dasionov
       - davidvossel
       - davo911
-      - dollierp
       - dominikholler
       - Dsanatar
       - EdDev
