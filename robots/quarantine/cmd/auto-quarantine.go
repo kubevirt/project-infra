@@ -31,11 +31,14 @@ import (
 	"kubevirt.io/project-infra/pkg/options"
 	"kubevirt.io/project-infra/pkg/searchci"
 	"os"
+	"regexp"
 	"strings"
 	"text/template"
 )
 
 const (
+	defaultMatchingLaneRegexString = `^pull-.*-sig-(compute(-serial|-migrations|-arm64)?|network|storage|operator)%s$`
+
 	shortAutoTest = "Quarantines flaky tests matching the required criteria"
 	longAutoTest  = shortAutoTest + `.
 
@@ -63,6 +66,8 @@ var (
 func init() {
 	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.daysInThePast, "days-in-the-past", 14, "the number of days in the past")
 	autoQuarantineCmd.PersistentFlags().IntVar(&autoQuarantineOpts.maxTestsToQuarantine, "max-tests-to-quarantine", 1, "the overall number of tests that are going to be quarantined in one run")
+	autoQuarantineCmd.PersistentFlags().StringVar(&autoQuarantineOpts.releaseLaneSuffix, "release-lane-suffix", "", "the suffix for the release lane to target (i.e. -1.7) or empty for targeting the main branch")
+	autoQuarantineCmd.PersistentFlags().StringVar(&autoQuarantineOpts.matchingLaneRegexString, "matching-lane-regex", defaultMatchingLaneRegexString, "the regular expression that the lanes need to match - note that there's a suffix placeholder required")
 	autoQuarantineOpts.prDescriptionOutputFileOpts = options.NewOutputFileOptions(
 		"pr-description-*.md",
 		func(o *options.OutputFileOptions) { o.OverwriteOutputFile = true },
@@ -85,7 +90,14 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 	reportOpts := flakestats.NewDefaultReportOpts(
 		flakestats.DaysInThePast(quarantineOpts.daysInThePast),
 		flakestats.FilterPeriodicJobRunResults(true),
+		// we only want to look at lanes targeting a specific branch here, so either the main branch (suffix is empty string) or a specific release like 1.7
+		flakestats.MatchingLaneRegex(autoQuarantineOpts.MatchingLaneRegexString()),
 	)
+	err = reportOpts.Validate()
+	if err != nil {
+		return err
+	}
+
 	topXTests, err := flakestats.NewFlakeStatsAggregate(reportOpts).AggregateData()
 	if err != nil {
 		return fmt.Errorf("error while aggregating data: %w", err)
@@ -99,8 +111,7 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("could not find ginkgo test reports: %w", err)
 	}
 
-	testsToIgnore := []string{"AfterSuite"}
-	testsToQuarantine, err := determineTestsForQuarantine(topXTests, testsToIgnore, reports, autoQuarantineOpts.maxTestsToQuarantine)
+	testsToQuarantine, err := determineTestsForQuarantine(topXTests, reports)
 	if err != nil {
 		return err
 	}
@@ -125,7 +136,10 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-func determineTestsForQuarantine(topXTests flakestats.TopXTests, testsToIgnore []string, reports []types.Report, ceilingForTestsToQuarantine int) ([]*TestToQuarantine, error) {
+func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types.Report) ([]*TestToQuarantine, error) {
+	var jobHistoryURLMatcher = regexp.MustCompile(autoQuarantineOpts.MatchingLaneRegexString())
+	var ceilingForTestsToQuarantine = autoQuarantineOpts.maxTestsToQuarantine
+	var testsToIgnore = []string{"AfterSuite"}
 	var testsToQuarantine []*TestToQuarantine
 	for _, topXTest := range topXTests {
 		log.Infof("%s{Count: %d, Sum: %d, Avg: %f, Max: %d}", topXTest.Name, topXTest.AllFailures.Count, topXTest.AllFailures.Sum, topXTest.AllFailures.Avg, topXTest.AllFailures.Max)
@@ -152,10 +166,26 @@ func determineTestsForQuarantine(topXTests flakestats.TopXTests, testsToIgnore [
 			log.Infof("search.ci found no matches for %q", topXTest.Name)
 			continue
 		}
+		var filteredRelevantImpacts []searchci.Impact
+		for _, i := range relevantImpacts {
+			elements := strings.Split(i.URL, "/")
+			if len(elements) == 0 {
+				return nil, fmt.Errorf("no last element in job history url %q", i.URL)
+			}
+			lastElement := elements[len(elements)-1]
+			if !jobHistoryURLMatcher.MatchString(lastElement) {
+				continue
+			}
+			filteredRelevantImpacts = append(filteredRelevantImpacts, i)
+		}
+		if filteredRelevantImpacts == nil {
+			log.Infof("search.ci found no matches in relevant jobs for %q", topXTest.Name)
+			continue
+		}
 
 		newTestToQuarantine := &TestToQuarantine{
 			Test:            topXTest,
-			RelevantImpacts: relevantImpacts,
+			RelevantImpacts: filteredRelevantImpacts,
 			SpecReport:      matchingSpecReport,
 			SearchCIURL:     searchci.NewScrapeURL(topXTest.Name, timeRange),
 			TimeRange:       timeRange,
