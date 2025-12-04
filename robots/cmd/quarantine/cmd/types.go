@@ -30,7 +30,7 @@ import (
 const filterLaneRegexDefault = "rehearsal"
 
 type autoQuarantineOptions struct {
-	ceilingForTestsToQuarantine int
+	maxTestsToQuarantine int
 }
 
 type quarantineOptions struct {
