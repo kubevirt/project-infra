@@ -32,9 +32,15 @@ import (
 const filterLaneRegexDefault = "rehearsal"
 
 type autoQuarantineOptions struct {
-	maxTestsToQuarantine int
+	maxTestsToQuarantine    int
+	releaseLaneSuffix       string
+	matchingLaneRegexString string
 
 	prDescriptionOutputFileOpts *options.OutputFileOptions
+}
+
+func (a autoQuarantineOptions) MatchingLaneRegexString() string {
+	return fmt.Sprintf(a.matchingLaneRegexString, a.releaseLaneSuffix)
 }
 
 type quarantineOptions struct {
