@@ -22,12 +22,6 @@
 
 Auto-quarantine flaky tests
 
-> [!WARNING]
-> **Flaky tests detected!**
-
-> [!NOTE]
-> **This PR was created by automation!**
-
 {{ range $sig, $testsToQuarantine := . }}
 {{ range $testToQuarantine := $testsToQuarantine }}
 ### `{{ $testToQuarantine.Test.Name }}`
