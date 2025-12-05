@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	pi_github "kubevirt.io/project-infra/pkg/github"
 	"net/http"
 	"os"
 	"os/exec"
@@ -22,8 +23,6 @@ import (
 	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
 	"sigs.k8s.io/prow/pkg/github"
 	"sigs.k8s.io/prow/pkg/pjutil"
-
-	pi_github "kubevirt.io/project-infra/robots/pkg/github"
 )
 
 var log *logrus.Logger
