@@ -649,9 +649,11 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 9216M
         resources:
           requests:
-            memory: 16Gi
+            memory: 32Gi
         securityContext:
           privileged: true
       nodeSelector:
