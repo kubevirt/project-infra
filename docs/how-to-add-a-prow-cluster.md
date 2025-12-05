@@ -174,7 +174,7 @@ The encrypted file will be available in `my-kubeconfig.gpg` in the current
 directory.
 
 
-[this Prow document]: https://github.com/kubernetes/test-infra/blob/master/prow/getting_started_deploy.md#Run-test-pods-in-different-clusters
+[this Prow document]: https://docs.prow.k8s.io/docs/getting-started-deploy/#run-test-pods-in-different-clusters
 [issue on project-infra]: https://github.com/kubevirt/project-infra/issues/new
 [kubeconfig encrypted as described here]: #encrypt
 [an example of a job configured with KubeVirtCI external provider]: https://github.com/kubevirt/project-infra/blob/bab947fa42f89f78238160d487bf047f4dea5c9f/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml#L650
