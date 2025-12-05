@@ -6,7 +6,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20251125-e3ae8cf22
+      - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20251204-c1b4d92ca
         args:
         - "/ko-app/checkconfig"
         - "--config-path"
@@ -937,7 +937,7 @@ presubmits:
     spec:
       containers:
       - name: peribolos
-        image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20251125-e3ae8cf22
+        image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20251204-c1b4d92ca
         command:
         - /ko-app/peribolos
         # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
