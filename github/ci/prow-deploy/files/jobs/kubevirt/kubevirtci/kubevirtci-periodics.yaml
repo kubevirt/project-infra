@@ -98,12 +98,12 @@ periodics:
         set -e
         if labels-checker \
               --org=kubevirt \
-              --repo=kubevirt \
+              --repo=kubevirtci \
               --author=kubevirt-bot \
               --branch-name=bump-fedora-provision \
               --ensure-labels-missing=lgtm,approved,do-not-merge/hold \
               --github-token-path=/etc/github/oauth; then
-          git-pr.sh -c "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile" -d "Bump fedora provisioning base to latest version" -b bump-fedora-provision -p ../kubevirtci -T main
+          git-pr.sh -c "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile" -d "echo 'Bump fedora provisioning base to latest version'" -b bump-fedora-provision -p ../kubevirtci -r kubevirtci -T main
         fi
       securityContext:
         privileged: true
