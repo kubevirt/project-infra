@@ -547,6 +547,11 @@ orgs:
         has_projects: true
         has_wiki: true
         has_issues: true
+      alpine-make-vm-image:
+        default_branch: main
+        has_projects: true
+        has_wiki: true
+        has_issues: true
     teams:
       QE:
         description: ""
@@ -987,6 +992,16 @@ orgs:
         repos:
           kubevirt-migration-controller: admin
           kubevirt-migration-operator: admin
+      alpine-make-vm-image-maintainers:
+        description: Maintainers of alpine make vm image project
+        members:
+          - brianmcarey
+          - dhiller
+          - vamsikrishna-siddu
+          - vladikr
+          - xpivarc
+        repos:
+          alpine-make-vm-image: admin          
       kubevirt.core-maintainers:
         description: Maintainers of kubevirt.core
         privacy: closed
