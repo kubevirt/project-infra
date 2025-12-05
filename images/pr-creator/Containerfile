@@ -1,23 +1,32 @@
-FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1
+FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1 AS builder
 
 ENV GIMME_GO_VERSION=1.22.6
 
 RUN set -x && \
     git clone --depth 1 --revision e4d87dae72dbf1754625cbf112afc535307c1db4 https://github.com/kubernetes/test-infra.git && \
     cd ./test-infra && \
-    /usr/local/bin/runner.sh /bin/sh -ce 'go mod vendor && go build -o /usr/local/bin/pr-creator ./robots/pr-creator && go clean -cache -modcache' && \
+    /usr/local/bin/runner.sh /bin/sh -ce 'go mod vendor && go build -o /usr/local/bin/pr-creator ./robots/pr-creator' && \
     chmod +x /usr/local/bin/pr-creator && \
     cd .. && rm -rf ./test-infra
 
 RUN set -x && \
     cd /project-infra && \
-    cp ./hack/git-askpass.sh ./hack/git-pr.sh /usr/local/bin && \
-    chmod +x /usr/local/bin/git-askpass.sh /usr/local/bin/git-pr.sh && \
-    /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/labels-checker ./robots/cmd/labels-checker && go clean -cache -modcache' && \
+    /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/labels-checker ./robots/cmd/labels-checker' && \
     chmod +x /usr/local/bin/labels-checker
 
+FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1 AS final
+
 RUN dnf install -y \
-        skopeo && \
+    skopeo && \
     dnf -y clean all
 
+COPY --from=builder /usr/local/bin/pr-creator /usr/local/bin/
+COPY --from=builder /usr/local/bin/labels-checker /usr/local/bin/
+
+RUN set -x && \
+    cd /project-infra && \
+    cp ./hack/git-askpass.sh ./hack/git-pr.sh /usr/local/bin && \
+    chmod +x /usr/local/bin/git-askpass.sh /usr/local/bin/git-pr.sh
+
 ENV GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+
