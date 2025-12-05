@@ -4,7 +4,7 @@ postsubmits:
       always_run: false
       branches:
       - main
-      run_if_changed: "external-plugins/rehearse/.*"
+      run_if_changed: "external-plugins/rehearse/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -36,7 +36,7 @@ postsubmits:
       always_run: false
       branches:
       - main
-      run_if_changed: "external-plugins/phased/.*"
+      run_if_changed: "external-plugins/phased/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -68,7 +68,7 @@ postsubmits:
       always_run: false
       branches:
       - main
-      run_if_changed: "external-plugins/test-subset/.*"
+      run_if_changed: "external-plugins/test-subset/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -100,7 +100,7 @@ postsubmits:
       always_run: false
       branches:
       - main
-      run_if_changed: "external-plugins/release-blocker/.*"
+      run_if_changed: "external-plugins/release-blocker/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -132,7 +132,7 @@ postsubmits:
       always_run: false
       branches:
       - main
-      run_if_changed: "releng/release-tool/.*"
+      run_if_changed: "releng/release-tool/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -163,7 +163,7 @@ postsubmits:
       always_run: false
       branches:
       - main
-      run_if_changed: "external-plugins/botreview/.*"
+      run_if_changed: "external-plugins/botreview/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -195,7 +195,7 @@ postsubmits:
       always_run: false
       branches:
       - main
-      run_if_changed: "^(external-plugins|images)/referee/.*"
+      run_if_changed: "^(external-plugins|images)/referee/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -256,7 +256,7 @@ postsubmits:
               privileged: true
     - name: publish-ginkgo-tests-image
       always_run: false
-      run_if_changed: "^(images/ginkgo-tests/.*|robots/ginkgo-tests/.*|pkg/.*)"
+      run_if_changed: "images/ginkgo-tests/.*|robots/ginkgo-tests/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -824,7 +824,7 @@ postsubmits:
               memory: "1Gi"
     - name: publish-ci-usage-exporter-image
       always_run: false
-      run_if_changed: "robots/.*/ci-usage-exporter/.*"
+      run_if_changed: "robots/ci-usage-exporter/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -856,7 +856,7 @@ postsubmits:
       always_run: false
       branches:
       - main
-      run_if_changed: "robots/.*/test-report/.*"
+      run_if_changed: "robots/test-report/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
@@ -888,7 +888,7 @@ postsubmits:
       always_run: false
       branches:
       - main
-      run_if_changed: "images/test-label-analyzer/.*|robots/.*/test-label-analyzer/.*"
+      run_if_changed: "images/test-label-analyzer/.*|robots/test-label-analyzer/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
