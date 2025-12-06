@@ -28,7 +28,7 @@ If you do not want the webhook to be managed by Prow, here's how you setup the w
 * Go to the settings page of your repository or org, select webhooks on the left, and click on "Add webhook"
 * Enter the values as described in the screenshot
   * payload url is `https://prow.ci.kubevirt.io/hook`
-  * how and what to add as a secret is [documented here](https://github.com/kubernetes/test-infra/blob/master/prow/getting_started_deploy.md#create-the-github-secrets)
+  * how and what to add as a secret is [documented here](https://docs.prow.k8s.io/docs/getting-started-deploy/#create-the-github-secrets)
 
 ![Prow Webhook Configuration](prow_webhook_configuration.png)
 
@@ -39,7 +39,7 @@ Further resources
   * [Prow Deployment overview](https://github.com/kubevirt/project-infra/tree/main/github/ci/prow-deploy#kubevirt-prow-deployment)
   * [Prow configuration repository](https://github.com/kubevirt/project-infra/)
   * [Deck - the prow ui](https://prow.ci.kubevirt.io/)
-* kubernetes/test-infra
-  * [Prow docs](https://github.com/kubernetes/test-infra/blob/master/prow/)
-  * [Life Of A Prow Job](https://github.com/kubernetes/test-infra/blob/master/prow/life_of_a_prow_job.md)
-  * [How To Configure New Jobs](https://github.com/kubernetes/test-infra/blob/master/prow/jobs.md#how-to-configure-new-jobs)
+* sigs.k8s.io/prow
+  * [Prow docs](https://docs.prow.k8s.io/docs/)
+  * [Life Of A Prow Job](https://docs.prow.k8s.io/docs/life-of-a-prow-job/)
+  * [How To Configure New Jobs](https://docs.prow.k8s.io/docs/jobs/#how-to-configure-new-jobs)
