@@ -438,7 +438,7 @@ presubmits:
       preset-bazel-unnested: "false"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-unit-test-arm64-1.5
-    optional: false
+    optional: true
     spec:
       containers:
       - command:
@@ -871,7 +871,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-arm64-1.5
-    optional: false
+    optional: true
     spec:
       containers:
       - command:

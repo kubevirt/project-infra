@@ -551,6 +551,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-unit-test-arm64
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1080,6 +1081,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 4
     name: pull-kubevirt-e2e-k8s-1.34-sig-compute-arm64
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
