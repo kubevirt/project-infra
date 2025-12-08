@@ -398,6 +398,40 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
+    run_if_changed: "artifacts/opensuse/tumbleweed/.*"
+    annotations:
+      testgrid-create-test-group: "false"
+    cluster: prow-s390x-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 3
+    name: pull-containerdisks-pipeline-opensuse-tumbleweed-s390x
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - ./pipeline.sh
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.24.1"
+        - name: FOCUS
+          value: "opensuse-tumbleweed:*"
+        - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
+          value: "true"
+        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        name: ""
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+  - always_run: false
     run_if_changed: "artifacts/opensuse/leap/.*"
     annotations:
       testgrid-create-test-group: "false"
