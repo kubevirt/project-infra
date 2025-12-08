@@ -7,7 +7,7 @@ ENV GOPROXY=https://proxy.golang.org|direct \
     CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=${ARCH}
-ENV GIMME_GO_VERSION=1.22.6
+ENV GIMME_GO_VERSION=1.25.1
 
 RUN set -x && \
     git clone --depth 1 --revision e4d87dae72dbf1754625cbf112afc535307c1db4 https://github.com/kubernetes/test-infra.git && \
