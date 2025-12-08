@@ -12,7 +12,7 @@ Correctness tests run as unit and functional tests for each PR, and performance 
 ## Prow cluster
 The CI/CD system for performance testing is based on [Prow], a Kubernetes CI system, using the same control plane system as the Correctness tests. Therefore, all test statuses can be viewed in the same testgrid.
 
-However, unlike Correctness tests, Performance testing jobs do not use KubeVirtCI, which creates a Kubernetes cluster in a virtual machine. Instead, a pre-built cluster on top of baremetal nodes is used due to performance reasons. Most speacilly because we want to avoid the performance implications of nested virtualization. Moreover, unlike Correctness tests, only one Performance test job can run at a time to avoid performance interference from workload collocation.
+However, unlike Correctness tests, Performance testing jobs do not use KubeVirtCI, which creates a Kubernetes cluster in a virtual machine. Instead, a pre-built cluster on top of baremetal nodes is used due to performance reasons. Most specially because we want to avoid the performance implications of nested virtualization. Moreover, unlike Correctness tests, only one Performance test job can run at a time to avoid performance interference from workload collocation.
 
 
 
@@ -85,11 +85,10 @@ Regarding the hardware configuration, all nodes are homogeneous, with 2 Intel(R)
 
 ## Contact
 
-Please join our community and help us build the future of KubeVirt! There are many ways to participate. If you’re particularly interested in perfoamcne and scalability, you’ll be interested in: 
+Please join our community and help us build the future of KubeVirt! There are many ways to participate. If you’re particularly interested in performance and scalability, you’ll be interested in:
 
 * Joining the scalability “Special Interest Group”, which meets every Thursday at 7 AM Pacific Time at [Zoom meeting](https://zoom.us/j/96406344036). Calendar information [here](https://calendar.google.com/calendar/u/0/embed?src=kubevirt@cncf.io&ctz=GMT).
 * Chat with us on Slack via [#virtualization](https://kubernetes.slack.com/?redir=%2Farchives%2FC8ED7RKFE) or [#kubevirt-dev](https://kubernetes.slack.com/archives/C0163DT0R8X) @ kubernetes.slack.com
 * Discuss with us on the [kubevirt-dev Google Group](https://groups.google.com/forum/#!forum/kubevirt-dev)
 
-[Prow]: https://github.com/kubernetes/test-infra/tree/master/prow#readme
-[docker proxy]: https://github.com/rpardini/docker-registry-proxy
+[Prow]: https://github.com/kubernetes-sigs/prow#readme

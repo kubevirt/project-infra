@@ -143,12 +143,12 @@ Used to run ARM test jobs.
 
 Runs [performance-related jobs](performance-cluster.md).
 
-[Prow]: https://github.com/kubernetes/test-infra/tree/master/prow#readme
-["Life of a Prow Job"]: https://github.com/kubernetes/test-infra/blob/master/prow/life_of_a_prow_job.md
-[sequence diagram]: https://raw.githubusercontent.com/kubernetes/test-infra/master/prow/docs/pr-interactions-sequence.svg?sanitize=true
+[Prow]: https://github.com/kubernetes-sigs/prow#readme
+["Life of a Prow Job"]: https://docs.prow.k8s.io/docs/life-of-a-prow-job/
+[sequence diagram]: https://docs.prow.k8s.io/images/pr-interactions-sequence.svg
 [ci-search]: https://github.com/openshift/ci-search
 [docker proxy]: https://github.com/rpardini/docker-registry-proxy
 [cert-manager]: https://cert-manager.io/docs/
-[greenhouse]: https://github.com/kubernetes/test-infra/tree/master/greenhouse
+[greenhouse]: https://github.com/kubernetes/test-infra/tree/1b4b11a/greenhouse
 [automation secrets]: https://github.com/kubevirt/secrets/blob/master/secrets.tar.asc
 [build clusters configuration here]: ./how-to-add-a-prow-cluster.md
