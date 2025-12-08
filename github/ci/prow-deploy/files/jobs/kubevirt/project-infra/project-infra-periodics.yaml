@@ -1174,3 +1174,29 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
+- annotations:
+    testgrid-dashboards: kubevirt-project-infra-periodics
+    testgrid-days-of-results: "30"
+    testgrid-num-failures-to-alert: "1"
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 5m
+    grace_period: 1m
+  interval: 30m
+  labels:
+  max_concurrency: 1
+  name: periodic-project-infra-prow-arm-workloads-livez
+  spec:
+    containers:
+    - image: quay.io/curl/curl:8.14.1
+      env:
+      command:
+      - "curl"
+      - "--fail"
+      - "--insecure"
+      - "https://eu-west-1.rancher.arm.com/k8s/clusters/c-zvkv8/livez?verbose"
+      resources:
+        requests:
+          memory: "200Mi"
