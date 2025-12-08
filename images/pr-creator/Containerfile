@@ -15,7 +15,7 @@ ENV GOPROXY=https://proxy.golang.org|direct \
 # - https://gitlab.com/qemu-project/qemu/-/issues/2738
 # - https://github.com/openshift/dpu-operator/pull/308
 ENV GOMAXPROCS=3
-ENV GIMME_GO_VERSION=1.24.9
+ENV GIMME_GO_VERSION=1.25.1
 
 RUN set -x && \
     git clone --depth 1 --revision 03e5768a447b55381f7517a9d27bb51831893d31 https://github.com/kubernetes/test-infra.git && \

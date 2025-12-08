@@ -976,8 +976,6 @@ postsubmits:
         containers:
         - image: quay.io/kubevirtci/pr-creator:v20260121-35abae6
           env:
-          - name: GIMME_GO_VERSION
-            value: "1.25.1"
           - name: TARGET_GITHUB_REPO
             value: kubevirt/ci-performance-benchmarks
           - name: GITHUB_TOKEN_PATH
@@ -1009,11 +1007,11 @@ postsubmits:
             mkdir -p "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance/vmi "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance/vm
             mv "$CI_PERF_REPO_DIR"/weekly/vmi/release-index.html "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance/vmi
             mv "$CI_PERF_REPO_DIR"/weekly/vm/release-index.html "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance/vm
-            
+
             git-pr.sh -c "git clean -fd weekly && git add $RELEASE_DIR" -T main -r ci-performance-benchmarks -m "$CI_PERF_REPO_DIR" -b $BRANCH -d "echo 'Add release $RELEASE_VERSION performance benchmarks data'" -B "Add release $RELEASE_VERSION performance benchmarks data via automation"
 
             echo "PR created successfully"
-            echo "Process completed successfully." 
+            echo "Process completed successfully."
           resources:
             requests:
               memory: "1Gi"

@@ -171,9 +171,6 @@ periodics:
         echo "$image_tag" > amd64-centos9-$SHORT_SHA &&
         gsutil cp ./amd64-centos9-$SHORT_SHA gs://kubevirt-prow/release/kubevirt/kubevirtci/amd64-centos9-$SHORT_SHA
       # docker-in-docker needs privileged mode
-      env:
-      - name: GIMME_GO_VERSION
-        value: "1.24.7"
       securityContext:
         privileged: true
       resources:
