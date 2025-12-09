@@ -115,6 +115,14 @@ var _ = Describe("builds.go", func() {
 			Expect(err).To(BeIdenticalTo(err2))
 		})
 
+		It("should return nil if 403", func() {
+			err2 := fmt.Errorf("%d", http.StatusForbidden)
+			build, statusCode, err := getBuildFromGetterWithRetry(&SimpleMockBuildDataGetter{build: []*gojenkins.Build{nil}, err: []error{err2}}, int64(42), entry)
+			Expect(build).To(BeNil())
+			Expect(statusCode).To(BeEquivalentTo(http.StatusForbidden))
+			Expect(err).To(BeIdenticalTo(err2))
+		})
+
 		It("should return build after one retry with gateway timeout", func() {
 			expectedBuild := &gojenkins.Build{}
 			build, statusCode, err := getBuildFromGetterWithRetry(&SimpleMockBuildDataGetter{build: []*gojenkins.Build{nil, expectedBuild}, err: []error{fmt.Errorf("%d", http.StatusGatewayTimeout), nil}}, int64(42), entry)
@@ -157,6 +165,28 @@ var _ = Describe("builds.go", func() {
 			Expect(buildDataGetter.GetCallCounter()).To(BeEquivalentTo(uint32(numberOfThreads)))
 		})
 
+	})
+
+	When("filtering builds", func() {
+
+		It("should treat 404 as missing build status", func() {
+			Expect(isMissingBuildStatus(http.StatusNotFound)).To(BeTrue())
+		})
+
+		It("should treat 403 as missing build status", func() {
+			// This test validates that getFilteredBuild will treat 403 the same as 404,
+			// returning (nil, false) instead of calling Fatalf. The actual getFilteredBuild
+			// function uses isMissingBuildStatus internally, so testing this helper function
+			// validates the behavior.
+			Expect(isMissingBuildStatus(http.StatusForbidden)).To(BeTrue())
+		})
+
+		It("should not treat other status codes as missing builds", func() {
+			Expect(isMissingBuildStatus(http.StatusOK)).To(BeFalse())
+			Expect(isMissingBuildStatus(http.StatusInternalServerError)).To(BeFalse())
+			Expect(isMissingBuildStatus(http.StatusGatewayTimeout)).To(BeFalse())
+			Expect(isMissingBuildStatus(http.StatusUnauthorized)).To(BeFalse())
+		})
 	})
 
 })
