@@ -154,7 +154,7 @@ func getFilteredBuild(startOfReport time.Time, job *gojenkins.Job, ctx context.C
 	build, statusCode, err := getBuildWithRetry(job, ctx, buildNumber, fLog)
 
 	if build == nil {
-		if statusCode != http.StatusNotFound {
+		if !isMissingBuildStatus(statusCode) {
 			fLog.Fatalf("failed to fetch build data for build no %d: %v", buildNumber, err)
 		}
 		return nil, false
@@ -204,7 +204,7 @@ func getBuildFromGetterWithRetry(buildDataGetter BuildDataGetter, buildNumber in
 		retry.RetryIf(func(err error) bool {
 			fLog.Warningf("failed to fetch build data for build no %d: %v", buildNumber, err)
 			statusCode = httpStatusOrDie(err, fLog)
-			if statusCode == http.StatusNotFound {
+			if isMissingBuildStatus(statusCode) {
 				return false
 			}
 			if statusCode == http.StatusGatewayTimeout {
@@ -243,6 +243,15 @@ func httpStatusOrDie(err error, fLog *log.Entry) int {
 		fLog.Fatalf("Failed to get status code from error %v: %v", err, conversionError)
 	}
 	return statusCode
+}
+
+// isMissingBuildStatus returns true if the status code indicates a missing build.
+// Since Jenkins 2.528+, missing builds return 403 (Forbidden) instead of 404 (Not Found).
+// Note: This treats all 403 responses as missing builds, which could theoretically mask
+// genuine authorization/permission issues. However, in practice, Jenkins returns 403 for
+// missing builds when the build number doesn't exist, and we rely on this behavior.
+func isMissingBuildStatus(statusCode int) bool {
+	return statusCode == http.StatusNotFound || statusCode == http.StatusForbidden
 }
 
 func msecsToTime(msecs int64) time.Time {
