@@ -51,6 +51,11 @@
             background-color: #ffbf80;
         }
 
+        .nondeterministic {
+            border: 3px solid blue !important;
+            box-shadow: 0 0 8px rgba(0,0,255,0.5);
+        }
+
         .unimportant {
         }
 
@@ -268,7 +273,14 @@
                             N/A
                         </td>
                     {{- else -}}
-                        <td class="{{ (index $.Data $test $header).Severity }} center"
+                        {{- $details := (index $.Data $test $header) -}}
+                        {{- $flakyClass := "" -}}
+
+                        {{- if $details.NonDeterministic }}
+                            {{- $flakyClass = "nondeterministic" -}}
+                        {{- end }}
+
+                        <td class="{{ $details.Severity }} {{ $flakyClass }} center"
                             title="{{ $test }}&#10;{{ $header }}">
                             <div id="r{{$row}}c{{$col}}" onClick="popup(this.id)" class="popup">
                             <span class="tests_failed"

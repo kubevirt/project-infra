@@ -26,11 +26,12 @@ type Params struct {
 }
 
 type Details struct {
-	Succeeded int    `json:"succeeded"`
-	Skipped   int    `json:"skipped"`
-	Failed    int    `json:"failed"`
-	Severity  string `json:"severity"`
-	Jobs      []*Job `json:"jobs"`
+	Succeeded        int    `json:"succeeded"`
+	Skipped          int    `json:"skipped"`
+	Failed           int    `json:"failed"`
+	Severity         string `json:"severity"`
+	Jobs             []*Job `json:"jobs"`
+	NonDeterministic bool   `json:"nonDeterministic"`
 }
 
 type Job struct {
@@ -39,6 +40,7 @@ type Job struct {
 	PR          int    `json:"pr"`
 	BatchPRs    []int  `json:"batchPRs"`
 	Job         string `json:"job"`
+	CommitID    string `json:"commitID"`
 }
 
 type JobFailures struct {
@@ -128,9 +130,9 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 					data[test.Name][result.Job].Skipped = data[test.Name][result.Job].Skipped + 1
 				} else if test.Status == junit.StatusPassed {
 					data[test.Name][result.Job].Succeeded = data[test.Name][result.Job].Succeeded + 1
-					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &Job{Severity: "green", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR, BatchPRs: result.BatchPRs})
+					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &Job{Severity: "green", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR, BatchPRs: result.BatchPRs, CommitID: result.CommitID})
 				} else {
-					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &Job{Severity: "red", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR, BatchPRs: result.BatchPRs})
+					data[test.Name][result.Job].Jobs = append(data[test.Name][result.Job].Jobs, &Job{Severity: "red", BuildNumber: result.BuildNumber, Job: result.Job, PR: result.PR, BatchPRs: result.BatchPRs, CommitID: result.CommitID})
 				}
 			}
 		}
@@ -168,6 +170,7 @@ func CreateFlakeReportData(results []*JobResult, prNumbers []int, endOfReport ti
 	}
 
 	testsSortedByRelevance := SortTestsByRelevance(data, tests)
+	markNonDeterministicTests(data)
 	testAttributes := map[string]TestAttributes{}
 	bareTestNames := map[string]string{}
 	for _, testName := range testsSortedByRelevance {
@@ -438,4 +441,46 @@ func GenerateReportURL(org string, repo string, targetReportDate time.Time, date
 		return "", fmt.Errorf("Value %q not allowed for range, allowed values: %v", dateRange, dateRangeAllowedValues)
 	}
 	return fmt.Sprintf("https://storage.googleapis.com/kubevirt-prow/reports/flakefinder/%s/%s/flakefinder-%s-%s.%s", org, repo, targetReportDate.Format("2006-01-02"), dateRange, fileType), nil
+}
+
+// Mark tests where a test had both pass and fail outcomes for the same commit on the same lane.
+func markNonDeterministicTests(data map[string]map[string]*Details) {
+	for _, jobsByLane := range data {
+		for _, details := range jobsByLane {
+
+			outcomes := map[string]struct {
+				passed int
+				failed int
+			}{}
+
+			for _, job := range details.Jobs {
+				commitKey := job.CommitID
+				if commitKey == "" {
+					continue
+				}
+
+				out := outcomes[commitKey]
+
+				switch job.Severity {
+				case "green":
+					out.passed++
+				case "red":
+					out.failed++
+				case "skipped":
+				default:
+					// ignore other severities ("yellow", "orange", "almostgreen")
+				}
+
+				outcomes[commitKey] = out
+			}
+
+			// detect pass+fail mix for the same commit
+			for _, o := range outcomes {
+				if o.passed > 0 && o.failed > 0 {
+					details.NonDeterministic = true
+					break
+				}
+			}
+		}
+	}
 }

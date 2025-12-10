@@ -40,10 +40,26 @@ import (
 	prowv1 "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
 )
 
+// CloneRecord holds the top-level structure of clone-records.json
+type CloneRecord struct {
+	Refs []RepoRef `json:"refs"`
+}
+
+// RepoRef holds the repository reference details
+type RepoRef struct {
+	Pulls []PullRef `json:"pulls"`
+}
+
+// PullRef holds the commit SHA for the PR
+type PullRef struct {
+	SHA string `json:"sha"`
+}
+
 const (
 	//finishedJSON is the JSON file that stores build success info
-	finishedJSON = "finished.json"
-	startedJSON  = "started.json"
+	finishedJSON     = "finished.json"
+	startedJSON      = "started.json"
+	cloneRecordsJSON = "clone-records.json"
 )
 
 var testJobNameRegex *regexp.Regexp
@@ -115,6 +131,7 @@ func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			if err != nil {
 				return nil, fmt.Errorf("Cannot read started.json (%s) in bucket '%s'", dirOfStartedJSON, bucket)
 			}
+
 			if !IsLatestCommit(startedJSON, change) {
 				continue
 			}
@@ -129,11 +146,17 @@ func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			if err != nil {
 				return nil, err
 			}
+			//Always fetch the CommitID from the job's clone-records.json artifact.
+			commitID, err := readCommitIDFromCloneRecords(ctx, client, bucket, buildDirPath)
+			if err != nil {
+				logrus.Warningf("Failed to read clone-records.json for %s/%d: %v", job, build, err)
+				commitID = ""
+			}
 			report, err := junit.Ingest(data)
 			if err != nil {
 				return nil, err
 			}
-			reports = append(reports, &JobResult{Job: job, JUnit: report, BuildNumber: buildNumber, PR: change.ID()})
+			reports = append(reports, &JobResult{Job: job, JUnit: report, BuildNumber: buildNumber, PR: change.ID(), CommitID: commitID})
 		}
 	}
 
@@ -177,6 +200,10 @@ func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client
 		}
 
 		_, err = readGcsObject(ctx, client, bucket, dirOfFinishedJSON)
+
+		if err != nil {
+			return nil, err
+		}
 		if err == storage.ErrObjectNotExist {
 			// build still running?
 			continue
@@ -212,11 +239,16 @@ func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client
 			if err != nil {
 				return nil, err
 			}
+			commitID, err := readCommitIDFromCloneRecords(ctx, client, bucket, buildDirPath)
+			if err != nil {
+				logrus.Warningf("Failed to read clone-records.json for periodic job %s/%d: %v", buildDirPath, build, err)
+				commitID = ""
+			}
 			report, err := junit.Ingest(data)
 			if err != nil {
 				return nil, err
 			}
-			reports = append(reports, &JobResult{Job: lastJobDirectoryPathElement, JUnit: report, BuildNumber: buildNumber})
+			reports = append(reports, &JobResult{Job: lastJobDirectoryPathElement, JUnit: report, BuildNumber: buildNumber, CommitID: commitID})
 		}
 	}
 
@@ -326,6 +358,12 @@ func FindUnitTestFilesForBatchJobs(ctx context.Context, client *storage.Client, 
 					return nil, fmt.Errorf("Cannot read %q: %v", profilePath, err)
 				}
 
+				commitID, err := readCommitIDFromCloneRecords(ctx, client, bucket, buildDirPath)
+				if err != nil {
+					logrus.Warningf("Failed to read clone-records.json for batch job %s/%d: %v", buildDirPath, build, err)
+					commitID = ""
+				}
+
 				jobName := path.Base(batchJobDir)
 				if err != nil {
 					return nil, err
@@ -334,7 +372,7 @@ func FindUnitTestFilesForBatchJobs(ctx context.Context, client *storage.Client, 
 				if err != nil {
 					return nil, err
 				}
-				reports = append(reports, &JobResult{Job: jobName, JUnit: report, BuildNumber: buildNumber, BatchPRs: batchPRs})
+				reports = append(reports, &JobResult{Job: jobName, JUnit: report, BuildNumber: buildNumber, BatchPRs: batchPRs, CommitID: commitID})
 			}
 		}
 	}
@@ -377,4 +415,29 @@ func IsLatestCommit(jsonText []byte, change api.Change) bool {
 		return false
 	}
 	return change.Matches(&status)
+}
+
+// readCommitIDFromCloneRecords attempts to fetch and parse clone-records.json to get the CommitID (SHA).
+func readCommitIDFromCloneRecords(ctx context.Context, client *storage.Client, bucket string, buildDirPath string) (string, error) {
+	cloneRecordsPath := path.Join(buildDirPath, cloneRecordsJSON)
+	data, err := readGcsObject(ctx, client, bucket, cloneRecordsPath)
+	if err == storage.ErrObjectNotExist {
+		logrus.Debugf("Didn't find object '%s' in bucket '%s'", cloneRecordsPath, bucket)
+		return "", nil
+	}
+	if err != nil {
+		return "", fmt.Errorf("cannot read %q: %v", cloneRecordsPath, err)
+	}
+
+	var record CloneRecord
+	if err := json.Unmarshal(data, &record); err != nil {
+		return "", fmt.Errorf("failed to unmarshal %q: %v", cloneRecordsPath, err)
+	}
+
+	// Safely extract the SHA from the parsed structure
+	if len(record.Refs) > 0 && len(record.Refs[0].Pulls) > 0 {
+		return record.Refs[0].Pulls[0].SHA, nil
+	}
+
+	return "", nil
 }
