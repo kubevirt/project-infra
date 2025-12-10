@@ -656,6 +656,9 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
+  - org: kubernetes-sigs
+    repo: prow
+    base_ref: main
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -664,7 +667,7 @@ periodics:
       args:
       - "-ce"
       - |
-        hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra -T main -B $'Bump Prow\n\n/cc @kubevirt/prow-job-taskforce'
+        hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra -T main -d "./hack/prow-updates.sh"
       securityContext:
         privileged: true
       resources:
