@@ -223,6 +223,37 @@ postsubmits:
                 memory: "8Gi"
             securityContext:
               privileged: true
+    - name: publish-flakefinder-image
+      always_run: false
+      run_if_changed: "^(images/flakefinder/.*|robots/cmd/flakefinder/.*|robots/pkg/.*)"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      cluster: kubevirt-prow-control-plane
+      max_concurrency: 1
+      labels:
+        preset-bazel-cache: "true"
+        preset-kubevirtci-quay-credential: "true"
+        preset-podman-in-container-enabled: "true"
+        preset-project-infra-image-build-linux: "true"
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                cd images
+                ./publish_image.sh -e flakefinder quay.io kubevirtci
+            resources:
+              requests:
+                memory: "1Gi"
+              limits:
+                memory: "1Gi"
+            securityContext:
+              privileged: true
     - name: publish-ginkgo-tests-image
       always_run: false
       run_if_changed: "^(images/ginkgo-tests/.*|robots/cmd/ginkgo-tests/.*|robots/pkg/.*)"
