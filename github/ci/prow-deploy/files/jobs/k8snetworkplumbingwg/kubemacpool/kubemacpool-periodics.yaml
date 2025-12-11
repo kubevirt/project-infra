@@ -7,7 +7,7 @@ periodics:
       testgrid-create-test-group: "false"
     spec:
       containers:
-        - image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
+        - image: quay.io/kubevirtci/flakefinder:v20251210-e03df2d
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/gcs/service-account.json
@@ -43,7 +43,7 @@ periodics:
     decorate: true
     spec:
       containers:
-        - image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
+        - image: quay.io/kubevirtci/flakefinder:v20251210-e03df2d
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/gcs/service-account.json
@@ -79,7 +79,7 @@ periodics:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/flakefinder:v20250103-a6934c9
+        - image: quay.io/kubevirtci/flakefinder:v20251210-e03df2d
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /etc/gcs/service-account.json
