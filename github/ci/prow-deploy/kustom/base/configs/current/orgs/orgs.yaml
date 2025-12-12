@@ -638,7 +638,7 @@ orgs:
         description: Default Community health files.
         maintainers:
           - dhiller
-          - brianmcarey
+          - dollierp
           - aburdenthehand
         repos:
           ".github": admin
@@ -794,7 +794,7 @@ orgs:
         maintainers:
           - dhiller
           - rmohr
-          - brianmcarey
+          - dollierp
           - enp0s3
         members:
           - phoracek
@@ -959,7 +959,7 @@ orgs:
         description: "Users who are responsible for when things go wrong wrt CI."
         members:
         - dhiller
-        - brianmcarey
+        - dollierp
         - enp0s3
         - xpivarc
       sig-scale:
@@ -996,7 +996,7 @@ orgs:
       alpine-make-vm-image-maintainers:
         description: Maintainers of alpine make vm image project
         members:
-          - brianmcarey
+          - dollierp
           - dhiller
           - vamsikrishna-siddu
           - vladikr
