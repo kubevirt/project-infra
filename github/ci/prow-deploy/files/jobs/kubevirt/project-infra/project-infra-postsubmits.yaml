@@ -550,7 +550,7 @@ postsubmits:
       always_run: false
       branches:
       - main
-      run_if_changed: "images/pr-creator/.*"
+      run_if_changed: 'images/pr-creator/.*|hack/(git-pr\.sh|git-askpass\.sh)|robots/cmd/labels-checker/.*|robots/pkg/.*|go\.(mod|sum)'
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
