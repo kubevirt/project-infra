@@ -1,6 +1,6 @@
 FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1 AS builder
 
-ENV GIMME_GO_VERSION=1.22.6
+ENV GIMME_GO_VERSION=1.25.1
 
 RUN set -x && \
     git clone --depth 1 --revision e4d87dae72dbf1754625cbf112afc535307c1db4 https://github.com/kubernetes/test-infra.git && \
