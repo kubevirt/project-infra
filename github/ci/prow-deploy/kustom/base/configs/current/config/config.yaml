@@ -9,10 +9,10 @@ plank:
       timeout: 2h
       grace_period: 15s
       utility_images:
-        clonerefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20251204-c1b4d92ca"
-        initupload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20251204-c1b4d92ca"
-        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20251204-c1b4d92ca"
-        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20251204-c1b4d92ca"
+        clonerefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20251211-8a9b5e47b"
+        initupload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20251211-8a9b5e47b"
+        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20251211-8a9b5e47b"
+        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20251211-8a9b5e47b"
       gcs_configuration:
         bucket: "kubevirt-prow"
         path_strategy: "explicit"
