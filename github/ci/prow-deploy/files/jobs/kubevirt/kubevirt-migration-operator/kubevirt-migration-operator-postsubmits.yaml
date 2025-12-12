@@ -28,10 +28,10 @@ postsubmits:
         - "-c"
         - |
           cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
-          make clean &&
+          make buildah-manifest-clean &&
           GOARCH=arm64 make buildah-manifest &&
           GOARCH=amd64 make buildah-manifest &&
-          GOARCH=s390x make buildah-manifest
+          GOARCH=s390x make buildah-manifest &&
           # Only push images on tags
           [ -z "$(git tag --points-at HEAD | head -1)" ] ||
           TAG="$(git tag --points-at HEAD | head -1)" make buildah-manifest-push
