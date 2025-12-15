@@ -2837,3 +2837,44 @@ periodics:
           privileged: true
     nodeSelector:
       type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-alert-email: "kubevirt-ci-maintainers@redhat.com"
+  cluster: prow-workloads
+  cron: 3 * * * *
+  decorate: true
+  extra_refs:
+    - base_ref: main
+      org: kubevirt
+      repo: project-infra
+      workdir: true
+    - base_ref: main
+      org: kubevirt
+      repo: kubevirt
+  labels:
+    preset-github-credentials: "true"
+  name: periodic-kubevirt-auto-quarantine
+  spec:
+    containers:
+      - image: quay.io/kubevirtci/pr-creator:v20251125-430e226
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-ce"
+          - |
+            KUBEVIRT_REPO_PATH="$(realpath ../../kubevirt/kubevirt)"
+            GIT_ASKPASS="$(realpath .)/hack/git-askpass.sh" git-pr.sh \
+              -c "go run ./robots/cmd/quarantine auto --pr-description-output-file=/tmp/pr-description.md --test-source-path=${KUBEVIRT_REPO_PATH}/tests" \
+              -r kubevirt \
+              -b auto-quarantine \
+              -T main \
+              -p "${KUBEVIRT_REPO_PATH}" \
+              -d "cat /tmp/pr-description.md" \
+              -R \
+              -L 'skip-review' \
+              -M 'lgtm,approved,do-not-merge/hold,skip-review'
+        env:
+          - name: GIMME_GO_VERSION
+            value: "1.25.1"
+    nodeSelector:
+      type: bare-metal-external
