@@ -1114,6 +1114,48 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-s390x-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-kubevirt-s390x-icr-credential: "true"
+    max_concurrency: 3
+    name: pull-kubevirt-e2e-k8s-1.34-s390x
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          cat $ICR_PASSWORD | podman login icr.io --username $(cat $ICR_USER) --password-stdin=true
+          automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.34-wg-s390x
+        - name: KUBEVIRTCI_TAG
+          value: "2512052315-50023d28"
+        - name: KUBEVIRT_SLIM
+          value: "true"
+        - name: KUBEVIRT_BUILDER_IMAGE
+          value: icr.io/kubevirt/builder:2405141107-77fe60855
+        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        name: ""
+        resources:
+          requests:
+            memory: 21Gi
+        securityContext:
+          privileged: true
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
     cluster: prow-arm64-workloads
     decorate: true
     decoration_config:
