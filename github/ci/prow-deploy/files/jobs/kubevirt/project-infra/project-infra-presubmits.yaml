@@ -397,7 +397,7 @@ presubmits:
               memory: "4Gi"
   - name: build-pr-creator-image
     always_run: false
-    run_if_changed: "images/pr-creator/.*"
+    run_if_changed: 'images/pr-creator/.*|hack/(git-pr\.sh|git-askpass\.sh)|robots/cmd/labels-checker/.*|robots/pkg/.*|go\.(mod|sum)'
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"

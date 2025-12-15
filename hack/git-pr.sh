@@ -40,13 +40,14 @@ repo=kubevirt
 command_path=$(pwd)
 targetbranch=master
 labels=
+missing_labels=
 description_command=
 title=
 body=
 head_branch=
 release_note_none=
 
-while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:d:h:R:B:" opt; do
+while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:M:d:h:R:B:" opt; do
     case "${opt}" in
         D )
             dry_run=true
@@ -90,6 +91,9 @@ while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:d:h:R:B:" opt; do
         L )
             labels="${OPTARG}"
             ;;
+        M )
+            missing_labels="${OPTARG}"
+            ;;
         d )
             description_command="${OPTARG}"
             ;;
@@ -112,6 +116,19 @@ done
 if [ -z "${command}" ]; then
     usage
     exit 1
+fi
+
+if [ -n "${missing_labels}" ]; then
+    if ! labels-checker \
+        --org=kubevirt \
+        --repo="${repo}" \
+        --author="${user}" \
+        --branch-name="${branch}" \
+        --ensure-labels-missing="${missing_labels}" \
+        --github-token-path="${token}"; then
+        echo "skipping PR creation since a PR exists and has one of labels ${missing_labels}"
+        exit 0
+    fi
 fi
 
 if [ -z "${summary}" ]; then
