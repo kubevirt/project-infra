@@ -418,7 +418,9 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "60Gi"
+              memory: "52Gi"
+            limits:
+              memory: "52Gi"
   - name: build-vm-image-builder-image
     always_run: false
     run_if_changed: "images/bootstrap/.*"
