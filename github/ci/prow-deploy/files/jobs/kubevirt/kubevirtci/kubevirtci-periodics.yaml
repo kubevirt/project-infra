@@ -62,7 +62,9 @@ periodics:
       args:
       - |
         set -e
-        git-pr.sh -c "cd ../kubevirt && make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -p ../kubevirt -T main -L skip-review -M lgtm,approved,do-not-merge/hold
+        if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=bump-kubevirtci --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
+          git-pr.sh -c "cd ../kubevirt && make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -p ../kubevirt -T main
+        fi
       securityContext:
         privileged: true
       resources:
@@ -90,16 +92,19 @@ periodics:
   spec:
     containers:
     - image: quay.io/kubevirtci/pr-creator:v20251125-430e226
-      command: ["/bin/sh", "-ce"]
+      command: ["/bin/sh", "-c"]
       args:
       - |
-        git-pr.sh -c "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile" \
-          -d "echo 'Bump fedora provisioning base to latest version'" \
-          -b bump-fedora-provision \
-          -p ../kubevirtci \
-          -r kubevirtci \
-          -T main \
-          -M lgtm,approved,do-not-merge/hold
+        set -e
+        if labels-checker \
+              --org=kubevirt \
+              --repo=kubevirtci \
+              --author=kubevirt-bot \
+              --branch-name=bump-fedora-provision \
+              --ensure-labels-missing=lgtm,approved,do-not-merge/hold \
+              --github-token-path=/etc/github/oauth; then
+          git-pr.sh -c "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile" -d "echo 'Bump fedora provisioning base to latest version'" -b bump-fedora-provision -p ../kubevirtci -r kubevirtci -T main
+        fi
       securityContext:
         privileged: true
       resources:
@@ -267,16 +272,17 @@ periodics:
         args:
           - |
             set -e
-            git-pr.sh \
-              -c "cd ../hyperconverged-cluster-operator && make bump-kubevirtci" \
-              -b bump-kubevirtci \
-              -p ../hyperconverged-cluster-operator \
-              -r hyperconverged-cluster-operator \
-              -L "release-note-none" \
-              -M 'lgtm,approved,do-not-merge/hold' \
-              -d "../hyperconverged-cluster-operator/hack/pr-description-for-bump-kvci.sh" \
-              -T main \
-              -R
+            if labels-checker --org=kubevirt --repo=hyperconverged-cluster-operator --author=kubevirt-bot --branch-name=bump-kubevirtci --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
+              git-pr.sh \
+                -c "cd ../hyperconverged-cluster-operator && make bump-kubevirtci" \
+                -b bump-kubevirtci \
+                -p ../hyperconverged-cluster-operator \
+                -r hyperconverged-cluster-operator \
+                -L "release-note-none" \
+                -d "../hyperconverged-cluster-operator/hack/pr-description-for-bump-kvci.sh" \
+                -T main \
+                -R
+            fi
         securityContext:
           privileged: true
         resources:
