@@ -99,7 +99,7 @@ build_image() {
         if [[ $local_base_image == false ]]; then
 	        podman pull --platform="linux/${arch}" ${base_image}
         fi
-        podman build --platform="linux/${arch}" "${build_args[@]}" --build-arg ARCH=${arch} --build-arg IMAGE_ARG=${build_target} . -t "${image_name}-${arch}" -t "${build_target}-${arch}"
+        podman build --platform="linux/${arch}" "${build_args[@]}" --build-arg ARCH=${arch} --build-arg IMAGE_ARG=${build_target} . -t "${image_name}-${arch}"
     done
 }
 
