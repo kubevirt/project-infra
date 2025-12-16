@@ -874,14 +874,21 @@ periodics:
       - -c
       args:
       - |
-        hack/git-pr.sh \
-          -c "hack/bump-prow-job-images.sh" \
-          -b prow-job-image-bump \
-          -r project-infra \
-          -T main \
-          -d "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Job images'" \
-          -L 'skip-review' \
-          -M 'lgtm,approved,do-not-merge/hold,skip-review'
+        if labels-checker \
+          --org=kubevirt \
+          --repo=kubevirt \
+          --author=kubevirt-bot \
+          --branch-name=prow-job-image-bump \
+          --ensure-labels-missing=lgtm,approved,do-not-merge/hold,skip-review \
+          --github-token-path=/etc/github/oauth; then
+          hack/git-pr.sh \
+            -c "hack/bump-prow-job-images.sh" \
+            -b prow-job-image-bump \
+            -r project-infra \
+            -T main \
+            -d "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Job images'" \
+            -L 'skip-review'
+        fi
       resources:
         requests:
           memory: "200Mi"
@@ -913,14 +920,21 @@ periodics:
       - -c
       args:
       - |
-        hack/git-pr.sh \
-          -c "hack/bump-prow-deployment-images.sh" \
-          -b prow-deployment-image-bump \
-          -r project-infra \
-          -T main \
-          -d "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Deployment images'" \
-          -L 'skip-review' \
-          -M lgtm,approved,do-not-merge/hold,skip-review
+        if labels-checker \
+          --org=kubevirt \
+          --repo=kubevirt \
+          --author=kubevirt-bot \
+          --branch-name=prow-deployment-image-bump \
+          --ensure-labels-missing=lgtm,approved,do-not-merge/hold,skip-review \
+          --github-token-path=/etc/github/oauth; then
+          hack/git-pr.sh \
+            -c "hack/bump-prow-deployment-images.sh" \
+            -b prow-deployment-image-bump \
+            -r project-infra \
+            -T main \
+            -d "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Deployment images'" \
+            -L 'skip-review'
+        fi
       resources:
         requests:
           memory: "200Mi"
@@ -952,14 +966,21 @@ periodics:
       - -c
       args:
       - |
-        git-pr.sh \
-          -c "hack/bump-containerfile-images.sh" \
-          -b containerfile-image-bump \
-          -r project-infra \
-          -T main \
-          -d "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Containerfile base images'" \
-          -L 'skip-review' \
-          -M 'lgtm,approved,do-not-merge/hold,skip-review'
+        if labels-checker \
+          --org=kubevirt \
+          --repo=kubevirt \
+          --author=kubevirt-bot \
+          --branch-name=containerfile-image-bump \
+          --ensure-labels-missing=lgtm,approved,do-not-merge/hold,skip-review \
+          --github-token-path=/etc/github/oauth; then
+          hack/git-pr.sh \
+            -c "hack/bump-containerfile-images.sh" \
+            -b containerfile-image-bump \
+            -r project-infra \
+            -T main \
+            -d "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Containerfile base images'" \
+            -L 'skip-review'
+        fi
       resources:
         requests:
           memory: "200Mi"
