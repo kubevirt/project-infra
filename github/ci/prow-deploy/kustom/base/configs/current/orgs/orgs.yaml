@@ -1009,6 +1009,7 @@ orgs:
         maintainers:
           - 0xFelix
           - lyarwood
+          - jcanocan
         repos:
           kubevirt.core: admin
       containerdisks-maintainers:
