@@ -26,7 +26,7 @@ postsubmits:
       preset-pgp-bot-key: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20251216-1746113
+      - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -111,7 +111,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20251216-1746113
+      - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt

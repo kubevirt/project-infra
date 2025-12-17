@@ -20,7 +20,7 @@ presubmits:
         env:
           - name: GIMME_GO_VERSION
             value: "1.24.8"
-        image: quay.io/kubevirtci/golang:v20251216-1746113
+        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
         resources:
           requests:
             memory: 4Gi
@@ -44,7 +44,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.24.8"
-        image: quay.io/kubevirtci/golang:v20251216-1746113
+        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
         resources:
           requests:
             memory: 4Gi
@@ -71,7 +71,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.24.8"
-        image: quay.io/kubevirtci/golang:v20251216-1746113
+        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
         resources:
           requests:
             memory: "8Gi"
@@ -99,7 +99,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.24.8"
-        image: quay.io/kubevirtci/golang:v20251216-1746113
+        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
         resources:
           requests:
             memory: 4Gi
@@ -126,7 +126,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.24.8"
-        image: quay.io/kubevirtci/golang:v20251216-1746113
+        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
         resources:
           requests:
             memory: 20Gi
@@ -154,7 +154,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.24.8"
-        image: quay.io/kubevirtci/golang:v20251216-1746113
+        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
         resources:
           requests:
             memory: 4Gi
