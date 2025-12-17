@@ -1,17 +1,23 @@
+ARG ARCH
+
 FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1 AS builder
 
+ENV GOPROXY=https://proxy.golang.org|direct \
+    GOFLAGS="-mod=vendor -ldflags=-extldflags=\"-static\"" \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=${ARCH}
 ENV GIMME_GO_VERSION=1.22.6
 
 RUN set -x && \
     git clone --depth 1 --revision e4d87dae72dbf1754625cbf112afc535307c1db4 https://github.com/kubernetes/test-infra.git && \
     cd ./test-infra && \
-    /usr/local/bin/runner.sh /bin/sh -ce 'go mod vendor && go build -o /usr/local/bin/pr-creator ./robots/pr-creator' && \
-    chmod +x /usr/local/bin/pr-creator && \
-    cd .. && rm -rf ./test-infra
+    /usr/local/bin/runner.sh /bin/sh -ce 'go mod vendor && go build -tags netgo -o /usr/local/bin/pr-creator ./robots/pr-creator' && \
+    chmod +x /usr/local/bin/pr-creator
 
 RUN set -x && \
     cd /project-infra && \
-    /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/labels-checker ./robots/cmd/labels-checker' && \
+    /usr/local/bin/runner.sh /bin/sh -ce 'go build -tags netgo -o /usr/local/bin/labels-checker ./robots/cmd/labels-checker' && \
     chmod +x /usr/local/bin/labels-checker
 
 FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1 AS final
