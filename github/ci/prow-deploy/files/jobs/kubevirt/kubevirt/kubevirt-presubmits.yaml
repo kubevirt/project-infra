@@ -338,6 +338,8 @@ presubmits:
           value: quay.io/kubevirtci/cannier:v20250910-9d5a17d
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
+        - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
+          value: "6h45m"
         image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         name: ""
         resources:
@@ -387,6 +389,8 @@ presubmits:
           value: quay.io/kubevirtci/cannier:v20250910-9d5a17d
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
+        - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
+          value: "35h45m"
         image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         name: ""
         resources:
