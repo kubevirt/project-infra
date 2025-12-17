@@ -1,0 +1,43 @@
+postsubmits:
+  kubevirt/virt-template:
+  - name: push-virt-template-release-tag
+    branches:
+    # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+    - ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+    cluster: kubevirt-prow-control-plane
+    always_run: true
+    optional: false
+    annotations:
+      testgrid-create-test-group: "false"
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-github-credentials: "true"
+      preset-kubevirtci-quay-credential: "true"
+      preset-pgp-bot-key: "true"
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 3h0m0s
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          cat "$QUAY_PASSWORD" | podman login --username "$(cat "$QUAY_USER")" --password-stdin=true quay.io
+          gpg --allow-secret-key-import --import /etc/pgp/token
+          export GIT_ASKPASS="$PWD/hack/git-askpass.sh"
+          hack/release.sh
+        env:
+          - name: GIMME_GO_VERSION
+            value: "1.24.11"
+          - name: GPG_USER_ID
+            value: "0x99F7C0D2E1BB8025"
+        image: quay.io/kubevirtci/golang:v20251216-1746113
+        resources:
+          requests:
+            memory: "8Gi"
+        securityContext:
+          privileged: true
