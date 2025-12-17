@@ -339,6 +339,7 @@ postsubmits:
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
+              - "-e"
               - "-c"
               - |
                 cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
