@@ -1,5 +1,5 @@
 ARG ARCH
-FROM quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1-$ARCH
+FROM bootstrap-$ARCH
 
 ENV GIMME_GO_VERSION=1.24.9
 
