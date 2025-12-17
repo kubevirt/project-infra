@@ -108,7 +108,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources: {}
 - annotations:
@@ -151,7 +151,7 @@ periodics:
           secretKeyRef:
             key: oauth
             name: oauth-token
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources: {}
 - annotations:
@@ -184,7 +184,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources: {}
 - annotations:
@@ -215,7 +215,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.23.4
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources: {}
 - annotations:
@@ -246,7 +246,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources: {}
 - annotations:
@@ -382,7 +382,7 @@ periodics:
         value: /etc/github/oauth
       - name: BUILD_ARCH
         value: amd64,crossbuild-s390x,crossbuild-aarch64
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources:
         requests:
@@ -509,7 +509,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: kind-1.33-vgpu
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources:
         requests:
@@ -581,7 +581,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: kind-sriov
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources:
         requests:
@@ -881,7 +881,7 @@ periodics:
       - /bin/sh
       - -c
       - make go-test
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources:
         requests:
@@ -957,7 +957,7 @@ periodics:
         value: Always
       - name: PERFSCALE_WORKLOAD
         value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-100.yaml
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources:
         requests:
@@ -1044,7 +1044,7 @@ periodics:
         value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-400.yaml
       - name: PERFSCALE_WORKLOAD_SIX_HUNDRED
         value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-600.yaml
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources:
         requests:
@@ -1667,7 +1667,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources: {}
 - annotations:
@@ -1708,7 +1708,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources: {}
 - annotations:
@@ -1772,7 +1772,7 @@ periodics:
         value: kubevirtbot@redhat.com
       - name: GIT_REPO_URL
         value: https://kubevirt-bot@github.com/kubevirt/sig-release.git
-      image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+      image: quay.io/kubevirtci/golang:v20251216-1746113
       name: ""
       resources:
         requests:

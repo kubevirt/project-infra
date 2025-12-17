@@ -21,7 +21,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.24.1"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:
@@ -47,7 +47,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.24.1"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:
@@ -78,7 +78,7 @@ presubmits:
           value: "1.24.1"
         - name: FOCUS
           value: "centos-stream:9"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:
@@ -113,7 +113,7 @@ presubmits:
           value: "centos-stream:9"
         - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:
@@ -146,7 +146,7 @@ presubmits:
               value: "1.24.1"
             - name: FOCUS
               value: "debian:*"
-          image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+          image: quay.io/kubevirtci/golang:v20251216-1746113
           name: ""
           resources:
             requests:
@@ -181,7 +181,7 @@ presubmits:
           value: "1.24.1"
         - name: FOCUS
           value: "centos-stream:*"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:
@@ -217,7 +217,7 @@ presubmits:
           value: "centos-stream:*"
         - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:
@@ -250,7 +250,7 @@ presubmits:
           value: "1.24.1"
         - name: FOCUS
           value: "fedora:*"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:
@@ -286,7 +286,7 @@ presubmits:
           value: "fedora:*"
         - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:
@@ -319,7 +319,7 @@ presubmits:
           value: "1.24.1"
         - name: FOCUS
           value: "ubuntu:*"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:
@@ -355,7 +355,7 @@ presubmits:
           value: "ubuntu:*"
         - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:
@@ -388,7 +388,7 @@ presubmits:
           value: "1.24.1"
         - name: FOCUS
           value: "opensuse-tumbleweed:*"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:
@@ -424,7 +424,7 @@ presubmits:
           value: "opensuse-tumbleweed:*"
         - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:
@@ -457,7 +457,7 @@ presubmits:
           value: "1.24.1"
         - name: FOCUS
           value: "opensuse-leap:*"
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20251216-1746113
         name: ""
         resources:
           requests:

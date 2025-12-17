@@ -724,7 +724,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/golang:v20251216-1746113
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -787,7 +787,7 @@ postsubmits:
           env:
           - name: GIMME_GO_VERSION
             value: "1.25.1"
-          image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+          image: quay.io/kubevirtci/golang:v20251216-1746113
           resources:
             requests:
               memory: "8Gi"
@@ -959,7 +959,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/golang:v20251216-1746113
           env:
           - name: GIMME_GO_VERSION
             value: "1.25.1"

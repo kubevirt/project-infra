@@ -20,7 +20,7 @@ presubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/golang:v20251216-1746113
             securityContext:
               privileged: true
             env:
@@ -52,7 +52,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/golang:v20251216-1746113
             securityContext:
               privileged: true
             resources:
@@ -118,7 +118,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/golang:v20251216-1746113
             securityContext:
               privileged: true
             resources:
@@ -153,7 +153,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/golang:v20251216-1746113
             securityContext:
               privileged: true
             resources:
