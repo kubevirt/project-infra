@@ -14,11 +14,7 @@ periodics:
   extra_refs:
   - base_ref: main
     org: kubevirt
-    repo: project-infra
-  - base_ref: main
-    org: kubevirt
     repo: virt-template
-    workdir: true
   spec:
     containers:
     - command:
@@ -26,13 +22,11 @@ periodics:
       - /bin/sh
       - -c
       - |
-        export GIT_ASKPASS="$PWD/../project-infra/hack/git-askpass.sh"
+        export GIT_ASKPASS="$PWD/hack/git-askpass.sh"
         hack/publish-staging.sh
       env:
-      - name: PULL_BASE_REF
-        value: main
       - name: GIMME_GO_VERSION
-        value: "1.24.8"
+        value: "1.24.11"
       image: quay.io/kubevirtci/golang:v20251216-1746113
       resources:
         requests:

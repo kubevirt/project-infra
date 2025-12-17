@@ -18,8 +18,8 @@ presubmits:
         - -c
         - make all
         env:
-          - name: GIMME_GO_VERSION
-            value: "1.24.8"
+        - name: GIMME_GO_VERSION
+          value: "1.24.11"
         image: quay.io/kubevirtci/golang:v20251216-1746113
         resources:
           requests:
@@ -43,7 +43,7 @@ presubmits:
         - make build-virttemplatectl
         env:
         - name: GIMME_GO_VERSION
-          value: "1.24.8"
+          value: "1.24.11"
         image: quay.io/kubevirtci/golang:v20251216-1746113
         resources:
           requests:
@@ -70,7 +70,7 @@ presubmits:
         - make container-build
         env:
         - name: GIMME_GO_VERSION
-          value: "1.24.8"
+          value: "1.24.11"
         image: quay.io/kubevirtci/golang:v20251216-1746113
         resources:
           requests:
@@ -98,7 +98,7 @@ presubmits:
         - make test
         env:
         - name: GIMME_GO_VERSION
-          value: "1.24.8"
+          value: "1.24.11"
         image: quay.io/kubevirtci/golang:v20251216-1746113
         resources:
           requests:
@@ -125,7 +125,7 @@ presubmits:
         - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
         - name: GIMME_GO_VERSION
-          value: "1.24.8"
+          value: "1.24.11"
         image: quay.io/kubevirtci/golang:v20251216-1746113
         resources:
           requests:
@@ -153,7 +153,7 @@ presubmits:
         - make build-installer build-installer-openshift
         env:
         - name: GIMME_GO_VERSION
-          value: "1.24.8"
+          value: "1.24.11"
         image: quay.io/kubevirtci/golang:v20251216-1746113
         resources:
           requests:
