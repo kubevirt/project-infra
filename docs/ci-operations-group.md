@@ -29,7 +29,7 @@ The CI Operations Group consists of a small number of people who maintain the Ku
    <td><b>SIG Support</b></td>
   </tr>
   <tr>
-   <td><a href="https://github.com/brianmcarey">Brian Carey</a></td>
+   <td><a href="https://github.com/dollierp">Denis Ollier Pinas</a></td>
    <td>Mon-Fri</td>
    <td>GMT+1</td>
    <td>Primary</td>

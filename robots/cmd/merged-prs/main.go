@@ -53,7 +53,7 @@ type SearchResult struct {
 
 func main() {
 	startDate := flag.String("start-date", time.Now().AddDate(0, 0, -7).Format("2006-01-02"), "Start date for PR search, format YYYY-MM-DD")
-	authors := flag.String("authors", "dhiller,brianmcarey", "Comma-separated list of GitHub author handles")
+	authors := flag.String("authors", "dhiller,dollierp", "Comma-separated list of GitHub author handles")
 	flag.Parse()
 
 	query, searchResults, err := queryMergedPRsForAuthors(authors, startDate)
