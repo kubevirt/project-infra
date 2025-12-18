@@ -1,8 +1,8 @@
 presubmits:
   kubevirt/virt-template:
-  - name: pull-virt-template
+  - name: pull-virt-template-0.1
     branches:
-    - main
+    - release-0.1
     always_run: true
     optional: false
     cluster: prow-workloads
@@ -26,9 +26,9 @@ presubmits:
         resources:
           requests:
             memory: 4Gi
-  - name: pull-virt-template-build-virttemplatectl
+  - name: pull-virt-template-build-virttemplatectl-0.1
     branches:
-    - main
+    - release-0.1
     always_run: false
     run_if_changed: "api/.*|cmd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|Makefile|go.*"
     cluster: prow-workloads
@@ -52,9 +52,9 @@ presubmits:
         resources:
           requests:
             memory: 4Gi
-  - name: pull-virt-template-container-build
+  - name: pull-virt-template-container-build-0.1
     branches:
-    - main
+    - release-0.1
     always_run: false
     run_if_changed: "api/.*|cmd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|apiserver.Dockerfile|Dockerfile|Makefile|go.*"
     cluster: prow-workloads
@@ -85,9 +85,9 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-virt-template-test
+  - name: pull-virt-template-test-0.1
     branches:
-    - main
+    - release-0.1
     always_run: false
     run_if_changed: "api/.*|config/crd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|Makefile|go.*"
     cluster: prow-workloads
@@ -111,9 +111,9 @@ presubmits:
         resources:
           requests:
             memory: 4Gi
-  - name: pull-virt-template-cluster-functest
+  - name: pull-virt-template-cluster-functest-0.1
     branches:
-    - main
+    - release-0.1
     always_run: false
     run_if_changed: "api/.*|cmd/.*|config/.*|hack/.*|internal/.*|staging/.*|tests/.*|vendor/.*|apiserver.Dockerfile|Dockerfile|Makefile|go.*"
     annotations:
@@ -144,9 +144,9 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - name: pull-virt-template-build-installer
+  - name: pull-virt-template-build-installer-0.1
     branches:
-    - main
+    - release-0.1
     always_run: false
     run_if_changed: "api/.*|config/.*|hack/.*|internal/.*|Makefile"
     cluster: prow-workloads
