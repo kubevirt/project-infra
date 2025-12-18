@@ -1006,7 +1006,7 @@ postsubmits:
       run_if_changed: "robots/cmd/perf-report-creator/shape.yaml"
       spec:
         containers:
-        - image: quay.io/kubevirtci/pr-creator:v20251125-430e226
+        - image: quay.io/kubevirtci/pr-creator:v20251218-01f83ad
           env:
           - name: GIMME_GO_VERSION
             value: "1.25.1"
