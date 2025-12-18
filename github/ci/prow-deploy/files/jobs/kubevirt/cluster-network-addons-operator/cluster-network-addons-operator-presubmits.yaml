@@ -22,7 +22,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             securityContext:
               privileged: true
             resources:
@@ -54,7 +54,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             securityContext:
               privileged: true
             resources:
@@ -82,7 +82,7 @@ presubmits:
         preset-podman-in-container-enabled: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             securityContext:
               privileged: true
             resources:
@@ -117,7 +117,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             securityContext:
               privileged: true
             resources:
@@ -150,7 +150,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             securityContext:
               privileged: true
             resources:
@@ -181,7 +181,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             securityContext:
               privileged: true
             resources:
@@ -214,7 +214,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             securityContext:
               privileged: true
             resources:
@@ -247,7 +247,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             securityContext:
               privileged: true
             resources:
@@ -280,7 +280,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             securityContext:
               privileged: true
             resources:
@@ -313,7 +313,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             securityContext:
               privileged: true
             resources:
@@ -345,7 +345,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             securityContext:
               privileged: true
             resources:
@@ -378,7 +378,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             securityContext:
               privileged: true
             resources:

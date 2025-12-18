@@ -22,7 +22,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20251216-1746113
+          - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
             env:
             - name: GIT_ASKPASS
               value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
@@ -66,7 +66,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20251216-1746113
+          - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
             env:
             - name: GIT_ASKPASS
               value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
