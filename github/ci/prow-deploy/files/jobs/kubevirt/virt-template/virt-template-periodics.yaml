@@ -21,13 +21,11 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/sh
       - -c
-      - |
-        export GIT_ASKPASS="$PWD/hack/git-askpass.sh"
-        hack/publish-staging.sh
+      - hack/publish-staging.sh
       env:
       - name: GIMME_GO_VERSION
         value: "1.24.11"
-      image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+      image: quay.io/kubevirtci/pr-creator:v20251218-01f83ad
       resources:
         requests:
           memory: 200Mi
