@@ -637,6 +637,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: check-provision-k8s-1.35
+    optional: true
     spec:
       containers:
       - command:
