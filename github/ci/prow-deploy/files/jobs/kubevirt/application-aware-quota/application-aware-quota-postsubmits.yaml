@@ -19,7 +19,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+      - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -56,7 +56,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+      - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -92,7 +92,7 @@ postsubmits:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+      - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -131,7 +131,7 @@ postsubmits:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+      - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -173,7 +173,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+      - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt

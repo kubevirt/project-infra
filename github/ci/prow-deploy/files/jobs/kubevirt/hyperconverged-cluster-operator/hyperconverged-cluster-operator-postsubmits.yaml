@@ -14,7 +14,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             env:
             - name: GIMME_GO_VERSION
               value: "1.24.3"
@@ -49,7 +49,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+          - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
             env:
               - name: GIMME_GO_VERSION
                 value: "1.24.3"

@@ -19,7 +19,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -47,7 +47,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20251216-1746113
+        - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -85,7 +85,7 @@ presubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         name: ""
         resources:
           requests:
@@ -120,7 +120,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -152,7 +152,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -184,7 +184,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -216,7 +216,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20251216-1746113
+        - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -250,7 +250,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -289,7 +289,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -328,7 +328,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -367,7 +367,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -410,7 +410,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -453,7 +453,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -492,7 +492,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -531,7 +531,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -570,7 +570,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -613,7 +613,7 @@ presubmits:
         env:
         - name: FOSSA_TOKEN_FILE
           value: /root/.docker/secrets/fossa/token
-        image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         name: ""
         resources:
           requests:
@@ -650,7 +650,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image:  quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
+        - image:  quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
