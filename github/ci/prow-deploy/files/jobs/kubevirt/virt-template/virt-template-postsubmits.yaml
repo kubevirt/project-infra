@@ -28,6 +28,7 @@ postsubmits:
         - |
           cat "$QUAY_PASSWORD" | podman login --username "$(cat "$QUAY_USER")" --password-stdin=true quay.io
           gpg --allow-secret-key-import --import /etc/pgp/token
+          export GIT_ASKPASS="/usr/local/bin/git-askpass.sh"
           hack/release.sh
         env:
           - name: GIMME_GO_VERSION
