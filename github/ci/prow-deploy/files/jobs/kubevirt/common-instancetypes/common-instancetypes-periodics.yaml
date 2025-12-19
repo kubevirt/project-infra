@@ -25,13 +25,11 @@ periodics:
           command: ["/bin/bash", "-ce"]
           args:
             - |
-              if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=update-common-instancetypes-main --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
-                export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
-                latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
-                description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
+              export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+              latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
+              description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
 
-                git-pr.sh -c "cd ../kubevirt && hack/common-instancetypes/bump.sh ${COMMON_INSTANCETYPES_BRANCH}" -d "echo -e \"${description}\"" -r kubevirt -b update-common-instancetypes-main -T ${KUBEVIRT_BRANCH}
-              fi
+              git-pr.sh -c "cd ../kubevirt && hack/common-instancetypes/bump.sh ${COMMON_INSTANCETYPES_BRANCH}" -d "echo -e \"${description}\"" -r kubevirt -b update-common-instancetypes-main -T ${KUBEVIRT_BRANCH} -M lgtm,approved,do-not-merge/hold
           resources:
             requests:
               memory: "200Mi"
@@ -61,13 +59,11 @@ periodics:
           command: ["/bin/bash", "-ce"]
           args:
             - |
-              if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=update-common-instancetypes-main --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
-                export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
-                latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
-                description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
+              export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+              latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
+              description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
 
-                git-pr.sh -c "cd ../kubevirt && hack/common-instancetypes/bump.sh ${COMMON_INSTANCETYPES_BRANCH}" -d "echo -e \"[${KUBEVIRT_BRANCH}] ${description}\"" -r kubevirt -b update-common-instancetypes-${KUBEVIRT_BRANCH} -T ${KUBEVIRT_BRANCH}
-              fi
+              git-pr.sh -c "cd ../kubevirt && hack/common-instancetypes/bump.sh ${COMMON_INSTANCETYPES_BRANCH}" -d "echo -e \"[${KUBEVIRT_BRANCH}] ${description}\"" -r kubevirt -b update-common-instancetypes-${KUBEVIRT_BRANCH} -T ${KUBEVIRT_BRANCH} -M lgtm,approved,do-not-merge/hold
           resources:
             requests:
               memory: "200Mi"
@@ -97,13 +93,11 @@ periodics:
           command: ["/bin/bash", "-ce"]
           args:
             - |
-              if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=update-common-instancetypes-main --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
-                export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
-                latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
-                description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
+              export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+              latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
+              description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
 
-                git-pr.sh -c "cd ../kubevirt && hack/common-instancetypes/bump.sh ${COMMON_INSTANCETYPES_BRANCH}" -d "echo -e \"[${KUBEVIRT_BRANCH}] ${description}\"" -r kubevirt -b update-common-instancetypes-${KUBEVIRT_BRANCH} -T ${KUBEVIRT_BRANCH}
-              fi
+              git-pr.sh -c "cd ../kubevirt && hack/common-instancetypes/bump.sh ${COMMON_INSTANCETYPES_BRANCH}" -d "echo -e \"[${KUBEVIRT_BRANCH}] ${description}\"" -r kubevirt -b update-common-instancetypes-${KUBEVIRT_BRANCH} -T ${KUBEVIRT_BRANCH} -M lgtm,approved,do-not-merge/hold
           resources:
             requests:
               memory: "200Mi"
@@ -133,13 +127,11 @@ periodics:
           command: ["/bin/bash", "-ce"]
           args:
             - |
-              if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=update-common-instancetypes-${KUBEVIRT_BRANCH} --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
-                export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
-                latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
-                description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
+              export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+              latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
+              description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
 
-                git-pr.sh -c "cd ../kubevirt && hack/bump-common-instancetypes.sh ${COMMON_INSTANCETYPES_BRANCH}" -d "echo -e \"[${KUBEVIRT_BRANCH}] ${description}\"" -r kubevirt -b update-common-instancetypes-${KUBEVIRT_BRANCH} -T ${KUBEVIRT_BRANCH}
-              fi
+              git-pr.sh -c "cd ../kubevirt && hack/bump-common-instancetypes.sh ${COMMON_INSTANCETYPES_BRANCH}" -d "echo -e \"[${KUBEVIRT_BRANCH}] ${description}\"" -r kubevirt -b update-common-instancetypes-${KUBEVIRT_BRANCH} -T ${KUBEVIRT_BRANCH} -M lgtm,approved,do-not-merge/hold
           resources:
             requests:
               memory: "200Mi"
@@ -169,13 +161,11 @@ periodics:
           command: ["/bin/bash", "-ce"]
           args:
             - |
-              if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=update-common-instancetypes-${KUBEVIRT_BRANCH} --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
-                export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
-                latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
-                description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
+              export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+              latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
+              description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
 
-                git-pr.sh -c "cd ../kubevirt && hack/bump-common-instancetypes.sh ${COMMON_INSTANCETYPES_BRANCH}" -d "echo -e \"[${KUBEVIRT_BRANCH}] ${description}\"" -r kubevirt -b update-common-instancetypes-${KUBEVIRT_BRANCH} -T ${KUBEVIRT_BRANCH}
-              fi
+              git-pr.sh -c "cd ../kubevirt && hack/bump-common-instancetypes.sh ${COMMON_INSTANCETYPES_BRANCH}" -d "echo -e \"[${KUBEVIRT_BRANCH}] ${description}\"" -r kubevirt -b update-common-instancetypes-${KUBEVIRT_BRANCH} -T ${KUBEVIRT_BRANCH} -M lgtm,approved,do-not-merge/hold
           resources:
             requests:
               memory: "200Mi"
