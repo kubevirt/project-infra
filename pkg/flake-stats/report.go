@@ -37,6 +37,9 @@ import (
 //go:embed flake-stats.gohtml
 var htmlTemplate string
 
+//go:embed flake-stats.gomd
+var mdTemplate string
+
 const defaultDaysInThePast = 14
 const defaultOrg = "kubevirt"
 const defaultRepo = "kubevirt"
@@ -44,10 +47,12 @@ const dayFormat = "Mon, 02 Jan 2006"
 
 const defaultOutputFormatHTML = "html"
 const outputFormatJSON = "json"
+const outputFormatMD = "md"
 
 var outputFormats = []string{
 	defaultOutputFormatHTML,
 	outputFormatJSON,
+	outputFormatMD,
 }
 
 func GenerateReport(options *Options) error {
@@ -80,9 +85,14 @@ func (r FlakeStats) generate() error {
 	shareFromTotalFailures := topXTests.CalculateShareFromTotalFailures()
 	switch r.writeOpts.OutputFormat {
 	case defaultOutputFormatHTML:
-		err = r.writeReport(shareFromTotalFailures, topXTests)
+		err = r.writeHTMLReport(shareFromTotalFailures, topXTests)
 		if err != nil {
-			return fmt.Errorf("failed writing report: %w", err)
+			return fmt.Errorf("failed writing html report: %w", err)
+		}
+	case outputFormatMD:
+		err = r.writeMDReport(shareFromTotalFailures, topXTests)
+		if err != nil {
+			return fmt.Errorf("failed writing markdown report: %w", err)
 		}
 	case outputFormatJSON:
 		var jsonOutput []byte
@@ -247,7 +257,7 @@ func (r FlakeStats) generateSortedAllTests(testNamesByTopXTests map[string]*TopX
 	return allTests
 }
 
-func (r FlakeStats) writeReport(overallFailures *TopXTest, topXTests TopXTests) error {
+func (r FlakeStats) writeHTMLReport(overallFailures *TopXTest, topXTests TopXTests) error {
 	htmlReportOutputWriter, err := os.Create(r.writeOpts.OutputFile)
 	if err != nil {
 		return fmt.Errorf("failed to create file %q: %w", r.writeOpts.OutputFile, err)
@@ -265,6 +275,30 @@ func (r FlakeStats) writeReport(overallFailures *TopXTest, topXTests TopXTests) 
 		Repo:            r.reportOpts.Repo,
 	}
 	err = flakefinder.WriteTemplateToOutput(htmlTemplate, templateData, htmlReportOutputWriter)
+	if err != nil {
+		return fmt.Errorf("failed to write to file %q: %w", r.writeOpts.OutputFile, err)
+	}
+	return nil
+}
+
+func (r FlakeStats) writeMDReport(overallFailures *TopXTest, topXTests TopXTests) error {
+	mdReportOutputWriter, err := os.Create(r.writeOpts.OutputFile)
+	if err != nil {
+		return fmt.Errorf("failed to create file %q: %w", r.writeOpts.OutputFile, err)
+	}
+	logrus.Printf("Writing markdown to %q", r.writeOpts.OutputFile)
+	defer mdReportOutputWriter.Close()
+
+	templateData := &ReportData{
+		OverallFailures: overallFailures,
+		TopXTests:       topXTests,
+		DaysInThePast:   r.reportOpts.DaysInThePast,
+		Date:            time.Now(),
+		ShareCategories: shareCategories,
+		Org:             r.reportOpts.Org,
+		Repo:            r.reportOpts.Repo,
+	}
+	err = flakefinder.WriteTemplateToOutput(mdTemplate, templateData, mdReportOutputWriter)
 	if err != nil {
 		return fmt.Errorf("failed to write to file %q: %w", r.writeOpts.OutputFile, err)
 	}

@@ -1,0 +1,65 @@
+{{- /*
+
+    This file is part of the KubeVirt project
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+    Copyright 2023 Red Hat, Inc.
+
+*/ -}}
+
+{{- /* gotype: kubevirt.io/project-infra/robots/cmd/flake-stats.TemplateData */ -}}
+
+<style>
+    <!--
+
+    .lightyellow {
+        background-color: lightgoldenrodyellow;
+    }
+
+    .yellow {
+        background-color: #ffff80;
+    }
+
+    .orange {
+        background-color: #ffbf80;
+    }
+
+    .orangered {
+        background-color: #ff9090;
+    }
+
+    .red {
+        background-color: #ff7070;
+    }
+
+    .darkred {
+        background-color: #ff5050;
+    }
+    -->
+</style>
+
+{{ define "failures" }}
+* {{ template "failure" .AllFailures }}
+{{ range .GetSortedFailuresPerLane }}
+{{ if gt .SharePercent 1.0 }}  * {{ template "failure" . }}{{ end }}{{ end }}
+{{ end }}
+
+{{ define "failure" -}}
+<span class="failureBlock {{ .ShareCategory.CSSClassName }}">{{ if .URL }}[{{ end }}{{ .Name }}{{ if .URL }}]({{ .URL }}){{ end }} <span class="failureValue">( ∑={{ .Sum }}, {{ printf "%.2f" .SharePercent }}% )</span></span>
+{{- end }}
+
+# {{$.Org}}/{{$.Repo}}
+{{ template "failures" $.OverallFailures }}
+
+Last updated: {{ $.Date }}
