@@ -21,7 +21,9 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/sh
       - -c
-      - hack/publish-staging.sh
+      - |
+        export GIT_ASKPASS="/usr/local/bin/git-askpass.sh"
+        hack/publish-staging.sh
       env:
       - name: GIMME_GO_VERSION
         value: "1.24.11"
