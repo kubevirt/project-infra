@@ -58,7 +58,7 @@ require (
 	github.com/letsencrypt/boulder v0.0.0-20240620165639-de9c06129bec // indirect
 	github.com/manifoldco/promptui v0.9.0 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
-	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
+	github.com/mattn/go-sqlite3 v1.14.32 // indirect
 	github.com/miekg/pkcs11 v1.1.1 // indirect
 	github.com/mistifyio/go-zfs/v3 v3.1.0 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
@@ -121,7 +121,7 @@ require (
 	tags.cncf.io/container-device-interface v1.0.1 // indirect
 )
 
-replace kubevirt.io/project-infra => github.com/kubevirt/project-infra v0.0.0-20220224113809-e8d0e2c5b1e0
+replace kubevirt.io/project-infra => github.com/kubevirt/project-infra v0.0.0-20251219093753-85e388fe9163
 
 go 1.25
 

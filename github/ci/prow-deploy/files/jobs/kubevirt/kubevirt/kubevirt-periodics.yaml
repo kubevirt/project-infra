@@ -100,7 +100,7 @@ periodics:
     containers:
     - args:
       - |
-        go run robots/cmd/push-flakefinder-results/main.go --pushgateway-url=http://pushgateway.kubevirt-prow
+        go run robots/push-flakefinder-results/main.go --pushgateway-url=http://pushgateway.kubevirt-prow
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -135,7 +135,7 @@ periodics:
 
         report_dir="/tmp/merge-commit-summary"
         mkdir -p "${report_dir}"
-        go run ./robots/cmd/merge-commit-summary \
+        go run ./robots/merge-commit-summary \
           --days-in-the-past 7 \
           --output-file "${report_dir}/index.html"
         gsutil cp "${report_dir}/*" "gs://kubevirt-prow/reports/merge-commit-summary/kubevirt/kubevirt/last-seven-days/"
@@ -175,7 +175,7 @@ periodics:
       - |
         report_dir="/tmp/per-test-results/last-six-months"
         mkdir -p "${report_dir}"
-        go run ./robots/cmd/per-test-execution --months 6 --output-directory "${report_dir}"
+        go run ./robots/per-test-execution --months 6 --output-directory "${report_dir}"
         gsutil cp "${report_dir}/*" "gs://kubevirt-prow/reports/per-test-results/kubevirt/kubevirt/last-six-months/"
       command:
       - /usr/local/bin/runner.sh
@@ -206,7 +206,7 @@ periodics:
     containers:
     - args:
       - |
-        go run ./robots/cmd/quarantine report --output-file "/tmp/index.html"
+        go run ./robots/quarantine report --output-file "/tmp/index.html"
         gsutil cp "/tmp/index.html" "gs://kubevirt-prow/reports/most-flaky-tests/kubevirt/kubevirt/"
       command:
       - /usr/local/bin/runner.sh
@@ -237,7 +237,7 @@ periodics:
     containers:
     - args:
       - |
-        go run robots/cmd/push-test-metrics/main.go \
+        go run robots/push-test-metrics/main.go \
           --pushgateway-url=http://pushgateway.kubevirt-prow
       command:
       - /usr/local/bin/runner.sh
@@ -1595,7 +1595,7 @@ periodics:
     - args:
       - |
         make bump-images
-        git-pr.sh -c "cd ../project-infra && go run ./robots/cmd/uploader -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ${PWD} -s 'Automated run of make bump-images and ./robots/cmd/uploader' -b bump-images -r kubevirt -L skip-review,release-note-none -T main
+        git-pr.sh -c "cd ../project-infra && go run ./robots/uploader -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ${PWD} -s 'Automated run of make bump-images and ./robots/uploader' -b bump-images -r kubevirt -L skip-review,release-note-none -T main
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -1660,7 +1660,7 @@ periodics:
       - /bin/bash
       - -ce
       - |
-        go run ./robots/cmd/test-label-analyzer stats --config-name=quarantine --test-file-path=/home/prow/go/src/github.com/kubevirt/kubevirt/tests --remote-url=https://github.com/kubevirt/kubevirt/%s/tests > /tmp/quarantine.json
+        go run ./robots/test-label-analyzer stats --config-name=quarantine --test-file-path=/home/prow/go/src/github.com/kubevirt/kubevirt/tests --remote-url=https://github.com/kubevirt/kubevirt/%s/tests > /tmp/quarantine.json
         gsutil cp /tmp/quarantine.json gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/quarantine.json
       command:
       - /bin/sh
@@ -1692,7 +1692,7 @@ periodics:
       - |
         # generate flake stats daily report for today
         output_file=/tmp/flake-stats-14days-$(date +%Y-%m-%d).html
-        go run ./robots/cmd/flake-stats \
+        go run ./robots/flake-stats \
           '--filter-lane-regex=.*-root$' \
           --output-file ${output_file} \
           --overwrite-output-file=true
@@ -1700,7 +1700,7 @@ periodics:
 
         # generate index page with calendar
         index_output_file=/tmp/flake-stats-14days.html
-        go run ./robots/cmd/flake-stats-index-page \
+        go run ./robots/flake-stats-index-page \
           --output-file-path ${index_output_file}
         gsutil cp ${index_output_file} gs://kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/
       command:
