@@ -1,0 +1,100 @@
+presubmits:
+  kubevirt/hyperconverged-cluster-operator:
+    - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.33
+      branches:
+      - release-1.17
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 7h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-podman-shared-images: "true"
+      cluster: prow-workloads
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "export TARGET=k8s-1.33 && automation/test.sh"
+            env:
+              - name: GIMME_GO_VERSION
+                value: "1.25.5"
+              - name: GINKGO_LABELS
+                value: '!OpenShift && !SINGLE_NODE_ONLY'
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "50Gi"
+    - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.34
+      branches:
+      - release-1.17
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 7h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-podman-shared-images: "true"
+      cluster: prow-workloads
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "export TARGET=k8s-1.34 && automation/test.sh"
+            env:
+              - name: GIMME_GO_VERSION
+                value: "1.25.5"
+              - name: GINKGO_LABELS
+                value: '!OpenShift && !SINGLE_NODE_ONLY'
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "50Gi"
+    - name: pull-hyperconverged-cluster-operator-unit-test-s390x
+      branches:
+        - release-1.17
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 2h
+        grace_period: 5m
+      cluster: prow-s390x-workloads
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+            env:
+              - name: GIMME_GO_VERSION
+                value: "1.25.5"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "make test"
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "2Gi"
