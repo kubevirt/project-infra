@@ -1,0 +1,8 @@
+---
+- op: replace
+  path: /spec/template/spec/volumes/2/secret
+  value:
+    secretName: oauth-token
+    items:
+      - key: oauth
+        path: token
