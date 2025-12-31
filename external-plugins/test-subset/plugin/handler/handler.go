@@ -11,6 +11,8 @@ import (
 	"regexp"
 	"strings"
 
+	pi_github "kubevirt.io/project-infra/pkg/github"
+
 	"github.com/google/shlex"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
@@ -22,8 +24,6 @@ import (
 	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
 	"sigs.k8s.io/prow/pkg/github"
 	"sigs.k8s.io/prow/pkg/pjutil"
-
-	pi_github "kubevirt.io/project-infra/robots/pkg/github"
 )
 
 var log *logrus.Logger

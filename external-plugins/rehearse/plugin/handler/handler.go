@@ -12,8 +12,9 @@ import (
 	"strconv"
 	"strings"
 
+	pi_github "kubevirt.io/project-infra/pkg/github"
+
 	"github.com/r3labs/diff/v3"
-	pi_github "kubevirt.io/project-infra/robots/pkg/github"
 	"sigs.k8s.io/prow/pkg/repoowners"
 
 	"github.com/go-git/go-git/v5"
