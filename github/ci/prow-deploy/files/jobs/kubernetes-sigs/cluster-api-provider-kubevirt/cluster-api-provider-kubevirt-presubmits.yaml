@@ -36,3 +36,41 @@ presubmits:
             value: "1.24.7"
       nodeSelector:
         type: bare-metal-external
+  - always_run: true
+    optional: true
+    decorate: true
+    skip_report: true
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 3h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-cluster-api-provider-kubevirt-capi-1.10-e2e
+    skip_branches:
+      - release-\d+\.\d+
+    spec:
+      containers:
+        - command:
+            - /usr/local/bin/runner.sh
+            - /bin/sh
+            - -c
+            - make functest
+          image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+          name: ""
+          resources:
+            requests:
+              memory: 16Gi
+            limits:
+              memory: 16Gi
+          securityContext:
+            privileged: true
+          env:
+            - name: GIMME_GO_VERSION
+              value: "1.24.7"
+            - name: CLUSTERCTL_VERSION
+              value: "v1.10.4"
+      nodeSelector:
+        type: bare-metal-external
