@@ -28,7 +28,7 @@ periodics:
     - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
       env:
       - name: GIMME_GO_VERSION
-        value: "1.24.3"
+        value: "1.25.5"
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"
