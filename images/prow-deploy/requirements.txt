@@ -1,4 +1,4 @@
-ansible == 10.5.0
+ansible == 12.2.0
 kubernetes == 26.1.0
 kubernetes-validate == 1.27.0
 openshift == 0.13.2
