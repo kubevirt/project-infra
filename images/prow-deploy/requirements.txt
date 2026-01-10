@@ -4,3 +4,4 @@ kubernetes-validate == 1.27.0
 openshift == 0.13.2
 selinux == 0.3.0
 pyyaml == 6.0.1
+urllib3>=2.6.3 # not directly required, pinned by Snyk to avoid a vulnerability
