@@ -23,11 +23,24 @@ import (
 	"fmt"
 	"github.com/onsi/ginkgo/v2/types"
 	flakestats "kubevirt.io/project-infra/robots/pkg/flake-stats"
+	"kubevirt.io/project-infra/robots/pkg/options"
 	"kubevirt.io/project-infra/robots/pkg/searchci"
 	"time"
 )
 
 const filterLaneRegexDefault = "rehearsal"
+
+type autoQuarantineOptions struct {
+	maxTestsToQuarantine    int
+	releaseLaneSuffix       string
+	matchingLaneRegexString string
+
+	prDescriptionOutputFileOpts *options.OutputFileOptions
+}
+
+func (a autoQuarantineOptions) MatchingLaneRegexString() string {
+	return fmt.Sprintf(a.matchingLaneRegexString, a.releaseLaneSuffix)
+}
 
 type quarantineOptions struct {
 	testSourcePath string
@@ -48,6 +61,8 @@ type TestToQuarantine struct {
 	RelevantImpacts []searchci.Impact
 	SpecReport      *types.SpecReport
 }
+
+type TestsPerSIG map[string][]*TestToQuarantine
 
 var (
 	mostFlakyTestsTimeRanges = []searchci.TimeRange{searchci.ThreeDays, searchci.FourteenDays}
