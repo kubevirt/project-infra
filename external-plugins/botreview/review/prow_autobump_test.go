@@ -20,11 +20,12 @@
 package review
 
 import (
-	"github.com/sourcegraph/go-diff/diff"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
+
+	"github.com/sourcegraph/go-diff/diff"
 )
 
 func TestProwAutobump_Review(t1 *testing.T) {

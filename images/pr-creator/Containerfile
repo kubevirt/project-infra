@@ -17,7 +17,7 @@ RUN set -x && \
 
 RUN set -x && \
     cd /project-infra && \
-    /usr/local/bin/runner.sh /bin/sh -ce 'go build -tags netgo -o /usr/local/bin/labels-checker ./robots/cmd/labels-checker' && \
+    /usr/local/bin/runner.sh /bin/sh -ce 'go build -tags netgo -o /usr/local/bin/labels-checker ./robots/labels-checker' && \
     chmod +x /usr/local/bin/labels-checker
 
 FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1 AS final

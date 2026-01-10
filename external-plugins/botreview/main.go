@@ -21,17 +21,18 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
+
 	"github.com/sirupsen/logrus"
 	"k8s.io/test-infra/pkg/flagutil"
 	"kubevirt.io/project-infra/external-plugins/botreview/server"
-	"net/http"
-	"os"
 	"sigs.k8s.io/prow/pkg/config/secret"
 	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/interrupts"
 	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
-	"strconv"
-	"time"
 )
 
 const pluginName = "botreview"
