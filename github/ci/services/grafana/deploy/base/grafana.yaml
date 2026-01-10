@@ -9123,7 +9123,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 21,
+      "id": 12,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -9162,7 +9162,7 @@ data:
                 "spanNulls": false,
                 "stacking": {
                   "group": "A",
-                  "mode": "none"
+                  "mode": "normal"
                 },
                 "thresholdsStyle": {
                   "mode": "line+area"
@@ -9210,10 +9210,14 @@ data:
           "id": 2,
           "options": {
             "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": false
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
             },
             "tooltip": {
               "mode": "single",
@@ -9239,7 +9243,7 @@ data:
               },
               "editorMode": "code",
               "expr": "sum(increase(prowjobs{org=\"kubevirt\", state=\"failure\"}[1h]))",
-              "hide": false,
+              "hide": true,
               "legendFormat": "total: failed/h",
               "range": true,
               "refId": "B"
@@ -9283,7 +9287,7 @@ data:
                 "spanNulls": false,
                 "stacking": {
                   "group": "A",
-                  "mode": "none"
+                  "mode": "normal"
                 },
                 "thresholdsStyle": {
                   "mode": "line+area"
@@ -9331,10 +9335,14 @@ data:
           "id": 3,
           "options": {
             "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": false
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
             },
             "tooltip": {
               "mode": "single",
@@ -9360,7 +9368,7 @@ data:
               },
               "editorMode": "code",
               "expr": "sum(increase(prowjobs{org=\"kubevirt\", state=\"aborted\"}[1h]))",
-              "hide": false,
+              "hide": true,
               "legendFormat": "total: aborted/h",
               "range": true,
               "refId": "B"
@@ -9370,7 +9378,7 @@ data:
           "type": "timeseries"
         }
       ],
-      "refresh": "15m",
+      "refresh": false,
       "schemaVersion": 37,
       "style": "dark",
       "tags": [],
@@ -9378,14 +9386,14 @@ data:
         "list": []
       },
       "time": {
-        "from": "now-2d",
+        "from": "now-6h",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "",
       "title": "e2e job failures / h",
       "uid": "_6XBEfyIk",
-      "version": 8,
+      "version": 2,
       "weekStart": ""
     }
   e2e-lane-runtimes.json: |
