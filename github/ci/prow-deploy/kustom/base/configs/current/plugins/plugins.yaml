@@ -404,6 +404,7 @@ plugins:
   kubevirt/secrets:
     plugins:
     - approve
+    - branchcleaner
     - lgtm
     - trigger
 
