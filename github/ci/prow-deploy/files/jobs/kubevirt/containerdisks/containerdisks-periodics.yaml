@@ -15,8 +15,6 @@ periodics:
     workdir: true
   labels:
     preset-podman-in-container-enabled: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-kubevirtci-quay-credential: "true"
   max_concurrency: 1
   name: periodic-containerdisks-s390x-verify-nightly
   spec:
