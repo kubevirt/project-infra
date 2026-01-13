@@ -25,7 +25,7 @@ import (
 	"testing"
 
 	"github.com/sirupsen/logrus"
-	test_report "kubevirt.io/project-infra/pkg/test-report"
+	testreport "kubevirt.io/project-infra/pkg/test-report"
 )
 
 func Test_writeHTMLReportToOutput(t *testing.T) {
@@ -54,23 +54,23 @@ func Test_writeHTMLReportToOutput(t *testing.T) {
 				lookedAtJobs: []string{"job1", "job2", "job3"},
 				testNamesToJobNamesToSkipped: map[string]map[string]int{
 					"a": {
-						"job1": test_report.TestExecution_Skipped,
-						"job2": test_report.TestExecution_Skipped,
+						"job1": testreport.TestExecution_Skipped,
+						"job2": testreport.TestExecution_Skipped,
 					},
 					"b": {
-						"job1": test_report.TestExecution_Skipped,
-						"job2": test_report.TestExecution_Run,
-						"job3": test_report.TestExecution_Run,
+						"job1": testreport.TestExecution_Skipped,
+						"job2": testreport.TestExecution_Run,
+						"job3": testreport.TestExecution_Run,
 					},
 					"c": {
-						"job1": test_report.TestExecution_Skipped,
-						"job2": test_report.TestExecution_Skipped,
-						"job3": test_report.TestExecution_Run,
+						"job1": testreport.TestExecution_Skipped,
+						"job2": testreport.TestExecution_Skipped,
+						"job3": testreport.TestExecution_Run,
 					},
 					"d": {
-						"job1": test_report.TestExecution_Unsupported,
-						"job2": test_report.TestExecution_Skipped,
-						"job3": test_report.TestExecution_NoData,
+						"job1": testreport.TestExecution_Unsupported,
+						"job2": testreport.TestExecution_Skipped,
+						"job3": testreport.TestExecution_NoData,
 					},
 				},
 				err:  nil,
@@ -80,7 +80,7 @@ func Test_writeHTMLReportToOutput(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := writeHTMLReportToOutput(test_report.NewData(tt.args.testNames, tt.args.filteredTestNames, tt.args.skippedTests, tt.args.lookedAtJobs, tt.args.testNamesToJobNamesToSkipped), tt.args.htmlReportOutputWriter)
+			err := writeHTMLReportToOutput(testreport.NewData(tt.args.testNames, tt.args.filteredTestNames, tt.args.skippedTests, tt.args.lookedAtJobs, tt.args.testNamesToJobNamesToSkipped), tt.args.htmlReportOutputWriter)
 			if err != nil {
 				t.Errorf("writeHTMLReportToOutput: %v", err)
 			}

@@ -29,7 +29,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"kubevirt.io/project-infra/pkg/git"
-	test_label_analyzer "kubevirt.io/project-infra/pkg/test-label-analyzer"
+	testlabelanalyzer "kubevirt.io/project-infra/pkg/test-label-analyzer"
 )
 
 var _ = Describe("root tests", func() {
@@ -37,7 +37,7 @@ var _ = Describe("root tests", func() {
 	Context("getConfig", func() {
 
 		DescribeTable("returns a config",
-			func(options *ConfigOptions, expectedConfig *test_label_analyzer.Config, expectedErr error) {
+			func(options *ConfigOptions, expectedConfig *testlabelanalyzer.Config, expectedErr error) {
 				config, err := options.getConfig()
 				if expectedErr != nil {
 					Expect(err).To(BeEquivalentTo(expectedErr))
@@ -69,7 +69,7 @@ var _ = Describe("root tests", func() {
 					testNameLabelRE:    "test regex",
 					outputHTML:         false,
 				},
-				test_label_analyzer.NewTestNameDefaultConfig("test regex"),
+				testlabelanalyzer.NewTestNameDefaultConfig("test regex"),
 				nil,
 			),
 			Entry("for quarantine config",
@@ -82,7 +82,7 @@ var _ = Describe("root tests", func() {
 					testNameLabelRE:    "",
 					outputHTML:         false,
 				},
-				test_label_analyzer.NewQuarantineDefaultConfig(),
+				testlabelanalyzer.NewQuarantineDefaultConfig(),
 				nil,
 			),
 			Entry("for config name that doesn't exist",
@@ -154,23 +154,23 @@ var _ = Describe("root tests", func() {
 				testNameLabelRE:     "",
 				outputHTML:          false,
 			}
-			expectedConfig := &test_label_analyzer.Config{
-				Categories: []*test_label_analyzer.LabelCategory{
+			expectedConfig := &testlabelanalyzer.Config{
+				Categories: []*testlabelanalyzer.LabelCategory{
 					{
 						Name:            "flaky",
-						TestNameLabelRE: test_label_analyzer.NewRegexp("test name 1"),
+						TestNameLabelRE: testlabelanalyzer.NewRegexp("test name 1"),
 						GinkgoLabelRE:   nil,
 						BlameLine:       gitBlameLines[2],
 					},
 					{
 						Name:            "also flaky",
-						TestNameLabelRE: test_label_analyzer.NewRegexp("test name 2"),
+						TestNameLabelRE: testlabelanalyzer.NewRegexp("test name 2"),
 						GinkgoLabelRE:   nil,
 						BlameLine:       gitBlameLines[6],
 					},
 					{
 						Name:            "also flaky",
-						TestNameLabelRE: test_label_analyzer.NewRegexp(regexp.QuoteMeta("[sig-compute]test name 3")),
+						TestNameLabelRE: testlabelanalyzer.NewRegexp(regexp.QuoteMeta("[sig-compute]test name 3")),
 						GinkgoLabelRE:   nil,
 						BlameLine:       gitBlameLines[10],
 					},

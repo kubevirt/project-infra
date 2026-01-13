@@ -40,9 +40,9 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/Masterminds/semver"
-	junit2 "github.com/joshdk/go-junit"
+	gojunit "github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
-	flakefinder2 "kubevirt.io/project-infra/pkg/flakefinder"
+	"kubevirt.io/project-infra/pkg/flakefinder"
 	"sigs.k8s.io/yaml"
 )
 
@@ -425,7 +425,7 @@ func doWriteReportFiles(ctx context.Context, storageClient *storage.Client, star
 func writeReportFile(wg *sync.WaitGroup, ctx context.Context, storageClient *storage.Client, startOfReport time.Time, endOfReport time.Time, jobDir string, periodicJobDir string, writeReportFileResults chan writeReportFileResult, reportDir string) {
 	defer wg.Done()
 	log.Debugf("writing file for %q", periodicJobDir)
-	results, err := flakefinder2.FindUnitTestFilesForPeriodicJob(ctx, storageClient, BucketName, []string{jobDir, periodicJobDir}, startOfReport, endOfReport)
+	results, err := flakefinder.FindUnitTestFilesForPeriodicJob(ctx, storageClient, BucketName, []string{jobDir, periodicJobDir}, startOfReport, endOfReport)
 	if err != nil {
 		writeReportFileResults <- writeReportFileResult{err: fmt.Errorf("failed to load periodicJobDirs for %v: %v", fmt.Sprintf("%s*", periodicJobDir), fmt.Errorf("error listing gcs objects: %v", err))}
 		return
@@ -491,7 +491,7 @@ func writeReportFile(wg *sync.WaitGroup, ctx context.Context, storageClient *sto
 	writeReportFileResults <- writeReportFileResult{reportFileName, err}
 }
 
-func condenseToTestExecutions(periodicJobDir string, results []*flakefinder2.JobResult) ([]int, map[string]map[int]rune, map[string]*TestExecutions) {
+func condenseToTestExecutions(periodicJobDir string, results []*flakefinder.JobResult) ([]int, map[string]map[int]rune, map[string]*TestExecutions) {
 	log.Debugf("iterating over results for %s", periodicJobDir)
 	buildNumbers := make([]int, 0, len(results))
 	perBuildTestExecutions := make(map[string]map[int]rune)
@@ -500,7 +500,7 @@ func condenseToTestExecutions(periodicJobDir string, results []*flakefinder2.Job
 		for _, junit := range result.JUnit {
 			buildNumbers = append(buildNumbers, result.BuildNumber)
 			for _, test := range junit.Tests {
-				testName := flakefinder2.NormalizeTestName(test.Name)
+				testName := flakefinder.NormalizeTestName(test.Name)
 
 				if _, exists := perBuildTestExecutions[testName]; !exists {
 					perBuildTestExecutions[testName] = make(map[int]rune)
@@ -514,14 +514,14 @@ func condenseToTestExecutions(periodicJobDir string, results []*flakefinder2.Job
 					FailedExecutions: 0,
 				}
 				switch test.Status {
-				case junit2.StatusFailed, junit2.StatusError:
+				case gojunit.StatusFailed, gojunit.StatusError:
 					if _, exists := allTestExecutions[testName]; !exists {
 						allTestExecutions[testName] = testExecutionRecord
 					}
 					testExecutionRecord = allTestExecutions[testName]
 					testExecutionRecord.FailedExecutions = testExecutionRecord.FailedExecutions + 1
 					testExecutionRecord.TotalExecutions = testExecutionRecord.TotalExecutions + 1
-				case junit2.StatusPassed:
+				case gojunit.StatusPassed:
 					if _, exists := allTestExecutions[testName]; !exists {
 						allTestExecutions[testName] = testExecutionRecord
 					}

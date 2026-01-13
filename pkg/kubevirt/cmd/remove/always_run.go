@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	"kubevirt.io/project-infra/pkg/kubevirt/cmd/flags"
-	kv_github "kubevirt.io/project-infra/pkg/kubevirt/github"
+	kvgithub "kubevirt.io/project-infra/pkg/kubevirt/github"
 	"kubevirt.io/project-infra/pkg/kubevirt/log"
 	"kubevirt.io/project-infra/pkg/kubevirt/prowjobconfigs"
 	"kubevirt.io/project-infra/pkg/kubevirt/release"
@@ -91,7 +91,7 @@ func runAlwaysRunCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	ctx := context.Background()
-	client, err := kv_github.NewGitHubClient(ctx)
+	client, err := kvgithub.NewGitHubClient(ctx)
 	if err != nil {
 		return err
 	}

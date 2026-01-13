@@ -26,25 +26,25 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"kubevirt.io/project-infra/pkg/git"
-	test_label_analyzer "kubevirt.io/project-infra/pkg/test-label-analyzer"
+	testlabelanalyzer "kubevirt.io/project-infra/pkg/test-label-analyzer"
 )
 
 var _ = Describe("filter", func() {
 	Context("matching tests", func() {
 		DescribeTable("are filtered",
-			func(input test_label_analyzer.TestFilesStats, expected matchingTests) {
+			func(input testlabelanalyzer.TestFilesStats, expected matchingTests) {
 				Expect(filterMatchingTests(input, "")).To(BeEquivalentTo(expected))
 			},
-			Entry("empty input", test_label_analyzer.TestFilesStats{}, nil),
+			Entry("empty input", testlabelanalyzer.TestFilesStats{}, nil),
 			Entry("simple input",
-				test_label_analyzer.TestFilesStats{
-					FilesStats: []*test_label_analyzer.FileStats{
+				testlabelanalyzer.TestFilesStats{
+					FilesStats: []*testlabelanalyzer.FileStats{
 						{
-							TestStats: &test_label_analyzer.TestStats{
+							TestStats: &testlabelanalyzer.TestStats{
 								SpecsTotal: 0,
-								MatchingSpecPaths: []*test_label_analyzer.PathStats{
+								MatchingSpecPaths: []*testlabelanalyzer.PathStats{
 									{
-										Path: []*test_label_analyzer.GinkgoNode{
+										Path: []*testlabelanalyzer.GinkgoNode{
 											{
 												Text: "VM Live Migration",
 											},
@@ -55,9 +55,9 @@ var _ = Describe("filter", func() {
 												Text: "Should migrate over that network",
 											},
 										},
-										MatchingCategory: &test_label_analyzer.LabelCategory{
+										MatchingCategory: &testlabelanalyzer.LabelCategory{
 											Name:            "flaky test - Tracked in https://github.com/kubevirt/kubevirt/issues/37",
-											TestNameLabelRE: test_label_analyzer.NewRegexp("with a dedicated migration network Should migrate over that network"),
+											TestNameLabelRE: testlabelanalyzer.NewRegexp("with a dedicated migration network Should migrate over that network"),
 											BlameLine: &git.BlameLine{
 												CommitID: "",
 												Author:   "Daniel Hiller",

@@ -21,7 +21,7 @@ import (
 	"regexp"
 
 	"kubevirt.io/project-infra/pkg/kubevirt/cmd/flags"
-	github2 "kubevirt.io/project-infra/pkg/kubevirt/github"
+	"kubevirt.io/project-infra/pkg/kubevirt/github"
 	"kubevirt.io/project-infra/pkg/kubevirt/log"
 	"kubevirt.io/project-infra/pkg/kubevirt/prowjobconfigs"
 	"kubevirt.io/project-infra/pkg/querier"
@@ -116,7 +116,7 @@ func run(cmd *cobra.Command, args []string) error {
 	log.Log().Infof("Will write output to file %s", checkProvidersOpts.outputFile)
 
 	ctx := context.Background()
-	client, err := github2.NewGitHubClient(ctx)
+	client, err := github.NewGitHubClient(ctx)
 	if err != nil {
 		return err
 	}

@@ -35,7 +35,7 @@ import (
 	"time"
 
 	"kubevirt.io/project-infra/pkg/flakefinder"
-	test_report "kubevirt.io/project-infra/pkg/test-report"
+	testreport "kubevirt.io/project-infra/pkg/test-report"
 
 	"github.com/bndr/gojenkins"
 	"github.com/sirupsen/logrus"
@@ -79,7 +79,7 @@ func ExecutionCmd(rootLogger *logrus.Entry) *cobra.Command {
 var executionReportFlagOpts = executionReportFlagOptions{}
 
 func init() {
-	executionCmd.PersistentFlags().StringVar(&executionReportFlagOpts.endpoint, "endpoint", test_report.DefaultJenkinsBaseUrl, "jenkins base url")
+	executionCmd.PersistentFlags().StringVar(&executionReportFlagOpts.endpoint, "endpoint", testreport.DefaultJenkinsBaseUrl, "jenkins base url")
 	executionCmd.PersistentFlags().DurationVar(&executionReportFlagOpts.startFrom, "start-from", 14*24*time.Hour, "time period for report")
 	executionCmd.PersistentFlags().StringVar(&executionReportFlagOpts.configFile, "config-file", "", "yaml file that contains job names associated with dont_run_tests.json and the job name pattern, if set overrides default-config.yaml")
 	var keys []string
@@ -190,7 +190,7 @@ var configs = map[string][]byte{
 	"ssp":     sspConfigFileContent,
 }
 
-var config *test_report.Config
+var config *testreport.Config
 var configName string
 
 func runExecutionReport() error {
@@ -226,7 +226,7 @@ func runExecutionReport() error {
 		},
 	}
 
-	jobNamePatternsToTestNameFilterRegexps, err := test_report.CreateJobNamePatternsToTestNameFilterRegexps(config, client)
+	jobNamePatternsToTestNameFilterRegexps, err := testreport.CreateJobNamePatternsToTestNameFilterRegexps(config, client)
 	if err != nil {
 		logger.Fatalf("failed to create test filter regexp: %v", err)
 	}
@@ -246,7 +246,7 @@ func runExecutionReport() error {
 	if err != nil {
 		logger.Fatalf("failed to get jobs: %v", err)
 	}
-	jobs, err := test_report.FilterMatchingJobsByJobNamePattern(ctx, jenkins, jobNames, jobNamePattern)
+	jobs, err := testreport.FilterMatchingJobsByJobNamePattern(ctx, jenkins, jobNames, jobNamePattern)
 	if err != nil {
 		logger.Fatalf("failed to filter matching jobs: %v", err)
 	}
@@ -271,9 +271,9 @@ func runExecutionReport() error {
 	if config.JobNamePatternForTestNames != "" {
 		jobNamePatternForTestNames = regexp.MustCompile(config.JobNamePatternForTestNames)
 	}
-	testNamesToJobNamesToExecutionStatus := test_report.GetTestNamesToJobNamesToTestExecutions(jobs, startOfReport, ctx, regexp.MustCompile(config.TestNamePattern), jobNamePatternForTestNames)
+	testNamesToJobNamesToExecutionStatus := testreport.GetTestNamesToJobNamesToTestExecutions(jobs, startOfReport, ctx, regexp.MustCompile(config.TestNamePattern), jobNamePatternForTestNames)
 
-	data := test_report.CreateReportData(jobNamePatternsToTestNameFilterRegexps, testNamesToJobNamesToExecutionStatus)
+	data := testreport.CreateReportData(jobNamePatternsToTestNameFilterRegexps, testNamesToJobNamesToExecutionStatus)
 
 	err = writeJsonBaseDataFile(data.TestNamesToJobNamesToSkipped)
 	if err != nil {
@@ -295,7 +295,7 @@ func runExecutionReport() error {
 	return nil
 }
 
-func writeHTMLReportToOutputFile(data test_report.Data) error {
+func writeHTMLReportToOutputFile(data testreport.Data) error {
 	htmlReportOutputWriter, err := os.OpenFile(executionReportFlagOpts.outputFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to write report %q: %v", executionReportFlagOpts.outputFile, err)
@@ -327,7 +327,7 @@ func writeJsonBaseDataFile(testNamesToJobNamesToExecutionStatus map[string]map[s
 	return err
 }
 
-func writeHTMLReportToOutput(data test_report.Data, htmlReportOutputWriter io.Writer) error {
+func writeHTMLReportToOutput(data testreport.Data, htmlReportOutputWriter io.Writer) error {
 	err := flakefinder.WriteTemplateToOutput(reportTemplate, data, htmlReportOutputWriter)
 	if err != nil {
 		return fmt.Errorf("failed to write report: %v", err)

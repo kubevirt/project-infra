@@ -27,7 +27,7 @@ import (
 	"reflect"
 	"testing"
 
-	test_report "kubevirt.io/project-infra/pkg/test-report"
+	testreport "kubevirt.io/project-infra/pkg/test-report"
 )
 
 func Test_applyData(t *testing.T) {
@@ -39,7 +39,7 @@ func Test_applyData(t *testing.T) {
 		name                          string
 		args                          args
 		wantErr                       error
-		wantRemainingQuarantinedTests []*test_report.FilterTestRecord
+		wantRemainingQuarantinedTests []*testreport.FilterTestRecord
 	}{
 		{
 			name: "no input data",
@@ -57,7 +57,7 @@ func Test_applyData(t *testing.T) {
 				values:  loadTestFileOrPanic("testdata/no-test-results.json"),
 			},
 			wantErr: nil,
-			wantRemainingQuarantinedTests: []*test_report.FilterTestRecord{
+			wantRemainingQuarantinedTests: []*testreport.FilterTestRecord{
 				{
 					Id:     "Storage Starting a VirtualMachineInstance with error disk  should pause VMI on IO error",
 					Reason: "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17044, https://issues.redhat.com/browse/CNV-19692",
@@ -71,7 +71,7 @@ func Test_applyData(t *testing.T) {
 				values:  loadTestFileOrPanic("testdata/test-failing.json"),
 			},
 			wantErr: nil,
-			wantRemainingQuarantinedTests: []*test_report.FilterTestRecord{
+			wantRemainingQuarantinedTests: []*testreport.FilterTestRecord{
 				{
 					Id:     "with a dedicated migration network Should migrate over that network",
 					Reason: "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17143",
@@ -94,7 +94,7 @@ func Test_applyData(t *testing.T) {
 				values:  loadTestFileOrPanic("testdata/test-some-passing-some-failing.json"),
 			},
 			wantErr: nil,
-			wantRemainingQuarantinedTests: []*test_report.FilterTestRecord{
+			wantRemainingQuarantinedTests: []*testreport.FilterTestRecord{
 				{
 					Id:     "with a dedicated migration network Should migrate over that network",
 					Reason: "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17143",
@@ -110,7 +110,7 @@ func Test_applyData(t *testing.T) {
 				values: loadTestFileOrPanic("testdata/some-tests-skipped.json"),
 			},
 			wantErr: nil,
-			wantRemainingQuarantinedTests: []*test_report.FilterTestRecord{
+			wantRemainingQuarantinedTests: []*testreport.FilterTestRecord{
 				{
 					Id:     "should reach the vmi",
 					Reason: "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17143",
@@ -135,7 +135,7 @@ func Test_applyData(t *testing.T) {
 				values: loadTestFileOrPanic("testdata/one-test-passing.json"),
 			},
 			wantErr: nil,
-			wantRemainingQuarantinedTests: []*test_report.FilterTestRecord{
+			wantRemainingQuarantinedTests: []*testreport.FilterTestRecord{
 				{
 					Id:     "Storage Starting a VirtualMachineInstance with lun disk should run the VMI",
 					Reason: "Failed continously - Tracked in https://issues.redhat.com/browse/CNV-17044, https://issues.redhat.com/browse/CNV-19692",

@@ -29,8 +29,8 @@ import (
 	"github.com/bndr/gojenkins"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	jenkins2 "kubevirt.io/project-infra/pkg/jenkins"
-	test_report "kubevirt.io/project-infra/pkg/test-report"
+	kvjenkins "kubevirt.io/project-infra/pkg/jenkins"
+	testreport "kubevirt.io/project-infra/pkg/test-report"
 )
 
 var dequarantineCmd = &cobra.Command{
@@ -42,7 +42,7 @@ var dequarantineCmd = &cobra.Command{
 var logger = logrus.StandardLogger().WithField("test-report", "dequarantine")
 
 type quarantinedTestsRunData struct {
-	*test_report.FilterTestRecord
+	*testreport.FilterTestRecord
 	testNamePattern *regexp.Regexp
 	Tests           []*quarantinedTestRunsData `json:"tests"`
 }
@@ -85,7 +85,7 @@ func init() {
 	dequarantineCmd.AddCommand(dequarantineExecuteCmd)
 }
 
-func generateDequarantineBaseData(jenkins *gojenkins.Jenkins, ctx context.Context, jobs []*gojenkins.Job, startOfReport time.Time, quarantinedTestEntriesFromFile []*test_report.FilterTestRecord) []*quarantinedTestsRunData {
+func generateDequarantineBaseData(jenkins *gojenkins.Jenkins, ctx context.Context, jobs []*gojenkins.Job, startOfReport time.Time, quarantinedTestEntriesFromFile []*testreport.FilterTestRecord) []*quarantinedTestsRunData {
 
 	quarantinedTestsRunDataValues, testNamePattern := createTestCaseCollectionBaseData(quarantinedTestEntriesFromFile)
 	quarantinedTestNamesToTestRunData := filterMatchingTestRunData(jobs, startOfReport, ctx, jenkins, testNamePattern)
@@ -95,7 +95,7 @@ func generateDequarantineBaseData(jenkins *gojenkins.Jenkins, ctx context.Contex
 
 // createTestCaseCollectionBaseData returns the base records that are used to collect the test runs for those tests
 // and the regexp.Regexp that is used to filter the test data by test name that matches the quarantined file expressions
-func createTestCaseCollectionBaseData(quarantinedTestEntriesFromFile []*test_report.FilterTestRecord) ([]*quarantinedTestsRunData, *regexp.Regexp) {
+func createTestCaseCollectionBaseData(quarantinedTestEntriesFromFile []*testreport.FilterTestRecord) ([]*quarantinedTestsRunData, *regexp.Regexp) {
 	var quarantinedTestPatternStrings []string
 	var quarantinedTestsRunDataValues []*quarantinedTestsRunData
 	for _, quarantinedTestEntry := range quarantinedTestEntriesFromFile {
@@ -114,7 +114,7 @@ func createTestCaseCollectionBaseData(quarantinedTestEntriesFromFile []*test_rep
 func filterMatchingTestRunData(jobs []*gojenkins.Job, startOfReport time.Time, ctx context.Context, jenkins *gojenkins.Jenkins, testNamePattern *regexp.Regexp) map[string]*quarantinedTestRunsData {
 	testNamesToTestCases := map[string]*quarantinedTestRunsData{}
 	for _, job := range jobs {
-		buildNumbersToTestResultsForJob := jenkins2.GetBuildNumbersToTestResultsForJob(startOfReport, job, ctx, logger)
+		buildNumbersToTestResultsForJob := kvjenkins.GetBuildNumbersToTestResultsForJob(startOfReport, job, ctx, logger)
 		for buildNumber, testResultForJob := range buildNumbersToTestResultsForJob {
 			build, err := jenkins.GetBuild(ctx, job.GetName(), buildNumber)
 			if err != nil {

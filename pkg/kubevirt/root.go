@@ -23,7 +23,7 @@ import (
 	"fmt"
 
 	"kubevirt.io/project-infra/pkg/kubevirt/cmd/check"
-	copy2 "kubevirt.io/project-infra/pkg/kubevirt/cmd/copy"
+	"kubevirt.io/project-infra/pkg/kubevirt/cmd/copy"
 	"kubevirt.io/project-infra/pkg/kubevirt/cmd/flags"
 	"kubevirt.io/project-infra/pkg/kubevirt/cmd/get"
 	"kubevirt.io/project-infra/pkg/kubevirt/cmd/remove"
@@ -43,7 +43,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	flags.AddPersistentFlags(rootCmd)
 
-	rootCmd.AddCommand(copy2.CopyCommand())
+	rootCmd.AddCommand(copy.CopyCommand())
 	rootCmd.AddCommand(require.RequireCommand())
 	rootCmd.AddCommand(remove.RemoveCommand())
 	rootCmd.AddCommand(check.CheckCommand())

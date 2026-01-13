@@ -33,7 +33,7 @@ import (
 
 	"github.com/bndr/gojenkins"
 	"github.com/spf13/cobra"
-	test_report "kubevirt.io/project-infra/pkg/test-report"
+	testreport "kubevirt.io/project-infra/pkg/test-report"
 )
 
 const shortDequarantineExecuteUsage = "test-report dequarantine execute creates a new file matching the format of quarantined_tests.json from the source file where entries for stable tests are omitted"
@@ -94,7 +94,7 @@ func (r *dequarantineExecuteOpts) Validate() error {
 }
 
 func init() {
-	dequarantineExecuteCmd.PersistentFlags().StringVar(&dequarantineExecOptions.endpoint, "endpoint", test_report.DefaultJenkinsBaseUrl, "jenkins base url")
+	dequarantineExecuteCmd.PersistentFlags().StringVar(&dequarantineExecOptions.endpoint, "endpoint", testreport.DefaultJenkinsBaseUrl, "jenkins base url")
 	dequarantineExecuteCmd.PersistentFlags().DurationVar(&dequarantineExecOptions.startFrom, "start-from", 10*24*time.Hour, "time period for report")
 	dequarantineExecuteCmd.PersistentFlags().StringVar(&dequarantineExecOptions.quarantineFileURL, "quarantine-file-url", "", "the url to the quarantine file")
 	dequarantineExecuteCmd.PersistentFlags().StringVar(&dequarantineExecOptions.jobNamePattern, "job-name-pattern", "", "the pattern to which all jobs have to match")
@@ -135,7 +135,7 @@ func runDequarantineExecution() error {
 	if err != nil {
 		logger.Fatalf("failed to get jobs: %v", err)
 	}
-	jobs, err := test_report.FilterMatchingJobsByJobNamePattern(ctx, jenkins, jobNames, executeJobNamePattern)
+	jobs, err := testreport.FilterMatchingJobsByJobNamePattern(ctx, jenkins, jobNames, executeJobNamePattern)
 	if err != nil {
 		logger.Fatalf("failed to filter matching jobs: %v", err)
 	}
@@ -153,7 +153,7 @@ func runDequarantineExecution() error {
 		return nil
 	}
 
-	quarantinedTestEntriesFromFile, err := test_report.FetchDontRunEntriesFromFile(dequarantineExecOptions.quarantineFileURL, client)
+	quarantinedTestEntriesFromFile, err := testreport.FetchDontRunEntriesFromFile(dequarantineExecOptions.quarantineFileURL, client)
 	if err != nil {
 		logger.Fatalf("failed to filter matching jobs: %v", err)
 	}
@@ -188,7 +188,7 @@ func runDequarantineExecution() error {
 	return nil
 }
 
-func filterUnstableTestRecords(options dequarantineExecuteOpts, values []*quarantinedTestsRunData) (remainingQuarantinedTests []*test_report.FilterTestRecord, err error) {
+func filterUnstableTestRecords(options dequarantineExecuteOpts, values []*quarantinedTestsRunData) (remainingQuarantinedTests []*testreport.FilterTestRecord, err error) {
 	if len(values) == 0 {
 		return nil, fmt.Errorf("no input data")
 	}

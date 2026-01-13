@@ -32,7 +32,7 @@ import (
 
 	"github.com/bndr/gojenkins"
 	"github.com/spf13/cobra"
-	test_report "kubevirt.io/project-infra/pkg/test-report"
+	testreport "kubevirt.io/project-infra/pkg/test-report"
 )
 
 const shortDequarantineReportUsage = "test-report dequarantine report generates a report of the test status for each entry in the quarantined_tests.json"
@@ -79,7 +79,7 @@ func (r *dequarantineReportOpts) Validate() error {
 }
 
 func init() {
-	dequarantineReportCmd.PersistentFlags().StringVar(&dequarantineReportOptions.endpoint, "endpoint", test_report.DefaultJenkinsBaseUrl, "jenkins base url")
+	dequarantineReportCmd.PersistentFlags().StringVar(&dequarantineReportOptions.endpoint, "endpoint", testreport.DefaultJenkinsBaseUrl, "jenkins base url")
 	dequarantineReportCmd.PersistentFlags().DurationVar(&dequarantineReportOptions.startFrom, "start-from", 10*24*time.Hour, "time period for report")
 	dequarantineReportCmd.PersistentFlags().StringVar(&dequarantineReportOptions.quarantineFileURL, "quarantine-file-url", "", "the url to the quarantine file")
 	dequarantineReportCmd.PersistentFlags().StringVar(&dequarantineReportOptions.jobNamePattern, "job-name-pattern", "", "the pattern to which all jobs have to match")
@@ -119,7 +119,7 @@ func runDequarantineReport() error {
 	if err != nil {
 		logger.Fatalf("failed to get jobs: %v", err)
 	}
-	jobs, err := test_report.FilterMatchingJobsByJobNamePattern(ctx, jenkins, jobNames, reportJobNamePattern)
+	jobs, err := testreport.FilterMatchingJobsByJobNamePattern(ctx, jenkins, jobNames, reportJobNamePattern)
 	if err != nil {
 		logger.Fatalf("failed to filter matching jobs: %v", err)
 	}
@@ -137,7 +137,7 @@ func runDequarantineReport() error {
 		return nil
 	}
 
-	quarantinedTestEntriesFromFile, err := test_report.FetchDontRunEntriesFromFile(dequarantineReportOptions.quarantineFileURL, client)
+	quarantinedTestEntriesFromFile, err := testreport.FetchDontRunEntriesFromFile(dequarantineReportOptions.quarantineFileURL, client)
 	if err != nil {
 		logger.Fatalf("failed to filter matching jobs: %v", err)
 	}

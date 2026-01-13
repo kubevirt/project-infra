@@ -30,7 +30,7 @@ import (
 
 	"kubevirt.io/project-infra/pkg/git"
 	testlabelanalyzer "kubevirt.io/project-infra/pkg/test-label-analyzer"
-	test_report "kubevirt.io/project-infra/pkg/test-report"
+	testreport "kubevirt.io/project-infra/pkg/test-report"
 
 	"github.com/spf13/cobra"
 )
@@ -165,7 +165,7 @@ func (s *ConfigOptions) getConfig() (*testlabelanalyzer.Config, error) {
 	}
 }
 
-func generateConfigWithCategoriesFromFilterTestRecords(filterTestRecords []test_report.FilterTestRecord, blameLines []*git.BlameLine) *testlabelanalyzer.Config {
+func generateConfigWithCategoriesFromFilterTestRecords(filterTestRecords []testreport.FilterTestRecord, blameLines []*git.BlameLine) *testlabelanalyzer.Config {
 	config := &testlabelanalyzer.Config{}
 	blameIndex := 0
 	for _, filterTestRecord := range filterTestRecords {
@@ -189,12 +189,12 @@ func generateConfigWithCategoriesFromFilterTestRecords(filterTestRecords []test_
 	return config
 }
 
-func unmarshallFilterTestRecords(s *ConfigOptions) ([]test_report.FilterTestRecord, error) {
+func unmarshallFilterTestRecords(s *ConfigOptions) ([]testreport.FilterTestRecord, error) {
 	file, err := os.ReadFile(s.FilterTestNamesFile)
 	if err != nil {
 		return nil, err
 	}
-	var filterTestRecords []test_report.FilterTestRecord
+	var filterTestRecords []testreport.FilterTestRecord
 	err = json.Unmarshal(file, &filterTestRecords)
 	if err != nil {
 		return nil, err

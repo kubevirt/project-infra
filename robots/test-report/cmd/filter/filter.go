@@ -30,7 +30,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	test_report "kubevirt.io/project-infra/pkg/test-report"
+	testreport "kubevirt.io/project-infra/pkg/test-report"
 )
 
 // defaultFileOutputPattern defines the pattern that is used to generate the file names, to be output in target directory.
@@ -184,10 +184,10 @@ func runFilter(input *map[string]map[string]int, groupConfigs groupConfigs) map[
 				if _, exists := testStatePerVersion[version]; !exists {
 					testStatePerVersion[version] = &testState{}
 				}
-				if testExecution == test_report.TestExecution_Run {
+				if testExecution == testreport.TestExecution_Run {
 					testStatePerVersion[version].run = true
 				}
-				if testExecution == test_report.TestExecution_Unsupported {
+				if testExecution == testreport.TestExecution_Unsupported {
 					testStatePerVersion[version].unsupported = true
 				}
 			}
