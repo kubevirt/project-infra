@@ -155,8 +155,9 @@ postsubmits:
   - name: push-aaq-builder
     branches:
     - main
-    cluster: kubevirt-prow-control-plane
-    always_run: true
+    cluster: prow-workloads
+    always_run: false
+    run_if_changed: "hack/build/builder/.*"
     optional: false
     skip_report: true
     annotations:
@@ -165,6 +166,7 @@ postsubmits:
     decoration_config:
       timeout: 3h
       grace_period: 5m
+    max_concurrency: 1
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -172,6 +174,8 @@ postsubmits:
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
     spec:
+      nodeSelector:
+        type: bare-metal-external
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         env:
@@ -180,10 +184,11 @@ postsubmits:
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
-          - "-ce"
+          - "-c"
           - |
-            cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-            aaq_CONTAINER_BUILDCMD=buildah make builder-push
+            set -e
+            cat "$QUAY_PASSWORD" | podman login quay.io --username $(cat "$QUAY_USER") --password-stdin=true
+            make builder-push
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
