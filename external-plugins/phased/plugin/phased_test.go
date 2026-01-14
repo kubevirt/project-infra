@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	kubeVirtLabels "kubevirt.io/project-infra/pkg/github/labels"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
@@ -16,7 +18,6 @@ import (
 	"sigs.k8s.io/prow/pkg/labels"
 
 	"kubevirt.io/project-infra/external-plugins/phased/plugin/handler"
-	kubeVirtLabels "kubevirt.io/project-infra/robots/pkg/github/labels"
 )
 
 const (

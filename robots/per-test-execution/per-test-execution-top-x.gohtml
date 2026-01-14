@@ -1,0 +1,56 @@
+{{- /*
+
+    This file is part of the KubeVirt project
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+    Copyright The KubeVirt Authors.
+
+*/ -}}
+
+{{- /* gotype: kubevirt.io/project-infra/robots/per-test-execution.TopXTestExecutions */ -}}
+
+<html lang="en">
+<head>
+    <title>per-test-execution top x report</title>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<h1>per-test-execution top x report</h1>
+
+<div>From {{ $.StartOfReport.Format "2006-01-02" }} till {{ $.EndOfReport.Format "2006-01-02" }} </div>
+
+{{ range $baseFilename := $.SortedLinkFilenames }}
+    <h2>{{ $baseFilename }} <a style="text-decoration: none" href="./{{ $baseFilename }}" title="source file">🛈</a></h2>
+    {{ $testExecutions := index $.PerLaneExecutions $baseFilename }}
+    {{ if not $testExecutions }}<div>🎉 ♥ No failures!</div>{{ else }}
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Test name</th>
+            <th># executions</th>
+            <th># failures</th>
+            <th>most recent failure</th>
+        </tr>{{ range $index, $testExecution := $testExecutions }}
+        {{ if $testExecution.FailedExecutions }}<tr>
+            <td>{{ len (printf "a%*s" $index "") }}</td>
+            <td>{{ $testExecution.Name }}</td>
+            <td>{{ $testExecution.TotalExecutions }}</td>
+            <td>{{ $testExecution.FailedExecutions }}</td>
+            <td><a style="text-decoration: none" href="{{ $testExecution.LatestFailureURL }}">🔗</a></td>
+        </tr>{{ end }}
+        {{ end }}
+    </table>{{ end }}
+{{ end }}
+</body>
+</html>

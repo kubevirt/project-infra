@@ -1,8 +1,8 @@
 limiter     := limiter
-flake-report-writer := robots/cmd/flake-report-writer
-flake-issue-creator := robots/cmd/flake-issue-creator
-querier := robots/cmd/release-querier
-kubevirtci := robots/cmd/kubevirtci-bumper
+flake-report-writer := robots/flake-report-writer
+flake-issue-creator := robots/flake-issue-creator
+querier := robots/release-querier
+kubevirtci := robots/kubevirtci-bumper
 
 ifndef ARTIFACTS
 	ARTIFACTS=/tmp/artifacts

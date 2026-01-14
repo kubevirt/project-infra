@@ -19,8 +19,9 @@
 package review
 
 import (
-	"github.com/sourcegraph/go-diff/diff"
 	"testing"
+
+	"github.com/sourcegraph/go-diff/diff"
 )
 
 func TestBasicReviewResult_ShortString(t *testing.T) {

@@ -21,12 +21,13 @@ package metrics
 
 import (
 	"fmt"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
-	"github.com/prometheus/client_golang/prometheus"
 	"slices"
 	"sync"
 	"sync/atomic"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 type fakeCounter struct {

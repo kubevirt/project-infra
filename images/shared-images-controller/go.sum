@@ -975,6 +975,8 @@ github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
 github.com/kr/text v0.2.0/go.mod h1:eLer722TekiGuMkidMxC/pM04lWEeraHUUmBw8l2grE=
 github.com/kubevirt/project-infra v0.0.0-20220224113809-e8d0e2c5b1e0 h1:jY70a0e+SxyJjoOZkUVCHOxuqpf6N+INasC2HwmLcRw=
 github.com/kubevirt/project-infra v0.0.0-20220224113809-e8d0e2c5b1e0/go.mod h1:a8xfGq3nGWj2OIu3J/E0yl4kz5JizTK9qRZbneatDhY=
+github.com/kubevirt/project-infra v0.0.0-20251219093753-85e388fe9163 h1:d7IVpQRbycZ5MIDivxG4urtv8ynCLiMxUusDSIbwOKs=
+github.com/kubevirt/project-infra v0.0.0-20251219093753-85e388fe9163/go.mod h1:B2Y7AzSd98IC7sWQ5ofHpnaZt3Nq1D2n6ZBgZHUlg/s=
 github.com/letsencrypt/boulder v0.0.0-20240620165639-de9c06129bec h1:2tTW6cDth2TSgRbAhD7yjZzTQmcN25sDRPEeinR51yQ=
 github.com/letsencrypt/boulder v0.0.0-20240620165639-de9c06129bec/go.mod h1:TmwEoGCwIti7BCeJ9hescZgRtatxRE+A72pCoPfmcfk=
 github.com/lib/pq v1.0.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
@@ -1024,6 +1026,8 @@ github.com/mattn/go-shellwords v1.0.9/go.mod h1:EZzvwXDESEeg03EKmM+RmDnNOPKG4lLt
 github.com/mattn/go-shellwords v1.0.10/go.mod h1:EZzvwXDESEeg03EKmM+RmDnNOPKG4lLtQsUlTZDWQ8Y=
 github.com/mattn/go-sqlite3 v0.0.0-20160514122348-38ee283dabf1/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
 github.com/mattn/go-sqlite3 v1.9.0/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
+github.com/mattn/go-sqlite3 v1.14.32 h1:JD12Ag3oLy1zQA+BNn74xRgaBbdhbNIDYvQUEuuErjs=
+github.com/mattn/go-sqlite3 v1.14.32/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
 github.com/mattn/go-sqlite3 v2.0.1+incompatible h1:xQ15muvnzGBHpIpdrNi1DA5x0+TcBZzsIDwmw9uTHzw=
 github.com/mattn/go-sqlite3 v2.0.1+incompatible/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
 github.com/mattn/go-zglob v0.0.1/go.mod h1:9fxibJccNxU2cnpIKLRRFA7zX7qhkJIQWBb449FYHOo=

@@ -20,10 +20,11 @@
 package review
 
 import (
-	"github.com/sourcegraph/go-diff/diff"
 	"os"
 	"reflect"
 	"testing"
+
+	"github.com/sourcegraph/go-diff/diff"
 )
 
 func TestProwJobImageUpdate_Review(t1 *testing.T) {

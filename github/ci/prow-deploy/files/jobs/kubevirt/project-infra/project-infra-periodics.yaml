@@ -18,7 +18,7 @@ periodics:
       - "/bin/sh"
       - "-ce"
       - >
-        go run ./robots/cmd/retester
+        go run ./robots/retester
         --token=/etc/github/oauth
         --ceiling=1
         --confirm
@@ -272,8 +272,8 @@ periodics:
         - -ce
         args:
         - |
-          git-pr.sh -c "go run ./robots/cmd/uploader -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ../kubevirt -r kubevirt -L skip-review,release-note-none -T main
-          git-pr.sh -c "go run ./robots/cmd/uploader -workspace ${PWD}/../containerized-data-importer/WORKSPACE -dry-run=false" -p ../containerized-data-importer -r containerized-data-importer -T main -L skip-review,release-note-none
+          git-pr.sh -c "go run ./robots/uploader -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ../kubevirt -r kubevirt -L skip-review,release-note-none -T main
+          git-pr.sh -c "go run ./robots/uploader -workspace ${PWD}/../containerized-data-importer/WORKSPACE -dry-run=false" -p ../containerized-data-importer -r containerized-data-importer -T main -L skip-review,release-note-none
         resources:
           requests:
             memory: "200Mi"
@@ -309,7 +309,7 @@ periodics:
         args:
           - |
             git-pr.sh \
-              -c "go run ./robots/cmd/kubevirtci-bumper -ensure-last-three-minor-of v1 --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s" \
+              -c "go run ./robots/kubevirtci-bumper -ensure-last-three-minor-of v1 --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s" \
               -p ../kubevirtci \
               -r kubevirtci \
               -b patch-version-bump \
@@ -387,7 +387,7 @@ periodics:
         args:
           - |
             git-pr.sh \
-              -c "go run ./robots/cmd/kubevirtci-bumper -ensure-latest --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" \
+              -c "go run ./robots/kubevirtci-bumper -ensure-latest --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" \
               -b minor-version-bump \
               -r kubevirtci \
               -p ../kubevirtci \
@@ -497,7 +497,7 @@ periodics:
         args:
           - |
             TEMP_FILE=$(mktemp)
-            if ! go run ./robots/cmd/kubevirt check providers \
+            if ! go run ./robots/kubevirt check providers \
               --job-config-path-kubevirt-presubmits=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml \
               --job-config-path-kubevirt-periodics=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml \
               --output-file=${TEMP_FILE} \
@@ -508,7 +508,7 @@ periodics:
               echo "unsupported kubevirtci providers are still in use, cancelling removal of unsupported kubevirtci providers!"
               exit 0
             fi
-            git-pr.sh -c "go run ./robots/cmd/kubevirtci-bumper -ensure-only-latest-three --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" \
+            git-pr.sh -c "go run ./robots/kubevirtci-bumper -ensure-only-latest-three --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" \
               -p ../kubevirtci \
               -r kubevirtci \
               -b remove-unsupported-versions \
@@ -545,7 +545,7 @@ periodics:
         - -ce
         args:
           - |
-            git-pr.sh -c "go run ./robots/cmd/kubevirtci-presubmit-creator --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" \
+            git-pr.sh -c "go run ./robots/kubevirtci-presubmit-creator --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" \
               -r project-infra \
               -b create-kubevirtci-presubmit \
               -T main
@@ -581,7 +581,7 @@ periodics:
         args:
           - |
             TEMP_FILE=$(mktemp)
-            if ! go run ./robots/cmd/kubevirt check providers \
+            if ! go run ./robots/kubevirt check providers \
               --job-config-path-kubevirt-presubmits=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml \
               --job-config-path-kubevirt-periodics=${PWD}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml \
               --output-file=${TEMP_FILE} \
@@ -592,7 +592,7 @@ periodics:
               echo "unsupported kubevirtci providers are still in use, cancelling removal of kubevirt presubmits!"
               exit 0
             fi
-            git-pr.sh -c "go run ./robots/cmd/kubevirtci-presubmit-remover --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" \
+            git-pr.sh -c "go run ./robots/kubevirtci-presubmit-remover --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" \
               -r project-infra \
               -b remove-kubevirtci-presubmit \
               -T main
@@ -730,7 +730,7 @@ periodics:
         - -ce
         args:
           - |
-            git-pr.sh -c "go run ./robots/cmd/kubevirt require presubmits --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false && go run ./robots/cmd/kubevirt remove always_run --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" \
+            git-pr.sh -c "go run ./robots/kubevirt require presubmits --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false && go run ./robots/kubevirt remove always_run --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" \
               -r project-infra \
               -b require-kubevirt-presubmits \
               -T main \
@@ -769,7 +769,7 @@ periodics:
       - -ce
       args:
       - |
-        git-pr.sh -c "go run ./robots/cmd/kubevirt copy jobs --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" \
+        git-pr.sh -c "go run ./robots/kubevirt copy jobs --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" \
           -r project-infra \
           -b copy-kubevirt-jobs \
           -T main
@@ -805,7 +805,7 @@ periodics:
       - -ce
       args:
       - |
-        git-pr.sh -c "go run ./robots/cmd/kubevirt remove jobs --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" \
+        git-pr.sh -c "go run ./robots/kubevirt remove jobs --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" \
           -r project-infra \
           -b remove-kubevirt-jobs \
           -T main
@@ -1033,7 +1033,7 @@ periodics:
       - "/bin/sh"
       - "-ce"
       - |
-        ( cd robots/cmd/job-config-validator && go build ./... )
+        ( cd robots/job-config-validator && go build ./... )
 
         curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
         chmod +x ./yq && mv ./yq /usr/local/bin/yq
@@ -1042,7 +1042,7 @@ periodics:
         decrypt_secrets
         extract_secret 'kubeconfig' ~/.kube/config
 
-        ./robots/cmd/job-config-validator/job-config-validator
+        ./robots/job-config-validator/job-config-validator
       resources:
         requests:
           memory: "1Gi"
@@ -1084,7 +1084,7 @@ periodics:
         - "/bin/sh"
         - "-ce"
         - |
-          go build -o /usr/local/bin/perf-report-creator ./robots/cmd/perf-report-creator/...
+          go build -o /usr/local/bin/perf-report-creator ./robots/perf-report-creator/...
           (
             cd ..
             git clone "https://kubevirt-bot@github.com/$TARGET_GITHUB_REPO.git"
@@ -1094,8 +1094,8 @@ periodics:
           )
           scrape_dir=$(mktemp -d)
           ci_perf_repo_dir=$(cd ../ci-performance-benchmarks && pwd)
-          ./robots/cmd/perf-report-creator/scrape.sh $GOOGLE_APPLICATION_CREDENTIALS $ci_perf_repo_dir $scrape_dir $KUBEVIRT_PROVIDER
-          ./robots/cmd/perf-report-creator/graph.sh $ci_perf_repo_dir $KUBEVIRT_PROVIDER
+          ./robots/perf-report-creator/scrape.sh $GOOGLE_APPLICATION_CREDENTIALS $ci_perf_repo_dir $scrape_dir $KUBEVIRT_PROVIDER
+          ./robots/perf-report-creator/graph.sh $ci_perf_repo_dir $KUBEVIRT_PROVIDER
           cd $ci_perf_repo_dir
           git add -A results weekly
           current_date=$(date --iso-8601=date)

@@ -21,12 +21,13 @@ package review
 
 import (
 	"fmt"
+	"os/exec"
+	"strings"
+
 	"github.com/sirupsen/logrus"
 	"github.com/sourcegraph/go-diff/diff"
-	"os/exec"
 	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
 	"sigs.k8s.io/prow/pkg/github"
-	"strings"
 )
 
 type KindOfChange interface {

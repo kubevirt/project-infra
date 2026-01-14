@@ -21,9 +21,10 @@ package review
 
 import (
 	"fmt"
-	"github.com/sourcegraph/go-diff/diff"
 	"regexp"
 	"strings"
+
+	"github.com/sourcegraph/go-diff/diff"
 )
 
 const (
