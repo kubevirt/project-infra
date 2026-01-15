@@ -17,7 +17,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
       - name: release-blocker
-        image: quay.io/kubevirtci/release-blocker:v20251107-65f39af
+        image: quay.io/kubevirtci/release-blocker:v20260114-a457511
         imagePullPolicy: IfNotPresent
         args:
         - --dry-run=false
