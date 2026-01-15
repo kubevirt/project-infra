@@ -7,7 +7,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20251210-e03df2d
+    - image: quay.io/kubevirtci/flakefinder:v20260114-16ce7a1
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -43,7 +43,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20251210-e03df2d
+    - image: quay.io/kubevirtci/flakefinder:v20260114-16ce7a1
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -79,7 +79,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20251210-e03df2d
+    - image: quay.io/kubevirtci/flakefinder:v20260114-16ce7a1
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
