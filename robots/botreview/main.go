@@ -115,7 +115,7 @@ func main() {
 	if err != nil {
 		logrus.WithError(err).Fatal("error getting bot user")
 	}
-	reviewer := review.NewReviewer(log, github.PullRequestActionEdited, o.Org, o.Repo, o.PullRequestNumber, user.Login, o.dryRun)
+	reviewer := review.NewReviewer(log, github.PullRequestActionEdited, o.Org, o.Repo, o.PullRequestNumber, user.Login, pullRequest.Title, o.dryRun)
 	reviewer.BaseSHA = pullRequest.Base.SHA
 	botReviewResults, err := reviewer.ReviewLocalCode()
 	if err != nil {

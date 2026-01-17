@@ -506,3 +506,252 @@ func (f *FakeGHReviewClient) BotUser() (*github.UserData, error) {
 func newGHReviewClient() FakeGHReviewClient {
 	return FakeGHReviewClient{}
 }
+
+func TestMatchSubjectFiltersPerStrategy(t *testing.T) {
+	prowJobImagesPaths := []string{
+		"testdata/simple_bump-prow-job-images_sh.patch0",
+		"testdata/simple_bump-prow-job-images_sh.patch1",
+	}
+	prowAutobumpPaths := []string{
+		"testdata/prow-autobump/github_ci_prow-deploy_kustom_base_manifests_test_infra_current_deck_deployment.yaml",
+	}
+	kubevirtciBumpPaths := []string{
+		"testdata/kubevirtci-bump/cluster-up-sha.txt",
+		"testdata/kubevirtci-bump/hack_config-default.sh",
+	}
+	uploaderPaths := []string{
+		"testdata/kubevirt/uploader/uploader-autoupdate.patch00",
+	}
+
+	type args struct {
+		paths []string
+		title string
+	}
+	tests := []struct {
+		name      string
+		args      args
+		wantMatch bool
+	}{
+		// Prow Job Images tests
+		{
+			name: "prow job images: both title and files match",
+			args: args{
+				paths: prowJobImagesPaths,
+				title: "Bump Prow Job images",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "prow job images: explicit script title matches",
+			args: args{
+				paths: prowJobImagesPaths,
+				title: "Run hack/bump-prow-job-images.sh",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "prow job images: lowercase title variant matches",
+			args: args{
+				paths: prowJobImagesPaths,
+				title: "bump prow job images",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "prow job images: mixed case script path matches",
+			args: args{
+				paths: prowJobImagesPaths,
+				title: "run HACK/bump-prow-job-images.sh",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "prow job images: singular image should not match",
+			args: args{
+				paths: prowJobImagesPaths,
+				title: "Bump Prow Job image",
+			},
+			wantMatch: false,
+		},
+		{
+			name: "prow job images: misspelled script name should not match",
+			args: args{
+				paths: prowJobImagesPaths,
+				title: "Run hack/bump-prow-job-image.sh",
+			},
+			wantMatch: false,
+		},
+		{
+			name: "prow job images: files match but title does not",
+			args: args{
+				paths: prowJobImagesPaths,
+				title: "Bump kubevirtci",
+			},
+			wantMatch: false,
+		},
+		// Prow Autobump tests
+		{
+			name: "prow autobump: both title and file match",
+			args: args{
+				paths: prowAutobumpPaths,
+				title: "Run hack/bump-prow.sh",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "prow autobump: Bump Prow Deployment images title matches",
+			args: args{
+				paths: prowAutobumpPaths,
+				title: "Bump Prow Deployment images",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "prow autobump: Bump prow-deploy images title matches",
+			args: args{
+				paths: prowAutobumpPaths,
+				title: "Bump prow-deploy images",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "prow autobump: deployment-images script title matches",
+			args: args{
+				paths: prowAutobumpPaths,
+				title: "run hack/bump-prow-deployment-images.sh",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "prow autobump: lowercase variants match",
+			args: args{
+				paths: prowAutobumpPaths,
+				title: "bump prow deployment images",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "prow autobump: mixed case script path matches",
+			args: args{
+				paths: prowAutobumpPaths,
+				title: "RUN hack/BUMP-prow.sh",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "prow autobump: singular image should not match",
+			args: args{
+				paths: prowAutobumpPaths,
+				title: "Bump Prow Deployment image",
+			},
+			wantMatch: false,
+		},
+		{
+			name: "prow autobump: misspelled script should not match",
+			args: args{
+				paths: prowAutobumpPaths,
+				title: "Run hack/bump-prow-deploloyment-images.sh",
+			},
+			wantMatch: false,
+		},
+		{
+			name: "prow autobump: file matches but title does not",
+			args: args{
+				paths: prowAutobumpPaths,
+				title: "Bump Prow Job images",
+			},
+			wantMatch: false,
+		},
+		{
+			name: "prow autobump run job-images: file matches but title does not",
+			args: args{
+				paths: prowAutobumpPaths,
+				title: "run hack/bump-prow-job-images.sh",
+			},
+			wantMatch: false,
+		},
+		// KubevirtCI bump tests
+		{
+			name: "kubevirtci bump: both files and title match",
+			args: args{
+				paths: kubevirtciBumpPaths,
+				title: "Bump kubevirtci",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "kubevirtci bump: files match but title does not",
+			args: args{
+				paths: kubevirtciBumpPaths,
+				title: "Bump Prow Job images",
+			},
+			wantMatch: false,
+		},
+		// Uploader tests
+		{
+			name: "uploader: both file and title match",
+			args: args{
+				paths: uploaderPaths,
+				title: "Run bazelisk run //robots/cmd/uploader:uploader -- -workspace /home/prow/workspace -dry-run=false",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "uploader: file matches but title does not",
+			args: args{
+				paths: uploaderPaths,
+				title: "Bump Prow",
+			},
+			wantMatch: false,
+		},
+		// Uploader tests
+		{
+			name: "uploader: both file and title match",
+			args: args{
+				paths: uploaderPaths,
+				title: "Run bazelisk run //robots/cmd/uploader:uploader -- -workspace /home/prow/workspace -dry-run=false",
+			},
+			wantMatch: true,
+		},
+		{
+			name: "uploader: file matches but title does not",
+			args: args{
+				paths: uploaderPaths,
+				title: "Bump Prow",
+			},
+			wantMatch: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var fileDiffs []*diff.FileDiff
+			for _, p := range tt.args.paths {
+				file, err := os.ReadFile(p)
+				if err != nil {
+					t.Fatalf("failed to read diff %s: %v", p, err)
+				}
+				fileParsed, err := diff.ParseFileDiff(file)
+				if err != nil || fileParsed == nil {
+					t.Fatalf("failed to parse diff %s: %v", p, err)
+				}
+				fileDiffs = append(fileDiffs, fileParsed)
+			}
+
+			types := GuessReviewTypes(fileDiffs)
+			if len(types) == 0 {
+				t.Fatalf("expected diff-based relevance to yield at least one strategy for %v", tt.args.paths)
+			}
+			filtered := make([]KindOfChange, 0, len(types))
+			for _, k := range types {
+				if k.MatchSubject(tt.args.title) {
+					filtered = append(filtered, k)
+				}
+			}
+			hasMatch := len(filtered) > 0
+			if hasMatch != tt.wantMatch {
+				t.Fatalf("title match expected %v, got %v (title=%q)", tt.wantMatch, hasMatch, tt.args.title)
+			}
+		})
+	}
+}

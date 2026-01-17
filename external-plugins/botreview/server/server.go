@@ -104,11 +104,12 @@ func (s *Server) handlePR(l *logrus.Entry, pr github.PullRequestEvent) error {
 	repo := pr.Repo.Name
 	num := pr.Number
 	user := pr.Sender.Login
+	title := pr.PullRequest.Title
 
-	return s.handlePullRequest(l, action, org, repo, num, user)
+	return s.handlePullRequest(l, action, org, repo, num, user, title)
 }
 
-func (s *Server) handlePullRequest(l *logrus.Entry, action github.PullRequestEventAction, org string, repo string, num int, user string) error {
+func (s *Server) handlePullRequest(l *logrus.Entry, action github.PullRequestEventAction, org string, repo string, num int, user string, title string) error {
 	switch action {
 	case github.PullRequestActionOpened:
 	case github.PullRequestActionEdited:
@@ -133,7 +134,7 @@ func (s *Server) handlePullRequest(l *logrus.Entry, action github.PullRequestEve
 		logrus.WithError(err).Fatal("error changing to directory")
 	}
 
-	reviewer := review.NewReviewer(l, action, org, repo, num, user, s.DryRun)
+	reviewer := review.NewReviewer(l, action, org, repo, num, user, title, s.DryRun)
 	reviewer.BaseSHA = pullRequest.Base.SHA
 	botReviewResults, err := reviewer.ReviewLocalCode()
 	if err != nil {

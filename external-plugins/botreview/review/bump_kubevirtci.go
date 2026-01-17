@@ -35,11 +35,13 @@ const (
 var bumpKubevirtCIHackConfigDefaultMatcher *regexp.Regexp
 var bumpKubevirtCIClusterUpShaMatcher *regexp.Regexp
 var bumpKubevirtCIClusterUpVersionMatcher *regexp.Regexp
+var bumpKubevirtCITitleMatcher *regexp.Regexp
 
 func init() {
 	bumpKubevirtCIHackConfigDefaultMatcher = regexp.MustCompile(`(?m)^-[\s]*kubevirtci_git_hash=\"[^\s]+\"$[\n]^\+[\s]*kubevirtci_git_hash=\"[^\s]+\"$`)
 	bumpKubevirtCIClusterUpShaMatcher = regexp.MustCompile(`(?m)^-[\s]*[^\s]+$[\n]^\+[^\s]+$`)
 	bumpKubevirtCIClusterUpVersionMatcher = regexp.MustCompile(`(?m)^-[0-9]+-[a-z0-9]+$[\n]^\+[0-9]+-[a-z0-9]+$`)
+    bumpKubevirtCITitleMatcher = regexp.MustCompile(`(?i)\bbump\s+kubevirtci\b`)
 }
 
 type BumpKubevirtCI struct {
@@ -108,4 +110,8 @@ func (t *BumpKubevirtCI) Review() BotReviewResult {
 
 func (t *BumpKubevirtCI) String() string {
 	return fmt.Sprintf("relevantFileDiffs: %v", t.relevantFileDiffs)
+}
+
+func (t *BumpKubevirtCI) MatchSubject(subject string) bool {
+	return bumpKubevirtCITitleMatcher.MatchString(subject)
 }

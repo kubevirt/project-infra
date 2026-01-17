@@ -34,9 +34,11 @@ const (
 )
 
 var prowAutobumpHunkBodyMatcher *regexp.Regexp
+var prowAutobumpTitleMatcher *regexp.Regexp
 
 func init() {
-	prowAutobumpHunkBodyMatcher = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+(image|clonerefs|initupload|entrypoint|sidecar): [^\s]+$[\n]^\+[\s]+(image|clonerefs|initupload|entrypoint|sidecar): [^\s]+)$`)
+    prowAutobumpHunkBodyMatcher = regexp.MustCompile(`(?m)^(-[\s]+- image: [^\s]+$[\n]^\+[\s]+- image: [^\s]+|-[\s]+(image|clonerefs|initupload|entrypoint|sidecar): [^\s]+$[\n]^\+[\s]+(image|clonerefs|initupload|entrypoint|sidecar): [^\s]+)$`)
+    prowAutobumpTitleMatcher = regexp.MustCompile(`(?i)\b(run\s+hack/(bump-prow\.sh|bump-prow-deployment-images\.sh)|bump\s+prow\s+deployment\s+images|bump\s+prow-deploy\s+images)\b`)
 }
 
 type ProwAutobump struct {
@@ -75,4 +77,8 @@ func (t *ProwAutobump) Review() BotReviewResult {
 
 func (t *ProwAutobump) String() string {
 	return fmt.Sprintf("relevantFileDiffs: %v", t.relevantFileDiffs)
+}
+
+func (t *ProwAutobump) MatchSubject(subject string) bool {
+	return prowAutobumpTitleMatcher.MatchString(subject)
 }

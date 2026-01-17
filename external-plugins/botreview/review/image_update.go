@@ -36,6 +36,7 @@ var (
 	prowJobImageUpdateLineMatcher       = regexp.MustCompile(`(?m)^\+\s+- image: \S+$`)
 	prowJobImageUpdateHunkBodyMatcher   = regexp.MustCompile(`(?m)^(-\s+- image:\s+\S+$\n^\+\s+- image:\s+\S+|-\s+image:\s+\S+$\n^\+\s+image:\s+\S+)$`)
 	prowJobReleaseBranchFileNameMatcher = regexp.MustCompile(`.*/[\w-]+-[0-9-.]+\.yaml`)
+	prowJobImageUpdateTitleMatcher      = regexp.MustCompile(`(?i)\b(run\s+hack/bump-prow-job-images\.sh|bump\s+prow\s+job\s+images)\b`)
 )
 
 type ProwJobImageUpdate struct {
@@ -99,4 +100,8 @@ func (t *ProwJobImageUpdate) hunkMatches(hunk *diff.Hunk) bool {
 
 func (t *ProwJobImageUpdate) String() string {
 	return fmt.Sprintf("relevantFileDiffs: %v", t.relevantFileDiffs)
+}
+
+func (t *ProwJobImageUpdate) MatchSubject(subject string) bool {
+	return prowJobImageUpdateTitleMatcher.MatchString(subject)
 }
