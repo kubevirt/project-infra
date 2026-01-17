@@ -578,6 +578,11 @@ external_plugins:
     endpoint: http://botreview:9900
     events:
       - pull_request
+  - name: docs-pr-checker
+    endpoint: http://docs-pr-checker:9900
+    events:
+      - pull_request
+      - issue_comment
   kubevirt/kubevirt:
   - name: phased
     endpoint: http://prow-phased:9900
@@ -591,6 +596,11 @@ external_plugins:
   - name: test-subset
     endpoint: http://test-subset:9900
     events:
+      - issue_comment
+  - name: docs-pr-checker
+    endpoint: http://docs-pr-checker:9900
+    events:
+      - pull_request
       - issue_comment
 
 approve:
