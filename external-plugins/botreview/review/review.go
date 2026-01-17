@@ -34,6 +34,7 @@ type KindOfChange interface {
 	AddIfRelevant(fileDiff *diff.FileDiff)
 	Review() BotReviewResult
 	IsRelevant() bool
+	MatchSubject(subject string) bool
 }
 
 func newPossibleReviewTypes() []KindOfChange {
@@ -68,11 +69,12 @@ type Reviewer struct {
 	num     int
 	user    string
 	action  github.PullRequestEventAction
+	title   string
 	dryRun  bool
 	BaseSHA string
 }
 
-func NewReviewer(l *logrus.Entry, action github.PullRequestEventAction, org string, repo string, num int, user string, dryRun bool) *Reviewer {
+func NewReviewer(l *logrus.Entry, action github.PullRequestEventAction, org string, repo string, num int, user string, title string, dryRun bool) *Reviewer {
 	return &Reviewer{
 		l:      l,
 		org:    org,
@@ -80,12 +82,13 @@ func NewReviewer(l *logrus.Entry, action github.PullRequestEventAction, org stri
 		num:    num,
 		user:   user,
 		action: action,
+		title:  title,
 		dryRun: dryRun,
 	}
 }
 
 func (r *Reviewer) withFields() *logrus.Entry {
-	return r.l.WithField("dryRun", r.dryRun).WithField("org", r.org).WithField("repo", r.repo).WithField("pr", r.num).WithField("user", r.user)
+	return r.l.WithField("dryRun", r.dryRun).WithField("org", r.org).WithField("repo", r.repo).WithField("pr", r.num).WithField("user", r.user).WithField("title", r.title)
 }
 func (r *Reviewer) info(message string) {
 	r.withFields().Info(message)
@@ -120,8 +123,20 @@ func (r *Reviewer) ReviewLocalCode() ([]BotReviewResult, error) {
 		return nil, nil
 	}
 
+	matchingTypes := []KindOfChange{}
+	for _, t := range types {
+		if t.MatchSubject(r.title) {
+			matchingTypes = append(matchingTypes, t)
+		}
+	}
+
+	if len(matchingTypes) == 0 {
+		r.info("this PR title didn't match any expected titles")
+		return nil, nil
+	}
+
 	results := []BotReviewResult{}
-	for _, reviewType := range types {
+	for _, reviewType := range matchingTypes {
 		result := reviewType.Review()
 		results = append(results, result)
 	}
