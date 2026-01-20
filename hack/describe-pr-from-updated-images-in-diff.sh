@@ -38,7 +38,7 @@ FYI @kubevirt/prow-job-taskforce
 Images updated:
 EOF
     for image in $(
-        git show -- "${PROJECT_INFRA_ROOT}/github/ci/prow-deploy" | \
+        git diff -- "${PROJECT_INFRA_ROOT}/github/ci/prow-deploy" | \
             grep -E '^\+\s+-? image: ' | \
             grep -oE 'quay.io/kubevirtci/[^: @]+' | \
             sort -u

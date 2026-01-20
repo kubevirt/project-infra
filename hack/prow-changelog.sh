@@ -31,14 +31,14 @@ set -u
 set -o pipefail
 
 commit_range=$(
-    git show "$(git log -1 --format=%H -- hack/bump-prow.sh)" -- hack/bump-prow.sh | \
+    git diff -- hack/bump-prow.sh | \
         grep -E '^[+-]\s.*v[0-9]+-([a-f0-9]+).*$' |\
         sed -E 's#^[+-]\s.*v[0-9]+-([a-f0-9]+).*$#\1#g'
 )
 changes=$(
     (
         cd ../../kubernetes-sigs/prow
-        git log --format=oneline "${commit_range/$'\n'/..}"
+        git log --format=oneline --abbrev-commit "${commit_range/$'\n'/..}"
     ) | sed -E 's#^([a-f0-9]+)#* \[\1\]\(https://github.com/kubernetes-sigs/prow/commit/\1\)#g' \
       | sed -E 's/ (#[0-9]+) / kubernetes-sigs\/prow\1 /g'
 )

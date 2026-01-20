@@ -139,7 +139,12 @@ cd "${command_path}"
 eval "${command}"
 
 cd "${repo_path}"
-echo "git config user.name=${git_name} user.email=${git_email}..." >&2
+
+if [ -z "$(git status --porcelain)" ]; then
+    echo "Nothing changed" >&2
+    exit 0
+fi
+
 git config user.name "${git_name}"
 git config user.email "${git_email}"
 
@@ -166,10 +171,6 @@ if [ -z "${head_branch}" ]; then
 fi
 
 git add -A
-if git diff --name-only --exit-code HEAD; then
-    echo "Nothing changed" >&2
-    exit 0
-fi
 
 if [ -n "$release_note_none" ]; then
     summary+='\n\n```release-note\nNONE\n```'

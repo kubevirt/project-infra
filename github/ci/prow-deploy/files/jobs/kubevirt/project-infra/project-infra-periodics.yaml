@@ -667,7 +667,7 @@ periodics:
       args:
       - "-ce"
       - |
-        hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra -T main -d "./hack/prow-updates.sh"
+        hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra -T main -d "./hack/prow-changelog.sh"
       securityContext:
         privileged: true
       resources:
