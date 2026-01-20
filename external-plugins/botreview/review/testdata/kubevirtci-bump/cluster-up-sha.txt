@@ -1,7 +1,0 @@
-diff --git a/cluster-up-sha.txt b/cluster-up-sha.txt
-index 640df6bd4..4fed8da0b 100644
---- a/cluster-up-sha.txt
-+++ b/cluster-up-sha.txt
-@@ -1 +1 @@
--358d9700101b03a3fb54c1944e4b890f382b4038
-+1518a55b959b5d79d7a8ab1a3b8b703a557db466

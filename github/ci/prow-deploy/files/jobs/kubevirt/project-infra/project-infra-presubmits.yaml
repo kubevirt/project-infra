@@ -470,31 +470,6 @@ presubmits:
               memory: "4Gi"
             limits:
               memory: "4Gi"
-  - name: build-botreview-image
-    always_run: false
-    run_if_changed: "images/botreview/.*|external-plugins/botreview/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
-      preset-project-infra-image-build-linux: "true"
-    cluster: kubevirt-prow-control-plane
-    spec:
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/bash"
-            - "-ce"
-            - "cd images && ./publish_image.sh -b -e botreview quay.io kubevirtci"
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "1Gi"
-            limits:
-              memory: "1Gi"
   - name: build-test-report-image
     always_run: false
     run_if_changed: "images/test-report/.*|robots/test-report/.*|pkg/.*|go.mod|go.sum"

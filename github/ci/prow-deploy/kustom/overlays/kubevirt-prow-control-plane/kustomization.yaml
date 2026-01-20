@@ -375,12 +375,6 @@ secretGenerator:
     files:
       - oauth=secrets/commenter-oauth-token
     type: Opaque
-  - name: botreview-oauth-token
-    namespace: kubevirt-prow
-    # githubBotreviewToken
-    files:
-    - oauth=secrets/botreview-oauth-token
-    type: Opaque
   - name: kubevirtci-coveralls-token
     namespace: kubevirt-prow-jobs
     files:

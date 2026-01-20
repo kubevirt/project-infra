@@ -29,8 +29,6 @@ depending on billing alerts. See [README](limiter/README.md)
 
 * `robots`: Automation tools
 
-  * `robots/botreview`: Tool to automate reviews of repetitive PRs that are created through automation
-
   * `robots/ci-usage-exporter`: Prometheus exporter to expose CI infrastructure
   information
 

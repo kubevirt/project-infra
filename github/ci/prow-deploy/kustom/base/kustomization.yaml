@@ -1,6 +1,4 @@
 resources:
-  - manifests/local/botreview-deployment.yaml
-  - manifests/local/botreview-service.yaml
   - manifests/local/branch-protector.yaml
   - manifests/local/cherrypicker_deployment.yaml
   - manifests/local/cherrypicker_service.yaml
