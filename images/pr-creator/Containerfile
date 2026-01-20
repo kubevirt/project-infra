@@ -7,17 +7,25 @@ ENV GOPROXY=https://proxy.golang.org|direct \
     CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=${ARCH}
-ENV GIMME_GO_VERSION=1.22.6
+# Due to https://github.com/golang/go/issues/70329 cross-compilation hangs at times.
+# As a temporary workaround, we can try limiting GOMAXPROCS to relieve this issue.
+# See also:
+# - https://github.com/golang/go/issues/67355
+# - https://github.com/golang/go/issues/68464
+# - https://gitlab.com/qemu-project/qemu/-/issues/2738
+# - https://github.com/openshift/dpu-operator/pull/308
+ENV GOMAXPROCS=3
+ENV GIMME_GO_VERSION=1.24.9
 
 RUN set -x && \
-    git clone --depth 1 --revision e4d87dae72dbf1754625cbf112afc535307c1db4 https://github.com/kubernetes/test-infra.git && \
+    git clone --depth 1 --revision 03e5768a447b55381f7517a9d27bb51831893d31 https://github.com/kubernetes/test-infra.git && \
     cd ./test-infra && \
-    /usr/local/bin/runner.sh /bin/sh -ce 'go mod vendor && go build -tags netgo -o /usr/local/bin/pr-creator ./robots/pr-creator' && \
+    /usr/local/bin/runner.sh /bin/sh -cex 'go mod vendor && time go build -tags netgo -o /usr/local/bin/pr-creator ./robots/pr-creator' && \
     chmod +x /usr/local/bin/pr-creator
 
 RUN set -x && \
     cd /project-infra && \
-    /usr/local/bin/runner.sh /bin/sh -ce 'go build -tags netgo -o /usr/local/bin/labels-checker ./robots/labels-checker' && \
+    /usr/local/bin/runner.sh /bin/sh -cex 'time go build -tags netgo -o /usr/local/bin/labels-checker ./robots/labels-checker' && \
     chmod +x /usr/local/bin/labels-checker
 
 FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1 AS final
