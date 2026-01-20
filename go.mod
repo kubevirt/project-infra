@@ -5,7 +5,6 @@ require (
 	cloud.google.com/go/storage v1.43.0
 	github.com/Masterminds/semver v1.5.0
 	github.com/MetalBlueberry/go-plotly v0.4.0
-	github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/bazelbuild/buildtools v0.0.0-20200922170545-10384511ce98
 	github.com/bndr/gojenkins v1.1.0
@@ -24,7 +23,6 @@ require (
 	github.com/r3labs/diff/v3 v3.0.1
 	github.com/shurcooL/githubv4 v0.0.0-20210725200734-83ba7b4c9228
 	github.com/sirupsen/logrus v1.9.3
-	github.com/sourcegraph/go-diff v0.5.3
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.10.0
@@ -218,7 +216,6 @@ require (
 	sigs.k8s.io/controller-runtime v0.18.5 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
-	sourcegraph.com/sqs/pbtypes v1.0.0 // indirect
 )
 
 replace (
