@@ -12,4 +12,4 @@ format:
 	goimports -w -local kubevirt.io/project-infra . ../../pkg/kubevirt
 
 validate: format
-	../../../hack/check-workspace-dirty.sh
+	../../hack/check-workspace-dirty.sh

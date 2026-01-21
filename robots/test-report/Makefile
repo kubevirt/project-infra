@@ -14,9 +14,9 @@ verify:
 	../build-verify.sh
 
 push:
-	cd ../../../images && ./publish_image.sh -e $(CONTAINER_IMAGE) quay.io kubevirtci
-	bash -x "../../../hack/update-jobs-with-latest-image.sh" "$(CONTAINER_REPO)"
-	bash -x "../../../hack/update-scripts-with-latest-image.sh" "$(CONTAINER_REPO)"
+	cd ../../images && ./publish_image.sh -e $(CONTAINER_IMAGE) quay.io kubevirtci
+	bash -x "../../hack/update-jobs-with-latest-image.sh" "$(CONTAINER_REPO)"
+	bash -x "../../hack/update-scripts-with-latest-image.sh" "$(CONTAINER_REPO)"
 
 clean:
 	go clean -cache -modcache
