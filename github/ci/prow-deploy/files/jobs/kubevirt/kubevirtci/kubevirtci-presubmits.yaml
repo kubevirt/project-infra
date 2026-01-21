@@ -447,15 +447,6 @@ presubmits:
     name: check-provision-alpine-with-test-tooling
     optional: true
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/hostname
-                operator: NotIn
-                values:
-                - bare-metal-9
       containers:
       - command:
         - /usr/local/bin/runner.sh
