@@ -22,15 +22,6 @@ postsubmits:
         preset-kubevirtci-quay-credential: "true"
       cluster: prow-workloads
       spec:
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
-                - key: kubernetes.io/hostname
-                  operator: NotIn
-                  values:
-                  - bare-metal-9
         nodeSelector:
           type: bare-metal-external
         volumes:
