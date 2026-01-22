@@ -28,7 +28,7 @@ postsubmits:
         - /usr/local/bin/runner.sh
         - /bin/bash
         - -ce
-        image: quay.io/kubevirtci/pr-creator:v20260120-0b824e7
+        image: quay.io/kubevirtci/pr-creator:v20260121-35abae6
         resources:
           requests:
             memory: "1Gi"
