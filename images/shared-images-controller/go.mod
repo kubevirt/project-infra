@@ -120,7 +120,7 @@ require (
 	tags.cncf.io/container-device-interface v1.0.1 // indirect
 )
 
-replace kubevirt.io/project-infra => github.com/kubevirt/project-infra v0.0.0-20251219093753-85e388fe9163
+replace kubevirt.io/project-infra => github.com/kubevirt/project-infra v0.0.0-20260114110801-16ce7a10fbd6
 
 go 1.25.0
 
