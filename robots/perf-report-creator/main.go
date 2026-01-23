@@ -350,7 +350,7 @@ func getVMIResult(ctx context.Context, client *storage.Client, jobID string, per
 }
 
 func getVMResult(ctx context.Context, client *storage.Client, jobID string, performanceJobName string) (*Result, error) {
-	reader, err := getAuditFileReaderForJob(ctx, client, jobID, performanceJobName, "performance/VM-perf-audit-results.json")
+	reader, err := getAuditFileReaderForJob(ctx, client, jobID, performanceJobName, "VM-perf-audit-results.json")
 	if err != nil {
 		log.Printf("job: %s, error getting BuildLogReaderForJob. %+v\n", jobID, err)
 		return nil, err
