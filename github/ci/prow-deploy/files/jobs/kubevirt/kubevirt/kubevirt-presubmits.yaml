@@ -2281,7 +2281,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.35-sig-compute
+          value: k8s-1.35-sig-compute-parallel
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
         image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
