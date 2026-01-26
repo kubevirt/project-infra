@@ -6,7 +6,6 @@ postsubmits:
     - ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
     cluster: kubevirt-prow-control-plane
     always_run: true
-    optional: false
     annotations:
       testgrid-create-test-group: "false"
     labels:

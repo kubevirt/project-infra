@@ -6,7 +6,6 @@ postsubmits:
     - ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
     cluster: kubevirt-prow-control-plane
     always_run: true
-    optional: false
     skip_report: false
     annotations:
       testgrid-dashboards: kubevirt-postsubmits
@@ -95,7 +94,6 @@ postsubmits:
     - main
     cluster: prow-workloads
     always_run: true
-    optional: false
     skip_report: false
     annotations:
       testgrid-create-test-group: "false"
@@ -134,7 +132,6 @@ postsubmits:
     annotations:
       testgrid-create-test-group: "false"
     always_run: true
-    optional: false
     skip_report: true
     decorate: true
     decoration_config:
@@ -249,7 +246,6 @@ postsubmits:
     - ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
     cluster: kubevirt-prow-control-plane
     always_run: true
-    optional: false
     skip_report: false
     annotations:
       testgrid-create-test-group: "false"
