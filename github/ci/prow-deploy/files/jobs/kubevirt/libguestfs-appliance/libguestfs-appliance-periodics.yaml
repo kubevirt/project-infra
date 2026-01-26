@@ -1,7 +1,5 @@
 periodics:
 - name: periodic-libguestfs-appliance-push-weekly-build-main
-  branches:
-    - main
   # Run once a week at 2AM on Saturday morning
   cron: "0 2 * * 6"
   annotations:
