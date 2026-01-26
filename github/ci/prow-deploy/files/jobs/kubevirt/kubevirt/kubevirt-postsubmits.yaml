@@ -135,7 +135,7 @@ postsubmits:
       testgrid-create-test-group: "false"
     always_run: true
     optional: false
-    skip_reporting: true
+    skip_report: true
     decorate: true
     decoration_config:
       timeout: 1h
