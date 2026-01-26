@@ -86,7 +86,6 @@ periodics:
     - org: kubevirt
       repo: containerized-data-importer
       base_ref: main
-      work_dir: true
   cluster: prow-workloads
   spec:
     nodeSelector:

@@ -21,7 +21,6 @@ periodics:
    - org: kubevirt
      repo: libguestfs-appliance
      base_ref: main
-     work_dir: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
