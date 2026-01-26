@@ -9,7 +9,6 @@ periodics:
   - org: kubevirt
     repo: project-infra
     base_ref: main
-    work_dir: true
   spec:
     containers:
     - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
@@ -200,7 +199,6 @@ periodics:
   - org: kubevirt
     repo: project-infra
     base_ref: main
-    work_dir: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -538,7 +536,6 @@ periodics:
       runAsUser: 0
     containers:
       - image: quay.io/kubevirtci/pr-creator:v20260123-b4aca96
-        env:
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -762,7 +759,6 @@ periodics:
       runAsUser: 0
     containers:
     - image: quay.io/kubevirtci/pr-creator:v20260123-b4aca96
-      env:
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -798,7 +794,6 @@ periodics:
       runAsUser: 0
     containers:
     - image: quay.io/kubevirtci/pr-creator:v20260123-b4aca96
-      env:
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -1115,13 +1110,11 @@ periodics:
     timeout: 5m
     grace_period: 1m
   interval: 1h
-  labels:
   max_concurrency: 1
   name: periodic-project-infra-prow-s390x-workloads-livez
   spec:
     containers:
     - image: quay.io/curl/curl:8.14.1
-      env:
       command:
         - "curl"
         - "--fail"
@@ -1141,13 +1134,11 @@ periodics:
     timeout: 5m
     grace_period: 1m
   interval: 30m
-  labels:
   max_concurrency: 1
   name: periodic-project-infra-prow-amd-workloads-livez
   spec:
     containers:
     - image: quay.io/curl/curl:8.14.1
-      env:
       command:
       - "curl"
       - "--fail"

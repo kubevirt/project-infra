@@ -12,7 +12,6 @@ periodics:
   - org: kubevirt
     repo: kubectl-virt-plugin
     base_ref: main
-    work_dir: true
   - org: kubevirt
     repo: project-infra
     base_ref: main

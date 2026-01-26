@@ -127,7 +127,6 @@ presubmits:
                 values:
                 - "true"
             topologyKey: kubernetes.io/hostname
-            weight: 100
       containers:
       - command:
         - /usr/local/bin/runner.sh

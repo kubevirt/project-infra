@@ -1,24 +1,33 @@
 presubmits:
   kubevirt/project-infra:
   - name: check-prow-config
+    # Check Prow configuration using the `checkconfig` tool:
+    # - https://docs.prow.k8s.io/docs/components/cli-tools/checkconfig/
     always_run: true
     decorate: true
     cluster: kubevirt-prow-control-plane
+    clone_depth: 1
     spec:
       containers:
       - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260119-643bbf68a
+        command:
+        - /ko-app/checkconfig
         args:
-        - "/ko-app/checkconfig"
-        - "--config-path"
-        - "github/ci/prow-deploy/files/config.yaml"
-        - "--job-config-path"
-        - "github/ci/prow-deploy/files/jobs"
-        - "--plugin-config"
-        - "github/ci/prow-deploy/files/plugins.yaml"
-        - "--strict"
+        - --config-path=github/ci/prow-deploy/files/config.yaml
+        - --job-config-path=github/ci/prow-deploy/files/jobs
+        - --plugin-config=github/ci/prow-deploy/files/plugins.yaml
+        - --strict
+        - --include-default-warnings
+        - --warnings=unknown-fields-all
         resources:
           requests:
             memory: "500Mi"
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+          seccompProfile:
+            type: RuntimeDefault
   - name: pull-project-infra-test-robots
     run_if_changed: "robots/.*|pkg/.*|go.mod|go.sum"
     optional: false

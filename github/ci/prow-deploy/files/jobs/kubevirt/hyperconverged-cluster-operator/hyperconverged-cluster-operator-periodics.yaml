@@ -19,7 +19,6 @@ periodics:
     - org: kubevirt
       repo: hyperconverged-cluster-operator
       base_ref: main
-      work_dir: true
   cluster: prow-workloads
   spec:
     nodeSelector:

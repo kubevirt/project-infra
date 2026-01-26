@@ -5,7 +5,6 @@ postsubmits:
     - master
     cluster: kubevirt-prow-control-plane
     always_run: true
-    optional: false
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
@@ -39,7 +38,6 @@ postsubmits:
     - ^v\d+\.\d+\.\d+$
     cluster: kubevirt-prow-control-plane
     always_run: true
-    optional: false
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"

@@ -12,8 +12,8 @@ presubmits:
       skip_report: false
       decorate: true
       decoration_config:
-      timeout: 1h
-      grace_period: 5m
+        timeout: 1h
+        grace_period: 5m
       max_concurrency: 11
       labels:
         preset-podman-in-container-enabled: "true"
@@ -48,8 +48,8 @@ presubmits:
       skip_report: false
       decorate: true
       decoration_config:
-      timeout: 1h
-      grace_period: 5m
+        timeout: 1h
+        grace_period: 5m
       max_concurrency: 11
       labels:
         preset-podman-in-container-enabled: "true"
@@ -84,8 +84,8 @@ presubmits:
       skip_report: false
       decorate: true
       decoration_config:
-      timeout: 1h
-      grace_period: 5m
+        timeout: 1h
+        grace_period: 5m
       max_concurrency: 11
       labels:
         preset-podman-in-container-enabled: "true"
