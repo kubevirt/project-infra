@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1 as builder
+FROM quay.io/kubevirtci/golang:v20251218-e7a7fc9 as builder
 RUN cd /project-infra/ && \
     /usr/local/bin/runner.sh /bin/sh -c "env GOPROXY=off go build -tags netgo -o /go/bin/release-tool ./releng/release-tool"
 
