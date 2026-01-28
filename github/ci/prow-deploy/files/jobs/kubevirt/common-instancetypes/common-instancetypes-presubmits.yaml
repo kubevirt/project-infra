@@ -125,9 +125,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - "/bin/sh"
         - "-c"
-        - |
-          cat $ICR_PASSWORD | podman login icr.io --username $(cat $ICR_USER) --password-stdin=true
-          make kubevirt-up && make kubevirt-sync && make kubevirt-functest
+        - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.5
