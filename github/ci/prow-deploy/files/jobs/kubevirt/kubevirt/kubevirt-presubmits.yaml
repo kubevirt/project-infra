@@ -2511,3 +2511,78 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-hyperv-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-kind-1.35-sig-compute-parallel-wg-mshv-amd64
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+
+          # MSHV cluster is deployed using a custom kernel which lacks the modules for nftables,
+          # hence we need to use iptables as the firewall driver for Podman in this job.
+          dnf install -y iptables iptables-services
+          echo 'firewall_driver = "iptables"' >> /etc/containers/containers.conf
+          podman system reset -f
+
+          # Launch a container with the QEMU RPMs repo to serve the RPMs for installation
+          container_id=$(podman run -dit --rm --name qemu-rpms -p 9090:80 $QEMU_RPMS_IMG)
+
+          # Get the IP address of the container to access the RPMs repo
+          prow_container_ip=$(ip route get 1.1.1.1 | awk '{print $7; exit}')
+
+          cat >custom-repo.yaml <<EOF
+          repositories:
+          - arch: x86_64
+            baseurl: http://${prow_container_ip}:9090/x86_64/
+            name: custom-qemu
+            gpgcheck: 0
+            repo_gpgcheck: 0
+          EOF
+
+          # Extract the exact version of QEMU (tolerate missing build-info fields)
+          QEMU_VERSION=$(curl -s "http://${prow_container_ip}:9090/build-info.json" | jq -r '.qemu_version // empty') || true
+          # Return an error if the QEMU version is not found in the build-info.json
+          if [ -z "$QEMU_VERSION" ]; then
+            echo "Error: QEMU version not found in build-info.json"
+            exit 1
+          fi
+
+          # Configure KubeVirt to use latest Libvirt version and the custom QEMU version
+          make CUSTOM_REPO=custom-repo.yaml LIBVIRT_VERSION="0:11.10.0-12.el9" QEMU_VERSION="$QEMU_VERSION" SINGLE_ARCH="x86_64" rpm-deps
+
+          # Run end-to-end tests
+          automation/test.sh
+
+          # After the tests are done, stop the container serving the QEMU RPMs
+          podman stop $container_id
+        env:
+        - name: TARGET
+          value: kind-1.35-sig-compute-parallel-wg-mshv-amd64
+        - name: QEMU_RPMS_IMG
+          value: docker.io/harshitg/qemu-rpms:qemu-10.2.0-w-cpuid # TODO Change this to stable image after testing
+        - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
+          value: "8h"
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 18Gi
+        securityContext:
+          privileged: true
