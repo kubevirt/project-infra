@@ -1,6 +1,6 @@
 ARG ARCH
 
-FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1 AS builder
+FROM quay.io/kubevirtci/golang:v20251218-e7a7fc9 AS builder
 
 ENV GOPROXY=https://proxy.golang.org|direct \
     GOFLAGS="-mod=vendor -ldflags=-extldflags=\"-static\"" \
@@ -28,7 +28,7 @@ RUN set -x && \
     /usr/local/bin/runner.sh /bin/sh -cex 'time go build -tags netgo -o /usr/local/bin/labels-checker ./robots/labels-checker' && \
     chmod +x /usr/local/bin/labels-checker
 
-FROM quay.io/kubevirtci/golang:v20251022-6eb3ab1 AS final
+FROM quay.io/kubevirtci/golang:v20251218-e7a7fc9 AS final
 
 RUN dnf install -y \
     skopeo && \
