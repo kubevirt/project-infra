@@ -482,6 +482,9 @@ orgs:
       virt-template-client-go:
         description: client-go package for kubevirt.io/virt-template
         has_projects: true
+      virt-template-engine:
+        description: template engine package for kubevirt.io/virt-template
+        has_projects: true
       vm-console-proxy:
         allow_rebase_merge: false
         allow_squash_merge: false
@@ -1045,3 +1048,4 @@ orgs:
           virt-template: admin
           virt-template-api: admin
           virt-template-client-go: admin
+          virt-template-engine: admin
