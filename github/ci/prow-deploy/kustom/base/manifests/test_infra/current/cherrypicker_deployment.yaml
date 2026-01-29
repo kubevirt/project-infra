@@ -1,4 +1,4 @@
-# Copyright 2016 The Kubernetes Authors All rights reserved.
+# Copyright 2021 The Kubernetes Authors All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,11 +15,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: default
   name: cherrypicker
   labels:
     app: cherrypicker
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: cherrypicker
@@ -28,16 +34,18 @@ spec:
       labels:
         app: cherrypicker
     spec:
+      serviceAccountName: ""
+      serviceAccount: ""
       terminationGracePeriodSeconds: 180
       containers:
       - name: cherrypicker
         image: us-docker.pkg.dev/k8s-infra-prow/images/cherrypicker:v20260119-643bbf68a
         imagePullPolicy: Always
         args:
-        - --dry-run=false
+        - --github-token-path=/etc/github/token
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
-        - --github-token-path=/etc/github/oauth
+        - --dry-run=false
         ports:
           - name: http
             containerPort: 8888
@@ -45,19 +53,17 @@ spec:
         - name: hmac
           mountPath: /etc/webhook
           readOnly: true
-        - name: oauth
+        - name: github-token
           mountPath: /etc/github
           readOnly: true
-        - name: plugins
-          mountPath: /etc/plugins
-          readOnly: true
+        - name: tmp
+          mountPath: /tmp
       volumes:
+      - name: tmp
+        emptyDir: {}
       - name: hmac
         secret:
           secretName: hmac-token
-      - name: oauth
+      - name: github-token
         secret:
-          secretName: oauth-token
-      - name: plugins
-        configMap:
-          name: plugins
+          secretName: k8s-infra-cherrypick-robot-github-token
