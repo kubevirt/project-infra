@@ -23,7 +23,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260126-f00ab24
+      image: quay.io/kubevirtci/flakefinder:v20260128-84f963a
       name: ""
       resources: {}
 - annotations:
@@ -50,7 +50,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260126-f00ab24
+      image: quay.io/kubevirtci/flakefinder:v20260128-84f963a
       name: ""
       resources:
         requests:
@@ -80,7 +80,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260126-f00ab24
+      image: quay.io/kubevirtci/flakefinder:v20260128-84f963a
       name: ""
       resources: {}
 - annotations:
@@ -639,7 +639,7 @@ periodics:
       - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
         -p ../kubevirt -T main -R -L skip-review -B $'Run of `cd ../kubevirt && make
         rpm-deps`\n\n/release-blocker main'
-      image: quay.io/kubevirtci/pr-creator:v20260126-f00ab24
+      image: quay.io/kubevirtci/pr-creator:v20260128-84f963a
       name: ""
       resources:
         requests:
@@ -1600,7 +1600,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260126-f00ab24
+      image: quay.io/kubevirtci/pr-creator:v20260128-84f963a
       name: ""
       resources:
         requests:
@@ -1634,7 +1634,7 @@ periodics:
       - --output-gcs-url=gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/index.html
       command:
       - /usr/bin/test-label-analyzer
-      image: quay.io/kubevirtci/test-label-analyzer:v20260126-f00ab24
+      image: quay.io/kubevirtci/test-label-analyzer:v20260128-84f963a
       name: ""
       resources: {}
 - annotations:
