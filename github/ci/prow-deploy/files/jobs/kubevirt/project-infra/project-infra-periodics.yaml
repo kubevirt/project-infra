@@ -1103,7 +1103,7 @@ periodics:
 # Check the health of the Prow workloads clusters.
 # They appear in the testgrid dashboard: https://testgrid.k8s.io/kubevirt-project-infra-periodics
 # Failures are notified by testgrid to the KubeVirt CI maintainers mailing list.
-- name: periodic-project-infra-prow-amd-workloads-livez
+- name: periodic-project-infra-prow-workloads-livez
   annotations: &cluster_livez_annotations
     testgrid-dashboards: kubevirt-project-infra-periodics
     testgrid-days-of-results: "30"
@@ -1114,7 +1114,7 @@ periodics:
   decoration_config:
     timeout: 5m
     grace_period: 1m
-  interval: 30m
+  interval: 1h
   max_concurrency: 1
   spec:
     containers:
@@ -1130,7 +1130,7 @@ periodics:
       - $(CLUSTER_LIVEZ_ENDPOINT)
       env:
       - name: CLUSTER_LIVEZ_ENDPOINT
-        value: https://165.204.53.121:30128/livez?verbose
+        value: https://api.prow-workloads.ci.kubevirt.io:6443/livez?verbose
       resources:
         requests:
           memory: 100Mi
@@ -1140,6 +1140,21 @@ periodics:
           drop: [ALL]
         seccompProfile:
           type: RuntimeDefault
+- name: periodic-project-infra-prow-amd-workloads-livez
+  annotations: *cluster_livez_annotations
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 5m
+    grace_period: 1m
+  interval: 30m
+  max_concurrency: 1
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_LIVEZ_ENDPOINT
+        value: https://165.204.53.121:30128/livez?verbose
 - name: periodic-project-infra-prow-s390x-workloads-livez
   annotations:
     <<: *cluster_livez_annotations

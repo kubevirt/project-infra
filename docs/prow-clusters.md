@@ -18,6 +18,17 @@ It is used to host the [Prow] control plane and a couple of additional services.
 [Prow]: https://docs.prow.k8s.io/
 [IBM Cloud]: https://cloud.ibm.com/docs/openshift
 
+## Prow Workloads
+
+This cluster hosted on [IBM Cloud Classic] and leveraging bare-metal servers is provided by [Red Hat].
+
+In Prow’s configuration, it is referenced using the name `prow-workloads`.
+
+It is used to run test lanes that are resource-intensive or require specific capabilities such as GPU or [SR-IOV].
+
+[IBM Cloud Classic]: https://cloud.ibm.com/docs/bare-metal
+[SR-IOV]: https://docs.kernel.org/PCI/pci-iov-howto.html
+
 ## Prow AMD Workloads
 
 This cluster leveraging an [`AMD EPYC 7413`] processor is provided by [AMD].
