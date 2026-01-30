@@ -1189,6 +1189,23 @@ periodics:
       resources: *cluster_livez_resources
       securityContext:
         runAsUser: 0
+- name: periodic-project-infra-prow-hyperv-workloads-livez
+  annotations:
+    <<: *cluster_livez_annotations
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, guptaharshit@microsoft.com
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 5m
+    grace_period: 1m
+  interval: 1h
+  max_concurrency: 1
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_LIVEZ_ENDPOINT
+        value: https://l1vh-prow-test-0.westus3.cloudapp.azure.com:6443/livez?verbose
 - name: periodic-project-infra-prow-s390x-workloads-livez
   annotations:
     <<: *cluster_livez_annotations

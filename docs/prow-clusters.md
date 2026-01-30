@@ -54,6 +54,18 @@ It is used to test the support of the [ARM64] architecture in KubeVirt.
 [`AWS Graviton2`]: https://aws.amazon.com/ec2/graviton/
 [ARM64]: https://docs.kernel.org/arch/arm64/index.html
 
+## Prow HyperV Workloads
+
+This cluster hosted on [Azure] and leveraging Microsoft Azure Linux is provided by [Microsoft].
+
+In Prow’s configuration, it is referenced using the name `prow-hyperv-workloads`.
+
+It is used to test the support of the [HyperV] hypervisor in KubeVirt.
+
+[Microsoft]: https://www.microsoft.com/
+[Azure]: https://azure.microsoft.com/
+[HyperV]: https://learn.microsoft.com/windows-server/virtualization/hyper-v/
+
 ## Prow s390x Workloads
 
 This cluster leveraging an `IBM/S390` processor is provided by [IBM].
