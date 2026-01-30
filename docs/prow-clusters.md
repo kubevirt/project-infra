@@ -41,6 +41,19 @@ It is used to test the support of the [AMD SEV] for confidential VMs in KubeVirt
 [`AMD EPYC 7413`]: https://www.amd.com/en/products/processors/server/epyc/7003-series/amd-epyc-7413.html
 [AMD SEV]: https://www.amd.com/en/developer/sev.html
 
+## Prow ARM64 Workloads
+
+This cluster hosted on [AWS] and leveraging an [`AWS Graviton2`] processor is provided by [ARM].
+
+In Prow’s configuration, it is referenced using the name `prow-arm64-workloads`.
+
+It is used to test the support of the [ARM64] architecture in KubeVirt.
+
+[ARM]: https://www.arm.com/
+[AWS]: https://aws.amazon.com/
+[`AWS Graviton2`]: https://aws.amazon.com/ec2/graviton/
+[ARM64]: https://docs.kernel.org/arch/arm64/index.html
+
 ## Prow s390x Workloads
 
 This cluster leveraging an `IBM/S390` processor is provided by [IBM].

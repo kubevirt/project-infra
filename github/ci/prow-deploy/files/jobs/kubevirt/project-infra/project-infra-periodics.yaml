@@ -1131,7 +1131,7 @@ periodics:
       env:
       - name: CLUSTER_LIVEZ_ENDPOINT
         value: https://api.prow-workloads.ci.kubevirt.io:6443/livez?verbose
-      resources:
+      resources: &cluster_livez_resources
         requests:
           memory: 100Mi
       securityContext:
@@ -1155,6 +1155,40 @@ periodics:
       env:
       - name: CLUSTER_LIVEZ_ENDPOINT
         value: https://165.204.53.121:30128/livez?verbose
+- name: periodic-project-infra-prow-arm64-workloads-livez
+  annotations: *cluster_livez_annotations
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 5m
+    grace_period: 1m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    clone_depth: 1
+  interval: 30m
+  labels:
+    preset-github-credentials: "true"
+    preset-pgp-bot-key: "true"
+  max_concurrency: 1
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+      command:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -ce
+      args:
+      - |
+        source ./hack/manage-secrets.sh
+        decrypt_secrets
+        extract_secret 'kubeconfig' ~/.kube/config
+
+        kubectl get --context='prow-arm64-workloads' --raw '/k8s/clusters/c-zvkv8/livez?verbose'
+      resources: *cluster_livez_resources
+      securityContext:
+        runAsUser: 0
 - name: periodic-project-infra-prow-s390x-workloads-livez
   annotations:
     <<: *cluster_livez_annotations
