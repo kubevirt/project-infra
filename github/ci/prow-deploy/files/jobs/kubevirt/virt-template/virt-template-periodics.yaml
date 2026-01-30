@@ -31,3 +31,46 @@ periodics:
       resources:
         requests:
           memory: 200Mi
+- name: periodic-update-virt-template
+  cron: 0 2 * * *
+  cluster: kubevirt-prow-control-plane
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 1h0m0s
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirt
+    base_ref: main
+  - org: kubevirt
+    repo: hyperconverged-cluster-operator
+    base_ref: main
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20260126-f00ab24
+      env:
+      - name: VIRT_TEMPLATE_BRANCH
+        value: release-0.1
+      - name: KUBEVIRT_BRANCH
+        value: main
+      - name: HCO_BRANCH
+        value: main
+      command:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -c
+      - |
+        export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+        latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/virt-template/releases | jq -r '.[] | select(.target_commitish == '\""${VIRT_TEMPLATE_BRANCH}"\"') | .tag_name' | head -n1)
+        description="Automated update of virt-template to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated virt-template to ${latest_version}\n\\\`\\\`\\\`"
+
+        git-pr.sh -c "cd ../kubevirt && hack/virt-template/bump.sh ${VIRT_TEMPLATE_BRANCH}" -p ../kubevirt -d "echo -e \"${description}\"" -r kubevirt -b update-virt-template-main -T ${KUBEVIRT_BRANCH} -M lgtm,approved,do-not-merge/hold
+        git-pr.sh -c "cd ../hyperconverged-cluster-operator && sed -i 's/VIRT_TEMPLATE_VERSION=.*/VIRT_TEMPLATE_VERSION=${latest_version}/' hack/config && automation/digester/update_images.sh" -p ../hyperconverged-cluster-operator -d "echo -e \"${description}\"" -r hyperconverged-cluster-operator -b update-virt-template-main -T ${HCO_BRANCH} -M lgtm,approved,do-not-merge/hold
+      resources:
+        requests:
+          memory: "200Mi"
