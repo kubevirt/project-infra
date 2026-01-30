@@ -9,7 +9,7 @@ presubmits:
     clone_depth: 1
     spec:
       containers:
-      - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260119-643bbf68a
+      - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260128-95b2a3412
         command:
         - /ko-app/checkconfig
         args:
@@ -923,7 +923,7 @@ presubmits:
     spec:
       containers:
       - name: peribolos
-        image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260119-643bbf68a
+        image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260128-95b2a3412
         command:
         - /ko-app/peribolos
         # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
