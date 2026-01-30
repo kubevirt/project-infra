@@ -1099,31 +1099,12 @@ periodics:
       resources:
         requests:
           memory: "1Gi"
-- annotations:
-    testgrid-dashboards: kubevirt-project-infra-periodics
-    testgrid-days-of-results: "30"
-    testgrid-num-failures-to-alert: "1"
-    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
-  cluster: kubevirt-prow-control-plane
-  decorate: true
-  decoration_config:
-    timeout: 5m
-    grace_period: 1m
-  interval: 1h
-  max_concurrency: 1
-  name: periodic-project-infra-prow-s390x-workloads-livez
-  spec:
-    containers:
-    - image: quay.io/curl/curl:8.14.1
-      command:
-        - "curl"
-        - "--fail"
-        - "--insecure"
-        - "https://195.212.74.206:6443/livez?verbose"
-      resources:
-        requests:
-          memory: "200Mi"
-- annotations:
+
+# Check the health of the Prow workloads clusters.
+# They appear in the testgrid dashboard: https://testgrid.k8s.io/kubevirt-project-infra-periodics
+# Failures are notified by testgrid to the KubeVirt CI maintainers mailing list.
+- name: periodic-project-infra-prow-workloads-livez
+  annotations: &cluster_livez_annotations
     testgrid-dashboards: kubevirt-project-infra-periodics
     testgrid-days-of-results: "30"
     testgrid-num-failures-to-alert: "1"
@@ -1133,17 +1114,112 @@ periodics:
   decoration_config:
     timeout: 5m
     grace_period: 1m
-  interval: 30m
+  interval: 1h
   max_concurrency: 1
-  name: periodic-project-infra-prow-amd-workloads-livez
   spec:
     containers:
-    - image: quay.io/curl/curl:8.14.1
+    - &cluster_livez_container
+      image: quay.io/curl/curl:8.14.1
       command:
-      - "curl"
-      - "--fail"
-      - "--insecure"
-      - "https://165.204.53.121:30128/livez?verbose"
-      resources:
+      - curl
+      args:
+      - --fail-with-body
+      - --insecure
+      - --silent
+      - --show-error
+      - $(CLUSTER_LIVEZ_ENDPOINT)
+      env:
+      - name: CLUSTER_LIVEZ_ENDPOINT
+        value: https://api.prow-workloads.ci.kubevirt.io:6443/livez?verbose
+      resources: &cluster_livez_resources
         requests:
-          memory: "200Mi"
+          memory: 100Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: [ALL]
+        seccompProfile:
+          type: RuntimeDefault
+- name: periodic-project-infra-prow-amd-workloads-livez
+  annotations: *cluster_livez_annotations
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 5m
+    grace_period: 1m
+  interval: 30m
+  max_concurrency: 1
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_LIVEZ_ENDPOINT
+        value: https://165.204.53.121:30128/livez?verbose
+- name: periodic-project-infra-prow-arm64-workloads-livez
+  annotations: *cluster_livez_annotations
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 5m
+    grace_period: 1m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    clone_depth: 1
+  interval: 30m
+  labels:
+    preset-github-credentials: "true"
+    preset-pgp-bot-key: "true"
+  max_concurrency: 1
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+      command:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -ce
+      args:
+      - |
+        source ./hack/manage-secrets.sh
+        decrypt_secrets
+        extract_secret 'kubeconfig' ~/.kube/config
+
+        kubectl get --context='prow-arm64-workloads' --raw '/k8s/clusters/c-zvkv8/livez?verbose'
+      resources: *cluster_livez_resources
+      securityContext:
+        runAsUser: 0
+- name: periodic-project-infra-prow-hyperv-workloads-livez
+  annotations:
+    <<: *cluster_livez_annotations
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, guptaharshit@microsoft.com
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 5m
+    grace_period: 1m
+  interval: 1h
+  max_concurrency: 1
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_LIVEZ_ENDPOINT
+        value: https://l1vh-prow-test-0.westus3.cloudapp.azure.com:6443/livez?verbose
+- name: periodic-project-infra-prow-s390x-workloads-livez
+  annotations:
+    <<: *cluster_livez_annotations
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 5m
+    grace_period: 1m
+  interval: 1h
+  max_concurrency: 1
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_LIVEZ_ENDPOINT
+        value: https://195.212.74.206:6443/livez?verbose
