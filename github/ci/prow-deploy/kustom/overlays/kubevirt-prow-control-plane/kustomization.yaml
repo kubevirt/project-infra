@@ -61,6 +61,12 @@ patches:
       version: v1
       group: apps
       kind: Deployment
+      name: cherrypicker
+    path: patches/JsonRFC6902/cherrypicker_deployment.yaml
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
       name: crier
     path: patches/JsonRFC6902/crier_deployment.yaml
   - target:
@@ -106,12 +112,6 @@ patches:
       kind: Deployment
       name: docker-mirror
     path: patches/StrategicMerge/docker-mirror_deployment.yaml
-  - target:
-      version: v1
-      kind: PersistentVolumeClaim
-      namespace: default
-      name: .*
-    path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
       version: v1
       kind: PersistentVolumeClaim

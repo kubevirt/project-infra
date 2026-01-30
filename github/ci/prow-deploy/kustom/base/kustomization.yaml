@@ -1,7 +1,5 @@
 resources:
   - manifests/local/branch-protector.yaml
-  - manifests/local/cherrypicker_deployment.yaml
-  - manifests/local/cherrypicker_service.yaml
   - manifests/local/deck-ingress.yaml
   - manifests/local/gcsweb-deployment.yaml
   - manifests/local/gcsweb-ingress.yaml
@@ -25,6 +23,8 @@ resources:
   - manifests/local/statusreconciler_rbac.yaml
   - manifests/local/tide_rbac_prowjob.yaml
 
+  - manifests/test_infra/current/cherrypicker_deployment.yaml
+  - manifests/test_infra/current/cherrypicker_service.yaml
   - manifests/test_infra/current/crier_deployment.yaml
   - manifests/test_infra/current/crier_rbac.yaml
   - manifests/test_infra/current/crier_service.yaml
