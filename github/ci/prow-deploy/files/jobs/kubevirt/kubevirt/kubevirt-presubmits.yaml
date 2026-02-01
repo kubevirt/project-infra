@@ -339,7 +339,7 @@ presubmits:
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
-          value: "6h45m"
+          value: 6h45m
         image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         name: ""
         resources:
@@ -390,7 +390,7 @@ presubmits:
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
-          value: "35h45m"
+          value: 35h45m
         image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         name: ""
         resources:
@@ -2147,7 +2147,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.35-sig-compute-serial
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2189,7 +2188,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.35-sig-network
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2229,7 +2227,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.35-sig-storage
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2269,7 +2266,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.35-sig-compute
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2311,7 +2307,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.35-sig-operator
-    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
