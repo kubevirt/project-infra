@@ -1,0 +1,90 @@
+presubmits:
+  kubevirt/application-aware-quota:
+  - name: pull-aaq-unit-test-1.7
+    context: pull-aaq-unit-test
+    branches:
+      - release-v1.7
+    cluster: kubevirt-prow-control-plane
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-aaq-generate-verify-1.7
+    context: pull-aaq-generate-verify
+    branches:
+      - release-v1.7
+    cluster: kubevirt-prow-control-plane
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-bazel-cache: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make generate-verify"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-aaq-functest-1.7
+    context: pull-aaq-functest
+    branches:
+      - release-v1.7
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 5h
+      grace_period: 5m
+    max_concurrency: 6
+    cluster: prow-workloads
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "automation/test.sh"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "52Gi"
