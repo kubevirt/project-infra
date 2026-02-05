@@ -1,0 +1,24 @@
+FROM golang:1.25.1 as builder
+
+WORKDIR /workspace
+
+# Copy the entire project (needed for go.mod dependencies)
+COPY . .
+
+# Build the coverage plugin binary
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -a -o /coverage \
+    ./external-plugins/coverage/plugin
+
+# Use distroless base image for minimal attack surface
+FROM gcr.io/distroless/static:nonroot
+
+WORKDIR /
+
+# Copy the binary from builder
+COPY --from=builder /coverage .
+
+# Run as non-root user
+USER 65532:65532
+
+ENTRYPOINT ["/coverage"]
