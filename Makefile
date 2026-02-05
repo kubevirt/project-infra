@@ -13,7 +13,7 @@ ifndef COVERAGE_OUTPUT_PATH
 	export COVERAGE_OUTPUT_PATH
 endif
 ifndef WHAT_COVERAGE
-	WHAT_COVERAGE=./external-plugins/... ./releng/... ./robots/...
+	WHAT_COVERAGE=./external-plugins/... ./releng/... ./robots/... ./pkg/...
 	export WHAT_COVERAGE
 endif
 
@@ -36,10 +36,10 @@ deps-update:
 	go mod vendor
 
 build:
-	go build ./external-plugins/... ./releng/... ./robots/... ./github/ci/services/...
+	go build ./external-plugins/... ./releng/... ./robots/... ./github/ci/services/... ./pkg/...
 
 test: build
-	go test ./external-plugins/... ./releng/... ./robots/...
+	go test ./external-plugins/... ./releng/... ./robots/... ./pkg/...
 
 update-labels:
 	./hack/labels/update.sh
