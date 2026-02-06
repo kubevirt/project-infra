@@ -196,6 +196,10 @@ func (r FlakeStats) aggregateFailuresPerJob(reportData *flakefinder.Params, orig
 			continue
 		}
 
+		if r.reportOpts.matchingLaneRegex != nil && !r.reportOpts.matchingLaneRegex.MatchString(jobName) {
+			continue
+		}
+
 		if r.reportOpts.FilterPeriodicJobRunResults && strings.Index(jobName, "periodic") == 0 {
 			continue
 		}
