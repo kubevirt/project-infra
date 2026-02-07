@@ -485,7 +485,7 @@ periodics:
     preset-podman-shared-images: "true"
     vgpu: "true"
   max_concurrency: 1
-  name: periodic-kubevirt-e2e-kind-1.33-vgpu
+  name: periodic-kubevirt-e2e-kind-1.35-vgpu
   spec:
     affinity:
       podAntiAffinity:
@@ -508,7 +508,7 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: kind-1.33-vgpu
+        value: kind-1.35-vgpu
       image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
       name: ""
       resources:
