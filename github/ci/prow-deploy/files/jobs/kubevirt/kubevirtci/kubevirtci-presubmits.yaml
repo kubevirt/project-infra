@@ -272,7 +272,7 @@ presubmits:
           path: /sys/fs/cgroup
           type: Directory
         name: cgroup
-  - always_run: false
+  - always_run: true
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -283,7 +283,6 @@ presubmits:
       vgpu: "true"
     max_concurrency: 3
     name: check-up-kind-1.35-vgpu
-    optional: true
     spec:
       affinity:
         podAntiAffinity:
