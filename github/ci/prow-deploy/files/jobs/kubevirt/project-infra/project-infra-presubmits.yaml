@@ -7,6 +7,8 @@ presubmits:
     decorate: true
     cluster: kubevirt-prow-control-plane
     clone_depth: 1
+    labels:
+      preset-gcs-credentials: "true"
     spec:
       containers:
       - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260205-2d6316e3a
