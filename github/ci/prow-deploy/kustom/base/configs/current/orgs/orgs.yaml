@@ -318,6 +318,13 @@ orgs:
         description: Kubernetes Virtualization API and runtime in order to define and manage virtual machines.
         has_projects: true
         homepage: https://kubevirt.io
+      kubevirt-aie:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        default_branch: main
+        description: A temporary KubeVirt fork aligned with the CentOS Stream Accelerated Infrastructure Enablement SIG.
+        has_projects: true
+        homepage: https://kubevirt.io
       kubevirt-ansible:
         allow_rebase_merge: false
         description: Set of Ansible roles & playbooks for KubeVirt deployment
@@ -1051,3 +1058,13 @@ orgs:
           virt-template-api: admin
           virt-template-client-go: admin
           virt-template-engine: admin
+      kubevirt-aie-maintainers:
+        description: "Maintainers of kubevirt-aie"
+        privacy: closed
+        maintainers:
+          - vladikr
+          - jean-edouard
+          - xpivarc
+          - lyarwood
+        repos:
+          kubevirt-aie: admin
