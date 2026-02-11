@@ -23,7 +23,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260128-84f963a
+      image: quay.io/kubevirtci/flakefinder:v20260210-878d8f0
       name: ""
       resources: {}
 - annotations:
@@ -50,7 +50,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260128-84f963a
+      image: quay.io/kubevirtci/flakefinder:v20260210-878d8f0
       name: ""
       resources:
         requests:
@@ -80,7 +80,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260128-84f963a
+      image: quay.io/kubevirtci/flakefinder:v20260210-878d8f0
       name: ""
       resources: {}
 - annotations:
