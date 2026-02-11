@@ -505,6 +505,14 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/kubevirt-aie:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+
   nmstate/kubernetes-nmstate:
     plugins:
     - approve
