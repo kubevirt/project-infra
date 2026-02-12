@@ -1,0 +1,245 @@
+presubmits:
+  kubevirt/kubevirt-aie:
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    name: pull-kubevirt-aie-build-1.8-aie-nv
+    branches:
+    - release-1.8-aie-nv
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    name: pull-kubevirt-aie-build-arm64-1.8-aie-nv
+    branches:
+    - release-1.8-aie-nv
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
+        env:
+        - name: BUILD_ARCH
+          value: crossbuild-aarch64
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-aie-code-lint-1.8-aie-nv
+    branches:
+    - release-1.8-aie-nv
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          make lint
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    name: pull-kubevirt-aie-unit-test-1.8-aie-nv
+    branches:
+    - release-1.8-aie-nv
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make test
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            cpu: "4"
+            memory: 24Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-arm64-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 2h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+    name: pull-kubevirt-aie-unit-test-arm64-1.8-aie-nv
+    branches:
+    - release-1.8-aie-nv
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make test
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-arm64-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 4
+    name: pull-kubevirt-aie-kind-1.35-sig-compute-arm64-1.8-aie-nv
+    branches:
+    - release-1.8-aie-nv
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          automation/test.sh
+        env:
+        - name: TARGET
+          value: kind-1.35-wg-arm64
+        - name: KUBEVIRT_NUM_NODES
+          value: "2"
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-arm64-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 2
+    name: pull-kubevirt-aie-kind-1.35-conformance-arm64-1.8-aie-nv
+    optional: true
+    branches:
+    - release-1.8-aie-nv
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          automation/conformance.sh
+        env:
+        - name: TARGET
+          value: kind-1.35-wg-arm64
+        - name: KUBEVIRT_PROVIDER
+          value: kind-1.35
+        - name: KUBEVIRT_NUM_NODES
+          value: "3"
+        - name: IPFAMILY
+          value: dual
+        - name: RUN_ON_ARM64_INFRA
+          value: "true"
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
