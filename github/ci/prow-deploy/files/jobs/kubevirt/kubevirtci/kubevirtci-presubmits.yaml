@@ -272,6 +272,83 @@ presubmits:
           path: /sys/fs/cgroup
           type: Directory
         name: cgroup
+  - always_run: false
+    optional: true
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 3
+    name: check-up-kind-1.35
+    run_if_changed: cluster-up/cluster/kind(-1\.35)?
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        - make cluster-up
+        env:
+        - name: KUBEVIRT_PROVIDER
+          value: kind-1.35
+        - name: KUBEVIRT_NUM_NODES
+          value: "2"
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 11264M
+        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+  - always_run: false
+    optional: true
+    cluster: prow-arm64-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    max_concurrency: 1
+    name: check-up-kind-1.35-arm64
+    run_if_changed: cluster-up/cluster/kind(-1\.35)?
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        - make cluster-up
+        env:
+        - name: KUBEVIRT_PROVIDER
+          value: kind-1.35
+        - name: KUBEVIRT_DEPLOY_CDI
+          value: "true"
+        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 24Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
   - always_run: true
     cluster: prow-workloads
     decorate: true
