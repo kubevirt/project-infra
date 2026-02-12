@@ -6,7 +6,6 @@ presubmits:
     always_run: true
     decorate: true
     cluster: kubevirt-prow-control-plane
-    clone_depth: 1
     labels:
       preset-gcs-credentials: "true"
     spec:
