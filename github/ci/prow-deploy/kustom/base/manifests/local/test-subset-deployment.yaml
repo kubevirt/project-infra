@@ -18,7 +18,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: test-subset
-          image: quay.io/kubevirtci/test-subset:v20260128-84f963a
+          image: quay.io/kubevirtci/test-subset:v20260212-3e76cbb
           imagePullPolicy: IfNotPresent
           args:
             - --github-token-path=/etc/github/oauth
