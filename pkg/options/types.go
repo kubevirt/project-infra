@@ -24,11 +24,17 @@ import (
 	"os"
 )
 
-func NewOutputFileOptions(tempFilePattern string) *OutputFileOptions {
-	return &OutputFileOptions{
+func NewOutputFileOptions(tempFilePattern string, options ...OutputFileOption) *OutputFileOptions {
+	r := &OutputFileOptions{
 		tempFilePattern: tempFilePattern,
 	}
+	for _, o := range options {
+		o(r)
+	}
+	return r
 }
+
+type OutputFileOption func(o *OutputFileOptions)
 
 type OutputFileOptions struct {
 	OutputFile          string
