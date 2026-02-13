@@ -1114,6 +1114,50 @@ presubmits:
           path: /sys/fs/cgroup
           type: Directory
         name: cgroup
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-arm64-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 4
+    name: pull-kubevirt-e2e-k8s-1.34-sig-compute-migrations-arm64
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          automation/test.sh
+        env:
+        - name: TARGET
+          value: kind-1.34-sig-compute-migrations-wg-arm64
+        - name: KUBEVIRT_NUM_NODES
+          value: "2"
+        image: quay.io/kubevirtci/bootstrap:v20251015-5720d72
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
   - always_run: false
     annotations:
       fork-per-release: "true"
