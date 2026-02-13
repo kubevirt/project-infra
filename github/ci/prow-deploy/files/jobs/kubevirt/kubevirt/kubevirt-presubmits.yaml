@@ -2333,3 +2333,85 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: kubevirt-prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      ci.kubevirt.io/prometheus: ""
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+    name: pull-kube-burner-performance-kubevirt-density
+    optional: true
+    reporter_config:
+      slack:
+        job_states_to_report: []
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          # install yq
+          curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+          chmod +x ./yq && mv ./yq /usr/local/bin/yq
+
+          # get kubectl
+          curl -L "https://dl.k8s.io/release/v1.19.7/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+          chmod +x /usr/local/bin/kubectl
+
+          # get kubeconfig
+          source ../project-infra/hack/manage-secrets.sh
+          decrypt_secrets
+          extract_secret 'kubeconfigPerf' /kubeconfig
+
+          # login quay.io
+          cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+
+          # run test
+          PERFSCALE_KUBE_BURNER=true ./automation/perfscale-tests.sh
+        env:
+        - name: TARGET
+          value: external
+        - name: KUBEVIRT_PROVIDER
+          value: external
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirtci
+        - name: DOCKER_TAG
+          value: perfscale_test
+        - name: KUBECONFIG
+          value: /kubeconfig
+        - name: PROMETHEUS_PORT
+          value: "9090"
+        - name: PERFAUDIT
+          value: "true"
+        - name: kubectl
+          value: /usr/local/bin/kubectl
+        - name: IMAGE_PULL_POLICY
+          value: Always
+        - name: KUBE_BURNER_VERSION
+          value: latest
+        - name: QPS
+          value: "10"
+        - name: BURST
+          value: "10"
+        - name: JOB_ITERATIONS
+          value: "1"
+        - name: PERFSCALE_WORKLOAD
+          value: tests/performance/manifests/kube-burner/kubevirt-density/kubevirt-density.yml
+        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 500Mi
+        securityContext:
+          privileged: true
