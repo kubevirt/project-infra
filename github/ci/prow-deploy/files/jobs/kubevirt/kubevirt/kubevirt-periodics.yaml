@@ -23,7 +23,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260210-878d8f0
+      image: quay.io/kubevirtci/flakefinder:v20260212-3e76cbb
       name: ""
       resources: {}
 - annotations:
@@ -50,7 +50,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260210-878d8f0
+      image: quay.io/kubevirtci/flakefinder:v20260212-3e76cbb
       name: ""
       resources:
         requests:
@@ -80,7 +80,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260210-878d8f0
+      image: quay.io/kubevirtci/flakefinder:v20260212-3e76cbb
       name: ""
       resources: {}
 - annotations:
@@ -1634,7 +1634,7 @@ periodics:
       - --output-gcs-url=gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/index.html
       command:
       - /usr/bin/test-label-analyzer
-      image: quay.io/kubevirtci/test-label-analyzer:v20260128-84f963a
+      image: quay.io/kubevirtci/test-label-analyzer:v20260212-3e76cbb
       name: ""
       resources: {}
 - annotations:
