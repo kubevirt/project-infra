@@ -15,7 +15,7 @@ RUN mkdir -p /src && cd /src && \
     npm install -g markdownlint-cli@latest yaspeller@latest && \
     cd /src && bundle install && bundle update && cd && \
     pip install --upgrade pip && \
-    pip install mkdocs mkdocs-material mkdocs-awesome-pages-plugin mkdocs-htmlproofer-plugin && \
+    pip install mkdocs mkdocs-material mkdocs-awesome-pages-plugin mkdocs-htmlproofer-plugin mkdocs-redirects && \
     gem list && \
     rpm -e --nodeps libX11 libX11-common libXrender libXft && \
     dnf remove -y @development-tools gcc qt5-srpm-macros \
