@@ -1140,11 +1140,11 @@ presubmits:
           automation/conformance.sh
         env:
         - name: TARGET
-          value: kind-1.35
+          value: kind-1.35-wg-arm64
         - name: KUBEVIRT_PROVIDER
           value: kind-1.35
         - name: KUBEVIRT_NUM_NODES
-          value: "3"
+          value: "2"
         - name: IPFAMILY
           value: dual
         - name: RUN_ON_ARM64_INFRA
