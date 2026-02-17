@@ -117,6 +117,7 @@ orgs:
       - Whitedyl
       - zhencliu
       - zhlhahaha
+      - sbiradar10
     members_can_create_repositories: false
     name: KubeVirt
     repos:
