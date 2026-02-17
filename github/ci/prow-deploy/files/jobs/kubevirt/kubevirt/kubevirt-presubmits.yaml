@@ -1083,7 +1083,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 4
-    name: pull-kubevirt-e2e-k8s-1.35-sig-compute-arm64
+    name: pull-kubevirt-e2e-kind-1.35-sig-compute-arm64
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1126,7 +1126,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 2
-    name: pull-kubevirt-e2e-k8s-1.35-sig-compute-conformance-arm64
+    name: pull-kubevirt-e2e-kind-1.35-sig-compute-conformance-arm64
     optional: true
     skip_branches:
     - release-\d+\.\d+
