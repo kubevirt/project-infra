@@ -428,12 +428,12 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "52Gi"
+              memory: "4Gi"
             limits:
-              memory: "52Gi"
+              memory: "4Gi"
   - name: build-vm-image-builder-image
     always_run: false
-    run_if_changed: "images/bootstrap/.*"
+    run_if_changed: "images/vm-image-builder/.*"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
@@ -776,6 +776,7 @@ presubmits:
     - org: kubevirt
       repo: kubevirt
       base_ref: main
+      clone_depth: 1
     spec:
       securityContext:
         runAsUser: 0
@@ -795,7 +796,7 @@ presubmits:
             privileged: true
           resources:
             requests:
-              memory: "52Gi"
+              memory: "2Gi"
           volumeMounts:
           - name: molecule-docker
             mountPath: /tmp/prow-deploy-molecule
@@ -846,7 +847,7 @@ presubmits:
             runAsUser: 0
   - name: pull-project-infra-grafana-deploy-test
     optional: false
-    run_if_changed: "github/ci/services/grafana/.*|github/ci/services/common/.*"
+    run_if_changed: "github/ci/services/(grafana|common)/.*"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
@@ -857,6 +858,7 @@ presubmits:
     - org: kubevirt
       repo: kubevirt
       base_ref: main
+      clone_depth: 1
     spec:
       containers:
         - command:
@@ -871,7 +873,7 @@ presubmits:
               # create test cluster
               kind create cluster --image quay.io/kubevirtci/kindest-node:v1.30.0
               kubectl cluster-info --context kind-kind
-              
+
               ./github/ci/services/grafana/hack/test.sh
           env:
           - name: GIMME_GO_VERSION
@@ -879,9 +881,9 @@ presubmits:
           image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
           resources:
             requests:
-              memory: "52Gi"
+              memory: "2Gi"
             limits:
-              memory: "52Gi"
+              memory: "2Gi"
           securityContext:
             privileged: true
             runAsUser: 0

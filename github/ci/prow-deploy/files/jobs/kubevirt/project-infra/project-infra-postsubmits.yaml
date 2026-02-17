@@ -519,6 +519,7 @@ postsubmits:
       always_run: false
       branches:
       - main
+      clone_depth: 1
       run_if_changed: 'images/pr-creator/.*|hack/(git-pr\.sh|git-askpass\.sh)|robots/labels-checker/.*|pkg/.*|go.mod|go.sum'
       annotations:
         testgrid-create-test-group: "false"
@@ -543,13 +544,14 @@ postsubmits:
               privileged: true
             resources:
               requests:
-                memory: "52Gi"
+                memory: "4Gi"
               limits:
-                memory: "52Gi"
+                memory: "4Gi"
     - name: publish-vm-image-builder-image
       always_run: false
       branches:
       - main
+      clone_depth: 1
       run_if_changed: "images/vm-image-builder/.*"
       annotations:
         testgrid-create-test-group: "false"
@@ -577,9 +579,9 @@ postsubmits:
               privileged: true
             resources:
               requests:
-                memory: "52Gi"
+                memory: "4Gi"
               limits:
-                memory: "52Gi"
+                memory: "4Gi"
     - name: publish-fedora-coreos-kubevirt-image
       always_run: false
       branches:
