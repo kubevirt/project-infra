@@ -2348,579 +2348,354 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 14,
+      "id": 13,
       "links": [],
       "liveNow": false,
       "panels": [
         {
-          "datasource": {},
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "short"
+          "alert": {
+            "alertRuleTags": {
+              "severity": "warning"
             },
-            "overrides": []
+            "conditions": [
+              {
+                "evaluator": {
+                  "params": [
+                    20
+                  ],
+                  "type": "gt"
+                },
+                "operator": {
+                  "type": "and"
+                },
+                "query": {
+                  "params": [
+                    "C",
+                    "5m",
+                    "now"
+                  ]
+                },
+                "reducer": {
+                  "params": [],
+                  "type": "avg"
+                },
+                "type": "query"
+              }
+            ],
+            "executionErrorState": "alerting",
+            "for": "15m",
+            "frequency": "5m",
+            "handler": 1,
+            "message": "More than 20 ProwJobs in queue",
+            "name": "prowjobs in queue alert",
+            "noDataState": "no_data",
+            "notifications": []
           },
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+          },
+          "fill": 2,
+          "fillGradient": 0,
           "gridPos": {
             "h": 10,
-            "w": 11,
+            "w": 24,
             "x": 0,
             "y": 0
           },
-          "id": 12,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
+          "hiddenSeries": false,
+          "id": 3,
+          "interval": "1h",
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sort": "current",
+            "sortDesc": true,
+            "total": false,
+            "values": true
           },
+          "lines": true,
+          "linewidth": 1,
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Triggered jobs",
+              "url": "https://prow.ci.kubevirt.io/?state=triggered"
+            }
+          ],
+          "nullPointMode": "null as zero",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
           "pluginVersion": "9.1.6",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": true,
+          "steppedLine": false,
           "targets": [
             {
               "datasource": {
-                "uid": "Prometheus"
+                "type": "prometheus",
+                "uid": "promethues"
               },
               "editorMode": "code",
-              "expr": "sum by(type)\n(prowjobs{state='pending'})",
+              "exemplar": true,
+              "expr": "sum by (type, repo, base_ref) (clamp_min(last_over_time(prowjobs{state=\"triggered\", job_name=~\"${job_name}\"}[1h]),0))",
+              "hide": false,
               "interval": "",
-              "legendFormat": "",
-              "queryType": "randomWalk",
+              "legendFormat": "{{repo}} {{base_ref}} {{type}}s - ${job_name}",
               "range": true,
-              "refId": "A"
+              "refId": "C"
             }
           ],
-          "title": "Jobs",
-          "type": "timeseries"
+          "thresholds": [
+            {
+              "colorMode": "critical",
+              "fill": true,
+              "line": true,
+              "op": "gt",
+              "value": 20,
+              "visible": true
+            }
+          ],
+          "timeRegions": [],
+          "title": "prowjobs in queue",
+          "tooltip": {
+            "shared": true,
+            "sort": 2,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "logBase": 1,
+              "show": true
+            },
+            {
+              "format": "short",
+              "logBase": 1,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false
+          }
         },
         {
-          "datasource": {},
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "short"
+          "alert": {
+            "alertRuleTags": {
+              "severity": "warning"
             },
-            "overrides": []
+            "conditions": [
+              {
+                "evaluator": {
+                  "params": [
+                    200
+                  ],
+                  "type": "gt"
+                },
+                "operator": {
+                  "type": "and"
+                },
+                "query": {
+                  "params": [
+                    "C",
+                    "1h",
+                    "now"
+                  ]
+                },
+                "reducer": {
+                  "params": [],
+                  "type": "avg"
+                },
+                "type": "query"
+              }
+            ],
+            "executionErrorState": "alerting",
+            "for": "1h",
+            "frequency": "15m",
+            "handler": 1,
+            "message": "ProwJobs running exceed 200 for more than one hour.",
+            "name": "prowjobs running alert",
+            "noDataState": "no_data",
+            "notifications": []
           },
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+          },
+          "fill": 0,
+          "fillGradient": 0,
           "gridPos": {
             "h": 10,
-            "w": 11,
-            "x": 11,
-            "y": 0
+            "w": 24,
+            "x": 0,
+            "y": 10
           },
+          "hiddenSeries": false,
           "id": 2,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
+          "interval": "1h",
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sort": "current",
+            "sortDesc": true,
+            "total": false,
+            "values": true
           },
+          "lines": true,
+          "linewidth": 1,
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Pending jobs",
+              "url": "https://prow.ci.kubevirt.io/?state=pending"
+            }
+          ],
+          "nullPointMode": "null as zero",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
           "pluginVersion": "9.1.6",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": true,
+          "steppedLine": false,
           "targets": [
             {
               "datasource": {
-                "uid": "Prometheus"
+                "type": "prometheus",
+                "uid": "Wq7NJYPGk"
               },
               "editorMode": "code",
-              "expr": "sum by(repo, type)\n(prowjobs{state='pending'})",
+              "exemplar": true,
+              "expr": "sum by (type, repo, base_ref) (last_over_time(prowjobs{state=\"pending\", job_name=~\"${job_name}\"}[1h]))",
+              "hide": false,
               "interval": "",
-              "legendFormat": "",
-              "queryType": "randomWalk",
+              "legendFormat": "{{repo}} {{base_ref}} {{type}}s - ${job_name}",
               "range": true,
-              "refId": "A"
+              "refId": "C"
             }
           ],
-          "title": "Jobs / Repo",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {},
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 9,
-            "w": 11,
-            "x": 0,
-            "y": 10
-          },
-          "id": 6,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "9.1.6",
-          "targets": [
+          "thresholds": [
             {
-              "datasource": {
-                "uid": "Prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sum by (type)\n(prowjobs{job_name=~'.*e2e.*', state='pending'})",
-              "interval": "",
-              "legendFormat": "",
-              "queryType": "randomWalk",
-              "range": true,
-              "refId": "A"
+              "colorMode": "critical",
+              "fill": true,
+              "line": true,
+              "op": "gt",
+              "value": 200,
+              "visible": true
             }
           ],
-          "title": "e2e jobs",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {},
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
+          "timeRegions": [],
+          "title": "prowjobs running",
+          "tooltip": {
+            "shared": true,
+            "sort": 2,
+            "value_type": "individual"
           },
-          "gridPos": {
-            "h": 9,
-            "w": 11,
-            "x": 11,
-            "y": 10
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "show": true,
+            "values": []
           },
-          "id": 4,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "9.1.6",
-          "targets": [
+          "yaxes": [
             {
-              "datasource": {
-                "uid": "Prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sum by (repo)\n(prowjobs{job_name=~'.*e2e.*', state='pending'})",
-              "interval": "",
-              "legendFormat": "",
-              "queryType": "randomWalk",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "e2e jobs / repo",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {},
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "short"
+              "format": "short",
+              "logBase": 1,
+              "show": true
             },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 10,
-            "w": 11,
-            "x": 0,
-            "y": 19
-          },
-          "id": 8,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "9.1.6",
-          "targets": [
             {
-              "datasource": {
-                "uid": "Prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sum by (repo) (clamp_min(delta(prowjobs{org=\"kubevirt\", state=~\"failure|error\"}[4h]), 0))",
-              "interval": "",
-              "legendFormat": "",
-              "queryType": "randomWalk",
-              "range": true,
-              "refId": "A"
+              "format": "short",
+              "logBase": 1,
+              "show": true
             }
           ],
-          "title": "Job failures per repo / 4h",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {},
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 10,
-            "w": 11,
-            "x": 11,
-            "y": 19
-          },
-          "id": 10,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "9.1.6",
-          "targets": [
-            {
-              "datasource": {
-                "uid": "Prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sum by (job_name)\n(clamp_min(delta(prowjobs{org=\"kubevirt\", state=~\"failure|error\", job_name=~\".*e2e.*\"}[4h]), 0))",
-              "interval": "",
-              "legendFormat": "",
-              "queryType": "randomWalk",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "e2e job failures / 4h",
-          "type": "timeseries"
+          "yaxis": {
+            "align": false
+          }
         }
       ],
-      "refresh": "1h",
+      "refresh": "1d",
       "schemaVersion": 37,
       "style": "dark",
-      "tags": [],
+      "tags": [
+        "prow",
+        "load"
+      ],
       "templating": {
-        "list": []
+        "list": [
+          {
+            "current": {
+              "selected": true,
+              "text": ".*",
+              "value": ".*"
+            },
+            "hide": 0,
+            "name": "job_name",
+            "options": [
+              {
+                "selected": true,
+                "text": ".*",
+                "value": ".*"
+              }
+            ],
+            "query": ".*",
+            "skipUrlSync": false,
+            "type": "textbox"
+          }
+        ]
       },
       "time": {
-        "from": "now-24h",
+        "from": "now-7d",
         "to": "now"
       },
-      "timepicker": {},
+      "timepicker": {
+        "refresh_intervals": [
+          "1m",
+          "15m",
+          "30m",
+          "2h",
+          "1d"
+        ]
+      },
       "timezone": "",
-      "title": "Prow Jobs",
-      "uid": "wc9rspPGk",
-      "version": 3,
+      "title": "Prow job load - 1h resolution",
+      "uid": "asdfare79we8r",
+      "version": 5,
       "weekStart": ""
     }
   e2e-jobs-overview.json: |
@@ -5244,7 +5019,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 11,
+      "id": 13,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -5291,7 +5066,10 @@ data:
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": {},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+          },
           "fill": 2,
           "fillGradient": 0,
           "gridPos": {
@@ -5332,7 +5110,7 @@ data:
           "renderer": "flot",
           "seriesOverrides": [],
           "spaceLength": 10,
-          "stack": false,
+          "stack": true,
           "steppedLine": false,
           "targets": [
             {
@@ -5342,10 +5120,10 @@ data:
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (type) (clamp_min(last_over_time(prowjobs{state=\"triggered\", job_name=~\"${job_name}\"}[1h]),0))",
+              "expr": "sum by (type, base_ref) (clamp_min(last_over_time(prowjobs{state=\"triggered\", job_name=~\"${job_name}\"}[1h]),0))",
               "hide": false,
               "interval": "",
-              "legendFormat": "{{type}}s - ${job_name}",
+              "legendFormat": "{{base_ref}} {{type}}s - ${job_name}",
               "range": true,
               "refId": "C"
             }
@@ -5364,7 +5142,7 @@ data:
           "title": "prowjobs in queue",
           "tooltip": {
             "shared": true,
-            "sort": 0,
+            "sort": 2,
             "value_type": "individual"
           },
           "type": "graph",
@@ -5432,7 +5210,10 @@ data:
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": {},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+          },
           "fill": 0,
           "fillGradient": 0,
           "gridPos": {
@@ -5473,7 +5254,7 @@ data:
           "renderer": "flot",
           "seriesOverrides": [],
           "spaceLength": 10,
-          "stack": false,
+          "stack": true,
           "steppedLine": false,
           "targets": [
             {
@@ -5483,10 +5264,10 @@ data:
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (type) (last_over_time(prowjobs{state=\"pending\", job_name=~\"${job_name}\"}[1h]))",
+              "expr": "sum by (type, base_ref) (last_over_time(prowjobs{state=\"pending\", job_name=~\"${job_name}\"}[1h]))",
               "hide": false,
               "interval": "",
-              "legendFormat": "{{type}}s - ${job_name}",
+              "legendFormat": "{{base_ref}} {{type}}s - ${job_name}",
               "range": true,
               "refId": "C"
             }
@@ -5505,7 +5286,7 @@ data:
           "title": "prowjobs running",
           "tooltip": {
             "shared": true,
-            "sort": 0,
+            "sort": 2,
             "value_type": "individual"
           },
           "type": "graph",
