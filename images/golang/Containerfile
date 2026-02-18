@@ -3,6 +3,8 @@ FROM bootstrap-$ARCH
 
 ENV GIMME_GO_VERSION=1.24.9
 
+COPY entrypoint.sh /usr/local/bin/
+
 # Cache latest stable golang version
 RUN curl -sL -o /bin/gimme https://raw.githubusercontent.com/travis-ci/gimme/master/gimme && chmod +x /bin/gimme
 RUN gimme $GIMME_GO_VERSION
