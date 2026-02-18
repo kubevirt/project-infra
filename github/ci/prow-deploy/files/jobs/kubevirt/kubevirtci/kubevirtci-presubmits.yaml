@@ -8,8 +8,8 @@ presubmits:
     decoration_config:
       timeout: 3h0m0s
     labels:
-      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
       rehearsal.allowed: "true"
       sriov-pod: "true"
     max_concurrency: 3
@@ -86,8 +86,8 @@ presubmits:
     decoration_config:
       timeout: 3h0m0s
     labels:
-      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
       rehearsal.allowed: "true"
     max_concurrency: 3
     name: check-up-kind-ovn
@@ -196,7 +196,6 @@ presubmits:
           type: Directory
         name: cgroup
   - always_run: false
-    optional: true
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -206,6 +205,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: check-up-kind-1.34
+    optional: true
     run_if_changed: cluster-up/cluster/kind(-1\.34)?
     spec:
       containers:
@@ -237,13 +237,13 @@ presubmits:
           type: Directory
         name: cgroup
   - always_run: false
-    optional: true
     cluster: prow-arm64-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
     max_concurrency: 1
     name: check-up-kind-1.34-arm64
+    optional: true
     run_if_changed: cluster-up/cluster/kind(-1\.34)?
     spec:
       containers:
@@ -273,7 +273,6 @@ presubmits:
           type: Directory
         name: cgroup
   - always_run: false
-    optional: true
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -283,6 +282,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: check-up-kind-1.35
+    optional: true
     run_if_changed: cluster-up/cluster/kind(-1\.35)?
     spec:
       containers:
@@ -314,13 +314,13 @@ presubmits:
           type: Directory
         name: cgroup
   - always_run: false
-    optional: true
     cluster: prow-arm64-workloads
     decorate: true
     decoration_config:
       timeout: 3h0m0s
     max_concurrency: 1
     name: check-up-kind-1.35-arm64
+    optional: true
     run_if_changed: cluster-up/cluster/kind(-1\.35)?
     spec:
       containers:
@@ -431,11 +431,11 @@ presubmits:
         - /bin/bash
         - -c
         - cd cluster-provision/gocli/ && make all container
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
-        name: ""
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
+        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        name: ""
         resources:
           requests:
             memory: 1Gi
@@ -498,11 +498,11 @@ presubmits:
         - |
           (cd cluster-provision/gocli && make test && make container)
           podman run --rm -v $(pwd):/workdir:Z quay.io/kubevirtci/gocli provision-manager --debug
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
-        name: ""
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
+        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        name: ""
         resources:
           requests:
             memory: 1Gi
@@ -526,7 +526,6 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.32 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
@@ -534,42 +533,13 @@ presubmits:
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
-        name: ""
-        resources:
-          requests:
-            memory: 16Gi
-        securityContext:
-          privileged: true
-  - always_run: true
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      timeout: 3h0m0s
-    labels:
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-check-provision-env: "true"
-      preset-podman-in-container-enabled: "true"
-    max_concurrency: 3
-    name: check-provision-k8s-1.32
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.32 && ../provision.sh
         image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
         name: ""
-        env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
         resources:
           requests:
             memory: 16Gi
         securityContext:
           privileged: true
-      nodeSelector:
-        type: bare-metal-external
   - always_run: false
     cluster: prow-s390x-workloads
     decorate: true
@@ -588,7 +558,6 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.33 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
@@ -596,6 +565,7 @@ presubmits:
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
+        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
         name: ""
         resources:
           requests:
@@ -620,11 +590,11 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.33 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
-        name: ""
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
+        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        name: ""
         resources:
           requests:
             memory: 16Gi
@@ -649,7 +619,6 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.34 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
@@ -657,6 +626,7 @@ presubmits:
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
+        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
         name: ""
         resources:
           requests:
@@ -681,11 +651,11 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.34 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
-        name: ""
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
+        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        name: ""
         resources:
           requests:
             memory: 16Gi
@@ -711,19 +681,19 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.34 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
-        name: ""
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
         - name: PROVISION_CENTOS_VERSION
           value: "10"
         - name: PHASES
-          value: "linux,k8s"
+          value: linux,k8s
         - name: CHECK_CLUSTER
           value: "true"
         - name: KUBEVIRT_PSA
           value: "true"
+        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        name: ""
         resources:
           requests:
             memory: 16Gi
@@ -750,11 +720,11 @@ presubmits:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.35 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
-        name: ""
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
+        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        name: ""
         resources:
           requests:
             memory: 16Gi
