@@ -5,101 +5,103 @@ package handler
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	corev1 "k8s.io/api/core/v1"
+	prowapi "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
 	"sigs.k8s.io/prow/pkg/github"
 )
 
-var _ = Describe("DetectGoFileChanges", func() {
+var _ = Describe("detectGoFileChanges", func() {
+	DescribeTable("returns true when a file is in a watched path",
+		func(files []string) {
+			Expect(detectGoFileChanges(files)).To(BeTrue())
+		},
+		Entry("external-plugins path", []string{"external-plugins/coverage/plugin/handler/handler.go"}),
+		Entry("releng path", []string{"releng/release-tool/release-tool.go"}),
+		Entry("robots path", []string{"robots/flakefinder/flakefinder.go"}),
+		Entry("pkg path", []string{"pkg/git/blame_test.go"}),
+	)
 
-
-	Context("A file is in the coverage directory", func() {
-		It("Return true for external-plugins directory", func() {
-			files := []string{"external-plugins/coverage/plugin/handler/handler.go"}
-			result := DetectGoFileChanges(files)
-			Expect(result).To(BeTrue())
-		})
-
-		It("Return true for releng path", func() {
-			files := []string{"releng/release-tool/release-tool.go"}
-			result := DetectGoFileChanges(files)
-			Expect(result).To(BeTrue())
-		})
-
-		It("Return true for robots path", func() {
-			files := []string{"robots/flakefinder/flakefinder.go"}
-			result := DetectGoFileChanges(files)
-			Expect(result).To(BeTrue())
-		})
-		It("Return true for rehearse path", func() {
-			files := []string{"external-plugins/rehearse/plugin/handler/handler.go"}
-			result := DetectGoFileChanges(files)
-			Expect(result).To(BeTrue())
-		})
-		It("Return true for coverage path", func() {
-			files := []string{"external-plugins/coverage/plugin/handler/handler.go"}
-			result := DetectGoFileChanges(files)
-			Expect(result).To(BeTrue())
-		})
-	})
-
-	Context("A file is not in coverage directiry", func(){
-		It("Returns false for  github path", func() {
-			files := []string{"github/ci/prow-deplooy/config.yaml"}
-			result := DetectGoFileChanges(files)
-			Expect(result).To(BeFalse())
-		})
-		It("Return false for root level file", func () {
-			files := []string{"README.md"}
-			result := DetectGoFileChanges(files)
-			Expect(result).To(BeFalse())
-		})
-		It("Retun false on an empty string", func() {
-			files := []string{}
-			result := DetectGoFileChanges(files)
-			Expect(result).To(BeFalse())
-		})
-	})	
+	DescribeTable("returns false when no relevant file is in the list",
+		func(files []string) {
+			Expect(detectGoFileChanges(files)).To(BeFalse())
+		},
+		Entry("github path", []string{"github/ci/prow-deploy/config.yaml"}),
+		Entry("root level file", []string{"README.md"}),
+		Entry("empty list", []string{}),
+	)
 })
 
-var _ = Describe("ActOnPrEvent", func() {
-	Context("When an action should trigger coverage plugin", func() {
-		It("Return true for open and synchronize actions", func() {
-			event := &github.PullRequestEvent {
-				Action: github.PullRequestActionOpened,
-			}
-			result := ActOnPrEvent(event)
-			Expect(result).To(BeTrue())
-	})
-        It("Return true for synchronize actions", func() {
-			event := &github.PullRequestEvent {
-				Action : github.PullRequestActionSynchronize,
-			}
-			result := ActOnPrEvent(event)
-			Expect(result).To(BeTrue())
-		})
-	})
+var _ = Describe("actOnPrEvent", func() {
+	DescribeTable("returns true when the action should trigger the coverage plugin",
+		func(action github.PullRequestEventAction) {
+			event := &github.PullRequestEvent{Action: action}
+			Expect(actOnPrEvent(event)).To(BeTrue())
+		},
+		Entry("opened", github.PullRequestActionOpened),
+		Entry("synchronize", github.PullRequestActionSynchronize),
+	)
 
-	Context("When an action should not trigger coverage plugin", func() {
-		It("Return false for closed action", func() {
-			event := &github.PullRequestEvent {
-				Action : github.PullRequestActionClosed,
-			}
-			result := ActOnPrEvent(event)
-			Expect(result).To(BeFalse())
-		})
-		It("Return false for labled action", func() {
-			event := &github.PullRequestEvent {
-				Action : github.PullRequestActionLabeled,
-			}
-			result := ActOnPrEvent(event)
-			Expect(result).To(BeFalse())
-		})
-		It("Return false for edited action", func() {
-			event := &github.PullRequestEvent {
-				Action : github.PullRequestActionEdited,
-			}
-			result := ActOnPrEvent(event)
-			Expect(result).To(BeFalse())
-		})
-	})
+	DescribeTable("returns false when the action should not trigger the coverage plugin",
+		func(action github.PullRequestEventAction) {
+			event := &github.PullRequestEvent{Action: action}
+			Expect(actOnPrEvent(event)).To(BeFalse())
+		},
+		Entry("closed", github.PullRequestActionClosed),
+		Entry("labeled", github.PullRequestActionLabeled),
+		Entry("edited", github.PullRequestActionEdited),
+	)
 })
 
+var _ = Describe("generateCoverageJob", func() {
+	var (
+		handler *GitHubEventsHandler
+		pr      *github.PullRequest
+		job     prowapi.ProwJob
+	)
+
+	BeforeEach(func() {
+		handler = &GitHubEventsHandler{
+			jobsNamespace: "kubevirt-prow-jobs",
+		}
+
+		pr = &github.PullRequest{
+			Number: 123,
+			Base: github.PullRequestBranch{
+				Ref: "main",
+				SHA: "sha-1",
+				Repo: github.Repo{
+					Name:     "project-infra",
+					Owner:    github.User{Login: "kubevirt"},
+					FullName: "kubevirt/project-infra",
+				},
+			},
+			Head: github.PullRequestBranch{
+				SHA: "sha-2",
+			},
+			User: github.User{Login: "testuser"},
+		}
+
+		job = handler.generateCoverageJob(pr, "test-event-123")
+	})
+
+	DescribeTable("Should set the correct configuration",
+		func(getField func(prowapi.ProwJob) string, expectedValue string) {
+			Expect(getField(job)).To(Equal(expectedValue))
+
+		},
+		Entry("job name", func(j prowapi.ProwJob) string { return j.Spec.Job }, "coverage-auto"),
+		Entry("cluster", func(j prowapi.ProwJob) string { return j.Spec.Cluster }, "kubevirt-prow-control-plane"),
+		Entry("coverage-plugin label", func(j prowapi.ProwJob) string { return j.Labels["coverage-plugin"] }, "true"),
+		Entry("container image", func(j prowapi.ProwJob) string { return j.Spec.PodSpec.Containers[0].Image }, "quay.io/kubevirtci/golang:v20251218-e7a7fc9"),
+	)
+	It("Should run make coverage command", func() {
+		Expect(job.Spec.PodSpec.Containers[0].Args).To(ContainElement("make coverage"))
+	})
+	It("Should set go version env to 1.25.1", func() {
+		Expect(job.Spec.PodSpec.Containers[0].Env).To(ContainElement(corev1.EnvVar{
+			Name:  "GO_MOD_PATH",
+			Value: "go.mod",
+		}))
+	})
+})
