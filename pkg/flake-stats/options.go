@@ -79,6 +79,12 @@ func MatchingLaneRegex(s string) func(r *ReportOptions) {
 	}
 }
 
+func IgnoreTests(tests []string) func(r *ReportOptions) {
+	return func(r *ReportOptions) {
+		r.TestsToIgnore = tests
+	}
+}
+
 func NewDefaultReportOpts(opts ...ReportOption) *ReportOptions {
 	r := &ReportOptions{
 		DaysInThePast:               defaultDaysInThePast,
@@ -102,6 +108,7 @@ type ReportOptions struct {
 	filterLaneRegex             *regexp.Regexp
 	MatchingLaneRegexString     string
 	matchingLaneRegex           *regexp.Regexp
+	TestsToIgnore               []string
 }
 
 func (o *ReportOptions) Validate() error {

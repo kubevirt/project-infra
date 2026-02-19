@@ -46,13 +46,14 @@ func (a autoQuarantineOptions) MatchingLaneRegexString() string {
 type quarantineOptions struct {
 	testSourcePath string
 
-	// autoQuarantine
 	daysInThePast int
 
 	filterPeriodicJobRunResults bool
 	filterLaneRegex             string
 
 	testName string
+
+	autoQuarantineOptions
 }
 
 type TestToQuarantine struct {
@@ -73,7 +74,7 @@ func (t TestToQuarantine) String() string {
 	return fmt.Sprintf("TestToQuarantine{Test: %+v, SearchCIURL: %q, RelevantImpacts: %+v}", t.Test, t.SearchCIURL, t.RelevantImpacts)
 }
 
-func NewMostFlakyTestsTemplateData(mostFlakyTestsBySig map[string]map[string][]*TestToQuarantine, sigs []string, testNames []string) MostFlakyTestsTemplateData {
+func NewMostFlakyTestsTemplateData(mostFlakyTestsBySig map[string]TestsPerSIG, sigs []string, testNames []string) MostFlakyTestsTemplateData {
 	return MostFlakyTestsTemplateData{
 		ReportCreation:      time.Now(),
 		MostFlakyTestsBySig: mostFlakyTestsBySig,
@@ -86,7 +87,7 @@ func NewMostFlakyTestsTemplateData(mostFlakyTestsBySig map[string]map[string][]*
 type MostFlakyTestsTemplateData struct {
 	ReportCreation      time.Time
 	TimeRanges          []searchci.TimeRange
-	MostFlakyTestsBySig map[string]map[string][]*TestToQuarantine
+	MostFlakyTestsBySig map[string]TestsPerSIG
 	SIGs                []string
 	TestNames           []string
 }

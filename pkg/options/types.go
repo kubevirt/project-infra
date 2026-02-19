@@ -36,6 +36,12 @@ func NewOutputFileOptions(tempFilePattern string, options ...OutputFileOption) *
 
 type OutputFileOption func(o *OutputFileOptions)
 
+func WithOverwrite() OutputFileOption {
+	return func(o *OutputFileOptions) {
+		o.OverwriteOutputFile = true
+	}
+}
+
 type OutputFileOptions struct {
 	OutputFile          string
 	OverwriteOutputFile bool

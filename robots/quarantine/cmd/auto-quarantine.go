@@ -22,18 +22,18 @@ package cmd
 import (
 	_ "embed"
 	"fmt"
-	"github.com/onsi/ginkgo/v2/types"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-	"k8s.io/utils/strings/slices"
-	flakestats "kubevirt.io/project-infra/pkg/flake-stats"
-	"kubevirt.io/project-infra/pkg/ginkgo"
-	"kubevirt.io/project-infra/pkg/options"
-	"kubevirt.io/project-infra/pkg/searchci"
 	"os"
 	"regexp"
 	"strings"
 	"text/template"
+
+	"github.com/onsi/ginkgo/v2/types"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	flakestats "kubevirt.io/project-infra/pkg/flake-stats"
+	"kubevirt.io/project-infra/pkg/ginkgo"
+	"kubevirt.io/project-infra/pkg/options"
+	"kubevirt.io/project-infra/pkg/searchci"
 )
 
 const (
@@ -55,8 +55,6 @@ var (
 		RunE:  AutoQuarantine,
 	}
 
-	autoQuarantineOpts autoQuarantineOptions
-
 	//go:embed auto-quarantine-pr-description.gomd
 	autoQuarantinePRDescriptionTemplate string
 
@@ -65,14 +63,14 @@ var (
 
 func init() {
 	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.daysInThePast, "days-in-the-past", 14, "the number of days in the past")
-	autoQuarantineCmd.PersistentFlags().IntVar(&autoQuarantineOpts.maxTestsToQuarantine, "max-tests-to-quarantine", 1, "the overall number of tests that are going to be quarantined in one run")
-	autoQuarantineCmd.PersistentFlags().StringVar(&autoQuarantineOpts.releaseLaneSuffix, "release-lane-suffix", "", "the suffix for the release lane to target (i.e. -1.7) or empty for targeting the main branch")
-	autoQuarantineCmd.PersistentFlags().StringVar(&autoQuarantineOpts.matchingLaneRegexString, "matching-lane-regex", defaultMatchingLaneRegexString, "the regular expression that the lanes need to match - note that there's a suffix placeholder required")
-	autoQuarantineOpts.prDescriptionOutputFileOpts = options.NewOutputFileOptions(
+	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.maxTestsToQuarantine, "max-tests-to-quarantine", 1, "the overall number of tests that are going to be quarantined in one run")
+	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.releaseLaneSuffix, "release-lane-suffix", "", "the suffix for the release lane to target (i.e. -1.7) or empty for targeting the main branch")
+	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.matchingLaneRegexString, "matching-lane-regex", defaultMatchingLaneRegexString, "the regular expression that the lanes need to match - note that there's a suffix placeholder required")
+	quarantineOpts.prDescriptionOutputFileOpts = options.NewOutputFileOptions(
 		"pr-description-*.md",
-		func(o *options.OutputFileOptions) { o.OverwriteOutputFile = true },
+		options.WithOverwrite(),
 	)
-	autoQuarantineCmd.PersistentFlags().StringVar(&autoQuarantineOpts.prDescriptionOutputFileOpts.OutputFile, "pr-description-output-file", "", "the path to the output file to write the PR description into, or if unset a temp file will be generated")
+	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.prDescriptionOutputFileOpts.OutputFile, "pr-description-output-file", "", "the path to the output file to write the PR description into, or if unset a temp file will be generated")
 
 	var err error
 	reportTemplate, err = template.New("prDescription").Parse(autoQuarantinePRDescriptionTemplate)
@@ -82,7 +80,7 @@ func init() {
 }
 
 func AutoQuarantine(_ *cobra.Command, _ []string) error {
-	err := autoQuarantineOpts.prDescriptionOutputFileOpts.Validate()
+	err := quarantineOpts.prDescriptionOutputFileOpts.Validate()
 	if err != nil {
 		return err
 	}
@@ -91,7 +89,8 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 		flakestats.DaysInThePast(quarantineOpts.daysInThePast),
 		flakestats.FilterPeriodicJobRunResults(true),
 		// we only want to look at lanes targeting a specific branch here, so either the main branch (suffix is empty string) or a specific release like 1.7
-		flakestats.MatchingLaneRegex(autoQuarantineOpts.MatchingLaneRegexString()),
+		flakestats.MatchingLaneRegex(quarantineOpts.MatchingLaneRegexString()),
+		flakestats.IgnoreTests([]string{"AfterSuite"}),
 	)
 	err = reportOpts.Validate()
 	if err != nil {
@@ -128,7 +127,7 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 
 	testsPerSIG := groupTestsBySIG(testsToQuarantine)
 
-	err = writePRDescriptionToFile(autoQuarantineOpts.prDescriptionOutputFileOpts.OutputFile, testsPerSIG)
+	err = writePRDescriptionToFile(quarantineOpts.prDescriptionOutputFileOpts.OutputFile, testsPerSIG)
 	if err != nil {
 		return err
 	}
@@ -137,17 +136,11 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 }
 
 func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types.Report) ([]*TestToQuarantine, error) {
-	var jobHistoryURLMatcher = regexp.MustCompile(autoQuarantineOpts.MatchingLaneRegexString())
-	var ceilingForTestsToQuarantine = autoQuarantineOpts.maxTestsToQuarantine
-	var testsToIgnore = []string{"AfterSuite"}
+	var jobHistoryURLMatcher = regexp.MustCompile(quarantineOpts.MatchingLaneRegexString())
+	var ceilingForTestsToQuarantine = quarantineOpts.maxTestsToQuarantine
 	var testsToQuarantine []*TestToQuarantine
 	for _, topXTest := range topXTests {
 		log.Infof("%s{Count: %d, Sum: %d, Avg: %f, Max: %d}", topXTest.Name, topXTest.AllFailures.Count, topXTest.AllFailures.Sum, topXTest.AllFailures.Avg, topXTest.AllFailures.Max)
-
-		if slices.Contains(testsToIgnore, topXTest.Name) {
-			log.Infof("Ignoring %q", topXTest.Name)
-			continue
-		}
 
 		// Prepare to find the required data to modify the Test
 		matchingSpecReport := ginkgo.GetSpecReportByTestName(reports, topXTest.Name)
@@ -156,41 +149,35 @@ func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types
 			continue
 		}
 
-		// scrape impact from search.ci.kubevirt.io
-		timeRange := searchci.FourteenDays
-		relevantImpacts, err := searchci.ScrapeImpacts(topXTest.Name, timeRange)
+		candidate, err := getQuarantineCandidate(topXTest, searchci.FourteenDays)
 		if err != nil {
-			return nil, fmt.Errorf("could not scrape results for Test %q: %w", topXTest.Name, err)
+			return nil, fmt.Errorf("could not get quarantine candidate for test %q: %w", topXTest.Name, err)
 		}
-		if relevantImpacts == nil {
-			log.Infof("search.ci found no matches for %q", topXTest.Name)
+		if candidate == nil {
 			continue
 		}
-		var filteredRelevantImpacts []searchci.Impact
-		for _, i := range relevantImpacts {
-			elements := strings.Split(i.URL, "/")
+
+		// Additionally filter impacts by the matching lane regex to target the right branch
+		var filteredImpacts []searchci.Impact
+		for _, impact := range candidate.RelevantImpacts {
+			elements := strings.Split(impact.URL, "/")
 			if len(elements) == 0 {
-				return nil, fmt.Errorf("no last element in job history url %q", i.URL)
+				return nil, fmt.Errorf("no last element in job history url %q", impact.URL)
 			}
 			lastElement := elements[len(elements)-1]
 			if !jobHistoryURLMatcher.MatchString(lastElement) {
 				continue
 			}
-			filteredRelevantImpacts = append(filteredRelevantImpacts, i)
+			filteredImpacts = append(filteredImpacts, impact)
 		}
-		if filteredRelevantImpacts == nil {
+		if filteredImpacts == nil {
 			log.Infof("search.ci found no matches in relevant jobs for %q", topXTest.Name)
 			continue
 		}
+		candidate.RelevantImpacts = filteredImpacts
+		candidate.SpecReport = matchingSpecReport
 
-		newTestToQuarantine := &TestToQuarantine{
-			Test:            topXTest,
-			RelevantImpacts: filteredRelevantImpacts,
-			SpecReport:      matchingSpecReport,
-			SearchCIURL:     searchci.NewScrapeURL(topXTest.Name, timeRange),
-			TimeRange:       timeRange,
-		}
-		testsToQuarantine = append(testsToQuarantine, newTestToQuarantine)
+		testsToQuarantine = append(testsToQuarantine, candidate)
 
 		if ceilingForTestsToQuarantine > 0 &&
 			len(testsToQuarantine) >= ceilingForTestsToQuarantine {
@@ -232,6 +219,9 @@ func groupTestsBySIG(testsToQuarantine []*TestToQuarantine) TestsPerSIG {
 }
 
 func writePRDescriptionToFile(outputFileName string, testsPerSIG TestsPerSIG) error {
+	if outputFileName == "" {
+		return fmt.Errorf("output file name must not be empty")
+	}
 	outputFile, err := os.Create(outputFileName)
 	if err != nil {
 		return fmt.Errorf("could not create file: %w", err)
