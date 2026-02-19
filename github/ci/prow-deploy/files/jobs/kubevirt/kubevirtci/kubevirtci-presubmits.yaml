@@ -540,36 +540,6 @@ presubmits:
             memory: 16Gi
         securityContext:
           privileged: true
-  - always_run: true
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      timeout: 3h0m0s
-    labels:
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-check-provision-env: "true"
-      preset-podman-in-container-enabled: "true"
-    max_concurrency: 3
-    name: check-provision-k8s-1.32
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.32 && ../provision.sh
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
-        name: ""
-        env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
-        resources:
-          requests:
-            memory: 16Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
   - always_run: false
     cluster: prow-s390x-workloads
     decorate: true
