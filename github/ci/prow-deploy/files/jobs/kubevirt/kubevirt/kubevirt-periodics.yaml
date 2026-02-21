@@ -2485,3 +2485,216 @@ periodics:
     - name: pgp-bot-key
       secret:
         secretName: pgp-bot-key
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 50 5,17 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+    - base_ref: main
+      org: kubevirt
+      repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-etcd-in-mem: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-compute-migrations-np
+  spec:
+    containers:
+      - command:
+          - /usr/local/bin/runner.sh
+          - /bin/sh
+          - -c
+          - automation/test.sh
+        env:
+          - name: KUBEVIRT_DEPLOY_NP
+            value: "true"
+          - name: TARGET
+            value: k8s-1.34-sig-compute-migrations
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 50 6,18 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 5h0m0s
+  extra_refs:
+    - base_ref: main
+      org: kubevirt
+      repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-etcd-in-mem: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-compute-np
+  spec:
+    containers:
+      - command:
+          - /usr/local/bin/runner.sh
+          - /bin/sh
+          - -c
+          - automation/test.sh
+        env:
+          - name: KUBEVIRT_DEPLOY_NP
+            value: "true"
+          - name: TARGET
+            value: k8s-1.34-sig-compute
+          - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+            value: --usb 30M --usb 40M
+          - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
+            value: 4h45m
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 50 7,19 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+    - base_ref: main
+      org: kubevirt
+      repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-etcd-in-mem: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-network-np
+  spec:
+    containers:
+      - command:
+          - /usr/local/bin/runner.sh
+          - /bin/sh
+          - -c
+          - automation/test.sh
+        env:
+          - name: KUBEVIRT_DEPLOY_NP
+            value: "true"
+          - name: TARGET
+            value: k8s-1.34-sig-network
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 50 8,20 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+    - base_ref: main
+      org: kubevirt
+      repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-etcd-in-mem: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.34-sig-storage-np
+  spec:
+    containers:
+      - command:
+          - /usr/local/bin/runner.sh
+          - /bin/sh
+          - -c
+          - automation/test.sh
+        env:
+          - name: KUBEVIRT_DEPLOY_NP
+            value: "true"
+          - name: TARGET
+            value: k8s-1.34-sig-storage
+        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-alert-email: "kubevirt-ci-maintainers@redhat.com"
+  cluster: prow-workloads
+  cron: 3 * * * *
+  decorate: true
+  extra_refs:
+    - base_ref: main
+      org: kubevirt
+      repo: project-infra
+      workdir: true
+    - base_ref: main
+      org: kubevirt
+      repo: kubevirt
+  labels:
+    preset-github-credentials: "true"
+  name: periodic-kubevirt-auto-quarantine
+  spec:
+    containers:
+      - image: quay.io/kubevirtci/pr-creator:v20251125-430e226
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-ce"
+          - |
+            KUBEVIRT_REPO_PATH="$(realpath ../../kubevirt/kubevirt)"
+            GIT_ASKPASS="$(realpath .)/hack/git-askpass.sh" git-pr.sh \
+              -c "go run ./robots/cmd/quarantine auto --pr-description-output-file=/tmp/pr-description.md --test-source-path=${KUBEVIRT_REPO_PATH}/tests" \
+              -r kubevirt \
+              -b auto-quarantine \
+              -T main \
+              -p "${KUBEVIRT_REPO_PATH}" \
+              -d "cat /tmp/pr-description.md" \
+              -R \
+              -L 'skip-review' \
+              -M 'lgtm,approved,do-not-merge/hold,skip-review'
+        env:
+          - name: GIMME_GO_VERSION
+            value: "1.25.1"
+    nodeSelector:
+      type: bare-metal-external

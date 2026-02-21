@@ -41,6 +41,7 @@ func init() {
 	rootCmd.AddCommand(mostFlakyTestsReportCmd)
 	rootCmd.AddCommand(quarantineTestCmd)
 	rootCmd.AddCommand(infoTestCmd)
+	rootCmd.AddCommand(autoQuarantineCmd)
 }
 
 func Execute() {

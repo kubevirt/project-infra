@@ -176,6 +176,10 @@ func (r FlakeStats) aggregateTopXTests(recentFlakeFinderReports []*flakefinder.P
 			// i.e. `testNamesByTopXTests`
 			normalizedTestName := flakefinder.NormalizeTestName(originalTestName)
 
+			if r.testIsIgnored(normalizedTestName) {
+				continue
+			}
+
 			if flakefinder.IsQuarantineLabelPresent(originalTestName) {
 				quarantinedTestNames[normalizedTestName] = struct{}{}
 			}
@@ -193,6 +197,10 @@ func (r FlakeStats) aggregateFailuresPerJob(reportData *flakefinder.Params, orig
 	for jobName, jobFailures := range reportData.Data[originalTestName] {
 
 		if r.reportOpts.filterLaneRegex != nil && r.reportOpts.filterLaneRegex.MatchString(jobName) {
+			continue
+		}
+
+		if r.reportOpts.matchingLaneRegex != nil && !r.reportOpts.matchingLaneRegex.MatchString(jobName) {
 			continue
 		}
 
@@ -245,6 +253,15 @@ func (r FlakeStats) aggregateFailuresPerTestPerLane(currentTopXTest *TopXTest, j
 		}
 	}
 	currentTopXTest.FailuresPerLane[jobName].add(jobFailures.Failed)
+}
+
+func (r FlakeStats) testIsIgnored(testName string) bool {
+	for _, ignore := range r.reportOpts.TestsToIgnore {
+		if ignore == testName {
+			return true
+		}
+	}
+	return false
 }
 
 func (r FlakeStats) generateSortedAllTests(testNamesByTopXTests map[string]*TopXTest) TopXTests {
