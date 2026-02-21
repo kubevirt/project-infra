@@ -65,7 +65,7 @@ postsubmits:
         testgrid-create-test-group: "false"
       decorate: true
       decoration_config:
-        timeout: 2h
+        timeout: 4h
       max_concurrency: 1
       extra_refs:
       - org: kubevirt
