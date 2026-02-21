@@ -2950,7 +2950,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 1,
-      "id": 4,
+      "id": 8,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -2968,7 +2968,7 @@ data:
           "fillGradient": 0,
           "gridPos": {
             "h": 8,
-            "w": 12,
+            "w": 8,
             "x": 0,
             "y": 0
           },
@@ -3059,8 +3059,8 @@ data:
           "fillGradient": 0,
           "gridPos": {
             "h": 8,
-            "w": 12,
-            "x": 12,
+            "w": 8,
+            "x": 8,
             "y": 0
           },
           "hiddenSeries": false,
@@ -3212,7 +3212,145 @@ data:
           "fillGradient": 0,
           "gridPos": {
             "h": 8,
-            "w": 12,
+            "w": 8,
+            "x": 16,
+            "y": 0
+          },
+          "hiddenSeries": false,
+          "id": 19,
+          "interval": "1h",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "9.1.6",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*1.35.*\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*1.35.*\"}[1h]))\n* 100",
+              "interval": "1h",
+              "legendFormat": "1.35",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*1.34.*\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*1.34.*\"}[1h]))\n* 100",
+              "hide": false,
+              "interval": "1h",
+              "legendFormat": "1.34",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*1.33.*\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*1.33.*\"}[1h]))\n* 100",
+              "hide": false,
+              "interval": "1h",
+              "legendFormat": "1.33",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*1.32.*\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*1.32.*\"}[1h]))\n* 100",
+              "hide": false,
+              "interval": "1h",
+              "legendFormat": "1.32",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "D"
+            }
+          ],
+          "thresholds": [],
+          "timeRegions": [],
+          "title": "lane failures % per K8S Version",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "logBase": 1,
+              "max": "100",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "logBase": 1,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+          },
+          "description": "",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 8,
             "x": 0,
             "y": 8
           },
@@ -3305,8 +3443,8 @@ data:
           "fillGradient": 0,
           "gridPos": {
             "h": 8,
-            "w": 12,
-            "x": 12,
+            "w": 8,
+            "x": 8,
             "y": 8
           },
           "hiddenSeries": false,
@@ -3458,7 +3596,145 @@ data:
           "fillGradient": 0,
           "gridPos": {
             "h": 8,
-            "w": 12,
+            "w": 8,
+            "x": 16,
+            "y": 8
+          },
+          "hiddenSeries": false,
+          "id": 20,
+          "interval": "1h",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "9.1.6",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*1.35.*\", base_ref=\"main\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*1.35.*\", base_ref=\"main\"}[1h]))\n* 100",
+              "interval": "1h",
+              "legendFormat": "1.35",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*1.34.*\", base_ref=\"main\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*1.34.*\", base_ref=\"main\"}[1h]))\n* 100",
+              "hide": false,
+              "interval": "1h",
+              "legendFormat": "1.34",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*1.33.*\", base_ref=\"main\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*1.33.*\", base_ref=\"main\"}[1h]))\n* 100",
+              "hide": false,
+              "interval": "1h",
+              "legendFormat": "1.33",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*1.32.*\", base_ref=\"main\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*1.32.*\", base_ref=\"main\"}[1h]))\n* 100",
+              "hide": false,
+              "interval": "1h",
+              "legendFormat": "1.32",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "D"
+            }
+          ],
+          "thresholds": [],
+          "timeRegions": [],
+          "title": "lane failures % per K8S Version (main)",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "logBase": 1,
+              "max": "100",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "logBase": 1,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+          },
+          "description": "",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 8,
             "x": 0,
             "y": 16
           },
@@ -3564,8 +3840,8 @@ data:
           "fillGradient": 0,
           "gridPos": {
             "h": 8,
-            "w": 12,
-            "x": 12,
+            "w": 8,
+            "x": 8,
             "y": 16
           },
           "hiddenSeries": false,
@@ -3710,6 +3986,144 @@ data:
           "dashes": false,
           "datasource": {
             "type": "prometheus",
+            "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
+          },
+          "description": "",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 16
+          },
+          "hiddenSeries": false,
+          "id": 21,
+          "interval": "1h",
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "9.1.6",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*1.34.*\", base_ref=~\"release-.*\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*1.34.*\", base_ref=~\"release-.*\"}[1h]))\n* 100",
+              "hide": false,
+              "interval": "1h",
+              "legendFormat": "1.34",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*1.33.*\", base_ref=~\"release-.*\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*1.33.*\", base_ref=~\"release-.*\"}[1h]))\n* 100",
+              "hide": false,
+              "interval": "1h",
+              "legendFormat": "1.33",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*1.32.*\", base_ref=~\"release-.*\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*1.32.*\", base_ref=~\"release-.*\"}[1h]))\n* 100",
+              "hide": false,
+              "interval": "1h",
+              "legendFormat": "1.32",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"pull-kubevirt-e2e.*1.31.*\", base_ref=~\"release-.*\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"pull-kubevirt-e2e.*1.31.*\", base_ref=~\"release-.*\"}[1h]))\n* 100",
+              "interval": "1h",
+              "legendFormat": "1.31",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeRegions": [],
+          "title": "lane failures % per K8S Version (release-.*)",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "logBase": 1,
+              "max": "100",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "logBase": 1,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": {
+            "type": "prometheus",
             "uid": "prometheus"
           },
           "description": "",
@@ -3733,8 +4147,8 @@ data:
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
-            "h": 7,
-            "w": 24,
+            "h": 8,
+            "w": 8,
             "x": 0,
             "y": 24
           },
@@ -3828,9 +4242,9 @@ data:
           "fillGradient": 0,
           "gridPos": {
             "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 31
+            "w": 8,
+            "x": 8,
+            "y": 24
           },
           "hiddenSeries": false,
           "id": 11,
@@ -3916,9 +4330,9 @@ data:
           "fillGradient": 0,
           "gridPos": {
             "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 31
+            "w": 8,
+            "x": 16,
+            "y": 24
           },
           "hiddenSeries": false,
           "id": 6,
