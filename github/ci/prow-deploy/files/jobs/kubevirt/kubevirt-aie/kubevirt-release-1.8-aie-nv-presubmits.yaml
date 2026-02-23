@@ -178,6 +178,10 @@ presubmits:
           value: kind-1.35-wg-arm64
         - name: KUBEVIRT_NUM_NODES
           value: "2"
+        - name: KUBEVIRT_CENTOS_STREAM_VERSION
+          value: "10"
+        - name: KUBEVIRT_CS10_BUILDER_VERSION
+          value: "2602231621-e36f1c7568"
         image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         name: ""
         resources:
@@ -228,6 +232,10 @@ presubmits:
           value: dual
         - name: RUN_ON_ARM64_INFRA
           value: "true"
+        - name: KUBEVIRT_CENTOS_STREAM_VERSION
+          value: "10"
+        - name: KUBEVIRT_CS10_BUILDER_VERSION
+          value: "2602231621-e36f1c7568"
         image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         name: ""
         resources:
