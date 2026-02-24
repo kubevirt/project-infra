@@ -44,6 +44,7 @@ deck:
           - \[FAILED\]
           - "fatal: "
           - /logs/artifacts/k8s-reporter/.*\*
+          - " undefined: "
       required_files:
         - build-log.txt
     - lens:
