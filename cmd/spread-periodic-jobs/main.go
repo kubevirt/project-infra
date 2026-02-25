@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/robfig/cron/v3"
 	"gopkg.in/yaml.v3"
 )
 
@@ -217,19 +218,33 @@ func findMatchingJobs(periodicsNode *yaml.Node, pattern string) []JobWithNode {
 	return jobs
 }
 
-func parseCron(cron string) (CronInfo, error) {
-	// Cron format: "minute hour day month dayofweek"
-	parts := strings.Fields(cron)
+func parseCron(cronExpr string) (CronInfo, error) {
+	// Parse using robfig/cron library for robust parsing
+	parser := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow)
+	schedule, err := parser.Parse(cronExpr)
+	if err != nil {
+		return CronInfo{}, fmt.Errorf("failed to parse cron expression: %w", err)
+	}
+
+	// Extract minute and hours by checking the schedule
+	// We need to parse the original expression to extract specific values
+	parts := strings.Fields(cronExpr)
 	if len(parts) < 5 {
 		return CronInfo{}, fmt.Errorf("invalid cron format")
 	}
 
+	// Parse minute (first field)
 	minute, err := strconv.Atoi(parts[0])
 	if err != nil {
 		return CronInfo{}, fmt.Errorf("invalid minute: %w", err)
 	}
 
-	// Parse hours (can be comma-separated like "1,7,13,19")
+	// Validate minute range
+	if minute < 0 || minute > 59 {
+		return CronInfo{}, fmt.Errorf("minute must be 0-59, got %d", minute)
+	}
+
+	// Parse hours (second field, can be comma-separated like "1,7,13,19")
 	hourParts := strings.Split(parts[1], ",")
 	hours := make([]int, 0, len(hourParts))
 	for _, hp := range hourParts {
@@ -237,10 +252,17 @@ func parseCron(cron string) (CronInfo, error) {
 		if err != nil {
 			return CronInfo{}, fmt.Errorf("invalid hour: %w", err)
 		}
+		// Validate hour range
+		if h < 0 || h > 23 {
+			return CronInfo{}, fmt.Errorf("hour must be 0-23, got %d", h)
+		}
 		hours = append(hours, h)
 	}
 
 	sort.Ints(hours)
+
+	// schedule is validated but we use parsed values
+	_ = schedule
 
 	return CronInfo{
 		Minute: minute,

@@ -21,6 +21,7 @@ require (
 	github.com/onsi/gomega v1.34.1
 	github.com/prometheus/client_golang v1.19.0
 	github.com/r3labs/diff/v3 v3.0.1
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/shurcooL/githubv4 v0.0.0-20210725200734-83ba7b4c9228
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.7.0
