@@ -11,7 +11,132 @@ usage and interactions flow, see the pull request interactions [sequence diagram
 
 ## Layout
 
-![infra-layout](infra-layout.svg)
+```mermaid
+flowchart TB
+
+    subgraph ControlPlane["Control Plane Cluster"]
+    
+        subgraph CPWorkloads["Workloads"]
+        
+            subgraph KubeVirtProw["kubevirt-prow"]
+              ProwCP["Prow Control Plane"]
+              BazelCacheCP["Bazel Cache"]
+              DockerProxyCP["Docker Proxy"]
+            end
+        
+            subgraph KubeVirtProw["monitoring"]
+              Grafana
+            end
+        
+            subgraph CISearchNS["ci-search"]
+              CISearch
+            end
+        
+            subgraph KubeVirtProwJobs["kubevirt-prow-jobs"]
+              CIJobs
+            end
+
+            CPWorkers
+        end
+
+        MonitoringStack["Monitoring Stack"]
+
+        CIJobs["CI Jobs"]
+
+        ProwCP --> CIJobs
+        ProwCP --> MonitoringStack 
+        CIJobs --> MonitoringStack
+        CIJobs --> BazelCacheCP
+        CIJobs --> DockerProxyCP
+        CIJobs --> CPWorkers
+
+    end
+    
+    subgraph ObsTools["Observability Tools"]
+        Grafana
+        CISearch
+    end
+
+    subgraph CPWorkers["Worker Nodes"]
+      VMs["9 VMs"]
+    end
+
+    subgraph WorkloadsCluster["Workloads Cluster"]
+        subgraph WCWorkloads["Workloads"]
+            WCJobs["CI Jobs"]
+            WCBazel["Bazel Cache"]
+        end
+        subgraph WCWorkers["Worker Nodes"]
+            BMs["11 BMs<br/>(Bare Metal)"]
+        end
+        WCDockerProxy["Docker Proxy"]
+
+        WCJobs --> WCBazel
+        WCJobs --> WCWorkers
+        WCJobs --> WCDockerProxy
+    end
+
+    subgraph ARMCluster["ARM Cluster"]
+      ARMWorkers["Worker Nodes"]
+      ARMProwJobs["kubevirt-prow-jobs"]
+    end
+
+    subgraph PerfCluster["Performance Cluster"]
+        subgraph PCWorkloads["Workloads"]
+            PCJobs["CI Perf Job"]
+            PCPrometheus["Prometheus<br/>Stack"]
+        end
+        subgraph PCWorkers["Worker Nodes"]
+            PCBMs["6 BMs<br/>(Bare Metal)"]
+        end
+
+        PCJobs --> PCWorkers
+    end
+
+    subgraph External["External"]
+      ExternalServices
+      ExternalClients
+    end
+
+    subgraph ExternalServices["External Services"]
+      GitHub["GitHub"]
+      Quay["Quay"]
+      GCS[("GCS<br/>(Google Cloud Storage)")]
+      Slack
+    end
+
+    subgraph ExternalClients["External Clients"]
+      CISearchClients["ci-search clients"]
+      DeckClients["deck clients"]
+      GrafanaClients["grafana clients"]
+    end
+
+    GitHub --> ProwCP
+
+    ProwCP --> PCJobs
+    ProwCP --> WCJobs
+    ProwCP --> ARMProwJobs
+    ProwCP --> GCS
+    CIJobs --> GCS
+    ObsTools --> GCS
+
+    WCJobs --> GitHub
+    WCJobs --> Quay
+    PCJobs --> Quay
+
+    CISearch <--> GCS
+    CISearch <--> CISearchClients
+    ProwCP --> DeckClients
+    Grafana --> GrafanaClients
+    MonitoringStack --> GitHub
+
+    classDef externalStyle fill:#e1f5ff,stroke:#333,stroke-width:2px
+    classDef clusterStyle fill:#fff4e6,stroke:#333,stroke-width:2px
+    classDef componentStyle fill:#f0f0f0,stroke:#333,stroke-width:1px
+
+    class GitHub,Quay,GCS,Slack externalStyle
+    class WorkloadsCluster,ARMCluster,PerfCluster clusterStyle
+```
 
 ## Prow clusters
 
