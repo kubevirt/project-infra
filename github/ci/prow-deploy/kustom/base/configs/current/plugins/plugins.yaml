@@ -513,6 +513,14 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/kubevirt-aie-webhook:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+
   nmstate/kubernetes-nmstate:
     plugins:
     - approve
