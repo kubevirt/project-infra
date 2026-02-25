@@ -219,24 +219,23 @@ func findMatchingJobs(periodicsNode *yaml.Node, pattern string) []JobWithNode {
 }
 
 func parseCron(cronExpr string) (CronInfo, error) {
-	// Parse using robfig/cron library for robust parsing
+	// Validate the cron expression using robfig/cron library
 	parser := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow)
-	schedule, err := parser.Parse(cronExpr)
+	_, err := parser.Parse(cronExpr)
 	if err != nil {
-		return CronInfo{}, fmt.Errorf("failed to parse cron expression: %w", err)
+		return CronInfo{}, fmt.Errorf("invalid cron expression: %w", err)
 	}
 
-	// Extract minute and hours by checking the schedule
-	// We need to parse the original expression to extract specific values
+	// Extract minute and hours by simple string parsing
 	parts := strings.Fields(cronExpr)
 	if len(parts) < 5 {
-		return CronInfo{}, fmt.Errorf("invalid cron format")
+		return CronInfo{}, fmt.Errorf("invalid cron format: expected at least 5 fields, got %d", len(parts))
 	}
 
 	// Parse minute (first field)
 	minute, err := strconv.Atoi(parts[0])
 	if err != nil {
-		return CronInfo{}, fmt.Errorf("invalid minute: %w", err)
+		return CronInfo{}, fmt.Errorf("invalid minute field: %w", err)
 	}
 
 	// Validate minute range
@@ -250,7 +249,7 @@ func parseCron(cronExpr string) (CronInfo, error) {
 	for _, hp := range hourParts {
 		h, err := strconv.Atoi(strings.TrimSpace(hp))
 		if err != nil {
-			return CronInfo{}, fmt.Errorf("invalid hour: %w", err)
+			return CronInfo{}, fmt.Errorf("invalid hour field: %w", err)
 		}
 		// Validate hour range
 		if h < 0 || h > 23 {
@@ -259,10 +258,8 @@ func parseCron(cronExpr string) (CronInfo, error) {
 		hours = append(hours, h)
 	}
 
+	// Sort hours for consistent output
 	sort.Ints(hours)
-
-	// schedule is validated but we use parsed values
-	_ = schedule
 
 	return CronInfo{
 		Minute: minute,
