@@ -91,6 +91,7 @@ larger set of contributors to apply/remove them.
 | <a id="triage/duplicate" href="#triage/duplicate">`triage/duplicate`</a> | Indicates an issue is a duplicate of other open issue.| anyone | |
 | <a id="triage/infra-issue" href="#triage/infra-issue">`triage/infra-issue`</a> | Indicates an issue was caused by failures in the infrastructure.| anyone | |
 | <a id="triage/needs-information" href="#triage/needs-information">`triage/needs-information`</a> | Indicates an issue needs more information in order to work on it.| anyone | |
+| <a id="triage/no-action" href="#triage/no-action">`triage/no-action`</a> | Indicates an issue or PR is accepted but requires no action from the triage team.| org members |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="triage/not-reproducible" href="#triage/not-reproducible">`triage/not-reproducible`</a> | Indicates an issue can not be reproduced as described.| anyone | |
 | <a id="triage/unresolved" href="#triage/unresolved">`triage/unresolved`</a> | Indicates an issue that can not or will not be resolved.| anyone | |
 | <a id="wg/arch-arm" href="#wg/arch-arm">`wg/arch-arm`</a> | Denotes an issue or PR that relates to the ARM architecture working group.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
