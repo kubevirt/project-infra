@@ -326,6 +326,13 @@ orgs:
         description: A temporary KubeVirt fork aligned with the CentOS Stream Accelerated Infrastructure Enablement SIG.
         has_projects: true
         homepage: https://kubevirt.io
+      kubevirt-aie-webhook:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        default_branch: main
+        description: A webhook to inject virt-launcher images produced by the kubevirt-aie project
+        has_projects: true
+        homepage: https://kubevirt.io
       kubevirt-ansible:
         allow_rebase_merge: false
         description: Set of Ansible roles & playbooks for KubeVirt deployment
@@ -1069,3 +1076,4 @@ orgs:
           - lyarwood
         repos:
           kubevirt-aie: admin
+          kubevirt-aie-webhook: admin

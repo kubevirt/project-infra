@@ -145,6 +145,7 @@ tide:
     kubevirt/kubevirt-migration-controller: squash
     kubevirt/kubevirt-migration-operator: squash
     kubevirt/kubevirt-aie: merge
+    kubevirt/kubevirt-aie-webhook: merge
 
   queries:
   - repos:
@@ -219,6 +220,7 @@ tide:
     - kubevirt/kubevirt-migration-controller
     - kubevirt/kubevirt-migration-operator
     - kubevirt/kubevirt-aie
+    - kubevirt/kubevirt-aie-webhook
     labels:
     - lgtm
     - approved
@@ -240,6 +242,7 @@ tide:
     - kubevirt/containerized-data-importer
     - kubevirt/kubevirt
     - kubevirt/kubevirt-aie
+    - kubevirt/kubevirt-aie-webhook
     labels:
     - skip-review
     missingLabels:
