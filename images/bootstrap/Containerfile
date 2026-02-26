@@ -27,18 +27,32 @@ ENV IMAGE=${IMAGE_ARG}
 ARG ARCH
 
 # Install packages
+# Clean DNF cache first to avoid segmentation faults
+RUN dnf clean all && rm -rf /var/cache/dnf
+
+# Split package installation into smaller chunks to reduce memory pressure
+# Install basic utilities and build tools
 RUN dnf install -y \
     bind-utils \
-    buildah \
     cpio \
     dnf-plugins-core \
     findutils \
-    fuse-overlayfs \
     gawk \
     gcc \
     gcc-c++ \
     gettext \
     git \
+    make \
+    openssl \
+    patch \
+    procps-ng \
+    sudo \
+    wget \
+    which && \
+  dnf -y clean all
+
+# Install development libraries and language tools
+RUN dnf install -y \
     glibc-devel \
     glibc-static \
     iproute \
@@ -46,29 +60,30 @@ RUN dnf install -y \
     jq \
     libstdc++-static \
     libvirt-devel \
-    make \
     mercurial \
-    openssl \
-    patch \
-    procps-ng \
     protobuf-compiler \
     python3-devel \
     python3-jinja2 \
     python3-pip \
     python-unversioned-command \
-    qemu-user-static \
-    qemu-img \
     redhat-rpm-config \
     ripgrep \
     rsync \
     rsync-daemon \
-    ShellCheck \
-    skopeo \
-    sudo \
-    wget \
-    which && \
-  dnf -y clean all && \
-  pip install yamllint && \
+    ShellCheck && \
+  dnf -y clean all
+
+# Install container and virtualization tools
+RUN dnf install -y \
+    buildah \
+    fuse-overlayfs \
+    qemu-user-static \
+    qemu-img \
+    skopeo && \
+  dnf -y clean all
+
+# Install Python packages
+RUN pip install yamllint && \
   pip cache purge
 
 
