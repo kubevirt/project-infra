@@ -541,6 +541,24 @@ repos:
         description: Indicates a PR is trusted, used by tide for auto-merging PRs.
         name: skip-review
         target: prs
+      - name: ai/claude
+        color: D4A574
+        description: Denotes a PR containing commits attributed to Claude (Anthropic).
+        target: prs
+        prowPlugin: ai-label
+        addedBy: prow
+      - name: ai/cursor
+        color: D4A574
+        description: Denotes a PR containing commits attributed to Cursor.
+        target: prs
+        prowPlugin: ai-label
+        addedBy: prow
+      - name: ai/copilot
+        color: D4A574
+        description: Denotes a PR containing commits attributed to GitHub Copilot.
+        target: prs
+        prowPlugin: ai-label
+        addedBy: prow
   kubevirt/kubevirtci:
     labels:
     - addedBy: kubevirt-bot
