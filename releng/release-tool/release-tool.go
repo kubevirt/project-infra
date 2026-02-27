@@ -486,7 +486,7 @@ func (r *releaseData) forkProwJobs() error {
 
 // configureReleaseJob changes the values from the configuration required for jobs running against
 // main branch to what is required in the config for presubmits on release branches. It
-//   - appends -{version} suffix to presubmit job names (or replaces -master suffix)
+//   - appends -{version} suffix to presubmit job names
 //   - changes { run_before_merge: true; always_run: false }
 //     to { always_run: true }
 //   - deletes { labels.preset_bazel_cache: true }
@@ -501,11 +501,7 @@ func configureReleaseJob(configPath string, outputPath string, version string) e
 	for key, presubmits := range jobConfig.PresubmitsStatic {
 		var newPresubmits []config.Presubmit
 		for _, presubmit := range presubmits {
-			if strings.HasSuffix(presubmit.Name, "-master") {
-				presubmit.Name = strings.TrimSuffix(presubmit.Name, "-master") + "-" + version
-			} else {
-				presubmit.Name = presubmit.Name + "-" + version
-			}
+			presubmit.Name = presubmit.Name + "-" + version
 			if presubmit.RunBeforeMerge {
 				presubmit.AlwaysRun = true
 				presubmit.RunBeforeMerge = false
