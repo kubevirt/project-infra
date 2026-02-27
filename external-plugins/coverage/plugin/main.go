@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"flag"
@@ -7,17 +7,20 @@ import (
 	"os"
 	"time"
 
-	v1 "github.com/jetstack/cert-manager/pkg/client/clientset/versioned/typed/acme/v1"
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/test-infra/pkg/flagutil"
-	"kubevirt.io/project-infra/external-plugins/phased/plugin/handler"
-	"kubevirt.io/project-infra/external-plugins/phased/plugin/server"
+	v1 "sigs.k8s.io/prow/pkg/client/clientset/versioned/typed/prowjobs/v1"
+	prowconfig "sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/prow/pkg/config/secret"
+	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/interrupts"
 	"sigs.k8s.io/prow/pkg/pluginhelp"
 	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
+
+	"kubevirt.io/project-infra/external-plugins/coverage/plugin/handler"
+	"kubevirt.io/project-infra/external-plugins/coverage/plugin/server"
 )
 
 type options struct {
@@ -98,7 +101,6 @@ func main() {
 	logger := setupLogger()
 	logger.Infoln("Setting up events server")
 
-	//creating k8s config
 	var config *rest.Config
 	var err error
 	if opts.kubeconfig != "" {
@@ -113,29 +115,25 @@ func main() {
 	mustSucceed(err, "Could not create Prow client.")
 
 	if err := secret.Add(opts.github.TokenPath, opts.hmacSecretFile); err != nil {
-		logrus.WithError(err).Fatalf("Failed to laod secrets.")
+		logrus.WithError(err).Fatalf("Failed to load secrets.")
 	}
 
 	githubClient, err := opts.github.GitHubClient(opts.dryRun)
 	mustSucceed(err, "Could not create GitHub client.")
 
-	eventsChan := make(chan *handler.GitHubEvent)
-
 	eventsHandler := handler.NewGitHubEventsHandler(
-		eventsChan,
 		logger,
 		prowClient.ProwJobs(opts.jobsNs),
 		githubClient,
+		opts.jobsNs,
 		opts.dryRun,
 	)
 
-	//Webhook server
 	eventsServer := server.NewGitHubEventsServer(
 		secret.GetTokenGenerator(opts.hmacSecretFile),
-		eventsChan,
+		eventsHandler,
 	)
 
-	//HTTP routing
 	serverMux := http.NewServeMux()
 	serverMux.Handle(opts.endpoint, eventsServer)
 
@@ -144,10 +142,9 @@ func main() {
 		Addr:    fmt.Sprintf(":%d", opts.port),
 		Handler: serverMux,
 	}
-
 	//Starting server
 	interrupts.ListenAndServe(srv, 5*time.Second)
-	logger.Infoln("Coverage server us listening on port: ", opts.port)
+	logger.Infoln("Coverage server is listening on port: ", opts.port)
 
 	//Serve plugin help endpoint
 	externalplugins.ServeExternalPluginHelp(serverMux,
@@ -166,4 +163,22 @@ func helpProvider(_ []prowconfig.OrgRepo) (*pluginhelp.PluginHelp, error) {
 			 on pull requests containing Go code changes.`,
 	}
 	return pluginHelp, nil
+}
+
+// mustSucceed exits if the error is not nil
+func mustSucceed(err error, message string) {
+	if err != nil {
+		logrus.WithError(err).Fatal(message)
+	}
+}
+
+// setupLogger creates and configures the logger
+func setupLogger() *logrus.Logger {
+	l := logrus.New()
+	l.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp:   true,
+		TimestampFormat: time.RFC1123Z})
+	l.SetLevel(logrus.TraceLevel)
+	l.SetOutput(os.Stdout)
+	return l
 }

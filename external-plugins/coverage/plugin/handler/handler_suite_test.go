@@ -9,5 +9,5 @@ import (
 
 func TestHandler(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Handler Suite")
+	RunSpecs(t, "Coverage Handler Suite")
 }
