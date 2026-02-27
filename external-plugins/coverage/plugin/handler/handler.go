@@ -31,7 +31,6 @@ type githubClient interface {
 
 // GitHub events handler
 type GitHubEventsHandler struct {
-	eventsChan    <-chan *GitHubEvent
 	logger        *logrus.Logger
 	prowJobClient prowv1.ProwJobInterface
 	githubClient  githubClient
@@ -41,7 +40,6 @@ type GitHubEventsHandler struct {
 
 // Creating a new GitHubEventsHandler
 func NewGitHubEventsHandler(
-	eventsChan <-chan *GitHubEvent,
 	logger *logrus.Logger,
 	prowJobClient prowv1.ProwJobInterface,
 	githubClient githubClient,
@@ -49,7 +47,6 @@ func NewGitHubEventsHandler(
 	dryrun bool,
 ) *GitHubEventsHandler {
 	return &GitHubEventsHandler{
-		eventsChan:    eventsChan,
 		logger:        logger,
 		prowJobClient: prowJobClient,
 		githubClient:  githubClient,
