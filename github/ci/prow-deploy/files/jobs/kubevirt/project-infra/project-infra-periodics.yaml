@@ -616,7 +616,7 @@ periodics:
   spec:
     containers:
     - name: peribolos
-      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260220-ea4b6a3dc
+      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260225-8287579aa
       command:
       - /ko-app/peribolos
       args:
