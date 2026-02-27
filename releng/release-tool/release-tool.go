@@ -433,7 +433,7 @@ func (r *releaseData) forkProwJobs() error {
 			return err
 		}
 
-		err = configureReleaseJob(tempPresubmitsConfigPath, fullOutputConfig)
+		err = configureReleaseJob(tempPresubmitsConfigPath, fullOutputConfig, version)
 		if err != nil {
 			log.Printf("ERROR: configuring release job failed: %s", err)
 			return err
@@ -486,10 +486,11 @@ func (r *releaseData) forkProwJobs() error {
 
 // configureReleaseJob changes the values from the configuration required for jobs running against
 // main branch to what is required in the config for presubmits on release branches. It
+//   - appends -{version} suffix to presubmit job names (or replaces -master suffix)
 //   - changes { run_before_merge: true; always_run: false }
 //     to { always_run: true }
 //   - deletes { labels.preset_bazel_cache: true }
-func configureReleaseJob(configPath string, outputPath string) error {
+func configureReleaseJob(configPath string, outputPath string, version string) error {
 	if outputPath == configPath {
 		return fmt.Errorf("output-path and config-path must not be the same")
 	}
@@ -500,6 +501,11 @@ func configureReleaseJob(configPath string, outputPath string) error {
 	for key, presubmits := range jobConfig.PresubmitsStatic {
 		var newPresubmits []config.Presubmit
 		for _, presubmit := range presubmits {
+			if strings.HasSuffix(presubmit.Name, "-master") {
+				presubmit.Name = strings.TrimSuffix(presubmit.Name, "-master") + "-" + version
+			} else {
+				presubmit.Name = presubmit.Name + "-" + version
+			}
 			if presubmit.RunBeforeMerge {
 				presubmit.AlwaysRun = true
 				presubmit.RunBeforeMerge = false

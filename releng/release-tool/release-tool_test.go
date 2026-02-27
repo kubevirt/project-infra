@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -478,6 +479,7 @@ func TestConfigureReleaseJob(t *testing.T) {
 	err = configureReleaseJob(
 		"testdata/jobconfig/kubevirt-presubmits-1.6.yaml",
 		tempOutputFile,
+		"1.6",
 	)
 	if err != nil {
 		t.Errorf("got unexpected error %s", err)
@@ -489,6 +491,9 @@ func TestConfigureReleaseJob(t *testing.T) {
 	}
 	for _, presubmits := range jobConfig.PresubmitsStatic {
 		for _, presubmit := range presubmits {
+			if !strings.HasSuffix(presubmit.Name, "-1.6") {
+				t.Errorf("expected job name %q to have suffix -1.6", presubmit.Name)
+			}
 			if presubmit.RunBeforeMerge {
 				t.Errorf("got unexpected RunBeforeMerge on job %s", presubmit.Name)
 			}
