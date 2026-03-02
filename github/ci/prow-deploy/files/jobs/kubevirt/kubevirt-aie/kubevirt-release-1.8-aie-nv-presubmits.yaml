@@ -160,6 +160,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 4
     name: pull-kubevirt-aie-kind-1.35-sig-compute-arm64-1.8-aie-nv
@@ -207,6 +208,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 2
     name: pull-kubevirt-aie-kind-1.35-conformance-arm64-1.8-aie-nv
