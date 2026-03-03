@@ -661,6 +661,8 @@ approve:
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
+  - kubevirt/kubevirt-aie
+  - kubevirt/kubevirt-aie-webhook
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
