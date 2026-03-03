@@ -191,6 +191,8 @@ postsubmits:
           requests:
             memory: "8Gi"
   - name: push-cdi-goveralls
+    branches:
+    - main
     cluster: kubevirt-prow-control-plane
     annotations:
       testgrid-create-test-group: "false"
@@ -202,8 +204,6 @@ postsubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-    skip_branches:
-    - release-v\d+\.\d+
     spec:
       containers:
       - command:

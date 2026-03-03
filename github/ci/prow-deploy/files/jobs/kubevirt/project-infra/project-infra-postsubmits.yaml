@@ -193,6 +193,8 @@ postsubmits:
               privileged: true
     - name: publish-flakefinder-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "^(robots|images)/flakefinder/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
@@ -224,6 +226,8 @@ postsubmits:
               privileged: true
     - name: publish-ginkgo-tests-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "^(robots|images)/ginkgo-tests/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
@@ -685,7 +689,7 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       decorate: true
-      run_if_changed: "github/ci/services/ci-search.*"
+      run_if_changed: "github/ci/services/ci-search/.*"
       branches:
       - ^main$
       labels:
@@ -794,6 +798,8 @@ postsubmits:
               memory: "1Gi"
     - name: publish-ci-usage-exporter-image
       always_run: false
+      branches:
+      - main
       run_if_changed: "^(robots|images)/ci-usage-exporter/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
@@ -889,6 +895,8 @@ postsubmits:
                 memory: "1Gi"
     - name: post-project-infra-mirror-images-from-docker-hub
       always_run: false
+      branches:
+      - main
       run_if_changed: "hack/mirror-images.sh|hack/images_to_mirror.csv"
       annotations:
         testgrid-create-test-group: "false"
@@ -917,6 +925,8 @@ postsubmits:
             privileged: true
     - name: post-project-infra-kubevirt-e2e-jobs-overview
       always_run: false
+      branches:
+      - main
       annotations:
         testgrid-create-test-group: "false"
       cluster: kubevirt-prow-control-plane
@@ -967,6 +977,8 @@ postsubmits:
               memory: "200Mi"
     - name: post-project-infra-kubevirt-releasegraph
       always_run: false
+      branches:
+      - main
       annotations:
         testgrid-create-test-group: "false"
       cluster: kubevirt-prow-control-plane
