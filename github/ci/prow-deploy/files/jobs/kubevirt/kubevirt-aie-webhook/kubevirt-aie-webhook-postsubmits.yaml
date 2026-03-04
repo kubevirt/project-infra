@@ -28,7 +28,8 @@ postsubmits:
           - "-c"
           - |
             cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
-            DOCKER_TAG=$(git describe --tags --exact-match) make image-build image-push
+            DOCKER_TAG=$(git describe --tags --exact-match) make image-build image-push &&
+            DOCKER_TAG=latest make image-build image-push
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
