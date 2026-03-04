@@ -2051,7 +2051,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -2071,6 +2070,10 @@ presubmits:
           value: k8s-1.35-sig-compute-serial
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
         name: ""
         resources:
