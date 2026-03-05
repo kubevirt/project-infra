@@ -783,6 +783,7 @@ periodics:
         source ../project-infra/hack/manage-secrets.sh
         decrypt_secrets
         extract_secret 'kubeconfigS390x' /kubeconfig
+        cleanup_secrets
 
         # login quay.io
         cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
@@ -930,6 +931,7 @@ periodics:
         source ../project-infra/hack/manage-secrets.sh
         decrypt_secrets
         extract_secret 'kubeconfigPerf' /kubeconfig
+        cleanup_secrets
 
         # login quay.io
         cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
@@ -1006,6 +1008,7 @@ periodics:
         source ../project-infra/hack/manage-secrets.sh
         decrypt_secrets
         extract_secret 'kubeconfigPerf' /kubeconfig
+        cleanup_secrets
 
         # login quay.io
         cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
@@ -2442,6 +2445,7 @@ periodics:
         source ../project-infra/hack/manage-secrets.sh
         decrypt_secrets
         extract_secret 'kubeconfigS390xSecureExecution' /kubeconfig
+        cleanup_secrets
 
         # login quay.io
         cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io

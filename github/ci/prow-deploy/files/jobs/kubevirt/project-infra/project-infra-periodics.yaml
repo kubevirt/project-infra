@@ -1036,6 +1036,7 @@ periodics:
         source ./hack/manage-secrets.sh
         decrypt_secrets
         extract_secret 'kubeconfig' ~/.kube/config
+        cleanup_secrets
 
         ./robots/job-config-validator/job-config-validator
       resources:
@@ -1184,6 +1185,7 @@ periodics:
         source ./hack/manage-secrets.sh
         decrypt_secrets
         extract_secret 'kubeconfig' ~/.kube/config
+        cleanup_secrets
 
         kubectl get --context='prow-arm64-workloads' --raw '/k8s/clusters/c-zvkv8/livez?verbose'
       resources: *cluster_livez_resources
