@@ -1,0 +1,30 @@
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: prow-coverage
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prow-coverage
+rules:
+  - apiGroups:
+      - prow.k8s.io
+    resources:
+      - prowjobs
+    verbs:
+      - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prow-coverage
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  name: prow-coverage
+  kind: ClusterRole
+subjects:
+  - kind: ServiceAccount
+    name: prow-coverage
+    namespace: default
