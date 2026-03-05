@@ -12,7 +12,9 @@ main(){
     decrypt_secrets
 
     mkdir -p ${base_dir}/vars/${DEPLOY_ENVIRONMENT}
-    mv main.yml ${base_dir}/vars/${DEPLOY_ENVIRONMENT}/secrets.yml
+    mv "${secrets_repo_dir}"/main.yml ${base_dir}/vars/${DEPLOY_ENVIRONMENT}/secrets.yml
+
+    cleanup_secrets
 
     # run playbook
     cd ${base_dir}
