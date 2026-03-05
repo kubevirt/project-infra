@@ -93,7 +93,8 @@ build_image() {
         build_args=( "-v" "$project_infra_dir:/project-infra" )
     fi
     # add qemu-user-static
-    podman run --rm --privileged docker.io/multiarch/qemu-user-static --reset -p yes
+    # - https://github.com/linuxserver/docker-qemu-static
+    podman run --rm --privileged quay.io/linuxserver.io/qemu-static --reset -p yes
     # build multi-arch images
     for arch in ${archs[*]};do
         if [[ $local_base_image == false ]]; then
