@@ -31,7 +31,7 @@ periodics:
         value: "true"
       - name: PROMOTE_DRY_RUN
         value: "true"
-      image: quay.io/kubevirtci/golang:v20260305-b82a602
+      image: quay.io/kubevirtci/golang:v20260306-351d3b1
       name: ""
       resources:
         requests:
@@ -71,7 +71,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: "1.26.0"
-      image: quay.io/kubevirtci/golang:v20260305-b82a602
+      image: quay.io/kubevirtci/golang:v20260306-351d3b1
       name: ""
       resources:
         requests:
