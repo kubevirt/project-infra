@@ -731,6 +731,7 @@ postsubmits:
       run_if_changed: "github/ci/services/grafana/.*"
       branches:
       - ^main$
+      clone_depth: 1
       labels:
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
@@ -743,7 +744,7 @@ postsubmits:
         - command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
-            - "-c"
+            - "-ce"
             - |
               # install yq
               curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
@@ -752,15 +753,15 @@ postsubmits:
               source ./hack/manage-secrets.sh
               decrypt_secrets
               extract_secret 'kubeconfig' ~/.kube/config
-              cleanup_secrets
 
               environment='kubevirt-prow-control-plane'
               overlaySecretsDirectory="github/ci/services/grafana/deploy/overlays/kubevirt-prow-control-plane/secrets/grafana"
-              extract_secret 'grafanaUser' "${overlaySecretsDirectory}/admin-user"
-              extract_secret 'grafanaPassword' "${overlaySecretsDirectory}/admin-password"
-              extract_secret 'grafanaPromToken' "${overlaySecretsDirectory}/prom_bearer_token"
-              extract_secret 'grafanaClientID' "${overlaySecretsDirectory}/client-id"
-              extract_secret 'grafanaClientSecret' "${overlaySecretsDirectory}/client-secret"
+              install -m400 "${secrets_repo_dir}"/secrets/grafana/user "${overlaySecretsDirectory}"/admin-user
+              install -m400 "${secrets_repo_dir}"/secrets/grafana/password "${overlaySecretsDirectory}"/admin-password
+              install -m400 "${secrets_repo_dir}"/secrets/grafana/prometheus-token "${overlaySecretsDirectory}"/prom_bearer_token
+              install -m400 "${secrets_repo_dir}"/secrets/grafana/client-id "${overlaySecretsDirectory}"/client-id
+              install -m400 "${secrets_repo_dir}"/secrets/grafana/client-secret "${overlaySecretsDirectory}"/client-secret
+              cleanup_secrets
 
               ./github/ci/services/grafana/hack/deploy.sh "${environment}"
           env:
