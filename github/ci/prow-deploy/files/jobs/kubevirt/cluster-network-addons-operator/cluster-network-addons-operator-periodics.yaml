@@ -10,7 +10,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20260225-e8e5bc2
+    - image: quay.io/kubevirtci/flakefinder:v20260305-351d3b1
       command:
       - /usr/bin/flakefinder
       args:
@@ -32,7 +32,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20260225-e8e5bc2
+    - image: quay.io/kubevirtci/flakefinder:v20260305-351d3b1
       command:
       - /usr/bin/flakefinder
       args:
@@ -54,7 +54,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20260225-e8e5bc2
+    - image: quay.io/kubevirtci/flakefinder:v20260305-351d3b1
       command:
       - /usr/bin/flakefinder
       args:
@@ -88,7 +88,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+      - image: quay.io/kubevirtci/golang:v20260305-b82a602
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
