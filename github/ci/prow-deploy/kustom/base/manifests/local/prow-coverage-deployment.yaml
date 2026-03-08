@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coverage
+  labels:
+    app: coverage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prow-coverage
+  template:
+    metadata:
+      labels:
+        app: prow-coverage
+    spec:
+      serviceAccountName: prow-coverage
+      terminationGracePeriodSeconds: 180
+      containers:
+        - name: coverage
+          image: quay.io/kubevirtci/coverage:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            - --dry-run=false
+            - --github-token-path=/etc/github/oauth
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
+            - --hmac-secret-file=/etc/webhook/hmac
+            - --jobs-namespace=default
+          ports:
+            - name: http
+              containerPort: 9901
+          volumeMounts:
+            - name: hmac
+              mountPath: /etc/webhook
+              readOnly: true
+            - name: oauth
+              mountPath: /etc/github
+              readOnly: true
+      volumes:
+        - name: hmac
+          secret:
+            secretName: hmac-token
+        - name: oauth
+          secret:
+            secretName: oauth-token
