@@ -1,0 +1,85 @@
+periodics:
+- name: periodic-kubevirt-aie-sync-upstream-1.8
+  cron: "0 3 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 30m
+  max_concurrency: 1
+  cluster: kubevirt-prow-control-plane
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirt-aie
+    base_ref: release-1.8-aie-nv
+  labels:
+    preset-github-credentials: "true"
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20260225-45d67c8
+      env:
+      - name: UPSTREAM_BRANCH
+        value: "release-1.8"
+      - name: TARGET_BRANCH
+        value: "release-1.8-aie-nv"
+      - name: GIT_USER
+        value: "kubevirt-bot"
+      command: ["/bin/bash", "-ce"]
+      args:
+      - |
+        export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+        cd ../kubevirt-aie
+
+        # Skip if an open sync PR already exists
+        if ! labels-checker \
+          --org=kubevirt --repo=kubevirt-aie \
+          --author="${GIT_USER}" \
+          --branch-name=sync-upstream-${UPSTREAM_BRANCH} \
+          --ensure-labels-missing=lgtm,approved,do-not-merge/hold \
+          --github-token-path=/etc/github/oauth; then
+          echo "Open sync PR already exists, skipping"
+          exit 0
+        fi
+
+        # Fetch upstream
+        git remote add upstream https://github.com/kubevirt/kubevirt.git
+        git fetch upstream "${UPSTREAM_BRANCH}"
+        upstream_head=$(git rev-parse --short upstream/${UPSTREAM_BRANCH})
+
+        # Attempt merge
+        if ! git merge --no-edit "upstream/${UPSTREAM_BRANCH}"; then
+          # Merge conflict — open a GitHub issue
+          conflicts=$(git diff --name-only --diff-filter=U | head -20)
+          git merge --abort
+          curl -s -X POST \
+            -H "Authorization: token $(cat /etc/github/oauth)" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/kubevirt/kubevirt-aie/issues" \
+            -d "$(jq -n \
+              --arg title "Automated sync from upstream ${UPSTREAM_BRANCH} failed: merge conflicts at ${upstream_head}" \
+              --arg body "The periodic sync job attempted to merge \`kubevirt/kubevirt:${UPSTREAM_BRANCH}\` (${upstream_head}) into \`${TARGET_BRANCH}\` but encountered merge conflicts.\n\nConflicting files:\n\`\`\`\n${conflicts}\n\`\`\`\n\nPlease resolve manually." \
+              --arg label "automated-sync" \
+              '{title: $title, body: $body, labels: [$label]}')"
+          echo "Merge conflicts detected, issue created"
+          exit 0
+        fi
+
+        # Merge succeeded — push and create PR
+        git config user.name "kubevirt-bot"
+        git config user.email "kubevirtbot@redhat.com"
+        git push -f "https://${GIT_USER}@github.com/${GIT_USER}/kubevirt-aie.git" \
+          HEAD:"sync-upstream-${UPSTREAM_BRANCH}"
+
+        description="Merge upstream kubevirt/${UPSTREAM_BRANCH} at ${upstream_head}"
+        pr-creator \
+          --github-token-path=/etc/github/oauth \
+          --org=kubevirt --repo=kubevirt-aie \
+          --branch="${TARGET_BRANCH}" \
+          --title="${description}" \
+          --head-branch="sync-upstream-${UPSTREAM_BRANCH}" \
+          --body="Automated merge of \`kubevirt/kubevirt:${UPSTREAM_BRANCH}\` at ${upstream_head} into \`${TARGET_BRANCH}\`." \
+          --source="${GIT_USER}:sync-upstream-${UPSTREAM_BRANCH}" \
+          --confirm
+      resources:
+        requests:
+          memory: "200Mi"
