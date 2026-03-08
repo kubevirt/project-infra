@@ -637,7 +637,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20260306-379f9ea
+        - image: quay.io/kubevirtci/prow-deploy:v20260307-1702eaf
           env:
           - name: DEPLOY_ENVIRONMENT
             value: kubevirt-prow-control-plane
@@ -670,7 +670,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20260306-379f9ea
+        - image: quay.io/kubevirtci/prow-deploy:v20260307-1702eaf
           env:
           - name: DEPLOY_ENVIRONMENT
             value: prow-workloads
@@ -991,7 +991,7 @@ postsubmits:
       run_if_changed: "robots/perf-report-creator/shape.yaml"
       spec:
         containers:
-        - image: quay.io/kubevirtci/pr-creator:v20260306-379f9ea
+        - image: quay.io/kubevirtci/pr-creator:v20260307-1702eaf
           env:
           - name: TARGET_GITHUB_REPO
             value: kubevirt/ci-performance-benchmarks
