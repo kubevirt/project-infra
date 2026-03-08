@@ -46,7 +46,6 @@ orgs:
       - cfilleke
       - chandramerla
       - codingben
-      - cwilkers
       - dankenigsberg
       - dasionov
       - davidvossel
@@ -88,7 +87,6 @@ orgs:
       - nunnatsa
       - openshift-ci-robot
       - openshift-merge-robot
-      - opokornyy
       - orelmisan
       - orenc1
       - ormergi
@@ -930,7 +928,6 @@ orgs:
         maintainers:
           - fabiand
         members:
-          - cwilkers
           - aburdenthehand
         privacy: closed
         repos:
