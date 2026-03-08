@@ -12,7 +12,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -53,6 +52,8 @@ presubmits:
           value: --prometheus-port 30007
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -76,7 +77,6 @@ presubmits:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -95,6 +95,10 @@ presubmits:
         env:
         - name: TARGET
           value: windows2016
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -1068,7 +1072,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -1089,6 +1092,10 @@ presubmits:
           value: k8s-1.35-sig-network
         - name: KUBEVIRT_SINGLE_STACK
           value: "true"
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -1110,7 +1117,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -1132,6 +1138,10 @@ presubmits:
           value: k8s-1.35-sig-network
         - name: KUBEVIRT_WITH_DYN_NET_CTRL
           value: "true"
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -1153,7 +1163,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -1171,6 +1180,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.35-sig-compute-migrations
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -1391,7 +1404,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
     name: pull-kubevirt-e2e-k8s-1.34-sig-monitoring
@@ -1408,6 +1420,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.34-sig-monitoring
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -1496,6 +1512,10 @@ presubmits:
           value: k8s-1.34-sig-storage
         - name: FEATURE_GATES
           value: Root
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -1517,7 +1537,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -1540,6 +1559,10 @@ presubmits:
           value: Root
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -1561,7 +1584,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -1580,6 +1602,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.35-sig-compute-realtime
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -1633,7 +1659,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -1652,6 +1677,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.35-sig-compute-conformance
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -1705,6 +1734,10 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --prometheus-port 30007
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -1889,7 +1922,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -1908,6 +1940,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.34-sig-network
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -1929,7 +1965,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -1948,6 +1983,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.34-sig-storage
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -1969,7 +2008,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -1990,6 +2028,10 @@ presubmits:
           value: k8s-1.34-sig-compute-parallel
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -2011,7 +2053,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -2030,6 +2071,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.34-sig-operator
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -2095,7 +2140,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -2113,6 +2157,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.35-sig-network
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -2134,7 +2182,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -2152,6 +2199,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.35-sig-storage
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -2173,7 +2224,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -2193,6 +2243,10 @@ presubmits:
           value: k8s-1.35-sig-compute-parallel
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
@@ -2214,7 +2268,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
@@ -2232,6 +2285,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.35-sig-operator
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: "1G"
         image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
