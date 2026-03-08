@@ -11,7 +11,189 @@ usage and interactions flow, see the pull request interactions [sequence diagram
 
 ## Layout
 
-![infra-layout](infra-layout.svg)
+```mermaid
+flowchart LR
+
+    subgraph ControlPlaneCluster["kubevirt-prow-control-plane"]
+
+        subgraph KubeVirtProwNS["kubevirt-prow"]
+            subgraph ProwCP["Prow Control Plane"]
+                    deck
+                    hook
+                    tide
+                    crier
+                    OthersCP[...]
+            end
+            subgraph ProwPlugins["External Plugins"]
+                rehearse
+                test-subset
+                phased
+                OtherPlugins[...]
+            end
+            subgraph ProwSecondary["Secondary Components"]
+                gcsweb
+                ghproxy
+                label-sync
+                OtherSecondary[...]
+            end
+            subgraph BazelCacheCP["Bazel Cache"]
+              greenhouse
+            end
+            DockerProxyCP["Docker Proxy"]
+            CertManager["cert-manager"]
+        end
+
+        subgraph MonitoringNS["monitoring"]
+            Grafana["Grafana"]
+        end
+
+        subgraph CISearchNS["ci-search"]
+            CISearch["CI Search"]
+        end
+
+        subgraph CPJobsNS["kubevirt-prow-jobs"]
+            CPJobs["`CI Jobs
+            (non-e2e)`"]
+        end
+
+        subgraph CPWorkers["Worker Nodes"]
+            VMs["9 VMs"]
+        end
+
+        ProwCP --> CPJobs
+        CPJobs --> BazelCacheCP
+        CPJobs --> DockerProxyCP
+        CPJobs --> VMs
+        CertManager -.-> Grafana
+        CertManager -.-> CISearch
+        CertManager -.-> ProwCP
+
+    end
+
+    subgraph WorkloadsCluster["prow-workloads"]
+
+        subgraph WCJobsNS["Namespace: kubevirt-prow-jobs"]
+            WCJobs["`CI Jobs
+                    (e2e tests)`"]
+            WCBazel["`Bazel Cache
+                    (greenhouse)`"]
+            WCDockerProxy["Docker Proxy"]
+        end
+
+        subgraph WCMonitoring["Monitoring"]
+            WCPrometheus["`Prometheus + Thanos
+                            + Node Exporter`"]
+        end
+
+        subgraph WCWorkers["Worker Nodes"]
+            BMs["11 Bare Metal Servers"]
+        end
+
+        WCJobs --> WCBazel
+        WCJobs --> WCDockerProxy
+        WCJobs --> WCWorkers
+        WCJobs --> WCPrometheus
+
+    end
+
+    subgraph ARMCluster["prow-arm64-workloads"]
+        subgraph ARMJobsNS["kubevirt-prow-jobs"]
+            ARMJobs["ARM Test Jobs"]
+        end
+        ARMWorkers["Worker Nodes"]
+        ARMJobs --> ARMWorkers
+    end
+
+    subgraph S390XCluster["prow-s390x-workloads"]
+        subgraph S390XJobsNS["kubevirt-prow-jobs"]
+            S390XJobs["s390x Test Jobs"]
+        end
+        S390XWorkers["Worker Nodes"]
+        S390XJobs --> S390XWorkers
+    end
+
+    subgraph PerfCluster["prow-performance"]
+        subgraph PCJobsNS["kubevirt-prow-jobs"]
+            PCJobs["`Performance
+                    Test Jobs`"]
+        end
+        subgraph PCMonitoring["Monitoring"]
+            PCPrometheus["Prometheus Stack"]
+        end
+        subgraph PCWorkers["Worker Nodes"]
+            PCBMs["6 Bare Metal Servers"]
+        end
+
+        PCJobs --> PCPrometheus
+        PCJobs --> PCWorkers
+    end
+
+    subgraph AMDCluster["amd-workloads"]
+        subgraph AMDJobsNS["kubevirt-prow-jobs"]
+            AMDJobs["`AMD Test Jobs`"]
+        end
+    end
+
+    subgraph ExternalServices["External Services"]
+        GitHub["GitHub"]
+        Quay["`Quay
+               (Container Registry)`"]
+        GCS[("`GCS
+               (Google Cloud Storage)`")]
+        Slack["Slack"]
+    end
+
+    subgraph ExternalClients["External Clients"]
+        CISearchClients["`ci-search clients
+                          (search.ci.kubevirt.io)`"]
+        DeckClients["`deck clients
+                      (prow.ci.kubevirt.io)`"]
+        GrafanaClients["`grafana clients
+                         (grafana.ci.kubevirt.io)`"]
+    end
+
+    %% GitHub webhooks to Prow
+    GitHub -->|webhooks| ProwCP
+
+    %% Prow schedules jobs on all clusters
+    ProwCP -->|schedules| CPJobs
+    ProwCP -->|schedules| WCJobs
+    ProwCP -->|schedules| ARMJobs
+    ProwCP -->|schedules| S390XJobs
+    ProwCP -->|schedules| PCJobs
+    ProwCP -->|schedules| AMDJobs
+
+    %% Jobs interact with external services
+    CPJobs --> GCS
+    WCJobs --> GCS
+    WCJobs --> Quay
+    ARMJobs --> Quay
+    S390XJobs --> Quay
+    PCJobs --> Quay
+
+    %% Observability tools
+    CISearch <--> GCS
+    Grafana --> WCPrometheus
+    WCPrometheus --> GCS
+
+    %% External client access
+    CISearch <--> CISearchClients
+    ProwCP <--> DeckClients
+    Grafana <--> GrafanaClients
+
+    %% Notifications
+    ProwCP --> Slack
+
+    classDef externalStyle fill:#e1f5ff,stroke:#333,stroke-width:2px
+    classDef clusterStyle fill:#fff4e6,stroke:#333,stroke-width:2px
+    classDef namespaceStyle fill:#f9f9f9,stroke:#666,stroke-width:1px,stroke-dasharray: 5 5
+
+    class GitHub,Quay,GCS,Slack,CISearchClients,DeckClients,GrafanaClients externalStyle
+    class WorkloadsCluster,ARMCluster,S390XCluster,PerfCluster,ControlPlaneCluster,AMDCluster clusterStyle
+    class KubeVirtProwNS,MonitoringNS,CISearchNS,CPJobsNS,WCJobsNS,ARMJobsNS,S390XJobsNS,PCJobsNS,AMDJobsNS namespaceStyle
+```
+
+**Note:** The [AMD SEV Cluster](amd-sev-cluster.md) (`amd-workloads`) is also part of the infrastructure. See the dedicated documentation for details.
 
 ## Prow clusters
 

@@ -7,7 +7,8 @@ Correctness tests run as unit and functional tests for each PR, and performance 
 
 
 ## Layout
-![infra-layout](infra-layout.svg)
+
+[See Infrastructure layout](infrastructure-components.md#layout)
 
 ## Prow cluster
 The CI/CD system for performance testing is based on [Prow], a Kubernetes CI system, using the same control plane system as the Correctness tests. Therefore, all test statuses can be viewed in the same testgrid.
