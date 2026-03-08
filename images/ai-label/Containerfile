@@ -1,0 +1,7 @@
+FROM quay.io/kubevirtci/golang:v20251218-e7a7fc9 as builder
+RUN cd /project-infra/ && \
+    /usr/local/bin/runner.sh /bin/sh -c "env GOPROXY=off go build -tags netgo -o /go/bin/ai-label ./external-plugins/ai-label/main.go"
+
+FROM gcr.io/k8s-prow/git:v20240729-4f255edb07
+COPY --from=builder /go/bin/ai-label /usr/bin/ai-label
+ENTRYPOINT ["/usr/bin/ai-label"]

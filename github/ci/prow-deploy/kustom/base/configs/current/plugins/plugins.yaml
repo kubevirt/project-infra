@@ -604,6 +604,10 @@ external_plugins:
     endpoint: http://test-subset:9900
     events:
       - issue_comment
+  - name: ai-label
+    endpoint: http://ai-label:9900
+    events:
+      - pull_request
 
 approve:
 - repos:

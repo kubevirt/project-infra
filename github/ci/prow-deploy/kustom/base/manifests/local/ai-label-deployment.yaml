@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-label
+  labels:
+    app: ai-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-label
+  template:
+    metadata:
+      labels:
+        app: ai-label
+    spec:
+      terminationGracePeriodSeconds: 180
+      containers:
+      - name: ai-label
+        image: quay.io/kubevirtci/ai-label:latest
+        args:
+        - --dry-run=false
+        - --port=9900
+        - --github-token-path=/etc/github/oauth
+        - --github-endpoint=http://ghproxy
+        - --github-endpoint=https://api.github.com
+        ports:
+        - name: http
+          containerPort: 9900
+        volumeMounts:
+        - name: hmac
+          mountPath: /etc/webhook
+          readOnly: true
+        - name: oauth
+          mountPath: /etc/github
+          readOnly: true
+        - name: plugins
+          mountPath: /etc/plugins
+          readOnly: true
+      volumes:
+      - name: hmac
+        secret:
+          secretName: hmac-token
+      - name: oauth
+        secret:
+          secretName: commenter-oauth-token
+      - name: plugins
+        configMap:
+          name: plugins
