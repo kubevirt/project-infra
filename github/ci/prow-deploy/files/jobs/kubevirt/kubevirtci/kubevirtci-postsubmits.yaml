@@ -57,6 +57,46 @@ postsubmits:
           resources:
             requests:
               memory: "52Gi"
+    - name: publish-alpine-test-tooling
+      branches:
+      - main
+      always_run: true
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      decoration_config:
+        timeout: 1h
+      max_concurrency: 1
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-kubevirtci-quay-credential: "true"
+      cluster: prow-workloads
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        volumes:
+        - hostPath:
+            path: /dev
+            type: Directory
+          name: devices
+        containers:
+        - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+          command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/bash"
+          - "-c"
+          - |
+            cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
+            hack/publish-alpine.sh
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - mountPath: /dev
+            name: devices
+          resources:
+            requests:
+              memory: "8Gi"
     - name: publish-kubevirtci-s390x
       branches:
       - main
@@ -124,3 +164,40 @@ postsubmits:
           resources:
             requests:
               memory: "52Gi"
+    - name: publish-alpine-test-tooling-s390x
+      branches:
+      - main
+      always_run: true
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      decoration_config:
+        timeout: 1h
+      max_concurrency: 1
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-kubevirtci-quay-credential: "true"
+      cluster: prow-s390x-workloads
+      spec:
+        volumes:
+        - hostPath:
+            path: /dev
+            type: Directory
+          name: devices
+        containers:
+        - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+          command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/bash"
+          - "-c"
+          - |
+            cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
+            hack/publish-alpine.sh
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - mountPath: /dev
+            name: devices
+          resources:
+            requests:
+              memory: "8Gi"
