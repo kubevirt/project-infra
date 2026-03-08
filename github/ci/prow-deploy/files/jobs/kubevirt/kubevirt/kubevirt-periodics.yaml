@@ -1336,11 +1336,16 @@ periodics:
         value: "true"
       - name: TARGET
         value: k8s-1.35-sig-compute-migrations
+      - name: GOMAXPROCS
+        value: "10"
       image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
       name: ""
       resources:
         requests:
+          cpu: "8"
           memory: 52Gi
+        limits:
+          cpu: "10"
       securityContext:
         privileged: true
     nodeSelector:
@@ -1516,11 +1521,16 @@ periodics:
         value: Root
       - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
         value: --usb 30M --usb 40M
+      - name: GOMAXPROCS
+        value: "10"
       image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
       name: ""
       resources:
         requests:
+          cpu: "8"
           memory: 52Gi
+        limits:
+          cpu: "10"
       securityContext:
         privileged: true
     nodeSelector:
@@ -1997,11 +2007,16 @@ periodics:
         value: --usb 30M --usb 40M
       - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
         value: 4h45m
+      - name: GOMAXPROCS
+        value: "10"
       image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
       name: ""
       resources:
         requests:
+          cpu: "8"
           memory: 52Gi
+        limits:
+          cpu: "10"
       securityContext:
         privileged: true
     nodeSelector:
@@ -2177,11 +2192,16 @@ periodics:
         value: --usb 30M --usb 40M
       - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
         value: 4h45m
+      - name: GOMAXPROCS
+        value: "10"
       image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
       name: ""
       resources:
         requests:
+          cpu: "8"
           memory: 52Gi
+        limits:
+          cpu: "10"
       securityContext:
         privileged: true
     nodeSelector:
@@ -2357,11 +2377,16 @@ periodics:
         value: --usb 30M --usb 40M
       - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
         value: 4h45m
+      - name: GOMAXPROCS
+        value: "10"
       image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
       name: ""
       resources:
         requests:
+          cpu: "8"
           memory: 52Gi
+        limits:
+          cpu: "10"
       securityContext:
         privileged: true
     nodeSelector:
