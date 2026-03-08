@@ -46,10 +46,6 @@ func (n Node) CloneWithoutNodes() *Node {
 	}
 }
 
-// NodeFilter describes the interface for a positive filter, meaning that a
-// filter that returns true will let the node pass.
-type NodeFilter func(*Node) bool
-
 // CloneWithNodes creates a copy of this node including clones of its children
 func (n Node) CloneWithNodes(filters ...NodeFilter) *Node {
 	clone := &Node{
