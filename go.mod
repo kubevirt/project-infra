@@ -17,10 +17,12 @@ require (
 	github.com/jetstack/cert-manager v1.1.0
 	github.com/joshdk/go-junit v0.0.0-20190428045703-ad7e11aa49ff
 	github.com/lnquy/cron v1.1.1
+	github.com/nao1215/markdown v0.13.0
 	github.com/onsi/ginkgo/v2 v2.19.0
 	github.com/onsi/gomega v1.34.1
 	github.com/prometheus/client_golang v1.19.0
 	github.com/r3labs/diff/v3 v3.0.1
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/shurcooL/githubv4 v0.0.0-20210725200734-83ba7b4c9228
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.7.0

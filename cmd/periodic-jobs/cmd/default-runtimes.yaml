@@ -1,0 +1,22 @@
+# Default estimated runtimes for periodic job SIGs (in hours)
+# These estimates are based on average durations from ProwJob data in the cluster.
+#
+# Override with your own file using: --runtimes path/to/your-runtimes.yaml
+
+runtimes:
+  sig-compute: 5.5
+  sig-compute-migrations: 2.5
+  sig-compute-root: 4.0
+  sig-monitoring: 2.5
+  sig-network: 2.5
+  sig-network-with-dnc: 2.5
+  sig-operator: 2.5
+  sig-operator-root: 2.0
+  sig-performance: 1.0
+  sig-performance-kwok: 3.5
+  sig-performance-kwok-100: 0.5
+  sig-storage: 4.0
+  sig-storage-root: 8.5
+
+# Default fallback for unmatched SIGs
+default: 2.5
