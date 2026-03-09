@@ -1,0 +1,46 @@
+postsubmits:
+  kubevirt/kubevirt-aie:
+  - name: push-kubevirt-aie-virt-launcher-1.8-aie-nv
+    branches:
+    - release-1.8-aie-nv
+    cluster: prow-workloads
+    always_run: true
+    skip_report: false
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    max_concurrency: 1
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt/kubevirt-aie
+        - name: KUBEVIRT_CENTOS_STREAM_VERSION
+          value: "10"
+        - name: KUBEVIRT_CS10_BUILDER_VERSION
+          value: "2602251001-25ce1ccb15"
+        command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          cat "$QUAY_PASSWORD" | podman login --username "$(cat "$QUAY_USER")" --password-stdin=true quay.io
+          cp /etc/bazel.bazelrc ./ci.bazelrc
+          DOCKER_TAG="$(date +%Y%m%d)_$(git rev-parse --short=10 HEAD)" \
+            BUILD_ARCH=amd64,crossbuild-aarch64 \
+            PUSH_TARGETS=virt-launcher \
+            make bazel-push-images
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: 12Gi
