@@ -238,7 +238,8 @@ periodics:
     - args:
       - |
         go run robots/push-test-metrics/main.go \
-          --pushgateway-url=http://pushgateway.kubevirt-prow
+          --pushgateway-url=http://pushgateway.kubevirt-prow \
+          --job-config-path=github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
