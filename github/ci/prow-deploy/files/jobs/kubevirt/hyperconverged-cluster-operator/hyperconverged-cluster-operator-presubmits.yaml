@@ -136,7 +136,9 @@ presubmits:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
               - "-c"
-              - "make test"
+              - |
+                go build -o $(go env GOROOT)/pkg/tool/$(go env GOOS)_$(go env GOARCH)/covdata cmd/covdata && \
+                make test
             securityContext:
               privileged: true
             resources:
