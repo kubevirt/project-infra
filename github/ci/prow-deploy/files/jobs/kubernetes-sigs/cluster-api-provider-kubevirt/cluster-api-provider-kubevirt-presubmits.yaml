@@ -32,8 +32,8 @@ presubmits:
         securityContext:
           privileged: true
         env:
-          - name: GIMME_GO_VERSION
-            value: "1.24.7"
+          - name: GO_MOD_PATH
+            value: "go.mod"
       nodeSelector:
         type: bare-metal-external
   - always_run: true
@@ -68,8 +68,8 @@ presubmits:
           securityContext:
             privileged: true
           env:
-            - name: GIMME_GO_VERSION
-              value: "1.24.7"
+            - name: GO_MOD_PATH
+              value: "go.mod"
             - name: CLUSTERCTL_VERSION
               value: "v1.10.4"
       nodeSelector:
