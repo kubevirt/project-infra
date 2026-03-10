@@ -7894,7 +7894,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 10,
+      "id": 20,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -7988,7 +7988,7 @@ data:
                 "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
               },
               "editorMode": "code",
-              "expr": "max(ci_test_runtime_seconds_sum{job_name=~\"periodic-kubevirt-e2e-k8s-1.29-${sig}\"}/ci_test_runtime_seconds_count{job_name=~\"periodic-kubevirt-e2e-k8s-1.29-${sig}\"}) by (job_name, test_name, test_status)",
+              "expr": "max(ci_test_runtime_seconds_sum{job_name=~\"periodic-kubevirt-e2e-k8s-.*${sig}(-migrations)?\"}/ci_test_runtime_seconds_count{job_name=~\"periodic-kubevirt-e2e-k8s-.*${sig}(-migrations)?\"}) by (job_name, test_name, test_status)",
               "format": "time_series",
               "hide": false,
               "legendFormat": "[{{test_status}}]  ({{job_name}}): {{test_name}}",
@@ -8077,7 +8077,7 @@ data:
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum(ci_test_runtime_seconds_total_bucket{job_name=~\"periodic-kubevirt-e2e-k8s-1.29-${sig}\"}) by (le)",
+              "expr": "sum(ci_test_runtime_seconds_total_bucket{job_name=~\"periodic-kubevirt-e2e-k8s-.*${sig}(-migrations)?\"}) by (le)",
               "format": "heatmap",
               "hide": false,
               "instant": false,
@@ -8179,14 +8179,14 @@ data:
                 "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
               },
               "editorMode": "code",
-              "expr": "avg(\nprow_job_runtime_seconds_sum{org=\"kubevirt\", repo=\"kubevirt\", state=\"success\", type=\"presubmit\", \njob_name=~\"pull-kubevirt-e2e-k8s-.*-${sig}(-migrations|-serial)?\"}\n/\nprow_job_runtime_seconds_count{org=\"kubevirt\", repo=\"kubevirt\", state=\"success\", type=\"presubmit\", job_name=~\"pull-kubevirt-e2e-k8s-.*-${sig}(-migrations|-serial)?\"}\n) by (job_name)\n/ 3600",
+              "expr": "avg(\nprow_job_runtime_seconds_sum{org=\"kubevirt\", repo=\"kubevirt\", state=\"success\", type=\"presubmit\", \njob_name=~\"${job_name}\"}\n/\nprow_job_runtime_seconds_count{org=\"kubevirt\", repo=\"kubevirt\", state=\"success\", type=\"presubmit\", job_name=~\"${job_name}\"}\n) by (job_name)\n/ 3600",
               "hide": false,
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "${sig}: average e2e presubmit runtimes (succeeded)",
+          "title": "average e2e presubmit runtimes (succeeded)",
           "type": "timeseries"
         },
         {
@@ -8194,6 +8194,7 @@ data:
             "type": "prometheus",
             "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
           },
+          "description": "",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -8277,13 +8278,13 @@ data:
                 "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
               },
               "editorMode": "code",
-              "expr": "avg(\nprow_job_runtime_seconds_sum{org=\"kubevirt\", repo=\"kubevirt\", state=\"failure\", type=\"presubmit\", \njob_name=~\"pull-kubevirt-e2e-k8s-.*-${sig}(-migrations|-serial)?\"}\n/\nprow_job_runtime_seconds_count{org=\"kubevirt\", repo=\"kubevirt\", state=\"failure\", type=\"presubmit\", job_name=~\"pull-kubevirt-e2e-k8s-.*-${sig}(-migrations|-serial)?\"}\n) by (job_name)\n/ 3600",
+              "expr": "avg(\nprow_job_runtime_seconds_sum{org=\"kubevirt\", repo=\"kubevirt\", state=\"failure\", type=\"presubmit\", \njob_name=~\"${job_name}\"}\n/\nprow_job_runtime_seconds_count{org=\"kubevirt\", repo=\"kubevirt\", state=\"failure\", type=\"presubmit\", job_name=~\"${job_name}\"}\n) by (job_name)\n/ 3600",
               "legendFormat": "{{job_name}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "${sig}: average e2e runtimes (failed)",
+          "title": "average e2e runtimes (failed)",
           "type": "timeseries"
         }
       ],
@@ -8294,19 +8295,50 @@ data:
       "templating": {
         "list": [
           {
-            "allValue": "(sig-(compute|storage|network|operator))",
             "current": {
               "selected": true,
-              "text": "All",
-              "value": "$__all"
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "definition": "label_values(prowjobs, job_name)",
+            "description": "",
+            "hide": 0,
+            "includeAll": true,
+            "multi": true,
+            "name": "job_name",
+            "options": [],
+            "query": {
+              "query": "label_values(prowjobs, job_name)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "pull-kubevirt-e2e-.*",
+            "skipUrlSync": false,
+            "sort": 0,
+            "type": "query"
+          },
+          {
+            "allValue": "",
+            "current": {
+              "selected": true,
+              "text": [
+                "sig-performance"
+              ],
+              "value": [
+                "sig-performance"
+              ]
             },
             "hide": 0,
             "includeAll": true,
-            "multi": false,
+            "multi": true,
             "name": "sig",
             "options": [
               {
-                "selected": true,
+                "selected": false,
                 "text": "All",
                 "value": "$__all"
               },
@@ -8329,9 +8361,19 @@ data:
                 "selected": false,
                 "text": "sig-operator",
                 "value": "sig-operator"
+              },
+              {
+                "selected": false,
+                "text": "sig-monitoring",
+                "value": "sig-monitoring"
+              },
+              {
+                "selected": true,
+                "text": "sig-performance",
+                "value": "sig-performance"
               }
             ],
-            "query": "sig-compute,sig-storage,sig-network,sig-operator",
+            "query": "sig-compute,sig-storage,sig-network,sig-operator,sig-monitoring,sig-performance",
             "queryValue": "",
             "skipUrlSync": false,
             "type": "custom"
@@ -8339,14 +8381,14 @@ data:
         ]
       },
       "time": {
-        "from": "now-1h",
+        "from": "now-24h",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "",
       "title": "kubevirt/kubevirt e2e test runtimes",
-      "uid": "gY4hNc5Iz",
-      "version": 2,
+      "uid": "JfLwl2KDz",
+      "version": 5,
       "weekStart": ""
     }
   referee-retests.json: |
