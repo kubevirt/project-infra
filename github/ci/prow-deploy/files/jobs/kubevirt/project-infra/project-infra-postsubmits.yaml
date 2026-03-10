@@ -714,7 +714,6 @@ postsubmits:
               source ./hack/manage-secrets.sh
               decrypt_secrets
               extract_secret 'kubeconfig' ~/.kube/config
-              extract_secret 'bugzilla.apiKey' github/ci/services/ci-search/overlays/production/secrets/bugzilla-credentials
               cleanup_secrets
 
               ./github/ci/services/ci-search/hack/deploy.sh production
