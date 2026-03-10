@@ -48,8 +48,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.5
+        - name: GO_MOD_PATH
+          value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -89,8 +89,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.5
+        - name: GO_MOD_PATH
+          value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -127,8 +127,8 @@ presubmits:
         - "-c"
         - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.5
+        - name: GO_MOD_PATH
+          value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: KUBEVIRT_ONLY_USE_TAGS
@@ -170,8 +170,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.5
+        - name: GO_MOD_PATH
+          value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -211,8 +211,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.5
+        - name: GO_MOD_PATH
+          value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -252,8 +252,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.5
+        - name: GO_MOD_PATH
+          value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -293,8 +293,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.5
+        - name: GO_MOD_PATH
+          value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -334,8 +334,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.5
+        - name: GO_MOD_PATH
+          value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -375,8 +375,8 @@ presubmits:
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.5
+        - name: GO_MOD_PATH
+          value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -419,8 +419,8 @@ presubmits:
           cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
           make kubevirt-up && make kubevirt-sync && make kubevirt-sync-containerdisks && make kubevirt-functest
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.5
+        - name: GO_MOD_PATH
+          value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: FUNCTEST_EXTRA_ARGS
@@ -460,8 +460,8 @@ presubmits:
             - "-c"
             - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
           env:
-            - name: GIMME_GO_VERSION
-              value: 1.24.5
+            - name: GO_MOD_PATH
+              value: "go.mod"
             - name: KUBEVIRT_MEMORY_SIZE
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
@@ -501,8 +501,8 @@ presubmits:
             - "-c"
             - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
           env:
-            - name: GIMME_GO_VERSION
-              value: 1.24.5
+            - name: GO_MOD_PATH
+              value: "go.mod"
             - name: KUBEVIRT_MEMORY_SIZE
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
@@ -542,8 +542,8 @@ presubmits:
             - "-c"
             - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
           env:
-            - name: GIMME_GO_VERSION
-              value: 1.24.5
+            - name: GO_MOD_PATH
+              value: "go.mod"
             - name: KUBEVIRT_MEMORY_SIZE
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
@@ -619,8 +619,8 @@ presubmits:
               cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
               make kubevirt-up && make kubevirt-sync && make kubevirt-sync-containerdisks && make kubevirt-functest
           env:
-            - name: GIMME_GO_VERSION
-              value: 1.24.5
+            - name: GO_MOD_PATH
+              value: "go.mod"
             - name: KUBEVIRT_MEMORY_SIZE
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
@@ -663,8 +663,8 @@ presubmits:
               cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
               make kubevirt-up && make kubevirt-sync && make kubevirt-sync-containerdisks && make kubevirt-functest
           env:
-            - name: GIMME_GO_VERSION
-              value: 1.24.5
+            - name: GO_MOD_PATH
+              value: "go.mod"
             - name: KUBEVIRT_MEMORY_SIZE
               value: 16G
             - name: FUNCTEST_EXTRA_ARGS
