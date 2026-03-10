@@ -20,8 +20,8 @@ presubmits:
         - -c
         - make all
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.24.11"
+        - name: GO_MOD_PATH
+          value: "go.mod"
         image: quay.io/kubevirtci/golang:v20260306-351d3b1
         resources:
           requests:
@@ -46,8 +46,8 @@ presubmits:
         - -c
         - make build-virttemplatectl
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.24.11"
+        - name: GO_MOD_PATH
+          value: "go.mod"
         image: quay.io/kubevirtci/golang:v20260306-351d3b1
         resources:
           requests:
@@ -75,8 +75,8 @@ presubmits:
         - -c
         - make container-build
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.24.11"
+        - name: GO_MOD_PATH
+          value: "go.mod"
         image: quay.io/kubevirtci/golang:v20260306-351d3b1
         resources:
           requests:
@@ -105,8 +105,8 @@ presubmits:
         - -c
         - make test
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.24.11"
+        - name: GO_MOD_PATH
+          value: "go.mod"
         image: quay.io/kubevirtci/golang:v20260306-351d3b1
         resources:
           requests:
@@ -134,8 +134,8 @@ presubmits:
         - -c
         - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.24.11"
+        - name: GO_MOD_PATH
+          value: "go.mod"
         image: quay.io/kubevirtci/golang:v20260306-351d3b1
         resources:
           requests:
@@ -164,8 +164,8 @@ presubmits:
         - -c
         - make build-installer build-installer-openshift
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.24.11"
+        - name: GO_MOD_PATH
+          value: "go.mod"
         image: quay.io/kubevirtci/golang:v20260306-351d3b1
         resources:
           requests:
