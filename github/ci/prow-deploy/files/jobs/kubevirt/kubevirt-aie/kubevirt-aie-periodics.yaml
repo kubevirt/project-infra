@@ -1,0 +1,34 @@
+periodics:
+- name: periodic-kubevirt-aie-sync-nv-rpms
+  cron: "0 6 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+  max_concurrency: 1
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirt-aie
+    base_ref: release-1.8-aie-nv
+    workdir: true
+  labels:
+    preset-github-credentials: "true"
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20260311-60fd5df
+      command: ["/bin/sh", "-c"]
+      args:
+      - |
+        git-pr.sh \
+          -c "./hack/sync-nv-rpms.sh" \
+          -s "Sync el10nv RPMs for libvirt and qemu-kvm" \
+          -r kubevirt-aie \
+          -b sync-nv-rpms \
+          -T release-1.8-aie-nv \
+          -p $(pwd) \
+          -M lgtm,approved,do-not-merge/hold
+      resources:
+        requests:
+          memory: "200Mi"
