@@ -259,7 +259,7 @@ presubmits:
           value: icr.io/kubevirt/builder:2405141107-77fe60855
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS Stream 9"'
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        image: quay.io/kubevirtci/golang:v20260306-351d3b1
         name: ""
         resources:
           requests:
@@ -422,7 +422,7 @@ presubmits:
           value: icr.io/kubevirt/builder:2405141107-77fe60855
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*OpenSUSE Tumbleweed"'
-        image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+        image: quay.io/kubevirtci/golang:v20260306-351d3b1
         name: ""
         resources:
           requests:
