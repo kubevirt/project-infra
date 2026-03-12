@@ -798,38 +798,6 @@ postsubmits:
           resources:
             requests:
               memory: "1Gi"
-    - name: publish-ci-usage-exporter-image
-      always_run: false
-      branches:
-      - main
-      run_if_changed: "^(robots|images)/ci-usage-exporter/.*|pkg/.*|go.mod|go.sum"
-      annotations:
-        testgrid-create-test-group: "false"
-      decorate: true
-      cluster: kubevirt-prow-control-plane
-      max_concurrency: 1
-      labels:
-        preset-bazel-cache: "true"
-        preset-kubevirtci-quay-credential: "true"
-        preset-podman-in-container-enabled: "true"
-      spec:
-        containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
-            command:
-              - "/usr/local/bin/runner.sh"
-              - "/bin/bash"
-              - "-c"
-              - |
-                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                cd images
-                ./publish_image.sh ci-usage-exporter quay.io kubevirtci
-            resources:
-              requests:
-                memory: "8Gi"
-              limits:
-                memory: "8Gi"
-            securityContext:
-              privileged: true
     - name: publish-test-report-image
       always_run: false
       branches:
