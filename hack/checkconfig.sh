@@ -24,7 +24,9 @@ project_infra_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
 
 podman run --rm \
     -v "${project_infra_dir}:/project-infra" \
-    us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260205-2d6316e3a \
+    -v "$(realpath $(dirname $GOOGLE_APPLICATION_CREDENTIALS)):/etc/google/:Z" \
+    -e=GOOGLE_APPLICATION_CREDENTIALS="/etc/google/$(basename $GOOGLE_APPLICATION_CREDENTIALS)" \
+    us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260313-8ae687e48 \
     --config-path /project-infra/github/ci/prow-deploy/files/config.yaml \
     --job-config-path /project-infra/github/ci/prow-deploy/files/jobs \
     --plugin-config /project-infra/github/ci/prow-deploy/files/plugins.yaml \

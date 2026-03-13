@@ -41,6 +41,12 @@ default:
       name: triage/infra-issue
       target: both
       addedBy: anyone
+    - color: d455d0
+      description: Indicates an issue or PR is accepted but requires no action from the triage team.
+      name: triage/no-action
+      target: both
+      prowPlugin: label
+      addedBy: org members
     - color: c2e0c6
       name: release-note
       target: prs
@@ -339,6 +345,12 @@ default:
     - name: wg/code-quality
       color: E3F582
       description: Denotes an issue or PR that relates to the code-quality working group.
+      target: both
+      prowPlugin: label
+      addedBy: anyone
+    - name: wg/aie
+      color: E3F582
+      description: Denotes an issue or PR that relates to the AIE working group.
       target: both
       prowPlugin: label
       addedBy: anyone

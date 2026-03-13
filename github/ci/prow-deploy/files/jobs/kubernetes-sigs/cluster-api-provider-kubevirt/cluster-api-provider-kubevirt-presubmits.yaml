@@ -22,7 +22,7 @@ presubmits:
         - /bin/sh
         - -c
         - make functest
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        image: quay.io/kubevirtci/golang:v20260306-351d3b1
         name: ""
         resources:
           requests:
@@ -32,8 +32,8 @@ presubmits:
         securityContext:
           privileged: true
         env:
-          - name: GIMME_GO_VERSION
-            value: "1.24.7"
+          - name: GO_MOD_PATH
+            value: "go.mod"
       nodeSelector:
         type: bare-metal-external
   - always_run: true
@@ -58,7 +58,7 @@ presubmits:
             - /bin/sh
             - -c
             - make functest
-          image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+          image: quay.io/kubevirtci/golang:v20260306-351d3b1
           name: ""
           resources:
             requests:
@@ -68,8 +68,8 @@ presubmits:
           securityContext:
             privileged: true
           env:
-            - name: GIMME_GO_VERSION
-              value: "1.24.7"
+            - name: GO_MOD_PATH
+              value: "go.mod"
             - name: CLUSTERCTL_VERSION
               value: "v1.10.4"
       nodeSelector:

@@ -136,9 +136,6 @@ func GetSpecReportByTestName(reports []types.Report, testName string) *types.Spe
 	return &matchingSpecReports[0]
 }
 
-// SpecReportFilter defines the signature of filters for types.SpecReport
-type SpecReportFilter func(r types.SpecReport) bool
-
 // ByName checks whether all the node texts of types.SpecReport are contained in the test name
 func ByName(testName string) func(r types.SpecReport) bool {
 	return func(r types.SpecReport) bool {
@@ -174,6 +171,41 @@ func FilterSpecReports(reports []types.Report, f SpecReportFilter, maxResults in
 		}
 	}
 	return result
+}
+
+type LabelMatcher func(l string) bool
+
+func NewRegexLabelMatcher(regex string) LabelMatcher {
+	pattern := regexp.MustCompile(regex)
+	return func(l string) bool {
+		return pattern.MatchString(l)
+	}
+}
+
+func ExtractLabels(r types.SpecReport, matchers ...LabelMatcher) []string {
+	var labels []string
+	for _, containerLabels := range r.ContainerHierarchyLabels {
+		labels = append(labels, filterLabels(containerLabels, matchers...)...)
+	}
+	labels = append(labels, filterLabels(r.LeafNodeLabels, matchers...)...)
+	return labels
+}
+
+func filterLabels(labels []string, matchers ...LabelMatcher) []string {
+	var filteredLabels []string
+	for _, l := range labels {
+		matchesAll := true
+		for _, m := range matchers {
+			if !m(l) {
+				matchesAll = false
+				break
+			}
+		}
+		if matchesAll {
+			filteredLabels = append(filteredLabels, l)
+		}
+	}
+	return filteredLabels
 }
 
 func containsMultiSpaceNormalized(fullText, substring string) bool {

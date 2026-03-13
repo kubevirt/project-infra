@@ -34,3 +34,53 @@ var _ = Describe("dry-run", func() {
 		})
 	})
 })
+
+var _ = Describe("extract", func() {
+	Context("labels", func() {
+		DescribeTable("returns a set of labels",
+			func(r SpecReport, expected []string, m []LabelMatcher) {
+				Expect(ExtractLabels(r, m...)).To(BeEquivalentTo(expected))
+			},
+			Entry("leaf node label",
+				SpecReport{
+					LeafNodeLabels: []string{
+						"sig-compute",
+					},
+				},
+				[]string{"sig-compute"},
+				nil,
+			),
+			Entry("parent label",
+				SpecReport{
+					ContainerHierarchyLabels: [][]string{{"sig-compute"}},
+				},
+				[]string{"sig-compute"},
+				nil,
+			),
+			Entry("all labels",
+				SpecReport{
+					ContainerHierarchyLabels: [][]string{{"sig-compute"}},
+					LeafNodeLabels:           []string{"sig-compute"},
+				},
+				[]string{"sig-compute", "sig-compute"},
+				nil,
+			),
+			Entry("matching labels",
+				SpecReport{
+					ContainerHierarchyLabels: [][]string{{"sig-compute"}},
+					LeafNodeLabels:           []string{"whatever"},
+				},
+				[]string{"sig-compute"},
+				[]LabelMatcher{NewRegexLabelMatcher("sig-.*")},
+			),
+			Entry("matching labels where leaf node contains match",
+				SpecReport{
+					ContainerHierarchyLabels: [][]string{{"whatever"}},
+					LeafNodeLabels:           []string{"sig-compute"},
+				},
+				[]string{"sig-compute"},
+				[]LabelMatcher{NewRegexLabelMatcher("sig-.*")},
+			),
+		)
+	})
+})

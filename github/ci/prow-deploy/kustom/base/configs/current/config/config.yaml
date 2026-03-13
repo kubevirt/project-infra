@@ -9,10 +9,10 @@ plank:
       timeout: 2h
       grace_period: 15s
       utility_images:
-        clonerefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260205-2d6316e3a"
-        initupload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260205-2d6316e3a"
-        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260205-2d6316e3a"
-        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260205-2d6316e3a"
+        clonerefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260313-8ae687e48"
+        initupload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260313-8ae687e48"
+        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260313-8ae687e48"
+        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260313-8ae687e48"
       gcs_configuration:
         bucket: "kubevirt-prow"
         path_strategy: "explicit"
@@ -44,6 +44,7 @@ deck:
           - \[FAILED\]
           - "fatal: "
           - /logs/artifacts/k8s-reporter/.*\*
+          - " undefined: "
       required_files:
         - build-log.txt
     - lens:
@@ -143,6 +144,8 @@ tide:
     kubevirt/virt-template: merge
     kubevirt/kubevirt-migration-controller: squash
     kubevirt/kubevirt-migration-operator: squash
+    kubevirt/kubevirt-aie: merge
+    kubevirt/kubevirt-aie-webhook: merge
 
   queries:
   - repos:
@@ -216,7 +219,8 @@ tide:
     - kubevirt/virt-template
     - kubevirt/kubevirt-migration-controller
     - kubevirt/kubevirt-migration-operator
-
+    - kubevirt/kubevirt-aie
+    - kubevirt/kubevirt-aie-webhook
     labels:
     - lgtm
     - approved
@@ -237,6 +241,8 @@ tide:
     - kubevirt/kubevirtci
     - kubevirt/containerized-data-importer
     - kubevirt/kubevirt
+    - kubevirt/kubevirt-aie
+    - kubevirt/kubevirt-aie-webhook
     labels:
     - skip-review
     missingLabels:

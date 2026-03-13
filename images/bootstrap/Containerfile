@@ -39,6 +39,7 @@ RUN dnf install -y \
     gcc-c++ \
     gettext \
     git \
+    git-crypt \
     glibc-devel \
     glibc-static \
     iproute \
@@ -66,10 +67,9 @@ RUN dnf install -y \
     skopeo \
     sudo \
     wget \
-    which && \
-  dnf -y clean all && \
-  pip install yamllint && \
-  pip cache purge
+    which \
+    yamllint && \
+  dnf clean all
 
 
 RUN if test "${ARCH}" != s390x; then \

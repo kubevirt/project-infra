@@ -39,12 +39,13 @@ orgs:
       - assafad
       - avlitman
       - awels
+      - Atharva-Shinde
       - Barakmor1
+      - bgartzi
       - brianmcarey
       - cfilleke
       - chandramerla
       - codingben
-      - cwilkers
       - dankenigsberg
       - dasionov
       - davidvossel
@@ -86,7 +87,6 @@ orgs:
       - nunnatsa
       - openshift-ci-robot
       - openshift-merge-robot
-      - opokornyy
       - orelmisan
       - orenc1
       - ormergi
@@ -100,6 +100,7 @@ orgs:
       - Ruclo
       - rthallisey
       - salawhaaat
+      - sbiradar10
       - shellyka13
       - shubham-pampattiwar
       - sradco
@@ -315,6 +316,20 @@ orgs:
         allow_squash_merge: false
         default_branch: main
         description: Kubernetes Virtualization API and runtime in order to define and manage virtual machines.
+        has_projects: true
+        homepage: https://kubevirt.io
+      kubevirt-aie:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        default_branch: release-1.8-aie-nv
+        description: A temporary KubeVirt fork aligned with the CentOS Stream Accelerated Infrastructure Enablement SIG.
+        has_projects: true
+        homepage: https://kubevirt.io
+      kubevirt-aie-webhook:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        default_branch: main
+        description: A webhook to inject virt-launcher images produced by the kubevirt-aie project
         has_projects: true
         homepage: https://kubevirt.io
       kubevirt-ansible:
@@ -913,7 +928,6 @@ orgs:
         maintainers:
           - fabiand
         members:
-          - cwilkers
           - aburdenthehand
         privacy: closed
         repos:
@@ -1050,3 +1064,14 @@ orgs:
           virt-template-api: admin
           virt-template-client-go: admin
           virt-template-engine: admin
+      kubevirt-aie-maintainers:
+        description: "Maintainers of kubevirt-aie"
+        privacy: closed
+        maintainers:
+          - vladikr
+          - jean-edouard
+          - xpivarc
+          - lyarwood
+        repos:
+          kubevirt-aie: admin
+          kubevirt-aie-webhook: admin

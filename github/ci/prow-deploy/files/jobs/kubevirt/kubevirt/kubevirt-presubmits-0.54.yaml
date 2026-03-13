@@ -1566,6 +1566,7 @@ presubmits:
           source ../project-infra/hack/manage-secrets.sh
           decrypt_secrets
           extract_secret 'kubeconfigARM' /kubeconfig
+          cleanup_secrets
 
           # login quay.io
           cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io

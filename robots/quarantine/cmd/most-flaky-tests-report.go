@@ -114,7 +114,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 
 const noSIGKey = "NONE"
 
-func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string, testNames []string, mostFlakyTestsBySIG map[string]map[string][]*TestToQuarantine, err error) {
+func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string, testNames []string, mostFlakyTestsBySIG map[string]TestsPerSIG, err error) {
 	mostFlakyTests := make(map[string][]*TestToQuarantine)
 	for _, topXTest := range topXTests {
 		for _, timeRange := range mostFlakyTestsTimeRanges {
@@ -128,7 +128,7 @@ func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string
 			mostFlakyTests[topXTest.Name] = append(mostFlakyTests[topXTest.Name], candidate)
 		}
 	}
-	mostFlakyTestsBySIG = make(map[string]map[string][]*TestToQuarantine)
+	mostFlakyTestsBySIG = make(map[string]TestsPerSIG)
 	mapOfSIGs := make(map[string]struct{})
 	testNames = make([]string, 0, len(mostFlakyTests))
 	for testName, testsToQuarantine := range mostFlakyTests {
@@ -141,7 +141,7 @@ func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string
 			}
 			mapOfSIGs[key] = struct{}{}
 			if _, ok := mostFlakyTestsBySIG[key]; !ok {
-				mostFlakyTestsBySIG[key] = make(map[string][]*TestToQuarantine)
+				mostFlakyTestsBySIG[key] = make(TestsPerSIG)
 			}
 			mostFlakyTestsBySIG[key][testName] = append(mostFlakyTestsBySIG[key][testName], testToQuarantine)
 		}

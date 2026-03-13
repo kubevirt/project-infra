@@ -1,3 +1,7 @@
+---
+# Source:
+# - https://github.com/openshift/release/tree/5a86cfbd/clusters/build-clusters/01_cluster/ci-search
+
 kind: Namespace
 apiVersion: v1
 metadata:

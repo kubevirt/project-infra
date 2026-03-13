@@ -1019,7 +1019,7 @@ presubmits:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
-    name: build-kubevirt-builder
+    name: build-kubevirt-builder-1.6
     optional: true
     spec:
       containers:
