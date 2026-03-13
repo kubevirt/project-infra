@@ -590,6 +590,10 @@ external_plugins:
     events:
       - pull_request
       - issue_comment
+  - name: coverage
+    endpoint: http://prow-coverage:9901
+    events:
+      - pull_request
   kubevirt/kubevirt:
   - name: phased
     endpoint: http://prow-phased:9900

@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/testing"
 	prowapi "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
 	"sigs.k8s.io/prow/pkg/client/clientset/versioned/typed/prowjobs/v1/fake"
@@ -42,45 +43,64 @@ func createPREventPayload(action github.PullRequestEventAction, prNumber int, or
 	return payload
 }
 
-var _ = Describe("detectGoFileChanges", func() {
-	DescribeTable("Should return true when a file is in a watched path",
-		func(files []string) {
-			Expect(detectGoFileChanges(files)).To(BeTrue())
-		},
-		Entry("external-plugins path", []string{"external-plugins/coverage/plugin/handler/handler.go"}),
-		Entry("releng path", []string{"releng/release-tool/release-tool.go"}),
-		Entry("robots path", []string{"robots/flakefinder/flakefinder.go"}),
-		Entry("pkg path", []string{"pkg/git/blame_test.go"}),
-	)
+// errorGithubClient is a fake github client that returns an error
+type errorGithubClient struct{}
 
-	DescribeTable("Should return false when no relevant file is in the list",
-		func(files []string) {
-			Expect(detectGoFileChanges(files)).To(BeFalse())
+func (e *errorGithubClient) GetPullRequestChanges(org, repo string, number int) ([]github.PullRequestChange, error) {
+	return nil, fmt.Errorf("GitHub API error")
+}
+
+var _ = Describe("detectGoFileChanges", func() {
+	DescribeTable("check go file changes",
+		func(files []string, expected bool) {
+			Expect(detectGoFileChanges(files)).To(BeEquivalentTo(expected))
 		},
-		Entry("github path", []string{"github/ci/prow-deploy/config.yaml"}),
-		Entry("root level file", []string{"README.md"}),
-		Entry("empty list", []string{}),
+		Entry("go files only",
+			[]string{
+				"external-plugins/coverage/plugin/handler/handler.go",
+				"releng/release-tool/release-tool.go",
+				"robots/flakefinder/main.go",
+				"pkg/git/blame_test.go",
+			},
+			true,
+		),
+		Entry("no go files",
+			[]string{
+			"github/ci/prow-deploy/prow-deploy.yaml",
+			"README.md",
+		},
+		false,
+	),
+	Entry("last is a go file",
+		[]string{
+			"github/ci/prow-deploy/prow-deploy.yaml",
+				"README.md",
+				"pkg/git/blame_test.go",
+			},
+			true,
+		),
+		Entry("first is a go file",
+			[]string{
+				"pkg/git/blame_test.go",
+				"README.md",
+				"docs/prow-clusters.md",
+			},
+			true,
+		),
+		Entry("empty list", []string{}, false),
 	)
 })
 
-var _ = Describe("actOnPrEvent", func() {
-	DescribeTable("Should return true when the action should trigger the coverage plugin",
-		func(action github.PullRequestEventAction) {
-			event := &github.PullRequestEvent{Action: action}
-			Expect(actOnPrEvent(event)).To(BeTrue())
+var _ = Describe("shouldActOnPREvent", func() {
+	DescribeTable("check PR event actions",
+		func(action github.PullRequestEventAction, expected bool) {
+			Expect(shouldActOnPREvent(string(action))).To(BeEquivalentTo(expected))
 		},
-		Entry("opened", github.PullRequestActionOpened),
-		Entry("synchronize", github.PullRequestActionSynchronize),
-	)
-
-	DescribeTable("Should return false when the action should not trigger the coverage plugin",
-		func(action github.PullRequestEventAction) {
-			event := &github.PullRequestEvent{Action: action}
-			Expect(actOnPrEvent(event)).To(BeFalse())
-		},
-		Entry("closed", github.PullRequestActionClosed),
-		Entry("labeled", github.PullRequestActionLabeled),
-		Entry("edited", github.PullRequestActionEdited),
+		Entry("opened", github.PullRequestActionOpened, true),
+		Entry("synchronize", github.PullRequestActionSynchronize, true),
+		Entry("closed", github.PullRequestActionClosed, false),
+		Entry("labeled", github.PullRequestActionLabeled, false),
+		Entry("edited", github.PullRequestActionEdited, false),
 	)
 })
 
@@ -123,10 +143,13 @@ var _ = Describe("generateCoverageJob", func() {
 		Entry("job name", func(j prowapi.ProwJob) string { return j.Spec.Job }, "coverage-auto"),
 		Entry("cluster", func(j prowapi.ProwJob) string { return j.Spec.Cluster }, "kubevirt-prow-control-plane"),
 		Entry("coverage-plugin label", func(j prowapi.ProwJob) string { return j.Labels["coverage-plugin"] }, "true"),
-		Entry("container image", func(j prowapi.ProwJob) string { return j.Spec.PodSpec.Containers[0].Image }, "quay.io/kubevirtci/golang:v20251218-e7a7fc9"),
+		Entry("container image", func(j prowapi.ProwJob) string { return j.Spec.PodSpec.Containers[0].Image }, "quay.io/kubevirtci/covreport:latest"),
 	)
-	It("Should run make coverage command", func() {
-		Expect(job.Spec.PodSpec.Containers[0].Args).To(ContainElement("make coverage"))
+	It("Should run inline coverage commands", func() {
+		args := job.Spec.PodSpec.Containers[0].Args
+		Expect(args).To(HaveLen(1))
+		Expect(args[0]).To(ContainSubstring("go test ./..."))
+		Expect(args[0]).To(ContainSubstring("covreport"))
 	})
 
 	It("Should set the GO_MOD_PATH env variable", func() {
@@ -165,7 +188,7 @@ var _ = Describe("Handle", func() {
 		}
 	})
 
-	Context("When a PR is opened with Go files changes in a watched path", func() {
+	Context("When a PR is opened with Go file changes", func() {
 		It("Should create a coverage ProwJob", func() {
 			event := &GitHubEvent{
 				Type:    "pull_request",
@@ -189,7 +212,7 @@ var _ = Describe("Handle", func() {
 
 	})
 
-	Context("When a PR is synchronized with Go files changes in a watched path", func() {
+	Context("When a PR is synchronized with Go file changes", func() {
 		It("Should create a coverage ProwJob", func() {
 			event := &GitHubEvent{
 				Type:    "pull_request",
@@ -211,7 +234,7 @@ var _ = Describe("Handle", func() {
 
 	})
 
-	Context("When a PR has mixed go and non go file changes in a watched path", func() {
+	Context("When a PR has mixed go and non go file changes", func() {
 		It("Should create a coverage ProwJob", func() {
 			event := &GitHubEvent{
 				Type:    "pull_request",
@@ -263,7 +286,7 @@ var _ = Describe("Handle", func() {
 			Expect(fakeProwClient.Actions()).To(BeEmpty())
 		})
 	})
-	
+
 	Context("When the PR has no Go file changes", func() {
 		It("Should not create a job", func() {
 			event := &GitHubEvent{
@@ -274,23 +297,6 @@ var _ = Describe("Handle", func() {
 			fakeGithubClient.PullRequestChanges[300] = []github.PullRequestChange{
 				{Filename: "README.md"},
 				{Filename: "docs/guide.txt"},
-			}
-			handler.Handle(event)
-
-			Expect(fakeProwClient.Actions()).To(BeEmpty())
-		})
-	})
-
-	Context("When Go files are only in unwatched directories", func() {
-		It("Should not create a job", func() {
-			event := &GitHubEvent{
-				Type:    "pull_request",
-				GUID:    "event-guid-6",
-				Payload: createPREventPayload(github.PullRequestActionOpened, 301, "kubevirt", "project-infra"),
-			}
-			fakeGithubClient.PullRequestChanges[301] = []github.PullRequestChange{
-				{Filename: "github/ci/test.go"},
-				{Filename: "scripts/helper.go"},
 			}
 			handler.Handle(event)
 
@@ -321,7 +327,7 @@ var _ = Describe("Handle", func() {
 				Payload: []byte("invalid json{{{"),
 			}
 
-			Expect(func() { handler.Handle(event)}).NotTo(Panic())
+			Expect(func() { handler.Handle(event) }).NotTo(Panic())
 			Expect(fakeProwClient.Actions()).To(BeEmpty())
 		})
 	})
@@ -334,8 +340,42 @@ var _ = Describe("Handle", func() {
 				Payload: []byte{},
 			}
 
-			Expect(func() { handler.Handle(event)}).NotTo(Panic())
+			Expect(func() { handler.Handle(event) }).NotTo(Panic())
 			Expect(fakeProwClient.Actions()).To(BeEmpty())
+		})
+	})
+
+	Context("When the GitHub API fails to get PR changes", func() {
+		It("Should not panic and not create a job", func() {
+			handler.githubClient = &errorGithubClient{}
+
+			event := &GitHubEvent{
+				Type:    "pull_request",
+				GUID:    "event-guid-github-error",
+				Payload: createPREventPayload(github.PullRequestActionOpened, 500, "kubevirt", "project-infra"),
+			}
+
+			Expect(func() { handler.Handle(event) }).NotTo(Panic())
+			Expect(fakeProwClient.Actions()).To(BeEmpty())
+		})
+	})
+
+	Context("When ProwJob creation fails", func() {
+		It("Should not panic", func() {
+			fakeProwClient.Fake.PrependReactor("create", "prowjobs", func(action testing.Action) (bool, runtime.Object, error) {
+				return true, nil, fmt.Errorf("api server unavailable")
+			})
+
+			event := &GitHubEvent{
+				Type:    "pull_request",
+				GUID:    "event-guid-prowjob-error",
+				Payload: createPREventPayload(github.PullRequestActionOpened, 501, "kubevirt", "project-infra"),
+			}
+			fakeGithubClient.PullRequestChanges[501] = []github.PullRequestChange{
+				{Filename: "handler.go"},
+			}
+
+			Expect(func() { handler.Handle(event) }).NotTo(Panic())
 		})
 	})
 

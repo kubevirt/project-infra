@@ -3,8 +3,8 @@ package server
 import (
 	"net/http"
 
-	"sigs.k8s.io/prow/pkg/github"
 	"kubevirt.io/project-infra/external-plugins/coverage/plugin/handler"
+	"sigs.k8s.io/prow/pkg/github"
 )
 
 // GitHubEventsServer handles incoming GitHub webhook requests and routes them to the appropriate handler
@@ -13,7 +13,7 @@ type GitHubEventsServer struct {
 	eventsHandler  *handler.GitHubEventsHandler
 }
 
-// New GitHubEventsServer creates a new webhook server
+// NewGitHubEventsServer creates and returns a new GitHubEventsServer.
 func NewGitHubEventsServer(tokenGenerator func() []byte, eventsHandler *handler.GitHubEventsHandler) *GitHubEventsServer {
 	return &GitHubEventsServer{
 		tokenGenerator: tokenGenerator,
@@ -21,7 +21,7 @@ func NewGitHubEventsServer(tokenGenerator func() []byte, eventsHandler *handler.
 	}
 }
 
-// Serve HTTP handler for incoming webhooks
+// ServeHTTP validates the incoming webhook and dispatches the event to the handler asynchronously.
 func (s *GitHubEventsServer) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	eventType, eventGUID, eventPayload, eventOk, _ := github.ValidateWebhook(writer, request, s.tokenGenerator)
 

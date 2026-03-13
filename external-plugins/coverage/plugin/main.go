@@ -156,7 +156,7 @@ func main() {
 	logger.Println("Coverage plugin server was gracefully shut down")
 }
 
-// Help provider return plugin help info
+// helpProvider returns the plugin help information for the coverage plugin.
 func helpProvider(_ []prowconfig.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	pluginHelp := &pluginhelp.PluginHelp{
 		Description: `The coverage plugin automatically runs Go unit test coverage
