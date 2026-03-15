@@ -83,14 +83,36 @@ func traverseNodesRecursively(stats *TestStats, config *Config, gingkoOutline []
 		var parentsWithNode []*GinkgoNode
 		parentsWithNode = append(parentsWithNode, parents...)
 		parentsWithNode = append(parentsWithNode, node)
+
 		if node.Spec {
 			stats.SpecsTotal++
+
+			// compute testName once per spec and reuse across categories
+			var testName string
+			for _, nodeFromPath := range parentsWithNode {
+				testName = strings.Join([]string{testName, nodeFromPath.Text}, " ")
+			}
+
+			// accumulate labels from parents + spec to mimic Ginkgo v2 label inheritance semantics
+			inheritedLabels := make([]string, 0, len(parentsWithNode))
+			for _, parentNode := range parentsWithNode {
+				inheritedLabels = append(inheritedLabels, parentNode.Labels...)
+			}
+
 			for _, category := range config.Categories {
-				var testName string
-				for _, nodeFromPath := range parentsWithNode {
-					testName = strings.Join([]string{testName, nodeFromPath.Text}, " ")
+				matchesTestName := category.TestNameLabelRE != nil && category.TestNameLabelRE.MatchString(testName)
+
+				matchesGinkgoLabel := false
+				if !matchesTestName && category.GinkgoLabelRE != nil {
+					for _, label := range inheritedLabels {
+						if category.GinkgoLabelRE.MatchString(label) {
+							matchesGinkgoLabel = true
+							break
+						}
+					}
 				}
-				if category.TestNameLabelRE.MatchString(testName) {
+
+				if matchesTestName || matchesGinkgoLabel {
 					var path []*GinkgoNode
 					for _, pathNode := range parentsWithNode {
 						path = append(path, pathNode.CloneWithoutNodes())

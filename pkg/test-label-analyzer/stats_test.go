@@ -223,6 +223,114 @@ var _ = Describe("GetStatsFromGinkgoOutline", func() {
 					}}))
 		})
 
+		It("matches when a parent node has a matching Ginkgo label", func() {
+			quarantineLabelCategory.Hits = 1
+			Expect(GetStatsFromGinkgoOutline(
+				NewQuarantineDefaultConfig(),
+				[]*GinkgoNode{
+					{
+						Text:   "parent",
+						Labels: []string{"Quarantine"},
+						Nodes: []*GinkgoNode{
+							{
+								Text: "child",
+								Spec: true,
+							},
+						},
+					},
+				})).To(BeEquivalentTo(
+				&TestStats{
+					SpecsTotal: 1,
+					MatchingSpecPaths: []*PathStats{
+						{
+							Path: []*GinkgoNode{
+								{
+									Text:   "parent",
+									Labels: []string{"Quarantine"},
+								},
+								{
+									Text: "child",
+									Spec: true,
+								},
+							},
+							MatchingCategory: quarantineLabelCategory,
+						},
+					},
+				}))
+		})
+
+		It("matches when the spec node itself has a matching Ginkgo label", func() {
+			quarantineLabelCategory.Hits = 1
+			Expect(GetStatsFromGinkgoOutline(
+				NewQuarantineDefaultConfig(),
+				[]*GinkgoNode{
+					{
+						Text: "parent",
+						Nodes: []*GinkgoNode{
+							{
+								Text:   "child",
+								Spec:   true,
+								Labels: []string{"Quarantine"},
+							},
+						},
+					},
+				})).To(BeEquivalentTo(
+				&TestStats{
+					SpecsTotal: 1,
+					MatchingSpecPaths: []*PathStats{
+						{
+							Path: []*GinkgoNode{
+								{
+									Text: "parent",
+								},
+								{
+									Text:   "child",
+									Spec:   true,
+									Labels: []string{"Quarantine"},
+								},
+							},
+							MatchingCategory: quarantineLabelCategory,
+						},
+					},
+				}))
+		})
+
+		It("matches only once when both test name and Ginkgo label match the same category", func() {
+			quarantineLabelCategory.Hits = 1
+			Expect(GetStatsFromGinkgoOutline(
+				NewQuarantineDefaultConfig(),
+				[]*GinkgoNode{
+					{
+						Text: "parent [QUARANTINE]",
+						Nodes: []*GinkgoNode{
+							{
+								Text:   "child",
+								Spec:   true,
+								Labels: []string{"Quarantine"},
+							},
+						},
+					},
+				})).To(BeEquivalentTo(
+				&TestStats{
+					SpecsTotal: 1,
+					MatchingSpecPaths: []*PathStats{
+						{
+							Path: []*GinkgoNode{
+								{
+									Text: "parent [QUARANTINE]",
+								},
+								{
+									Text:   "child",
+									Spec:   true,
+									Labels: []string{"Quarantine"},
+								},
+							},
+							MatchingCategory: quarantineLabelCategory,
+						},
+					},
+				}))
+		})
+
 		It("doesnt collect the test names twice if parent and child contain the matching label", func() {
 			quarantineLabelCategory.Hits = 1
 			Expect(GetStatsFromGinkgoOutline(
