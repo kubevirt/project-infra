@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -41,7 +42,7 @@ var filterExpressionsOpts = &filterExpressionsOptions{}
 // JSON output as input and emitting filter expressions for both Ginkgo v1 text filters and
 // Ginkgo v2 label filters.
 var expressionsCmd = &cobra.Command{
-	Use:   "expressions",
+	Use:   "expressions <matching-tests.json>",
 	Short: "Generates Ginkgo filter expressions from matching tests",
 	Long: `Generates expressions that can be used with Ginkgo's --filter/--skip (v1) and --label-filter (v2) flags.
 
@@ -145,23 +146,18 @@ func buildExpressions(matches matchingTests) expressionsOutput {
 	if len(testNames) > 0 {
 		parts := make([]string, 0, len(testNames))
 		for _, name := range testNames {
-			// Escape quotes inside names to keep expression simple.
-			escaped := strings.ReplaceAll(name, `"`, `\"`)
-			escaped = strings.ReplaceAll(escaped, `'`, `\'`)
-			parts = append(parts, fmt.Sprintf("'%s'", escaped))
+			parts = append(parts, regexp.QuoteMeta(name))
 		}
-		filterExpr = strings.Join(parts, " || ")
+		filterExpr = strings.Join(parts, "|")
 	}
 
 	var labelExpr string
 	if len(reasons) > 0 {
 		parts := make([]string, 0, len(reasons))
 		for _, r := range reasons {
-			escaped := strings.ReplaceAll(r, `"`, `\"`)
-			escaped = strings.ReplaceAll(escaped, `'`, `\'`)
-			parts = append(parts, fmt.Sprintf("'%s'", escaped))
+			parts = append(parts, r)
 		}
-		labelExpr = strings.Join(parts, " || ")
+		labelExpr = strings.Join(parts, "||")
 	}
 
 	return expressionsOutput{

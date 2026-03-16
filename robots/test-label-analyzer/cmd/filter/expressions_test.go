@@ -19,8 +19,6 @@
 package filter
 
 import (
-	"strings"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -38,13 +36,13 @@ var _ = Describe("expressions", func() {
 			matches := matchingTests{
 				{
 					Id:       "id-1",
-					Reason:   "Quarantine",
+					Reason:   "sig-network",
 					Version:  "",
 					TestName: "test A",
 				},
 				{
 					Id:       "id-2",
-					Reason:   "Quarantine",
+					Reason:   "sig-storage",
 					Version:  "",
 					TestName: "test B",
 				},
@@ -53,13 +51,8 @@ var _ = Describe("expressions", func() {
 			out := buildExpressions(matches)
 
 			Expect(out.Skip).To(BeEmpty())
-
-			// Filter should mention both test names
-			Expect(out.Filter).To(ContainSubstring("test A"))
-			Expect(out.Filter).To(ContainSubstring("test B"))
-
-			// LabelFilter should mention the reason once
-			Expect(strings.Count(out.LabelFilter, "Quarantine")).To(Equal(1))
+			Expect(out.Filter).To(Equal("test A|test B"))
+			Expect(out.LabelFilter).To(Equal("sig-network||sig-storage"))
 		})
 	})
 })
