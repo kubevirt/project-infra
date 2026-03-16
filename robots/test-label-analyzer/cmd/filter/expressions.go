@@ -21,11 +21,13 @@ package filter
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"sort"
 	"strings"
 
+	ginkgotypes "github.com/onsi/ginkgo/v2/types"
 	"github.com/spf13/cobra"
 )
 
@@ -52,7 +54,7 @@ By default it prints a simple text representation with the expressions.
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		filterExpressionsOpts.inputFilePath = args[0]
-		return runExpressions(filterExpressionsOpts)
+		return runExpressions(filterExpressionsOpts, cmd.OutOrStdout())
 	},
 }
 
@@ -64,11 +66,11 @@ type expressionsOutput struct {
 	// Skip is suitable for use with Ginkgo v1 --skip
 	Skip string `json:"skip"`
 
-	// LabelFilter is suitable for use with Ginkgo v2 --label-filter
+	// LabelFilter is suitable for use with Ginkgo v2 --label-filter when reasons are valid labels
 	LabelFilter string `json:"label_filter"`
 }
 
-func runExpressions(opts *filterExpressionsOptions) error {
+func runExpressions(opts *filterExpressionsOptions, outWriter io.Writer) error {
 	fileContent, err := os.ReadFile(opts.inputFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to read input file %q: %w", opts.inputFilePath, err)
@@ -83,23 +85,26 @@ func runExpressions(opts *filterExpressionsOptions) error {
 		return fmt.Errorf("no matching tests found in input")
 	}
 
-	out := buildExpressions(matches)
+	out, err := buildExpressions(matches)
+	if err != nil {
+		return err
+	}
 
 	switch strings.ToLower(opts.mode) {
 	case "", "text":
-		fmt.Printf("# Ginkgo v1\n")
+		fmt.Fprintf(outWriter, "# Ginkgo v1\n")
 		if out.Filter != "" {
-			fmt.Printf("--filter=%s\n", out.Filter)
+			fmt.Fprintf(outWriter, "--filter=%s\n", out.Filter)
 		}
 		if out.Skip != "" {
-			fmt.Printf("--skip=%s\n", out.Skip)
+			fmt.Fprintf(outWriter, "--skip=%s\n", out.Skip)
 		}
-		fmt.Printf("\n# Ginkgo v2\n")
+		fmt.Fprintf(outWriter, "\n# Ginkgo v2\n")
 		if out.LabelFilter != "" {
-			fmt.Printf("--label-filter=%s\n", out.LabelFilter)
+			fmt.Fprintf(outWriter, "--label-filter=%s\n", out.LabelFilter)
 		}
 	case "json":
-		enc := json.NewEncoder(os.Stdout)
+		enc := json.NewEncoder(outWriter)
 		enc.SetIndent("", "  ")
 		if err := enc.Encode(out); err != nil {
 			return fmt.Errorf("failed to marshal expressions output: %w", err)
@@ -112,11 +117,11 @@ func runExpressions(opts *filterExpressionsOptions) error {
 }
 
 // buildExpressions deduplicates the matching tests and constructs simple OR-based expressions.
-func buildExpressions(matches matchingTests) expressionsOutput {
+func buildExpressions(matches matchingTests) (expressionsOutput, error) {
 	// For now we keep things deliberately simple:
 	// - v1 filter: OR of all test names as literal substrings
 	// - v1 skip: left empty (can be extended later)
-	// - v2 label-filter: OR of all unique reasons, treated as labels
+	// - v2 label-filter: OR of all unique reasons, if they are already valid Ginkgo labels
 
 	testNameSet := map[string]struct{}{}
 	reasonSet := map[string]struct{}{}
@@ -155,7 +160,11 @@ func buildExpressions(matches matchingTests) expressionsOutput {
 	if len(reasons) > 0 {
 		parts := make([]string, 0, len(reasons))
 		for _, r := range reasons {
-			parts = append(parts, r)
+			cleaned, err := ginkgotypes.ValidateAndCleanupLabel(r, ginkgotypes.CodeLocation{})
+			if err != nil {
+				return expressionsOutput{}, fmt.Errorf("cannot generate --label-filter from reason %q: %w", r, err)
+			}
+			parts = append(parts, cleaned)
 		}
 		labelExpr = strings.Join(parts, "||")
 	}
@@ -164,11 +173,10 @@ func buildExpressions(matches matchingTests) expressionsOutput {
 		Filter:      filterExpr,
 		Skip:        "",
 		LabelFilter: labelExpr,
-	}
+	}, nil
 }
 
 func init() {
 	rootCmd.AddCommand(expressionsCmd)
 	expressionsCmd.PersistentFlags().StringVar(&filterExpressionsOpts.mode, "output-mode", "text", "output mode: text or json")
 }
-
