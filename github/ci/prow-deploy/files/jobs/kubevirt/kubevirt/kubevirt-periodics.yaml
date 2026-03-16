@@ -2577,8 +2577,8 @@ periodics:
               -p "${KUBEVIRT_REPO_PATH}" \
               -d "cat /tmp/pr-description.md" \
               -R \
-              -L 'skip-review' \
-              -M 'lgtm,approved,do-not-merge/hold,skip-review'
+              -L approved \
+              -M lgtm,approved,do-not-merge/hold
         env:
           - name: GIMME_GO_VERSION
             value: "1.25.1"
