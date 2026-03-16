@@ -166,15 +166,15 @@ if [ -z "${body}" ]; then
     body="${generated_body}"
 fi
 
+if [ -n "$release_note_none" ]; then
+    body+='\n\n```release-note\nNONE\n```'
+fi
+
 if [ -z "${head_branch}" ]; then
     head_branch="${branch}"
 fi
 
 git add -A
-
-if [ -n "$release_note_none" ]; then
-    summary+='\n\n```release-note\nNONE\n```'
-fi
 
 if [ -z "$dry_run" ]; then
     git commit -s -m "${summary//[@#]/}"
