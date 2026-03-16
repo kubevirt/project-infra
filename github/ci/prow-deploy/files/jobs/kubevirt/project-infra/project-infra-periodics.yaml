@@ -1030,7 +1030,8 @@ periodics:
       - |
         ( cd robots/job-config-validator && go build ./... )
 
-        curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+        # TODO: remove yq installation after golang image tag bump
+        curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
         chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
         source ./hack/manage-secrets.sh

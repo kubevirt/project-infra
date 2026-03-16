@@ -19,9 +19,9 @@ RUN curl -Lo ./kustomize.tar.gz https://github.com/kubernetes-sigs/kustomize/rel
   mv ./kustomize /usr/local/bin && \
   rm kustomize.tar.gz
 
-RUN curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64 && \
-  chmod a+x ./yq && \
-  mv ./yq /usr/local/bin
+# TODO: remove yq installation after golang image tag bump
+RUN curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64 && \
+  chmod +x ./yq && mv ./yq /usr/local/bin
 
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
   chmod a+x ./kubectl && \

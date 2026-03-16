@@ -21,7 +21,6 @@ if [ ! -d "$OVERLAY_DIR" ]; then
     exit 1
 fi
 
-YQ_BIN=/usr/local/bin/yq
 CONFIGS=( "config/config.yaml" "plugins/plugins.yaml" "labels/labels.yaml" "mirror/mirror.yaml")
 
 echo "Rendering from base configs at $BASE_DIR"
@@ -35,11 +34,11 @@ for config in ${CONFIGS[@]}; do
     if [ -f "$OVERLAY_DIR/yq_scripts/$config_file" ]; then
         echo "Applying commands from yq script at $OVERLAY_DIR/yq_scripts/$config_file for $BASE_DIR/$config_file in overlay ${OVERLAY}"
 
-        ${YQ_BIN} write $BASE_DIR/$config_file \
-          --script $OVERLAY_DIR/yq_scripts/$config_file >  $OVERLAY_DIR/configs/$config
+        yq --from-file $OVERLAY_DIR/yq_scripts/$config_file \
+          $BASE_DIR/$config_file > $OVERLAY_DIR/configs/$config
     else
         echo "No yq script for $BASE_DIR/$config_file in overlay ${OVERLAY}, copying without changes"
-        ${YQ_BIN} validate $BASE_DIR/$config_file
+        yq 'true' $BASE_DIR/$config_file >/dev/null
         cp -v $BASE_DIR/$config_file $OVERLAY_DIR/configs/$config
     fi
 done

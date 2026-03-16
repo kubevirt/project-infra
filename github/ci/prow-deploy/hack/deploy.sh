@@ -1,12 +1,16 @@
 #!/bin/bash
 
-set -e
+set -eu -o pipefail
 
 main(){
     current_dir=$(dirname "$0")
     project_infra_root=$(readlink -f "${current_dir}/../../../..")
 
     base_dir=${project_infra_root}/github/ci/prow-deploy
+
+    # TODO: remove yq installation after prow-deploy image tag bump
+    curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
+    chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
     source ${project_infra_root}/hack/manage-secrets.sh
     decrypt_secrets
