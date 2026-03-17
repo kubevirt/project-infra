@@ -639,7 +639,7 @@ periodics:
       - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
         -p ../kubevirt -T main -R -L skip-review -B $'Run of `cd ../kubevirt && make
         rpm-deps`\n\n/release-blocker main'
-      image: quay.io/kubevirtci/pr-creator:v20260312-b87ba5f
+      image: quay.io/kubevirtci/pr-creator:v20260316-cf1557a
       name: ""
       resources:
         requests:
@@ -1627,7 +1627,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260312-b87ba5f
+      image: quay.io/kubevirtci/pr-creator:v20260316-cf1557a
       name: ""
       resources:
         requests:
@@ -2562,7 +2562,7 @@ periodics:
   name: periodic-kubevirt-auto-quarantine
   spec:
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260312-b87ba5f
+      - image: quay.io/kubevirtci/pr-creator:v20260316-cf1557a
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"

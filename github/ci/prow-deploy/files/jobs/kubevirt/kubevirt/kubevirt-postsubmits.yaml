@@ -284,7 +284,7 @@ postsubmits:
         - /usr/local/bin/runner.sh
         - /bin/bash
         - -ce
-        image: quay.io/kubevirtci/pr-creator:v20260312-b87ba5f
+        image: quay.io/kubevirtci/pr-creator:v20260316-cf1557a
         resources:
           requests:
             memory: "200Mi"
