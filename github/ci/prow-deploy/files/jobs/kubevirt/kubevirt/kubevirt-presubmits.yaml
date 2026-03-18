@@ -1343,7 +1343,7 @@ presubmits:
         - -ce
         - |
           make builder-build-cs10
-        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
         name: ""
         resources:
           requests:

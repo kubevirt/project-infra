@@ -263,7 +263,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
