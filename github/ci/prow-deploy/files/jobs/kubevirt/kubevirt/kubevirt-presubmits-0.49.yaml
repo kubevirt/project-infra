@@ -1,4 +1,4 @@
-periodics: null
+periodics:
 postsubmits: {}
 presubmits:
   kubevirt/kubevirt:
@@ -16,6 +16,9 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.21'
+      ci.kubevirt.io/sig: network
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.21-sig-network-0.49
     spec:
@@ -51,6 +54,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.21'
+      ci.kubevirt.io/sig: storage
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.21-sig-storage-0.49
     spec:
@@ -86,6 +92,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.21'
+      ci.kubevirt.io/sig: compute
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.21-sig-compute-0.49
     spec:
@@ -121,6 +130,8 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.21'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.21-operator-0.49
     spec:
@@ -156,6 +167,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/sig: compute
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-compute-cgroupsv2-0.49
     spec:
@@ -193,6 +207,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/sig: storage
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-storage-cgroupsv2-0.49
     optional: true
@@ -231,6 +248,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/sig: compute
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-compute-nonroot-0.49
     spec:
@@ -270,6 +290,9 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/sig: network
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-network-nonroot-0.49
     optional: true
@@ -310,6 +333,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/sig: storage
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-storage-nonroot-0.49
     optional: true
@@ -350,6 +376,8 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-operator-nonroot-0.49
     spec:
@@ -390,6 +418,7 @@ presubmits:
       preset-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/category: e2e
     max_concurrency: 1
     name: pull-kubevirt-e2e-windows2016-0.49
     spec:
@@ -427,6 +456,8 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       sriov-pod: "true"
+      ci.kubevirt.io/k8s-version: '1.22'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-1.22-sriov-nonroot-0.49
     optional: true
@@ -512,6 +543,8 @@ presubmits:
       preset-shared-images: "true"
       rehearsal.allowed: "true"
       sriov-pod: "true"
+      ci.kubevirt.io/k8s-version: '1.19'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-1.19-sriov-nonroot-0.49
     optional: true
@@ -597,6 +630,8 @@ presubmits:
       preset-shared-images: "true"
       rehearsal.allowed: "true"
       sriov-pod: "true"
+      ci.kubevirt.io/k8s-version: '1.22'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-1.22-sriov-0.49
     spec:
@@ -672,6 +707,8 @@ presubmits:
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.23-vgpu-0.49
     spec:
@@ -730,6 +767,8 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      ci.kubevirt.io/k8s-version: '1.19'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.19-vgpu-nonroot-0.49
     optional: true
@@ -941,6 +980,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      ci.kubevirt.io/category: build
     name: pull-kubevirt-build-0.49
     spec:
       containers:
@@ -968,6 +1008,7 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      ci.kubevirt.io/category: build
     name: pull-kubevirt-build-arm64-0.49
     spec:
       containers:
@@ -998,6 +1039,7 @@ presubmits:
     labels:
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
+      ci.kubevirt.io/category: unit
     name: pull-kubevirt-unit-test-0.49
     spec:
       containers:
@@ -1033,8 +1075,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cp /etc/bazel.bazelrc ./ci.bazelrc && if [ ${JOB_TYPE} != 'batch' ]; then
-          make goveralls; fi
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && if [ ${JOB_TYPE} != 'batch' ]; then make goveralls; fi
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
@@ -1126,8 +1167,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX="docker.io/kubevirt"
-          && make olm-verify
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX="docker.io/kubevirt" && make olm-verify
         image: quay.io/kubevirtci/bootstrap:v20220211-d7d6c59
         name: ""
         resources:
@@ -1203,6 +1243,9 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.22'
+      ci.kubevirt.io/sig: network
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-sig-network-0.49
     spec:
@@ -1238,6 +1281,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.22'
+      ci.kubevirt.io/sig: network
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-ipv6-sig-network-0.49
     optional: true
@@ -1274,6 +1320,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.22'
+      ci.kubevirt.io/sig: storage
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-sig-storage-0.49
     spec:
@@ -1309,6 +1358,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.22'
+      ci.kubevirt.io/sig: compute
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-sig-compute-0.49
     spec:
@@ -1344,6 +1396,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.21'
+      ci.kubevirt.io/sig: compute
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.21-sig-compute-migrations-0.49
     spec:
@@ -1383,6 +1438,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.22'
+      ci.kubevirt.io/sig: compute
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-sig-compute-migrations-0.49
     spec:
@@ -1422,6 +1480,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/sig: compute
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-compute-migrations-0.49
     spec:
@@ -1461,6 +1522,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/sig: compute
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-compute-migrations-nonroot-0.49
     optional: false
@@ -1505,6 +1569,8 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.22'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-operator-0.49
     spec:
@@ -1539,6 +1605,9 @@ presubmits:
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      ci.kubevirt.io/k8s-version: '1.22'
+      ci.kubevirt.io/sig: compute
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.22-sig-compute-realtime-0.49
     optional: true
@@ -1582,6 +1651,7 @@ presubmits:
       preset-kubevirtci-quay-credential: "true"
       preset-shared-images: "true"
       preset-pgp-bot-key: "true"
+      ci.kubevirt.io/category: e2e
     max_concurrency: 1
     name: pull-kubevirt-e2e-arm64-0.49
     optional: true
@@ -1653,6 +1723,9 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/sig: network
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-network-0.49
     spec:
@@ -1688,6 +1761,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/sig: storage
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-storage-0.49
     spec:
@@ -1723,6 +1799,9 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/sig: compute
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-sig-compute-0.49
     spec:
@@ -1758,6 +1837,8 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.23'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.23-operator-0.49
     spec:
@@ -1791,6 +1872,9 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
+      ci.kubevirt.io/k8s-version: '1.22'
+      ci.kubevirt.io/sig: monitoring
+      ci.kubevirt.io/category: e2e
     name: pull-kubevirt-e2e-k8s-1.22-sig-monitoring-0.49
     optional: true
     run_if_changed: ^pkg/monitoring/.*|tests/monitoring/.*$

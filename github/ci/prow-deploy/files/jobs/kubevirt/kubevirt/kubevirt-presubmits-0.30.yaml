@@ -1,4 +1,4 @@
-periodics: null
+periodics:
 postsubmits: {}
 presubmits:
   kubevirt/kubevirt:
@@ -13,6 +13,8 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.13'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-1.13.3-0.30
     context: pull-kubevirt-e2e-k8s-1.13.3
@@ -45,6 +47,8 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.14'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-1.14-0.30
     context: pull-kubevirt-e2e-k8s-1.14
@@ -77,6 +81,8 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.15'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-1.15-ceph-0.30
     context: pull-kubevirt-e2e-k8s-1.15-ceph
@@ -87,8 +93,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - export TARGET=k8s-1.15 && export KUBEVIRT_PROVIDER_EXTRA_ARGS='--enable-ceph'
-          && automation/test.sh
+        - export TARGET=k8s-1.15 && export KUBEVIRT_PROVIDER_EXTRA_ARGS='--enable-ceph' && automation/test.sh
         image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
         name: ""
         resources:
@@ -109,6 +114,8 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.16'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-1.16-0.30
     context: pull-kubevirt-e2e-k8s-1.16
@@ -140,6 +147,8 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.17'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 10
     name: pull-kubevirt-e2e-k8s-1.17-0.30
     context: pull-kubevirt-e2e-k8s-1.17
@@ -171,6 +180,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/category: e2e
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-cnao-1.17-0.30
     context: pull-kubevirt-e2e-k8s-cnao-1.17
@@ -202,6 +212,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/category: e2e
     max_concurrency: 6
     name: pull-kubevirt-e2e-os-3.11.0-crio-0.30
     context: pull-kubevirt-e2e-os-3.11.0-crio
@@ -234,6 +245,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/category: e2e
     max_concurrency: 6
     name: pull-kubevirt-e2e-os-3.11.0-multus-0.30
     context: pull-kubevirt-e2e-os-3.11.0-multus
@@ -266,6 +278,7 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/category: e2e
     max_concurrency: 1
     name: pull-kubevirt-e2e-windows2016-0.30
     context: pull-kubevirt-e2e-windows2016
@@ -300,6 +313,8 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
       sriov-pod: "true"
+      ci.kubevirt.io/k8s-version: '1.17'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-1.17-sriov-release-0.30
     context: pull-kubevirt-e2e-kind-1.17-sriov
@@ -373,6 +388,8 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.17'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 10
     name: pull-kubevirt-e2e-kind-k8s-1.17.0-ipv6-0.30
     context: pull-kubevirt-e2e-kind-k8s-1.17.0-ipv6
@@ -451,6 +468,8 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
+      ci.kubevirt.io/k8s-version: '1.17'
+      ci.kubevirt.io/category: e2e
     max_concurrency: 6
     name: pull-kubevirt-e2e-k8s-1.17-rook-ceph-0.30
     context: pull-kubevirt-e2e-k8s-1.17-rook-ceph
