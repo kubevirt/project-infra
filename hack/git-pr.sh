@@ -47,7 +47,7 @@ body=
 head_branch=
 release_note_none=
 
-while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:M:d:h:R:B:" opt; do
+while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:M:d:h:RB:" opt; do
     case "${opt}" in
         D )
             dry_run=true
