@@ -2569,7 +2569,7 @@ periodics:
           - "-ce"
           - |
             KUBEVIRT_REPO_PATH="$(realpath ../../kubevirt/kubevirt)"
-            GIT_ASKPASS="$(realpath .)/hack/git-askpass.sh" git-pr.sh \
+            GIT_ASKPASS="$(realpath .)/hack/git-askpass.sh" "$(realpath .)/hack/git-pr.sh" \
               -c "go run ./robots/quarantine auto --pr-description-output-file=/tmp/pr-description.md --test-source-path=${KUBEVIRT_REPO_PATH}/tests" \
               -r kubevirt \
               -b auto-quarantine \
