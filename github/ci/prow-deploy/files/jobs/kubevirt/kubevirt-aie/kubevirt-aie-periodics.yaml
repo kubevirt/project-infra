@@ -22,8 +22,9 @@ periodics:
       args:
       - |
         git-pr.sh \
-          -c "./hack/sync-nv-rpms.sh" \
+          -c "./hack/sync-nv-rpms.sh && make generate" \
           -s "Sync el10nv RPMs for libvirt and qemu-kvm" \
+          -R \
           -r kubevirt-aie \
           -b sync-nv-rpms \
           -T release-1.8-aie-nv \
