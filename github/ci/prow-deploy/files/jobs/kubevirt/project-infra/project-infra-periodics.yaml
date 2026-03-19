@@ -1036,7 +1036,7 @@ periodics:
 
         source ./hack/manage-secrets.sh
         decrypt_secrets
-        extract_secret 'kubeconfig' ~/.kube/config
+        install -Dm400 "${secrets_repo_dir}"/secrets/kubeconfigs/kubevirt-prow-control-plane ~/.kube/config
         cleanup_secrets
 
         ./robots/job-config-validator/job-config-validator
@@ -1185,7 +1185,7 @@ periodics:
       - |
         source ./hack/manage-secrets.sh
         decrypt_secrets
-        extract_secret 'kubeconfig' ~/.kube/config
+        install -Dm400 "${secrets_repo_dir}"/secrets/kubeconfigs/prow-arm64-workloads ~/.kube/config
         cleanup_secrets
 
         kubectl get --context='prow-arm64-workloads' --raw '/k8s/clusters/c-zvkv8/livez?verbose'

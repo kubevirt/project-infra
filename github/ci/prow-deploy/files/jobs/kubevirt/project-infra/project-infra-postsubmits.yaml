@@ -713,7 +713,7 @@ postsubmits:
 
               source ./hack/manage-secrets.sh
               decrypt_secrets
-              extract_secret 'kubeconfig' ~/.kube/config
+              install -Dm400 "${secrets_repo_dir}"/secrets/kubeconfigs/kubevirt-prow-control-plane ~/.kube/config
               cleanup_secrets
 
               ./github/ci/services/ci-search/hack/deploy.sh production
@@ -751,7 +751,7 @@ postsubmits:
 
               source ./hack/manage-secrets.sh
               decrypt_secrets
-              extract_secret 'kubeconfig' ~/.kube/config
+              install -Dm400 "${secrets_repo_dir}"/secrets/kubeconfigs/kubevirt-prow-control-plane ~/.kube/config
 
               environment='kubevirt-prow-control-plane'
               overlaySecretsDirectory="github/ci/services/grafana/deploy/overlays/kubevirt-prow-control-plane/secrets/grafana"

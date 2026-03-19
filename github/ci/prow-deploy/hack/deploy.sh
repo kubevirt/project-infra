@@ -15,9 +15,32 @@ main(){
     source ${project_infra_root}/hack/manage-secrets.sh
     decrypt_secrets
 
-    mkdir -p ${base_dir}/vars/${DEPLOY_ENVIRONMENT}
-    mv "${secrets_repo_dir}"/main.yml ${base_dir}/vars/${DEPLOY_ENVIRONMENT}/secrets.yml
+    # Generate a consolidated kubeconfig to use in Prow secrets
+    local prow_build_clusters kubeconfig_list kubeconfig_tmp
 
+    prow_build_clusters=(
+        kubevirt-prow-control-plane
+        amd-workloads
+        prow-arm64-workloads
+        prow-hyperv-workloads
+        prow-s390x-workloads
+        prow-workloads
+    )
+
+    kubeconfig_list=$(
+        printf "${secrets_repo_dir}/secrets/kubeconfigs/%s:" "${prow_build_clusters[@]}"
+    )
+
+    kubeconfig_tmp=$(mktemp)
+    kubectl config view --kubeconfig="${kubeconfig_list}" --flatten --raw > "${kubeconfig_tmp}"
+
+    mkdir -p ${base_dir}/vars/${DEPLOY_ENVIRONMENT}
+
+    yq '
+      .kubeconfig |= load_str("'"${kubeconfig_tmp}"'")
+    ' "${secrets_repo_dir}"/main.yml > "${base_dir}/vars/${DEPLOY_ENVIRONMENT}"/secrets.yml
+
+    rm -f "${kubeconfig_tmp}"
     cleanup_secrets
 
     # run playbook

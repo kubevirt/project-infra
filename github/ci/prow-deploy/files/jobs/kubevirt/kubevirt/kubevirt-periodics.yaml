@@ -782,7 +782,7 @@ periodics:
         # get kubeconfig
         source ../project-infra/hack/manage-secrets.sh
         decrypt_secrets
-        extract_secret 'kubeconfigS390x' /kubeconfig
+        install -m400 "${secrets_repo_dir}"/secrets/kubeconfigs/prow-s390x-e2e-test /kubeconfig
         cleanup_secrets
 
         # login quay.io
@@ -930,7 +930,7 @@ periodics:
         # get kubeconfig
         source ../project-infra/hack/manage-secrets.sh
         decrypt_secrets
-        extract_secret 'kubeconfigPerf' /kubeconfig
+        install -m400 "${secrets_repo_dir}"/secrets/kubeconfigs/kubevirt-performance /kubeconfig
         cleanup_secrets
 
         # login quay.io
@@ -1007,7 +1007,7 @@ periodics:
         # get kubeconfig
         source ../project-infra/hack/manage-secrets.sh
         decrypt_secrets
-        extract_secret 'kubeconfigPerf' /kubeconfig
+        install -m400 "${secrets_repo_dir}"/secrets/kubeconfigs/kubevirt-performance /kubeconfig
         cleanup_secrets
 
         # login quay.io
@@ -2498,7 +2498,7 @@ periodics:
         # get kubeconfig
         source ../project-infra/hack/manage-secrets.sh
         decrypt_secrets
-        extract_secret 'kubeconfigS390xSecureExecution' /kubeconfig
+        install -m400 "${secrets_repo_dir}"/secrets/kubeconfigs/prow-s390x-secure-execution /kubeconfig
         cleanup_secrets
 
         # login quay.io
