@@ -680,6 +680,7 @@ periodics:
       resources:
         requests:
           memory: 52Gi
+          cpu: "16"
       securityContext:
         privileged: true
       volumeMounts:
@@ -731,6 +732,7 @@ periodics:
       resources:
         requests:
           memory: 52Gi
+          cpu: "16"
       securityContext:
         privileged: true
       volumeMounts:
@@ -858,6 +860,7 @@ periodics:
       resources:
         requests:
           memory: 8Gi
+          cpu: "4"
       securityContext:
         privileged: true
 - annotations:

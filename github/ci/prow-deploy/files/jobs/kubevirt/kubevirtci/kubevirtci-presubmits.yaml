@@ -185,6 +185,7 @@ presubmits:
         resources:
           requests:
             memory: 24Gi
+            cpu: "8"
         securityContext:
           privileged: true
         volumeMounts:
@@ -262,6 +263,7 @@ presubmits:
         resources:
           requests:
             memory: 24Gi
+            cpu: "8"
         securityContext:
           privileged: true
         volumeMounts:
@@ -339,6 +341,7 @@ presubmits:
         resources:
           requests:
             memory: 24Gi
+            cpu: "8"
         securityContext:
           privileged: true
         volumeMounts:

@@ -542,6 +542,7 @@ presubmits:
         resources:
           requests:
             memory: 12Gi
+            cpu: "4"
         securityContext:
           privileged: true
   - always_run: true
@@ -978,6 +979,7 @@ presubmits:
         resources:
           requests:
             memory: 52Gi
+            cpu: "16"
         securityContext:
           privileged: true
         volumeMounts:
@@ -1030,6 +1032,7 @@ presubmits:
         resources:
           requests:
             memory: 52Gi
+            cpu: "16"
         securityContext:
           privileged: true
         volumeMounts:

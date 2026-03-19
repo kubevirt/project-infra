@@ -181,6 +181,7 @@ presubmits:
         resources:
           requests:
             memory: 20Gi
+            cpu: "16"
         securityContext:
           privileged: true
         volumeMounts:
