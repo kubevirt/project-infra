@@ -60,6 +60,7 @@
 <body>
 <section class="container">
     <h1>kubevirt/kubevirt: most flaky tests report</h1>
+    <label><input type="checkbox" id="show-release-lanes" onchange="toggleReleaseLanes()"> Show release branch lanes</label>
 </section>
 
 {{ if $.SIGs }}
@@ -89,6 +90,7 @@
                             <code title="{{ $testName }}">{{ $testName }}</code><br/>
                             {{ range $mostFlakyTest := $mostFlakyTests }}
                                 {{ range $relevantImpact := $mostFlakyTest.RelevantImpacts -}}
+                                    <div class="impact-entry" data-lane="{{ $relevantImpact.URLToDisplay }}">
                                     <span style="white-space: nowrap;">
                                         <a href="{{ $mostFlakyTest.SearchCIURL }}" title="execute query on search.ci">🔎</a>
                                         💥<span title="Test has impact of {{ $relevantImpact.Percent }}%"> <b>{{ $relevantImpact.Percent }}%</b> over <b>{{ $mostFlakyTest.TimeRange }}</b></span> on<br/>
@@ -96,7 +98,8 @@
                                             style="white-space: nowrap;">Failures: {{ range $buildURL := $relevantImpact.BuildURLs -}}
                                             <a href="{{ $buildURL.URL }}"
                                                title="{{ $buildURL.URL }}">{{ $buildURL.Interval }}</a> {{ end }}
-                                    </span><br/>
+                                    </span>
+                                    </div>
                                 {{- end }}
                             {{ end }}
                         </div>
@@ -116,5 +119,26 @@
 <section class="container">
     <div style="text-align: right"><i>Last updated: {{ $.ReportCreation }}</i></div>
 </section>
+<script>
+    var releaseLanePattern = /-\d+\.\d+$/;
+    function toggleReleaseLanes() {
+        var show = document.getElementById('show-release-lanes').checked;
+        document.querySelectorAll('.impact-entry').forEach(function(el) {
+            var lane = el.getAttribute('data-lane');
+            if (releaseLanePattern.test(lane)) {
+                el.style.display = show ? '' : 'none';
+            }
+        });
+        document.querySelectorAll('.card[id^="test_"]').forEach(function(card) {
+            var entries = card.querySelectorAll('.impact-entry');
+            var anyVisible = false;
+            entries.forEach(function(el) {
+                if (el.style.display !== 'none') anyVisible = true;
+            });
+            card.style.display = (entries.length > 0 && !anyVisible) ? 'none' : '';
+        });
+    }
+    toggleReleaseLanes();
+</script>
 </body>
 </html>
