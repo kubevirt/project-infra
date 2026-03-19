@@ -5,7 +5,67 @@ The prow control-plane cluster is used to run the prowjobs that cover the SEV te
 
 
 ## Layout
-![infra-layout](amd-infra-layout.svg)
+
+```mermaid
+flowchart LR
+    subgraph External["External Services"]
+        GitHub["GitHub"]
+        GCS[("GCS<br/>(Google Cloud Storage)")]
+    end
+
+    subgraph AMDCluster["AMD SEV CLUSTER"]
+        SingleNode["Single Node"]
+    end
+
+    subgraph ControlPlane["Control Plane"]
+        Workloads
+    end
+
+    subgraph Workloads["Workloads"]
+        ProwCP["Prow Control Plane"]
+        CIJobs["CI Jobs"]
+        BazelCache["Bazel Cache"]
+        DockerProxy["Docker Proxy"]
+        CertManager["cert-manager"]
+        ObsTools["Observability Tools"]
+
+        ProwCP --> CIJobs
+        CIJobs --> BazelCache
+        CIJobs --> DockerProxy
+    end
+
+    subgraph Workers["Worker Nodes"]
+        VMs["9 VMs"]
+    end
+
+    MonitoringStack["Monitoring Stack"]
+
+    subgraph Clients["External Clients"]
+        CISearchClients["ci-search clients"]
+        DeckClients["deck clients"]
+        GrafanaClients["grafana clients"]
+    end
+
+    GitHub --> ProwCP
+    ProwCP --> GCS
+    ObsTools --> GCS
+    GCS --> ObsTools
+    CIJobs --> Workers
+
+    SingleNode <-->|SSH Tunnel| CIJobs
+
+    ObsTools <--> CISearchClients
+    ProwCP <--> DeckClients
+    MonitoringStack <--> GrafanaClients
+    MonitoringStack <--> GCS
+
+    classDef externalStyle fill:#e1f5ff,stroke:#333,stroke-width:2px
+    classDef clusterStyle fill:#fff4e6,stroke:#333,stroke-width:2px
+    classDef componentStyle fill:#f0f0f0,stroke:#333,stroke-width:1px
+
+    class GitHub,GCS externalStyle
+    class AMDCluster clusterStyle
+```
 
 As the cluster is only available remotely over SSH, an SSH tunnel is required to access the Kubernetes API which is listening on the private interface of the node. A tool such as [sshuttle](https://github.com/sshuttle/sshuttle) allows the prowjob pod on the Prow control-plane cluster to access the Kubernetes API of the AMD SEV cluster. The SSH key and kubeconfig are stored in the KubeVirt secrets repository.
 

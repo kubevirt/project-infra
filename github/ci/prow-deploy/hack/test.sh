@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eu -o pipefail
 
 unset "${!KUBERNETES@}"
 
@@ -32,6 +32,10 @@ NODE_POD_IP=$(podman inspect $POD_NAME -f '{{ .NetworkSettings.IPAddress }}')
 echo "$NODE_POD_IP gcsweb.prowdeploy.ci deck.prowdeploy.ci" >> /etc/hosts
 
 cd $BASE_DIR
+
+# TODO: remove yq installation after prow-deploy image tag bump
+curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
+chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
 cat << EOF > inventory
 [local]

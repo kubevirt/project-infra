@@ -19,8 +19,8 @@ periodics:
     containers:
     - args:
       - |
-        # install yq
-        curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/v4.44.6/yq_linux_amd64
+        # TODO: remove yq installation after pr-creator image tag bump
+        curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
         chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
         ARTIFACTS=/tmp/artifacts
@@ -78,7 +78,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260312-b87ba5f
+      image: quay.io/kubevirtci/pr-creator:v20260318-92e112b
       securityContext:
         privileged: true
       resources:

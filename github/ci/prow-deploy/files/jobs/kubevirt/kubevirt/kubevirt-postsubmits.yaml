@@ -240,6 +240,42 @@ postsubmits:
           resources:
             requests:
               memory: "16Gi"
+  - name: publish-kubevirt-builder-cs10
+    always_run: false
+    run_if_changed: "hack/builder/.*"
+    branches:
+      - main
+    decorate: true
+    decoration_config:
+      timeout: 4h
+      grace_period: 5m
+    max_concurrency: 1
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-gcs-credentials: "true"
+      preset-github-credentials: "true"
+      preset-kubevirtci-quay-credential: "true"
+    annotations:
+      testgrid-create-test-group: "false"
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/bash"
+            - "-c"
+            - >
+              cat $QUAY_PASSWORD | podman login quay.io --username $(cat $QUAY_USER) --password-stdin=true &&
+              make builder-publish-cs10
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "16Gi"
   - name: push-kubevirt-update-support-matrix
     branches:
     # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
@@ -284,7 +320,7 @@ postsubmits:
         - /usr/local/bin/runner.sh
         - /bin/bash
         - -ce
-        image: quay.io/kubevirtci/pr-creator:v20260312-b87ba5f
+        image: quay.io/kubevirtci/pr-creator:v20260318-92e112b
         resources:
           requests:
             memory: "200Mi"

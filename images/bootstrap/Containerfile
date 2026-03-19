@@ -68,7 +68,8 @@ RUN dnf install -y \
     sudo \
     wget \
     which \
-    yamllint && \
+    yamllint \
+    yq && \
   dnf clean all
 
 

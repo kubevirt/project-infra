@@ -639,7 +639,7 @@ periodics:
       - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
         -p ../kubevirt -T main -R -L skip-review -B $'Run of `cd ../kubevirt && make
         rpm-deps`\n\n/release-blocker main'
-      image: quay.io/kubevirtci/pr-creator:v20260312-b87ba5f
+      image: quay.io/kubevirtci/pr-creator:v20260318-92e112b
       name: ""
       resources:
         requests:
@@ -769,10 +769,10 @@ periodics:
     - command:
       - /usr/local/bin/runner.sh
       - /bin/sh
-      - -c
+      - -ce
       - |
-        # install yq
-        curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+        # TODO: remove yq installation after bootstrap image tag bump
+        curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
         chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
         # get kubectl
@@ -917,10 +917,10 @@ periodics:
     - command:
       - /usr/local/bin/runner.sh
       - /bin/sh
-      - -c
+      - -ce
       - |
-        # install yq
-        curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+        # TODO: remove yq installation after golang image tag bump
+        curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
         chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
         # get kubectl
@@ -996,8 +996,8 @@ periodics:
       - /bin/sh
       - -c
       - |
-        # install yq
-        curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+        # TODO: remove yq installation after golang image tag bump
+        curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
         chmod +x ./yq && mv ./yq /usr/local/bin/yq
 
         # get kubectl
@@ -1627,7 +1627,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260312-b87ba5f
+      image: quay.io/kubevirtci/pr-creator:v20260318-92e112b
       name: ""
       resources:
         requests:
@@ -2562,14 +2562,14 @@ periodics:
   name: periodic-kubevirt-auto-quarantine
   spec:
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260312-b87ba5f
+      - image: quay.io/kubevirtci/pr-creator:v20260318-92e112b
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
           - "-ce"
           - |
             KUBEVIRT_REPO_PATH="$(realpath ../../kubevirt/kubevirt)"
-            GIT_ASKPASS="$(realpath .)/hack/git-askpass.sh" git-pr.sh \
+            GIT_ASKPASS="$(realpath .)/hack/git-askpass.sh" "$(realpath .)/hack/git-pr.sh" \
               -c "go run ./robots/quarantine auto --pr-description-output-file=/tmp/pr-description.md --test-source-path=${KUBEVIRT_REPO_PATH}/tests" \
               -r kubevirt \
               -b auto-quarantine \
@@ -2577,8 +2577,8 @@ periodics:
               -p "${KUBEVIRT_REPO_PATH}" \
               -d "cat /tmp/pr-description.md" \
               -R \
-              -L 'skip-review' \
-              -M 'lgtm,approved,do-not-merge/hold,skip-review'
+              -L approved \
+              -M lgtm,approved,do-not-merge/hold
         env:
           - name: GIMME_GO_VERSION
             value: "1.25.1"
