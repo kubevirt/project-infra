@@ -32,7 +32,7 @@ main(){
     )
 
     kubeconfig_tmp=$(mktemp)
-    kubectl config view --kubeconfig="${kubeconfig_list}" --flatten --raw > "${kubeconfig_tmp}"
+    KUBECONFIG="${kubeconfig_list}" kubectl config view --flatten --raw > "${kubeconfig_tmp}"
 
     mkdir -p ${base_dir}/vars/${DEPLOY_ENVIRONMENT}
 
