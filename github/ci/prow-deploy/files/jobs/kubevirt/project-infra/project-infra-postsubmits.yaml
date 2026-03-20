@@ -623,7 +623,6 @@ postsubmits:
       run_if_changed: "github/ci/prow-deploy/.*"
       annotations:
         testgrid-dashboards: kubevirt-project-infra-postsubmits
-        testgrid-days-of-results: "90"
         testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
         testgrid-num-failures-to-alert: "1"
       decorate: true
@@ -659,7 +658,6 @@ postsubmits:
       run_if_changed: "github/ci/prow-deploy/kustom/overlays/prow-workloads/.*|github/ci/prow-deploy/kustom/components/.*"
       annotations:
         testgrid-dashboards: kubevirt-project-infra-postsubmits
-        testgrid-days-of-results: "90"
         testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
         testgrid-num-failures-to-alert: "1"
       decorate: true
@@ -694,7 +692,6 @@ postsubmits:
       always_run: false
       annotations:
         testgrid-dashboards: kubevirt-project-infra-postsubmits
-        testgrid-days-of-results: "90"
         testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
         testgrid-num-failures-to-alert: "1"
       decorate: true
@@ -735,7 +732,6 @@ postsubmits:
       always_run: false
       annotations:
         testgrid-dashboards: kubevirt-project-infra-postsubmits
-        testgrid-days-of-results: "90"
         testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
         testgrid-num-failures-to-alert: "1"
       decorate: true
