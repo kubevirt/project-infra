@@ -1,2 +1,0 @@
-// package main
-package main

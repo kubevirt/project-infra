@@ -1,38 +1,46 @@
-# Coverage External Plugin
+# coverage - external plugin for prow
 
-Automatically runs Go unit test coverage on pull requests containing Go code changes.
+## Motivation
+
+Go unit test coverage is an important metric for maintaining code quality across KubeVirt repositories. Rather than requiring each repository to define its own coverage job, the coverage plugin automates this by triggering a coverage ProwJob on any pull request that contains Go file changes.
 
 ## Overview
 
-This Prow external plugin:
-- Listens for GitHub pull request webhooks (opened/synchronize events)
-- Detects when a PR contains Go file changes (*.go, go.mod, go.sum)
-- Automatically creates and submits a coverage ProwJob
-- Makes coverage artifacts browsable via Prow's Spyglass coverage lens
-- Posts GitHub status check with link to coverage report
-
-## How It Works
-
-1. GitHub sends webhook when PR is opened/updated
-2. Plugin checks if PR contains Go files in coverage directories
-3. If yes, plugin generates a ProwJob to run `make coverage`
-4. Prow executes the job, uploads artifacts to GCS
-5. Developer can view coverage in Spyglass UI via GitHub status link
-
-## Coverage Scope
-
-Includes Go files in:
-- `external-plugins/`
-- `releng/`
-- `robots/`
+The coverage plugin is a Prow external plugin that:
+- Listens for GitHub pull request webhooks (`opened` and `synchronize` events)
+- Detects when a PR contains any `.go` file changes
+- Automatically creates a coverage ProwJob for the target repository
+- Runs `go test` and generates an HTML coverage report via `covreport`
+- Makes the coverage report browsable via Prow's Spyglass UI through the GitHub status link
 
 ## Configuration
 
-See deployment manifests in:
-- `github/ci/prow-deploy/kustom/base/manifests/local/prow-coverage-*.yaml`
+The plugin is registered in:
+- `github/ci/prow-deploy/kustom/base/configs/current/plugins/plugins.yaml`
 
-## Related
+Images: 
+- `quay.io/kubevirtci/coverage` Plugin server — runs the webhook handler in the cluster 
+- `quay.io/kubevirtci/covreport` ProwJob runner — contains the Go toolchain and `covreport` tool
 
-- Issue: https://github.com/kubevirt/project-infra/issues/4064
-- Design doc: `/COVERAGE_PLUGIN_DESIGN.md`
-- Based on rehearse plugin pattern
+Deployment manifests:
+- `github/ci/prow-deploy/kustom/base/manifests/local/prow-coverage-deployment.yaml`
+- `github/ci/prow-deploy/kustom/base/manifests/local/prow-coverage-service.yaml`
+- `github/ci/prow-deploy/kustom/base/manifests/local/prow-coverage-rbac.yaml`
+
+The `--jobs-namespace` flag is set via a kustomize overlay patch in:
+- `github/ci/prow-deploy/kustom/overlays/kubevirt-prow-control-plane/patches/JsonRFC6902/prow-coverage-deployment.yaml`
+
+## Development
+
+To build and push the plugin images:
+
+```bash
+# Build and push both images
+make push
+
+# Push only the plugin server image
+make push-plugin
+
+# Push only the ProwJob runner image
+make push-job
+```

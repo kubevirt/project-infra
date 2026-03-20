@@ -66,14 +66,14 @@ var _ = Describe("detectGoFileChanges", func() {
 		),
 		Entry("no go files",
 			[]string{
-			"github/ci/prow-deploy/prow-deploy.yaml",
-			"README.md",
-		},
-		false,
-	),
-	Entry("last is a go file",
-		[]string{
-			"github/ci/prow-deploy/prow-deploy.yaml",
+				"github/ci/prow-deploy/prow-deploy.yaml",
+				"README.md",
+			},
+			false,
+		),
+		Entry("last is a go file",
+			[]string{
+				"github/ci/prow-deploy/prow-deploy.yaml",
 				"README.md",
 				"pkg/git/blame_test.go",
 			},
