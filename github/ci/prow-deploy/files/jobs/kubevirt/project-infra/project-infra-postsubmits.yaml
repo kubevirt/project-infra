@@ -622,7 +622,10 @@ postsubmits:
       always_run: false
       run_if_changed: "github/ci/prow-deploy/.*"
       annotations:
-        testgrid-create-test-group: "false"
+        testgrid-dashboards: kubevirt-project-infra-postsubmits
+        testgrid-days-of-results: "90"
+        testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
+        testgrid-num-failures-to-alert: "1"
       decorate: true
       branches:
       - ^main$
@@ -655,7 +658,10 @@ postsubmits:
       always_run: false
       run_if_changed: "github/ci/prow-deploy/kustom/overlays/prow-workloads/.*|github/ci/prow-deploy/kustom/components/.*"
       annotations:
-        testgrid-create-test-group: "false"
+        testgrid-dashboards: kubevirt-project-infra-postsubmits
+        testgrid-days-of-results: "90"
+        testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
+        testgrid-num-failures-to-alert: "1"
       decorate: true
       branches:
       - ^main$
@@ -687,7 +693,10 @@ postsubmits:
     - name: post-project-infra-ci-search-deployment
       always_run: false
       annotations:
-        testgrid-create-test-group: "false"
+        testgrid-dashboards: kubevirt-project-infra-postsubmits
+        testgrid-days-of-results: "90"
+        testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
+        testgrid-num-failures-to-alert: "1"
       decorate: true
       run_if_changed: "github/ci/services/ci-search/.*"
       branches:
@@ -725,7 +734,10 @@ postsubmits:
     - name: post-project-infra-grafana-deployment
       always_run: false
       annotations:
-        testgrid-create-test-group: "false"
+        testgrid-dashboards: kubevirt-project-infra-postsubmits
+        testgrid-days-of-results: "90"
+        testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
+        testgrid-num-failures-to-alert: "1"
       decorate: true
       run_if_changed: "github/ci/services/grafana/.*"
       branches:
