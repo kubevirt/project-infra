@@ -10,7 +10,7 @@ presubmits:
       preset-gcs-credentials: "true"
     spec:
       containers:
-      - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260313-8ae687e48
+      - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260316-25576911a
         command:
         - /ko-app/checkconfig
         args:
@@ -926,7 +926,7 @@ presubmits:
     spec:
       containers:
       - name: peribolos
-        image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260313-8ae687e48
+        image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260316-25576911a
         command:
         - /ko-app/peribolos
         # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
