@@ -466,6 +466,39 @@ presubmits:
             memory: 12Gi
         securityContext:
           privileged: true
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+    cluster: kubevirt-prow-control-plane
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-verify-rpms-cs10
+    optional: true
+    run_if_changed: WORKSPACE
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make verify-rpm-deps
+        env:
+        - name: KUBEVIRT_CENTOS_STREAM_VERSION
+          value: "10"
+        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        name: ""
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
   - always_run: true
     annotations:
       fork-per-release: "true"
