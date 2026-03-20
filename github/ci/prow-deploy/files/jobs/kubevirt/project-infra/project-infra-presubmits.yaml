@@ -36,7 +36,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+      - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -60,7 +60,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+      - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -82,7 +82,7 @@ presubmits:
     decorate: true
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+      - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -106,7 +106,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+      - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -138,7 +138,7 @@ presubmits:
           value: "1.25.1"
         - name: GOLANGCI_LINT_VERSION
           value: "v2.4.0"
-        image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         resources:
           requests:
             memory: "4Gi"
@@ -161,7 +161,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: "1.25.1"
-        image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         resources:
           requests:
             memory: "4Gi"
@@ -178,7 +178,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -202,7 +202,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -228,7 +228,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -255,7 +255,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -281,7 +281,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -311,7 +311,7 @@ presubmits:
       base_ref: main
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -338,7 +338,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -364,7 +364,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -390,7 +390,7 @@ presubmits:
     cluster: prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -416,7 +416,7 @@ presubmits:
     cluster: prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -442,7 +442,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -466,7 +466,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -492,7 +492,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -517,7 +517,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -542,7 +542,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -570,7 +570,7 @@ presubmits:
       preset-project-infra-image-build-linux: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -598,7 +598,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -623,7 +623,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -648,7 +648,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -673,7 +673,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -698,7 +698,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -723,7 +723,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -748,7 +748,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -781,7 +781,7 @@ presubmits:
       securityContext:
         runAsUser: 0
       containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20260307-1702eaf
+        - image: quay.io/kubevirtci/prow-deploy:v20260319-c8f1db8
           env:
           - name: GITHUB_TOKEN
             value: "/etc/github/oauth"
@@ -818,7 +818,7 @@ presubmits:
     cluster: prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -878,7 +878,7 @@ presubmits:
           env:
           - name: GIMME_GO_VERSION
             value: "1.25.1"
-          image: quay.io/kubevirtci/golang:v20260306-351d3b1
+          image: quay.io/kubevirtci/golang:v20260319-c8f1db8
           resources:
             requests:
               memory: "2Gi"
@@ -901,7 +901,7 @@ presubmits:
       base_ref: master
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+      - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         command:
         - github/ci/testgrid/hack/check.sh
         securityContext:
@@ -1003,7 +1003,7 @@ presubmits:
     run_if_changed: 'robots/job-config-validator/.*|pkg/.*|go.mod|go.sum'
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+      - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         env:
         - name: GIMME_GO_VERSION
           value: "1.25.1"
