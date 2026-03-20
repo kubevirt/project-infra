@@ -314,6 +314,7 @@ dashboards:
 - name: kubevirt-csi-driver-presubmits
 - name: kubevirt-containerdisks-periodics
 - name: kubevirt-project-infra-periodics
+- name: kubevirt-project-infra-postsubmits
 
 dashboard_groups:
 - name: kubevirt
@@ -333,6 +334,7 @@ dashboard_groups:
   - kubevirt-csi-driver-presubmits
   - kubevirt-containerdisks-periodics
   - kubevirt-project-infra-periodics
+  - kubevirt-project-infra-postsubmits
 
 test_groups:
   - gcs_prefix: origin-ci-test/pr-logs/directory/pull-ci-kubevirt-hyperconverged-cluster-operator-main-ci-index
