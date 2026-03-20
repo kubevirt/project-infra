@@ -621,7 +621,7 @@ postsubmits:
     - name: post-project-infra-kubevirt-prow-control-plane-deployment
       always_run: false
       run_if_changed: "github/ci/prow-deploy/.*"
-      annotations:
+      annotations: &deploy_postsubmit_annotations
         testgrid-dashboards: kubevirt-project-infra-postsubmits
         testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
         testgrid-num-failures-to-alert: "1"
@@ -656,10 +656,7 @@ postsubmits:
     - name: post-project-infra-prow-workloads-deployment
       always_run: false
       run_if_changed: "github/ci/prow-deploy/kustom/overlays/prow-workloads/.*|github/ci/prow-deploy/kustom/components/.*"
-      annotations:
-        testgrid-dashboards: kubevirt-project-infra-postsubmits
-        testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
-        testgrid-num-failures-to-alert: "1"
+      annotations: *deploy_postsubmit_annotations
       decorate: true
       branches:
       - ^main$
@@ -690,10 +687,7 @@ postsubmits:
               memory: "8Gi"
     - name: post-project-infra-ci-search-deployment
       always_run: false
-      annotations:
-        testgrid-dashboards: kubevirt-project-infra-postsubmits
-        testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
-        testgrid-num-failures-to-alert: "1"
+      annotations: *deploy_postsubmit_annotations
       decorate: true
       run_if_changed: "github/ci/services/ci-search/.*"
       branches:
@@ -730,10 +724,7 @@ postsubmits:
               memory: "8Gi"
     - name: post-project-infra-grafana-deployment
       always_run: false
-      annotations:
-        testgrid-dashboards: kubevirt-project-infra-postsubmits
-        testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
-        testgrid-num-failures-to-alert: "1"
+      annotations: *deploy_postsubmit_annotations
       decorate: true
       run_if_changed: "github/ci/services/grafana/.*"
       branches:
