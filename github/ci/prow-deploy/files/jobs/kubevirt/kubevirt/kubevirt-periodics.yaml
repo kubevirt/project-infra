@@ -771,10 +771,6 @@ periodics:
       - /bin/sh
       - -ce
       - |
-        # TODO: remove yq installation after bootstrap image tag bump
-        curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
-        chmod +x ./yq && mv ./yq /usr/local/bin/yq
-
         # get kubectl
         curl -Lo ./kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
         chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
@@ -919,10 +915,6 @@ periodics:
       - /bin/sh
       - -ce
       - |
-        # TODO: remove yq installation after golang image tag bump
-        curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
-        chmod +x ./yq && mv ./yq /usr/local/bin/yq
-
         # get kubectl
         curl -L "https://dl.k8s.io/release/v1.19.7/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
         chmod +x /usr/local/bin/kubectl
@@ -996,10 +988,6 @@ periodics:
       - /bin/sh
       - -c
       - |
-        # TODO: remove yq installation after golang image tag bump
-        curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
-        chmod +x ./yq && mv ./yq /usr/local/bin/yq
-
         # get kubectl
         curl -L "https://dl.k8s.io/release/v1.19.7/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
         chmod +x /usr/local/bin/kubectl
