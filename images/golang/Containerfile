@@ -1,7 +1,7 @@
 ARG ARCH
 FROM bootstrap-$ARCH
 
-ENV GIMME_GO_VERSION=1.24.9
+ENV GIMME_GO_VERSION=1.25.8
 
 COPY entrypoint.sh /usr/local/bin/
 
