@@ -710,6 +710,7 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    preset-gomaxprocs-16: "true"
     preset-podman-in-container-enabled: "true"
   max_concurrency: 5
   name: periodic-kubevirt-kind-e2e-test-ARM64
@@ -754,6 +755,7 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    preset-gomaxprocs-16: "true"
     preset-podman-in-container-enabled: "true"
   max_concurrency: 1
   name: periodic-kubevirt-kind-conformance-test-ARM64
@@ -890,6 +892,7 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-unnested: "false"
+    preset-gomaxprocs-4: "true"
   max_concurrency: 10
   name: periodic-kubevirt-unit-test-Arm64
   spec:

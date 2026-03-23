@@ -594,6 +594,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     labels:
+      preset-gomaxprocs-4: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-unit-test-arm64
     skip_branches:
@@ -1240,6 +1241,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      preset-gomaxprocs-16: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 4
     name: pull-kubevirt-e2e-kind-1.35-sig-compute-arm64
@@ -1283,6 +1285,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      preset-gomaxprocs-16: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 2
     name: pull-kubevirt-e2e-kind-1.35-sig-compute-conformance-arm64

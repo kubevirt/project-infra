@@ -786,6 +786,16 @@ presets:
       value: linux
     - name: GOARCH
       value: amd64
+- labels:
+    preset-gomaxprocs-4: "true"
+  env:
+  - name: GOMAXPROCS
+    value: "4"
+- labels:
+    preset-gomaxprocs-16: "true"
+  env:
+  - name: GOMAXPROCS
+    value: "16"
 
 # default preset with no labels, settings common to all jobs
 - env:
