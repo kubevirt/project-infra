@@ -1209,6 +1209,21 @@ periodics:
       env:
       - name: CLUSTER_LIVEZ_ENDPOINT
         value: https://l1vh-prow-test-0.westus3.cloudapp.azure.com:6443/livez?verbose
+- name: periodic-project-infra-prow-kubevirt-performance-livez
+  annotations: *cluster_livez_annotations
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 5m
+    grace_period: 1m
+  interval: 1h
+  max_concurrency: 1
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_LIVEZ_ENDPOINT
+        value: https://api.kubevirt-performance.ci.kubevirt.io:6443/livez?verbose
 - name: periodic-project-infra-prow-s390x-workloads-livez
   annotations:
     <<: *cluster_livez_annotations
@@ -1226,3 +1241,54 @@ periodics:
       env:
       - name: CLUSTER_LIVEZ_ENDPOINT
         value: https://195.212.74.206:6443/livez?verbose
+- name: periodic-project-infra-prow-s390x-e2e-test-livez
+  annotations:
+    <<: *cluster_livez_annotations
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 5m
+    grace_period: 1m
+  interval: 1h
+  max_concurrency: 1
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_LIVEZ_ENDPOINT
+        value: https://141.125.104.27:6443/livez?verbose
+- name: periodic-project-infra-prow-s390x-openshift-livez
+  annotations:
+    <<: *cluster_livez_annotations
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 5m
+    grace_period: 1m
+  interval: 1h
+  max_concurrency: 1
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_LIVEZ_ENDPOINT
+        value: https://195.212.74.206:6004/livez?verbose
+- name: periodic-project-infra-prow-s390x-secure-execution-livez
+  annotations:
+    <<: *cluster_livez_annotations
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 5m
+    grace_period: 1m
+  interval: 1h
+  max_concurrency: 1
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_LIVEZ_ENDPOINT
+        value: https://195.212.74.206:6003/livez?verbose

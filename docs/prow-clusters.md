@@ -20,7 +20,7 @@ It is used to host the [Prow] control plane and a couple of additional services.
 
 ## Prow Workloads
 
-This cluster hosted on [IBM Cloud Classic] and leveraging bare-metal servers is provided by [Red Hat].
+This federated cluster hosted on [IBM Cloud Classic] and leveraging bare-metal servers is provided by [Red Hat].
 
 In Prow’s configuration, it is referenced using the name `prow-workloads`.
 
@@ -31,7 +31,7 @@ It is used to run test lanes that are resource-intensive or require specific cap
 
 ## Prow AMD Workloads
 
-This cluster leveraging an [`AMD EPYC 7413`] processor is provided by [AMD].
+This federated cluster leveraging an [`AMD EPYC 7413`] processor is provided by [AMD].
 
 In Prow’s configuration, it is referenced using the name `amd-workloads`.
 
@@ -43,7 +43,7 @@ It is used to test the support of the [AMD SEV] for confidential VMs in KubeVirt
 
 ## Prow ARM64 Workloads
 
-This cluster hosted on [AWS] and leveraging an [`AWS Graviton2`] processor is provided by [ARM].
+This federated cluster hosted on [AWS] and leveraging an [`AWS Graviton2`] processor is provided by [ARM].
 
 In Prow’s configuration, it is referenced using the name `prow-arm64-workloads`.
 
@@ -56,7 +56,7 @@ It is used to test the support of the [ARM64] architecture in KubeVirt.
 
 ## Prow HyperV Workloads
 
-This cluster hosted on [Azure] and leveraging Microsoft Azure Linux is provided by [Microsoft].
+This federated cluster hosted on [Azure] and leveraging Microsoft Azure Linux is provided by [Microsoft].
 
 In Prow’s configuration, it is referenced using the name `prow-hyperv-workloads`.
 
@@ -66,9 +66,19 @@ It is used to test the support of the [HyperV] hypervisor in KubeVirt.
 [Azure]: https://azure.microsoft.com/
 [HyperV]: https://learn.microsoft.com/windows-server/virtualization/hyper-v/
 
+## Prow Performance
+
+This KubevirtCI external cluster hosted on [IBM Cloud Classic] and leveraging bare-metal servers is provided by [Red Hat].
+
+In Prow’s configuration, it is referenced using the name `kubevirt-performance`.
+
+It is used to run test lanes for [performance jobs].
+
+[performance jobs]: https://prow.ci.kubevirt.io/?job=*kubevirt-performance*
+
 ## Prow s390x Workloads
 
-This cluster leveraging an `IBM/S390` processor is provided by [IBM].
+This federated cluster leveraging an `IBM/S390` processor is provided by [IBM].
 
 In Prow’s configuration, it is referenced using the name `prow-s390x-workloads`.
 
@@ -76,3 +86,33 @@ It is used to test the support of the [s390x] architecture in KubeVirt.
 
 [IBM]: https://www.ibm.com/
 [s390x]: https://docs.kernel.org/arch/s390/index.html
+
+## Prow s390x e2e test
+
+This KubevirtCI external cluster leveraging an `IBM/S390` processor is provided by [IBM].
+
+In Prow’s configuration, it is referenced using the name `prow-s390x-e2e-test`.
+
+It is used to run test lanes for [s390x e2e testing].
+
+[s390x e2e testing]: https://prow.ci.kubevirt.io/?job=*-e2e-test-S390X*
+
+## Prow s390x OpenShift
+
+This KubevirtCI external cluster leveraging an `IBM/S390` processor is provided by [IBM].
+
+In Prow’s configuration, it is referenced using the name `prow-s390x-openshift`.
+
+It is used to run test lanes for [s390x CDI testing] with storage requirements.
+
+[s390x CDI testing]: https://prow.ci.kubevirt.io/?job=*-containerized-data-importer-e2e-s390x*
+
+## Prow s390x Secure Execution
+
+This KubevirtCI external cluster leveraging an `IBM/S390` processor is provided by [IBM].
+
+In Prow’s configuration, it is referenced using the name `prow-s390x-secure-execution`.
+
+It is used to test the support of the [Secure Execution] for confidential VMs in KubeVirt.
+
+[Secure Execution]: https://www.ibm.com/docs/en/linux-on-systems?topic=security-secure-execution-linux
