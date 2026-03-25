@@ -24,6 +24,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"sigs.k8s.io/prow/pkg/github"
 )
 
 func TestParseHTMLURL(t *testing.T) {
@@ -168,5 +170,177 @@ func TestInitRequiredPresubmits(t *testing.T) {
 				t.Errorf("%s should NOT be required but is", tc.name)
 			}
 		}
+	}
+}
+
+func TestExtractPresubmitName(t *testing.T) {
+	cases := []struct {
+		name      string
+		targetURL string
+		expected  string
+	}{
+		{
+			name:      "prow target URL",
+			targetURL: "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14804/pull-kubevirt-build-s390x/1234567890",
+			expected:  "pull-kubevirt-build-s390x",
+		},
+		{
+			name:      "no match",
+			targetURL: "https://coveralls.io/builds/abc",
+			expected:  "",
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := extractPresubmitName(tc.targetURL)
+			if actual != tc.expected {
+				t.Errorf("expected %q, got %q", tc.expected, actual)
+			}
+		})
+	}
+}
+
+func TestIsE2EJob(t *testing.T) {
+	cases := []struct {
+		name     string
+		expected bool
+	}{
+		{"pull-kubevirt-e2e-k8s-1.33-sig-compute", true},
+		{"pull-kubevirt-e2e-kind-sriov", true},
+		{"pull-kubevirt-build", false},
+		{"pull-kubevirt-unit-test", false},
+		{"pull-kubevirt-generate", false},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := isE2EJob(tc.name)
+			if actual != tc.expected {
+				t.Errorf("isE2EJob(%q) = %v, want %v", tc.name, actual, tc.expected)
+			}
+		})
+	}
+}
+
+func prowTargetURL(jobName string) string {
+	return "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/1/" + jobName + "/1234567890"
+}
+
+func TestNotFitForRetest(t *testing.T) {
+	// Set up the required presubmit map for tests
+	savedMap := presubmitRequiredMap
+	defer func() { presubmitRequiredMap = savedMap }()
+
+	presubmitRequiredMap = map[string]struct{}{
+		"pull-kubevirt-build":                      {},
+		"pull-kubevirt-build-s390x":                {},
+		"pull-kubevirt-generate":                   {},
+		"pull-kubevirt-verify-go-mod":              {},
+		"pull-kubevirt-unit-test":                  {},
+		"pull-kubevirt-e2e-k8s-1.33-sig-compute":  {},
+		"pull-kubevirt-e2e-k8s-1.34-sig-compute":  {},
+		"pull-kubevirt-e2e-k8s-1.35-sig-compute":  {},
+		"pull-kubevirt-e2e-k8s-1.33-sig-operator": {},
+		"pull-kubevirt-e2e-k8s-1.34-sig-operator": {},
+		"pull-kubevirt-e2e-k8s-1.35-sig-operator": {},
+		"pull-kubevirt-e2e-k8s-1.33-sig-storage":  {},
+		"pull-kubevirt-e2e-k8s-1.34-sig-storage":  {},
+		"pull-kubevirt-e2e-k8s-1.35-sig-storage":  {},
+	}
+
+	cases := []struct {
+		name            string
+		failedRequired  []string
+		allStatuses     []github.Status
+		expectNotFit    bool
+		expectSubstring string
+	}{
+		{
+			name:           "deterministic build failure (PR 14804 pattern)",
+			failedRequired: []string{"pull-kubevirt-build-s390x", "pull-kubevirt-generate", "pull-kubevirt-verify-go-mod"},
+			allStatuses: []github.Status{
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-build-s390x")},
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-generate")},
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-verify-go-mod")},
+				{State: "success", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-compute")},
+			},
+			expectNotFit:    true,
+			expectSubstring: "Deterministic jobs failed",
+		},
+		{
+			name:           "e2e SIG lane fails on all k8s versions (PR 17243 pattern)",
+			failedRequired: []string{"pull-kubevirt-e2e-k8s-1.33-sig-operator", "pull-kubevirt-e2e-k8s-1.34-sig-operator"},
+			allStatuses: []github.Status{
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-operator")},
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.34-sig-operator")},
+				{State: "success", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-compute")},
+				{State: "success", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.34-sig-compute")},
+				{State: "success", TargetURL: prowTargetURL("pull-kubevirt-build")},
+			},
+			expectNotFit:    true,
+			expectSubstring: "E2E lane(s) failing on all k8s versions: sig-operator",
+		},
+		{
+			name:           "e2e failure on some but not all k8s versions (flake)",
+			failedRequired: []string{"pull-kubevirt-e2e-k8s-1.33-sig-compute"},
+			allStatuses: []github.Status{
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-compute")},
+				{State: "success", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.34-sig-compute")},
+				{State: "success", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.35-sig-compute")},
+			},
+			expectNotFit: false,
+		},
+		{
+			name:           "e2e failure on single k8s version only (no multi-version data)",
+			failedRequired: []string{"pull-kubevirt-e2e-k8s-1.33-sig-storage"},
+			allStatuses: []github.Status{
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-storage")},
+			},
+			expectNotFit: false,
+		},
+		{
+			name:           "multiple e2e SIG lanes failing on all versions",
+			failedRequired: []string{"pull-kubevirt-e2e-k8s-1.33-sig-operator", "pull-kubevirt-e2e-k8s-1.34-sig-operator", "pull-kubevirt-e2e-k8s-1.33-sig-storage", "pull-kubevirt-e2e-k8s-1.34-sig-storage"},
+			allStatuses: []github.Status{
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-operator")},
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.34-sig-operator")},
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-storage")},
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.34-sig-storage")},
+				{State: "success", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-compute")},
+				{State: "success", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.34-sig-compute")},
+			},
+			expectNotFit:    true,
+			expectSubstring: "sig-operator",
+		},
+		{
+			name:           "mixed deterministic and e2e failures prefers deterministic reason",
+			failedRequired: []string{"pull-kubevirt-unit-test", "pull-kubevirt-e2e-k8s-1.33-sig-operator", "pull-kubevirt-e2e-k8s-1.34-sig-operator"},
+			allStatuses: []github.Status{
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-unit-test")},
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-operator")},
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.34-sig-operator")},
+			},
+			expectNotFit:    true,
+			expectSubstring: "Deterministic jobs failed",
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			reason := notFitForRetest(tc.failedRequired, tc.allStatuses)
+			if tc.expectNotFit {
+				if reason == "" {
+					t.Error("expected not fit for retest, but got empty reason")
+				}
+				if tc.expectSubstring != "" && !strings.Contains(reason, tc.expectSubstring) {
+					t.Errorf("expected reason to contain %q, got %q", tc.expectSubstring, reason)
+				}
+			} else {
+				if reason != "" {
+					t.Errorf("expected fit for retest, but got reason: %q", reason)
+				}
+			}
+		})
 	}
 }
