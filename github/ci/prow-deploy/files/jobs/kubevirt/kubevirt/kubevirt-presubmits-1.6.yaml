@@ -456,6 +456,8 @@ presubmits:
     labels:
       preset-bazel-unnested: "true"
     name: pull-kubevirt-unit-test-s390x-1.6
+    # TODO: revert once the prow-s390x-workloads cluster is healthy again
+    optional: true
     spec:
       containers:
       - command:
