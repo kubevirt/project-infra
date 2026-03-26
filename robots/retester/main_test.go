@@ -201,23 +201,30 @@ func TestExtractPresubmitName(t *testing.T) {
 	}
 }
 
-func TestIsE2EJob(t *testing.T) {
+func TestDeterministicJobPattern(t *testing.T) {
 	cases := []struct {
 		name     string
 		expected bool
 	}{
-		{"pull-kubevirt-e2e-k8s-1.33-sig-compute", true},
-		{"pull-kubevirt-e2e-kind-sriov", true},
-		{"pull-kubevirt-build", false},
+		{"pull-kubevirt-build", true},
+		{"pull-kubevirt-build-arm64", true},
+		{"pull-kubevirt-build-s390x", true},
+		{"pull-kubevirt-build-cs10", true},
+		{"pull-kubevirt-generate", true},
+		{"pull-kubevirt-e2e-k8s-1.33-sig-compute", false},
+		{"pull-kubevirt-e2e-kind-sriov", false},
 		{"pull-kubevirt-unit-test", false},
-		{"pull-kubevirt-generate", false},
+		{"pull-kubevirt-verify-go-mod", false},
+		{"pull-kubevirt-code-lint", false},
+		{"pull-kubevirt-goveralls", false},
+		{"pull-kubevirt-fossa", false},
 	}
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual := isE2EJob(tc.name)
+			actual := deterministicJobPattern.MatchString(tc.name)
 			if actual != tc.expected {
-				t.Errorf("isE2EJob(%q) = %v, want %v", tc.name, actual, tc.expected)
+				t.Errorf("deterministicJobPattern.MatchString(%q) = %v, want %v", tc.name, actual, tc.expected)
 			}
 		})
 	}
@@ -258,11 +265,10 @@ func TestNotFitForRetest(t *testing.T) {
 	}{
 		{
 			name:           "deterministic build failure (PR 14804 pattern)",
-			failedRequired: []string{"pull-kubevirt-build-s390x", "pull-kubevirt-generate", "pull-kubevirt-verify-go-mod"},
+			failedRequired: []string{"pull-kubevirt-build-s390x", "pull-kubevirt-generate"},
 			allStatuses: []github.Status{
 				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-build-s390x")},
 				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-generate")},
-				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-verify-go-mod")},
 				{State: "success", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-compute")},
 			},
 			expectNotFit:    true,
@@ -315,14 +321,24 @@ func TestNotFitForRetest(t *testing.T) {
 		},
 		{
 			name:           "mixed deterministic and e2e failures prefers deterministic reason",
-			failedRequired: []string{"pull-kubevirt-unit-test", "pull-kubevirt-e2e-k8s-1.33-sig-operator", "pull-kubevirt-e2e-k8s-1.34-sig-operator"},
+			failedRequired: []string{"pull-kubevirt-build", "pull-kubevirt-e2e-k8s-1.33-sig-operator", "pull-kubevirt-e2e-k8s-1.34-sig-operator"},
 			allStatuses: []github.Status{
-				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-unit-test")},
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-build")},
 				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-operator")},
 				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.34-sig-operator")},
 			},
 			expectNotFit:    true,
 			expectSubstring: "Deterministic jobs failed",
+		},
+		{
+			name:           "non-build non-e2e failure does not trigger deterministic skip",
+			failedRequired: []string{"pull-kubevirt-verify-go-mod"},
+			allStatuses: []github.Status{
+				{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-verify-go-mod")},
+				{State: "success", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-compute")},
+				{State: "success", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.34-sig-compute")},
+			},
+			expectNotFit: false,
 		},
 	}
 

@@ -242,15 +242,13 @@ func extractPresubmitName(targetURL string) string {
 	return m[1]
 }
 
-func isE2EJob(name string) bool {
-	return strings.Contains(name, "-e2e-")
-}
+var deterministicJobPattern = regexp.MustCompile(`-build(-|$)|-generate$`)
 
 func notFitForRetest(failedRequired []string, allStatuses []github.Status) string {
-	// Condition 1: any non-e2e required job failed (deterministic failure)
+	// Condition 1: a build or generate job failed (deterministic failure)
 	var deterministicFailures []string
 	for _, name := range failedRequired {
-		if !isE2EJob(name) {
+		if deterministicJobPattern.MatchString(name) {
 			deterministicFailures = append(deterministicFailures, name)
 		}
 	}
