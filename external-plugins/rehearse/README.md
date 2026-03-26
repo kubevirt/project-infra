@@ -1,4 +1,4 @@
-# rehearse - external plugin for prow
+# rehearse - external plugin for Prow
 
 ## Motivation
 
@@ -10,7 +10,7 @@ to merge first.
 
 ## Overview
 
-Rehearse is a Prow external plugin that:
+Rehearse is a Prow external plugin for presubmit jobs that:
 - Listens for GitHub issue comment events (`created` on open PRs) to handle `/rehearse` commands
 - When `--always-run` is enabled (disabled by default), also listens for pull request `opened` and `synchronize` events to automatically trigger rehearsals
 - Detects changes to Prow job configuration files in a PR by rebasing and diffing the PR head against the base
