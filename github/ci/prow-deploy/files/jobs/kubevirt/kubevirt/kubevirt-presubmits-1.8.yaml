@@ -508,8 +508,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     name: pull-kubevirt-unit-test-s390x-1.8
-    # TODO: revert once the prow-s390x-workloads cluster is healthy again
-    optional: true
     spec:
       containers:
       - command:

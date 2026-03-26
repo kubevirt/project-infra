@@ -42,8 +42,7 @@ presubmits:
       annotations:
         fork-per-release: "true"
       always_run: true
-      # TODO: revert once the prow-s390x-workloads cluster is healthy again
-      optional: true
+      optional: false
       decorate: true
       cluster: prow-s390x-workloads
       decoration_config:
@@ -69,8 +68,7 @@ presubmits:
       annotations:
         fork-per-release: "true"
       always_run: true
-      # TODO: revert once the prow-s390x-workloads cluster is healthy again
-      optional: true
+      optional: false
       decorate: true
       cluster: prow-s390x-workloads
       decoration_config:
