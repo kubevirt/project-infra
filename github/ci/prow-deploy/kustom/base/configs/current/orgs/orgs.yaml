@@ -257,6 +257,13 @@ orgs:
         allow_rebase_merge: false
         description: Operator pattern for managing multi-operator products
         has_projects: true
+      iommufd-device-plugin:
+        allow_rebase_merge: false
+        allow_squash_merge: false
+        default_branch: main
+        description: A Kubernetes device plugin for iommufd devices
+        has_projects: true
+        homepage: https://kubevirt.io
       irsa-mutation-webhook:
         allow_merge_commit: false
         allow_rebase_merge: false
@@ -1075,5 +1082,6 @@ orgs:
           - xpivarc
           - lyarwood
         repos:
+          iommufd-device-plugin: admin
           kubevirt-aie: admin
           kubevirt-aie-webhook: admin

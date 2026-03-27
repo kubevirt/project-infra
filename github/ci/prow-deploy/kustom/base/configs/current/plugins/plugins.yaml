@@ -505,6 +505,14 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/iommufd-device-plugin:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+
   kubevirt/kubevirt-aie:
     plugins:
     - approve
@@ -661,6 +669,7 @@ approve:
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
+  - kubevirt/iommufd-device-plugin
   - kubevirt/kubevirt-aie
   - kubevirt/kubevirt-aie-webhook
   require_self_approval: true

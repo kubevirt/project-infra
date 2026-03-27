@@ -144,6 +144,7 @@ tide:
     kubevirt/virt-template: merge
     kubevirt/kubevirt-migration-controller: squash
     kubevirt/kubevirt-migration-operator: squash
+    kubevirt/iommufd-device-plugin: merge
     kubevirt/kubevirt-aie: merge
     kubevirt/kubevirt-aie-webhook: merge
 
@@ -219,6 +220,7 @@ tide:
     - kubevirt/virt-template
     - kubevirt/kubevirt-migration-controller
     - kubevirt/kubevirt-migration-operator
+    - kubevirt/iommufd-device-plugin
     - kubevirt/kubevirt-aie
     - kubevirt/kubevirt-aie-webhook
     labels:
