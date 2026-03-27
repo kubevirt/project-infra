@@ -1074,6 +1074,7 @@ orgs:
           - jean-edouard
           - xpivarc
           - lyarwood
+          - fossedihelm
         repos:
           kubevirt-aie: admin
           kubevirt-aie-webhook: admin
