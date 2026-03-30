@@ -183,7 +183,11 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/bash
         - -ce
-        - automation/test.sh
+        - |
+          sysctl -w fs.inotify.max_user_instances=512
+          sysctl -w fs.inotify.max_user_watches=1048576
+
+          automation/test.sh
         env:
         - name: TARGET
           value: kind-1.34-sev

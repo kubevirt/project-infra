@@ -1366,8 +1366,12 @@ periodics:
     - command:
       - /usr/local/bin/runner.sh
       - /bin/sh
-      - -c
-      - automation/test.sh
+      - -ce
+      - |
+        sysctl -w fs.inotify.max_user_instances=512
+        sysctl -w fs.inotify.max_user_watches=1048576
+
+        automation/test.sh
       env:
       - name: KUBEVIRT_E2E_RUN_ALL_SUITES
         value: "true"
