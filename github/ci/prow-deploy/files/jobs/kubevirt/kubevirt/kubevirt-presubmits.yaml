@@ -98,7 +98,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -185,7 +185,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 5
     name: pull-kubevirt-e2e-kind-1.34-sev
-    # TODO: revert once the persistent job failures are fixed
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -697,7 +696,7 @@ presubmits:
         - name: KUBEVIRT_CENTOS_STREAM_VERSION
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
-          value: "2602251001-25ce1ccb15"
+          value: 2602251001-25ce1ccb15
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -705,7 +704,7 @@ presubmits:
             memory: 12Gi
         securityContext:
           privileged: true
-  - always_run: false 
+  - always_run: false
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
@@ -732,7 +731,7 @@ presubmits:
         - name: KUBEVIRT_CENTOS_STREAM_VERSION
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
-          value: "2602251001-25ce1ccb15"
+          value: 2602251001-25ce1ccb15
         - name: BUILD_ARCH
           value: crossbuild-aarch64
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
@@ -742,7 +741,7 @@ presubmits:
             memory: 8Gi
         securityContext:
           privileged: true
-  - always_run: false 
+  - always_run: false
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
@@ -769,7 +768,7 @@ presubmits:
         - name: KUBEVIRT_CENTOS_STREAM_VERSION
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
-          value: "2602251001-25ce1ccb15"
+          value: 2602251001-25ce1ccb15
         - name: BUILD_ARCH
           value: crossbuild-s390x
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
@@ -1097,7 +1096,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -1143,7 +1142,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -1185,7 +1184,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -1457,7 +1456,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -1549,7 +1548,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -1596,7 +1595,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -1639,7 +1638,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -1714,7 +1713,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -1771,175 +1770,13 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
           requests:
             cpu: "12"
             memory: 73Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-sig-network
-    run_before_merge: true
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.33-sig-network
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
-        name: ""
-        resources:
-          requests:
-            memory: 52Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-sig-storage
-    run_before_merge: true
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.33-sig-storage
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
-        name: ""
-        resources:
-          requests:
-            memory: 52Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 7h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-sig-compute
-    run_before_merge: true
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.33-sig-compute-parallel
-        - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
-          value: --usb 30M --usb 40M
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
-        name: ""
-        resources:
-          requests:
-            memory: 52Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 7h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-etcd-in-mem: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.33-sig-operator
-    run_before_merge: true
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.33-sig-operator
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
-        name: ""
-        resources:
-          requests:
-            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -1977,7 +1814,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -2020,7 +1857,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -2065,7 +1902,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -2108,7 +1945,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -2152,7 +1989,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -2194,7 +2031,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -2236,7 +2073,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -2280,7 +2117,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
@@ -2322,7 +2159,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: "1G"
+          value: 1G
         image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         name: ""
         resources:
