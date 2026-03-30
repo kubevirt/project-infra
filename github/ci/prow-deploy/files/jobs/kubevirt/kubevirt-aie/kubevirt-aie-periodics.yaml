@@ -23,7 +23,7 @@ periodics:
       - |
         export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
         git-pr.sh \
-          -c "./hack/sync-nv-rpms.sh && make generate" \
+          -c "./hack/sync-nv-rpms.sh" \
           -s "Sync el10nv RPMs for libvirt and qemu-kvm" \
           -R \
           -r kubevirt-aie \
