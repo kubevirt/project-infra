@@ -15,16 +15,24 @@ Rehearse is a Prow external plugin for presubmit jobs that:
 - When `--always-run` is enabled (disabled by default), also listens for pull request `opened` and `synchronize` events to automatically trigger rehearsals
 - Detects changes to Prow job configuration files in a PR by rebasing and diffing the PR head against the base
 - Compares job configs at the PR head vs base to identify modified or new presubmit jobs
-- Creates rehearsal ProwJobs prefixed with `rehearsal-` for each modified job
-- Jobs with the annotation `rehearsal.restricted: "true"` are excluded from rehearsal
+- Creates rehearsal ProwJobs prefixed with `rehearsal-` for each modified or new job
 
 ## Usage
 
 Comment on a PR to trigger rehearsals:
 
-`/rehearse` or `/rehearse all` - Rehearse all modified jobs
-`/rehearse <job-name>` - Rehearse a specific job
-`/rehearse ?` - List all jobs available for rehearsal
+```
+# Rehearse all modified jobs
+/rehearse
+# or
+/rehearse all
+
+# Rehearse a specific job
+/rehearse <job-name>
+
+# List all jobs available for rehearsal
+/rehearse ?
+```
 
 Multiple `/rehearse <job-name>` lines can be included in a single comment to rehearse several specific jobs at once.
 
@@ -48,6 +56,13 @@ Deployment manifests:
 The `--jobs-namespace` flag is set via a kustomize overlay patch in:
 - `github/ci/prow-deploy/kustom/overlays/kubevirt-prow-control-plane/patches/JsonRFC6902/prow-rehearse-deployment.yaml`
 
+## Limitations
+
+- Only supports **presubmit** jobs — postsubmit and periodic jobs are not supported
+- Only **modified or new** presubmit jobs are eligible for rehearsal — unmodified jobs cannot be rehearsed even with `/rehearse <job-name>`
+- Jobs that reference `project-infra` in `extra_refs` will fail due to a clone path conflict with the PR's own checkout of `project-infra`
+- Job configs outside the `--jobs-config-base` path are not detected and will not be rehearsed
+- Jobs annotated with `rehearsal.restricted: "true"` are silently skipped
 
 ## Development
 
