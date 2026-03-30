@@ -26,8 +26,8 @@ require (
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/mod v0.30.0
-	golang.org/x/net v0.48.0
+	golang.org/x/mod v0.33.0
+	golang.org/x/net v0.50.0
 	golang.org/x/oauth2 v0.34.0
 	gonum.org/v1/plot v0.12.0
 	google.golang.org/api v0.191.0
@@ -38,7 +38,6 @@ require (
 	k8s.io/apimachinery v0.30.1
 	k8s.io/client-go v0.30.1
 	k8s.io/test-infra v0.0.0-20250115095034-1f33b84b2d0d
-	sigs.k8s.io/boskos v0.0.0-20241205030959-9f79a9e4406a
 	sigs.k8s.io/prow v0.0.0-20241224162210-8e8a5cfe7516
 	sigs.k8s.io/yaml v1.4.0
 )
@@ -137,7 +136,6 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.7 // indirect
 	github.com/hashicorp/golang-lru v1.0.2 // indirect
-	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
@@ -145,16 +143,13 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
-	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-zglob v0.0.2 // indirect
-	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/spdystream v0.2.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/mxk/go-flowrate v0.0.0-20140419014527-cca7078d478f // indirect
-	github.com/pelletier/go-toml v1.9.3 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pjbgf/sha1cd v0.3.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -166,13 +161,9 @@ require (
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/shurcooL/graphql v0.0.0-20181231061246-d48a9a75455f // indirect
 	github.com/skeema/knownhosts v1.3.1 // indirect
-	github.com/spf13/afero v1.9.2 // indirect
-	github.com/spf13/cast v1.3.1 // indirect
-	github.com/spf13/jwalterweatherman v1.1.0 // indirect
-	github.com/spf13/viper v1.8.1 // indirect
+	github.com/smarty/assertions v1.15.1 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
-	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/tektoncd/pipeline v0.61.0 // indirect
 	github.com/trivago/tgo v1.0.7 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
@@ -189,15 +180,15 @@ require (
 	go.uber.org/zap v1.27.0 // indirect
 	go4.org v0.0.0-20201209231011-d4a079459e60 // indirect
 	gocloud.dev v0.40.0 // indirect
-	golang.org/x/crypto v0.46.0 // indirect
+	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
-	golang.org/x/image v0.18.0 // indirect
-	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.39.0 // indirect
-	golang.org/x/term v0.38.0 // indirect
-	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/image v0.38.0 // indirect
+	golang.org/x/sync v0.20.0 // indirect
+	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/term v0.40.0 // indirect
+	golang.org/x/text v0.35.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
-	golang.org/x/tools v0.39.0 // indirect
+	golang.org/x/tools v0.42.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
 	google.golang.org/genproto v0.0.0-20240812133136-8ffd90a71988 // indirect
@@ -230,6 +221,6 @@ replace (
 	k8s.io/client-go => k8s.io/client-go v0.30.1
 )
 
-go 1.25
+go 1.25.0
 
 toolchain go1.25.1
