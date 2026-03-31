@@ -188,10 +188,11 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 				},
 			},
 			Name:           fmt.Sprintf("check-provision-k8s-%s.%s", semver.Major, semver.Minor),
-			MaxConcurrency: 1,
+			MaxConcurrency: 3,
 			Labels: map[string]string{
-				"preset-docker-mirror-proxy":         "true",
-				"preset-podman-in-container-enabled": "true",
+				"preset-docker-mirror-proxy":              "true",
+				"preset-kubevirtci-check-provision-env":    "true",
+				"preset-podman-in-container-enabled":       "true",
 			},
 			Cluster: cluster,
 			Spec: &v1.PodSpec{
@@ -205,14 +206,20 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 							"/usr/local/bin/runner.sh",
 							"/bin/sh",
 							"-c",
-							fmt.Sprintf("cd cluster-provision/k8s/%s.%s && KUBEVIRT_PSA='true' ../provision.sh", semver.Major, semver.Minor),
+							fmt.Sprintf("cd cluster-provision/k8s/%s.%s && ../provision.sh", semver.Major, semver.Minor),
+						},
+						Env: []v1.EnvVar{
+							{
+								Name:  "GIMME_GO_VERSION",
+								Value: "1.24.7",
+							},
 						},
 						SecurityContext: &v1.SecurityContext{
 							Privileged: &yes,
 						},
 						Resources: v1.ResourceRequirements{
 							Requests: v1.ResourceList{
-								v1.ResourceMemory: *resource.NewQuantity(8*1024*1024*1024, resource.BinarySI),
+								v1.ResourceMemory: *resource.NewQuantity(16*1024*1024*1024, resource.BinarySI),
 							},
 						},
 					},
