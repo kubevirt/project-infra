@@ -499,6 +499,8 @@ orgs:
         description: VM monitoring application based on WSGI, libvirt, flask and gevent, inspired by cAdvisor.
         has_projects: false
         has_wiki: false
+      vdpa-network-binding-plugin:
+        description: KubeVirt network binding plugin providing network vhost-vdpa interface support to VMs.
       virt-template:
         description: A KubeVirt add-on providing native, user-friendly templating workflows for KubeVirt virtual machines.
         has_projects: true
