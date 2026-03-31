@@ -42,18 +42,10 @@ type removeJobsOptions struct {
 
 func (o *removeJobsOptions) Validate() error {
 	if _, err := os.Stat(o.jobConfigPathKubevirtPresubmits); os.IsNotExist(err) {
-		if o.jobConfigPathKubevirtPresubmits == "" {
-			o.jobConfigPathKubevirtPresubmits = "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml"
-		}
-		if _, err := os.Stat(o.jobConfigPathKubevirtPresubmits); os.IsNotExist(err) {
-			return fmt.Errorf("jobConfigPathKubevirtPresubmits is required: %v", err)
-		}
+		return fmt.Errorf("jobConfigPathKubevirtPresubmits %q is required: %v", o.jobConfigPathKubevirtPresubmits, err)
 	}
 	if _, err := os.Stat(o.jobConfigPathKubevirtPeriodics); os.IsNotExist(err) {
-		o.jobConfigPathKubevirtPeriodics = "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml"
-		if _, err := os.Stat(o.jobConfigPathKubevirtPeriodics); os.IsNotExist(err) {
-			return fmt.Errorf("jobConfigPathKubevirtPeriodics is required: %v", err)
-		}
+		return fmt.Errorf("jobConfigPathKubevirtPeriodics %q is required: %v", o.jobConfigPathKubevirtPeriodics, err)
 	}
 	return nil
 }
@@ -61,6 +53,9 @@ func (o *removeJobsOptions) Validate() error {
 const (
 	shortUsage                    = "kubevirt remove jobs removes presubmit and periodic job definitions for kubevirt for unsupported kubevirtci providers"
 	fourReleasesRequiredAtMinimum = 4
+
+	defaultJobConfigPathKubevirtPresubmits = "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml"
+	defaultJobConfigPathKubevirtPeriodics  = "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml"
 )
 
 var removeJobsCommand = &cobra.Command{
@@ -95,8 +90,8 @@ func RemoveJobsCommand() *cobra.Command {
 }
 
 func init() {
-	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The directory of the kubevirt presubmit job definitions")
-	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
+	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", defaultJobConfigPathKubevirtPresubmits, "The directory of the kubevirt presubmit job definitions")
+	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", defaultJobConfigPathKubevirtPeriodics, "The path to the kubevirt periodic job definitions")
 	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.targetRelease, "target-release", "", "The target release for the jobs to remove (requires --force)")
 	removeJobsCommand.PersistentFlags().BoolVar(&removeJobsOpts.force, "force", false, "Whether the job definitions should be removed regardless of the state")
 }
