@@ -66,6 +66,39 @@ presubmits:
           resources:
             requests:
               memory: "52Gi"
+  - name: pull-hostpath-provisioner-k8s-e2e-overlay-csi
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "export HPP_CR_TYPE=overlay-csi && ./hack/k8s-e2e.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "52Gi"
   - name: pull-hostpath-provisioner-sanity
     skip_branches:
       - release-\d+\.\d+
