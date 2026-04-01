@@ -159,6 +159,30 @@ func FilterImpacts(impacts []Impact, timeRange TimeRange) []Impact {
 	return FilterImpactsBy(impacts, matchingTimeRange(timeRange))
 }
 
+// WithMinPercent returns a FilterOpt that keeps impacts with at least minPercent impact.
+func WithMinPercent(minPercent float64) FilterOpt {
+	return func(i Impact) bool {
+		return i.Percent >= minPercent
+	}
+}
+
+// ScrapeImpactsWithMinPercent works like ScrapeImpacts but uses a configurable minimum percentage threshold
+// instead of the default thresholds for each time range.
+func ScrapeImpactsWithMinPercent(testNameSubstring string, timeRange TimeRange, minPercent float64) ([]Impact, error) {
+	scrapeResultURL := NewScrapeURL(testNameSubstring, timeRange)
+	logger.Debugf("scraping search.ci for test %q with URL %q", testNameSubstring, scrapeResultURL)
+	resp, err := http.Get(scrapeResultURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get search.ci results from %s: %w", scrapeResultURL, err)
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read search.ci result from %s: %w", scrapeResultURL, err)
+	}
+	return FilterImpactsBy(ScrapeImpact(string(body)), WithMinPercent(minPercent)), nil
+}
+
 // FilterImpactsBy filters all impacts for which all filterOpts apply, i.e. each of them returns true
 func FilterImpactsBy(impacts []Impact, filterOpts ...FilterOpt) []Impact {
 	if impacts == nil {

@@ -51,6 +51,11 @@ type quarantineOptions struct {
 	filterPeriodicJobRunResults bool
 	filterLaneRegex             string
 
+	threeDayWarningThreshold      float64
+	threeDayCriticalThreshold     float64
+	fourteenDayWarningThreshold   float64
+	fourteenDayCriticalThreshold  float64
+
 	testName string
 
 	autoQuarantineOptions

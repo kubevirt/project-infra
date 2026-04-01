@@ -69,6 +69,10 @@ func init() {
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&outputFileOpts.OverwriteOutputFile, "overwrite-output-file", false, "whether to overwrite the output file")
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&quarantineOpts.filterPeriodicJobRunResults, "filter-periodic-job-run-results", true, "whether to filter the results for periodics")
 	mostFlakyTestsReportCmd.PersistentFlags().StringVar(&quarantineOpts.filterLaneRegex, "filter-lane-regex", filterLaneRegexDefault, "the regular expression to use to filter test lanes with")
+	mostFlakyTestsReportCmd.PersistentFlags().Float64Var(&quarantineOpts.threeDayWarningThreshold, "three-day-warning-threshold", 10.0, "minimum 3-day failure percentage to highlight as warning")
+	mostFlakyTestsReportCmd.PersistentFlags().Float64Var(&quarantineOpts.threeDayCriticalThreshold, "three-day-critical-threshold", 20.0, "minimum 3-day failure percentage to highlight as critical")
+	mostFlakyTestsReportCmd.PersistentFlags().Float64Var(&quarantineOpts.fourteenDayWarningThreshold, "fourteen-day-warning-threshold", 3.0, "minimum 14-day failure percentage to highlight as warning")
+	mostFlakyTestsReportCmd.PersistentFlags().Float64Var(&quarantineOpts.fourteenDayCriticalThreshold, "fourteen-day-critical-threshold", 5.0, "minimum 14-day failure percentage to highlight as critical")
 }
 
 var sigMatcher = regexp.MustCompile(`\[(sig-[^]]+)]`)
@@ -91,12 +95,25 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return fmt.Errorf("error while aggregating data: %w", err)
 	}
-	sigs, testNames, mostFlakyTestsBySig, err := aggregateMostFlakyTestsBySIG(topXTests)
+	thresholds := map[searchci.TimeRange][2]float64{
+		searchci.ThreeDays:    {quarantineOpts.threeDayWarningThreshold, quarantineOpts.threeDayCriticalThreshold},
+		searchci.FourteenDays: {quarantineOpts.fourteenDayWarningThreshold, quarantineOpts.fourteenDayCriticalThreshold},
+	}
+	sigs, testNames, mostFlakyTestsBySig, err := aggregateMostFlakyTestsBySIG(topXTests, thresholds)
 	if err != nil {
 		return err
 	}
 
-	reportTemplate, err := template.New("mostFlakyTests").Parse(mostFlakyTestsReportTemplate)
+	reportTemplate, err := template.New("mostFlakyTests").Funcs(template.FuncMap{
+		"isWarning": func(timeRange searchci.TimeRange, percent float64) bool {
+			t, ok := thresholds[timeRange]
+			return ok && percent >= t[0] && percent < t[1]
+		},
+		"isCritical": func(timeRange searchci.TimeRange, percent float64) bool {
+			t, ok := thresholds[timeRange]
+			return ok && percent >= t[1]
+		},
+	}).Parse(mostFlakyTestsReportTemplate)
 	if err != nil {
 		return fmt.Errorf("could not read template: %w", err)
 	}
@@ -114,11 +131,12 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 
 const noSIGKey = "NONE"
 
-func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string, testNames []string, mostFlakyTestsBySIG map[string]TestsPerSIG, err error) {
+func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests, thresholds map[searchci.TimeRange][2]float64) (sigs []string, testNames []string, mostFlakyTestsBySIG map[string]TestsPerSIG, err error) {
 	mostFlakyTests := make(map[string][]*TestToQuarantine)
 	for _, topXTest := range topXTests {
 		for _, timeRange := range mostFlakyTestsTimeRanges {
-			candidate, err := getQuarantineCandidate(topXTest, timeRange)
+			minPercent := thresholds[timeRange][0]
+			candidate, err := getQuarantineCandidate(topXTest, timeRange, minPercent)
 			if err != nil {
 				return nil, nil, nil, fmt.Errorf("could not scrape results for Test %q: %w", topXTest.Name, err)
 			}
@@ -189,8 +207,8 @@ func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string
 	return sigs, testNames, mostFlakyTestsBySIG, nil
 }
 
-func getQuarantineCandidate(topXTest *flakestats.TopXTest, timeRange searchci.TimeRange) (*TestToQuarantine, error) {
-	impacts, err := searchci.ScrapeImpacts(topXTest.Name, timeRange)
+func getQuarantineCandidate(topXTest *flakestats.TopXTest, timeRange searchci.TimeRange, minPercent float64) (*TestToQuarantine, error) {
+	impacts, err := searchci.ScrapeImpactsWithMinPercent(topXTest.Name, timeRange, minPercent)
 	if err != nil {
 		return nil, fmt.Errorf("could not scrape results for test %q: %w", topXTest.Name, err)
 	}

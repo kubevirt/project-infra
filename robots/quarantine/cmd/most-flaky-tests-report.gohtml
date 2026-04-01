@@ -55,6 +55,20 @@
             transition: transform var(--transition-speed);
         }
 
+        .impact-warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 4px 8px;
+            margin: 2px 0;
+        }
+
+        .impact-critical {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 4px 8px;
+            margin: 2px 0;
+        }
+
     </style>
 </head>
 <body>
@@ -90,9 +104,10 @@
                             <code title="{{ $testName }}">{{ $testName }}</code><br/>
                             {{ range $mostFlakyTest := $mostFlakyTests }}
                                 {{ range $relevantImpact := $mostFlakyTest.RelevantImpacts -}}
-                                    <div class="impact-entry" data-lane="{{ $relevantImpact.URLToDisplay }}">
+                                    <div class="impact-entry{{ if isCritical $mostFlakyTest.TimeRange $relevantImpact.Percent }} impact-critical{{ else if isWarning $mostFlakyTest.TimeRange $relevantImpact.Percent }} impact-warning{{ end }}" data-lane="{{ $relevantImpact.URLToDisplay }}">
                                     <span style="white-space: nowrap;">
                                         <a href="{{ $mostFlakyTest.SearchCIURL }}" title="execute query on search.ci">🔎</a>
+                                        {{ if isCritical $mostFlakyTest.TimeRange $relevantImpact.Percent }}🔴{{ else if isWarning $mostFlakyTest.TimeRange $relevantImpact.Percent }}🟡{{ end -}}
                                         💥<span title="Test has impact of {{ $relevantImpact.Percent }}%"> <b>{{ $relevantImpact.Percent }}%</b> over <b>{{ $mostFlakyTest.TimeRange }}</b></span> on<br/>
                                         <a href="{{ $relevantImpact.URL }}">{{ $relevantImpact.URLToDisplay }}</a>:</span> <span
                                             style="white-space: nowrap;">Failures: {{ range $buildURL := $relevantImpact.BuildURLs -}}
