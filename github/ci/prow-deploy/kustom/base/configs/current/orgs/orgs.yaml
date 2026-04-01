@@ -46,6 +46,7 @@ orgs:
       - cfilleke
       - chandramerla
       - codingben
+      - cuiyingd
       - dankenigsberg
       - dasionov
       - davidvossel
@@ -120,7 +121,6 @@ orgs:
       - Whitedyl
       - zhencliu
       - zhlhahaha
-      - cuiyingd
     members_can_create_repositories: false
     name: KubeVirt
     repos:
