@@ -225,6 +225,61 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-intel-tdx-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 30m0s
+      timeout: 4h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 1
+    name: pull-kubevirt-e2e-kind-1.35-tdx
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: kind-1.35-tdx
+        - name: KUBEVIRT_PROVIDER
+          value: kind-1.35
+        - name: KUBEVIRT_NUM_NODES
+          value: "2"
+        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        name: ""
+        resources:
+          requests:
+            memory: 18Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+        - mountPath: /dev/vfio/
+          name: vfio
+      dnsConfig:
+        nameservers:
+        - 8.8.8.8
+      dnsPolicy: None
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+      - hostPath:
+          path: /dev/vfio/
+          type: Directory
+        name: vfio
   - always_run: false
     annotations:
       fork-per-release: "true"
