@@ -167,7 +167,7 @@ if [ -z "${body}" ]; then
 fi
 
 if [ -n "$release_note_none" ]; then
-    body+='\n\n```release-note\nNONE\n```'
+    body+=$'\n\n```release-note\nNONE\n```'
 fi
 
 if [ -z "${head_branch}" ]; then
