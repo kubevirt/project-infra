@@ -22,100 +22,175 @@ set -o errexit
 set -o pipefail
 set -x
 
-usage() {
-    echo "Usage: $(basename "$0") -c \"<command>\" [-s \"<summary>\"] [-l <github-login>] [-t </path/to/github/token>] [-T <target-branch>] [-p </path/to/github/repo>] [-n \"<git-name>\"] [-e <git-email>]  [-b <pr-branch>] [-o <org>] [-r <repo>] [-L label1,..,labelN] [-m </path/where/command/should/be/run>] [-d <command-to-create-commit-message>] [-h <head-branch>]">&2
-}
-
-dry_run=
-command=
-summary=
-user=kubevirt-bot
-token=/etc/github/oauth
-repo_path=$(pwd)
-git_name=kubevirt-bot
-git_email=kubevirtbot@redhat.com
+# Constants and default values
+body=
 branch=autoupdate
-org=kubevirt
-repo=kubevirt
-command_path=$(pwd)
-targetbranch=master
+command=
+command_path=${PWD}
+description_command=
+dry_run=
+git_author=kubevirt-bot
+git_email=kubevirtbot@redhat.com
+head_branch=
 labels=
 missing_labels=
-description_command=
-title=
-body=
-head_branch=
+org=kubevirt
+progname=${0##*/}
 release_note_none=
+repo=kubevirt
+repo_path=${PWD}
+summary=
+targetbranch=master
+title=
+token=/etc/github/oauth
+user=kubevirt-bot
 
-while getopts ":Dc:s:l:t:T:p:n:e:b:o:r:m:L:M:d:h:RB:" opt; do
-    case "${opt}" in
-        D )
-            dry_run=true
-            ;;
-        c )
-            command="${OPTARG}"
-            ;;
-        s )
-            summary="${OPTARG}"
-            ;;
-        l )
-            user="${OPTARG}"
-            ;;
-        t )
-            token="${OPTARG}"
-            ;;
-        p )
-            repo_path="${OPTARG}"
-            ;;
-        n )
-            git_name="${OPTARG}"
-            ;;
-        e )
-            git_email="${OPTARG}"
-            ;;
-        b )
-            branch="${OPTARG}"
-            ;;
-        T )
-            targetbranch="${OPTARG}"
-            ;;
-        o )
-            org="${OPTARG}"
-            ;;
-        r )
-            repo="${OPTARG}"
-            ;;
-        m )
-            command_path="${OPTARG}"
-            ;;
-        L )
-            labels="${OPTARG}"
-            ;;
-        M )
-            missing_labels="${OPTARG}"
-            ;;
-        d )
-            description_command="${OPTARG}"
-            ;;
-        h )
-            head_branch="${OPTARG}"
-            ;;
-        R )
-            release_note_none=true
-            ;;
-        B )
-            body="${OPTARG}"
-            ;;
-        \? )
-            usage
-            exit 1
-            ;;
+usage() {
+    cat <<EOF
+Wrapper script around the \`pr-creator\` tool. It runs a command, commits the
+changes and creates a Pull Request to a GitHub repository.
+
+Usage:
+  ${progname} <options>
+
+Short options are deprecated.
+
+Options:
+  --author, -n "<git-author>"
+    The git author name to use when committing changes.
+    (Default: ${git_author:-unset})
+
+  --body, -B "<body-text>"
+    Custom body text for the PR. If provided, it overrides the body generated
+    by the <description-command>.
+    (Default: "Automatic run of "<command>". Please review")
+
+  --branch, -b <pr-branch>
+    The source branch name to create/push to for the PR.
+    (Default: ${branch:-unset})
+
+  --command, -c "<command>"
+    The command to execute. Any file changes produced by this command will be
+    committed and included in the PR. Required.
+    (Default: ${command:-unset})
+
+  --command-path, -m </path/to/which/execute/the/command/>
+    The working directory to use when running the command.
+    (Default: current working directory)
+
+  --description-command, -d "<command-to-generate-commit-and-pr-message>"
+    A command that generates the commit message and PR description. The first
+    line becomes the PR title, and lines after the second become the PR body.
+    (Default: ${description_command:-unset})
+
+  --dry-run, -D
+    Run the command but don't actually commit changes or create/update the PR.
+    (Default: ${dry_run:-false})
+
+  --email, -e <git-email>
+    The git author email to use when committing changes.
+    (Default: ${git_email:-unset})
+
+  --head-branch, -h <head-branch>
+    Reuse any self-authored open PR from this branch. This takes priority over
+    matching by title when finding existing PRs to update.
+    (Default: ${head_branch:-<pr-branch>})
+
+  --labels, -L label1,..,labelN
+    Comma-separated list of labels to attach to the PR.
+    (Default: ${labels:-unset})
+
+  --missing-labels, -M label1,..,labelN
+    Comma-separated list of labels that must be missing on an existing PR.
+    If an existing PR from the same source repo and branch has any of these
+    labels, the script will exit without performing any action.
+    (Default: ${missing_labels:-unset})
+
+  --org, -o <org>
+    The GitHub organization name for the PR.
+    (Default: ${org:-unset})
+
+  --release-note-none, -R
+    Append a "Release note: NONE" block to the PR body.
+    (Default: ${release_note_none:-false})
+
+  --repo, -r <repo>
+    The GitHub repository name for the PR.
+    (Default: ${repo:-unset})
+
+  --repo-path, -p </path/to/git/repository/checkout>
+    Path to the local git repository where changes will be committed.
+    (Default: current working directory)
+
+  --summary, -s "<summary>"
+    The commit message and PR title (if --description-command is not set).
+    (Default: "Run <command>")
+
+  --target, -T <target-branch>
+    The target branch in the destination repository to merge the PR into.
+    (Default: ${targetbranch:-unset})
+
+  --token, -t </path/to/github/token>
+    Path to the file containing the GitHub OAuth token.
+    (Default: ${token:-unset})
+
+  --user, -l <github-user>
+    The GitHub username used as the source fork owner for the PR.
+    (Default: ${user:-unset})
+EOF
+}
+
+die(){ usage >&2; exit 64; }  # EX_USAGE
+
+# Parse command line arguments
+cmdline=$(
+    set +x
+
+    opts='author:,body:,branch:,command:,command-path:,description-command:'
+    opts+=',dry-run,email:,head-branch:,help,labels:,missing-labels:,org:'
+    opts+=',release-note-none,repo:,repo-path:,summary:,target:,token:,user:'
+
+    getopt \
+        --name="${progname}" \
+        --longoptions="${opts}" \
+        --options='b:B:c:d:De:h:Hl:L:m:M:n:o:p:r:Rs:t:T:' \
+        -- "$@"
+) || die
+
+eval set -- "${cmdline}"
+
+# Convert command line arguments to local variables
+while [ "$#" -gt 0 ]; do
+    case $1 in
+        --author              | -n) git_author=$2;           shift;;
+        --body                | -B) body=$2;                 shift;;
+        --branch              | -b) branch=$2;               shift;;
+        --command             | -c) command=$2;              shift;;
+        --command-path        | -m) command_path=$2;         shift;;
+        --description-command | -d) description_command=$2;  shift;;
+        --dry-run             | -D) dry_run='true'                ;;
+        --email               | -e) git_email=$2;            shift;;
+        --head-branch         | -h) head_branch=$2;          shift;;
+        --labels              | -L) labels=$2;               shift;;
+        --missing-labels      | -M) missing_labels=$2;       shift;;
+        --org                 | -o) org=$2;                  shift;;
+        --release-note-none   | -R) release_note_none='true'      ;;
+        --repo                | -r) repo=$2;                 shift;;
+        --repo-path           | -p) repo_path=$2;            shift;;
+        --summary             | -s) summary=$2;              shift;;
+        --target              | -T) targetbranch=$2;         shift;;
+        --token               | -t) token=$2;                shift;;
+        --user                | -l) user=$2;                 shift;;
+
+        --help|-H) usage;  exit;;
+        --)        shift; break;;  # End of options
+        *)         die;;           # Should not happen
     esac
+    shift
 done
 
 if [ -z "${command}" ]; then
-    usage
-    exit 1
+    die
 fi
 
 if [ -n "${missing_labels}" ]; then
@@ -145,7 +220,7 @@ if [ -z "$(git status --porcelain)" ]; then
     exit 0
 fi
 
-git config user.name "${git_name}"
+git config user.name "${git_author}"
 git config user.email "${git_email}"
 
 if ! git config user.name &>/dev/null && git config user.email &>/dev/null; then
