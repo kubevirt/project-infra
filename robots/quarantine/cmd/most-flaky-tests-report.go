@@ -40,6 +40,11 @@ import (
 
 const (
 	shortReportHelp = `Creates a report of the most flaky tests`
+
+	defaultThreeDayWarningThreshold      = 10.0
+	defaultThreeDayCriticalThreshold     = 20.0
+	defaultFourteenDayWarningThreshold   = 3.0
+	defaultFourteenDayCriticalThreshold  = 5.0
 )
 
 var (
@@ -69,10 +74,10 @@ func init() {
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&outputFileOpts.OverwriteOutputFile, "overwrite-output-file", false, "whether to overwrite the output file")
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&quarantineOpts.filterPeriodicJobRunResults, "filter-periodic-job-run-results", true, "whether to filter the results for periodics")
 	mostFlakyTestsReportCmd.PersistentFlags().StringVar(&quarantineOpts.filterLaneRegex, "filter-lane-regex", filterLaneRegexDefault, "the regular expression to use to filter test lanes with")
-	mostFlakyTestsReportCmd.PersistentFlags().Float64Var(&quarantineOpts.threeDayWarningThreshold, "three-day-warning-threshold", 10.0, "minimum 3-day failure percentage to highlight as warning")
-	mostFlakyTestsReportCmd.PersistentFlags().Float64Var(&quarantineOpts.threeDayCriticalThreshold, "three-day-critical-threshold", 20.0, "minimum 3-day failure percentage to highlight as critical")
-	mostFlakyTestsReportCmd.PersistentFlags().Float64Var(&quarantineOpts.fourteenDayWarningThreshold, "fourteen-day-warning-threshold", 3.0, "minimum 14-day failure percentage to highlight as warning")
-	mostFlakyTestsReportCmd.PersistentFlags().Float64Var(&quarantineOpts.fourteenDayCriticalThreshold, "fourteen-day-critical-threshold", 5.0, "minimum 14-day failure percentage to highlight as critical")
+	mostFlakyTestsReportCmd.PersistentFlags().Float64Var(&quarantineOpts.threeDayWarningThreshold, "three-day-warning-threshold", defaultThreeDayWarningThreshold, "minimum 3-day failure percentage to highlight as warning")
+	mostFlakyTestsReportCmd.PersistentFlags().Float64Var(&quarantineOpts.threeDayCriticalThreshold, "three-day-critical-threshold", defaultThreeDayCriticalThreshold, "minimum 3-day failure percentage to highlight as critical")
+	mostFlakyTestsReportCmd.PersistentFlags().Float64Var(&quarantineOpts.fourteenDayWarningThreshold, "fourteen-day-warning-threshold", defaultFourteenDayWarningThreshold, "minimum 14-day failure percentage to highlight as warning")
+	mostFlakyTestsReportCmd.PersistentFlags().Float64Var(&quarantineOpts.fourteenDayCriticalThreshold, "fourteen-day-critical-threshold", defaultFourteenDayCriticalThreshold, "minimum 14-day failure percentage to highlight as critical")
 }
 
 var sigMatcher = regexp.MustCompile(`\[(sig-[^]]+)]`)

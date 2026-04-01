@@ -149,7 +149,7 @@ func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types
 			continue
 		}
 
-		candidate, err := getQuarantineCandidate(topXTest, searchci.FourteenDays, 5.0)
+		candidate, err := getQuarantineCandidate(topXTest, searchci.FourteenDays, defaultFourteenDayCriticalThreshold)
 		if err != nil {
 			return nil, fmt.Errorf("could not get quarantine candidate for test %q: %w", topXTest.Name, err)
 		}
