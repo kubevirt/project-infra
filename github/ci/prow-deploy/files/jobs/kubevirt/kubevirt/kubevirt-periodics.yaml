@@ -2398,7 +2398,7 @@ periodics:
           --repo-path "${KUBEVIRT_REPO_PATH}" \
           --description-command "cat /tmp/pr-description.md" \
           --release-note-none \
-          --labels approved \
+          --labels approved,kind/auto-quarantine \
           --missing-labels lgtm,approved,do-not-merge/hold
       env:
       - name: GIMME_GO_VERSION
