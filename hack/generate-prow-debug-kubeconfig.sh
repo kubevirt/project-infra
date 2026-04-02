@@ -9,12 +9,36 @@ set -euo pipefail
 
 function usage {
     cat <<EOF
-usage: $0 <token-name>
+usage: $0 [--help] [--include-kubevirt-prow] <token-name>
 
-    Create a KUBECONFIG based on a newly created token for the prow-debug serviceaccount.
+    Generate a readonly KUBECONFIG for debugging Prow clusters.
+
+    Creates a service account token for the prow-debug serviceaccount on each
+    cluster and writes a standalone kubeconfig file to /tmp. The generated
+    kubeconfig provides readonly access to prowjobs, pods, and pod logs in the
+    kubevirt-prow-jobs namespace on both the kubevirt-prow-control-plane and
+    prow-workloads clusters.
+
+    Requires the prow-debug RBAC to be deployed first. If it is missing, run:
+      hack/apply-prow-debug-rbac.sh
+
+    Options:
+      --help                    Show this help message and exit.
+      --include-kubevirt-prow   Also create readonly access for the kubevirt-prow
+                                namespace on the kubevirt-prow-control-plane cluster.
 
 EOF
 }
+
+include_kubevirt_prow=false
+if [ "${1:-}" == "--help" ]; then
+    usage
+    exit 0
+fi
+if [ "${1:-}" == "--include-kubevirt-prow" ]; then
+    include_kubevirt_prow=true
+    shift
+fi
 
 current_context=$(kubectl config current-context)
 
@@ -26,7 +50,15 @@ fi
 token_name="prow-debug-$1"
 token_namespace="kubevirt-prow-jobs"
 
-clusters=( ibm-prow-jobs prow-workloads )
+clusters=( kubevirt-prow-control-plane prow-workloads )
+
+for cluster in "${clusters[@]}"; do
+    if ! kubectl --context "$cluster" -n "$token_namespace" get serviceaccount prow-debug &>/dev/null; then
+        echo "ERROR: serviceaccount prow-debug not found in namespace $token_namespace on cluster $cluster"
+        echo "Apply the RBAC manifest first by running: hack/apply-prow-debug-rbac.sh"
+        exit 1
+    fi
+done
 
 for cluster in "${clusters[@]}"; do
     kubectl config use-context "$cluster"
@@ -45,10 +77,42 @@ type: kubernetes.io/service-account-token
 EOF
 done
 
-token_ibm_prow_jobs=$(kubectl config use-context ibm-prow-jobs 2>&1 > /dev/null && kubectl get secret "$token_name" -n "$token_namespace" -o yaml | yq -r '.data.token' | base64 -d)
+if [ "$include_kubevirt_prow" == "true" ]; then
+    if ! kubectl --context kubevirt-prow-control-plane -n kubevirt-prow get serviceaccount prow-debug &>/dev/null; then
+        echo "ERROR: serviceaccount prow-debug not found in namespace kubevirt-prow on cluster kubevirt-prow-control-plane"
+        echo "Apply the RBAC manifest first by running: hack/apply-prow-debug-rbac.sh"
+        exit 1
+    fi
+
+    kubectl config use-context kubevirt-prow-control-plane
+
+    kubectl delete --ignore-not-found=true -n kubevirt-prow secret "$token_name"
+
+    kubectl create -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: $token_name
+  namespace: kubevirt-prow
+  annotations:
+    kubernetes.io/service-account.name: prow-debug
+type: kubernetes.io/service-account-token
+EOF
+fi
+
+token_kubevirt_prow_control_plane=$(kubectl config use-context kubevirt-prow-control-plane 2>&1 > /dev/null && kubectl get secret "$token_name" -n "$token_namespace" -o yaml | yq -r '.data.token' | base64 -d)
 token_prow_workloads=$(kubectl config use-context prow-workloads 2>&1 > /dev/null && kubectl get secret "$token_name" -n "$token_namespace" -o yaml | yq -r '.data.token' | base64 -d)
 
-kubeconfig_clusters=$(yq -y '.clusters' "$KUBECONFIG")
+kubeconfig_clusters=$(yq '.clusters' "$KUBECONFIG")
+
+kubevirt_prow_context=""
+if [ "$include_kubevirt_prow" == "true" ]; then
+    kubevirt_prow_context="- context:
+    cluster: kubevirt-prow-control-plane
+    namespace: kubevirt-prow
+    user: prow-debug-kubevirt-prow-control-plane
+  name: kubevirt-prow-control-plane-kubevirt-prow"
+fi
 
 cat <<EOF > "/tmp/kubeconfig_$token_name.yaml"
 apiVersion: v1
@@ -56,23 +120,24 @@ clusters:
 $kubeconfig_clusters
 contexts:
 - context:
-    cluster: ibm-cluster
+    cluster: kubevirt-prow-control-plane
     namespace: $token_namespace
-    user: prow-debug-ibm-cluster
-  name: ibm-prow-jobs
+    user: prow-debug-kubevirt-prow-control-plane
+  name: kubevirt-prow-control-plane
 - context:
-    cluster: prow-workloads-cluster
+    cluster: prow-workloads
     namespace: $token_namespace
-    user: prow-debug-prow-workloads-cluster
+    user: prow-debug-prow-workloads
   name: prow-workloads
-current-context: ibm-prow-jobs
+$kubevirt_prow_context
+current-context: kubevirt-prow-control-plane
 kind: Config
 preferences: {}
 users:
-- name: prow-debug-ibm-cluster
+- name: prow-debug-kubevirt-prow-control-plane
   user:
-    token: $token_ibm_prow_jobs
-- name: prow-debug-prow-workloads-cluster
+    token: $token_kubevirt_prow_control_plane
+- name: prow-debug-prow-workloads
   user:
     token: $token_prow_workloads
 EOF
