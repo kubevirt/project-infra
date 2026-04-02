@@ -58,11 +58,17 @@ periodics:
   spec:
     containers:
     - image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
-      command: ["/bin/sh", "-c"]
+      command: ["/bin/sh", "-ce"]
       args:
       - |
-        set -e
-        git-pr.sh -c "cd ../kubevirt && make bump-kubevirtci" -d "./hack/whatchanged.sh" -b bump-kubevirtci -p ../kubevirt -T main -L skip-review -M lgtm,approved,do-not-merge/hold
+        git-pr.sh \
+          --command "cd ../kubevirt && make bump-kubevirtci" \
+          --description-command "./hack/whatchanged.sh" \
+          --branch bump-kubevirtci  \
+          --repo-path ../kubevirt \
+          --target main \
+          --labels skip-review \
+          --missing-labels lgtm,approved,do-not-merge/hold
       securityContext:
         privileged: true
       resources:
@@ -93,13 +99,14 @@ periodics:
       command: ["/bin/sh", "-ce"]
       args:
       - |
-        git-pr.sh -c "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile" \
-          -d "echo 'Bump fedora provisioning base to latest version'" \
-          -b bump-fedora-provision \
-          -p ../kubevirtci \
-          -r kubevirtci \
-          -T main \
-          -M lgtm,approved,do-not-merge/hold
+        git-pr.sh \
+          --command "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile" \
+          --description-command "echo 'Bump fedora provisioning base to latest version'" \
+          --branch bump-fedora-provision \
+          --repo-path ../kubevirtci \
+          --repo kubevirtci \
+          --target main \
+          --missing-labels lgtm,approved,do-not-merge/hold
       securityContext:
         privileged: true
       resources:
@@ -127,7 +134,11 @@ periodics:
     - image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
       command: ["/bin/sh", "-c"]
       args:
-      - GIT_ASKPASS=/usr/local/bin/git-askpass.sh git-pr.sh -c "./hack/bump-cdi.sh" -r kubevirtci -b bump-cdi -T main -p $(pwd)
+      - GIT_ASKPASS=/usr/local/bin/git-askpass.sh git-pr.sh \
+          --command "./hack/bump-cdi.sh" \
+          --repo kubevirtci \
+          --branch bump-cdi \
+          --target main
       resources:
         requests:
           memory: "200Mi"
@@ -165,7 +176,13 @@ periodics:
         cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
         ./hack/bump-centos-version.sh &&
         SHORT_SHA=$(git rev-parse --short HEAD) &&
-        GIT_ASKPASS=../project-infra/hack/git-askpass.sh ../project-infra/hack/git-pr.sh -c "PHASES=linux BYPASS_PMAN_CHANGE_CHECK=true ./publish.sh" -r kubevirtci -b bump-centos-stream -T main -p $(pwd) -s "Automatic bump of CentOS Stream to latest" -L skip-review &&
+        GIT_ASKPASS=../project-infra/hack/git-askpass.sh ../project-infra/hack/git-pr.sh \
+          --command "PHASES=linux BYPASS_PMAN_CHANGE_CHECK=true ./publish.sh" \
+          --repo kubevirtci \
+          --branch bump-centos-stream \
+          --target main \
+          --summary "Automatic bump of CentOS Stream to latest" \
+          --labels skip-review &&
         # For passing centos image tag to dependent (s390x) prow job
         image_tag=$(cat cluster-provision/k8s/base-image | cut -d ':' -f 2) &&
         echo "$image_tag" > amd64-centos9-$SHORT_SHA &&
@@ -274,20 +291,18 @@ periodics:
   spec:
     containers:
       - image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
-        command: ["/bin/sh", "-c"]
+        command: ["/bin/sh", "-ce"]
         args:
           - |
-            set -e
             git-pr.sh \
-              -c "cd ../hyperconverged-cluster-operator && make bump-kubevirtci" \
-              -b bump-kubevirtci \
-              -p ../hyperconverged-cluster-operator \
-              -r hyperconverged-cluster-operator \
-              -L "release-note-none" \
-              -M 'lgtm,approved,do-not-merge/hold' \
-              -d "../hyperconverged-cluster-operator/hack/pr-description-for-bump-kvci.sh" \
-              -T main \
-              -R
+              --command "cd ../hyperconverged-cluster-operator && make bump-kubevirtci" \
+              --branch bump-kubevirtci \
+              --repo-path ../hyperconverged-cluster-operator \
+              --repo hyperconverged-cluster-operator \
+              --missing-labels 'lgtm,approved,do-not-merge/hold' \
+              --description-command "../hyperconverged-cluster-operator/hack/pr-description-for-bump-kvci.sh" \
+              --target main \
+              --release-note-none
         securityContext:
           privileged: true
         resources:

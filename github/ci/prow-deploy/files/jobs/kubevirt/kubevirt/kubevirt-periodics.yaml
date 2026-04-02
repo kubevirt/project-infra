@@ -636,11 +636,15 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -c
-      - ../project-infra/hack/git-pr.sh -c "cd ../kubevirt && make rpm-deps" -b bump-rpm-dependencies
-        -p ../kubevirt -T main -R -L skip-review -B $'Run of `cd ../kubevirt && make
-        rpm-deps`\n\n/release-blocker main'
+      - ../project-infra/hack/git-pr.sh \
+          --command "cd ../kubevirt && make rpm-deps" \
+          --branch bump-rpm-dependencies \
+          --repo-path ../kubevirt \
+          --target main \
+          --release-note-none \
+          --labels skip-review \
+          --body $'Run of `cd ../kubevirt && make rpm-deps`\n\n/release-blocker main'
       image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
-      name: ""
       resources:
         requests:
           memory: 8Gi
@@ -1614,13 +1618,19 @@ periodics:
     - args:
       - |
         make bump-images
-        git-pr.sh -c "cd ../project-infra && go run ./robots/uploader -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ${PWD} -s 'Automated run of make bump-images and ./robots/uploader' -b bump-images -r kubevirt -L skip-review,release-note-none -T main
+        git-pr.sh \
+         --command "cd ../project-infra && go run ./robots/uploader -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" \
+         --summary 'Automated run of make bump-images and ./robots/uploader' \
+         --branch bump-images \
+         --repo kubevirt \
+         --release-note-none \
+         --labels skip-review \
+         --target main
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
       image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
-      name: ""
       resources:
         requests:
           memory: 200Mi
@@ -2381,20 +2391,19 @@ periodics:
       - |
         KUBEVIRT_REPO_PATH="$(realpath ../../kubevirt/kubevirt)"
         GIT_ASKPASS="$(realpath .)/hack/git-askpass.sh" "$(realpath .)/hack/git-pr.sh" \
-          -c "go run ./robots/quarantine auto --pr-description-output-file=/tmp/pr-description.md --test-source-path=${KUBEVIRT_REPO_PATH}/tests" \
-          -r kubevirt \
-          -b auto-quarantine \
-          -T main \
-          -p "${KUBEVIRT_REPO_PATH}" \
-          -d "cat /tmp/pr-description.md" \
-          -R \
-          -L approved \
-          -M lgtm,approved,do-not-merge/hold
+          --command "go run ./robots/quarantine auto --pr-description-output-file=/tmp/pr-description.md --test-source-path=${KUBEVIRT_REPO_PATH}/tests" \
+          --repo kubevirt \
+          --branch auto-quarantine \
+          --target main \
+          --repo-path "${KUBEVIRT_REPO_PATH}" \
+          --description-command "cat /tmp/pr-description.md" \
+          --release-note-none \
+          --labels approved \
+          --missing-labels lgtm,approved,do-not-merge/hold
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
       image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
-      name: ""
       resources: {}
     nodeSelector:
       type: bare-metal-external

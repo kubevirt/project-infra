@@ -23,14 +23,13 @@ periodics:
       - |
         export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
         git-pr.sh \
-          -c "./hack/sync-nv-rpms.sh" \
-          -s "Sync el10nv RPMs for libvirt and qemu-kvm" \
-          -R \
-          -r kubevirt-aie \
-          -b sync-nv-rpms \
-          -T release-1.8-aie-nv \
-          -p $(pwd) \
-          -M lgtm,approved,do-not-merge/hold
+          --command "./hack/sync-nv-rpms.sh" \
+          --summary "Sync el10nv RPMs for libvirt and qemu-kvm" \
+          --release-note-none \
+          --repo kubevirt-aie \
+          --branch sync-nv-rpms \
+          --target release-1.8-aie-nv \
+          --missing-labels lgtm,approved,do-not-merge/hold
       resources:
         requests:
           memory: "200Mi"

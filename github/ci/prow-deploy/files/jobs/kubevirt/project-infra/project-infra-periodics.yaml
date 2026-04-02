@@ -303,9 +303,27 @@ periodics:
         - -ce
         args:
         - |
-          git-pr.sh -c "go run ./robots/uploader -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" -p ../kubevirt -r kubevirt -L skip-review,release-note-none -T main
-          git-pr.sh -c "go run ./robots/uploader -workspace ${PWD}/../containerized-data-importer/WORKSPACE -dry-run=false" -p ../containerized-data-importer -r containerized-data-importer -T main -L skip-review,release-note-none
-          git-pr.sh -c "go run ./robots/uploader -workspace ${PWD}/../kubevirt-aie/WORKSPACE -dry-run=false" -p ../kubevirt-aie -r kubevirt-aie -L skip-review,release-note-none -T release-1.8-aie-nv
+          git-pr.sh \
+            --command "go run ./robots/uploader -workspace ${PWD}/../kubevirt/WORKSPACE -dry-run=false" \
+            --repo-path ../kubevirt \
+            --repo kubevirt \
+            --labels skip-review \
+            --release-note-none \
+            --target main
+          git-pr.sh \
+            --command "go run ./robots/uploader -workspace ${PWD}/../containerized-data-importer/WORKSPACE -dry-run=false" \
+            --repo-path ../containerized-data-importer \
+            --repo containerized-data-importer \
+            --labels skip-review \
+            --release-note-none \
+            --target main
+          git-pr.sh \
+            --command "go run ./robots/uploader -workspace ${PWD}/../kubevirt-aie/WORKSPACE -dry-run=false" \
+            --repo-path ../kubevirt-aie \
+            --repo kubevirt-aie \
+            --labels skip-review \
+            --release-note-none \
+            --target release-1.8-aie-nv
         resources:
           requests:
             memory: "200Mi"
@@ -341,13 +359,13 @@ periodics:
         args:
           - |
             git-pr.sh \
-              -c "go run ./robots/kubevirtci-bumper -ensure-last-three-minor-of v1 --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s" \
-              -p ../kubevirtci \
-              -r kubevirtci \
-              -b patch-version-bump \
-              -T main \
-              -B $'Update KubeVirtCI provider patch versions\nFYI @kubevirt/sig-buildsystem\n/cc none' \
-              -L 'skip-review'
+              --command "go run ./robots/kubevirtci-bumper -ensure-last-three-minor-of v1 --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s" \
+              --repo-path ../kubevirtci \
+              --repo kubevirtci \
+              --branch patch-version-bump \
+              --target main \
+              --body $'Update KubeVirtCI provider patch versions\nFYI @kubevirt/sig-buildsystem\n/cc none' \
+              --labels 'skip-review'
         resources:
           requests:
             memory: "200Mi"
@@ -419,12 +437,12 @@ periodics:
         args:
           - |
             git-pr.sh \
-              -c "go run ./robots/kubevirtci-bumper -ensure-latest --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" \
-              -b minor-version-bump \
-              -r kubevirtci \
-              -p ../kubevirtci \
-              -T main \
-              -B $'Add KubeVirtCI provider latest minorversion\nFYI @kubevirt/sig-buildsystem\n/cc none'
+              --command "go run ./robots/kubevirtci-bumper -ensure-latest --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" \
+              --branch minor-version-bump \
+              --repo kubevirtci \
+              --repo-path ../kubevirtci \
+              --target main \
+              --body $'Add KubeVirtCI provider latest minorversion\nFYI @kubevirt/sig-buildsystem\n/cc none'
         resources:
           requests:
             memory: "200Mi"
@@ -453,11 +471,21 @@ periodics:
       runAsUser: 0
     containers:
       - image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
-        command: ["/bin/sh"]
+        command: ["/bin/sh", "-ce"]
         args:
-          - "-c"
-          - git-pr.sh -c "./hack/bump-crio-mirror-versions.sh" -p ./ -r project-infra -b crio-version-bump -T main
-          - git-pr.sh -p ../kubevirtci -r kubevirtci -b crio-version-bump -s "Bump cri-o version to match provider version" -T main
+          - |
+            git-pr.sh \
+              --command "./hack/bump-crio-mirror-versions.sh" \
+              --repo project-infra \
+              --branch crio-version-bump \
+              --target main
+            git-pr.sh \
+              --command "true" \
+              --repo-path ../kubevirtci \
+              --repo kubevirtci \
+              --branch crio-version-bump \
+              --summary "Bump cri-o version to match provider version" \
+              --target main
         resources:
           requests:
             memory: "200Mi"
@@ -488,12 +516,11 @@ periodics:
         - -c
         args:
           - |
-              git-pr.sh \
-              -c "./hack/bump-fedora-images-version.sh ./images/bootstrap/Containerfile" \
-              -p ./ \
-              -r project-infra \
-              -b bootstrap-fedora-version-bump \
-              -T main
+            git-pr.sh \
+              --command "./hack/bump-fedora-images-version.sh ./images/bootstrap/Containerfile" \
+              --repo project-infra \
+              --branch bootstrap-fedora-version-bump \
+              --target main
         resources:
           requests:
             memory: "200Mi"
@@ -540,11 +567,12 @@ periodics:
               echo "unsupported kubevirtci providers are still in use, cancelling removal of unsupported kubevirtci providers!"
               exit 0
             fi
-            git-pr.sh -c "go run ./robots/kubevirtci-bumper -ensure-only-latest-three --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" \
-              -p ../kubevirtci \
-              -r kubevirtci \
-              -b remove-unsupported-versions \
-              -T main
+            git-pr.sh \
+              --command "go run ./robots/kubevirtci-bumper -ensure-only-latest-three --k8s-provider-dir ${PWD}/../kubevirtci/cluster-provision/k8s --cluster-up-dir ${PWD}/../kubevirtci/cluster-up/cluster" \
+              --repo-path ../kubevirtci \
+              --repo kubevirtci \
+              --branch remove-unsupported-versions \
+              --target main
         resources:
           requests:
             memory: "200Mi"
@@ -576,10 +604,11 @@ periodics:
         - -ce
         args:
           - |
-            git-pr.sh -c "go run ./robots/kubevirtci-presubmit-creator --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" \
-              -r project-infra \
-              -b create-kubevirtci-presubmit \
-              -T main
+            git-pr.sh \
+              --command "go run ./robots/kubevirtci-presubmit-creator --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" \
+              --repo project-infra \
+              --branch create-kubevirtci-presubmit \
+              --target main
         resources:
           requests:
             memory: "200Mi"
@@ -623,10 +652,11 @@ periodics:
               echo "unsupported kubevirtci providers are still in use, cancelling removal of kubevirt presubmits!"
               exit 0
             fi
-            git-pr.sh -c "go run ./robots/kubevirtci-presubmit-remover --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" \
-              -r project-infra \
-              -b remove-kubevirtci-presubmit \
-              -T main
+            git-pr.sh \
+              --command "go run ./robots/kubevirtci-presubmit-remover --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" \
+              --repo project-infra \
+              --branch remove-kubevirtci-presubmit \
+              --target main
         resources:
           requests:
             memory: "200Mi"
@@ -694,11 +724,15 @@ periodics:
   spec:
     containers:
     - image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
-      command: ["/bin/sh"]
+      command: ["/bin/sh", "-ce"]
       args:
-      - "-ce"
       - |
-        hack/git-pr.sh -c "hack/bump-prow.sh" -b prow-autobump -r project-infra -T main -d "./hack/prow-changelog.sh"
+        hack/git-pr.sh \
+          --command "hack/bump-prow.sh" \
+          --branch prow-autobump \
+          --repo project-infra \
+          --target main \
+          --description-command "./hack/prow-changelog.sh"
       securityContext:
         privileged: true
       resources:
@@ -761,13 +795,13 @@ periodics:
         - -ce
         args:
           - |
-            git-pr.sh -c "go run ./robots/kubevirt require presubmits --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false && go run ./robots/kubevirt remove always_run --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" \
-              -r project-infra \
-              -b require-kubevirt-presubmits \
-              -T main \
-              -s 'Enable e2e lanes for latest kubernetes version' \
-              -B $'Enable lanes for latest kubernetes version and disable lanes with unsupported version\n\n/cc @kubevirt/prow-job-taskforce'
-
+            git-pr.sh \
+              --command "go run ./robots/kubevirt require presubmits --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false && go run ./robots/kubevirt remove always_run --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --github-token-path= --dry-run=false" \
+              --repo project-infra \
+              --branch require-kubevirt-presubmits \
+              --target main \
+              --summary 'Enable e2e lanes for latest kubernetes version' \
+              --body $'Enable lanes for latest kubernetes version and disable lanes with unsupported version\n\n/cc @kubevirt/prow-job-taskforce'
         resources:
           requests:
             memory: "200Mi"
@@ -799,10 +833,11 @@ periodics:
       - -ce
       args:
       - |
-        git-pr.sh -c "go run ./robots/kubevirt copy jobs --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" \
-          -r project-infra \
-          -b copy-kubevirt-jobs \
-          -T main
+        git-pr.sh \
+          --command "go run ./robots/kubevirt copy jobs --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" \
+          --repo project-infra \
+          --branch copy-kubevirt-jobs \
+          --target main
       resources:
         requests:
           memory: "200Mi"
@@ -834,10 +869,11 @@ periodics:
       - -ce
       args:
       - |
-        git-pr.sh -c "go run ./robots/kubevirt remove jobs --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" \
-          -r project-infra \
-          -b remove-kubevirt-jobs \
-          -T main
+        git-pr.sh \
+          --command "go run ./robots/kubevirt remove jobs --job-config-path-kubevirt-presubmits=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml --job-config-path-kubevirt-periodics=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml --github-token-path= --dry-run=false" \
+          --repo project-infra \
+          --branch remove-kubevirt-jobs \
+          --target main
       resources:
         requests:
           memory: "200Mi"
@@ -904,13 +940,13 @@ periodics:
       args:
       - |
         hack/git-pr.sh \
-          -c "hack/bump-prow-job-images.sh" \
-          -b prow-job-image-bump \
-          -r project-infra \
-          -T main \
-          -d "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Job images'" \
-          -L 'skip-review' \
-          -M 'lgtm,approved,do-not-merge/hold,skip-review'
+          --command "hack/bump-prow-job-images.sh" \
+          --branch prow-job-image-bump \
+          --repo project-infra \
+          --target main \
+          --description-command "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Job images'" \
+          --labels 'skip-review' \
+          --missing-labels 'lgtm,approved,do-not-merge/hold,skip-review'
       resources:
         requests:
           memory: "200Mi"
@@ -943,13 +979,13 @@ periodics:
       args:
       - |
         hack/git-pr.sh \
-          -c "hack/bump-prow-deployment-images.sh" \
-          -b prow-deployment-image-bump \
-          -r project-infra \
-          -T main \
-          -d "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Deployment images'" \
-          -L 'skip-review' \
-          -M lgtm,approved,do-not-merge/hold,skip-review
+          --command "hack/bump-prow-deployment-images.sh" \
+          --branch prow-deployment-image-bump \
+          --repo project-infra \
+          --target main \
+          --description-command "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Deployment images'" \
+          --labels 'skip-review' \
+          --missing-labels lgtm,approved,do-not-merge/hold,skip-review
       resources:
         requests:
           memory: "200Mi"
@@ -982,13 +1018,13 @@ periodics:
       args:
       - |
         git-pr.sh \
-          -c "hack/bump-containerfile-images.sh" \
-          -b containerfile-image-bump \
-          -r project-infra \
-          -T main \
-          -d "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Containerfile base images'" \
-          -L 'skip-review' \
-          -M 'lgtm,approved,do-not-merge/hold,skip-review'
+          --command "hack/bump-containerfile-images.sh" \
+          --branch containerfile-image-bump \
+          --repo project-infra \
+          --target main \
+          --description-command "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Containerfile base images'" \
+          --labels 'skip-review' \
+          --missing-labels 'lgtm,approved,do-not-merge/hold,skip-review'
       resources:
         requests:
           memory: "200Mi"

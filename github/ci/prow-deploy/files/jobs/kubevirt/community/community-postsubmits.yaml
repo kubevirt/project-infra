@@ -23,7 +23,12 @@ postsubmits:
           TARGET_DIR=$REPO_DIR/scripts/kubevirt/
           mkdir -p $TARGET_DIR
           export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
-          git-pr.sh -c "go run ./generators/cmd/devstats/... --output-path $TARGET_DIR/repo_groups.sql" -p $REPO_DIR -o cncf -r devstats -b update-kubevirt-devstats-repo-sql
+          git-pr.sh \
+            --command "go run ./generators/cmd/devstats/... --output-path $TARGET_DIR/repo_groups.sql" \
+            --repo-path "${REPO_DIR}" \
+            --org cncf \
+            --repo devstats \
+            --branch update-kubevirt-devstats-repo-sql
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash

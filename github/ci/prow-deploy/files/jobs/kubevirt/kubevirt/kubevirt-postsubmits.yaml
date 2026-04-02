@@ -310,12 +310,12 @@ postsubmits:
             --job-config-path=${project_infra_dir}/github/ci/prow-deploy/files/jobs/kubevirt/kubevirt \
             --overwrite-output-file
           git-pr.sh \
-            -c "mv /tmp/k8s-support-matrix.md ${sig_release_dir}/releases/k8s-support-matrix.md" \
-            -p ${sig_release_dir} \
-            -s 'Automated run of //robots/kubevirt get support-matrix' \
-            -r sig-release \
-            -b update-support-matrix \
-            -T main
+            --command "mv /tmp/k8s-support-matrix.md ${sig_release_dir}/releases/k8s-support-matrix.md" \
+            --repo-path "${sig_release_dir}" \
+            --summary 'Automated run of //robots/kubevirt get support-matrix' \
+            --repo sig-release \
+            --branch update-support-matrix \
+            --target main
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
