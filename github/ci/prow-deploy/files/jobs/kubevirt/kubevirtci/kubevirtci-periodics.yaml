@@ -57,7 +57,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
+    - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -95,7 +95,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
+    - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -131,7 +131,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
+    - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
       command: ["/bin/sh", "-c"]
       args:
       - GIT_ASKPASS=/usr/local/bin/git-askpass.sh git-pr.sh \
@@ -167,7 +167,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
+    - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -291,7 +291,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260128-84f963a
+    - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -337,7 +337,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+    - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -400,7 +400,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
+      - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
         command: ["/bin/sh", "-ce"]
         args:
           - |

@@ -17,7 +17,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260401-c3d5ad2
+    - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
       command: ["/bin/sh", "-c"]
       args:
       - |
