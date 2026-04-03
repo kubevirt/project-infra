@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20260306-351d3b1 as builder
+FROM quay.io/kubevirtci/golang:v20260319-c8f1db8 as builder
 
 RUN git clone --depth 1 --revision 3815e13b727dd09738bf9bd7e8a06ab616cb0d62 https://github.com/kubernetes/test-infra.git && \
   cd test-infra && \
@@ -10,7 +10,7 @@ RUN git clone --depth 1 --revision 3815e13b727dd09738bf9bd7e8a06ab616cb0d62 http
   /usr/local/bin/runner.sh /bin/sh -ce 'go build -o /usr/local/bin/hmac ./prow/cmd/hmac' && \
   /usr/local/bin/hmac --help
 
-FROM quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+FROM quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
 
 COPY --from=builder /usr/local/bin/config-bootstrapper /usr/local/bin/phony /usr/local/bin/hmac /usr/local/bin/
 
@@ -18,10 +18,6 @@ RUN curl -Lo ./kustomize.tar.gz https://github.com/kubernetes-sigs/kustomize/rel
   tar -xvf kustomize.tar.gz && \
   mv ./kustomize /usr/local/bin && \
   rm kustomize.tar.gz
-
-# TODO: remove yq installation after golang image tag bump
-RUN curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64 && \
-  chmod +x ./yq && mv ./yq /usr/local/bin
 
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
   chmod a+x ./kubectl && \

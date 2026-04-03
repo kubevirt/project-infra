@@ -17,7 +17,7 @@ postsubmits:
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -25,6 +25,38 @@ postsubmits:
               - |
                 cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 make -C external-plugins/rehearse push
+            resources:
+              requests:
+                memory: "8Gi"
+              limits:
+                memory: "8Gi"
+            securityContext:
+              privileged: true
+    - name: publish-coverage-image
+      always_run: false
+      branches:
+      - main
+      run_if_changed: "external-plugins/coverage/.*|images/covreport/.*|pkg/.*|go.mod|go.sum"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      cluster: kubevirt-prow-control-plane
+      max_concurrency: 1
+      labels:
+        preset-bazel-cache: "true"
+        preset-kubevirtci-quay-credential: "true"
+        preset-podman-in-container-enabled: "true"
+        preset-project-infra-image-build-linux: "true"
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/bash"
+              - "-c"
+              - |
+                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+                make -C external-plugins/coverage push
             resources:
               requests:
                 memory: "8Gi"
@@ -49,7 +81,7 @@ postsubmits:
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -81,7 +113,7 @@ postsubmits:
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -113,7 +145,7 @@ postsubmits:
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -144,7 +176,7 @@ postsubmits:
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -176,7 +208,7 @@ postsubmits:
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -208,7 +240,7 @@ postsubmits:
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -241,7 +273,7 @@ postsubmits:
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -273,7 +305,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -307,7 +339,7 @@ postsubmits:
       cluster: prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -340,7 +372,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -372,7 +404,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -408,7 +440,7 @@ postsubmits:
         base_ref: main
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -441,7 +473,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -472,7 +504,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -503,7 +535,7 @@ postsubmits:
       cluster: prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -535,7 +567,7 @@ postsubmits:
       cluster: prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -570,7 +602,7 @@ postsubmits:
       cluster: prow-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -601,7 +633,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -621,8 +653,10 @@ postsubmits:
     - name: post-project-infra-kubevirt-prow-control-plane-deployment
       always_run: false
       run_if_changed: "github/ci/prow-deploy/.*"
-      annotations:
-        testgrid-create-test-group: "false"
+      annotations: &deploy_postsubmit_annotations
+        testgrid-dashboards: kubevirt-project-infra-postsubmits
+        testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
+        testgrid-num-failures-to-alert: "1"
       decorate: true
       branches:
       - ^main$
@@ -637,7 +671,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20260307-1702eaf
+        - image: quay.io/kubevirtci/prow-deploy:v20260324-e10b556
           env:
           - name: DEPLOY_ENVIRONMENT
             value: kubevirt-prow-control-plane
@@ -654,8 +688,7 @@ postsubmits:
     - name: post-project-infra-prow-workloads-deployment
       always_run: false
       run_if_changed: "github/ci/prow-deploy/kustom/overlays/prow-workloads/.*|github/ci/prow-deploy/kustom/components/.*"
-      annotations:
-        testgrid-create-test-group: "false"
+      annotations: *deploy_postsubmit_annotations
       decorate: true
       branches:
       - ^main$
@@ -670,7 +703,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20260307-1702eaf
+        - image: quay.io/kubevirtci/prow-deploy:v20260324-e10b556
           env:
           - name: DEPLOY_ENVIRONMENT
             value: prow-workloads
@@ -686,8 +719,7 @@ postsubmits:
               memory: "8Gi"
     - name: post-project-infra-ci-search-deployment
       always_run: false
-      annotations:
-        testgrid-create-test-group: "false"
+      annotations: *deploy_postsubmit_annotations
       decorate: true
       run_if_changed: "github/ci/services/ci-search/.*"
       branches:
@@ -701,19 +733,15 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-ce"
             - |
-              # TODO: remove yq installation after golang image tag bump
-              curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
-              chmod +x ./yq && mv ./yq /usr/local/bin/yq
-
               source ./hack/manage-secrets.sh
               decrypt_secrets
-              extract_secret 'kubeconfig' ~/.kube/config
+              install -Dm400 "${secrets_repo_dir}"/secrets/kubeconfigs/kubevirt-prow-control-plane ~/.kube/config
               cleanup_secrets
 
               ./github/ci/services/ci-search/hack/deploy.sh production
@@ -724,8 +752,7 @@ postsubmits:
               memory: "8Gi"
     - name: post-project-infra-grafana-deployment
       always_run: false
-      annotations:
-        testgrid-create-test-group: "false"
+      annotations: *deploy_postsubmit_annotations
       decorate: true
       run_if_changed: "github/ci/services/grafana/.*"
       branches:
@@ -745,13 +772,9 @@ postsubmits:
             - "/bin/bash"
             - "-ce"
             - |
-              # TODO: remove yq installation after golang image tag bump
-              curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
-              chmod +x ./yq && mv ./yq /usr/local/bin/yq
-
               source ./hack/manage-secrets.sh
               decrypt_secrets
-              extract_secret 'kubeconfig' ~/.kube/config
+              install -Dm400 "${secrets_repo_dir}"/secrets/kubeconfigs/kubevirt-prow-control-plane ~/.kube/config
 
               environment='kubevirt-prow-control-plane'
               overlaySecretsDirectory="github/ci/services/grafana/deploy/overlays/kubevirt-prow-control-plane/secrets/grafana"
@@ -766,7 +789,7 @@ postsubmits:
           env:
           - name: GIMME_GO_VERSION
             value: "1.25.1"
-          image: quay.io/kubevirtci/golang:v20260306-351d3b1
+          image: quay.io/kubevirtci/golang:v20260319-c8f1db8
           resources:
             requests:
               memory: "8Gi"
@@ -815,7 +838,7 @@ postsubmits:
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -847,7 +870,7 @@ postsubmits:
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+          - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
@@ -877,7 +900,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
       spec:
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
           command: ["/bin/sh"]
           args:
           - -c
@@ -912,7 +935,7 @@ postsubmits:
         securityContext:
           runAsUser: 0
         containers:
-        - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
           env:
           - name: GIMME_GO_VERSION
             value: "1.25.1"
@@ -958,7 +981,7 @@ postsubmits:
       run_if_changed: "robots/perf-report-creator/shape.yaml"
       spec:
         containers:
-        - image: quay.io/kubevirtci/pr-creator:v20260318-92e112b
+        - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
           env:
           - name: TARGET_GITHUB_REPO
             value: kubevirt/ci-performance-benchmarks
@@ -992,7 +1015,14 @@ postsubmits:
             mv "$CI_PERF_REPO_DIR"/weekly/vmi/release-index.html "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance/vmi
             mv "$CI_PERF_REPO_DIR"/weekly/vm/release-index.html "$CI_PERF_REPO_DIR"/$RELEASE_DIR/periodic-kubevirt-e2e-k8s-sig-performance/vm
 
-            git-pr.sh -c "git clean -fd weekly && git add $RELEASE_DIR" -T main -r ci-performance-benchmarks -m "$CI_PERF_REPO_DIR" -b $BRANCH -d "echo 'Add release $RELEASE_VERSION performance benchmarks data'" -B "Add release $RELEASE_VERSION performance benchmarks data via automation"
+            git-pr.sh \
+              --command "git clean -fd weekly && git add $RELEASE_DIR" \
+              --target main \
+              --repo ci-performance-benchmarks \
+              --command-path "$CI_PERF_REPO_DIR" \
+              --branch "$BRANCH" \
+              --description-command "echo 'Add release $RELEASE_VERSION performance benchmarks data'" \
+              --body "Add release $RELEASE_VERSION performance benchmarks data via automation"
 
             echo "PR created successfully"
             echo "Process completed successfully."

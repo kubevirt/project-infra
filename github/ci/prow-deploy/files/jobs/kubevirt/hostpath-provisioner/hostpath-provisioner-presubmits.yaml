@@ -21,7 +21,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -54,12 +54,45 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
             - "export KUBEVIRT_STORAGE=rook-ceph-default && export HPP_CR_TYPE=storagepool-pvc-template && ./hack/test.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "52Gi"
+  - name: pull-hostpath-provisioner-k8s-e2e-overlay-csi
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "export HPP_CR_TYPE=overlay-csi && ./hack/k8s-e2e.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -84,7 +117,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -117,7 +150,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -147,7 +180,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"

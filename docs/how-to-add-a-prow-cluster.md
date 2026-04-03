@@ -90,42 +90,63 @@ with the [kubeconfig encrypted as described here] attached to the issue.
 
 ### CI maintainer
 
-#### Integrate kubeconfig into prow main kubeconfig entry
+#### Integrate the new kubeconfig into prow aggregated kubeconfig
+
+1. Check the kubeconfig file
+
 * Decrypt the `kubeconfig` file attached to the issue
 * Check whether you can connect to the cluster with it
 * Check whether namespace and service account are created and can manage pods and secrets, so that it can be used inside the users section of the kubeconfig
-* Decrypt the secrets in https://github.com/kubevirt/secrets and add the
-  user and cluster in the new kubeconfig to a new context named `<name>` in
-  the `kubeconfig` entry of the secrets.
 
-  For a new cluster generate new sections inside `kubeconfig` for the new cluster:
-```yaml
-apiVersion: v1
-clusters:
-...
-- cluster:
-    certificate-authority-data: {kubeconfig-cert-auth-data}
-    server: {kubeconfig-server}
-  name: {cluster-name}
-...
-contexts:
-...
-- context:
-    cluster: {cluster-name}
-    user: {serviceaccount-name}
-  name: {context-name}
-users:
-...
-- name: {serviceaccount-name}
-  user:
-    token: {serviceaccount-secret-data}
-```
-* Encrypt the secrets and create a PR to https://github.com/kubevirt/secrets
-   with the changed file.
-* Once the PR is merged write a comment on the original issue saying that
+2. Add the kubeconfig file to the [kubevirt/secrets] repository
+
+* Copy the kubeconfig file in the `secrets/kubeconfigs/` folder of the
+  [kubevirt/secrets] repository
+* Ensure the `name` field in the `contexts`, `clusters` and `users` sections is
+  different from the other kubeconfig files so that their content can be aggregated
+  without conflict
+
+  ```yaml
+  ---
+  kind: Config
+  apiVersion: v1
+  current-context: {unique-context-name}
+
+  contexts:
+    - name: {unique-context-name}
+      context:
+        cluster: {unique-cluster-name}
+        user: {serviceaccount-name}
+        namespace: kubevirt-prow-jobs
+
+  clusters:
+    - name: {unique-cluster-name}
+      cluster:
+        server: {kubeapi-server}
+        certificate-authority-data: {kubeapi-server-cert-auth-data}
+
+  users:
+    - name: {unique-serviceaccount-name}
+      user:
+        token: {serviceaccount-secret-data}
+  ```
+* Commit the changes and create a PR to the [kubevirt/secrets] repository
+  with the added kubeconfig.
+
+[kubevirt/secrets]: https://github.com/kubevirt/secrets
+
+3. Declare the new cluster to the [kubevirt/project-infra] repository
+
+* Add the newly created kubeconfig filename to the `prow_build_clusters`
+  array variable in the script `github/ci/prow-deploy/hack/deploy.sh` of the
+  [kubevirt/project-infra] repository.
+* Create a PR to the [kubevirt/project-infra] repository.
+* Once the PRs are merged, write a comment on the original issue saying that
 all is done and close it.
 
-Create secrets that are required for the jobs.
+[kubevirt/project-infra]: https://github.com/kubevirt/project-infra
+
+#### Create secrets that are required for the jobs.
 
 > [!NOTE]
 > Currently there's only the `gcs` secret required.
@@ -146,10 +167,9 @@ Now we can create Prow job configurations that have the `cluster` field set to t
     * If you are a CI maintainer you should:
 
       * Decrypt the kubeconfig file attached to the issue.
-      * Decrypt the secrets in https://github.com/kubevirt/secrets and add the
-      new kubeconfig in a new entry of the secrets named `<name>`.
-      * Encrypt the secrets and create a PR to https://github.com/kubevirt/secrets
-      with the changed file.
+      * Add the new kubeconfig in the `secrets/kubeconfigs/` folder of the
+        [kubevirt/secrets] repository.
+      * Create a PR to https://github.com/kubevirt/secrets with the new file.
       * Once the PR is merged write a comment on the original issue saying that
       all is done and close it.
 

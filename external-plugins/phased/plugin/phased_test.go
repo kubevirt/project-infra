@@ -29,10 +29,12 @@ const (
 )
 
 type TestCase struct {
-	AddedLabel         string
-	ApproveLabelExists bool
-	LGTMLabelExists    bool
-	ExpectComment      bool
+	Action                github.PullRequestEventAction
+	AddedLabel            string
+	ApproveLabelExists    bool
+	LGTMLabelExists       bool
+	SkipReviewLabelExists bool
+	ExpectComment         bool
 }
 
 var _ = Describe("Phased", func() {
@@ -108,10 +110,17 @@ var _ = Describe("Phased", func() {
 				if tc.LGTMLabelExists {
 					gh.IssueLabelsExisting = append(gh.IssueLabelsExisting, issueLabels(labels.LGTM)...)
 				}
+				if tc.SkipReviewLabelExists {
+					gh.IssueLabelsExisting = append(gh.IssueLabelsExisting, issueLabels(kubeVirtLabels.SkipReview)...)
+				}
+				action := tc.Action
+				if action == "" {
+					action = github.PullRequestActionLabeled
+				}
 				var event github.PullRequestEvent
 				By("Generating a fake pull request event and registering it to the github client", func() {
 					event = github.PullRequestEvent{
-						Action: github.PullRequestActionLabeled,
+						Action: action,
 						Label:  github.Label{Name: tc.AddedLabel},
 						GUID:   "guid",
 						Repo: github.Repo{
@@ -201,6 +210,21 @@ var _ = Describe("Phased", func() {
 					ApproveLabelExists: false,
 					LGTMLabelExists:    false,
 					ExpectComment:      true}),
+			Entry("Synchronize with skip-review present triggers phase 2",
+				TestCase{
+					Action:                github.PullRequestActionSynchronize,
+					SkipReviewLabelExists: true,
+					ExpectComment:         true}),
+			Entry("Synchronize without skip-review does not trigger phase 2",
+				TestCase{
+					Action:        github.PullRequestActionSynchronize,
+					ExpectComment: false}),
+			Entry("Synchronize with lgtm and approved but no skip-review does not trigger phase 2",
+				TestCase{
+					Action:             github.PullRequestActionSynchronize,
+					LGTMLabelExists:    true,
+					ApproveLabelExists: true,
+					ExpectComment:      false}),
 		)
 
 	})

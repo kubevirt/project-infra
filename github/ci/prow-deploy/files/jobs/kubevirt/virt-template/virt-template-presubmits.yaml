@@ -22,7 +22,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         resources:
           requests:
             memory: 4Gi
@@ -48,7 +48,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         resources:
           requests:
             memory: 4Gi
@@ -77,7 +77,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         resources:
           requests:
             memory: "8Gi"
@@ -107,7 +107,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         resources:
           requests:
             memory: 4Gi
@@ -136,7 +136,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         resources:
           requests:
             memory: 20Gi
@@ -166,7 +166,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260306-351d3b1
+        image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         resources:
           requests:
             memory: 4Gi

@@ -110,7 +110,7 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, event *g
 		return
 	}
 
-	shouldRun, err := h.shouldRunPhase2(org, repo, event.Label.Name, event.PullRequest.Number)
+	shouldRun, err := h.shouldRunPhase2(org, repo, event.Action, event.Label.Name, event.PullRequest.Number)
 	if err != nil || !shouldRun {
 		return
 	}
@@ -179,14 +179,19 @@ func generateJobConfigURL(org, repo, prowLocation, jobsConfigBase string) string
 }
 
 func (h *GitHubEventsHandler) shouldActOnPREvent(event *github.PullRequestEvent) bool {
-	return event.Action == github.PullRequestActionLabeled
+	return event.Action == github.PullRequestActionLabeled ||
+		event.Action == github.PullRequestActionSynchronize
 }
 
-func (h *GitHubEventsHandler) shouldRunPhase2(org, repo, eventLabel string, prNum int) (bool, error) {
+func (h *GitHubEventsHandler) shouldRunPhase2(org, repo string, eventAction github.PullRequestEventAction, eventLabel string, prNum int) (bool, error) {
 	l, err := h.ghClient.GetIssueLabels(org, repo, prNum)
 	if err != nil {
 		log.WithError(err).Errorf("Could not get PR labels")
 		return false, err
+	}
+
+	if eventAction == github.PullRequestActionSynchronize {
+		return github.HasLabel(kubeVirtLabels.SkipReview, l), nil
 	}
 
 	return (eventLabel == labels.LGTM && github.HasLabel(labels.Approved, l)) ||

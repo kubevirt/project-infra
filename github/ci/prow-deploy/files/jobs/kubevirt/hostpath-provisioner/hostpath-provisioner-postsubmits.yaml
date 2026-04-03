@@ -18,7 +18,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+      - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -32,6 +32,7 @@ postsubmits:
           GOARCH=arm64 make manifest &&
           GOARCH=amd64 make manifest &&
           GOARCH=ppc64le make manifest &&
+          GOARCH=s390x make manifest &&
           # Only push images on tags
           [ -z "$(git tag --points-at HEAD | head -1)" ] ||
           TAG="$(git tag --points-at HEAD | head -1)" make manifest-push
@@ -59,7 +60,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260306-351d3b1
+      - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -73,6 +74,7 @@ postsubmits:
           GOARCH=arm64 make manifest &&
           GOARCH=amd64 make manifest &&
           GOARCH=ppc64le make manifest &&
+          GOARCH=s390x make manifest &&
           make manifest-push
         # docker-in-docker needs privileged mode
         securityContext:
@@ -99,7 +101,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "false"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+      - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt

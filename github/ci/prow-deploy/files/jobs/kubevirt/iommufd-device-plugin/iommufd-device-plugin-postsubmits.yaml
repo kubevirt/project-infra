@@ -1,0 +1,73 @@
+postsubmits:
+  kubevirt/iommufd-device-plugin:
+  - name: push-iommufd-device-plugin-main
+    branches:
+    - main
+    cluster: prow-workloads
+    always_run: true
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    max_concurrency: 1
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - |
+            cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+            make image-manifest
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: push-tagged-iommufd-device-plugin
+    branches:
+    # branches also handle tags
+    - ^v\d+\.\d+\.\d+$
+    cluster: prow-workloads
+    always_run: true
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    max_concurrency: 1
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - |
+            cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+            DOCKER_TAG=$(git describe --tags --exact-match) make image-manifest
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"

@@ -19,10 +19,6 @@ periodics:
     containers:
     - args:
       - |
-        # TODO: remove yq installation after pr-creator image tag bump
-        curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
-        chmod +x ./yq && mv ./yq /usr/local/bin/yq
-
         ARTIFACTS=/tmp/artifacts
         export ARTIFACTS
         mkdir "${ARTIFACTS}"
@@ -46,13 +42,13 @@ periodics:
         done
 
         git-pr.sh \
-          -c "echo 42" \
-          -p $PROJECT_INFRA_DIR \
-          -r project-infra \
-          -b remove-inactive-users-from-orgs-yaml \
-          -T main \
-          -s 'Remove inactive users from orgs.yaml' \
-          -B $'Automatic run of periodic-community-remove-inactive-users-from-orgs-yaml.\n\n/cc @aburdenthehand @kubevirt/sig-buildsystem\n\nFYI '"$(for githubUser in $(yq '.result.inactiveUsers[]' < ${CONTRIBUTIONS_OUTPUT_FILE_NAME}); do echo "@$githubUser "; done)"
+          --command "echo 42" \
+          --repo-path "${PROJECT_INFRA_DIR}" \
+          --repo project-infra \
+          --branch remove-inactive-users-from-orgs-yaml \
+          --target main \
+          --summary 'Remove inactive users from orgs.yaml' \
+          --body $'Automatic run of periodic-community-remove-inactive-users-from-orgs-yaml.\n\n/cc @aburdenthehand @kubevirt/sig-buildsystem\n\nFYI '"$(for githubUser in $(yq '.result.inactiveUsers[]' < ${CONTRIBUTIONS_OUTPUT_FILE_NAME}); do echo "@$githubUser "; done)"
 
         # add to alumni
 
@@ -66,19 +62,19 @@ periodics:
         go run ./generators/cmd/alumni
 
         git-pr.sh \
-          -c "echo 42" \
-          -p ${COMMUNITY_DIR} \
-          -r community \
-          -b remove-inactive-users-from-orgs-yaml \
-          -T main \
-          -s 'Add inactive users to alumni.yaml' \
-          -B $'Automatic run of periodic-community-remove-inactive-users-from-orgs-yaml.\n\n/cc @aburdenthehand @kubevirt/sig-buildsystem\n\nFYI '"$(for githubUser in $(yq '.result.inactiveUsers[]' < ${CONTRIBUTIONS_OUTPUT_FILE_NAME}); do echo "@$githubUser "; done)"
+          --command "echo 42" \
+          --repo-path "${COMMUNITY_DIR}" \
+          --repo community \
+          --branch remove-inactive-users-from-orgs-yaml \
+          --target main \
+          --summary 'Add inactive users to alumni.yaml' \
+          --body $'Automatic run of periodic-community-remove-inactive-users-from-orgs-yaml.\n\n/cc @aburdenthehand @kubevirt/sig-buildsystem\n\nFYI '"$(for githubUser in $(yq '.result.inactiveUsers[]' < ${CONTRIBUTIONS_OUTPUT_FILE_NAME}); do echo "@$githubUser "; done)"
 
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260318-92e112b
+      image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
       securityContext:
         privileged: true
       resources:

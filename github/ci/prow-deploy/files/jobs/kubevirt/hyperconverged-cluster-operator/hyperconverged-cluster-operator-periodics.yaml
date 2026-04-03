@@ -24,7 +24,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+    - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
       env:
       - name: GIMME_GO_VERSION
         value: "1.25.5"

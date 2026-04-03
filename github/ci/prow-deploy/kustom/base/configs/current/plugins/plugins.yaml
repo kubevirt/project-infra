@@ -505,6 +505,14 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/iommufd-device-plugin:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+
   kubevirt/kubevirt-aie:
     plugins:
     - approve
@@ -590,6 +598,10 @@ external_plugins:
     events:
       - pull_request
       - issue_comment
+  - name: coverage
+    endpoint: http://prow-coverage:9901
+    events:
+      - pull_request
   kubevirt/kubevirt:
   - name: phased
     endpoint: http://prow-phased:9900
@@ -661,6 +673,7 @@ approve:
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
+  - kubevirt/iommufd-device-plugin
   - kubevirt/kubevirt-aie
   - kubevirt/kubevirt-aie-webhook
   require_self_approval: true

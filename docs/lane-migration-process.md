@@ -25,7 +25,7 @@ Therefore whenever we do such a lane change, we scale down the [`statusreconcile
       ready to merge the PR
 * use migratestatus (borrowed from `kubernetes/test-infra`) to check whether retiring the old status works, i.e.
 
-      podman run -v /your/token/dir:/etc/tokens --rm quay.io/kubevirtci/migratestatus:v20250326-66cd380 --branch-filter main --github-token-path /etc/tokens/oauth --retire 'pull-kubevirt-e2e-k8s-1.31-sig-compute-migrations' --org 'kubevirt' --repo 'kubevirt' --dry-run=true
+      hack/migratestatus.sh /your/token/dir/oauth --branch-filter main --retire 'pull-kubevirt-e2e-k8s-1.31-sig-compute-migrations' --org 'kubevirt' --repo 'kubevirt' --dry-run=true
 * use migratestatus (borrowed from `kubernetes/test-infra`) to retire the old status as above but remove the `--dry-run` flag
 
 [`statusreconciler`]: https://docs.prow.k8s.io/docs/components/optional/status-reconciler/

@@ -9,10 +9,10 @@ plank:
       timeout: 2h
       grace_period: 15s
       utility_images:
-        clonerefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260313-8ae687e48"
-        initupload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260313-8ae687e48"
-        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260313-8ae687e48"
-        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260313-8ae687e48"
+        clonerefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260401-f6cc3990c"
+        initupload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260401-f6cc3990c"
+        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260401-f6cc3990c"
+        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260401-f6cc3990c"
       gcs_configuration:
         bucket: "kubevirt-prow"
         path_strategy: "explicit"
@@ -144,6 +144,7 @@ tide:
     kubevirt/virt-template: merge
     kubevirt/kubevirt-migration-controller: squash
     kubevirt/kubevirt-migration-operator: squash
+    kubevirt/iommufd-device-plugin: merge
     kubevirt/kubevirt-aie: merge
     kubevirt/kubevirt-aie-webhook: merge
 
@@ -219,6 +220,7 @@ tide:
     - kubevirt/virt-template
     - kubevirt/kubevirt-migration-controller
     - kubevirt/kubevirt-migration-operator
+    - kubevirt/iommufd-device-plugin
     - kubevirt/kubevirt-aie
     - kubevirt/kubevirt-aie-webhook
     labels:
@@ -230,6 +232,20 @@ tide:
     - do-not-merge/invalid-owners-file
     - do-not-merge/work-in-progress
     - do-not-merge/release-note-label-needed
+    - do-not-merge/invalid-commit-message
+    - needs-rebase
+    - "dco-signoff: no"
+  # dependabot PRs that have been labeled skip-review by the commenter periodic
+  - author: dependabot[bot]
+    repos:
+    - kubevirt/project-infra
+    labels:
+    - skip-review
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/work-in-progress
     - do-not-merge/invalid-commit-message
     - needs-rebase
     - "dco-signoff: no"

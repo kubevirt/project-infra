@@ -37,14 +37,15 @@ type removeJobsOptions struct {
 	jobConfigPathKubevirtPresubmits string
 	jobConfigPathKubevirtPeriodics  string
 	force                           bool
+	targetRelease                   string
 }
 
-func (o removeJobsOptions) Validate() error {
+func (o *removeJobsOptions) Validate() error {
 	if _, err := os.Stat(o.jobConfigPathKubevirtPresubmits); os.IsNotExist(err) {
-		return fmt.Errorf("jobConfigPathKubevirtPresubmits is required: %v", err)
+		return fmt.Errorf("jobConfigPathKubevirtPresubmits %q is required: %v", o.jobConfigPathKubevirtPresubmits, err)
 	}
 	if _, err := os.Stat(o.jobConfigPathKubevirtPeriodics); os.IsNotExist(err) {
-		return fmt.Errorf("jobConfigPathKubevirtPeriodics is required: %v", err)
+		return fmt.Errorf("jobConfigPathKubevirtPeriodics %q is required: %v", o.jobConfigPathKubevirtPeriodics, err)
 	}
 	return nil
 }
@@ -52,6 +53,9 @@ func (o removeJobsOptions) Validate() error {
 const (
 	shortUsage                    = "kubevirt remove jobs removes presubmit and periodic job definitions for kubevirt for unsupported kubevirtci providers"
 	fourReleasesRequiredAtMinimum = 4
+
+	defaultJobConfigPathKubevirtPresubmits = "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml"
+	defaultJobConfigPathKubevirtPeriodics  = "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml"
 )
 
 var removeJobsCommand = &cobra.Command{
@@ -86,13 +90,14 @@ func RemoveJobsCommand() *cobra.Command {
 }
 
 func init() {
-	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The directory of the kubevirt presubmit job definitions")
-	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
+	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", defaultJobConfigPathKubevirtPresubmits, "The directory of the kubevirt presubmit job definitions")
+	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", defaultJobConfigPathKubevirtPeriodics, "The path to the kubevirt periodic job definitions")
+	removeJobsCommand.PersistentFlags().StringVar(&removeJobsOpts.targetRelease, "target-release", "", "The target release for the jobs to remove (requires --force)")
 	removeJobsCommand.PersistentFlags().BoolVar(&removeJobsOpts.force, "force", false, "Whether the job definitions should be removed regardless of the state")
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	err := flags.ParseFlags(cmd, args, removeJobsOpts)
+	err := flags.ParseFlags(cmd, args, &removeJobsOpts)
 	if err != nil {
 		return err
 	}
@@ -117,8 +122,9 @@ func removeOldJobsIfNewOnesExist(releases []*github.RepositoryRelease) error {
 		return fmt.Errorf("failed to read jobconfig %s: %v", removeJobsOpts.jobConfigPathKubevirtPresubmits, err)
 	}
 
-	latestMinorReleases := release.GetLatestMinorReleases(release.AsSemVers(releases))
+	var targetRelease *querier.SemVer
 	if !removeJobsOpts.force {
+		latestMinorReleases := release.GetLatestMinorReleases(release.AsSemVers(releases))
 		if len(latestMinorReleases) < fourReleasesRequiredAtMinimum {
 			log.Log().Info("Not enough minor releases found, nothing to do.")
 			return nil
@@ -136,13 +142,20 @@ func removeOldJobsIfNewOnesExist(releases []*github.RepositoryRelease) error {
 			log.Log().Infof("Not all required jobs for k8s versions %s exist, nothing to do.\n%s", threeLatestRequiredMinorReleases, message)
 			return nil
 		}
+		targetRelease = latestMinorReleases[3:4][0]
+	}
+	if targetRelease == nil && removeJobsOpts.targetRelease == "" {
+		return fmt.Errorf("no target release given")
+	} else if removeJobsOpts.targetRelease != "" {
+		tagName := removeJobsOpts.targetRelease + ".0"
+		parseRelease := querier.ParseRelease(&github.RepositoryRelease{TagName: &tagName})
+		targetRelease = parseRelease
 	}
 
 	jobConfigKubevirtPeriodics, err := config.ReadJobConfig(removeJobsOpts.jobConfigPathKubevirtPeriodics)
 	if err != nil {
 		return fmt.Errorf("failed to read jobconfig %s: %v", removeJobsOpts.jobConfigPathKubevirtPeriodics, err)
 	}
-	targetRelease := latestMinorReleases[3:4][0]
 	if updated := deleteSigPeriodicJobsForRelease(&jobConfigKubevirtPeriodics, targetRelease); updated {
 		err := writeJobConfig(&jobConfigKubevirtPeriodics, removeJobsOpts.jobConfigPathKubevirtPeriodics)
 		if err != nil {

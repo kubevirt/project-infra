@@ -32,6 +32,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -84,7 +85,17 @@ Silence the bot with an ` + "`" + `/lgtm cancel` + "`" + ` or ` + "`" + `/hold` 
 
 	jobContextMatcher = regexp.MustCompile(`.*/([^/]+)/[0-9]+$`)
 
+	e2eK8sJobMatcher = regexp.MustCompile(`-e2e-k8s-([\d.]+)-(.+)$`)
+
 	presubmitRequiredMap = map[string]struct{}{}
+
+	skipComment = `Retesting this PR is being skipped.
+
+%s
+
+This bot automatically retries jobs that failed on required test lanes, but
+skips PRs where failures indicate issues that a retest would not fix.
+Silence the bot with an ` + "`" + `/lgtm cancel` + "`" + ` or ` + "`" + `/hold` + "`" + ` comment.`
 )
 
 func init() {
@@ -223,6 +234,81 @@ func makeQuery(query string, minUpdated time.Duration) string {
 	return query
 }
 
+func extractPresubmitName(targetURL string) string {
+	m := jobContextMatcher.FindStringSubmatch(targetURL)
+	if len(m) < 2 {
+		return ""
+	}
+	return m[1]
+}
+
+var deterministicJobPattern = regexp.MustCompile(`-build(-|$)|-generate$`)
+
+func notFitForRetest(failedRequired []string, allStatuses []github.Status) string {
+	// Condition 1: a build or generate job failed (deterministic failure)
+	var deterministicFailures []string
+	for _, name := range failedRequired {
+		if deterministicJobPattern.MatchString(name) {
+			deterministicFailures = append(deterministicFailures, name)
+		}
+	}
+	if len(deterministicFailures) > 0 {
+		return fmt.Sprintf("Deterministic jobs failed that a retest will not fix: %s",
+			strings.Join(deterministicFailures, ", "))
+	}
+
+	// Condition 2: any required e2e SIG lane fails on all k8s versions (≥2)
+	type laneInfo struct {
+		allVersions    map[string]bool
+		failedVersions map[string]bool
+	}
+	lanes := map[string]*laneInfo{}
+
+	for _, s := range allStatuses {
+		if s.State != "success" && s.State != "failure" {
+			continue
+		}
+		presubmitName := extractPresubmitName(s.TargetURL)
+		if _, isRequired := presubmitRequiredMap[presubmitName]; !isRequired {
+			continue
+		}
+		m := e2eK8sJobMatcher.FindStringSubmatch(presubmitName)
+		if m == nil {
+			continue
+		}
+		version, lane := m[1], m[2]
+		info, exists := lanes[lane]
+		if !exists {
+			info = &laneInfo{
+				allVersions:    map[string]bool{},
+				failedVersions: map[string]bool{},
+			}
+			lanes[lane] = info
+		}
+		info.allVersions[version] = true
+		if s.State == "failure" {
+			info.failedVersions[version] = true
+		}
+	}
+
+	var allVersionsFailedLanes []string
+	for lane, info := range lanes {
+		if len(info.allVersions) < 2 {
+			continue
+		}
+		if len(info.failedVersions) == len(info.allVersions) {
+			allVersionsFailedLanes = append(allVersionsFailedLanes, lane)
+		}
+	}
+	if len(allVersionsFailedLanes) > 0 {
+		slices.Sort(allVersionsFailedLanes)
+		return fmt.Sprintf("E2E lane(s) failing on all k8s versions: %s",
+			strings.Join(allVersionsFailedLanes, ", "))
+	}
+
+	return ""
+}
+
 func run(c client, query, sort string, asc bool, comment string, ceiling int) error {
 	log.Printf("Searching: %s", query)
 	issues, err := c.FindIssues(query, sort, asc)
@@ -256,28 +342,41 @@ func run(c client, query, sort string, asc bool, comment string, ceiling int) er
 			log.Print(msg)
 			problems = append(problems, msg)
 		}
-		requiredStatusFailed := false
+		var failedRequired []string
 		for _, s := range combinedStatus.Statuses {
 			if s.State != "failure" {
 				continue
 			}
-			stringSubmatch := jobContextMatcher.FindStringSubmatch(s.TargetURL)
-			if len(stringSubmatch) > 2 {
+			presubmitName := extractPresubmitName(s.TargetURL)
+			if presubmitName == "" {
 				continue
 			}
-			presubmitName := stringSubmatch[1]
 			if _, isRequired := presubmitRequiredMap[presubmitName]; !isRequired {
 				log.Printf("skipping non-required status for %s", presubmitName)
 				continue
 			}
-			log.Printf("found required status for %s", presubmitName)
-			requiredStatusFailed = true
-			break
+			log.Printf("found required status failure for %s", presubmitName)
+			failedRequired = append(failedRequired, presubmitName)
 		}
-		if !requiredStatusFailed {
+		if len(failedRequired) == 0 {
 			log.Printf("no failure on a required status detected for %s", i.HTMLURL)
 			continue
 		}
+
+		if reason := notFitForRetest(failedRequired, combinedStatus.Statuses); reason != "" {
+			log.Printf("PR %s is not fit for retest: %s", i.HTMLURL, reason)
+			skipMsg := fmt.Sprintf(skipComment, reason)
+			if err := c.CreateComment(org, repo, number, skipMsg); err != nil {
+				msg := fmt.Sprintf("Failed to apply skip comment to %s/%s#%d: %v", org, repo, number, err)
+				log.Print(msg)
+				problems = append(problems, msg)
+				continue
+			}
+			modified++
+			log.Printf("Commented skip on %s", i.HTMLURL)
+			continue
+		}
+
 		if err := c.CreateComment(org, repo, number, comment); err != nil {
 			msg := fmt.Sprintf("Failed to apply comment to %s/%s#%d: %v", org, repo, number, err)
 			log.Print(msg)

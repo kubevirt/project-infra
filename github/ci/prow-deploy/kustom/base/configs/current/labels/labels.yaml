@@ -128,6 +128,12 @@ default:
       previously:
       - name: sig/code-quality
         color: ce23cf
+    - name: kind/auto-quarantine
+      color: f7c5c7
+      target: prs
+      addedBy: label
+      prowPlugin: label
+      description: PR was created by the auto-quarantine bot.
     - name: kind/flake
       color: f7c5c7
       target: both
