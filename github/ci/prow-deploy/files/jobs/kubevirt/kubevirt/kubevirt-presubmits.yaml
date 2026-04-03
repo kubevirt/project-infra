@@ -2342,10 +2342,11 @@ presubmits:
     labels:
       ci.kubevirt.io/prometheus: ""
       preset-bazel-cache: "true"
-      preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
+      preset-kubevirtci-quay-credential: "true"
       preset-podman-shared-images: "true"
+    max_concurrency: 1
     name: pull-kube-burner-performance-kubevirt-density
     optional: true
     reporter_config:
@@ -2358,18 +2359,11 @@ presubmits:
         - /bin/sh
         - -c
         - |
-          # install yq
-          curl -Lo ./yq https://github.com/mikefarah/yq/releases/download/v4.54.4/yq_linux_amd64
-          chmod +x ./yq && mv ./yq /usr/local/bin/yq
-
-          # get kubectl
-          curl -L "https://dl.k8s.io/release/v1.35.3/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
-          chmod +x /usr/local/bin/kubectl
-
           # get kubeconfig
           source ../project-infra/hack/manage-secrets.sh
           decrypt_secrets
-          extract_secret 'kubeconfigPerf' /kubeconfig
+          install -m400 "${secrets_repo_dir}"/secrets/kubeconfigs/kubevirt-performance /kubeconfig
+          cleanup_secrets
 
           # login quay.io
           cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
@@ -2405,7 +2399,7 @@ presubmits:
           value: "1"
         - name: PERFSCALE_WORKLOAD
           value: tests/performance/manifests/kube-burner/kubevirt-density/kubevirt-density.yml
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        image: quay.io/kubevirtci/golang:v20260306-351d3b1
         name: ""
         resources:
           requests:
