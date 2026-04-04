@@ -23,7 +23,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260402-eac5f75
+      image: quay.io/kubevirtci/flakefinder:v20260403-f0e32a4
       name: ""
       resources: {}
 - annotations:
@@ -50,7 +50,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260402-eac5f75
+      image: quay.io/kubevirtci/flakefinder:v20260403-f0e32a4
       name: ""
       resources:
         requests:
@@ -80,7 +80,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260402-eac5f75
+      image: quay.io/kubevirtci/flakefinder:v20260403-f0e32a4
       name: ""
       resources: {}
 - annotations:
@@ -644,7 +644,7 @@ periodics:
           --release-note-none \
           --labels skip-review \
           --body $'Run of `cd ../kubevirt && make rpm-deps`\n\n/release-blocker main'
-      image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      image: quay.io/kubevirtci/pr-creator:v20260403-f0e32a4
       resources:
         requests:
           memory: 8Gi
@@ -689,7 +689,7 @@ periodics:
           --release-note-none \
           --labels skip-review \
           --body $'Run of `cd ../kubevirt && KUBEVIRT_CENTOS_STREAM_VERSION=10 make rpm-deps`\n\n/release-blocker main'
-      image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      image: quay.io/kubevirtci/pr-creator:v20260403-f0e32a4
       name: ""
       resources:
         requests:
@@ -1676,7 +1676,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      image: quay.io/kubevirtci/pr-creator:v20260403-f0e32a4
       resources:
         requests:
           memory: 200Mi
@@ -1709,7 +1709,7 @@ periodics:
       - --output-gcs-url=gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/index.html
       command:
       - /usr/bin/test-label-analyzer
-      image: quay.io/kubevirtci/test-label-analyzer:v20260402-eac5f75
+      image: quay.io/kubevirtci/test-label-analyzer:v20260403-f0e32a4
       name: ""
       resources: {}
 - annotations:
@@ -2449,7 +2449,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      image: quay.io/kubevirtci/pr-creator:v20260403-f0e32a4
       resources: {}
     nodeSelector:
       type: bare-metal-external
