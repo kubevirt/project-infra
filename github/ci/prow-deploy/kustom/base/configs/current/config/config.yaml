@@ -368,6 +368,11 @@ branch-protection:
               required_status_checks:
                 contexts:
                   - continuous-integration/travis-ci/pr
+        kubevirt-aie:
+          branches:
+            release-1.8-aie-nv:
+              protect: true
+              allow_force_pushes: true
         project-infra:
           branches:
             main:
