@@ -9,7 +9,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
 
-	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/testing"
 	prowapi "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
@@ -141,22 +140,31 @@ var _ = Describe("generateCoverageJob", func() {
 			Expect(getField(job)).To(Equal(expectedValue))
 		},
 		Entry("job name", func(j prowapi.ProwJob) string { return j.Spec.Job }, "coverage-auto"),
+		Entry("agent", func(j prowapi.ProwJob) string { return string(j.Spec.Agent) }, "kubernetes"),
 		Entry("cluster", func(j prowapi.ProwJob) string { return j.Spec.Cluster }, "kubevirt-prow-control-plane"),
 		Entry("coverage-plugin label", func(j prowapi.ProwJob) string { return j.Labels["coverage-plugin"] }, "true"),
 		Entry("container image", func(j prowapi.ProwJob) string { return j.Spec.PodSpec.Containers[0].Image }, "quay.io/kubevirtci/covreport:latest"),
+		Entry("GCS bucket", func(j prowapi.ProwJob) string { return j.Spec.DecorationConfig.GCSConfiguration.Bucket }, "kubevirt-prow"),
+		Entry("GCS path strategy", func(j prowapi.ProwJob) string { return j.Spec.DecorationConfig.GCSConfiguration.PathStrategy }, "explicit"),
+		Entry("GCS credentials secret", func(j prowapi.ProwJob) string { return *j.Spec.DecorationConfig.GCSCredentialsSecret }, "gcs"),
+		Entry("GO_MOD_PATH env", func(j prowapi.ProwJob) string { return j.Spec.PodSpec.Containers[0].Env[0].Value }, "go.mod"),
 	)
-	It("Should run inline coverage commands", func() {
+
+	DescribeTable("Should set decoration utility images",
+		func(getField func(prowapi.ProwJob) string) {
+			Expect(getField(job)).NotTo(BeEmpty())
+		},
+		Entry("clonerefs", func(j prowapi.ProwJob) string { return j.Spec.DecorationConfig.UtilityImages.CloneRefs }),
+		Entry("initupload", func(j prowapi.ProwJob) string { return j.Spec.DecorationConfig.UtilityImages.InitUpload }),
+		Entry("entrypoint", func(j prowapi.ProwJob) string { return j.Spec.DecorationConfig.UtilityImages.Entrypoint }),
+		Entry("sidecar", func(j prowapi.ProwJob) string { return j.Spec.DecorationConfig.UtilityImages.Sidecar }),
+	)
+
+	It("Should output coverage artifacts matching Spyglass config", func() {
 		args := job.Spec.PodSpec.Containers[0].Args
 		Expect(args).To(HaveLen(1))
-		Expect(args[0]).To(ContainSubstring("go test ./..."))
-		Expect(args[0]).To(ContainSubstring("covreport"))
-	})
-
-	It("Should set the GO_MOD_PATH env variable", func() {
-		Expect(job.Spec.PodSpec.Containers[0].Env).To(ContainElement(corev1.EnvVar{
-			Name:  "GO_MOD_PATH",
-			Value: "go.mod",
-		}))
+		Expect(args[0]).To(ContainSubstring("-coverprofile=${ARTIFACTS}/filtered.cov"))
+		Expect(args[0]).To(ContainSubstring("-o ${ARTIFACTS}/filtered.html"))
 	})
 })
 
