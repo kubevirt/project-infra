@@ -21,88 +21,62 @@ components:
   - ../../components/greenhouse/pv
 
 patches:
-  - target:
+  - target: &deployment_target
       version: v1
       group: apps
       kind: Deployment
       name: rehearse
     path: patches/JsonRFC6902/prow-rehearse-deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: coverage
     path: patches/JsonRFC6902/prow-coverage-deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: test-subset
     path: patches/JsonRFC6902/test-subset-deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: gcsweb
     path: patches/JsonRFC6902/gcsweb-deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: deck
     path: patches/JsonRFC6902/deck_deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: hook
     path: patches/JsonRFC6902/hook_deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: tide
     path: patches/JsonRFC6902/tide_deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: cherrypicker
     path: patches/JsonRFC6902/cherrypicker_deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: crier
     path: patches/JsonRFC6902/crier_deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: prow-controller-manager
     path: patches/JsonRFC6902/prow_controller_manager_deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: sinker
     path: patches/JsonRFC6902/sinker_deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: ghproxy
     path: patches/JsonRFC6902/ghproxy_deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: pushgateway
     path: patches/JsonRFC6902/pushgateway_deployment.yaml
   - target:
-      version: v1
-      group: apps
-      kind: Deployment
+      <<: *deployment_target
       name: pushgateway-proxy
     path: patches/JsonRFC6902/pushgateway_proxy_deployment.yaml
   - target:
@@ -113,9 +87,7 @@ patches:
       name: deck
     path: patches/StrategicMerge/deck_role.yaml
   - target:
-      group: apps
-      version: v1
-      kind: Deployment
+      <<: *deployment_target
       name: docker-mirror
     path: patches/StrategicMerge/docker-mirror_deployment.yaml
   - target:
@@ -140,9 +112,7 @@ patches:
 
   # namespaces
   - target:
-      group: apps
-      version: v1
-      kind: Deployment
+      <<: *deployment_target
       namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
@@ -158,9 +128,14 @@ patches:
       namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
-  - target:
+  - target: &configmap_target
       version: v1
       kind: ConfigMap
+      namespace: ""
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      <<: *configmap_target
       namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
@@ -170,7 +145,7 @@ patches:
       namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
-  - target:
+  - target: &role_target
       group: rbac.authorization.k8s.io
       version: v1
       kind: Role
@@ -178,83 +153,39 @@ patches:
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
+      <<: *role_target
+      namespace: test-pods
+      name: .*
+    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
+  - target: &rolebinding_target
       group: rbac.authorization.k8s.io
       version: v1
-      kind: Role
+      kind: RoleBinding
       namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: Role
+      <<: *rolebinding_target
       namespace: test-pods
       name: .*
     path: patches/JsonRFC6902/prow-jobs-namespace.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: RoleBinding
-      namespace: test-pods
-      name: .*
-    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: RoleBinding
-      namespace: test-pods
-      name: .*
-    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
-  - target:
+  - target: &clusterrolebinding_target
       group: rbac.authorization.k8s.io
       version: v1
       kind: ClusterRoleBinding
       name: prow-rehearse
     path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
   - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: ClusterRoleBinding
+      <<: *clusterrolebinding_target
       name: test-subset
     path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
   - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: RoleBinding
+      <<: *rolebinding_target
       namespace: test-pods
       name: .*
     path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
   - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: RoleBinding
-      namespace: test-pods
-      name: .*
-    path: patches/JsonRFC6902/rolebinding-subject-prow-namespace.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: RoleBinding
-      namespace: default
-      name: .*
-    path: patches/JsonRFC6902/prow-namespace.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: Role
-      namespace: test-pods
-      name: .*
-    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
-  - target:
-      group: rbnac.authorization.k8s.io
-      version: v1
-      kind: Role
-      namespace: test-pods
-      name: .*
-    path: patches/JsonRFC6902/prow-jobs-namespace.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      kind: Role
+      <<: *role_target
       namespace: test-pods
       name: deck
     path: patches/JsonRFC6902/prow-jobs-rolebinding-rules.yaml
@@ -269,12 +200,6 @@ patches:
       version: v1
       kind: Secret
       namespace: default
-      name: .*
-    path: patches/JsonRFC6902/prow-namespace.yaml
-  - target:
-      version: v1
-      kind: ConfigMap
-      namespace: ""
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
@@ -303,24 +228,20 @@ configMapGenerator:
       - configs/cat-api/api-key
 
 secretGenerator:
-  - name: oauth-token
+  - &oauth_token
+    name: oauth-token
     files:
       - oauth=secrets/oauth-token
     type: Opaque
-  - name: oauth-token
+  - <<: *oauth_token
     namespace: kubevirt-prow-jobs
-    files:
-      - oauth=secrets/oauth-token
-    type: Opaque
-  - name: gcs
+  - &gcs_secret
+    name: gcs
     files:
       - secrets/service-account.json
     type: Opaque
-  - name: gcs
+  - <<: *gcs_secret
     namespace: kubevirt-prow-jobs
-    files:
-      - secrets/service-account.json
-    type: Opaque
   - name: virtci-gcs
     namespace: kubevirt-prow-jobs
     files:
