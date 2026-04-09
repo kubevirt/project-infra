@@ -19,7 +19,7 @@ const pluginName = "release-blocker"
 const baseLabel = "release-blocker"
 
 var releaseBlockRe = regexp.MustCompile(`(?m)^(?:/releaseblock|/release-block|/release-blocker|/releaseblocker)\s+(.+)$`)
-var releaseBlockCancelRe = regexp.MustCompile(`(?m)^(?:/releaseblock\s+cancel|/release-block\s+cancel|/release-blocker\s+cancel|releaseblocker\s+cancel)\s+(.+)$`)
+var releaseBlockCancelRe = regexp.MustCompile(`(?m)^(?:/releaseblock\s+cancel|/release-block\s+cancel|/release-blocker\s+cancel|/releaseblocker\s+cancel)\s+(.+)$`)
 
 type issueEvent struct {
 	github.IssueEvent `json:",inline"`
