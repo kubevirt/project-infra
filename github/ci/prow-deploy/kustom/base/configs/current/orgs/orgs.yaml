@@ -1087,6 +1087,7 @@ orgs:
           - xpivarc
           - lyarwood
           - fossedihelm
+          - rthallisey
         repos:
           iommufd-device-plugin: admin
           kubevirt-aie: admin
