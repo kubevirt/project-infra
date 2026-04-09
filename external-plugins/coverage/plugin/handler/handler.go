@@ -151,7 +151,7 @@ func (h *GitHubEventsHandler) generateCoverageJob(
 					},
 					GCSConfiguration: &prowapi.GCSConfiguration{
 						Bucket:       "kubevirt-prow",
-						PathStrategy: "explicit",
+						PathStrategy: prowapi.PathStrategyExplicit,
 					},
 					GCSCredentialsSecret: pStr("gcs"),
 				},

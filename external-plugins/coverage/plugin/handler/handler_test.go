@@ -145,9 +145,16 @@ var _ = Describe("generateCoverageJob", func() {
 		Entry("coverage-plugin label", func(j prowapi.ProwJob) string { return j.Labels["coverage-plugin"] }, "true"),
 		Entry("container image", func(j prowapi.ProwJob) string { return j.Spec.PodSpec.Containers[0].Image }, "quay.io/kubevirtci/covreport:latest"),
 		Entry("GCS bucket", func(j prowapi.ProwJob) string { return j.Spec.DecorationConfig.GCSConfiguration.Bucket }, "kubevirt-prow"),
-		Entry("GCS path strategy", func(j prowapi.ProwJob) string { return j.Spec.DecorationConfig.GCSConfiguration.PathStrategy }, "explicit"),
+		Entry("GCS path strategy", func(j prowapi.ProwJob) string { return string(j.Spec.DecorationConfig.GCSConfiguration.PathStrategy) }, string(prowapi.PathStrategyExplicit)),
 		Entry("GCS credentials secret", func(j prowapi.ProwJob) string { return *j.Spec.DecorationConfig.GCSCredentialsSecret }, "gcs"),
-		Entry("GO_MOD_PATH env", func(j prowapi.ProwJob) string { return j.Spec.PodSpec.Containers[0].Env[0].Value }, "go.mod"),
+		Entry("GO_MOD_PATH env", func(j prowapi.ProwJob) string {
+			for _, env := range j.Spec.PodSpec.Containers[0].Env {
+				if env.Name == "GO_MOD_PATH" {
+					return env.Value
+				}
+			}
+			return ""
+		}, "go.mod"),
 	)
 
 	DescribeTable("Should set decoration utility images",
