@@ -542,6 +542,8 @@ branch-protection:
       repos:
         kubernetes-nmstate:
           protect: true
+          exclude:
+          - "^ai/"
 
 push_gateway:
   endpoint: pushgateway
