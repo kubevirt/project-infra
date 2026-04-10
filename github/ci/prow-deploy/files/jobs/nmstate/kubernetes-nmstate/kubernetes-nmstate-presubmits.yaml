@@ -36,7 +36,8 @@ presubmits:
         - release-\d+\.\d+
       annotations:
         fork-per-release: "true"
-      always_run: true
+      always_run: false
+      run_before_merge: true
       optional: false
       decorate: true
       decoration_config:
@@ -102,7 +103,8 @@ presubmits:
         - release-\d+\.\d+
       annotations:
         fork-per-release: "true"
-      always_run: true
+      always_run: false
+      run_before_merge: true
       optional: false
       decorate: true
       decoration_config:
@@ -137,7 +139,8 @@ presubmits:
         - release-\d+\.\d+
       annotations:
         fork-per-release: "true"
-      always_run: true
+      always_run: false
+      run_before_merge: true
       optional: true
       decorate: true
       decoration_config:
