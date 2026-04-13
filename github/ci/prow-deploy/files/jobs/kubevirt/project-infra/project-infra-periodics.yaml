@@ -214,7 +214,7 @@ periodics:
         once all required presubmit tests pass.
 
         /label skip-review
-        /retest-required
+        /test all
       - --template
       - --ceiling=10
       - --confirm
