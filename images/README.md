@@ -22,7 +22,7 @@ Updating published images
 
 See
 * [./hack/update-jobs-with-latest-image.sh](../hack/update-jobs-with-latest-image.sh) for doing a manual update for a selected directory containing job definitions.
-* [./hack/bump-prow-job-images.sh](../hack/bump-prow-job-images.sh) for updating all references to images hosted here in all the [jobs configured to run with prow](../github/ci/prow-deploy/files/jobs/)
+* `go run ./robots/image-bumper all` (from the repo root) refreshes kubevirtci references in prow jobs, prow deployment manifests, and tracked Containerfiles/Dockerfiles — this is what [`periodic-project-infra-image-bump`](../github/ci/prow-deploy/files/jobs/kubevirt/project-infra/project-infra-periodics.yaml) runs. Other subcommands: `job-images`, `prow-deployment-images`, `containerfile-images` (same as `bump <subcommand>` when this program is installed as the `bump` binary).
 
 `update-jobs-with-latest-image.sh`
 ----------------------------------
@@ -68,8 +68,3 @@ containers:
                privileged: true
              resources:
 ```
-
-`bump-prow-job-images.sh`
--------------------------
-
-Used by the prow job [`periodic-project-infra-prow-job-image-bump`](../github/ci/prow-deploy/files/jobs/kubevirt/project-infra/project-infra-periodics.yaml) to regularly update the image references in the prow job configurations.

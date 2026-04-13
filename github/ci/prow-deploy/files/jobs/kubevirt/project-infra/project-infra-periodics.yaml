@@ -916,7 +916,7 @@ periodics:
         resources:
           requests:
             memory: "2Gi"
-- name: periodic-project-infra-prow-job-image-bump
+- name: periodic-project-infra-image-bump
   cron: "30 0 * * *"
   max_concurrency: 1
   annotations:
@@ -945,89 +945,11 @@ periodics:
       args:
       - |
         hack/git-pr.sh \
-          --command "hack/bump-prow-job-images.sh" \
-          --branch prow-job-image-bump \
+          --command "go run ./robots/image-bumper all --repo-root=$(pwd)" \
+          --branch project-infra-image-bump \
           --repo project-infra \
           --target main \
-          --description-command "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Job images'" \
-          --labels 'skip-review' \
-          --missing-labels 'lgtm,approved,do-not-merge/hold,skip-review'
-      resources:
-        requests:
-          memory: "200Mi"
-- name: periodic-project-infra-prow-deployment-image-bump
-  cron: "45 0 * * *"
-  max_concurrency: 1
-  annotations:
-    testgrid-create-test-group: "false"
-  labels:
-    preset-github-credentials: "true"
-  decorate: true
-  decoration_config:
-    timeout: 1h
-    grace_period: 5m
-  extra_refs:
-  - org: kubevirt
-    repo: project-infra
-    base_ref: main
-    workdir: true
-  cluster: kubevirt-prow-control-plane
-  spec:
-    securityContext:
-      runAsUser: 0
-    containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260421-3a4bd4e
-      command:
-      - /usr/local/bin/runner.sh
-      - /bin/sh
-      - -c
-      args:
-      - |
-        hack/git-pr.sh \
-          --command "hack/bump-prow-deployment-images.sh" \
-          --branch prow-deployment-image-bump \
-          --repo project-infra \
-          --target main \
-          --description-command "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Deployment images'" \
-          --labels 'skip-review' \
-          --missing-labels lgtm,approved,do-not-merge/hold,skip-review
-      resources:
-        requests:
-          memory: "200Mi"
-- name: periodic-project-infra-containerfile-image-bump
-  cron: "0 1 * * *"
-  max_concurrency: 1
-  annotations:
-    testgrid-create-test-group: "false"
-  labels:
-    preset-github-credentials: "true"
-  decorate: true
-  decoration_config:
-    timeout: 1h
-    grace_period: 5m
-  extra_refs:
-  - org: kubevirt
-    repo: project-infra
-    base_ref: main
-    workdir: true
-  cluster: kubevirt-prow-control-plane
-  spec:
-    securityContext:
-      runAsUser: 0
-    containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260421-3a4bd4e
-      command:
-      - /usr/local/bin/runner.sh
-      - /bin/sh
-      - -c
-      args:
-      - |
-        git-pr.sh \
-          --command "hack/bump-containerfile-images.sh" \
-          --branch containerfile-image-bump \
-          --repo project-infra \
-          --target main \
-          --description-command "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Containerfile base images'" \
+          --description-command "hack/describe-pr-from-updated-images-in-diff.sh 'Bump prow and container images'" \
           --labels 'skip-review' \
           --missing-labels 'lgtm,approved,do-not-merge/hold,skip-review'
       resources:
