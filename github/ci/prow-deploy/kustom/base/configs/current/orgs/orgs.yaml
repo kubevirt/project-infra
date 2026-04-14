@@ -649,6 +649,7 @@ orgs:
           - awels
           - mhenriks
           - shellyka13
+          - alromeros
         repos:
           kubevirt-velero-plugin: admin
       containerized-data-importer-api-maintainers:
