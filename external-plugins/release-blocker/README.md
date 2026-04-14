@@ -8,6 +8,10 @@ The release-blocker plugin provides this by allowing project members to mark
 issues and PRs with branch-specific blocker labels via slash commands, and
 enforces that these labels cannot be manually added or removed through GitHub.
 
+The labels created by this plugin are consumed by the [release-tool](https://github.com/kubevirt/project-infra/tree/main/releng/release-tool) during the release process.
+The release-tool queries GitHub for open issues and PRs carrying these labels and
+will block RC promotions and tag creation until all blockers for the target branch are resolved.
+
 ## Overview
 
 Release-blocker is a Prow external plugin that:
