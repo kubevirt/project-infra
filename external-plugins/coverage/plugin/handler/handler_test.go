@@ -155,6 +155,36 @@ var _ = Describe("generateCoverageJob", func() {
 			}
 			return ""
 		}, "go.mod"),
+		Entry("GOTOOLCHAIN env", func(j prowapi.ProwJob) string {
+			for _, env := range j.Spec.PodSpec.Containers[0].Env {
+				if env.Name == "GOTOOLCHAIN" {
+					return env.Value
+				}
+			}
+			return ""
+		}, "local"),
+	)
+
+	DescribeTable("Should include specific coverage targets",
+		func(target string) {
+			args := job.Spec.PodSpec.Containers[0].Args
+			Expect(args).To(HaveLen(1))
+			Expect(args[0]).To(ContainSubstring(target))
+		},
+		Entry("external-plugins", "./external-plugins/..."),
+		Entry("releng", "./releng/..."),
+		Entry("robots", "./robots/..."),
+		Entry("cmd", "./cmd/..."),
+		Entry("pkg", "./pkg/..."),
+	)
+
+	DescribeTable("Should not include paths with e2e tests",
+		func(target string) {
+			args := job.Spec.PodSpec.Containers[0].Args
+			Expect(args[0]).NotTo(ContainSubstring(target))
+		},
+		Entry("should not run all tests", "go test ./..."),
+		Entry("should not include github/ci/services e2e tests", "./github/ci/services/..."),
 	)
 
 	DescribeTable("Should set decoration utility images",

@@ -125,13 +125,17 @@ func (h *GitHubEventsHandler) generateCoverageJob(
 							"-ce",
 						},
 						Args: []string{
-							"go test ./... -coverprofile=${ARTIFACTS}/filtered.cov && " +
+							"go test ./external-plugins/... ./releng/... ./robots/... ./cmd/... ./pkg/... -coverprofile=${ARTIFACTS}/filtered.cov && " +
 								"covreport -i ${ARTIFACTS}/filtered.cov -o ${ARTIFACTS}/filtered.html",
 						},
 						Env: []corev1.EnvVar{
 							{
 								Name:  "GO_MOD_PATH",
 								Value: "go.mod",
+							},
+							{
+								Name:  "GOTOOLCHAIN",
+								Value: "local",
 							},
 						},
 					},
