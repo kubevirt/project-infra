@@ -1,0 +1,87 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: prow
+  name: config
+data:
+  config.yaml: |
+    prowjob_namespace: prow
+    pod_namespace: test-pods
+
+    in_repo_config:
+      enabled:
+        "*": true
+
+    deck:
+     spyglass:
+       lenses:
+       - lens:
+           name: metadata
+         required_files:
+           - ^(?:started|finished)\.json$
+         optional_files:
+           - ^(?:podinfo|prowjob)\.json$
+       - lens:
+           config:
+           name: buildlog
+         required_files:
+         - build-log.txt
+       - lens:
+           name: junit
+         required_files:
+         - .*/junit.*\.xml
+       - lens:
+           name: podinfo
+         required_files:
+         - podinfo.json
+
+    plank:
+      job_url_prefix_config:
+        "*": https://$PROW_HOST/view/
+      report_templates:
+        '*': >-
+            [Full PR test history](https://$PROW_HOST/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}).
+            [Your PR dashboard](https://$PROW_HOST/pr?query=is:pr+state:open+author:{{with
+            index .Spec.Refs.Pulls 0}}{{.Author}}{{end}}).
+      default_decoration_config_entries:
+      - config:
+          gcs_configuration:
+            bucket: gs://your-bucket-name
+            path_strategy: explicit
+          gcs_credentials_secret: gcs-credentials
+          github_api_endpoints:
+            - http://ghproxy
+            - https://api.github.com
+          github_app_id: "$GITHUB_APP_ID"
+          github_app_private_key_secret:
+            name: github-token
+            key: cert
+          utility_images:
+            clonerefs: us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260416-449be3e64
+            entrypoint: us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260416-449be3e64
+            initupload: us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260416-449be3e64
+            sidecar: us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260416-449be3e64
+
+    tide:
+      queries:
+      - labels:
+        - lgtm
+        - approved
+        missingLabels:
+        - needs-rebase
+        - do-not-merge/hold
+        - do-not-merge/work-in-progress
+        - do-not-merge/invalid-owners-file
+        orgs:
+        - $GITHUB_ORG
+
+    decorate_all_jobs: true
+    periodics:
+    - interval: 1m
+      agent: kubernetes
+      name: echo-test
+      spec:
+        containers:
+        - image: alpine
+          command: ["/bin/date"]

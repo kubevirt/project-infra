@@ -31,10 +31,19 @@ generatorOptions:
   disableNameSuffixHash: true
 
 secretGenerator:
+  - name: github-token
+    namespace: kubevirt-prow-jobs
+    files:
+      - appid=secrets/github/app-id
+      - cert=secrets/github/app-secret
+      # For backward compatibility
+      - oauth=secrets/github/bot-token
+      - token=secrets/github/bot-token
+    type: Opaque
   - name: oauth-token
     namespace: kubevirt-prow-jobs
     files:
-      - oauth=secrets/oauth-token
+      - oauth=secrets/github/bot-token
     type: Opaque
   - name: unprivileged-oauth-token
     namespace: kubevirt-prow-jobs

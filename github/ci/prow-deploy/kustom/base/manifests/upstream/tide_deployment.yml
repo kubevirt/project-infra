@@ -1,0 +1,64 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: prow
+  name: tide
+  labels:
+    app: tide
+spec:
+  replicas: 1 # Do not scale up.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: tide
+  template:
+    metadata:
+      labels:
+        app: tide
+    spec:
+      serviceAccountName: tide
+      containers:
+        - name: tide
+          image: us-docker.pkg.dev/k8s-infra-prow/images/tide:v20260416-449be3e64
+          args:
+            - --dry-run=false
+            - --config-path=/etc/config/config.yaml
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
+            - --github-graphql-endpoint=http://ghproxy/graphql
+            - --gcs-credentials-file=/etc/gcs-credentials/service-account.json
+            - --status-path=gs://your-bucket-name/tide-status
+            - --history-uri=gs://your-bucket-name/tide-history.json
+            - --github-app-id=$(GITHUB_APP_ID)
+            - --github-app-private-key-path=/etc/github/cert
+          env:
+            - name: GITHUB_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: github-token
+                  key: appid
+          ports:
+            - name: http
+              containerPort: 8888
+          volumeMounts:
+            - name: github-token
+              mountPath: /etc/github
+              readOnly: true
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+            - name: gcs-credentials
+              mountPath: /etc/gcs-credentials
+              readOnly: true
+      volumes:
+        - name: github-token
+          secret:
+            secretName: github-token
+        - name: config
+          configMap:
+            name: config
+        - name: gcs-credentials
+          secret:
+            secretName: gcs-credentials

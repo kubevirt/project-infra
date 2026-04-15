@@ -742,6 +742,14 @@ presets:
     mountPath: /etc/kubevirtci-cred
     readOnly: true
 - labels:
+    preset-github-app-id: "true"
+  env:
+  - name: GITHUB_APP_ID
+    valueFrom:
+      secretKeyRef:
+        name: github-token
+        key: appid
+- labels:
     preset-github-credentials: "true"
   env:
   - name: GIT_ASKPASS

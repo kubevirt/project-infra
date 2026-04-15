@@ -87,10 +87,6 @@ patches:
       name: deck
     path: patches/StrategicMerge/deck_role.yaml
   - target:
-      <<: *deployment_target
-      name: docker-mirror
-    path: patches/StrategicMerge/docker-mirror_deployment.yaml
-  - target:
       version: v1
       kind: PersistentVolumeClaim
       name: ghproxy
@@ -228,10 +224,21 @@ configMapGenerator:
       - configs/cat-api/api-key
 
 secretGenerator:
+  - &github_token
+    name: github-token
+    files:
+      - appid=secrets/github/app-id
+      - cert=secrets/github/app-secret
+      # For backward compatibility
+      - oauth=secrets/github/bot-token
+      - token=secrets/github/bot-token
+    type: Opaque
+  - <<: *github_token
+    namespace: kubevirt-prow-jobs
   - &oauth_token
     name: oauth-token
     files:
-      - oauth=secrets/oauth-token
+      - oauth=secrets/github/bot-token
     type: Opaque
   - <<: *oauth_token
     namespace: kubevirt-prow-jobs
