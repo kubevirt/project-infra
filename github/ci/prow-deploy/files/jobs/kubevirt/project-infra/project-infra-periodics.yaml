@@ -192,8 +192,6 @@ periodics:
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
-  labels:
-    preset-github-credentials: "true"
   decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
@@ -218,6 +216,13 @@ periodics:
       - --template
       - --ceiling=10
       - --confirm
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+    volumes:
+    - name: token
+      secret:
+        secretName: commenter-oauth-token
 - name: periodic-project-infra-autoowners
   interval: 24h
   annotations:
