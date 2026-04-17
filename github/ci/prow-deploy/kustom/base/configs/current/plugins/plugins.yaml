@@ -79,6 +79,10 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/ci-health:
+    plugins:
+    - trigger
+
   kubevirt/charts:
     plugins:
     - approve
