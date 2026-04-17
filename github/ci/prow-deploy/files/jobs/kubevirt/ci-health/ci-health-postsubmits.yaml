@@ -1,0 +1,36 @@
+postsubmits:
+  kubevirt/ci-health:
+  - name: ci-health-sig-report-publish
+    always_run: false
+    run_if_changed: "output/kubevirt/kubevirt/results.json"
+    branches:
+    - main
+    max_concurrency: 1
+    annotations:
+      testgrid-create-test-group: "false"
+    labels:
+      preset-gcs-credentials: "true"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    cluster: kubevirt-prow-control-plane
+    spec:
+      securityContext:
+        runAsUser: 0
+      containers:
+        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+          command:
+          - /usr/local/bin/runner.sh
+          - /bin/bash
+          - -ce
+          args:
+            - |
+              SIGS_TO_REPORT=("compute" "network" "storage" "operator" "monitoring")
+              for SIG in "${SIGS_TO_REPORT[@]}"; do
+                go run ./cmd/html-report --sig $SIG --results-path ./output/kubevirt/kubevirt/results.json --path /tmp/
+              done
+              gsutil cp /tmp/sig*.html gs://kubevirt-prow/reports/sig-failure-reports/
+          resources:
+            requests:
+              memory: "200Mi"

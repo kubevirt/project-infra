@@ -374,42 +374,6 @@ periodics:
         resources:
           requests:
             memory: "200Mi"
-- name: periodic-ci-health-sig-report-publish
-  interval: 6h
-  max_concurrency: 1
-  annotations:
-    testgrid-create-test-group: "false"
-  labels:
-    preset-gcs-credentials: "true"
-  decorate: true
-  decoration_config:
-    timeout: 1h
-    grace_period: 5m
-  extra_refs:
-  - org: kubevirt
-    repo: ci-health
-    base_ref: main
-    workdir: true
-  cluster: kubevirt-prow-control-plane
-  spec:
-    securityContext:
-      runAsUser: 0
-    containers:
-      - image: quay.io/kubevirtci/golang:v20260417-7427ea2
-        command:
-        - /usr/local/bin/runner.sh
-        - /bin/bash
-        - -ce
-        args:
-          - |
-            SIGS_TO_REPORT=("compute" "network" "storage" "operator" "monitoring")
-            for SIG in "${SIGS_TO_REPORT[@]}"; do
-              go run ./cmd/html-report --sig $SIG --results-path ./output/kubevirt/kubevirt/results.json --path /tmp/
-            done
-            gsutil cp /tmp/sig*.html gs://kubevirt-prow/reports/sig-failure-reports/
-        resources:
-          requests:
-            memory: "200Mi"
 - name: periodic-kubevirtci-cluster-minorversion-updater
   interval: 24h
   max_concurrency: 1
