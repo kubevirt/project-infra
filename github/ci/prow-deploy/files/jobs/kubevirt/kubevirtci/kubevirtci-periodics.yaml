@@ -19,7 +19,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         env:
           - name: BUCKET_DIR
             value: kubevirtci-crio-mirror
@@ -57,7 +57,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260415-2a8f90a
+    - image: quay.io/kubevirtci/pr-creator:v20260417-e333d9d
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -95,7 +95,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260415-2a8f90a
+    - image: quay.io/kubevirtci/pr-creator:v20260417-e333d9d
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -131,7 +131,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260415-2a8f90a
+    - image: quay.io/kubevirtci/pr-creator:v20260417-e333d9d
       command: ["/bin/sh", "-c"]
       args:
       - GIT_ASKPASS=/usr/local/bin/git-askpass.sh git-pr.sh \
@@ -167,7 +167,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260415-2a8f90a
+    - image: quay.io/kubevirtci/pr-creator:v20260417-e333d9d
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -213,7 +213,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+    - image: quay.io/kubevirtci/golang:v20260417-7427ea2
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -291,7 +291,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260415-2a8f90a
+    - image: quay.io/kubevirtci/pr-creator:v20260417-e333d9d
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -337,7 +337,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+    - image: quay.io/kubevirtci/golang:v20260417-7427ea2
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -400,7 +400,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260415-2a8f90a
+      - image: quay.io/kubevirtci/pr-creator:v20260417-e333d9d
         command: ["/bin/sh", "-ce"]
         args:
           - |

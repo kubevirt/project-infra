@@ -18,7 +18,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -55,7 +55,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -91,7 +91,7 @@ postsubmits:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -131,7 +131,7 @@ postsubmits:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -173,7 +173,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -215,7 +215,7 @@ postsubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:

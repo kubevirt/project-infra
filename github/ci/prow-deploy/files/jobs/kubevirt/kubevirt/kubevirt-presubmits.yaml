@@ -54,7 +54,7 @@ presubmits:
           value: 1G
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -99,7 +99,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -148,7 +148,7 @@ presubmits:
         env:
         - name: TARGET
           value: kind-1.35-vgpu
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -203,7 +203,7 @@ presubmits:
           value: kind-1.34-sev
         - name: KUBEVIRT_PROVIDER
           value: kind-1.34
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -276,7 +276,7 @@ presubmits:
         env:
         - name: TARGET
           value: kind-sriov
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -347,7 +347,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
           value: 6h45m
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -398,7 +398,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
           value: 35h45m
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -428,7 +428,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -458,7 +458,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make verify-rpm-deps
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -491,7 +491,7 @@ presubmits:
         env:
         - name: KUBEVIRT_CENTOS_STREAM_VERSION
           value: "10"
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -519,7 +519,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make deps-sync && hack/verify-generate.sh
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -550,7 +550,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make gosec
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -576,7 +576,7 @@ presubmits:
         - /bin/sh
         - -c
         - make go-test
-        image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+        image: quay.io/kubevirtci/golang:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -605,7 +605,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -634,7 +634,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -666,7 +666,7 @@ presubmits:
         env:
         - name: BUILD_ARCH
           value: crossbuild-aarch64
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -698,7 +698,7 @@ presubmits:
         env:
         - name: BUILD_ARCH
           value: crossbuild-s390x
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -733,7 +733,7 @@ presubmits:
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
           value: 2602251001-25ce1ccb15
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -770,7 +770,7 @@ presubmits:
           value: 2602251001-25ce1ccb15
         - name: BUILD_ARCH
           value: crossbuild-aarch64
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -807,7 +807,7 @@ presubmits:
           value: 2602251001-25ce1ccb15
         - name: BUILD_ARCH
           value: crossbuild-s390x
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -837,7 +837,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -869,7 +869,7 @@ presubmits:
         - /bin/sh
         - -c
         - make fuzz
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -902,7 +902,7 @@ presubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -939,7 +939,7 @@ presubmits:
         env:
         - name: FOSSA_TOKEN_FILE
           value: /root/.docker/secrets/fossa/token
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -975,7 +975,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1003,7 +1003,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1032,7 +1032,7 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX="docker.io/kubevirt"
           && make olm-verify
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1061,7 +1061,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make prom-rules-verify
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1090,7 +1090,7 @@ presubmits:
         - /bin/sh
         - -c
         - hack/check-unassigned-tests.sh
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1133,7 +1133,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1179,7 +1179,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1221,7 +1221,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1259,7 +1259,7 @@ presubmits:
           value: kind-1.35-wg-arm64
         - name: KUBEVIRT_NUM_NODES
           value: "2"
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1310,7 +1310,7 @@ presubmits:
           value: dual
         - name: RUN_ON_ARM64_INFRA
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1350,7 +1350,7 @@ presubmits:
         - -ce
         - |
           make builder-build
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1382,7 +1382,7 @@ presubmits:
         - -ce
         - |
           make builder-build-cs10
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1412,7 +1412,7 @@ presubmits:
         - -c
         - |
           make lint
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1454,7 +1454,7 @@ presubmits:
           value: SwapTest
         - name: KUBEVIRT_SWAP_ON
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1495,7 +1495,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1542,7 +1542,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_STORAGE
           value: rook-ceph-default
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1587,7 +1587,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1634,7 +1634,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1677,7 +1677,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1711,7 +1711,7 @@ presubmits:
         - -c
         - |
           make lint-metrics
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1752,7 +1752,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1809,7 +1809,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 8G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1853,7 +1853,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1896,7 +1896,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1941,7 +1941,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -1984,7 +1984,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -2028,7 +2028,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -2070,7 +2070,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -2112,7 +2112,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -2156,7 +2156,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
@@ -2198,7 +2198,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
