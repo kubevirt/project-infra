@@ -1,3 +1,3 @@
-FROM quay.io/kubevirtci/golang:v20260319-c8f1db8
+FROM quay.io/kubevirtci/golang:v20260417-7427ea2
 RUN /usr/local/bin/entrypoint.sh /bin/sh -ce "GOBIN=/usr/local/bin go install github.com/cancue/covreport@v0.5.0"
 
