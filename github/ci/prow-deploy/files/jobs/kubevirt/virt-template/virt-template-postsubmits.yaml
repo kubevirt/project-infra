@@ -34,7 +34,7 @@ postsubmits:
             value: "go.mod"
           - name: GPG_USER_ID
             value: "0x99F7C0D2E1BB8025"
-        image: quay.io/kubevirtci/pr-creator:v20260417-e333d9d
+        image: quay.io/kubevirtci/pr-creator:v20260418-28352a5
         resources:
           requests:
             memory: "8Gi"
