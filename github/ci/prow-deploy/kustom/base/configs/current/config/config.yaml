@@ -147,7 +147,7 @@ tide:
     kubevirt/iommufd-device-plugin: merge
     kubevirt/kubevirt-aie: merge
     kubevirt/kubevirt-aie-webhook: merge
-
+    kubevirt/ci-health: merge
   queries:
   - repos:
     - kubevirt/dra-pci-driver
@@ -223,6 +223,7 @@ tide:
     - kubevirt/iommufd-device-plugin
     - kubevirt/kubevirt-aie
     - kubevirt/kubevirt-aie-webhook
+    - kubevirt/ci-health
     labels:
     - lgtm
     - approved
@@ -374,6 +375,10 @@ branch-protection:
               protect: true
               allow_force_pushes: true
         project-infra:
+          branches:
+            main:
+              protect: true
+        ci-health:
           branches:
             main:
               protect: true

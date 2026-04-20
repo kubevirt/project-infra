@@ -79,11 +79,13 @@ plugins:
     - release-note
     - trigger
 
-  kubevirt/ci-health:
+  kubevirt/charts:
     plugins:
+    - approve
+    - lgtm
     - trigger
 
-  kubevirt/charts:
+  kubevirt/ci-health:
     plugins:
     - approve
     - lgtm
@@ -680,6 +682,7 @@ approve:
   - kubevirt/iommufd-device-plugin
   - kubevirt/kubevirt-aie
   - kubevirt/kubevirt-aie-webhook
+  - kubevirt/ci-health
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -820,6 +823,7 @@ lgtm:
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
+  - kubevirt/ci-health
   review_acts_as_lgtm: true
 
 override:
@@ -877,6 +881,7 @@ triggers:
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
+  - kubevirt/ci-health
   ignore_ok_to_test: true
 - repos:
   - virtblocks/virtblocks
