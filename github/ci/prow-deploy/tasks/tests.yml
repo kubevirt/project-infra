@@ -1,38 +1,31 @@
 ---
-- name: wait for pods to be created
-  pause:
-    seconds: 60
-
-- name: wait for prow pods to be ready
+- name: wait for prow core components to be ready
   shell: |
-    kubectl wait --namespace kubevirt-prow \
-          --for=condition=ready pod \
-          --selector=app={{ item }} \
-          --timeout=700s
+    kubectl rollout status deployment {{ item }} \
+      --namespace=kubevirt-prow \
+      --timeout=5m
   changed_when: false
   environment:
     KUBECONFIG: '{{ kubeconfig_path }}'
   loop:
-    - greenhouse
+    - crier
     - deck
     - docker-mirror-proxy
+    - ghproxy
+    - greenhouse
     - hook
-    - sinker
-    - tide
-    - crier
-    - prow-controller-manager
     - horologium
+    - prow-controller-manager
+    - sinker
+    - statusreconciler
+    - tide
 
 - name: deploy ingress controller
   shell: |
     kubectl apply -f '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/resources/ingress-nginx-controller.yaml'
-    while [[ $(kubectl get pods --namespace ingress-nginx --selector=app.kubernetes.io/component=controller 2>&1) =~ ^No.resources.found.*$ ]]; do
-      echo "waiting for pods"; sleep 1;
-    done
-    kubectl wait --namespace ingress-nginx \
-          --for=condition=ready pod \
-          --selector=app.kubernetes.io/component=controller \
-          --timeout=600s
+    kubectl rollout status deployment ingress-nginx-controller \
+      --namespace=ingress-nginx \
+      --timeout=5m
   changed_when: false
   environment:
     KUBECONFIG: '{{ kubeconfig_path }}'

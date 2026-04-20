@@ -49,6 +49,10 @@ patches:
     path: patches/JsonRFC6902/hook_deployment.yaml
   - target:
       <<: *deployment_target
+      name: horologium
+    path: patches/JsonRFC6902/horologium_deployment.yaml
+  - target:
+      <<: *deployment_target
       name: tide
     path: patches/JsonRFC6902/tide_deployment.yaml
   - target:
@@ -113,6 +117,11 @@ patches:
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
+      <<: *deployment_target
+      namespace: prow
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
       version: v1
       kind: PersistentVolumeClaim
       namespace: default
@@ -135,10 +144,15 @@ patches:
       namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
-  - target:
+  - target: &serviceaccount_target
       version: v1
       kind: ServiceAccount
       namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      <<: *serviceaccount_target
+      namespace: prow
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target: &role_target
@@ -146,6 +160,11 @@ patches:
       version: v1
       kind: Role
       namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      <<: *role_target
+      namespace: prow
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
@@ -158,6 +177,11 @@ patches:
       version: v1
       kind: RoleBinding
       namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      <<: *rolebinding_target
+      namespace: prow
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:

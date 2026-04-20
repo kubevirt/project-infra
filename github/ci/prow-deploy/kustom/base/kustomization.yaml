@@ -1,4 +1,10 @@
 resources:
+  - manifests/upstream/horologium_deployment.yml
+  - manifests/upstream/horologium_rolebinding.yml
+  - manifests/upstream/horologium_role.yml
+  - manifests/upstream/horologium_serviceaccount.yml
+  - manifests/upstream/prowjob_customresourcedefinition.yaml
+
   - manifests/local/branch-protector.yaml
   - manifests/local/deck-ingress.yaml
   - manifests/local/gcsweb-deployment.yaml
@@ -38,15 +44,11 @@ resources:
   - manifests/test_infra/current/hook_deployment.yaml
   - manifests/test_infra/current/hook_rbac.yaml
   - manifests/test_infra/current/hook_service.yaml
-  - manifests/test_infra/current/horologium_deployment.yaml
-  - manifests/test_infra/current/horologium_rbac.yaml
-  - manifests/test_infra/current/horologium_service.yaml
   - manifests/test_infra/current/needs-rebase_deployment.yaml
   - manifests/test_infra/current/needs-rebase_service.yaml
   - manifests/test_infra/current/prow_controller_manager_deployment.yaml
   - manifests/test_infra/current/prow_controller_manager_rbac.yaml
   - manifests/test_infra/current/prow_controller_manager_service.yaml
-  - manifests/test_infra/current/prowjob-crd/prowjob_customresourcedefinition.yaml
   - manifests/test_infra/current/pushgateway_deployment.yaml
   - manifests/test_infra/current/sinker_deployment.yaml
   - manifests/test_infra/current/sinker_rbac.yaml
