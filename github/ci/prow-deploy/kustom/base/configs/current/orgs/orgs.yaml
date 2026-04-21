@@ -914,6 +914,13 @@ orgs:
           - alicefr
         repos:
           test-benchmarks: admin
+      vdpa-network-binding-plugin-maintainers:
+        description: "Maintainers of vdpa-network-binding-plugin repository"
+        maintainers:
+          - bgartzi
+        privacy: closed
+        repos:
+          vdpa-network-binding-plugin: admin
       vm-console-proxy-maintainers:
         description: "Maintainers of vm-console-proxy repository"
         privacy: closed
