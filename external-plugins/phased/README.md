@@ -22,9 +22,9 @@ Phased is a Prow external plugin that:
 - Selects presubmit jobs that are non-optional, not always-run, and have no path-based conditions (i.e. jobs requiring manual `/test` triggering)
 - Posts a GitHub comment with `/test <job-name>` for each selected job, which Prow then picks up and runs
 
-The `skip-review` label is restricted to `kubevirt-bot` via Prow label
-restrictions in `plugins.yaml`, allowing automated PRs to trigger phase 2
-without human review labels.
+The `skip-review` label is restricted to `kubevirt-bot` and
+`kubevirt-commenter-bot` via Prow label restrictions in `plugins.yaml`,
+allowing automated PRs to trigger phase 2 without human review labels.
 
 ## Configuration
 
@@ -41,6 +41,7 @@ Deployment manifests:
 
 - Hardcoded to `kubevirt/kubevirt` in the source, not just a configuration choice
 - Only triggers for PRs targeting `main` or `master` branches
+- Does not handle `opened` events, PRs created with `skip-review` already applied will not trigger phase 2 until a subsequent `synchronize` event
 
 ## Development
 
