@@ -152,11 +152,16 @@ periodics:
       - --updated=1080h
       - --token=/etc/github/oauth
       - |-
-        --comment=PRs go stale after 45d of inactivity.
-        Mark the PR as fresh with `/remove-lifecycle stale`.
-        Stale PRs rot after an additional 14d of inactivity and eventually close.
+        --comment=There has been no activity on this PR for 45 days.
+        To protect limited CI resources, it has been automatically labelled 'stale'.
+        This PR will automatically rot after an additional 14 days of inactivity, and will be closed shortly after that.
 
-        If this PR is safe to close now please do so with `/close`.
+        What you can do:
+
+        * If the PR is waiting on you to respond to a question or feedback and/or update the PR, please do so.
+        * You can mark the PR as fresh and remove the label with the following command: `/remove-lifecycle stale`
+        * If this PR is safe to close now, please help the project by closing it with: `/close`
+        * If you need attention on this PR from a reviewer, you can raise it on the agenda of the relevant [SIG meeting or KubeVirt Community meeting](https://calendar.google.com/calendar/u/0/embed?src=kubevirt@cncf.io), or ping the [kubevirt-dev slack](https://kubernetes.slack.com/messages/kubevirt-dev) channel.
 
         /lifecycle stale
       - --template
@@ -185,11 +190,15 @@ periodics:
       - --updated=336h
       - --token=/etc/github/oauth
       - |-
-        --comment=Stale PRs rot after 14d of inactivity.
-        Mark the PR as fresh with `/remove-lifecycle rotten`.
-        Rotten PRs close after an additional 7d of inactivity.
+        --comment=There has been no activity on this PR for 59 days and it has been stale for 14 days.
+        To protect limited CI resources, it has been automatically labelled 'rotten' and will be closed in 7 days.
 
-        If this PR is safe to close now please do so with `/close`.
+        What you can do:
+
+        * If the PR is waiting on you to respond to a question or feedback and/or update the PR, please do so.
+        * You can mark the PR as fresh and remove the label with the following command: `/remove-lifecycle rotten`
+        * If this PR is safe to close now, please help the project by closing it with: `/close`
+        * If you need attention on this PR from a reviewer, you can raise it on the agenda of the relevant [SIG meeting or KubeVirt Community meeting](https://calendar.google.com/calendar/u/0/embed?src=kubevirt@cncf.io), or ping the [kubevirt-dev slack](https://kubernetes.slack.com/messages/kubevirt-dev) channel.
 
         /lifecycle rotten
       - --template
@@ -217,9 +226,14 @@ periodics:
       - --updated=168h
       - --token=/etc/github/oauth
       - |-
-        --comment=Rotten PRs close after 7d of inactivity.
-        Reopen the PR with `/reopen`.
-        Mark the PR as fresh with `/remove-lifecycle rotten`.
+        --comment=There has been no activity on this PR for 66 days and it has been rotten for 7 days.
+        To protect limited CI resources, it has been automatically closed.
+
+        What you can do:
+
+        * If the PR is waiting on you to respond to a question or feedback and/or update the PR, please do so.
+        * You can reopen the PR with the following command: `/reopen`
+        * Raise attention on this PR at a relevant [SIG meeting or KubeVirt Community meeting](https://calendar.google.com/calendar/u/0/embed?src=kubevirt@cncf.io), or ping the [kubevirt-dev slack](https://kubernetes.slack.com/messages/kubevirt-dev) channel.
 
         /close
       - --template
