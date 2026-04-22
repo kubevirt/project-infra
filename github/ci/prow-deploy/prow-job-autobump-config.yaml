@@ -6,7 +6,11 @@ excludedConfigPaths: []
 targetVersion: latest
 upstreamURLBase: "https://raw.githubusercontent.com/kubernetes/test-infra/master"
 prefixes:
-  - name: "Jobs"
+  - name: "jobs-us-docker"
     prefix: "us-docker.pkg.dev/k8s-infra-prow/images"
+    summarise: true
+    consistentImages: true
+  - name: "jobs-gcr.io"
+    prefix: "gcr.io/k8s-staging-test-infra/"
     summarise: true
     consistentImages: true
