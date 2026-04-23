@@ -120,3 +120,39 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
+  - name: bump-kubevirt-migration-operator-on-api-change
+    branches:
+    - main
+    run_if_changed: "api/.*|config/controller/.*|config/rbac/.*"
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    max_concurrency: 1
+    extra_refs:
+    - org: kubevirt
+      repo: kubevirt-migration-operator
+      base_ref: main
+    labels:
+      preset-github-credentials: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/pr-creator:v20260421-3a4bd4e
+        command: ["/bin/sh", "-ce"]
+        args:
+        - |
+          CONTROLLER_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt-migration-controller
+          CONTROLLER_SHA=$(cd "${CONTROLLER_DIR}" && git rev-parse HEAD)
+          (cd "${CONTROLLER_DIR}" && git diff HEAD~1 -- api/ config/controller/ config/rbac/) > /tmp/controller.diff
+          git-pr.sh \
+            --command "cp /tmp/controller.diff ../kubevirt-migration-operator/CONTROLLER_BUMP" \
+            --branch bump-migration-controller \
+            --repo kubevirt-migration-operator \
+            --repo-path ../kubevirt-migration-operator \
+            --target main \
+            --summary "Bump kubevirt-migration-controller to ${CONTROLLER_SHA:0:12}" \
+            --missing-labels lgtm,approved,do-not-merge/hold
