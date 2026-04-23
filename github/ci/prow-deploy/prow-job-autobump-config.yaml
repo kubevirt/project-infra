@@ -2,6 +2,7 @@
 gitHubToken: "/etc/github/oauth"
 includedConfigPaths:
   - "/config/github/ci/prow-deploy/files/jobs"
+  - "/config/github/ci/prow-deploy/kustom/base/manifests/local"
 excludedConfigPaths: []
 targetVersion: latest
 upstreamURLBase: "https://raw.githubusercontent.com/kubernetes/test-infra/master"
@@ -11,6 +12,6 @@ prefixes:
     summarise: true
     consistentImages: true
   - name: "jobs-gcr.io"
-    prefix: "gcr.io/k8s-staging-test-infra/"
+    prefix: "gcr.io/k8s-staging-test-infra"
     summarise: true
-    consistentImages: true
+    consistentImages: false
