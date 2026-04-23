@@ -80,3 +80,41 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
+  - name: push-latest-kubevirt-migration-operator-images
+    branches:
+    - main
+    cluster: prow-workloads
+    always_run: true
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 15m
+    labels:
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        env:
+        - name: DOCKER_REPO
+          value: quay.io/kubevirt
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          make buildah-manifest-clean &&
+          GOARCH=arm64 make buildah-manifest &&
+          GOARCH=amd64 make buildah-manifest &&
+          GOARCH=s390x make buildah-manifest &&
+          make buildah-manifest-push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
