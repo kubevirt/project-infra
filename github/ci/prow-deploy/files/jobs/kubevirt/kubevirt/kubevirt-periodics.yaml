@@ -635,8 +635,10 @@ periodics:
     - command:
       - /usr/local/bin/runner.sh
       - /bin/bash
-      - -c
-      - ../project-infra/hack/git-pr.sh \
+      - -ceu
+      args:
+      - |
+        ../project-infra/hack/git-pr.sh \
           --command "cd ../kubevirt && make rpm-deps" \
           --branch bump-rpm-dependencies \
           --repo-path ../kubevirt \
@@ -680,8 +682,10 @@ periodics:
     - command:
       - /usr/local/bin/runner.sh
       - /bin/bash
-      - -c
-      - ../project-infra/hack/git-pr.sh \
+      - -ceu
+      args:
+      - |
+        ../project-infra/hack/git-pr.sh \
           --command "cd ../kubevirt && KUBEVIRT_CENTOS_STREAM_VERSION=10 make rpm-deps" \
           --branch bump-rpm-dependencies-cs10 \
           --repo-path ../kubevirt \
@@ -690,7 +694,6 @@ periodics:
           --labels skip-review \
           --body $'Run of `cd ../kubevirt && KUBEVIRT_CENTOS_STREAM_VERSION=10 make rpm-deps`\n\n/release-blocker main'
       image: quay.io/kubevirtci/pr-creator:v20260421-3a4bd4e
-      name: ""
       resources:
         requests:
           memory: 8Gi

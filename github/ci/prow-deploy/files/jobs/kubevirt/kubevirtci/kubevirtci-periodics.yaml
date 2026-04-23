@@ -132,9 +132,12 @@ periodics:
   spec:
     containers:
     - image: quay.io/kubevirtci/pr-creator:v20260421-3a4bd4e
-      command: ["/bin/sh", "-c"]
+      command:
+      - /bin/sh
+      - -ceu
       args:
-      - GIT_ASKPASS=/usr/local/bin/git-askpass.sh git-pr.sh \
+      - |
+        GIT_ASKPASS=/usr/local/bin/git-askpass.sh git-pr.sh \
           --command "./hack/bump-cdi.sh" \
           --repo kubevirtci \
           --branch bump-cdi \
