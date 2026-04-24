@@ -252,7 +252,7 @@ fi
 git add -A
 
 fork_url="https://${user}@github.com/${user}/${repo}.git"
-if git fetch "${fork_url}" "${branch}" 2>/dev/null; then
+if git fetch --depth 1 --no-tags "${fork_url}" "${branch}" 2>/dev/null; then
     local_tree=$(git write-tree)
     remote_tree=$(git rev-parse "FETCH_HEAD^{tree}" 2>/dev/null || true)
     if [ -n "${remote_tree}" ] && [ "${local_tree}" = "${remote_tree}" ]; then
