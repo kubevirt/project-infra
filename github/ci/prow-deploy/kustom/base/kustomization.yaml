@@ -1,4 +1,7 @@
 resources:
+  - manifests/upstream/ghproxy_deployment.yml
+  - manifests/upstream/ghproxy_persistentvolumeclaim.yml
+  - manifests/upstream/ghproxy_service.yml
   - manifests/upstream/horologium_deployment.yml
   - manifests/upstream/horologium_rolebinding.yml
   - manifests/upstream/horologium_role.yml
@@ -40,7 +43,6 @@ resources:
   - manifests/test_infra/current/deck_deployment.yaml
   - manifests/test_infra/current/deck_rbac.yaml
   - manifests/test_infra/current/deck_service.yaml
-  - manifests/test_infra/current/ghproxy.yaml
   - manifests/test_infra/current/hook_deployment.yaml
   - manifests/test_infra/current/hook_rbac.yaml
   - manifests/test_infra/current/hook_service.yaml

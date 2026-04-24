@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: horologium
-          image: us-docker.pkg.dev/k8s-infra-prow/images/horologium:v20260416-449be3e64
+          image: us-docker.pkg.dev/k8s-infra-prow/images/horologium:v20260423-a2314bdb2
           args:
             - --dry-run=false
             - --config-path=/etc/config/config.yaml

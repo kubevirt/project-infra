@@ -73,10 +73,6 @@ patches:
     path: patches/JsonRFC6902/sinker_deployment.yaml
   - target:
       <<: *deployment_target
-      name: ghproxy
-    path: patches/JsonRFC6902/ghproxy_deployment.yaml
-  - target:
-      <<: *deployment_target
       name: pushgateway
     path: patches/JsonRFC6902/pushgateway_deployment.yaml
   - target:
@@ -121,16 +117,26 @@ patches:
       namespace: prow
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
-  - target:
+  - target: &pvc_target
       version: v1
       kind: PersistentVolumeClaim
       namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
+      <<: *pvc_target
+      namespace: prow
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target: &service_target
       version: v1
       kind: Service
       namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      <<: *service_target
+      namespace: prow
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target: &configmap_target
