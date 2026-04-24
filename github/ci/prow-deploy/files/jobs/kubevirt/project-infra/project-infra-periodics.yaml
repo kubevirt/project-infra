@@ -1381,11 +1381,12 @@ periodics:
 
         install -Dm400 secrets/kubeconfigs/kubevirt-prow-control-plane ~/.kube/config
 
-        kubectl create token grafana-sa -n monitoring --duration=1440h \
-          > secrets/grafana/prometheus-token
+        TOKEN=$(kubectl create token grafana-sa -n monitoring --duration=1440h)
+
+        echo -n "$TOKEN" > secrets/grafana/prometheus-token
 
         kubectl patch secret grafana -n monitoring \
-          -p "{\"stringData\":{\"prom_bearer_token\":\"$(cat secrets/grafana/prometheus-token)\"}}"
+          -p "{\"stringData\":{\"prom_bearer_token\":\"$TOKEN\"}}"
 
         git config user.email "kubevirtbot@redhat.com"
         git config user.name "kubevirt-bot"
