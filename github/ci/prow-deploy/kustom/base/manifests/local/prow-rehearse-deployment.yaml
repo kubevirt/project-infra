@@ -18,7 +18,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: rehearse
-          image: quay.io/kubevirtci/rehearse:v20260421-3a4bd4e
+          image: quay.io/kubevirtci/rehearse:v20260423-f4bb615
           imagePullPolicy: IfNotPresent
           args:
             - --dry-run=false
