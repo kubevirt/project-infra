@@ -41,7 +41,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
       command:
       - /ko-app/commenter
       args:
@@ -70,7 +70,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
       command:
       - /ko-app/commenter
       args:
@@ -102,7 +102,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
       command:
       - /ko-app/commenter
       args:
@@ -135,7 +135,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
       command:
       - /ko-app/commenter
       args:
@@ -171,7 +171,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
       command:
       - /ko-app/commenter
       args:
@@ -196,7 +196,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
       command:
       - /ko-app/commenter
       args:
@@ -685,7 +685,7 @@ periodics:
   spec:
     containers:
     - name: peribolos
-      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260416-449be3e64
+      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260423-a2314bdb2
       command:
       - /ko-app/peribolos
       args:

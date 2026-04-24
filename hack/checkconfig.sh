@@ -26,7 +26,7 @@ podman run --rm \
     -v "${project_infra_dir}:/project-infra" \
     -v "$(realpath $(dirname $GOOGLE_APPLICATION_CREDENTIALS)):/etc/google/:Z" \
     -e=GOOGLE_APPLICATION_CREDENTIALS="/etc/google/$(basename $GOOGLE_APPLICATION_CREDENTIALS)" \
-    us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260416-449be3e64 \
+    us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260423-a2314bdb2 \
     --config-path /project-infra/github/ci/prow-deploy/files/config.yaml \
     --job-config-path /project-infra/github/ci/prow-deploy/files/jobs \
     --plugin-config /project-infra/github/ci/prow-deploy/files/plugins.yaml \
