@@ -19,7 +19,7 @@ postsubmits:
       securityContext:
         runAsUser: 0
       containers:
-        - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+        - image: quay.io/kubevirtci/golang:v20260417-7427ea2
           command:
           - /usr/local/bin/runner.sh
           - /bin/bash
