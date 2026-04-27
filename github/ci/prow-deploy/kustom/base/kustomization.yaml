@@ -7,6 +7,11 @@ resources:
   - manifests/upstream/horologium_role.yml
   - manifests/upstream/horologium_serviceaccount.yml
   - manifests/upstream/prowjob_customresourcedefinition.yaml
+  - manifests/upstream/sinker_deployment.yml
+  - manifests/upstream/sinker_rolebinding.yml
+  - manifests/upstream/sinker_rolebinding_test-pods.yml
+  - manifests/upstream/sinker_role.yml
+  - manifests/upstream/sinker_serviceaccount.yml
 
   - manifests/local/branch-protector.yaml
   - manifests/local/deck-ingress.yaml
@@ -52,9 +57,6 @@ resources:
   - manifests/test_infra/current/prow_controller_manager_rbac.yaml
   - manifests/test_infra/current/prow_controller_manager_service.yaml
   - manifests/test_infra/current/pushgateway_deployment.yaml
-  - manifests/test_infra/current/sinker_deployment.yaml
-  - manifests/test_infra/current/sinker_rbac.yaml
-  - manifests/test_infra/current/sinker_service.yaml
   - manifests/test_infra/current/statusreconciler_deployment.yaml
   - manifests/test_infra/current/statusreconciler_rbac.yaml
   - manifests/test_infra/current/tide_deployment.yaml

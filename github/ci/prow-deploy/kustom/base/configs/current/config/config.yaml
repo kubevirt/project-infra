@@ -80,6 +80,8 @@ deck:
       github_team_ids:
         - 3701123 # prow-job-taskforce
 
+# https://docs.prow.k8s.io/docs/components/core/sinker/
+# https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#Sinker
 sinker:
   resync_period: 1m
   max_prowjob_age: 48h
