@@ -162,9 +162,7 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-  # TODO: revert once the AMD workloads cluster certificate has been renewed
-  - always_run: false
-    skip_report: true
+  - always_run: true
     branches:
     - release-1.8
     cluster: amd-workloads
