@@ -1,0 +1,102 @@
+presubmits:
+  kubevirt/hyperconverged-cluster-operator:
+    - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.34
+      branches:
+        - release-1.18
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 7h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-podman-shared-images: "true"
+      cluster: prow-workloads
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "export TARGET=k8s-1.34 && automation/test.sh"
+            env:
+              - name: GO_MOD_PATH
+                value: "go.mod"
+              - name: GINKGO_LABELS
+                value: '!OpenShift && !SINGLE_NODE_ONLY'
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "50Gi"
+    - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.35
+      branches:
+      - release-1.18
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 7h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-podman-shared-images: "true"
+      cluster: prow-workloads
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "export TARGET=k8s-1.35 && automation/test.sh"
+            env:
+              - name: GO_MOD_PATH
+                value: "go.mod"
+              - name: GINKGO_LABELS
+                value: '!OpenShift && !SINGLE_NODE_ONLY'
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "50Gi"
+    - name: pull-hyperconverged-cluster-operator-unit-test-s390x
+      branches:
+        - release-1.18
+      always_run: true
+      optional: false
+      decorate: true
+      decoration_config:
+        timeout: 2h
+        grace_period: 5m
+      cluster: prow-s390x-workloads
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+            env:
+              - name: GO_MOD_PATH
+                value: "go.mod"
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - |
+                go build -o $(go env GOROOT)/pkg/tool/$(go env GOOS)_$(go env GOARCH)/covdata cmd/covdata && \
+                make test
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "2Gi"
