@@ -1,0 +1,14 @@
+# DO NOT EDIT; this file is auto-generated using https://github.com/openshift/ci-tools.
+# Fetched from https://github.com/kubevirt/ci-health root OWNERS
+# If the repo had OWNERS_ALIASES then the aliases were expanded
+# Logins who are not members of 'kubevirt' organization were filtered out
+# See the OWNERS docs: https://git.k8s.io/community/contributors/guide/owners.md
+
+approvers:
+- dhiller
+- dollierp
+options: {}
+reviewers:
+- dhiller
+- dollierp
+- whitedyl
