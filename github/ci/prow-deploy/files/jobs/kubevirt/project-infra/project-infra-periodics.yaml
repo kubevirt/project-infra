@@ -707,6 +707,44 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
+- name: periodic-project-infra-prow-manifests
+  cron: "@monthly"
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  decoration_config:
+    timeout: 10m
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    clone_depth: 1
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20260425-dd70848
+      command: [/bin/sh, -ce]
+      args:
+      - |
+        hack/git-pr.sh \
+          --command github/ci/prow-deploy/hack/sync-manifests.sh \
+          --summary 'chore(prow): synchronize manifests with upstream' \
+          --branch prow-sync-manifests \
+          --repo project-infra \
+          --target main
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: [ALL]
+        seccompProfile:
+          type: RuntimeDefault
+      resources:
+        requests:
+          memory: 100Mi
 - name: periodic-project-infra-check-docker-proxy-ca-cert
   cron: "25 8 * * 5"
   max_concurrency: 1
