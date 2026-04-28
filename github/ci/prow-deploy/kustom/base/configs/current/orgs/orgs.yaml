@@ -618,6 +618,7 @@ orgs:
         description: ""
         maintainers:
           - dhiller
+          - dollierp
         privacy: secret
         repos:
           kubectl-virt-plugin: admin
