@@ -646,7 +646,7 @@ periodics:
           --release-note-none \
           --labels skip-review \
           --body $'Run of `cd ../kubevirt && make rpm-deps`\n\n/release-blocker main'
-      image: quay.io/kubevirtci/pr-creator:v20260425-dd70848
+      image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
       resources:
         requests:
           memory: 8Gi
@@ -693,7 +693,7 @@ periodics:
           --release-note-none \
           --labels skip-review \
           --body $'Run of `cd ../kubevirt && KUBEVIRT_CENTOS_STREAM_VERSION=10 make rpm-deps`\n\n/release-blocker main'
-      image: quay.io/kubevirtci/pr-creator:v20260425-dd70848
+      image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
       resources:
         requests:
           memory: 8Gi
@@ -1682,7 +1682,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260425-dd70848
+      image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
       resources:
         requests:
           memory: 200Mi
@@ -2455,7 +2455,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/pr-creator:v20260425-dd70848
+      image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
       resources: {}
     nodeSelector:
       type: bare-metal-external
