@@ -1,0 +1,23 @@
+---
+# Removes status-path which point to a remote google storage location
+- op: remove
+  path: /spec/template/spec/containers/0/args/7
+
+# inject jobs configmap
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --job-config-path=/etc/job-config
+
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/-
+  value:
+    name: job-config
+    mountPath: /etc/job-config
+    readOnly: true
+
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: job-config
+    configMap:
+      name: job-config
