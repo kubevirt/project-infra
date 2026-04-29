@@ -29,7 +29,7 @@ presubmits:
               - "make test"
             env:
               - name: GIMME_GO_VERSION
-                value: "1.22.5"
+                value: "1.24.13"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
@@ -65,7 +65,7 @@ presubmits:
               - "make linter"
             env:
               - name: GIMME_GO_VERSION
-                value: "1.22.5"
+                value: "1.24.13"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
@@ -101,7 +101,7 @@ presubmits:
               - "make sanity-test"
             env:
               - name: GIMME_GO_VERSION
-                value: "1.22.5"
+                value: "1.24.13"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
@@ -137,6 +137,9 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "./hack/ci/e2e-latest.sh"
+            env:
+              - name: GIMME_GO_VERSION
+                value: "1.24.13"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
@@ -172,6 +175,9 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "./hack/ci/e2e-latest-split.sh"
+            env:
+              - name: GIMME_GO_VERSION
+                value: "1.24.13"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
@@ -207,6 +213,9 @@ presubmits:
               - "/bin/sh"
               - "-c"
               - "./hack/run-k8s-e2e.sh"
+            env:
+              - name: GIMME_GO_VERSION
+                value: "1.24.13"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
