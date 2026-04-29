@@ -175,6 +175,8 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 5
     name: pull-kubevirt-e2e-kind-1.34-sev-1.7
+    # TODO: revert once the service-account token has been renewed
+    optional: true
     spec:
       containers:
       - command:
