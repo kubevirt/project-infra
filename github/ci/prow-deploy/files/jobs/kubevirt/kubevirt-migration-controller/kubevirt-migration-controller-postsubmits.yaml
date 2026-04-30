@@ -145,6 +145,7 @@ postsubmits:
         command: ["/bin/sh", "-ce"]
         args:
         - |
+          export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
           CONTROLLER_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt-migration-controller
           CONTROLLER_SHA=$(cd "${CONTROLLER_DIR}" && git rev-parse HEAD)
           (cd "${CONTROLLER_DIR}" && git diff HEAD~1 -- api/ config/controller/ config/rbac/) > /tmp/controller.diff
