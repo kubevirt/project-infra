@@ -25,7 +25,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: deck
-          image: us-docker.pkg.dev/k8s-infra-prow/images/deck:v20260423-a2314bdb2
+          image: us-docker.pkg.dev/k8s-infra-prow/images/deck:v20260430-7dfdc18c1
           args:
             - --config-path=/etc/config/config.yaml
             - --plugin-config=/etc/plugins/plugins.yaml
