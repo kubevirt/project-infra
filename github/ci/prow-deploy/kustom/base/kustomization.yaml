@@ -1,17 +1,17 @@
 resources:
-  - manifests/upstream/ghproxy_deployment.yml
-  - manifests/upstream/ghproxy_persistentvolumeclaim.yml
-  - manifests/upstream/ghproxy_service.yml
-  - manifests/upstream/horologium_deployment.yml
-  - manifests/upstream/horologium_rolebinding.yml
-  - manifests/upstream/horologium_role.yml
-  - manifests/upstream/horologium_serviceaccount.yml
+  - manifests/upstream/ghproxy_deployment.yaml
+  - manifests/upstream/ghproxy_persistentvolumeclaim.yaml
+  - manifests/upstream/ghproxy_service.yaml
+  - manifests/upstream/horologium_deployment.yaml
+  - manifests/upstream/horologium_rolebinding.yaml
+  - manifests/upstream/horologium_role.yaml
+  - manifests/upstream/horologium_serviceaccount.yaml
   - manifests/upstream/prowjob_customresourcedefinition.yaml
-  - manifests/upstream/sinker_deployment.yml
-  - manifests/upstream/sinker_rolebinding.yml
-  - manifests/upstream/sinker_rolebinding_test-pods.yml
-  - manifests/upstream/sinker_role.yml
-  - manifests/upstream/sinker_serviceaccount.yml
+  - manifests/upstream/sinker_deployment.yaml
+  - manifests/upstream/sinker_rolebinding.yaml
+  - manifests/upstream/sinker_rolebinding_test-pods.yaml
+  - manifests/upstream/sinker_role.yaml
+  - manifests/upstream/sinker_serviceaccount.yaml
 
   - manifests/local/branch-protector.yaml
   - manifests/local/deck-ingress.yaml
