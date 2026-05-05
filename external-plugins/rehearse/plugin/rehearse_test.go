@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"k8s.io/apimachinery/pkg/util/sets"
-	"kubevirt.io/project-infra/external-plugins/testutils"
+	"kubevirt.io/project-infra/pkg/testutils"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
