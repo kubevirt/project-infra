@@ -65,9 +65,6 @@
       set_fact:
         dockerMirrorProxyCA: '{{ dockerMirrorProxyCATmp }}'
 
-#- name: Basic Validation
-#  include_tasks: validate.yml
-
 - name: create secret files
   include_tasks: secrets.yml
 
@@ -86,8 +83,8 @@
   block:
     - name: switch context
       shell: |
-        {{ kubectl_exec }} config use-context {{ remote_cluster_prow_jobs_context }}
-        {{ kubectl_exec }} config current-context
+        kubectl config use-context {{ remote_cluster_prow_jobs_context }}
+        kubectl config current-context
 
       environment:
         KUBECONFIG: "{{ kubeconfig_path }}"

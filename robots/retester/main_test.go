@@ -21,12 +21,59 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 	"time"
 
 	"sigs.k8s.io/prow/pkg/github"
 )
+
+type fakeClient struct {
+	comments        map[int][]github.IssueComment
+	createdComments map[int][]string
+	issues          []github.Issue
+	pullRequests    map[int]*github.PullRequest
+	combinedStatus  map[string]*github.CombinedStatus
+}
+
+func newFakeClient() *fakeClient {
+	return &fakeClient{
+		comments:        map[int][]github.IssueComment{},
+		createdComments: map[int][]string{},
+		pullRequests:    map[int]*github.PullRequest{},
+		combinedStatus:  map[string]*github.CombinedStatus{},
+	}
+}
+
+func (f *fakeClient) CreateComment(owner, repo string, number int, comment string) error {
+	f.createdComments[number] = append(f.createdComments[number], comment)
+	return nil
+}
+
+func (f *fakeClient) ListIssueComments(org, repo string, number int) ([]github.IssueComment, error) {
+	return f.comments[number], nil
+}
+
+func (f *fakeClient) FindIssues(query, sort string, asc bool) ([]github.Issue, error) {
+	return f.issues, nil
+}
+
+func (f *fakeClient) GetPullRequest(org, repo string, number int) (*github.PullRequest, error) {
+	pr, ok := f.pullRequests[number]
+	if !ok {
+		return nil, fmt.Errorf("PR %d not found", number)
+	}
+	return pr, nil
+}
+
+func (f *fakeClient) GetCombinedStatus(org, repo, ref string) (*github.CombinedStatus, error) {
+	cs, ok := f.combinedStatus[ref]
+	if !ok {
+		return nil, fmt.Errorf("combined status for %s not found", ref)
+	}
+	return cs, nil
+}
 
 func TestParseHTMLURL(t *testing.T) {
 	cases := []struct {
@@ -358,5 +405,130 @@ func TestNotFitForRetest(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestLastCommentMatches(t *testing.T) {
+	cases := []struct {
+		name     string
+		comments []github.IssueComment
+		comment  string
+		expected bool
+	}{
+		{
+			name:     "no comments",
+			comments: nil,
+			comment:  "hello",
+			expected: false,
+		},
+		{
+			name: "last comment matches",
+			comments: []github.IssueComment{
+				{Body: "old comment"},
+				{Body: "hello"},
+			},
+			comment:  "hello",
+			expected: true,
+		},
+		{
+			name: "last comment differs",
+			comments: []github.IssueComment{
+				{Body: "hello"},
+				{Body: "something else"},
+			},
+			comment:  "hello",
+			expected: false,
+		},
+		{
+			name: "matches with whitespace differences",
+			comments: []github.IssueComment{
+				{Body: "  hello\n"},
+			},
+			comment:  "hello",
+			expected: true,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			c := newFakeClient()
+			c.comments[1] = tc.comments
+			actual := lastCommentMatches(c, "org", "repo", 1, tc.comment)
+			if actual != tc.expected {
+				t.Errorf("expected %v, got %v", tc.expected, actual)
+			}
+		})
+	}
+}
+
+func TestRunSkipsDuplicateSkipComment(t *testing.T) {
+	savedMap := presubmitRequiredMap
+	defer func() { presubmitRequiredMap = savedMap }()
+
+	presubmitRequiredMap = map[string]struct{}{
+		"pull-kubevirt-e2e-k8s-1.33-sig-storage": {},
+		"pull-kubevirt-e2e-k8s-1.34-sig-storage": {},
+	}
+
+	skipMsg := fmt.Sprintf(skipComment, "E2E lane(s) failing on all k8s versions: sig-storage")
+
+	c := newFakeClient()
+	c.issues = []github.Issue{
+		{HTMLURL: "https://github.com/kubevirt/kubevirt/pull/1"},
+	}
+	c.pullRequests[1] = &github.PullRequest{
+		Head: github.PullRequestBranch{SHA: "abc123"},
+	}
+	c.combinedStatus["abc123"] = &github.CombinedStatus{
+		Statuses: []github.Status{
+			{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-storage")},
+			{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.34-sig-storage")},
+		},
+	}
+	c.comments[1] = []github.IssueComment{
+		{Body: skipMsg},
+	}
+
+	err := run(c, "test query", "", false, comment, 0)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(c.createdComments[1]) > 0 {
+		t.Errorf("expected no new comments, got %d: %v", len(c.createdComments[1]), c.createdComments[1])
+	}
+}
+
+func TestRunPostsSkipCommentWhenDifferent(t *testing.T) {
+	savedMap := presubmitRequiredMap
+	defer func() { presubmitRequiredMap = savedMap }()
+
+	presubmitRequiredMap = map[string]struct{}{
+		"pull-kubevirt-e2e-k8s-1.33-sig-storage": {},
+		"pull-kubevirt-e2e-k8s-1.34-sig-storage": {},
+	}
+
+	c := newFakeClient()
+	c.issues = []github.Issue{
+		{HTMLURL: "https://github.com/kubevirt/kubevirt/pull/1"},
+	}
+	c.pullRequests[1] = &github.PullRequest{
+		Head: github.PullRequestBranch{SHA: "abc123"},
+	}
+	c.combinedStatus["abc123"] = &github.CombinedStatus{
+		Statuses: []github.Status{
+			{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.33-sig-storage")},
+			{State: "failure", TargetURL: prowTargetURL("pull-kubevirt-e2e-k8s-1.34-sig-storage")},
+		},
+	}
+	c.comments[1] = []github.IssueComment{
+		{Body: "some other comment"},
+	}
+
+	err := run(c, "test query", "", false, comment, 0)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(c.createdComments[1]) != 1 {
+		t.Errorf("expected 1 new comment, got %d", len(c.createdComments[1]))
 	}
 }

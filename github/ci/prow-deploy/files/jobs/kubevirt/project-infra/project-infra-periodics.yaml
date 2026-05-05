@@ -11,7 +11,7 @@ periodics:
     base_ref: main
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+    - image: quay.io/kubevirtci/golang:v20260417-7427ea2
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/sh"
@@ -41,7 +41,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
       command:
       - /ko-app/commenter
       args:
@@ -70,7 +70,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
       command:
       - /ko-app/commenter
       args:
@@ -102,7 +102,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
       command:
       - /ko-app/commenter
       args:
@@ -135,7 +135,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
       command:
       - /ko-app/commenter
       args:
@@ -171,7 +171,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
       command:
       - /ko-app/commenter
       args:
@@ -192,13 +192,11 @@ periodics:
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
-  labels:
-    preset-github-credentials: "true"
   decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20240801-a5d9345e59
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
       command:
       - /ko-app/commenter
       args:
@@ -214,10 +212,17 @@ periodics:
         once all required presubmit tests pass.
 
         /label skip-review
-        /retest-required
+        /test all
       - --template
       - --ceiling=10
       - --confirm
+      volumeMounts:
+      - name: token
+        mountPath: /etc/github
+    volumes:
+    - name: token
+      secret:
+        secretName: commenter-oauth-token
 - name: periodic-project-infra-autoowners
   interval: 24h
   annotations:
@@ -296,7 +301,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -351,7 +356,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -366,42 +371,6 @@ periodics:
               --target main \
               --body $'Update KubeVirtCI provider patch versions\nFYI @kubevirt/sig-buildsystem\n/cc none' \
               --labels 'skip-review'
-        resources:
-          requests:
-            memory: "200Mi"
-- name: periodic-ci-health-sig-report-publish
-  interval: 6h
-  max_concurrency: 1
-  annotations:
-    testgrid-create-test-group: "false"
-  labels:
-    preset-gcs-credentials: "true"
-  decorate: true
-  decoration_config:
-    timeout: 1h
-    grace_period: 5m
-  extra_refs:
-  - org: kubevirt
-    repo: ci-health
-    base_ref: main
-    workdir: true
-  cluster: kubevirt-prow-control-plane
-  spec:
-    securityContext:
-      runAsUser: 0
-    containers:
-      - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
-        command:
-        - /usr/local/bin/runner.sh
-        - /bin/bash
-        - -ce
-        args:
-          - |
-            SIGS_TO_REPORT=("compute" "network" "storage" "operator" "monitoring")
-            for SIG in "${SIGS_TO_REPORT[@]}"; do
-              go run ./cmd/html-report --sig $SIG --results-path ./output/kubevirt/kubevirt/results.json --path /tmp/
-            done
-            gsutil cp /tmp/sig*.html gs://kubevirt-prow/reports/sig-failure-reports/
         resources:
           requests:
             memory: "200Mi"
@@ -429,7 +398,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -470,7 +439,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
         command: ["/bin/sh", "-ce"]
         args:
           - |
@@ -510,7 +479,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
         command:
         - "/bin/bash"
         - -c
@@ -548,7 +517,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -597,7 +566,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -633,7 +602,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -680,7 +649,7 @@ periodics:
   spec:
     containers:
     - name: peribolos
-      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260401-f6cc3990c
+      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260430-7dfdc18c1
       command:
       - /ko-app/peribolos
       args:
@@ -723,7 +692,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+    - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -738,6 +707,44 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
+- name: periodic-project-infra-prow-manifests
+  cron: "@monthly"
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  decoration_config:
+    timeout: 10m
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    clone_depth: 1
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+      command: [/bin/sh, -ce]
+      args:
+      - |
+        hack/git-pr.sh \
+          --command github/ci/prow-deploy/hack/sync-manifests.sh \
+          --summary 'chore(prow): synchronize manifests with upstream' \
+          --branch prow-sync-manifests \
+          --repo project-infra \
+          --target main
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: [ALL]
+        seccompProfile:
+          type: RuntimeDefault
+      resources:
+        requests:
+          memory: 100Mi
 - name: periodic-project-infra-check-docker-proxy-ca-cert
   cron: "25 8 * * 5"
   max_concurrency: 1
@@ -757,7 +764,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+    - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       command: ["/bin/sh"]
       args:
       - "-ce"
@@ -788,7 +795,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -826,7 +833,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+    - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -862,7 +869,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+    - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -897,7 +904,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         env:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
@@ -911,7 +918,7 @@ periodics:
         resources:
           requests:
             memory: "2Gi"
-- name: periodic-project-infra-prow-job-image-bump
+- name: periodic-project-infra-image-bump
   cron: "30 0 * * *"
   max_concurrency: 1
   annotations:
@@ -932,7 +939,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+    - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
       command:
       - /usr/local/bin/runner.sh
       - /bin/sh
@@ -940,89 +947,11 @@ periodics:
       args:
       - |
         hack/git-pr.sh \
-          --command "hack/bump-prow-job-images.sh" \
-          --branch prow-job-image-bump \
+          --command "go run ./robots/image-bumper all --repo-root=$(pwd)" \
+          --branch project-infra-image-bump \
           --repo project-infra \
           --target main \
-          --description-command "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Job images'" \
-          --labels 'skip-review' \
-          --missing-labels 'lgtm,approved,do-not-merge/hold,skip-review'
-      resources:
-        requests:
-          memory: "200Mi"
-- name: periodic-project-infra-prow-deployment-image-bump
-  cron: "45 0 * * *"
-  max_concurrency: 1
-  annotations:
-    testgrid-create-test-group: "false"
-  labels:
-    preset-github-credentials: "true"
-  decorate: true
-  decoration_config:
-    timeout: 1h
-    grace_period: 5m
-  extra_refs:
-  - org: kubevirt
-    repo: project-infra
-    base_ref: main
-    workdir: true
-  cluster: kubevirt-prow-control-plane
-  spec:
-    securityContext:
-      runAsUser: 0
-    containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
-      command:
-      - /usr/local/bin/runner.sh
-      - /bin/sh
-      - -c
-      args:
-      - |
-        hack/git-pr.sh \
-          --command "hack/bump-prow-deployment-images.sh" \
-          --branch prow-deployment-image-bump \
-          --repo project-infra \
-          --target main \
-          --description-command "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Prow Deployment images'" \
-          --labels 'skip-review' \
-          --missing-labels lgtm,approved,do-not-merge/hold,skip-review
-      resources:
-        requests:
-          memory: "200Mi"
-- name: periodic-project-infra-containerfile-image-bump
-  cron: "0 1 * * *"
-  max_concurrency: 1
-  annotations:
-    testgrid-create-test-group: "false"
-  labels:
-    preset-github-credentials: "true"
-  decorate: true
-  decoration_config:
-    timeout: 1h
-    grace_period: 5m
-  extra_refs:
-  - org: kubevirt
-    repo: project-infra
-    base_ref: main
-    workdir: true
-  cluster: kubevirt-prow-control-plane
-  spec:
-    securityContext:
-      runAsUser: 0
-    containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
-      command:
-      - /usr/local/bin/runner.sh
-      - /bin/sh
-      - -c
-      args:
-      - |
-        git-pr.sh \
-          --command "hack/bump-containerfile-images.sh" \
-          --branch containerfile-image-bump \
-          --repo project-infra \
-          --target main \
-          --description-command "hack/describe-pr-from-updated-images-in-diff.sh 'Bump Containerfile base images'" \
+          --description-command "hack/describe-pr-from-updated-images-in-diff.sh 'Bump prow and container images'" \
           --labels 'skip-review' \
           --missing-labels 'lgtm,approved,do-not-merge/hold,skip-review'
       resources:
@@ -1092,7 +1021,7 @@ periodics:
   name: periodic-project-infra-check-prow-jobconfigs
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+    - image: quay.io/kubevirtci/golang:v20260417-7427ea2
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/sh"
@@ -1130,7 +1059,7 @@ periodics:
   name: periodic-project-infra-perf-report-creator
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+    - image: quay.io/kubevirtci/golang:v20260417-7427ea2
       env:
         - name: KUBEVIRT_PROVIDER
           value: k8s-1.34
@@ -1171,7 +1100,8 @@ periodics:
 # Check the health of the Prow workloads clusters.
 # They appear in the testgrid dashboard: https://testgrid.k8s.io/kubevirt-project-infra-periodics
 # Failures are notified by testgrid to the KubeVirt CI maintainers mailing list.
-- name: periodic-project-infra-prow-workloads-livez
+- &cluster_livez_job
+  name: periodic-project-infra-prow-workloads-livez
   annotations: &cluster_livez_annotations
     testgrid-dashboards: kubevirt-project-infra-periodics
     testgrid-days-of-results: "30"
@@ -1182,113 +1112,118 @@ periodics:
   decoration_config:
     timeout: 5m
     grace_period: 1m
-  interval: 1h
-  max_concurrency: 1
-  spec:
-    containers:
-    - &cluster_livez_container
-      image: quay.io/curl/curl:8.14.1
-      command:
-      - curl
-      args:
-      - --fail-with-body
-      - --insecure
-      - --silent
-      - --show-error
-      - $(CLUSTER_LIVEZ_ENDPOINT)
-      env:
-      - name: CLUSTER_LIVEZ_ENDPOINT
-        value: https://api.prow-workloads.ci.kubevirt.io:6443/livez?verbose
-      resources: &cluster_livez_resources
-        requests:
-          memory: 100Mi
-      securityContext:
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop: [ALL]
-        seccompProfile:
-          type: RuntimeDefault
-- name: periodic-project-infra-prow-amd-workloads-livez
-  annotations: *cluster_livez_annotations
-  cluster: kubevirt-prow-control-plane
-  decorate: true
-  decoration_config:
-    timeout: 5m
-    grace_period: 1m
-  interval: 30m
-  max_concurrency: 1
-  spec:
-    containers:
-    - <<: *cluster_livez_container
-      env:
-      - name: CLUSTER_LIVEZ_ENDPOINT
-        value: https://165.204.53.121:30128/livez?verbose
-- name: periodic-project-infra-prow-arm64-workloads-livez
-  annotations: *cluster_livez_annotations
-  cluster: kubevirt-prow-control-plane
-  decorate: true
-  decoration_config:
-    timeout: 5m
-    grace_period: 1m
   extra_refs:
   - org: kubevirt
     repo: project-infra
     base_ref: main
     clone_depth: 1
-  interval: 30m
+  interval: 1h
   labels:
     preset-github-credentials: "true"
     preset-pgp-bot-key: "true"
   max_concurrency: 1
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+    - &cluster_livez_container
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
-      - -ce
+      - -ceu
       args:
       - |
         source ./hack/manage-secrets.sh
         decrypt_secrets
-        install -Dm400 "${secrets_repo_dir}"/secrets/kubeconfigs/prow-arm64-workloads ~/.kube/config
+        install -Dm400 "${secrets_repo_dir}"/secrets/kubeconfigs/"${CLUSTER_KUBECONFIG_NAME}" ~/.kube/config
         cleanup_secrets
 
-        kubectl get --context='prow-arm64-workloads' --raw '/k8s/clusters/c-zvkv8/livez?verbose'
-      resources: *cluster_livez_resources
+        kubectl get --raw "${CLUSTER_LIVEZ_ENDPOINT:-/livez}?verbose"
+      env:
+      - name: CLUSTER_KUBECONFIG_NAME
+        value: prow-workloads
+      resources: &cluster_livez_resources
+        requests:
+          memory: 100Mi
       securityContext:
         runAsUser: 0
-- name: periodic-project-infra-prow-hyperv-workloads-livez
+- <<: *cluster_livez_job
+  name: periodic-project-infra-prow-amd-workloads-livez
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_KUBECONFIG_NAME
+        value: amd-workloads
+- <<: *cluster_livez_job
+  name: periodic-project-infra-prow-arm64-workloads-livez
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_KUBECONFIG_NAME
+        value: prow-arm64-workloads
+      - name: CLUSTER_LIVEZ_ENDPOINT
+        value: /k8s/clusters/c-zvkv8/livez
+- <<: *cluster_livez_job
+  name: periodic-project-infra-prow-hyperv-workloads-livez
   annotations:
     <<: *cluster_livez_annotations
     testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, guptaharshit@microsoft.com
-  cluster: kubevirt-prow-control-plane
-  decorate: true
-  decoration_config:
-    timeout: 5m
-    grace_period: 1m
-  interval: 1h
-  max_concurrency: 1
   spec:
     containers:
     - <<: *cluster_livez_container
       env:
-      - name: CLUSTER_LIVEZ_ENDPOINT
-        value: https://l1vh-prow-test-0.westus3.cloudapp.azure.com:6443/livez?verbose
-- name: periodic-project-infra-prow-s390x-workloads-livez
+      - name: CLUSTER_KUBECONFIG_NAME
+        value: prow-hyperv-workloads
+- <<: *cluster_livez_job
+  name: periodic-project-infra-prow-kubevirt-performance-livez
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_KUBECONFIG_NAME
+        value: kubevirt-performance
+- <<: *cluster_livez_job
+  name: periodic-project-infra-prow-s390x-workloads-livez
   annotations:
     <<: *cluster_livez_annotations
     testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
-  cluster: kubevirt-prow-control-plane
-  decorate: true
-  decoration_config:
-    timeout: 5m
-    grace_period: 1m
-  interval: 1h
-  max_concurrency: 1
   spec:
     containers:
     - <<: *cluster_livez_container
       env:
-      - name: CLUSTER_LIVEZ_ENDPOINT
-        value: https://195.212.74.206:6443/livez?verbose
+      - name: CLUSTER_KUBECONFIG_NAME
+        value: prow-s390x-workloads
+- <<: *cluster_livez_job
+  name: periodic-project-infra-prow-s390x-e2e-test-livez
+  annotations:
+    <<: *cluster_livez_annotations
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_KUBECONFIG_NAME
+        value: prow-s390x-e2e-test
+- <<: *cluster_livez_job
+  name: periodic-project-infra-prow-s390x-openshift-livez
+  annotations:
+    <<: *cluster_livez_annotations
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_KUBECONFIG_NAME
+        value: prow-s390x-openshift
+- <<: *cluster_livez_job
+  name: periodic-project-infra-prow-s390x-secure-execution-livez
+  annotations:
+    <<: *cluster_livez_annotations
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+  spec:
+    containers:
+    - <<: *cluster_livez_container
+      env:
+      - name: CLUSTER_KUBECONFIG_NAME
+        value: prow-s390x-secure-execution

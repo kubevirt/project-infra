@@ -1,5 +1,4 @@
 testinfra_dir: /tmp/test-infra
-kubectl_exec: kubectl
 bootstrap_full_config: true
 reconcile_github_webhooks: true
 rescale_pushgateway_deployment: true

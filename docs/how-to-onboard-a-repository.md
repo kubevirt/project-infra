@@ -1,7 +1,9 @@
 How to onboard a repository to KubeVirt Prow
 ============================================
 
-Prow needs to be able to act on your repository, thus it requires at least write access. For this to work you need to invite [kubevirt-bot](https://github.com/kubevirt-bot) to your repository. This is a GitHub account we use for all CI matters.
+Prow needs to be able to act on your repository, thus it requires at least write access. For this to work you need to install the Application [kubevirt-bot](https://github.com/apps/kubevirt-prow) to your repository or organization.
+
+You also need to invite [kubevirt-bot](https://github.com/kubevirt-bot) to your repository. This is a GitHub account we use for several CI matters.
 
 Also a webhook needs to get added to your repository, so that it sends back signals to Prow. The webhook management is [automated](https://github.com/kubevirt/project-infra/tree/main/github/ci/prow-deploy/tasks/deploy.yml#L53) and [configured](https://github.com/kubevirt/project-infra/blob/main/github/ci/prow-deploy/kustom/base/configs/current/config/config.yaml#L594). _See [below](#manual-prow-webhook-configuration) if you do not want Prow to manage the webhook._
 

@@ -19,7 +19,9 @@ import (
 const (
 	registryVersion = "2.8.2"
 	checkInterval   = 6 * time.Hour
-	kubevirtciRepo  = "quay.io/kubevirtci/"
+	// Wait before cleaning old images after a tag change so running jobs have time to finish.
+	cleanupDelay   = 24 * time.Hour
+	kubevirtciRepo = "quay.io/kubevirtci/"
 )
 
 var log *logrus.Logger
@@ -153,6 +155,8 @@ func main() {
 	if err != nil {
 		log.WithError(err).Fatalf("Could not connect to podman socket %s", socket)
 	}
+	var lastTag string
+	var tagChangedAt time.Time
 	for {
 		log.Infof("Waiting for %.0f hours before checking again", checkInterval.Hours())
 		time.Sleep(checkInterval)
@@ -167,6 +171,18 @@ func main() {
 			log.WithError(err).Errorf("Failed to fetch image names")
 			continue
 		}
+
+		if tag != lastTag {
+			tagChangedAt = time.Now()
+			lastTag = tag
+			log.Infof("Tag changed to %s, deferring cleanup for %.0f hours", tag, cleanupDelay.Hours())
+		}
+
+		if time.Since(tagChangedAt) < cleanupDelay {
+			log.Infof("Skipping cleanup: %.0f hours remaining until cleanup delay expires", (cleanupDelay - time.Since(tagChangedAt)).Hours())
+			continue
+		}
+
 		err = cleanOldImages(connText, tag)
 		if err != nil {
 			log.WithError(err).Errorf("Failure occurred when deleting old images")

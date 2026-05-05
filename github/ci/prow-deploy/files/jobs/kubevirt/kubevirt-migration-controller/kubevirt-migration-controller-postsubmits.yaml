@@ -18,7 +18,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      - image: quay.io/kubevirtci/golang:v20260417-7427ea2
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -60,7 +60,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "false"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -81,3 +81,79 @@ postsubmits:
         resources:
           requests:
             memory: "8Gi"
+  - name: push-latest-kubevirt-migration-controller-images
+    branches:
+    - main
+    cluster: prow-workloads
+    always_run: true
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 15m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        env:
+        - name: DOCKER_REPO
+          value: quay.io/kubevirt
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          make buildah-manifest-clean &&
+          GOARCH=arm64 make buildah-manifest &&
+          GOARCH=amd64 make buildah-manifest &&
+          GOARCH=s390x make buildah-manifest &&
+          make buildah-manifest-push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: bump-kubevirt-migration-operator-on-api-change
+    branches:
+    - main
+    run_if_changed: "api/.*|config/controller/.*|config/rbac/.*"
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    max_concurrency: 1
+    extra_refs:
+    - org: kubevirt
+      repo: kubevirt-migration-operator
+      base_ref: main
+    labels:
+      preset-github-credentials: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+        command: ["/bin/sh", "-ce"]
+        args:
+        - |
+          export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+          CONTROLLER_DIR=/home/prow/go/src/github.com/kubevirt/kubevirt-migration-controller
+          CONTROLLER_SHA=$(cd "${CONTROLLER_DIR}" && git rev-parse HEAD)
+          (cd "${CONTROLLER_DIR}" && git diff HEAD~1 -- api/ config/controller/ config/rbac/) > /tmp/controller.diff
+          git-pr.sh \
+            --command "cp /tmp/controller.diff ../kubevirt-migration-operator/CONTROLLER_BUMP" \
+            --branch bump-migration-controller \
+            --repo kubevirt-migration-operator \
+            --repo-path ../kubevirt-migration-operator \
+            --target main \
+            --summary "Bump kubevirt-migration-controller to ${CONTROLLER_SHA:0:12}" \
+            --missing-labels lgtm,approved,do-not-merge/hold

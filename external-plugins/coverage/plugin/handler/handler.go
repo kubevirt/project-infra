@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"strings"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
@@ -109,6 +110,7 @@ func (h *GitHubEventsHandler) generateCoverageJob(
 	presubmit := config.Presubmit{
 		JobBase: config.JobBase{
 			Name:    "coverage-auto",
+			Agent:   string(prowapi.KubernetesAgent),
 			Cluster: "kubevirt-prow-control-plane",
 			Labels: map[string]string{
 				"coverage-plugin": "true",
@@ -123,13 +125,17 @@ func (h *GitHubEventsHandler) generateCoverageJob(
 							"-ce",
 						},
 						Args: []string{
-							"go test ./... -coverprofile=/tmp/coverage.out && " +
-								"covreport -i /tmp/coverage.out -o ${ARTIFACTS}/coverage.html",
+							"go test ./external-plugins/... ./releng/... ./robots/... ./cmd/... ./pkg/... -coverprofile=${ARTIFACTS}/filtered.cov && " +
+								"covreport -i ${ARTIFACTS}/filtered.cov -o ${ARTIFACTS}/filtered.html",
 						},
 						Env: []corev1.EnvVar{
 							{
 								Name:  "GO_MOD_PATH",
 								Value: "go.mod",
+							},
+							{
+								Name:  "GOTOOLCHAIN",
+								Value: "local",
 							},
 						},
 					},
@@ -138,6 +144,21 @@ func (h *GitHubEventsHandler) generateCoverageJob(
 			Namespace: &h.jobsNamespace,
 			UtilityConfig: config.UtilityConfig{
 				Decorate: &decorate,
+				DecorationConfig: &prowapi.DecorationConfig{
+					Timeout:     &prowapi.Duration{Duration: 2 * time.Hour},
+					GracePeriod: &prowapi.Duration{Duration: 15 * time.Second},
+					UtilityImages: &prowapi.UtilityImages{
+						CloneRefs:  "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260401-f6cc3990c",
+						InitUpload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260401-f6cc3990c",
+						Entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260401-f6cc3990c",
+						Sidecar:    "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260401-f6cc3990c",
+					},
+					GCSConfiguration: &prowapi.GCSConfiguration{
+						Bucket:       "kubevirt-prow",
+						PathStrategy: prowapi.PathStrategyExplicit,
+					},
+					GCSCredentialsSecret: pStr("gcs"),
+				},
 			},
 		},
 		Reporter: config.Reporter{
@@ -146,6 +167,10 @@ func (h *GitHubEventsHandler) generateCoverageJob(
 		},
 	}
 	return pjutil.NewPresubmit(*pr, pr.Base.SHA, presubmit, eventGUID, nil)
+}
+
+func pStr(s string) *string {
+	return &s
 }
 
 // getPullRequestChanges returns the files changed in the given pull request.

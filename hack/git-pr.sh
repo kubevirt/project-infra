@@ -251,6 +251,16 @@ fi
 
 git add -A
 
+fork_url="https://${user}@github.com/${user}/${repo}.git"
+if git fetch --depth 1 --no-tags "${fork_url}" "${branch}" 2>/dev/null; then
+    local_tree=$(git write-tree)
+    remote_tree=$(git rev-parse "FETCH_HEAD^{tree}" 2>/dev/null || true)
+    if [ -n "${remote_tree}" ] && [ "${local_tree}" = "${remote_tree}" ]; then
+        echo "PR branch ${user}:${branch} already has identical content, skipping" >&2
+        exit 0
+    fi
+fi
+
 if [ -z "$dry_run" ]; then
     git commit -s -m "${summary//[@#]/}"
     git push -f "https://${user}@github.com/${user}/${repo}.git" HEAD:"${branch}"

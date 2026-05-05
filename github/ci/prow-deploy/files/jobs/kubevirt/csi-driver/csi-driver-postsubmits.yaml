@@ -1,45 +1,79 @@
 postsubmits:
   kubevirt/csi-driver:
-    - name: publish-csi-driver
+    - name: push-release-csi-driver-images
       branches:
-        - main
-      decorate: true
-      max_concurrency: 1
-      extra_refs:
-        - org: kubevirt
-          repo: project-infra
-          base_ref: main
-      labels:
-        preset-podman-in-container-enabled: "true"
-        preset-docker-mirror: "true"
-        preset-gcs-credentials: "true"
-        preset-github-credentials: "true"
-        preset-kubevirtci-quay-credential: "true"
+        - release-v\d+\.\d+
+      cluster: prow-workloads
+      always_run: true
+      skip_report: true
       annotations:
         testgrid-create-test-group: "false"
-        rehearsal.allowed: "true"
-      cluster: prow-workloads
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 15m
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror-proxy: "false"
+        preset-kubevirtci-quay-credential: "true"
       spec:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+          - image: quay.io/kubevirtci/golang:v20260417-7427ea2
             env:
-              - name: REPO
+              - name: REGISTRY
                 value: quay.io/kubevirt
-              - name: TARGET_NAME
-                value: csi-driver
-              - name: TAG
-                value: latest
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
               - >
                 cat $QUAY_PASSWORD | docker login quay.io --username $(cat $QUAY_USER) --password-stdin=true &&
-                make image-push
+                [ -z "$(git tag --points-at HEAD | head -1)" ] ||
+                TAG="$(git tag --points-at HEAD | head -1)" make image-push
             securityContext:
               privileged: true
             resources:
               requests:
                 memory: "8Gi"
+    - name: push-release-csi-driver-gh
+      branches:
+      - release-v\d+\.\d+
+      cluster: kubevirt-prow-control-plane
+      always_run: true
+      skip_report: true
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      decoration_config:
+        timeout: 3h
+        grace_period: 5m
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror-proxy: "false"
+        preset-github-credentials: "true"
+        preset-kubevirtci-quay-credential: "false"
+      spec:
+        containers:
+        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+          env:
+          - name: DOCKER_REPO
+            value: quay.io/kubevirt
+          - name: GH_CLI_VERSION
+            value: "1.5.0"
+          - name: GITHUB_TOKEN_PATH
+            value: /etc/github/oauth
+          - name: GITHUB_REPOSITORY
+            value: kubevirt/csi-driver
+          - name: GIT_USER_NAME
+            value: kubevirt-bot
+          command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+          args:
+          - ./hack/release.sh
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"

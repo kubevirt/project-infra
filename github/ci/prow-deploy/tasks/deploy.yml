@@ -72,7 +72,7 @@
       --dry-run=false
   environment:
     PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
-    GITHUB_TOKEN_PATH: "{{ secrets_dir }}/oauth-token"
+    GITHUB_TOKEN_PATH: "{{ secrets_dir }}/github/bot-token"
     KUBECONFIG: "{{ kubeconfig_path }}"
   when: reconcile_github_webhooks
 

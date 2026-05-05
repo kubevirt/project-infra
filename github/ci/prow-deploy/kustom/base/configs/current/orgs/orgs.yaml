@@ -55,6 +55,7 @@ orgs:
       - Dsanatar
       - EdDev
       - enp0s3
+      - fanzhangio
       - fossedihelm
       - frenzyfriday
       - gaohoward
@@ -82,6 +83,7 @@ orgs:
       - MarSik
       - mfranczy
       - mhenriks
+      - michalskrivanek
       - mrnold
       - nekkunti
       - nestoracunablanco
@@ -106,6 +108,7 @@ orgs:
       - sbiradar10
       - shellyka13
       - shubham-pampattiwar
+      - skalanetworks
       - sradco
       - Sreeja1725
       - sseago
@@ -115,6 +118,7 @@ orgs:
       - vamsikrishna-siddu
       - vasiliy-ul
       - victortoso
+      - vishnuchalla
       - vladikr
       - xpivarc
       - weshayutin
@@ -500,6 +504,8 @@ orgs:
         description: VM monitoring application based on WSGI, libvirt, flask and gevent, inspired by cAdvisor.
         has_projects: false
         has_wiki: false
+      vdpa-network-binding-plugin:
+        description: KubeVirt network binding plugin providing network vhost-vdpa interface support to VMs.
       virt-template:
         description: A KubeVirt add-on providing native, user-friendly templating workflows for KubeVirt virtual machines.
         has_projects: true
@@ -590,6 +596,11 @@ orgs:
         has_projects: true
         has_wiki: true
         has_issues: true
+      vm-file-restore-operator:
+        default_branch: main
+        has_projects: true
+        has_wiki: true
+        has_issues: true
     teams:
       QE:
         description: ""
@@ -647,6 +658,7 @@ orgs:
           - awels
           - mhenriks
           - shellyka13
+          - alromeros
         repos:
           kubevirt-velero-plugin: admin
       containerized-data-importer-api-maintainers:
@@ -915,6 +927,13 @@ orgs:
           - alicefr
         repos:
           test-benchmarks: admin
+      vdpa-network-binding-plugin-maintainers:
+        description: "Maintainers of vdpa-network-binding-plugin repository"
+        maintainers:
+          - bgartzi
+        privacy: closed
+        repos:
+          vdpa-network-binding-plugin: admin
       vm-console-proxy-maintainers:
         description: "Maintainers of vm-console-proxy repository"
         privacy: closed
@@ -1030,6 +1049,13 @@ orgs:
         repos:
           kubevirt-migration-controller: admin
           kubevirt-migration-operator: admin
+      vm-file-restore-maintainers:
+        description: Maintainers of vm file restore operator project
+        members:
+          - arnongilboa
+          - noamasu
+        repos:
+          vm-file-restore-operator: admin
       alpine-make-vm-image-maintainers:
         description: Maintainers of alpine make vm image project
         members:
@@ -1085,6 +1111,8 @@ orgs:
           - xpivarc
           - lyarwood
           - fossedihelm
+          - fanzhangio
+          - rthallisey
         repos:
           iommufd-device-plugin: admin
           kubevirt-aie: admin

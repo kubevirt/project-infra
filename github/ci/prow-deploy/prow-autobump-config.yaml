@@ -6,20 +6,17 @@ includedConfigPaths:
   - "/config/github/ci/prow-deploy/kustom/base/manifests/local"
   - "/config/github/ci/prow-deploy/kustom/base/manifests/test_infra"
   - "/config/github/ci/prow-deploy/kustom/base/manifests/test_infra/current"
+  - "/config/github/ci/prow-deploy/kustom/base/manifests/upstream"
   - "/config/github/ci/prow-deploy/kustom/base/configs/current/config"
 excludedConfigPaths: []
 extraFiles:
   - "/config/hack/bump-prow.sh"
   - "/config/hack/checkconfig.sh"
-# TODO: re-switch to test-infra reference after the update for k8s prow has been fixed
 targetVersion: latest
 upstreamURLBase: "https://raw.githubusercontent.com/kubernetes/test-infra/master"
 prefixes:
   - name: "Prow"
-    prefix: "us-docker.pkg.dev/k8s-infra-prow/images"
-# TODO: re-enable see above
-#    refConfigFile: "config/prow/cluster/deck_deployment.yaml"
-#    repo: "https://github.com/kubernetes/test-infra"
+    prefix: "us-docker.pkg.dev/k8s-infra-prow/images/"
     summarise: true
     consistentImages: true
     consistentImageExceptions:

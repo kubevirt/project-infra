@@ -1,3 +1,9 @@
+---
+# https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#ProwConfig
+prowjob_namespace: kubevirt-prow-jobs
+pod_namespace: kubevirt-prow-jobs
+log_level: debug
+
 plank:
   job_url_template: 'https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
   job_url_prefix_config:
@@ -9,10 +15,10 @@ plank:
       timeout: 2h
       grace_period: 15s
       utility_images:
-        clonerefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260401-f6cc3990c"
-        initupload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260401-f6cc3990c"
-        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260401-f6cc3990c"
-        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260401-f6cc3990c"
+        clonerefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260430-7dfdc18c1"
+        initupload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260430-7dfdc18c1"
+        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260430-7dfdc18c1"
+        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260430-7dfdc18c1"
       gcs_configuration:
         bucket: "kubevirt-prow"
         path_strategy: "explicit"
@@ -74,15 +80,13 @@ deck:
       github_team_ids:
         - 3701123 # prow-job-taskforce
 
+# https://docs.prow.k8s.io/docs/components/core/sinker/
+# https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#Sinker
 sinker:
   resync_period: 1m
   max_prowjob_age: 48h
   max_pod_age: 30m
   terminated_pod_ttl: 2h
-
-prowjob_namespace: kubevirt-prow-jobs
-pod_namespace: kubevirt-prow-jobs
-log_level: debug
 
 tide:
   sync_period: 2m
@@ -147,7 +151,7 @@ tide:
     kubevirt/iommufd-device-plugin: merge
     kubevirt/kubevirt-aie: merge
     kubevirt/kubevirt-aie-webhook: merge
-
+    kubevirt/ci-health: merge
   queries:
   - repos:
     - kubevirt/dra-pci-driver
@@ -223,6 +227,7 @@ tide:
     - kubevirt/iommufd-device-plugin
     - kubevirt/kubevirt-aie
     - kubevirt/kubevirt-aie-webhook
+    - kubevirt/ci-health
     labels:
     - lgtm
     - approved
@@ -368,7 +373,16 @@ branch-protection:
               required_status_checks:
                 contexts:
                   - continuous-integration/travis-ci/pr
+        kubevirt-aie:
+          branches:
+            release-1.8-aie-nv:
+              protect: true
+              allow_force_pushes: true
         project-infra:
+          branches:
+            main:
+              protect: true
+        ci-health:
           branches:
             main:
               protect: true
@@ -737,6 +751,14 @@ presets:
     mountPath: /etc/kubevirtci-cred
     readOnly: true
 - labels:
+    preset-github-app-id: "true"
+  env:
+  - name: GITHUB_APP_ID
+    valueFrom:
+      secretKeyRef:
+        name: github-token
+        key: appid
+- labels:
     preset-github-credentials: "true"
   env:
   - name: GIT_ASKPASS
@@ -786,6 +808,16 @@ presets:
       value: linux
     - name: GOARCH
       value: amd64
+- labels:
+    preset-gomaxprocs-4: "true"
+  env:
+  - name: GOMAXPROCS
+    value: "4"
+- labels:
+    preset-gomaxprocs-16: "true"
+  env:
+  - name: GOMAXPROCS
+    value: "16"
 
 # default preset with no labels, settings common to all jobs
 - env:
@@ -798,12 +830,12 @@ managed_webhooks:
   # Config for orgs and repos that have been onboarded to this Prow instance.
   org_repo_config:
     kubevirt:
-      token_created_after: 2021-07-15T01:00:00Z
+      token_created_after: 2026-04-15T01:00:00Z
     k8snetworkplumbingwg/kubemacpool:
-      token_created_after: 2021-07-16T01:00:00Z
+      token_created_after: 2026-04-15T01:00:00Z
     k8snetworkplumbingwg/ovs-cni:
-      token_created_after: 2021-07-16T01:00:00Z
+      token_created_after: 2026-04-15T01:00:00Z
     nmstate/kubernetes-nmstate:
-      token_created_after: 2021-07-16T01:00:00Z
+      token_created_after: 2026-04-15T01:00:00Z
     nmstate/nmstate:
-      token_created_after: 2021-07-16T01:00:00Z
+      token_created_after: 2026-04-15T01:00:00Z

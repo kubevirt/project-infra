@@ -133,6 +133,7 @@ type options struct {
 
 type client interface {
 	CreateComment(owner, repo string, number int, comment string) error
+	ListIssueComments(org, repo string, number int) ([]github.IssueComment, error)
 	FindIssues(query, sort string, asc bool) ([]github.Issue, error)
 	GetPullRequest(org, repo string, number int) (*github.PullRequest, error)
 	GetCombinedStatus(org, repo, ref string) (*github.CombinedStatus, error)
@@ -309,6 +310,19 @@ func notFitForRetest(failedRequired []string, allStatuses []github.Status) strin
 	return ""
 }
 
+func lastCommentMatches(c client, org, repo string, number int, comment string) bool {
+	comments, err := c.ListIssueComments(org, repo, number)
+	if err != nil {
+		log.Printf("Failed to list comments for %s/%s#%d: %v", org, repo, number, err)
+		return false
+	}
+	if len(comments) == 0 {
+		return false
+	}
+	lastComment := comments[len(comments)-1]
+	return strings.TrimSpace(lastComment.Body) == strings.TrimSpace(comment)
+}
+
 func run(c client, query, sort string, asc bool, comment string, ceiling int) error {
 	log.Printf("Searching: %s", query)
 	issues, err := c.FindIssues(query, sort, asc)
@@ -366,6 +380,10 @@ func run(c client, query, sort string, asc bool, comment string, ceiling int) er
 		if reason := notFitForRetest(failedRequired, combinedStatus.Statuses); reason != "" {
 			log.Printf("PR %s is not fit for retest: %s", i.HTMLURL, reason)
 			skipMsg := fmt.Sprintf(skipComment, reason)
+			if lastCommentMatches(c, org, repo, number, skipMsg) {
+				log.Printf("Skipping duplicate skip comment on %s", i.HTMLURL)
+				continue
+			}
 			if err := c.CreateComment(org, repo, number, skipMsg); err != nil {
 				msg := fmt.Sprintf("Failed to apply skip comment to %s/%s#%d: %v", org, repo, number, err)
 				log.Print(msg)

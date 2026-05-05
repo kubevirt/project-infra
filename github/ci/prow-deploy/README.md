@@ -66,7 +66,7 @@ then renders the yaml configurations, then copy them to the environment director
 When configuration and secrets are in place in the overlay specific directories,
 we can finally call kustomize to generate overlay specific manifests:
 
-    ~/go/bin/kustomize build kustom/overlays/$overlay > prow-deploy.yaml
+    kustomize build kustom/overlays/$overlay > prow-deploy.yaml
 
 WARNING: There is a version of kustomize that is embedded in kubectl, but it's not the version
 required by this deployment, so don't use it.
@@ -88,9 +88,14 @@ Contains the base configurations and manifests
 Contains the list of resources utilized in the prow deployment. Only manifests
 specified here will be included in the final kustomized rendering.
 
+- base/manifests/upstream
+
+Contains an exact copy of the deployment manifests from the upstream Prow repository.
+It can be populated by running the script `./hack/sync-manifests.sh`.
+
 - base/manifests/test_infra/current
 
-Contains an exact copy of the prow manifests from the test-infra repository.
+Contains extra deployment manifests from the test-infra repository.
 
 - base/manifests/local
 

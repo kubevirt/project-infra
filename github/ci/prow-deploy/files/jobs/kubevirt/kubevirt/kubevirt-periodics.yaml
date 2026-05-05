@@ -23,7 +23,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260402-eac5f75
+      image: quay.io/kubevirtci/flakefinder:v20260425-dd70848
       name: ""
       resources: {}
 - annotations:
@@ -50,7 +50,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260402-eac5f75
+      image: quay.io/kubevirtci/flakefinder:v20260425-dd70848
       name: ""
       resources:
         requests:
@@ -80,7 +80,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260402-eac5f75
+      image: quay.io/kubevirtci/flakefinder:v20260425-dd70848
       name: ""
       resources: {}
 - annotations:
@@ -108,7 +108,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources: {}
 - annotations:
@@ -151,7 +151,7 @@ periodics:
           secretKeyRef:
             key: oauth
             name: oauth-token
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources: {}
 - annotations:
@@ -184,7 +184,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources: {}
 - annotations:
@@ -215,7 +215,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.23.4
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources: {}
 - annotations:
@@ -246,7 +246,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources: {}
 - annotations:
@@ -284,7 +284,7 @@ periodics:
         value: windows_sysprep
       - name: KUBEVIRT_WINDOWS_PRODUCT_KEY_PATH
         value: /etc/win-sysprep/productKey
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -382,7 +382,7 @@ periodics:
         value: /etc/github/oauth
       - name: BUILD_ARCH
         value: amd64,crossbuild-s390x,crossbuild-aarch64
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -423,7 +423,7 @@ periodics:
             gsutil -m rm -r ${nightly_build_dir};
           fi;
         done
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -458,7 +458,7 @@ periodics:
       - /bin/sh
       - -c
       - automation/conformance.sh
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -509,7 +509,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: kind-1.35-vgpu
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -581,7 +581,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: kind-sriov
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -635,8 +635,10 @@ periodics:
     - command:
       - /usr/local/bin/runner.sh
       - /bin/bash
-      - -c
-      - ../project-infra/hack/git-pr.sh \
+      - -ceu
+      args:
+      - |
+        ../project-infra/hack/git-pr.sh \
           --command "cd ../kubevirt && make rpm-deps" \
           --branch bump-rpm-dependencies \
           --repo-path ../kubevirt \
@@ -644,7 +646,7 @@ periodics:
           --release-note-none \
           --labels skip-review \
           --body $'Run of `cd ../kubevirt && make rpm-deps`\n\n/release-blocker main'
-      image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
       resources:
         requests:
           memory: 8Gi
@@ -680,8 +682,10 @@ periodics:
     - command:
       - /usr/local/bin/runner.sh
       - /bin/bash
-      - -c
-      - ../project-infra/hack/git-pr.sh \
+      - -ceu
+      args:
+      - |
+        ../project-infra/hack/git-pr.sh \
           --command "cd ../kubevirt && KUBEVIRT_CENTOS_STREAM_VERSION=10 make rpm-deps" \
           --branch bump-rpm-dependencies-cs10 \
           --repo-path ../kubevirt \
@@ -689,8 +693,7 @@ periodics:
           --release-note-none \
           --labels skip-review \
           --body $'Run of `cd ../kubevirt && KUBEVIRT_CENTOS_STREAM_VERSION=10 make rpm-deps`\n\n/release-blocker main'
-      image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
-      name: ""
+      image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
       resources:
         requests:
           memory: 8Gi
@@ -710,6 +713,7 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    preset-gomaxprocs-16: "true"
     preset-podman-in-container-enabled: "true"
   max_concurrency: 5
   name: periodic-kubevirt-kind-e2e-test-ARM64
@@ -725,7 +729,7 @@ periodics:
         value: kind-1.34-wg-arm64
       - name: KUBEVIRT_NUM_NODES
         value: "2"
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -754,6 +758,7 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    preset-gomaxprocs-16: "true"
     preset-podman-in-container-enabled: "true"
   max_concurrency: 1
   name: periodic-kubevirt-kind-conformance-test-ARM64
@@ -776,7 +781,7 @@ periodics:
         value: dual
       - name: RUN_ON_ARM64_INFRA
         value: "true"
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -853,7 +858,7 @@ periodics:
         value: crossbuild-s390x
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -890,6 +895,7 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-unnested: "false"
+    preset-gomaxprocs-4: "true"
   max_concurrency: 10
   name: periodic-kubevirt-unit-test-Arm64
   spec:
@@ -899,7 +905,7 @@ periodics:
       - /bin/sh
       - -c
       - make test
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -928,7 +934,7 @@ periodics:
       - /bin/sh
       - -c
       - make go-test
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1001,7 +1007,7 @@ periodics:
         value: Always
       - name: PERFSCALE_WORKLOAD
         value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-100.yaml
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1085,7 +1091,7 @@ periodics:
         value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-400.yaml
       - name: PERFSCALE_WORKLOAD_SIX_HUNDRED
         value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-600.yaml
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1096,7 +1102,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 30 7,15,23 * * *
+  cron: 0 0,8,16 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1146,7 +1152,7 @@ periodics:
         value: 1G
       - name: KUBEVIRT_WITH_ETC_IN_MEMORY
         value: "true"
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         limits:
@@ -1163,7 +1169,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 10 2,10,18 * * *
+  cron: 40 2,10,18 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1207,11 +1213,11 @@ periodics:
         value: "true"
       - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
         value: --prometheus-port 30007
+      - name: KUBEVIRT_WITH_ETC_CAPACITY
+        value: 8G
       - name: KUBEVIRT_WITH_ETC_IN_MEMORY
         value: "true"
-      - name: KUBEVIRT_WITH_ETC_CAPACITY
-        value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1225,7 +1231,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 50 4,12,20 * * *
+  cron: 20 5,13,21 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1275,7 +1281,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1289,7 +1295,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 6 * * *
+  cron: 0 0 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1338,7 +1344,7 @@ periodics:
         value: "512"
       - name: KUBEVIRT_REALTIME_SCHEDULER
         value: "true"
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1352,7 +1358,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 0,6,12,18 * * *
+  cron: 30 2,8,14,20 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1386,7 +1392,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1431,7 +1437,7 @@ periodics:
         value: kind-1.34-sev
       - name: KUBEVIRT_PROVIDER
         value: kind-1.34
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1442,7 +1448,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 5 * * 0
+  cron: 0 12 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1479,7 +1485,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1492,7 +1498,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 30 4,16 * * *
+  cron: 0 6,18 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1528,7 +1534,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1541,7 +1547,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 30 10,22 * * *
+  cron: 0 9,21 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1579,7 +1585,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1592,7 +1598,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 30 7,19 * * *
+  cron: 0 3,15 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1628,7 +1634,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1676,7 +1682,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
       resources:
         requests:
           memory: 200Mi
@@ -1709,7 +1715,7 @@ periodics:
       - --output-gcs-url=gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/index.html
       command:
       - /usr/bin/test-label-analyzer
-      image: quay.io/kubevirtci/test-label-analyzer:v20260402-eac5f75
+      image: quay.io/kubevirtci/test-label-analyzer:v20260425-dd70848
       name: ""
       resources: {}
 - annotations:
@@ -1742,7 +1748,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources: {}
 - annotations:
@@ -1783,7 +1789,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources: {}
 - annotations:
@@ -1847,7 +1853,7 @@ periodics:
         value: kubevirtbot@redhat.com
       - name: GIT_REPO_URL
         value: https://kubevirt-bot@github.com/kubevirt/sig-release.git
-      image: quay.io/kubevirtci/golang:v20260319-c8f1db8
+      image: quay.io/kubevirtci/golang:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1856,7 +1862,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 30 1,13 * * *
+  cron: 0 0,12 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1890,7 +1896,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1903,7 +1909,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 25 5,11,17,23 * * *
+  cron: 40 1,7,13,19 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1939,7 +1945,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1952,7 +1958,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 5 2,8,14,20 * * *
+  cron: 25 0,6,12,18 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -1986,7 +1992,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -1999,7 +2005,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 30 2,8,14,20 * * *
+  cron: 15 1,7,13,19 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2033,7 +2039,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -2046,7 +2052,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 55 2,8,14,20 * * *
+  cron: 0 0,6,12,18 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2084,7 +2090,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -2097,7 +2103,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 20 3,9,15,21 * * *
+  cron: 50 0,6,12,18 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2131,7 +2137,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -2144,7 +2150,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 45 3,9,15,21 * * *
+  cron: 55 2,8,14,20 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2178,7 +2184,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -2191,7 +2197,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 10 4,10,16,22 * * *
+  cron: 45 3,9,15,21 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2225,7 +2231,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -2238,7 +2244,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 35 4,10,16,22 * * *
+  cron: 5 2,8,14,20 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2276,7 +2282,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -2289,7 +2295,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 5,11,17,23 * * *
+  cron: 20 3,9,15,21 * * *
   decorate: true
   decoration_config:
     grace_period: 5m0s
@@ -2323,7 +2329,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -2391,7 +2397,7 @@ periodics:
         value: amd64,crossbuild-s390x
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
-      image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
       name: ""
       resources:
         requests:
@@ -2449,7 +2455,199 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/pr-creator:v20260402-eac5f75
+      image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
       resources: {}
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 35 4,10,16,22 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.36-sig-network
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.36-sig-network
+      - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+        value: "true"
+      - name: KUBEVIRT_WITH_ETC_CAPACITY
+        value: 1G
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      name: ""
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 25 5,11,17,23 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.36-sig-storage
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.36-sig-storage
+      - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+        value: "true"
+      - name: KUBEVIRT_WITH_ETC_CAPACITY
+        value: 1G
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      name: ""
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 10 4,10,16,22 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 5h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.36-sig-compute
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.36-sig-compute
+      - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+        value: --usb 30M --usb 40M
+      - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
+        value: 4h45m
+      - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+        value: "true"
+      - name: KUBEVIRT_WITH_ETC_CAPACITY
+        value: 1G
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      name: ""
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 0 5,11,17,23 * * *
+  decorate: true
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.36-sig-operator
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.36-sig-operator
+      - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+        value: "true"
+      - name: KUBEVIRT_WITH_ETC_CAPACITY
+        value: 1G
+      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      name: ""
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
     nodeSelector:
       type: bare-metal-external

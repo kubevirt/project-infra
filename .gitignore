@@ -1,6 +1,6 @@
 github/ci/**/group_vars/all/main.yml
-github/ci/prow-deploy/vars/ibmcloud-production/secrets.yml
-github/ci/prow-deploy/vars/workloads-production/secrets.yml
+github/ci/prow-deploy/vars/kubevirt-prow-control-plane/secrets.yml
+github/ci/prow-deploy/vars/prow-workloads/secrets.yml
 github/ci/prow-deploy/**/secrets
 github/ci/services/**/secrets
 *~
