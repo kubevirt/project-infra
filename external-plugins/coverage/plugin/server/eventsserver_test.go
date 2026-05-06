@@ -35,8 +35,21 @@ var _ = Describe("GitHubEventsServer", func() {
 		}
 		fakeGithubClient := fakegithub.NewFakeClient()
 
+		jobConfig := &handler.JobConfig{
+			Namespace:    "test-namespace",
+			Image:        "test-image:latest",
+			Cluster:      "test-cluster",
+			TestPackages: "./...",
+			GCS:          handler.GCSConfig{Bucket: "test-bucket", CredentialsSecret: "gcs"},
+			UtilityImages: handler.UtilityImagesConfig{
+				CloneRefs:  "clonerefs:latest",
+				InitUpload: "initupload:latest",
+				Entrypoint: "entrypoint:latest",
+				Sidecar:    "sidecar:latest",
+			},
+		}
 		eventsHandler := handler.NewGitHubEventsHandler(
-			logger, fakeProwClient.ProwJobs("test-namespace"), fakeGithubClient, "test-namespace", true,
+			logger, fakeProwClient.ProwJobs(jobConfig.Namespace), fakeGithubClient, jobConfig, true,
 		)
 		eventsServer = NewGitHubEventsServer(
 			func() []byte { return hmacSecret },

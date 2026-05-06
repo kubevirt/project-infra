@@ -22,6 +22,7 @@ spec:
           imagePullPolicy: IfNotPresent
           args:
             - --dry-run=false
+            - --config=/etc/coverage/config.yaml
             - --github-token-path=/etc/github/oauth
             - --github-endpoint=http://ghproxy
             - --github-endpoint=https://api.github.com
@@ -36,6 +37,9 @@ spec:
             - name: oauth
               mountPath: /etc/github
               readOnly: true
+            - name: config
+              mountPath: /etc/coverage
+              readOnly: true
       volumes:
         - name: hmac
           secret:
@@ -43,3 +47,6 @@ spec:
         - name: oauth
           secret:
             secretName: oauth-token
+        - name: config
+          configMap:
+            name: prow-coverage-config

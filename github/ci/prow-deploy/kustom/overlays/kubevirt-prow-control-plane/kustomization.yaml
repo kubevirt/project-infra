@@ -29,10 +29,6 @@ patches:
     path: patches/JsonRFC6902/prow-rehearse-deployment.yaml
   - target:
       <<: *deployment_target
-      name: coverage
-    path: patches/JsonRFC6902/prow-coverage-deployment.yaml
-  - target:
-      <<: *deployment_target
       name: test-subset
     path: patches/JsonRFC6902/test-subset-deployment.yaml
   - target:

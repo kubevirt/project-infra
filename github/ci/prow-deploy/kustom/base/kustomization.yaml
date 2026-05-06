@@ -33,6 +33,7 @@ resources:
   - manifests/local/test-subset-deployment.yaml
   - manifests/local/test-subset-service.yaml
   - manifests/local/prow-coverage-rbac.yaml
+  - manifests/local/prow-coverage-configmap.yaml
   - manifests/local/prow-coverage-deployment.yaml
   - manifests/local/prow-coverage-service.yaml
   - manifests/local/release-blocker_deployment.yaml

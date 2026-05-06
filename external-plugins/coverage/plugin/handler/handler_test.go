@@ -112,7 +112,29 @@ var _ = Describe("generateCoverageJob", func() {
 
 	BeforeEach(func() {
 		handler = &GitHubEventsHandler{
-			jobsNamespace: "kubevirt-prow-jobs",
+			jobConfig: &JobConfig{
+				Namespace:    "kubevirt-prow-jobs",
+				Image:        "quay.io/kubevirtci/covreport:latest",
+				Cluster:      "kubevirt-prow-control-plane",
+				TestPackages: "./external-plugins/... ./releng/... ./robots/... ./cmd/... ./pkg/...",
+				Env: map[string]string{
+					"GO_MOD_PATH": "go.mod",
+					"GOTOOLCHAIN": "local",
+				},
+				TimeoutMinutes:     120,
+				GracePeriodSeconds: 15,
+				UtilityImages: UtilityImagesConfig{
+					CloneRefs:  "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260401-f6cc3990c",
+					InitUpload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260401-f6cc3990c",
+					Entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260401-f6cc3990c",
+					Sidecar:    "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260401-f6cc3990c",
+				},
+				GCS: GCSConfig{
+					Bucket:            "kubevirt-prow",
+					PathStrategy:      "explicit",
+					CredentialsSecret: "gcs",
+				},
+			},
 		}
 
 		pr = &github.PullRequest{
@@ -225,11 +247,23 @@ var _ = Describe("Handle", func() {
 
 		//Create handler
 		handler = &GitHubEventsHandler{
-			logger:        logger,
-			githubClient:  fakeGithubClient,
+			logger:       logger,
+			githubClient: fakeGithubClient,
 			prowJobClient: fakeProwClient.ProwJobs("test-namespace"),
-			jobsNamespace: "test-namespace",
-			dryrun:        false,
+			jobConfig: &JobConfig{
+				Namespace:    "test-namespace",
+				Image:        "test-image:latest",
+				Cluster:      "test-cluster",
+				TestPackages: "./...",
+				GCS:          GCSConfig{Bucket: "test-bucket", CredentialsSecret: "gcs"},
+				UtilityImages: UtilityImagesConfig{
+					CloneRefs:  "clonerefs:latest",
+					InitUpload: "initupload:latest",
+					Entrypoint: "entrypoint:latest",
+					Sidecar:    "sidecar:latest",
+				},
+			},
+			dryrun: false,
 		}
 	})
 
