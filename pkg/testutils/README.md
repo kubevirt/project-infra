@@ -30,7 +30,7 @@ testutils is a Go library package that provides three in-memory mock types:
 Import the package and initialise the fakes with the state your test needs:
 
 ```go
-import "kubevirt.io/project-infra/external-plugins/testutils"
+import "kubevirt.io/project-infra/pkg/testutils"
 
 fc := &testutils.FakeClient{
     PullRequests: map[int]*github.PullRequest{ /* ... */ },
@@ -44,8 +44,8 @@ froc := testutils.FakeRepoownersClient{Foc: foc}
 ```
 
 Currently used by:
-- [rehearse](../rehearse/) — handler and plugin tests
-- [release-blocker](../release-blocker/) — server tests
+- [rehearse](../../external-plugins/rehearse/) — handler and plugin tests
+- [release-blocker](../../external-plugins/release-blocker/) — server tests
 
 ## Limitations
 

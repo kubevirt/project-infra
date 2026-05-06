@@ -7,7 +7,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/sets"
 	"sigs.k8s.io/prow/pkg/github"
 
-	"kubevirt.io/project-infra/external-plugins/testutils"
+	"kubevirt.io/project-infra/pkg/testutils"
 )
 
 func TestHandlePREvent(t *testing.T) {
