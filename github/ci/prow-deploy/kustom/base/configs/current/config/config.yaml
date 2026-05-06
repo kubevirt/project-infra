@@ -329,50 +329,106 @@ branch-protection:
           branches:
             main:
               require_manually_triggered_jobs: true
-            release-0.33:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.32:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.31:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.30:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.29:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.28:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.27:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.26:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.25:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.24:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
+            release-0.4:
+              unmanaged: true
+            release-0.6:
+              unmanaged: true
+            release-0.8:
+              unmanaged: true
+            release-0.9:
+              unmanaged: true
+            release-0.10:
+              unmanaged: true
+            release-0.11:
+              unmanaged: true
+            release-0.12:
+              unmanaged: true
+            release-0.13:
+              unmanaged: true
+            release-0.14:
+              unmanaged: true
+            release-0.15:
+              unmanaged: true
+            release-0.16:
+              unmanaged: true
+            release-0.17:
+              unmanaged: true
+            release-0.18:
+              unmanaged: true
+            release-0.19:
+              unmanaged: true
+            release-0.20:
+              unmanaged: true
+            release-0.21:
+              unmanaged: true
+            release-0.22:
+              unmanaged: true
             release-0.23:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
+              unmanaged: true
+            release-0.24:
+              unmanaged: true
+            release-0.26:
+              unmanaged: true
+            release-0.27:
+              unmanaged: true
+            release-0.29:
+              unmanaged: true
+            release-0.30:
+              unmanaged: true
+            release-0.31:
+              unmanaged: true
+            release-0.32:
+              unmanaged: true
+            release-0.33:
+              unmanaged: true
+            release-0.34:
+              unmanaged: true
+            release-0.35:
+              unmanaged: true
+            release-0.36:
+              unmanaged: true
+            release-0.37:
+              unmanaged: true
+            release-0.38:
+              unmanaged: true
+            release-0.39:
+              unmanaged: true
+            release-0.40:
+              unmanaged: true
+            release-0.41:
+              unmanaged: true
+            release-0.42:
+              unmanaged: true
+            release-0.43:
+              unmanaged: true
+            release-0.44:
+              unmanaged: true
+            release-0.45:
+              unmanaged: true
+            release-0.46:
+              unmanaged: true
+            release-0.47:
+              unmanaged: true
+            release-0.48:
+              unmanaged: true
+            release-0.49:
+              unmanaged: true
+            release-0.50:
+              unmanaged: true
+            release-0.51:
+              unmanaged: true
+            release-0.52:
+              unmanaged: true
+            release-0.53:
+              unmanaged: true
+            release-0.54:
+              unmanaged: true
+            release-0.55:
+              unmanaged: true
+            release-0.56:
+              unmanaged: true
+            release-0.57:
+              unmanaged: true
         kubevirt-aie:
           branches:
             release-1.8-aie-nv:
