@@ -2479,8 +2479,12 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
+        - name: PROMETHEUS_ENDPOINT
+          value: "http://127.0.0.1"
         - name: PROMETHEUS_PORT
           value: "30007"
+        - name: PROMETHEUS_TOKEN
+          value: ""
         - name: PERFAUDIT
           value: "true"
         - name: KUBECONFIG
