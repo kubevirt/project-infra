@@ -620,6 +620,38 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: true
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 3
+    name: check-provision-k8s-1.35-centos10
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cd cluster-provision/k8s/1.35 && ../provision.sh
+        env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
+        - name: PROVISION_CENTOS_VERSION
+          value: "10"
+        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        name: ""
+        resources:
+          requests:
+            memory: 16Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
   - always_run: false
     cluster: prow-workloads
     decorate: true
@@ -675,6 +707,38 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
+        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        name: ""
+        resources:
+          requests:
+            memory: 16Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 3
+    name: check-provision-k8s-1.36-centos10
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cd cluster-provision/k8s/1.36 && ../provision.sh
+        env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
+        - name: PROVISION_CENTOS_VERSION
+          value: "10"
         image: quay.io/kubevirtci/golang:v20260417-7427ea2
         name: ""
         resources:
