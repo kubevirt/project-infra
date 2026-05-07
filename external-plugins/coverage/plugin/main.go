@@ -114,7 +114,7 @@ func main() {
 	prowClient, err := v1.NewForConfig(config)
 	mustSucceed(err, "Could not create Prow client.")
 
-	jobConfig, err := handler.LoadJobConfig(opts.configPath)
+	cfg, err := handler.LoadConfig(opts.configPath)
 	mustSucceed(err, "Could not load job configuration.")
 
 	if err := secret.Add(opts.github.TokenPath, opts.hmacSecretFile); err != nil {
@@ -126,9 +126,9 @@ func main() {
 
 	eventsHandler := handler.NewGitHubEventsHandler(
 		logger,
-		prowClient.ProwJobs(jobConfig.Namespace),
+		prowClient.ProwJobs(cfg.Defaults.Namespace),
 		githubClient,
-		jobConfig,
+		cfg,
 		opts.dryRun,
 	)
 

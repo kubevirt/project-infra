@@ -47,53 +47,114 @@ type JobConfig struct {
 	GCS                GCSConfig           `yaml:"gcs"`
 }
 
-func LoadJobConfig(path string) (*JobConfig, error) {
+type Config struct {
+	Defaults JobConfig            `yaml:"defaults"`
+	Repos    map[string]JobConfig `yaml:"repos"`
+}
+
+func (c *Config) RepoConfig(repo string) (*JobConfig, bool) {
+	repoCfg, ok := c.Repos[repo]
+	if !ok {
+		return nil, false
+	}
+	merged := c.Defaults
+	if repoCfg.TestPackages != "" {
+		merged.TestPackages = repoCfg.TestPackages
+	}
+	if repoCfg.Image != "" {
+		merged.Image = repoCfg.Image
+	}
+	if repoCfg.Namespace != "" {
+		merged.Namespace = repoCfg.Namespace
+	}
+	if repoCfg.Cluster != "" {
+		merged.Cluster = repoCfg.Cluster
+	}
+	if len(repoCfg.Env) > 0 {
+		merged.Env = repoCfg.Env
+	}
+	if repoCfg.TimeoutMinutes != 0 {
+		merged.TimeoutMinutes = repoCfg.TimeoutMinutes
+	}
+	if repoCfg.GracePeriodSeconds != 0 {
+		merged.GracePeriodSeconds = repoCfg.GracePeriodSeconds
+	}
+	if repoCfg.UtilityImages != (UtilityImagesConfig{}) {
+		merged.UtilityImages = repoCfg.UtilityImages
+	}
+	if repoCfg.GCS != (GCSConfig{}) {
+		merged.GCS = repoCfg.GCS
+	}
+	return &merged, true
+}
+
+func LoadConfig(path string) (*Config, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("reading config file %s: %w", path, err)
 	}
 
-	cfg := &JobConfig{}
+	cfg := &Config{}
+	
 	if err := yaml.Unmarshal(data, cfg); err != nil {
 		return nil, fmt.Errorf("parsing config file %s: %w", path, err)
 	}
 
-	if cfg.Namespace == "" {
-		return nil, fmt.Errorf("config: namespace is required")
+	d := cfg.Defaults
+	if d.Namespace == "" {
+		return nil, fmt.Errorf("config: defaults.namespace is required")
 	}
-	if cfg.Image == "" {
-		return nil, fmt.Errorf("config: image is required")
+	if d.Image == "" {
+		return nil, fmt.Errorf("config: defaults.image is required")
 	}
-	if cfg.Cluster == "" {
-		return nil, fmt.Errorf("config: cluster is required")
+	if d.Cluster == "" {
+		return nil, fmt.Errorf("config: defaults.cluster is required")
 	}
-	if cfg.TestPackages == "" {
-		return nil, fmt.Errorf("config: testPackages is required")
+	if d.GCS.Bucket == "" {
+		return nil, fmt.Errorf("config: defaults.gcs.bucket is required")
 	}
-	if cfg.GCS.Bucket == "" {
-		return nil, fmt.Errorf("config: gcs.bucket is required")
+	if d.GCS.CredentialsSecret == "" {
+		return nil, fmt.Errorf("config: defaults.gcs.credentialsSecret is required")
 	}
-	if cfg.GCS.CredentialsSecret == "" {
-		return nil, fmt.Errorf("config: gcs.credentialsSecret is required")
+	if d.UtilityImages.CloneRefs == "" {
+		return nil, fmt.Errorf("config: defaults.utilityImages.cloneRefs is required")
 	}
-	if cfg.UtilityImages.CloneRefs == "" {
-		return nil, fmt.Errorf("config: utilityImages.cloneRefs is required")
+	if d.UtilityImages.InitUpload == "" {
+		return nil, fmt.Errorf("config: defaults.utilityImages.initUpload is required")
 	}
-	if cfg.UtilityImages.InitUpload == "" {
-		return nil, fmt.Errorf("config: utilityImages.initUpload is required")
+	if d.UtilityImages.Entrypoint == "" {
+		return nil, fmt.Errorf("config: defaults.utilityImages.entrypoint is required")
 	}
-	if cfg.UtilityImages.Entrypoint == "" {
-		return nil, fmt.Errorf("config: utilityImages.entrypoint is required")
-	}
-	if cfg.UtilityImages.Sidecar == "" {
-		return nil, fmt.Errorf("config: utilityImages.sidecar is required")
+	if d.UtilityImages.Sidecar == "" {
+		return nil, fmt.Errorf("config: defaults.utilityImages.sidecar is required")
 	}
 
-	if cfg.TimeoutMinutes == 0 {
-		cfg.TimeoutMinutes = 120
+	if cfg.Defaults.TimeoutMinutes < 0 {
+		return nil, fmt.Errorf("config: defaults.timeoutMinutes must not be negative")
 	}
-	if cfg.GracePeriodSeconds == 0 {
-		cfg.GracePeriodSeconds = 15
+	if cfg.Defaults.GracePeriodSeconds < 0 {
+		return nil, fmt.Errorf("config: defaults.gracePeriodSeconds must not be negative")
+	}
+	if cfg.Defaults.TimeoutMinutes == 0 {
+		cfg.Defaults.TimeoutMinutes = 120
+	}
+	if cfg.Defaults.GracePeriodSeconds == 0 {
+		cfg.Defaults.GracePeriodSeconds = 15
+	}
+
+	if len(cfg.Repos) == 0 {
+		return nil, fmt.Errorf("config: at least one repo must be configured")
+	}
+	for repo, repoCfg := range cfg.Repos {
+		if repoCfg.TestPackages == "" {
+			return nil, fmt.Errorf("config: repos.%s.testPackages is required", repo)
+		}
+		if repoCfg.TimeoutMinutes < 0 {
+			return nil, fmt.Errorf("config: repos.%s.timeoutMinutes must not be negative", repo)
+		}
+		if repoCfg.GracePeriodSeconds < 0 {
+			return nil, fmt.Errorf("config: repos.%s.gracePeriodSeconds must not be negative", repo)
+		}
 	}
 
 	return cfg, nil
@@ -116,7 +177,7 @@ type GitHubEventsHandler struct {
 	logger        *logrus.Logger
 	prowJobClient prowv1.ProwJobInterface
 	githubClient  githubClient
-	jobConfig     *JobConfig
+	config        *Config
 	dryrun        bool
 }
 
@@ -125,14 +186,14 @@ func NewGitHubEventsHandler(
 	logger *logrus.Logger,
 	prowJobClient prowv1.ProwJobInterface,
 	githubClient githubClient,
-	jobConfig *JobConfig,
+	config *Config,
 	dryrun bool,
 ) *GitHubEventsHandler {
 	return &GitHubEventsHandler{
 		logger:        logger,
 		prowJobClient: prowJobClient,
 		githubClient:  githubClient,
-		jobConfig:     jobConfig,
+		config:        config,
 		dryrun:        dryrun,
 	}
 }
@@ -187,9 +248,8 @@ func shouldActOnPREvent(action string) bool {
 
 // generateCoverageJob creates a ProwJob for running coverage on the given pull request.
 func (h *GitHubEventsHandler) generateCoverageJob(
-	pr *github.PullRequest, eventGUID string) prowapi.ProwJob {
+	pr *github.PullRequest, eventGUID string, cfg *JobConfig) prowapi.ProwJob {
 	decorate := true
-	cfg := h.jobConfig
 
 	envKeys := make([]string, 0, len(cfg.Env))
 	for k := range cfg.Env {
@@ -274,7 +334,15 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, prEvent 
 		return
 	}
 
-	changes, err := h.getPullRequestChanges(&prEvent.PullRequest)
+	pr := &prEvent.PullRequest
+	repoKey := fmt.Sprintf("%s/%s", pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
+	jobCfg, ok := h.config.RepoConfig(repoKey)
+	if !ok {
+		log.Infof("No coverage config for %s, skipping", repoKey)
+		return
+	}
+
+	changes, err := h.getPullRequestChanges(pr)
 	if err != nil {
 		log.WithError(err).Error("Failed to get pull request changes")
 		return
@@ -286,10 +354,10 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, prEvent 
 	}
 
 	eventGUID := log.Data["event-guid"].(string)
-	job := h.generateCoverageJob(&prEvent.PullRequest, eventGUID)
+	job := h.generateCoverageJob(pr, eventGUID, jobCfg)
 
 	if h.dryrun {
-		log.Infof("Dry-run: would create coverage job for PR #%d", prEvent.PullRequest.Number)
+		log.Infof("Dry-run: would create coverage job for PR #%d", pr.Number)
 		return
 	}
 
@@ -298,5 +366,5 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, prEvent 
 		return
 	}
 
-	log.Infof("Created coverage job for PR #%d", prEvent.PullRequest.Number)
+	log.Infof("Created coverage job for PR #%d", pr.Number)
 }

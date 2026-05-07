@@ -4,21 +4,24 @@ metadata:
   name: prow-coverage-config
 data:
   config.yaml: |
-    namespace: kubevirt-prow-jobs
-    image: "quay.io/kubevirtci/covreport:latest"
-    cluster: kubevirt-prow-control-plane
-    testPackages: "./external-plugins/... ./releng/... ./robots/... ./cmd/... ./pkg/..."
-    env:
-      GO_MOD_PATH: go.mod
-      GOTOOLCHAIN: local
-    timeoutMinutes: 120
-    gracePeriodSeconds: 15
-    utilityImages:
-      cloneRefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260401-f6cc3990c"
-      initUpload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260401-f6cc3990c"
-      entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260401-f6cc3990c"
-      sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260401-f6cc3990c"
-    gcs:
-      bucket: kubevirt-prow
-      pathStrategy: explicit
-      credentialsSecret: gcs
+    defaults:
+      namespace: kubevirt-prow-jobs
+      image: "quay.io/kubevirtci/covreport:latest"
+      cluster: kubevirt-prow-control-plane
+      env:
+        GO_MOD_PATH: go.mod
+        GOTOOLCHAIN: local
+      timeoutMinutes: 120
+      gracePeriodSeconds: 15
+      utilityImages:
+        cloneRefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260401-f6cc3990c"
+        initUpload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260401-f6cc3990c"
+        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260401-f6cc3990c"
+        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260401-f6cc3990c"
+      gcs:
+        bucket: kubevirt-prow
+        pathStrategy: explicit
+        credentialsSecret: gcs
+    repos:
+      kubevirt/project-infra:
+        testPackages: "./external-plugins/... ./releng/... ./robots/... ./cmd/... ./pkg/..."
