@@ -18,7 +18,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: coverage
-          image: quay.io/kubevirtci/coverage:v20260425-dd70848
+          image: quay.io/kubevirtci/coverage:v20260506-920f941
           imagePullPolicy: IfNotPresent
           args:
             - --dry-run=false

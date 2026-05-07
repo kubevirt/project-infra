@@ -2509,7 +2509,7 @@ presubmits:
         # Path to the kube-burner workload configuration file defining the density test scenario
         - name: PERFSCALE_WORKLOAD
           value: tests/performance/manifests/kube-burner/kubevirt-density/kubevirt-density.yml
-        image: quay.io/kubevirtci/bootstrap:v20260319-c8f1db8
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
         name: ""
         resources:
           requests:
