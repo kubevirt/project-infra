@@ -37,6 +37,20 @@ type TestCase struct {
 	ExpectComment         bool
 }
 
+type fakeGHClient struct {
+	*fakegithub.FakeClient
+}
+
+func (f *fakeGHClient) GetPullRequests(org, repo string) ([]github.PullRequest, error) {
+	var prs []github.PullRequest
+	for _, pr := range f.PullRequests {
+		if pr != nil {
+			prs = append(prs, *pr)
+		}
+	}
+	return prs, nil
+}
+
 var _ = Describe("Phased", func() {
 	Context("A valid pull request event", func() {
 		var gitrepo *localgit.LocalGit
@@ -103,7 +117,7 @@ var _ = Describe("Phased", func() {
 
 		DescribeTable("Prow Job Commenting",
 			func(tc TestCase) {
-				gh := fakegithub.NewFakeClient()
+				gh := &fakeGHClient{FakeClient: fakegithub.NewFakeClient()}
 				if tc.ApproveLabelExists {
 					gh.IssueLabelsExisting = append(gh.IssueLabelsExisting, issueLabels(labels.Approved)...)
 				}
@@ -229,6 +243,246 @@ var _ = Describe("Phased", func() {
 
 	})
 
+	Context("Status events for phased jobs", func() {
+		var gitrepo *localgit.LocalGit
+		var gitClientFactory git2.ClientFactory
+		var baseref string
+
+		BeforeEach(func() {
+			var err error
+			gitrepo, gitClientFactory, err = localgit.NewV2()
+			Expect(err).ShouldNot(HaveOccurred())
+		})
+
+		BeforeEach(func() {
+			baseConfig, err := json.Marshal(&config.Config{
+				JobConfig: config.JobConfig{
+					PresubmitsStatic: map[string][]config.Presubmit{
+						orgRepo: {
+							{
+								AlwaysRun: true,
+								JobBase: config.JobBase{
+									Name:        "pull-kubevirt-build",
+									Annotations: map[string]string{handler.PhaseAnnotationKey: "0"},
+									Spec:        &v1.PodSpec{Containers: []v1.Container{{Image: "img"}}},
+								},
+							},
+							{
+								AlwaysRun: true,
+								JobBase: config.JobBase{
+									Name:        "pull-kubevirt-generate",
+									Annotations: map[string]string{handler.PhaseAnnotationKey: "0"},
+									Spec:        &v1.PodSpec{Containers: []v1.Container{{Image: "img"}}},
+								},
+							},
+							{
+								JobBase: config.JobBase{
+									Name:        "pull-kubevirt-e2e-test",
+									Annotations: map[string]string{handler.PhaseAnnotationKey: "1"},
+									Spec:        &v1.PodSpec{Containers: []v1.Container{{Image: "img"}}},
+								},
+							},
+							{
+								JobBase: config.JobBase{
+									Name: "job_merge_phase",
+									Spec: &v1.PodSpec{Containers: []v1.Container{{Image: "img"}}},
+								},
+							},
+						},
+					},
+				},
+			})
+
+			makeRepoWithEmptyProwConfig(gitrepo, org, repo)
+
+			Expect(err).ShouldNot(HaveOccurred())
+			err = gitrepo.AddCommit(org, repo, map[string][]byte{
+				"jobs-config.yaml": baseConfig,
+			})
+			Expect(err).ShouldNot(HaveOccurred())
+			baseref, err = gitrepo.RevParse(org, repo, "HEAD")
+			Expect(err).ShouldNot(HaveOccurred())
+		})
+
+		AfterEach(func() {
+			if gitClientFactory != nil {
+				gitClientFactory.Clean()
+			}
+		})
+
+		createStatusTestHandler := func(gh *fakeGHClient) *handler.GitHubEventsHandler {
+			eventsChan := make(chan *handler.GitHubEvent)
+			eventsHandler := handler.NewGitHubEventsHandler(
+				eventsChan,
+				logrus.New(),
+				gh,
+				"prowconfig.yaml",
+				"jobs-config.yaml",
+				"",
+				gitClientFactory)
+			eventsHandler.SetLocalConfLoad()
+			return eventsHandler
+		}
+
+		It("triggers phase 1 when all phase 0 jobs succeed", func() {
+			testSHA := baseref
+			gh := &fakeGHClient{FakeClient: fakegithub.NewFakeClient()}
+			gh.PullRequests = map[int]*github.PullRequest{
+				prNumber: {
+					Number: prNumber,
+					State:  "open",
+					Head: github.PullRequestBranch{
+						SHA:  testSHA,
+						Repo: github.Repo{Name: repo, FullName: orgRepo},
+						Ref:  "feature-branch",
+					},
+					Base: github.PullRequestBranch{
+						SHA:  testSHA,
+						Repo: github.Repo{Name: repo, FullName: orgRepo, Owner: github.User{Login: org}},
+						Ref:  baseRef,
+					},
+				},
+			}
+			gh.CombinedStatuses = map[string]*github.CombinedStatus{
+				testSHA: {
+					SHA: testSHA,
+					Statuses: []github.Status{
+						{Context: "pull-kubevirt-build", State: github.StatusSuccess},
+						{Context: "pull-kubevirt-generate", State: github.StatusSuccess},
+					},
+				},
+			}
+
+			eventsHandler := createStatusTestHandler(gh)
+			statusEvent := &github.StatusEvent{
+				SHA:     testSHA,
+				State:   github.StatusSuccess,
+				Context: "pull-kubevirt-generate",
+				Repo:    github.Repo{Owner: github.User{Login: org}, Name: repo, FullName: orgRepo},
+				GUID:    "status-guid-1",
+			}
+			handlerEvent, err := makeHandlerStatusEvent(statusEvent)
+			Expect(err).ShouldNot(HaveOccurred())
+
+			eventsHandler.Handle(handlerEvent)
+
+			Expect(gh.IssueCommentsAdded).To(HaveLen(1))
+			Expect(gh.IssueCommentsAdded[0]).To(ContainSubstring("/test pull-kubevirt-e2e-test"))
+			Expect(gh.IssueCommentsAdded[0]).To(ContainSubstring("Phase 0 jobs completed"))
+		})
+
+		It("does not trigger phase 1 when phase 0 is partially succeeded", func() {
+			testSHA := baseref
+			gh := &fakeGHClient{FakeClient: fakegithub.NewFakeClient()}
+			gh.PullRequests = map[int]*github.PullRequest{
+				prNumber: {
+					Number: prNumber,
+					State:  "open",
+					Head: github.PullRequestBranch{
+						SHA:  testSHA,
+						Repo: github.Repo{Name: repo, FullName: orgRepo},
+						Ref:  "feature-branch",
+					},
+					Base: github.PullRequestBranch{
+						SHA:  testSHA,
+						Repo: github.Repo{Name: repo, FullName: orgRepo, Owner: github.User{Login: org}},
+						Ref:  baseRef,
+					},
+				},
+			}
+			gh.CombinedStatuses = map[string]*github.CombinedStatus{
+				testSHA: {
+					SHA: testSHA,
+					Statuses: []github.Status{
+						{Context: "pull-kubevirt-build", State: github.StatusSuccess},
+						{Context: "pull-kubevirt-generate", State: github.StatusPending},
+					},
+				},
+			}
+
+			eventsHandler := createStatusTestHandler(gh)
+			statusEvent := &github.StatusEvent{
+				SHA:     testSHA,
+				State:   github.StatusSuccess,
+				Context: "pull-kubevirt-build",
+				Repo:    github.Repo{Owner: github.User{Login: org}, Name: repo, FullName: orgRepo},
+				GUID:    "status-guid-2",
+			}
+			handlerEvent, err := makeHandlerStatusEvent(statusEvent)
+			Expect(err).ShouldNot(HaveOccurred())
+
+			eventsHandler.Handle(handlerEvent)
+
+			Expect(gh.IssueCommentsAdded).To(BeEmpty())
+		})
+
+		It("ignores non-success status events", func() {
+			testSHA := baseref
+			gh := &fakeGHClient{FakeClient: fakegithub.NewFakeClient()}
+			gh.PullRequests = map[int]*github.PullRequest{
+				prNumber: {
+					Number: prNumber,
+					State:  "open",
+					Head:   github.PullRequestBranch{SHA: testSHA, Repo: github.Repo{Name: repo, FullName: orgRepo}, Ref: "feature-branch"},
+					Base:   github.PullRequestBranch{SHA: testSHA, Repo: github.Repo{Name: repo, FullName: orgRepo, Owner: github.User{Login: org}}, Ref: baseRef},
+				},
+			}
+
+			eventsHandler := createStatusTestHandler(gh)
+			statusEvent := &github.StatusEvent{
+				SHA:     testSHA,
+				State:   github.StatusFailure,
+				Context: "pull-kubevirt-build",
+				Repo:    github.Repo{Owner: github.User{Login: org}, Name: repo, FullName: orgRepo},
+				GUID:    "status-guid-3",
+			}
+			handlerEvent, err := makeHandlerStatusEvent(statusEvent)
+			Expect(err).ShouldNot(HaveOccurred())
+
+			eventsHandler.Handle(handlerEvent)
+
+			Expect(gh.IssueCommentsAdded).To(BeEmpty())
+		})
+
+		It("does not re-trigger phase 1 when already triggered", func() {
+			testSHA := baseref
+			gh := &fakeGHClient{FakeClient: fakegithub.NewFakeClient()}
+			gh.PullRequests = map[int]*github.PullRequest{
+				prNumber: {
+					Number: prNumber,
+					State:  "open",
+					Head:   github.PullRequestBranch{SHA: testSHA, Repo: github.Repo{Name: repo, FullName: orgRepo}, Ref: "feature-branch"},
+					Base:   github.PullRequestBranch{SHA: testSHA, Repo: github.Repo{Name: repo, FullName: orgRepo, Owner: github.User{Login: org}}, Ref: baseRef},
+				},
+			}
+			gh.CombinedStatuses = map[string]*github.CombinedStatus{
+				testSHA: {
+					SHA: testSHA,
+					Statuses: []github.Status{
+						{Context: "pull-kubevirt-build", State: github.StatusSuccess},
+						{Context: "pull-kubevirt-generate", State: github.StatusSuccess},
+						{Context: "pull-kubevirt-e2e-test", State: github.StatusPending},
+					},
+				},
+			}
+
+			eventsHandler := createStatusTestHandler(gh)
+			statusEvent := &github.StatusEvent{
+				SHA:     testSHA,
+				State:   github.StatusSuccess,
+				Context: "pull-kubevirt-build",
+				Repo:    github.Repo{Owner: github.User{Login: org}, Name: repo, FullName: orgRepo},
+				GUID:    "status-guid-4",
+			}
+			handlerEvent, err := makeHandlerStatusEvent(statusEvent)
+			Expect(err).ShouldNot(HaveOccurred())
+
+			eventsHandler.Handle(handlerEvent)
+
+			Expect(gh.IssueCommentsAdded).To(BeEmpty())
+		})
+	})
+
 })
 
 func makeRepoWithEmptyProwConfig(lg *localgit.LocalGit, org, repo string) error {
@@ -256,6 +510,18 @@ func makeHandlerPullRequestEvent(event *github.PullRequestEvent) (*handler.GitHu
 		Payload: eventBytes,
 	}
 	return handlerEvent, nil
+}
+
+func makeHandlerStatusEvent(event *github.StatusEvent) (*handler.GitHubEvent, error) {
+	eventBytes, err := json.Marshal(event)
+	if err != nil {
+		return nil, err
+	}
+	return &handler.GitHubEvent{
+		Type:    "status",
+		GUID:    event.GUID,
+		Payload: eventBytes,
+	}, nil
 }
 
 func issueLabels(labels ...string) []string {
