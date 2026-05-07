@@ -2209,7 +2209,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2252,7 +2252,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2295,7 +2295,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2340,7 +2340,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2385,7 +2385,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2404,28 +2404,28 @@ presubmits:
     name: pull-kubevirt-e2e-k8s-1.36-sig-operator
     optional: true
     skip_branches:
-      - release-\d+\.\d+
+    - release-\d+\.\d+
     spec:
       containers:
-        - command:
-            - /usr/local/bin/runner.sh
-            - /bin/sh
-            - -c
-            - automation/test.sh
-          env:
-            - name: TARGET
-              value: k8s-1.36-sig-operator
-            - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-              value: "true"
-            - name: KUBEVIRT_WITH_ETC_CAPACITY
-              value: 1G
-          image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
-          name: ""
-          resources:
-            requests:
-              memory: 52Gi
-          securityContext:
-            privileged: true
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.36-sig-operator
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: 1G
+        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        name: ""
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
       nodeSelector:
         type: bare-metal-external
   - always_run: false
@@ -2440,16 +2440,15 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-kubevirtci-quay-credential: "true"
     max_concurrency: 4
     name: pull-kubevirt-e2e-k8s-1.34-sig-performance-kube-burner
     optional: true
     reporter_config:
-      slack:
-        job_states_to_report: []
+      slack: {}
     spec:
       containers:
       - command:
@@ -2480,33 +2479,26 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
         - name: PROMETHEUS_ENDPOINT
-          value: "http://127.0.0.1"
+          value: http://127.0.0.1
         - name: PROMETHEUS_PORT
           value: "30007"
         - name: PROMETHEUS_TOKEN
-          value: ""
         - name: PERFAUDIT
           value: "true"
         - name: KUBECONFIG
           value: kubevirtci/_ci-configs/k8s-1.34/.kubeconfig
         - name: IMAGE_PULL_POLICY
           value: Always
-        # kube-burner version to download and use for the workload test
         - name: KUBE_BURNER_VERSION
           value: latest
-        # Rate limit: maximum sustained requests per second to the API server
         - name: QPS
           value: "10"
-        # Rate limit: maximum burst of requests allowed above QPS to the API server
         - name: BURST
           value: "10"
-        # Number of times the kube-burner job workload is repeated
         - name: JOB_ITERATIONS
           value: "1"
-        # kube-burner log level (e.g., debug, info, warning, error) helpful for troubleshooting
         - name: KB_LOG_LEVEL
-          value: "debug"
-        # Path to the kube-burner workload configuration file defining the density test scenario
+          value: debug
         - name: PERFSCALE_WORKLOAD
           value: tests/performance/manifests/kube-burner/kubevirt-density/kubevirt-density.yml
         image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
