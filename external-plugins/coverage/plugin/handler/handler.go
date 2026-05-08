@@ -367,4 +367,6 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, prEvent 
 	}
 
 	log.Infof("Created coverage job for PR #%d", pr.Number)
+
+	
 }
