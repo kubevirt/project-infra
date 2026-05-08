@@ -9,6 +9,8 @@ import (
 	"os/exec"
 	"sort"
 	"strconv"
+	"sync"
+	"time"
 
 	pi_github "kubevirt.io/project-infra/pkg/github"
 	kubeVirtLabels "kubevirt.io/project-infra/pkg/github/labels"
@@ -53,6 +55,37 @@ type loadConfigBytesFunc func(h *GitHubEventsHandler, org, repo string) ([]byte,
 
 var LoadConfigBytesFunc loadConfigBytesFunc = loadConfigBytes
 
+type presubmitCache struct {
+	mu          sync.Mutex
+	presubmits  []config.Presubmit
+	phasedNames map[string]bool
+	loadedAt    time.Time
+	ttl         time.Duration
+}
+
+func (c *presubmitCache) get() ([]config.Presubmit, map[string]bool, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.presubmits == nil || time.Since(c.loadedAt) > c.ttl {
+		return nil, nil, false
+	}
+	return c.presubmits, c.phasedNames, true
+}
+
+func (c *presubmitCache) set(presubmits []config.Presubmit) {
+	names := make(map[string]bool)
+	for _, ps := range presubmits {
+		if _, ok := ps.JobBase.Annotations[PhaseAnnotationKey]; ok {
+			names[jobContext(ps)] = true
+		}
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.presubmits = presubmits
+	c.phasedNames = names
+	c.loadedAt = time.Now()
+}
+
 type GitHubEventsHandler struct {
 	eventsChan       <-chan *GitHubEvent
 	logger           *logrus.Logger
@@ -61,6 +94,7 @@ type GitHubEventsHandler struct {
 	prowConfigPath   string
 	jobsConfigBase   string
 	prowLocation     string
+	cache            presubmitCache
 }
 
 func NewGitHubEventsHandler(
@@ -80,6 +114,7 @@ func NewGitHubEventsHandler(
 		jobsConfigBase:   jobsConfigBase,
 		prowLocation:     prowLocation,
 		gitClientFactory: gitClientFactory,
+		cache:            presubmitCache{ttl: 5 * time.Minute},
 	}
 }
 
@@ -206,6 +241,12 @@ func (h *GitHubEventsHandler) handleStatusEvent(log *logrus.Entry, event *github
 		return
 	}
 
+	_, phasedNames, ok := h.cache.get()
+	if ok && !phasedNames[event.Context] {
+		log.Debugf("Status context %q is not a phased job, skipping", event.Context)
+		return
+	}
+
 	sha := event.SHA
 
 	prs, err := h.findPRsForSHA(org, repo, sha)
@@ -242,9 +283,18 @@ func (h *GitHubEventsHandler) handlePhaseTransition(log *logrus.Entry, org, repo
 		return
 	}
 
-	presubmits, err := h.loadPresubmits(pr)
-	if err != nil || presubmits == nil {
-		return
+	presubmits, _, ok := h.cache.get()
+	if !ok {
+		var err error
+		presubmits, err = h.loadPresubmits(pr)
+		if err != nil {
+			log.WithError(err).Error("Could not load presubmits for phase transition")
+			return
+		}
+		if presubmits == nil {
+			return
+		}
+		h.cache.set(presubmits)
 	}
 
 	phaseJobs, sortedPhases := groupJobsByPhase(presubmits)
@@ -270,10 +320,10 @@ func (h *GitHubEventsHandler) handlePhaseTransition(log *logrus.Entry, org, repo
 		return
 	}
 
-	triggerPhaseJobs(log, h.ghClient, pr, phaseJobs[nextPhase], nextPhase)
+	triggerPhaseJobs(log, h.ghClient, pr, phaseJobs[nextPhase], nextPhase, statusMap)
 }
 
-func triggerPhaseJobs(log *logrus.Entry, ghClient githubClientInterface, pr github.PullRequest, jobs []config.Presubmit, phase int) {
+func triggerPhaseJobs(log *logrus.Entry, ghClient githubClientInterface, pr github.PullRequest, jobs []config.Presubmit, phase int, statusMap map[string]string) {
 	org := pr.Base.Repo.Owner.Login
 	repo := pr.Base.Repo.Name
 
@@ -283,6 +333,10 @@ func triggerPhaseJobs(log *logrus.Entry, ghClient githubClientInterface, pr gith
 
 	var result string
 	for _, job := range jobs {
+		ctx := jobContext(job)
+		if _, exists := statusMap[ctx]; exists {
+			continue
+		}
 		result += "/test " + job.Name + "\n"
 		log.Debugf("Phase %d: triggering presubmit %s", phase, job.Name)
 	}
