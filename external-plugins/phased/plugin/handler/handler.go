@@ -242,6 +242,10 @@ func (h *GitHubEventsHandler) handleStatusEvent(log *logrus.Entry, event *github
 	}
 
 	_, phasedNames, ok := h.cache.get()
+	if !ok {
+		h.warmCache(log, org, repo)
+		_, phasedNames, ok = h.cache.get()
+	}
 	if ok && !phasedNames[event.Context] {
 		log.Debugf("Status context %q is not a phased job, skipping", event.Context)
 		return
@@ -259,8 +263,37 @@ func (h *GitHubEventsHandler) handleStatusEvent(log *logrus.Entry, event *github
 		return
 	}
 
+	combinedStatus, err := h.ghClient.GetCombinedStatus(org, repo, sha)
+	if err != nil {
+		log.WithError(err).Error("Could not get combined status")
+		return
+	}
+	statusMap := make(map[string]string)
+	if combinedStatus != nil {
+		for _, s := range combinedStatus.Statuses {
+			statusMap[s.Context] = s.State
+		}
+	}
+
 	for i := range prs {
-		h.handlePhaseTransition(log, org, repo, prs[i], sha)
+		h.handlePhaseTransition(log, prs[i], statusMap)
+	}
+}
+
+func (h *GitHubEventsHandler) warmCache(log *logrus.Entry, org, repo string) {
+	fullName := org + "/" + repo
+	presubmits, err := h.loadPresubmits(github.PullRequest{
+		Base: github.PullRequestBranch{
+			Ref:  "main",
+			Repo: github.Repo{FullName: fullName},
+		},
+	})
+	if err != nil {
+		log.WithError(err).Error("Could not warm presubmit cache")
+		return
+	}
+	if presubmits != nil {
+		h.cache.set(presubmits)
 	}
 }
 
@@ -278,7 +311,7 @@ func (h *GitHubEventsHandler) findPRsForSHA(org, repo, sha string) ([]github.Pul
 	return matched, nil
 }
 
-func (h *GitHubEventsHandler) handlePhaseTransition(log *logrus.Entry, org, repo string, pr github.PullRequest, sha string) {
+func (h *GitHubEventsHandler) handlePhaseTransition(log *logrus.Entry, pr github.PullRequest, statusMap map[string]string) {
 	if pr.Base.Ref != "main" && pr.Base.Ref != "master" {
 		return
 	}
@@ -302,28 +335,15 @@ func (h *GitHubEventsHandler) handlePhaseTransition(log *logrus.Entry, org, repo
 		return
 	}
 
-	combinedStatus, err := h.ghClient.GetCombinedStatus(org, repo, sha)
-	if err != nil {
-		log.WithError(err).Error("Could not get combined status")
-		return
-	}
-
-	statusMap := make(map[string]string)
-	if combinedStatus != nil {
-		for _, s := range combinedStatus.Statuses {
-			statusMap[s.Context] = s.State
-		}
-	}
-
-	nextPhase := findNextPhaseToTrigger(phaseJobs, sortedPhases, statusMap)
+	completedPhase, nextPhase := findNextPhaseToTrigger(phaseJobs, sortedPhases, statusMap)
 	if nextPhase < 0 {
 		return
 	}
 
-	triggerPhaseJobs(log, h.ghClient, pr, phaseJobs[nextPhase], nextPhase, statusMap)
+	triggerPhaseJobs(log, h.ghClient, pr, phaseJobs[nextPhase], completedPhase, nextPhase, statusMap)
 }
 
-func triggerPhaseJobs(log *logrus.Entry, ghClient githubClientInterface, pr github.PullRequest, jobs []config.Presubmit, phase int, statusMap map[string]string) {
+func triggerPhaseJobs(log *logrus.Entry, ghClient githubClientInterface, pr github.PullRequest, jobs []config.Presubmit, completedPhase, nextPhase int, statusMap map[string]string) {
 	org := pr.Base.Repo.Owner.Login
 	repo := pr.Base.Repo.Name
 
@@ -338,12 +358,11 @@ func triggerPhaseJobs(log *logrus.Entry, ghClient githubClientInterface, pr gith
 			continue
 		}
 		result += "/test " + job.Name + "\n"
-		log.Debugf("Phase %d: triggering presubmit %s", phase, job.Name)
+		log.Debugf("Phase %d: triggering presubmit %s", nextPhase, job.Name)
 	}
 
 	if result != "" {
-		prevPhase := phase - 1
-		result = fmt.Sprintf(PhaseIntroFmt, prevPhase, phase) + result
+		result = fmt.Sprintf(PhaseIntroFmt, completedPhase, nextPhase) + result
 		if err := ghClient.CreateComment(org, repo, pr.Number, result); err != nil {
 			log.WithError(err).Errorf("CreateComment failed PR %d", pr.Number)
 		}
@@ -498,20 +517,20 @@ func groupJobsByPhase(presubmits []config.Presubmit) (map[int][]config.Presubmit
 	return phases, sortedPhases
 }
 
-func findNextPhaseToTrigger(phaseJobs map[int][]config.Presubmit, sortedPhases []int, statusMap map[string]string) int {
+func findNextPhaseToTrigger(phaseJobs map[int][]config.Presubmit, sortedPhases []int, statusMap map[string]string) (completedPhase int, nextPhase int) {
 	for i, phase := range sortedPhases {
 		if !allJobsSucceeded(phaseJobs[phase], statusMap) {
-			return -1
+			return -1, -1
 		}
 		if i+1 < len(sortedPhases) {
-			nextPhase := sortedPhases[i+1]
-			if hasUntriggeredJobs(phaseJobs[nextPhase], statusMap) {
-				return nextPhase
+			next := sortedPhases[i+1]
+			if hasUntriggeredJobs(phaseJobs[next], statusMap) {
+				return phase, next
 			}
 			continue
 		}
 	}
-	return -1
+	return -1, -1
 }
 
 func allJobsSucceeded(jobs []config.Presubmit, statusMap map[string]string) bool {
