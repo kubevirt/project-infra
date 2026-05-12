@@ -415,7 +415,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+      - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -470,7 +470,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+      - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -512,7 +512,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+      - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -553,7 +553,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+      - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
         command: ["/bin/sh", "-ce"]
         args:
           - |
@@ -593,7 +593,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+      - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
         command:
         - "/bin/bash"
         - -c
@@ -631,7 +631,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+      - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -680,7 +680,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+      - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -716,7 +716,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+      - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -806,7 +806,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+    - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -840,7 +840,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+    - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
       command: [/bin/sh, -ce]
       args:
       - |
@@ -909,7 +909,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+      - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -947,7 +947,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+    - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -983,7 +983,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+    - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -1053,7 +1053,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260506-920f941
+    - image: quay.io/kubevirtci/pr-creator:v20260511-e57468c
       command:
       - /usr/local/bin/runner.sh
       - /bin/sh
