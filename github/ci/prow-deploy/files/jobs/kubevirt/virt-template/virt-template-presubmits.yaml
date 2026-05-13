@@ -26,32 +26,6 @@ presubmits:
         resources:
           requests:
             memory: 4Gi
-  - name: pull-virt-template-build-virttemplatectl
-    branches:
-    - main
-    always_run: false
-    run_if_changed: "api/.*|cmd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|Makefile|go.*"
-    cluster: prow-workloads
-    annotations:
-      testgrid-create-test-group: "false"
-    decorate: true
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 1h0m0s
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - make build-virttemplatectl
-        env:
-        - name: GO_MOD_PATH
-          value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
-        resources:
-          requests:
-            memory: 4Gi
   - name: pull-virt-template-container-build
     branches:
     - main
