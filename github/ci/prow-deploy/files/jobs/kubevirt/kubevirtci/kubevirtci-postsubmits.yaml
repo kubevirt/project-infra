@@ -97,6 +97,49 @@ postsubmits:
           resources:
             requests:
               memory: "8Gi"
+    - name: publish-multiarch-fedora-guest
+      branches:
+      - main
+      always_run: false
+      run_if_changed: "^cluster-provision/images/vm-image-builder/[^/]+$|^cluster-provision/images/vm-image-builder/fedora-with-test-tooling/[^/]+$"
+      annotations:
+        testgrid-create-test-group: "false"
+      decorate: true
+      decoration_config:
+        timeout: 2h
+      max_concurrency: 1
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-kubevirtci-quay-credential: "true"
+      cluster: prow-workloads
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        volumes:
+        - hostPath:
+            path: /dev
+            type: Directory
+          name: devices
+        containers:
+        - image: quay.io/kubevirtci/vm-image-builder:v20260518-2d2d4fd
+          command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/bash"
+          - "-c"
+          - |
+            cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
+            /usr/local/bin/bootstrap_libvirt_minimal.sh &&
+            cd cluster-provision/images/vm-image-builder &&
+            CONSOLE=false ./publish-multiarch-containerdisk.sh fedora-with-test-tooling kubevirtci quay.io
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - mountPath: /dev
+            name: devices
+          resources:
+            requests:
+              memory: "16Gi"
     - name: publish-kubevirtci-s390x
       branches:
       - main
