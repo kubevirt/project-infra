@@ -1277,6 +1277,8 @@ periodics:
         value: --prometheus-port 30007
       - name: VM_COUNT
         value: "100"
+      - name: KWOK_NODE_COUNT
+        value: "100"
       - name: KUBEVIRT_WITH_ETC_IN_MEMORY
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
