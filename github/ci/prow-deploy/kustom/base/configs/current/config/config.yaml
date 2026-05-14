@@ -152,6 +152,7 @@ tide:
     kubevirt/kubevirt-aie: merge
     kubevirt/kubevirt-aie-webhook: merge
     kubevirt/ci-health: merge
+    kubevirt/redfish-controller: merge
   queries:
   - repos:
     - kubevirt/dra-pci-driver
@@ -179,6 +180,7 @@ tide:
     - kubevirt/test-benchmarks
     - kubevirt/sig-release
     - kubevirt/enhancements
+    - kubevirt/redfish-controller
     labels:
     - lgtm
     - approved

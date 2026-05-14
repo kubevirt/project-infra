@@ -1,0 +1,37 @@
+periodics:
+- name: periodic-redfish-controller-push-nightly-main
+  cron: "2 4 * * *"
+  decorate: true
+  annotations:
+    testgrid-create-test-group: "false"
+  decoration_config:
+    timeout: 1h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-podman-in-container-enabled: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-kubevirtci-quay-credential: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: redfish-controller
+      base_ref: main
+  cluster: prow-workloads
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          build_date="$(date +%Y%m%d)"
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          DOCKER_TAG="${build_date}_$(git show -s --format=%h)" &&
+          make build-image push-image IMAGE_REGISTRY=quay.io IMAGE_NAMESPACE=kubevirt IMAGE_NAME=redfish-controller IMAGE_TAG="$DOCKER_TAG" &&
+          make push-image IMAGE_REGISTRY=quay.io IMAGE_NAMESPACE=kubevirt IMAGE_NAME=redfish-controller IMAGE_TAG=nightly
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "4Gi"
