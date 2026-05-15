@@ -36,6 +36,9 @@ type autoQuarantineOptions struct {
 	releaseLaneSuffix       string
 	matchingLaneRegexString string
 
+	jobConfigPath    string
+	jobConfigOrgRepo string
+
 	prDescriptionOutputFileOpts *options.OutputFileOptions
 }
 

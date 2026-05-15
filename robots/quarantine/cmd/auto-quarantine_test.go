@@ -21,13 +21,15 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"regexp"
+	"strings"
+	"time"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	flakestats "kubevirt.io/project-infra/pkg/flake-stats"
 	"kubevirt.io/project-infra/pkg/searchci"
-	"os"
-	"strings"
-	"time"
 )
 
 var _ = Describe("auto-quarantine", func() {
@@ -252,6 +254,146 @@ to contain
 						},
 					},
 				},
+			),
+		)
+	})
+
+	When("loading required job names", func() {
+		var tempFile *os.File
+		BeforeEach(func() {
+			var err error
+			tempFile, err = os.CreateTemp("", "presubmits-*.yaml")
+			Expect(err).ToNot(HaveOccurred())
+		})
+		AfterEach(func() {
+			Expect(os.Remove(tempFile.Name())).ToNot(HaveOccurred())
+		})
+
+		DescribeTable("it",
+			func(yamlContent string, orgRepo string, expectedJobs map[string]struct{}, expectErr bool) {
+				_, err := tempFile.WriteString(yamlContent)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(tempFile.Close()).ToNot(HaveOccurred())
+
+				result, err := loadRequiredJobNames(tempFile.Name(), orgRepo)
+				if expectErr {
+					Expect(err).To(HaveOccurred())
+					return
+				}
+				Expect(err).ToNot(HaveOccurred())
+				Expect(result).To(Equal(expectedJobs))
+			},
+			Entry("returns only required jobs",
+				`presubmits:
+  kubevirt/kubevirt:
+  - name: pull-kubevirt-e2e-k8s-1.35-sig-compute
+    always_run: true
+    spec:
+      containers:
+      - image: test
+  - name: pull-kubevirt-e2e-k8s-1.36-sig-compute
+    optional: true
+    always_run: true
+    spec:
+      containers:
+      - image: test
+`,
+				"kubevirt/kubevirt",
+				map[string]struct{}{
+					"pull-kubevirt-e2e-k8s-1.35-sig-compute": {},
+				},
+				false,
+			),
+			Entry("excludes skip_report jobs",
+				`presubmits:
+  kubevirt/kubevirt:
+  - name: pull-kubevirt-e2e-k8s-1.35-sig-compute
+    always_run: true
+    spec:
+      containers:
+      - image: test
+  - name: pull-kubevirt-e2e-k8s-1.35-sig-hidden
+    skip_report: true
+    always_run: true
+    spec:
+      containers:
+      - image: test
+`,
+				"kubevirt/kubevirt",
+				map[string]struct{}{
+					"pull-kubevirt-e2e-k8s-1.35-sig-compute": {},
+				},
+				false,
+			),
+			Entry("fails for unknown org/repo",
+				`presubmits:
+  kubevirt/kubevirt:
+  - name: pull-kubevirt-e2e-k8s-1.35-sig-compute
+    always_run: true
+    spec:
+      containers:
+      - image: test
+`,
+				"unknown/repo",
+				nil,
+				true,
+			),
+		)
+	})
+
+	When("filtering impacts by required lanes", func() {
+		DescribeTable("it",
+			func(impacts []searchci.Impact, requiredJobs map[string]struct{}, laneRegex string, expectedCount int) {
+				quarantineOpts.matchingLaneRegexString = laneRegex
+				quarantineOpts.releaseLaneSuffix = ""
+				var jobHistoryURLMatcher = regexp.MustCompile(quarantineOpts.MatchingLaneRegexString())
+
+				var filtered []searchci.Impact
+				for _, impact := range impacts {
+					elements := strings.Split(impact.URL, "/")
+					lastElement := elements[len(elements)-1]
+					if !jobHistoryURLMatcher.MatchString(lastElement) {
+						continue
+					}
+					if _, isRequired := requiredJobs[lastElement]; !isRequired {
+						continue
+					}
+					filtered = append(filtered, impact)
+				}
+				Expect(filtered).To(HaveLen(expectedCount))
+			},
+			Entry("keeps impacts from required lanes",
+				[]searchci.Impact{
+					{URL: "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.35-sig-compute", Percent: 10},
+				},
+				map[string]struct{}{
+					"pull-kubevirt-e2e-k8s-1.35-sig-compute": {},
+				},
+				defaultMatchingLaneRegexString,
+				1,
+			),
+			Entry("filters out impacts from optional lanes",
+				[]searchci.Impact{
+					{URL: "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.36-sig-compute", Percent: 10},
+				},
+				map[string]struct{}{
+					"pull-kubevirt-e2e-k8s-1.35-sig-compute": {},
+				},
+				defaultMatchingLaneRegexString,
+				0,
+			),
+			Entry("keeps required and filters optional from mixed set",
+				[]searchci.Impact{
+					{URL: "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.35-sig-compute", Percent: 10},
+					{URL: "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.36-sig-compute", Percent: 15},
+					{URL: "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.35-sig-network", Percent: 8},
+				},
+				map[string]struct{}{
+					"pull-kubevirt-e2e-k8s-1.35-sig-compute": {},
+					"pull-kubevirt-e2e-k8s-1.35-sig-network": {},
+				},
+				defaultMatchingLaneRegexString,
+				2,
 			),
 		)
 	})
