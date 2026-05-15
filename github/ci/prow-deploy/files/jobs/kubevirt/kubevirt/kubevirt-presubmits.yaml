@@ -2239,6 +2239,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.36-sig-network
+        - name: KUBEVIRT_CENTOS_STREAM_VERSION
+          value: "10"
+        - name: KUBEVIRT_CS10_BUILDER_VERSION
+          value: 2602251001-25ce1ccb15
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
@@ -2282,6 +2286,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.36-sig-storage
+        - name: KUBEVIRT_CENTOS_STREAM_VERSION
+          value: "10"
+        - name: KUBEVIRT_CS10_BUILDER_VERSION
+          value: 2602251001-25ce1ccb15
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
@@ -2325,6 +2333,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.36-sig-compute
+        - name: KUBEVIRT_CENTOS_STREAM_VERSION
+          value: "10"
+        - name: KUBEVIRT_CS10_BUILDER_VERSION
+          value: 2602251001-25ce1ccb15
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
@@ -2370,6 +2382,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.36-sig-compute-serial
+        - name: KUBEVIRT_CENTOS_STREAM_VERSION
+          value: "10"
+        - name: KUBEVIRT_CS10_BUILDER_VERSION
+          value: 2602251001-25ce1ccb15
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
@@ -2415,6 +2431,10 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.36-sig-operator
+        - name: KUBEVIRT_CENTOS_STREAM_VERSION
+          value: "10"
+        - name: KUBEVIRT_CS10_BUILDER_VERSION
+          value: 2602251001-25ce1ccb15
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
