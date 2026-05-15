@@ -29,7 +29,7 @@ spec:
         spec:
           containers:
             - name: label-sync
-              image: gcr.io/k8s-staging-test-infra/label_sync:v20260325-0ac3b4d79f
+              image: gcr.io/k8s-staging-test-infra/label_sync:v20260512-6f8992cc6b
               command: [ "/ko-app/label_sync" ]
               args:
               - --config=/etc/config/labels.yaml
