@@ -1,0 +1,64 @@
+postsubmits:
+  kubevirt/redfish-controller:
+  - name: push-latest-redfish-controller-images
+    branches:
+    - main
+    cluster: prow-workloads
+    always_run: true
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          make build-image push-image IMAGE_REGISTRY=quay.io IMAGE_NAMESPACE=kubevirt IMAGE_NAME=redfish-controller IMAGE_TAG=latest
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "4Gi"
+
+  - name: push-release-redfish-controller-images
+    branches:
+    - release-v\d+\.\d+
+    cluster: prow-workloads
+    always_run: true
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          TAG="$(git tag --points-at HEAD | head -1)" &&
+          [ -z "$TAG" ] || make build-image push-image IMAGE_REGISTRY=quay.io IMAGE_NAMESPACE=kubevirt IMAGE_NAME=redfish-controller IMAGE_TAG="$TAG"
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "4Gi"

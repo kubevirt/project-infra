@@ -1,0 +1,51 @@
+presubmits:
+  kubevirt/redfish-controller:
+  - name: pull-redfish-controller-unit-test
+    cluster: kubevirt-prow-control-plane
+    always_run: true
+    skip_report: false
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+
+  - name: pull-redfish-controller-sanity
+    cluster: kubevirt-prow-control-plane
+    always_run: true
+    skip_report: false
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make validate && make build"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
