@@ -41,14 +41,14 @@ type prowOwnersClient interface {
 // HelpProvider construct the pluginhelp.PluginHelp for this plugin.
 func HelpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	pluginHelp := &pluginhelp.PluginHelp{
-		Description: `The release-blocker plugin is used to signal an issue or PR must be resolved before the next release is made.`,
+		Description: `Manage release-blocker labels on issues and PRs. These labels are used by the release-tool to block RC promotions and tag creation until all blockers are resolved.`,
 	}
 	pluginHelp.AddCommand(pluginhelp.Command{
-		Usage:       "/release-blocker [branch]",
-		Description: "Mark a PR or issue as a release blocker.",
+		Usage:       "/release-blocker [cancel] [branch]",
+		Description: "Mark a PR or issue as a release blocker by applying a release-blocker/<branch> label, or remove it with cancel. The target branch must exist when adding a label, but can be removed even if the branch no longer exists. Manual additions or removals of release-blocker labels are automatically reverted. Only one command per comment is processed. Also accepts /release-block, /releaseblock, and /releaseblocker.",
 		Featured:    true,
-		WhoCanUse:   "Project members",
-		Examples:    []string{"/release-blocker release-3.9", "/release-blocker release-1.15"},
+		WhoCanUse:   "Top-level approvers from the OWNERS file",
+		Examples:    []string{"/release-blocker release-3.9", "/release-blocker release-1.15", "/release-blocker cancel release-3.9", "/release-blocker cancel release-1.15"},
 	})
 	return pluginHelp, nil
 }
