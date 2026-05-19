@@ -130,8 +130,9 @@ postsubmits:
           - |
             cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
             /usr/local/bin/bootstrap_libvirt_minimal.sh &&
+            curl -L https://github.com/kubevirt/kubevirtci/pull/1708.patch | git am -3 &&
             cd cluster-provision/images/vm-image-builder &&
-            CONSOLE=false ./publish-multiarch-containerdisk.sh fedora-with-test-tooling kubevirtci quay.io
+            DEBUG=true CONSOLE=false ./publish-multiarch-containerdisk.sh fedora-with-test-tooling kubevirtci quay.io
           securityContext:
             privileged: true
           volumeMounts:
