@@ -180,6 +180,7 @@ tide:
     - kubevirt/test-benchmarks
     - kubevirt/sig-release
     - kubevirt/enhancements
+    - kubevirt/ci-health
     - kubevirt/redfish-controller
     labels:
     - lgtm
@@ -229,7 +230,6 @@ tide:
     - kubevirt/iommufd-device-plugin
     - kubevirt/kubevirt-aie
     - kubevirt/kubevirt-aie-webhook
-    - kubevirt/ci-health
     labels:
     - lgtm
     - approved

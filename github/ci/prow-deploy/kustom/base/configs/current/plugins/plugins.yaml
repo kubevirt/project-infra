@@ -89,7 +89,6 @@ plugins:
     plugins:
     - approve
     - lgtm
-    - release-note
     - trigger
 
   kubevirt/cloud-image-builder:
