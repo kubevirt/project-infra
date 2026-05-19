@@ -43,7 +43,7 @@ function rescale_greenhouse_deployment() {
 
 function remove_greenhouse_data() {
     greenhouse_pod_name=$(kubectl get pods --no-headers -n kubevirt-prow -l app=greenhouse --field-selector=status.phase=Running | head -1 | awk '{print $1}')
-    kubectl exec "$greenhouse_pod_name" -n kubevirt-prow -- rm -rf /data/*
+    kubectl exec "$greenhouse_pod_name" -n kubevirt-prow -- find /data -mindepth 1 -delete
 }
 
 function wait_for_running_pods_number() {
