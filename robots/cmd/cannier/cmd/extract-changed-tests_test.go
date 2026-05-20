@@ -25,7 +25,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"kubevirt.io/project-infra/robots/pkg/ginkgo"
-	"kubevirt.io/project-infra/robots/pkg/git"
+	"kubevirt.io/project-infra/pkg/git"
 	"os"
 	osexec "os/exec"
 	"path/filepath"
