@@ -676,7 +676,7 @@ presets:
     - name: CACHE_PORT
       value: "8080"
     - name: BAZEL_REMOTE_CACHE_ENABLED
-      value: "true"
+      value: "false"
 - labels:
     preset-bazel-unnested: "true"
   env:
