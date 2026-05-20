@@ -37,7 +37,7 @@ var _ = Describe("simple", func() {
 	When("does something is executed", func() {
 
 		It("does not return an error", func() {
-			Expect(DoesSomething(false)).To(BeNil())
+			Expect(DoesSomething(false)).To(BeNil()) // verify no error
 		})
 
 		It("does return an error", func() {

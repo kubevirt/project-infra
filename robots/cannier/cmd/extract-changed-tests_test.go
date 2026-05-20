@@ -199,7 +199,7 @@ var _ = Describe("extract testnames", func() {
 
 		BeforeAll(func() {
 
-			absBasePath, err := filepath.Abs("./../../../..")
+			absBasePath, err := filepath.Abs("./../../..")
 			testfile := filepath.Join(testfilePath, testfileName)
 			Expect(err).ToNot(HaveOccurred())
 
