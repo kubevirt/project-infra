@@ -20,6 +20,8 @@
 package ginkgo
 
 import (
+	"strings"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -125,6 +127,72 @@ func main() {}
 `
 			result := ensureImport(code, "kubevirt.io/kubevirt/tests/decorators")
 			Expect(result).To(BeEquivalentTo(code))
+		})
+	})
+
+	When("quarantine and ensureImport are used together on a real file", func() {
+
+		It("adds both the decorator and the import to cluster-profiler.go", func() {
+			input := `package infrastructure
+
+import (
+	"kubevirt.io/kubevirt/tests/framework/kubevirt"
+	"kubevirt.io/kubevirt/tests/libkubevirt"
+	"kubevirt.io/kubevirt/tests/libkubevirt/config"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+	v1 "kubevirt.io/api/core/v1"
+	"kubevirt.io/client-go/kubecli"
+)
+
+var _ = Describe(SIGSerial("cluster profiler", func() {
+	Context("when ClusterProfiler configuration", func() {
+		It("is enabled it should allow subresource access", func() {
+			// test body
+		})
+	})
+}))
+`
+			code, err := quarantine(input, "is enabled it should allow subresource access")
+			Expect(err).ToNot(HaveOccurred())
+			code = ensureImport(code, decoratorsImport)
+
+			By("verifying the decorator was inserted")
+			Expect(code).To(ContainSubstring(`"[QUARANTINE]is enabled it should allow subresource access", decorators.Quarantine`))
+
+			By("verifying the import was added")
+			Expect(code).To(ContainSubstring(`"kubevirt.io/kubevirt/tests/decorators"`))
+
+			By("verifying existing imports are preserved")
+			Expect(code).To(ContainSubstring(`"kubevirt.io/kubevirt/tests/framework/kubevirt"`))
+			Expect(code).To(ContainSubstring(`"kubevirt.io/kubevirt/tests/libkubevirt"`))
+		})
+
+		It("does not duplicate the import if already present", func() {
+			input := `package infrastructure
+
+import (
+	"kubevirt.io/kubevirt/tests/decorators"
+	"kubevirt.io/kubevirt/tests/framework/kubevirt"
+
+	. "github.com/onsi/ginkgo/v2"
+)
+
+var _ = Describe(SIGSerial("cluster profiler", func() {
+	It("some test", func() {})
+}))
+`
+			code, err := quarantine(input, "some test")
+			Expect(err).ToNot(HaveOccurred())
+			code = ensureImport(code, decoratorsImport)
+
+			By("verifying the decorator was inserted")
+			Expect(code).To(ContainSubstring(`decorators.Quarantine`))
+
+			By("verifying the import appears exactly once")
+			count := strings.Count(code, `"kubevirt.io/kubevirt/tests/decorators"`)
+			Expect(count).To(Equal(1))
 		})
 	})
 
