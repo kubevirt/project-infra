@@ -87,4 +87,45 @@ var _ = Describe("modify", func() {
 		})
 	})
 
+	When("ensureImport is used", func() {
+
+		It("adds the import when not present", func() {
+			code := `package foo
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {}
+`
+			result := ensureImport(code, "kubevirt.io/kubevirt/tests/decorators")
+			Expect(result).To(ContainSubstring(`"kubevirt.io/kubevirt/tests/decorators"`))
+			Expect(result).To(ContainSubstring("import (\n\t\"kubevirt.io/kubevirt/tests/decorators\"\n\t\"fmt\""))
+		})
+
+		It("does not duplicate an existing import", func() {
+			code := `package foo
+
+import (
+	"fmt"
+	"kubevirt.io/kubevirt/tests/decorators"
+)
+
+func main() {}
+`
+			result := ensureImport(code, "kubevirt.io/kubevirt/tests/decorators")
+			Expect(result).To(BeEquivalentTo(code))
+		})
+
+		It("returns unchanged code when there is no import block", func() {
+			code := `package foo
+
+func main() {}
+`
+			result := ensureImport(code, "kubevirt.io/kubevirt/tests/decorators")
+			Expect(result).To(BeEquivalentTo(code))
+		})
+	})
+
 })
