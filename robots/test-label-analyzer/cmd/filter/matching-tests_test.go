@@ -27,7 +27,7 @@ import (
 	. "github.com/onsi/gomega"
 	"kubevirt.io/project-infra/pkg/git"
 	testlabelanalyzer "kubevirt.io/project-infra/pkg/test-label-analyzer"
-	"kubevirt.io/project-infra/robots/pkg/ginkgo"
+	"kubevirt.io/project-infra/pkg/ginkgo"
 )
 
 var _ = Describe("filter", func() {

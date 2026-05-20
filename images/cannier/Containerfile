@@ -12,7 +12,7 @@ RUN mkdir -p kubevirt/project-infra && \
     git remote add origin https://github.com/dhiller/project-infra.git && \
     git fetch origin $COMMIT_ID && \
     git reset --hard $COMMIT_ID && \
-    /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/cannier ./robots/cmd/cannier"
+    /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/cannier ./robots/cannier"
 RUN dnf install -y \
     ripgrep
 FROM gcr.io/k8s-prow/git:v20240729-4f255edb07

@@ -26,7 +26,7 @@ import (
 	"gonum.org/v1/gonum/floats"
 	"gonum.org/v1/gonum/stat"
 	"gopkg.in/yaml.v2"
-	"kubevirt.io/project-infra/robots/pkg/cannier"
+	"kubevirt.io/project-infra/pkg/cannier"
 	"os"
 )
 

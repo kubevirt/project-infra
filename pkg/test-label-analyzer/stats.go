@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"kubevirt.io/project-infra/pkg/git"
-	"kubevirt.io/project-infra/robots/pkg/ginkgo"
+	"kubevirt.io/project-infra/pkg/ginkgo"
 )
 
 type TestFilesStats struct {

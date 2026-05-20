@@ -17,13 +17,29 @@
  *
  */
 
-package main
+package cannier
 
-import "fmt"
+import "kubevirt.io/project-infra/pkg/ginkgo"
 
-func DoesSomething(returnErr bool) error {
-	if returnErr {
-		return fmt.Errorf("error: %d", 42)
+// TODO: evaluate whether that is feasible with a reasonable amount of work, would need remote instrumentation
+
+var (
+	coverageExtractors = []featureExtractor{
+		func(featureSet *FeatureSet) error {
+			featureSet.CoveredChanges = 0
+			return nil
+		},
+		func(featureSet *FeatureSet) error {
+			featureSet.CoveredLines = 0
+			return nil
+		},
+		func(featureSet *FeatureSet) error {
+			featureSet.SourceCoveredLines = 0
+			return nil
+		},
 	}
-	return nil
+)
+
+func getCoverageExtractors(test *ginkgo.SourceTestDescriptor) []featureExtractor {
+	return coverageExtractors
 }

@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Copyright 2023 Red Hat, Inc.
+ * Copyright the KubeVirt Authors.
  *
  */
 
-package testdata
+package main
 
-import "github.com/onsi/ginkgo/v2"
+import (
+	log "github.com/sirupsen/logrus"
+	"kubevirt.io/project-infra/robots/cannier/cmd"
+)
 
-var _ = ginkgo.Describe("whatever", func() {
-	ginkgo.Context("i don't care", func() {
-		ginkgo.It("is so meh", func() {})
-	})
-})
+func init() {
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetLevel(log.DebugLevel)
+}
+
+func main() {
+	cmd.Execute()
+}

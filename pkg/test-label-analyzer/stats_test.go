@@ -22,7 +22,7 @@ package test_label_analyzer
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"kubevirt.io/project-infra/robots/pkg/ginkgo"
+	"kubevirt.io/project-infra/pkg/ginkgo"
 )
 
 var _ = Describe("GetStatsFromGinkgoOutline", func() {

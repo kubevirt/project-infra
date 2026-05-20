@@ -24,7 +24,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"kubevirt.io/project-infra/robots/pkg/ginkgo"
+	"kubevirt.io/project-infra/pkg/ginkgo"
 	"kubevirt.io/project-infra/pkg/git"
 	"os"
 	osexec "os/exec"
@@ -186,7 +186,7 @@ var _ = Describe("extract testnames", func() {
 		const (
 			testfileName        = "simple_test.go"
 			testfilePartialPath = "testdata"
-			testfilePath        = "robots/cmd/cannier/cmd/testdata"
+			testfilePath        = "robots/cannier/cmd/testdata"
 		)
 
 		var (

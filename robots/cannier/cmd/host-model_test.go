@@ -21,7 +21,7 @@ package cmd
 
 import (
 	"encoding/json"
-	"kubevirt.io/project-infra/robots/pkg/cannier"
+	"kubevirt.io/project-infra/pkg/cannier"
 	"os"
 
 	. "github.com/onsi/ginkgo/v2"

@@ -21,7 +21,7 @@ package cannier
 
 import (
 	"go/ast"
-	"kubevirt.io/project-infra/robots/pkg/ginkgo"
+	"kubevirt.io/project-infra/pkg/ginkgo"
 	"regexp"
 	"strings"
 )

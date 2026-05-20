@@ -22,8 +22,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"kubevirt.io/project-infra/robots/pkg/cannier"
-	"kubevirt.io/project-infra/robots/pkg/ginkgo"
+	"kubevirt.io/project-infra/pkg/cannier"
+	"kubevirt.io/project-infra/pkg/ginkgo"
 	"os"
 
 	"github.com/spf13/cobra"

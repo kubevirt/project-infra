@@ -25,7 +25,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"io"
-	"kubevirt.io/project-infra/robots/pkg/cannier"
+	"kubevirt.io/project-infra/pkg/cannier"
 	"net/http"
 	"strconv"
 )

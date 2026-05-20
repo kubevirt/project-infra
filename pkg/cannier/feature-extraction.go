@@ -21,7 +21,7 @@ package cannier
 
 import (
 	"fmt"
-	"kubevirt.io/project-infra/robots/pkg/ginkgo"
+	"kubevirt.io/project-infra/pkg/ginkgo"
 	"time"
 )
 
