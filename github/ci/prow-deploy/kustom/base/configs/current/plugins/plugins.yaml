@@ -837,6 +837,9 @@ lgtm:
 
 override:
   allow_top_level_owners: true
+  allowed_github_teams:
+    kubevirt:
+      - prow-job-taskforce
 
 triggers:
 - repos:
