@@ -25,3 +25,5 @@ data:
     repos:
       kubevirt/project-infra:
         testPackages: "./external-plugins/... ./releng/... ./robots/... ./cmd/... ./pkg/..."
+      kubevirt/ci-health:
+        testPackages: "./pkg/... ./cmd/..."
