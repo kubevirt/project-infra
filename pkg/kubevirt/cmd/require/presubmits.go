@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"kubevirt.io/project-infra/pkg/kubevirt/cmd/flags"
@@ -77,7 +78,7 @@ func RequirePresubmitsCommand() *cobra.Command {
 }
 
 func init() {
-	requirePresubmitsCommand.PersistentFlags().StringVar(&requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The directory of the kubevirt presubmit job definitions")
+	requirePresubmitsCommand.PersistentFlags().StringVar(&requirePresubmitsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml", "The directory of the kubevirt presubmit job definitions")
 }
 
 func run(cmd *cobra.Command, args []string) error {
@@ -109,10 +110,14 @@ func run(cmd *cobra.Command, args []string) error {
 
 	latestReleaseSemver := querier.ParseRelease(releases[0])
 
-	updated := updatePresubmitsAlwaysRunAndOptionalFields(&jobConfig, latestReleaseSemver)
+	updated, phase := updatePresubmitsAlwaysRunAndOptionalFields(&jobConfig, latestReleaseSemver)
 	if !updated && !flags.Options.DryRun {
 		log.Log().Info(fmt.Sprintf("presubmit jobs for %v weren't modified, nothing to do.", latestReleaseSemver))
 		return nil
+	}
+	if phase == phase2 {
+		previousReleaseSemver := querier.SemVer{Major: latestReleaseSemver.Major, Minor: strconv.Itoa(latestReleaseSemver.MinorInt() - 1)}
+		setPresubmitsToRunBeforeMergeOnly(&jobConfig, &previousReleaseSemver)
 	}
 
 	marshalledConfig, err := yaml.Marshal(&jobConfig)
@@ -135,12 +140,19 @@ func run(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func updatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, latestReleaseSemver *querier.SemVer) (updated bool) {
+type phase int
+
+const (
+	phase1 = iota
+	phase2
+)
+
+func updatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, releaseSemver *querier.SemVer) (updated bool, phase phase) {
 	jobsToCheck := map[string]string{}
 	for _, sigName := range prowjobconfigs.SigNames {
-		jobsToCheck[prowjobconfigs.CreatePresubmitJobName(latestReleaseSemver, sigName)] = ""
+		jobsToCheck[prowjobconfigs.CreatePresubmitJobName(releaseSemver, sigName)] = ""
 	}
-	jobsToCheck[prowjobconfigs.CreatePresubmitJobName(latestReleaseSemver, "sig-compute-serial")] = ""
+	jobsToCheck[prowjobconfigs.CreatePresubmitJobName(releaseSemver, "sig-compute-serial")] = ""
 
 	for index := range jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] {
 		job := &jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig][index]
@@ -153,6 +165,7 @@ func updatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, lat
 		if !job.AlwaysRun {
 			job.AlwaysRun = true
 			updated = true
+			phase = phase1
 
 			// -- fix skip_report: true -> false
 			job.SkipReport = false
@@ -164,9 +177,34 @@ func updatePresubmitsAlwaysRunAndOptionalFields(jobConfig *config.JobConfig, lat
 		if job.Optional {
 			job.Optional = false
 			updated = true
+			phase = phase2
 		}
 
 	}
 
 	return
+}
+
+func setPresubmitsToRunBeforeMergeOnly(jobConfig *config.JobConfig, releaseSemver *querier.SemVer) {
+	jobsToCheck := map[string]string{}
+	for _, sigName := range prowjobconfigs.SigNames {
+		jobsToCheck[prowjobconfigs.CreatePresubmitJobName(releaseSemver, sigName)] = ""
+	}
+	jobsToCheck[prowjobconfigs.CreatePresubmitJobName(releaseSemver, "sig-compute-serial")] = ""
+
+	for index := range jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] {
+		job := &jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig][index]
+		name := job.Name
+		if _, exists := jobsToCheck[name]; !exists {
+			continue
+		}
+
+		if job.AlwaysRun {
+			job.AlwaysRun = false
+		}
+
+		if !job.RunBeforeMerge {
+			job.RunBeforeMerge = true
+		}
+	}
 }

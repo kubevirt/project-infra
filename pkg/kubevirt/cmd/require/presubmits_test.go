@@ -34,6 +34,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 		args             args
 		wantNewJobConfig config.JobConfig
 		wantUpdated      bool
+		wantPhase        phase
 	}{
 		{
 			name: "no job exists",
@@ -114,6 +115,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 				},
 			},
 			wantUpdated: true,
+			wantPhase:   phase1,
 		},
 		{
 			name: "sig-network job exists, always_run = true",
@@ -135,6 +137,7 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 				},
 			},
 			wantUpdated: true,
+			wantPhase:   phase2,
 		},
 		{
 			name: "sig-network job exists, always_run = true, optional = false",
@@ -160,9 +163,12 @@ func TestUpdatePresubmitsAlwaysRunAndOptionalFields(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			updated := updatePresubmitsAlwaysRunAndOptionalFields(&tt.args.jobConfig, tt.args.latestReleaseSemver)
+			updated, phase := updatePresubmitsAlwaysRunAndOptionalFields(&tt.args.jobConfig, tt.args.latestReleaseSemver)
 			if updated != tt.wantUpdated {
 				t.Errorf("updatePresubmitsAlwaysRunAndOptionalFields() updated = %v, want %v", updated, tt.wantUpdated)
+			}
+			if phase != tt.wantPhase {
+				t.Errorf("updatePresubmitsAlwaysRunAndOptionalFields() phase = %v, want %v", phase, tt.wantPhase)
 			}
 			if !reflect.DeepEqual(tt.args.jobConfig, tt.wantNewJobConfig) {
 				presubmit := tt.args.jobConfig.PresubmitsStatic["kubevirt/kubevirt"][0]
