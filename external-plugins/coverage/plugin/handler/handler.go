@@ -312,7 +312,7 @@ func (h *GitHubEventsHandler) generateCoverageJob(
 		},
 		Reporter: config.Reporter{
 			Context:    "coverage-auto",
-			SkipReport: true,
+			SkipReport: false,
 		},
 	}
 	return pjutil.NewPresubmit(*pr, pr.Base.SHA, presubmit, eventGUID, nil)
