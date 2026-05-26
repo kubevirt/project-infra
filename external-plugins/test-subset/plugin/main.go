@@ -180,16 +180,13 @@ func main() {
 
 func helpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	pluginHelp := &pluginhelp.PluginHelp{
-		Description: `The Test-subset plugin is used to trigger a job that runs custom subset of the tests.
-		<br>A pull request is considered trusted if the author is a member of the 'trusted organization' for the repository.
-        <br>The arguments are the job name and the requested filter and/or focus parameters.
-		<br>This allows running subset of the tests without changing the code.`,
+		Description: "Trigger a targeted subset of e2e tests on a PR without modifying code or job configuration. Only works on kubevirt/kubevirt PRs targeting main or master.",
 	}
 	pluginHelp.AddCommand(pluginhelp.Command{
 		Usage:       "/test-subset <job_name> [--filter <filter_expression>] [--focus <focus_expression>] [--verbosity <verbosity_settings>]",
-		Description: "Triggering job with the selected filter, focus, and/or verbosity. At least one parameter must be specified.",
+		Description: "Trigger a named presubmit job with a subset of tests. At least one parameter must be specified. --filter sets a Ginkgo label filter (KUBEVIRT_LABEL_FILTER), automatically wrapped in parentheses if missing. --focus sets a Ginkgo focus string (KUBEVIRT_E2E_FOCUS). --verbosity sets component verbosity (KUBEVIRT_VERBOSITY). The job runs as a separate GitHub status context prefixed with test-subset- and does not interfere with regular CI.",
 		Featured:    true,
-		WhoCanUse:   "Members of the trusted organization for the repo.",
+		WhoCanUse:   "Members of the Kubevirt org.",
 		Examples: []string{
 			"/test-subset pull-kubevirt-e2e-k8s-1.30-sig-network --filter USB",
 			"/test-subset pull-kubevirt-e2e-k8s-1.30-sig-network --focus SomeString",
