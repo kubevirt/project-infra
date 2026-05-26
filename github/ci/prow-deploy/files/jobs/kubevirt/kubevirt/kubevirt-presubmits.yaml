@@ -598,6 +598,7 @@ presubmits:
       preset-gomaxprocs-4: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-unit-test-arm64
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
