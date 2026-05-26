@@ -131,8 +131,6 @@ presubmits:
           value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
-        - name: KUBEVIRT_ONLY_USE_TAGS
-          value: "true"
         - name: KUBEVIRT_BUILDER_IMAGE
           value: icr.io/kubevirt/builder:2405141107-77fe60855
         - name: FUNCTEST_EXTRA_ARGS
@@ -296,12 +294,10 @@ presubmits:
         - "-c"
         - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.5
+        - name: GO_MOD_PATH
+          value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
-        - name: KUBEVIRT_ONLY_USE_TAGS
-          value: "true"
         - name: KUBEVIRT_BUILDER_IMAGE
           value: icr.io/kubevirt/builder:2405141107-77fe60855
         - name: FUNCTEST_EXTRA_ARGS
@@ -377,12 +373,10 @@ presubmits:
         - "-c"
         - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.5
+        - name: GO_MOD_PATH
+          value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
-        - name: KUBEVIRT_ONLY_USE_TAGS
-          value: "true"
         - name: KUBEVIRT_BUILDER_IMAGE
           value: icr.io/kubevirt/builder:2405141107-77fe60855
         - name: FUNCTEST_EXTRA_ARGS
@@ -541,8 +535,6 @@ presubmits:
           value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
-        - name: KUBEVIRT_ONLY_USE_TAGS
-          value: "true"
         - name: KUBEVIRT_BUILDER_IMAGE
           value: icr.io/kubevirt/builder:2405141107-77fe60855
         - name: FUNCTEST_EXTRA_ARGS
