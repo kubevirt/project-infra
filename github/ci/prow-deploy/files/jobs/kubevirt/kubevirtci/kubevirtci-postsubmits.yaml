@@ -140,30 +140,16 @@ postsubmits:
                     break
                 else
                     echo "File $GCS_FILE_PATH not found. Checking again in $CHECK_INTERVAL seconds."
-                    sleep $CHECK_INTERVAL
+                    sleep "$CHECK_INTERVAL"
                 fi
             done &&
-            # Add retry mechanism for reading file content to handle GCS eventual consistency
-            MAX_RETRIES=5
-            RETRY_COUNT=0
-            RETRY_INTERVAL=5
-            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-                KUBEVIRTCI_TAG=$(cat_gcs_file kubevirt-prow "$GCS_FILE_PATH" "false")
-                if [ $? -eq 0 ] && [ -n "$KUBEVIRTCI_TAG" ]; then
-                    echo "Successfully fetched KUBEVIRTCI_TAG: $KUBEVIRTCI_TAG"
-                    break
-                else
-                    RETRY_COUNT=$((RETRY_COUNT + 1))
-                    if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-                        echo "Failed to fetch KUBEVIRTCI_TAG (attempt $RETRY_COUNT/$MAX_RETRIES). Retrying in $RETRY_INTERVAL seconds..."
-                        sleep $RETRY_INTERVAL
-                    else
-                        echo "Failed to fetch KUBEVIRTCI_TAG after $MAX_RETRIES attempts"
-                        exit 1
-                    fi
-                fi
-            done
+            KUBEVIRTCI_TAG=$(cat_gcs_file_with_retry kubevirt-prow "$GCS_FILE_PATH" "false")
+            if [ $? -ne 0 ]; then
+                echo "Failed to fetch KUBEVIRTCI_TAG"
+                exit 1
+            fi
             export KUBEVIRTCI_TAG &&
+            echo "Fetched KUBEVIRTCI_TAG: $KUBEVIRTCI_TAG" &&
             ./publish.sh &&
             rm_gcs_file kubevirt-prow "$GCS_FILE_PATH"
           # docker-in-docker needs privileged mode
