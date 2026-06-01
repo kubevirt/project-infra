@@ -22,6 +22,8 @@ postsubmits:
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
+        - name: BUILD_ARCHES
+          value: "amd64 arm64 s390x"
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -58,6 +60,8 @@ postsubmits:
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
+        - name: BUILD_ARCHES
+          value: "amd64 arm64 s390x"
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
