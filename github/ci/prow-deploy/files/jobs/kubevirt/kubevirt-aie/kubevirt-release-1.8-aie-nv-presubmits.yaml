@@ -134,7 +134,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-aie-unit-test-arm64-1.8-aie-nv
-    optional: true
     branches:
     - release-1.8-aie-nv
     spec:
@@ -164,7 +163,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 4
     name: pull-kubevirt-aie-kind-1.35-sig-compute-arm64-1.8-aie-nv
-    optional: true
     branches:
     - release-1.8-aie-nv
     spec:
