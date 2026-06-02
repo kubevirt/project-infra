@@ -27,7 +27,6 @@ orgs:
       - akrejcir
       - alancaldelas
       - alaypatel07
-      - aliamerj
       - alicefr
       - AlonaKaplan
       - alromeros
@@ -76,7 +75,6 @@ orgs:
       - kubevirt-commenter-bot
       - kvaps
       - laxmi-333
-      - lerrigatto
       - lyarwood
       - machadovilaca
       - maiqueb
@@ -117,7 +115,6 @@ orgs:
       - tiraboschi
       - vamsikrishna-siddu
       - vasiliy-ul
-      - victortoso
       - vishnuchalla
       - vladikr
       - xpivarc
@@ -709,7 +706,6 @@ orgs:
       dra-pci-driver-mantainers:
         maintainers:
         - alicefr
-        - victortoso
         repos:
           dra-pci-driver: admin
       enhancements-maintainers:
@@ -1095,7 +1091,6 @@ orgs:
         privacy: closed
         maintainers:
           - dhiller
-          - lerrigatto
         repos:
           charts: write
       virt-template-maintainers:
