@@ -1115,7 +1115,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.35-ipv6-sig-network
+    name: pull-kubevirt-e2e-k8s-1.36-ipv6-sig-network
     run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
@@ -1128,7 +1128,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.35-sig-network
+          value: k8s-1.36-sig-network
         - name: KUBEVIRT_SINGLE_STACK
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
@@ -1161,7 +1161,7 @@ presubmits:
       preset-shared-images: "true"
       rehearsal.allowed: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.35-sig-network-with-dnc
+    name: pull-kubevirt-e2e-k8s-1.36-sig-network-with-dnc
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1174,7 +1174,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.35-sig-network
+          value: k8s-1.36-sig-network
         - name: KUBEVIRT_WITH_DYN_NET_CTRL
           value: "true"
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
