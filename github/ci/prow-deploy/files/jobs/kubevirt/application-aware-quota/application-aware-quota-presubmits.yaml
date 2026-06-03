@@ -81,6 +81,9 @@ presubmits:
         type: bare-metal-external
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+          env:
+            - name: BUILD_ARCHES
+              value: "amd64 arm64 s390x"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
