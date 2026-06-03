@@ -496,7 +496,7 @@ presubmits:
       preset-pgp-bot-key: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260306-351d3b1
+        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
           env:
           - name: KUBECONFIG
             value: /kubeconfig
