@@ -25,6 +25,7 @@ import (
 	"strings"
 
 	"github.com/onsi/ginkgo/v2/types"
+	"golang.org/x/tools/imports"
 )
 
 const decoratorsImport = "kubevirt.io/kubevirt/tests/decorators"
@@ -39,7 +40,11 @@ func QuarantineTest(report *types.SpecReport) error {
 		return fmt.Errorf("could not quarantine test %q: %w", report.FullText(), err)
 	}
 	code = ensureImport(code, decoratorsImport)
-	err = os.WriteFile(report.LeafNodeLocation.FileName, []byte(code), os.ModePerm)
+	formatted, err := imports.Process(report.LeafNodeLocation.FileName, []byte(code), &imports.Options{FormatOnly: true})
+	if err != nil {
+		return fmt.Errorf("could not format file for quarantined test %q: %w", report.FullText(), err)
+	}
+	err = os.WriteFile(report.LeafNodeLocation.FileName, formatted, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("could not write file for quarantined test %q: %w", report.FullText(), err)
 	}
