@@ -1301,7 +1301,7 @@ periodics:
   name: periodic-project-infra-prow-s390x-workloads-livez
   annotations:
     <<: *cluster_livez_annotations
-    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfillekes@ibm.com, svamsikr@redhat.com
   spec:
     containers:
     - <<: *cluster_livez_container
@@ -1312,7 +1312,7 @@ periodics:
   name: periodic-project-infra-prow-s390x-e2e-test-livez
   annotations:
     <<: *cluster_livez_annotations
-    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfillekes@ibm.com, svamsikr@redhat.com
   spec:
     containers:
     - <<: *cluster_livez_container
@@ -1323,7 +1323,7 @@ periodics:
   name: periodic-project-infra-prow-s390x-openshift-livez
   annotations:
     <<: *cluster_livez_annotations
-    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfillekes@ibm.com, svamsikr@redhat.com
   spec:
     containers:
     - <<: *cluster_livez_container
@@ -1334,7 +1334,7 @@ periodics:
   name: periodic-project-infra-prow-s390x-secure-execution-livez
   annotations:
     <<: *cluster_livez_annotations
-    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfillekes@ibm.com, svamsikr@redhat.com
   spec:
     containers:
     - <<: *cluster_livez_container
