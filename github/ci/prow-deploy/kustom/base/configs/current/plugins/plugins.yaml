@@ -511,6 +511,14 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/vm-file-restore-operator:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+
   kubevirt/iommufd-device-plugin:
     plugins:
     - approve
@@ -690,6 +698,7 @@ approve:
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
+  - kubevirt/vm-file-restore-operator
   - kubevirt/iommufd-device-plugin
   - kubevirt/kubevirt-aie
   - kubevirt/kubevirt-aie-webhook
@@ -836,6 +845,7 @@ lgtm:
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
+  - kubevirt/vm-file-restore-operator
   - kubevirt/ci-health
   - kubevirt/redfish-controller
   review_acts_as_lgtm: true
@@ -898,6 +908,7 @@ triggers:
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
+  - kubevirt/vm-file-restore-operator
   - kubevirt/ci-health
   - kubevirt/redfish-controller
   ignore_ok_to_test: true
