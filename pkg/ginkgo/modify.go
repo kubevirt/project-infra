@@ -25,7 +25,10 @@ import (
 	"strings"
 
 	"github.com/onsi/ginkgo/v2/types"
+	"golang.org/x/tools/imports"
 )
+
+const decoratorsImport = "kubevirt.io/kubevirt/tests/decorators"
 
 func QuarantineTest(report *types.SpecReport) error {
 	content, err := os.ReadFile(report.LeafNodeLocation.FileName)
@@ -36,7 +39,12 @@ func QuarantineTest(report *types.SpecReport) error {
 	if err != nil {
 		return fmt.Errorf("could not quarantine test %q: %w", report.FullText(), err)
 	}
-	err = os.WriteFile(report.LeafNodeLocation.FileName, []byte(code), os.ModePerm)
+	code = ensureImport(code, decoratorsImport)
+	formatted, err := imports.Process(report.LeafNodeLocation.FileName, []byte(code), &imports.Options{FormatOnly: true})
+	if err != nil {
+		return fmt.Errorf("could not format file for quarantined test %q: %w", report.FullText(), err)
+	}
+	err = os.WriteFile(report.LeafNodeLocation.FileName, formatted, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("could not write file for quarantined test %q: %w", report.FullText(), err)
 	}
@@ -53,4 +61,17 @@ func modify(input string, substring string, replacement string) (string, error) 
 func quarantine(input string, nodeText string) (string, error) {
 	replacement := fmt.Sprintf(`"[QUARANTINE]%s", decorators.Quarantine`, nodeText)
 	return modify(input, fmt.Sprintf(`%q`, nodeText), replacement)
+}
+
+func ensureImport(code string, importPath string) string {
+	quoted := fmt.Sprintf("%q", importPath)
+	if strings.Contains(code, quoted) {
+		return code
+	}
+	idx := strings.Index(code, "import (")
+	if idx < 0 {
+		return code
+	}
+	insertPos := idx + len("import (")
+	return code[:insertPos] + "\n\t" + quoted + code[insertPos:]
 }
