@@ -1,0 +1,22 @@
+{
+  "features": {
+    "ast_depth": 9,
+    "assertions": 0,
+    "cyclomatic_complexity": 1,
+    "test_lines_of_code": 44,
+    "external_modules": 1,
+    "halstead_volume": 108.99999999999999,
+    "maintainability": 0,
+    "read_count": 0,
+    "write_count": 0,
+    "max_memory": 685,
+    "context_switches": 0,
+    "max_threads": 0,
+    "max_children": 0,
+    "run_time": 0.000377184,
+    "wait_time": 0,
+    "covered_lines": 0,
+    "source_covered_lines": 0,
+    "covered_changes": 0
+  }
+}

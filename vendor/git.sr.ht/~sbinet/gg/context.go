@@ -11,6 +11,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
+	"io/fs"
 	"math"
 	"strings"
 
@@ -80,6 +81,7 @@ type Context struct {
 	fontHeight    float64
 	matrix        Matrix
 	stack         []*Context
+	interp        draw.Interpolator
 }
 
 // NewContext creates a new image.RGBA with the specified width and height
@@ -112,6 +114,7 @@ func NewContextForRGBA(im *image.RGBA) *Context {
 		fontFace:      basicfont.Face7x13,
 		fontHeight:    13,
 		matrix:        Identity(),
+		interp:        draw.BiLinear,
 	}
 }
 
@@ -468,7 +471,7 @@ func (dc *Context) Stroke() {
 }
 
 // FillPreserve fills the current path with the current color. Open subpaths
-// are implicity closed. The path is preserved after this operation.
+// are implicitly closed. The path is preserved after this operation.
 func (dc *Context) FillPreserve() {
 	var painter raster.Painter
 	if dc.mask == nil {
@@ -487,7 +490,7 @@ func (dc *Context) FillPreserve() {
 }
 
 // Fill fills the current path with the current color. Open subpaths
-// are implicity closed. The path is cleared after this operation.
+// are implicitly closed. The path is cleared after this operation.
 func (dc *Context) Fill() {
 	dc.FillPreserve()
 	dc.ClearPath()
@@ -504,7 +507,7 @@ func (dc *Context) ClipPreserve() {
 		dc.mask = clip
 	} else {
 		mask := image.NewAlpha(image.Rect(0, 0, dc.width, dc.height))
-		draw.DrawMask(mask, mask.Bounds(), clip, image.ZP, dc.mask, image.ZP, draw.Over)
+		draw.DrawMask(mask, mask.Bounds(), clip, image.Point{}, dc.mask, image.Point{}, draw.Over)
 		dc.mask = mask
 	}
 }
@@ -525,7 +528,7 @@ func (dc *Context) SetMask(mask *image.Alpha) error {
 // render the mask geometry and then use it as a mask.
 func (dc *Context) AsMask() *image.Alpha {
 	mask := image.NewAlpha(dc.im.Bounds())
-	draw.Draw(mask, dc.im.Bounds(), dc.im, image.ZP, draw.Src)
+	draw.Draw(mask, dc.im.Bounds(), dc.im, image.Point{}, draw.Src)
 	return mask
 }
 
@@ -559,7 +562,7 @@ func (dc *Context) ResetClip() {
 // Clear fills the entire image with the current color.
 func (dc *Context) Clear() {
 	src := image.NewUniform(dc.color)
-	draw.Draw(dc.im, dc.im.Bounds(), src, image.ZP, draw.Src)
+	draw.Draw(dc.im, dc.im.Bounds(), src, image.Point{}, draw.Src)
 }
 
 // SetPixel sets the color of the specified pixel using the current color.
@@ -664,6 +667,14 @@ func (dc *Context) DrawRegularPolygon(n int, x, y, r, rotation float64) {
 	dc.ClosePath()
 }
 
+// SetInterpolator sets the current context's drawing interpolator.
+func (dc *Context) SetInterpolator(interp draw.Interpolator) {
+	if interp == nil {
+		panic(errors.New("gg: invalid interpolator"))
+	}
+	dc.interp = interp
+}
+
 // DrawImage draws the specified image at the specified point.
 func (dc *Context) DrawImage(im image.Image, x, y int) {
 	dc.DrawImageAnchored(im, x, y, 0, 0)
@@ -676,18 +687,20 @@ func (dc *Context) DrawImageAnchored(im image.Image, x, y int, ax, ay float64) {
 	s := im.Bounds().Size()
 	x -= int(ax * float64(s.X))
 	y -= int(ay * float64(s.Y))
-	transformer := draw.BiLinear
-	fx, fy := float64(x), float64(y)
-	m := dc.matrix.Translate(fx, fy)
-	s2d := f64.Aff3{m.XX, m.XY, m.X0, m.YX, m.YY, m.Y0}
-	if dc.mask == nil {
-		transformer.Transform(dc.im, s2d, im, im.Bounds(), draw.Over, nil)
-	} else {
-		transformer.Transform(dc.im, s2d, im, im.Bounds(), draw.Over, &draw.Options{
+	var (
+		fx  = float64(x)
+		fy  = float64(y)
+		m   = dc.matrix.Translate(fx, fy)
+		s2d = f64.Aff3{m.XX, m.XY, m.X0, m.YX, m.YY, m.Y0}
+		opt *draw.Options
+	)
+	if dc.mask != nil {
+		opt = &draw.Options{
 			DstMask:  dc.mask,
-			DstMaskP: image.ZP,
-		})
+			DstMaskP: image.Point{},
+		}
 	}
+	dc.interp.Transform(dc.im, s2d, im, im.Bounds(), draw.Over, opt)
 }
 
 // Text Functions
@@ -699,11 +712,35 @@ func (dc *Context) SetFontFace(fontFace font.Face) {
 
 func (dc *Context) LoadFontFace(path string, points float64) error {
 	face, err := LoadFontFace(path, points)
-	if err == nil {
-		dc.fontFace = face
-		dc.fontHeight = points * 72 / 96
+	if err != nil {
+		return err
 	}
-	return err
+
+	dc.fontFace = face
+	dc.fontHeight = points * 72 / 96
+	return nil
+}
+
+func (dc *Context) LoadFontFaceFromFS(fsys fs.FS, path string, points float64) error {
+	face, err := LoadFontFaceFromFS(fsys, path, points)
+	if err != nil {
+		return err
+	}
+
+	dc.fontFace = face
+	dc.fontHeight = points * 72 / 96
+	return nil
+}
+
+func (dc *Context) LoadFontFaceFromBytes(raw []byte, points float64) error {
+	face, err := LoadFontFaceFromBytes(raw, points)
+	if err != nil {
+		return err
+	}
+
+	dc.fontFace = face
+	dc.fontHeight = points * 72 / 96
+	return nil
 }
 
 func (dc *Context) FontHeight() float64 {
@@ -731,11 +768,10 @@ func (dc *Context) drawString(im *image.RGBA, s string, x, y float64) {
 			continue
 		}
 		sr := dr.Sub(dr.Min)
-		transformer := draw.BiLinear
 		fx, fy := float64(dr.Min.X), float64(dr.Min.Y)
 		m := dc.matrix.Translate(fx, fy)
 		s2d := f64.Aff3{m.XX, m.XY, m.X0, m.YX, m.YY, m.Y0}
-		transformer.Transform(d.Dst, s2d, d.Src, sr, draw.Over, &draw.Options{
+		dc.interp.Transform(d.Dst, s2d, d.Src, sr, draw.Over, &draw.Options{
 			SrcMask:  mask,
 			SrcMaskP: maskp,
 		})
@@ -761,7 +797,7 @@ func (dc *Context) DrawStringAnchored(s string, x, y, ax, ay float64) {
 	} else {
 		im := image.NewRGBA(image.Rect(0, 0, dc.width, dc.height))
 		dc.drawString(im, s, x, y)
-		draw.DrawMask(dc.im, dc.im.Bounds(), im, image.ZP, dc.mask, image.ZP, draw.Over)
+		draw.DrawMask(dc.im, dc.im.Bounds(), im, image.Point{}, dc.mask, image.Point{}, draw.Over)
 	}
 }
 
@@ -912,10 +948,13 @@ func (dc *Context) Push() {
 
 // Pop restores the last saved context state from the stack.
 func (dc *Context) Pop() {
-	before := *dc
-	s := dc.stack
-	x, s := s[len(s)-1], s[:len(s)-1]
-	*dc = *x
+	var (
+		before = *dc
+		s      = dc.stack
+		ctx    *Context
+	)
+	ctx, dc.stack = s[len(s)-1], s[:len(s)-1]
+	*dc = *ctx
 	dc.mask = before.mask
 	dc.strokePath = before.strokePath
 	dc.fillPath = before.fillPath

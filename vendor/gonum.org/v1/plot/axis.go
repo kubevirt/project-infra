@@ -88,6 +88,10 @@ type Axis struct {
 	// to the normalized coordinate system of the axis—its distance
 	// along the axis as a fraction of the axis range.
 	Scale Normalizer
+
+	// AutoRescale enables an axis to automatically adapt its minimum
+	// and maximum boundaries, according to its underlying Ticker.
+	AutoRescale bool
 }
 
 // makeAxis returns a default Axis.
@@ -161,6 +165,14 @@ func (a *Axis) sanitizeRange() {
 		a.Min--
 		a.Max++
 	}
+
+	if a.AutoRescale {
+		marks := a.Tick.Marker.Ticks(a.Min, a.Max)
+		for _, t := range marks {
+			a.Min = math.Min(a.Min, t.Value)
+			a.Max = math.Max(a.Max, t.Value)
+		}
+	}
 }
 
 // LinearScale an be used as the value of an Axis.Scale function to
@@ -223,7 +235,6 @@ type horizontalAxis struct {
 // size returns the height of the axis.
 func (a horizontalAxis) size() (h vg.Length) {
 	if a.Label.Text != "" { // We assume that the label isn't rotated.
-		h += a.Label.TextStyle.FontExtents().Descent
 		h += a.Label.TextStyle.Height(a.Label.Text)
 		h += a.Label.Padding
 	}

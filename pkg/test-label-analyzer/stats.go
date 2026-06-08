@@ -23,6 +23,7 @@ import (
 	"strings"
 
 	"kubevirt.io/project-infra/pkg/git"
+	"kubevirt.io/project-infra/pkg/ginkgo"
 )
 
 type TestFilesStats struct {
@@ -42,7 +43,7 @@ type FileStats struct {
 }
 
 // TestStats contains the results of traversing a set of Ginkgo outlines and collecting the pathes in the form of
-// GinkgoNode slices matching a Config describing the criteria to match against.
+// Node slices matching a Config describing the criteria to match against.
 type TestStats struct {
 
 	// SpecsTotal is the total number of specs encountered during traversal of the outline
@@ -50,7 +51,7 @@ type TestStats struct {
 
 	// MatchingSpecPaths is the slice of PathStats to matching specs for the collection of outlines traversed.
 	// Each PathStats inside this slice is the path to each of the matching specs defined by the Config
-	// being used. Please note that the GinkgoNode.Nodes are being removed during traversal.
+	// being used. Please note that the Node.Nodes are being removed during traversal.
 	MatchingSpecPaths []*PathStats `json:"matching_spec_paths"`
 }
 
@@ -64,13 +65,13 @@ type PathStats struct {
 	GitBlameLines []*git.BlameLine `json:"git_blame_lines"`
 
 	// Path denotes the path to the spec that has been found to match
-	Path []*GinkgoNode `json:"path"`
+	Path []*ginkgo.Node `json:"path"`
 
 	// MatchingCategory holds the category that matched the path
 	MatchingCategory *LabelCategory `json:"matching_category"`
 }
 
-func GetStatsFromGinkgoOutline(config *Config, gingkoOutline []*GinkgoNode) *TestStats {
+func GetStatsFromGinkgoOutline(config *Config, gingkoOutline []*ginkgo.Node) *TestStats {
 	stats := &TestStats{
 		SpecsTotal: 0,
 	}
@@ -78,9 +79,9 @@ func GetStatsFromGinkgoOutline(config *Config, gingkoOutline []*GinkgoNode) *Tes
 	return stats
 }
 
-func traverseNodesRecursively(stats *TestStats, config *Config, gingkoOutline []*GinkgoNode, parents []*GinkgoNode) {
+func traverseNodesRecursively(stats *TestStats, config *Config, gingkoOutline []*ginkgo.Node, parents []*ginkgo.Node) {
 	for _, node := range gingkoOutline {
-		var parentsWithNode []*GinkgoNode
+		var parentsWithNode []*ginkgo.Node
 		parentsWithNode = append(parentsWithNode, parents...)
 		parentsWithNode = append(parentsWithNode, node)
 		if node.Spec {
@@ -91,7 +92,7 @@ func traverseNodesRecursively(stats *TestStats, config *Config, gingkoOutline []
 					testName = strings.Join([]string{testName, nodeFromPath.Text}, " ")
 				}
 				if category.TestNameLabelRE.MatchString(testName) {
-					var path []*GinkgoNode
+					var path []*ginkgo.Node
 					for _, pathNode := range parentsWithNode {
 						path = append(path, pathNode.CloneWithoutNodes())
 					}

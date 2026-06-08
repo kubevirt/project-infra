@@ -36,6 +36,35 @@ cloud.google.com/go/storage
 cloud.google.com/go/storage/internal
 cloud.google.com/go/storage/internal/apiv2
 cloud.google.com/go/storage/internal/apiv2/stubs
+# codeberg.org/go-fonts/liberation v0.5.0
+## explicit; go 1.23.0
+codeberg.org/go-fonts/liberation/liberationmonobold
+codeberg.org/go-fonts/liberation/liberationmonobolditalic
+codeberg.org/go-fonts/liberation/liberationmonoitalic
+codeberg.org/go-fonts/liberation/liberationmonoregular
+codeberg.org/go-fonts/liberation/liberationsansbold
+codeberg.org/go-fonts/liberation/liberationsansbolditalic
+codeberg.org/go-fonts/liberation/liberationsansitalic
+codeberg.org/go-fonts/liberation/liberationsansregular
+codeberg.org/go-fonts/liberation/liberationserifbold
+codeberg.org/go-fonts/liberation/liberationserifbolditalic
+codeberg.org/go-fonts/liberation/liberationserifitalic
+codeberg.org/go-fonts/liberation/liberationserifregular
+# codeberg.org/go-latex/latex v0.1.0
+## explicit; go 1.23.0
+codeberg.org/go-latex/latex
+codeberg.org/go-latex/latex/ast
+codeberg.org/go-latex/latex/drawtex
+codeberg.org/go-latex/latex/font
+codeberg.org/go-latex/latex/font/ttf
+codeberg.org/go-latex/latex/internal/tex2unicode
+codeberg.org/go-latex/latex/mtex
+codeberg.org/go-latex/latex/mtex/symbols
+codeberg.org/go-latex/latex/tex
+codeberg.org/go-latex/latex/token
+# codeberg.org/go-pdf/fpdf v0.10.0
+## explicit; go 1.21
+codeberg.org/go-pdf/fpdf
 # contrib.go.opencensus.io/exporter/ocagent v0.7.1-0.20200907061046-05415f1de66d
 ## explicit; go 1.13
 contrib.go.opencensus.io/exporter/ocagent
@@ -45,8 +74,8 @@ contrib.go.opencensus.io/exporter/prometheus
 # dario.cat/mergo v1.0.0
 ## explicit; go 1.13
 dario.cat/mergo
-# git.sr.ht/~sbinet/gg v0.3.1
-## explicit; go 1.16
+# git.sr.ht/~sbinet/gg v0.6.0
+## explicit; go 1.22
 git.sr.ht/~sbinet/gg
 # github.com/GoogleCloudPlatform/testgrid v0.0.123
 ## explicit; go 1.14
@@ -310,6 +339,10 @@ github.com/bombsimon/logrusr/v4
 # github.com/bwmarrin/snowflake v0.0.0
 ## explicit
 github.com/bwmarrin/snowflake
+# github.com/campoy/embedmd v1.0.0
+## explicit
+github.com/campoy/embedmd
+github.com/campoy/embedmd/embedmd
 # github.com/census-instrumentation/opencensus-proto v0.4.1
 ## explicit; go 1.18
 github.com/census-instrumentation/opencensus-proto/gen-go/agent/common/v1
@@ -393,20 +426,6 @@ github.com/fsnotify/fsnotify
 # github.com/fvbommel/sortorder v1.0.1
 ## explicit; go 1.13
 github.com/fvbommel/sortorder
-# github.com/go-fonts/liberation v0.2.0
-## explicit; go 1.13
-github.com/go-fonts/liberation/liberationmonobold
-github.com/go-fonts/liberation/liberationmonobolditalic
-github.com/go-fonts/liberation/liberationmonoitalic
-github.com/go-fonts/liberation/liberationmonoregular
-github.com/go-fonts/liberation/liberationsansbold
-github.com/go-fonts/liberation/liberationsansbolditalic
-github.com/go-fonts/liberation/liberationsansitalic
-github.com/go-fonts/liberation/liberationsansregular
-github.com/go-fonts/liberation/liberationserifbold
-github.com/go-fonts/liberation/liberationserifbolditalic
-github.com/go-fonts/liberation/liberationserifitalic
-github.com/go-fonts/liberation/liberationserifregular
 # github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376
 ## explicit; go 1.13
 github.com/go-git/gcfg
@@ -474,18 +493,6 @@ github.com/go-git/go-git/v5/utils/trace
 ## explicit; go 1.17
 github.com/go-kit/log
 github.com/go-kit/log/level
-# github.com/go-latex/latex v0.0.0-20210823091927-c0d11ff05a81
-## explicit; go 1.16
-github.com/go-latex/latex
-github.com/go-latex/latex/ast
-github.com/go-latex/latex/drawtex
-github.com/go-latex/latex/font
-github.com/go-latex/latex/font/ttf
-github.com/go-latex/latex/internal/tex2unicode
-github.com/go-latex/latex/mtex
-github.com/go-latex/latex/mtex/symbols
-github.com/go-latex/latex/tex
-github.com/go-latex/latex/token
 # github.com/go-logfmt/logfmt v0.5.1
 ## explicit; go 1.17
 github.com/go-logfmt/logfmt
@@ -506,9 +513,6 @@ github.com/go-openapi/jsonreference/internal
 # github.com/go-openapi/swag v0.22.5
 ## explicit; go 1.19
 github.com/go-openapi/swag
-# github.com/go-pdf/fpdf v0.6.0
-## explicit; go 1.16
-github.com/go-pdf/fpdf
 # github.com/go-task/slim-sprig/v3 v3.0.0
 ## explicit; go 1.20
 github.com/go-task/slim-sprig/v3
@@ -525,7 +529,6 @@ github.com/golang-jwt/jwt
 # github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 ## explicit
 github.com/golang/freetype/raster
-github.com/golang/freetype/truetype
 # github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8
 ## explicit; go 1.20
 github.com/golang/groupcache/lru
@@ -718,6 +721,9 @@ github.com/lnquy/cron/i18n
 github.com/mailru/easyjson/buffer
 github.com/mailru/easyjson/jlexer
 github.com/mailru/easyjson/jwriter
+# github.com/malaschitz/randomForest v0.0.0-20240228214944-c64ffe1648e0
+## explicit; go 1.13
+github.com/malaschitz/randomForest
 # github.com/mattn/go-zglob v0.0.2
 ## explicit
 github.com/mattn/go-zglob
@@ -1113,8 +1119,27 @@ golang.org/x/xerrors/internal
 # gomodules.xyz/jsonpatch/v2 v2.4.0
 ## explicit; go 1.20
 gomodules.xyz/jsonpatch/v2
-# gonum.org/v1/plot v0.12.0
-## explicit; go 1.18
+# gonum.org/v1/gonum v0.16.0
+## explicit; go 1.23.0
+gonum.org/v1/gonum/blas
+gonum.org/v1/gonum/blas/blas64
+gonum.org/v1/gonum/blas/cblas128
+gonum.org/v1/gonum/blas/gonum
+gonum.org/v1/gonum/floats
+gonum.org/v1/gonum/floats/scalar
+gonum.org/v1/gonum/internal/asm/c128
+gonum.org/v1/gonum/internal/asm/c64
+gonum.org/v1/gonum/internal/asm/f32
+gonum.org/v1/gonum/internal/asm/f64
+gonum.org/v1/gonum/internal/cmplx64
+gonum.org/v1/gonum/internal/math32
+gonum.org/v1/gonum/lapack
+gonum.org/v1/gonum/lapack/gonum
+gonum.org/v1/gonum/lapack/lapack64
+gonum.org/v1/gonum/mat
+gonum.org/v1/gonum/stat
+# gonum.org/v1/plot v0.15.2
+## explicit; go 1.22.0
 gonum.org/v1/plot
 gonum.org/v1/plot/font
 gonum.org/v1/plot/font/liberation
