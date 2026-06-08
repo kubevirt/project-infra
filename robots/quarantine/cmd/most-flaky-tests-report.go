@@ -189,7 +189,9 @@ func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string
 	return sigs, testNames, mostFlakyTestsBySIG, nil
 }
 
-func getQuarantineCandidate(topXTest *flakestats.TopXTest, timeRange searchci.TimeRange) (*TestToQuarantine, error) {
+var getQuarantineCandidate = getQuarantineCandidateDefault
+
+func getQuarantineCandidateDefault(topXTest *flakestats.TopXTest, timeRange searchci.TimeRange) (*TestToQuarantine, error) {
 	impacts, err := searchci.ScrapeImpacts(topXTest.Name, timeRange)
 	if err != nil {
 		return nil, fmt.Errorf("could not scrape results for test %q: %w", topXTest.Name, err)

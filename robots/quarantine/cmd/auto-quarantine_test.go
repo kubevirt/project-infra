@@ -21,13 +21,14 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"strings"
+	"time"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	flakestats "kubevirt.io/project-infra/pkg/flake-stats"
 	"kubevirt.io/project-infra/pkg/searchci"
-	"os"
-	"strings"
-	"time"
 )
 
 var _ = Describe("auto-quarantine", func() {
@@ -254,5 +255,276 @@ to contain
 				},
 			),
 		)
+	})
+
+	When("loading required job names", func() {
+		var tempFile *os.File
+		BeforeEach(func() {
+			var err error
+			tempFile, err = os.CreateTemp("", "presubmits-*.yaml")
+			Expect(err).ToNot(HaveOccurred())
+		})
+		AfterEach(func() {
+			Expect(os.Remove(tempFile.Name())).ToNot(HaveOccurred())
+		})
+
+		DescribeTable("it",
+			func(yamlContent string, orgRepo string, expectedJobs map[string]struct{}, expectErr bool) {
+				_, err := tempFile.WriteString(yamlContent)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(tempFile.Close()).ToNot(HaveOccurred())
+
+				result, err := loadRequiredJobNames(tempFile.Name(), orgRepo)
+				if expectErr {
+					Expect(err).To(HaveOccurred())
+					return
+				}
+				Expect(err).ToNot(HaveOccurred())
+				Expect(result).To(Equal(expectedJobs))
+			},
+			Entry("returns only required jobs",
+				`presubmits:
+  kubevirt/kubevirt:
+  - name: pull-kubevirt-e2e-k8s-1.35-sig-compute
+    always_run: true
+    spec:
+      containers:
+      - image: test
+  - name: pull-kubevirt-e2e-k8s-1.36-sig-compute
+    optional: true
+    always_run: true
+    spec:
+      containers:
+      - image: test
+`,
+				"kubevirt/kubevirt",
+				map[string]struct{}{
+					"pull-kubevirt-e2e-k8s-1.35-sig-compute": {},
+				},
+				false,
+			),
+			Entry("excludes skip_report jobs",
+				`presubmits:
+  kubevirt/kubevirt:
+  - name: pull-kubevirt-e2e-k8s-1.35-sig-compute
+    always_run: true
+    spec:
+      containers:
+      - image: test
+  - name: pull-kubevirt-e2e-k8s-1.35-sig-hidden
+    skip_report: true
+    always_run: true
+    spec:
+      containers:
+      - image: test
+`,
+				"kubevirt/kubevirt",
+				map[string]struct{}{
+					"pull-kubevirt-e2e-k8s-1.35-sig-compute": {},
+				},
+				false,
+			),
+			Entry("fails for unknown org/repo",
+				`presubmits:
+  kubevirt/kubevirt:
+  - name: pull-kubevirt-e2e-k8s-1.35-sig-compute
+    always_run: true
+    spec:
+      containers:
+      - image: test
+`,
+				"unknown/repo",
+				nil,
+				true,
+			),
+		)
+	})
+
+	When("determining tests for quarantine", func() {
+		const (
+			testName      = "[sig-compute] my flaky test should do something"
+			requiredLane  = "pull-kubevirt-e2e-k8s-1.35-sig-compute"
+			optionalLane  = "pull-kubevirt-e2e-k8s-1.36-sig-compute"
+			requiredLane2 = "pull-kubevirt-e2e-k8s-1.35-sig-network"
+		)
+
+		var originalGetQuarantineCandidate func(*flakestats.TopXTest, searchci.TimeRange) (*TestToQuarantine, error)
+
+		BeforeEach(func() {
+			originalGetQuarantineCandidate = getQuarantineCandidate
+			quarantineOpts.matchingLaneRegexString = defaultMatchingLaneRegexString
+			quarantineOpts.releaseLaneSuffix = ""
+			quarantineOpts.maxTestsToQuarantine = 0
+		})
+
+		AfterEach(func() {
+			getQuarantineCandidate = originalGetQuarantineCandidate
+		})
+
+		newImpact := func(lane string, percent float64) searchci.Impact {
+			return searchci.Impact{
+				URL:     "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/" + lane,
+				Percent: percent,
+			}
+		}
+
+		newTopXTest := func(name string) *flakestats.TopXTest {
+			return flakestats.NewTopXTest(name)
+		}
+
+		reportsContaining := func(leafNodeText string, containerTexts ...string) []Report {
+			return []Report{
+				{
+					SpecReports: []SpecReport{
+						{
+							LeafNodeText:         leafNodeText,
+							ContainerHierarchyTexts: containerTexts,
+						},
+					},
+				},
+			}
+		}
+
+		stubCandidate := func(impacts []searchci.Impact) {
+			getQuarantineCandidate = func(topXTest *flakestats.TopXTest, _ searchci.TimeRange) (*TestToQuarantine, error) {
+				return &TestToQuarantine{
+					Test:            topXTest,
+					RelevantImpacts: impacts,
+				}, nil
+			}
+		}
+
+		It("filters out impacts from optional lanes and keeps required ones", func() {
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10),
+				newImpact(optionalLane, 15),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(HaveLen(1))
+			Expect(result[0].RelevantImpacts).To(HaveLen(1))
+			Expect(result[0].RelevantImpacts[0].URL).To(ContainSubstring(requiredLane))
+		})
+
+		It("skips candidates where no impacts match required lanes", func() {
+			stubCandidate([]searchci.Impact{
+				newImpact(optionalLane, 10),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(BeEmpty())
+		})
+
+		It("respects maxTestsToQuarantine ceiling", func() {
+			const testName2 = "[sig-network] another flaky test should work"
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10),
+				newImpact(requiredLane2, 8),
+			})
+			quarantineOpts.maxTestsToQuarantine = 1
+
+			reports := []Report{
+				{
+					SpecReports: []SpecReport{
+						{
+							LeafNodeText:         "should do something",
+							ContainerHierarchyTexts: []string{"[sig-compute] my flaky test"},
+						},
+						{
+							LeafNodeText:         "should work",
+							ContainerHierarchyTexts: []string{"[sig-network] another flaky test"},
+						},
+					},
+				},
+			}
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName), newTopXTest(testName2)},
+				reports,
+				map[string]struct{}{requiredLane: {}, requiredLane2: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(HaveLen(1))
+		})
+
+		It("skips tests with no matching spec report", func() {
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("completely different test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(BeEmpty())
+		})
+
+		It("propagates error from getQuarantineCandidate", func() {
+			getQuarantineCandidate = func(_ *flakestats.TopXTest, _ searchci.TimeRange) (*TestToQuarantine, error) {
+				return nil, fmt.Errorf("scrape failed")
+			}
+
+			_, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("scrape failed"))
+		})
+
+		It("filters out impacts not matching lane regex", func() {
+			nonMatchingLane := "pull-kubevirt-unit-test"
+			stubCandidate([]searchci.Impact{
+				newImpact(nonMatchingLane, 20),
+				newImpact(requiredLane, 10),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{nonMatchingLane: {}, requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(HaveLen(1))
+			Expect(result[0].RelevantImpacts).To(HaveLen(1))
+			Expect(result[0].RelevantImpacts[0].URL).To(ContainSubstring(requiredLane))
+		})
+
+		It("keeps required and filters optional from mixed impacts", func() {
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10),
+				newImpact(optionalLane, 15),
+				newImpact(requiredLane2, 8),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}, requiredLane2: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(HaveLen(1))
+			Expect(result[0].RelevantImpacts).To(HaveLen(2))
+		})
 	})
 })
