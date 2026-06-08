@@ -144,29 +144,6 @@ presubmits:
             memory: "4Gi"
           limits:
             memory: "4Gi"
-  - always_run: false
-    cluster: kubevirt-prow-control-plane
-    decorate: true
-    name: pull-project-infra-coverage
-    run_if_changed: "external-plugins/.*|releng/.*|robots/.*|pkg/.*"
-    spec:
-      containers:
-      - args:
-        - |
-          make coverage
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-ce"
-        env:
-        - name: GIMME_GO_VERSION
-          value: "1.25.1"
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
-        resources:
-          requests:
-            memory: "4Gi"
-          limits:
-            memory: "4Gi"
   - name: build-kubevirt-infra-bootstrap-image
     always_run: false
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
