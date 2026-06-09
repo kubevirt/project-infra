@@ -75,14 +75,20 @@ make_bazel_rc () {
     echo "startup --host_jvm_args=-Dbazel.DigestFunction=sha256"
     # don't fail if the cache is unavailable
     echo "build --remote_local_fallback"
-    # point bazel at our http cache ...
-    # NOTE our caches are versioned by all path segments up until the last two
-    # IE PUT /foo/bar/baz/cas/asdf -> is in cache "/foo/bar/baz"
-    local cache_id
-    cache_id="$(get_workspace),$(hash_toolchains)"
-    local cache_url
-    cache_url="http://${CACHE_HOST}:${CACHE_PORT}/${cache_id}"
-    echo "build --remote_cache=${cache_url}"
+    if [[ -n "${BAZEL_REMOTE_CACHE:-}" ]]; then
+        local cache_id
+        cache_id="$(get_workspace),$(hash_toolchains)"
+        echo "build --remote_cache=${BAZEL_REMOTE_CACHE}/${cache_id}"
+        echo "build --google_credentials=${BAZEL_CACHE_GOOGLE_CREDENTIALS}"
+    else
+        # NOTE our caches are versioned by all path segments up until the last two
+        # IE PUT /foo/bar/baz/cas/asdf -> is in cache "/foo/bar/baz"
+        local cache_id
+        cache_id="$(get_workspace),$(hash_toolchains)"
+        local cache_url
+        cache_url="http://${CACHE_HOST}:${CACHE_PORT}/${cache_id}"
+        echo "build --remote_cache=${cache_url}"
+    fi
 }
 
 # https://docs.bazel.build/versions/master/user-manual.html#bazelrc

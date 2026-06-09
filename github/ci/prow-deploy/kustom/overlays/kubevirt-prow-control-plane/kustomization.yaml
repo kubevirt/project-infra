@@ -280,6 +280,11 @@ secretGenerator:
   - <<: *gcs_credentials
     name: gcs
     namespace: kubevirt-prow-jobs
+  - name: bazel-cache-gcs
+    namespace: kubevirt-prow-jobs
+    files:
+      - secrets/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json
+    type: Opaque
   - name: virtci-gcs
     namespace: kubevirt-prow-jobs
     files:

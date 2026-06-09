@@ -34,6 +34,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -75,6 +76,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -158,6 +160,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -199,6 +202,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -240,6 +244,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -281,6 +286,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -322,6 +328,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -363,6 +370,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -404,6 +412,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -448,6 +457,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -489,6 +499,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -530,6 +541,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -604,6 +616,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -648,6 +661,7 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"

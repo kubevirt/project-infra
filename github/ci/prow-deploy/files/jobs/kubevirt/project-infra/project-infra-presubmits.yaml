@@ -104,6 +104,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/golang:v20260417-7427ea2
@@ -542,6 +543,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
       preset-podman-in-container-enabled: "true"
       preset-project-infra-image-build-linux: "true"
@@ -857,6 +859,7 @@ presubmits:
     decorate: true
     labels:
       preset-bazel-cache: "true"
+      preset-bazel-cache-gcs-credentials: "true"
     annotations:
       testgrid-create-test-group: "false"
     cluster: kubevirt-prow-control-plane
