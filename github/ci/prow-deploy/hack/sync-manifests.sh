@@ -30,7 +30,7 @@ mkdir -p "${manifests_dir}"
 cd "${manifests_dir}"
 
 # Cleanup previous manifests
-rm -f *.yml *.yaml
+rm -f *.yaml
 
 # Download upstream deployment manifests
 curl -O "${manifests_url}/cluster/starter/${manifests_base}" \
@@ -50,8 +50,8 @@ latest_prow_version=$(
 sed -re "s|v[0-9]{8}-[a-f0-9]{6,10}|${latest_prow_version}|" -i "${manifests_base}"
 
 # Split the monolitic manifest into subfiles using the naming patterns:
-# - name_kind.yml for resources in the main prow namespace
-# - name_kind_namespace.yml for resources in the test pods namespace
+# - name_kind.yaml for resources in the main prow namespace
+# - name_kind_namespace.yaml for resources in the test pods namespace
 
 upstream_prow_config=$(
     yq -r '
@@ -70,7 +70,8 @@ yq --prettyPrint --split-exp '
   | (.metadata.namespace // $main_namespace) as $namespace
   | "\($name)_\($kind)_\($namespace)"
   | sub("_\($main_namespace)$", "")
-' "${manifests_base}" \
+  | "\(.).yaml"
+' "${manifests_base}"
 
 rm -f "${manifests_base}"
 
