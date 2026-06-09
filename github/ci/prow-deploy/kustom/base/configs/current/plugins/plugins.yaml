@@ -26,16 +26,7 @@ plugins:
 
   k8snetworkplumbingwg/ovs-cni:
     plugins:
-    - approve
-    - dco
-    - hold
-    - lgtm
-    - owners-label
-    - release-note
     - trigger
-    - verify-owners
-    - wip
-
 
   # we don't get events from there, it has no effect
   # but it is needed to host jobs on our prow and still
@@ -584,11 +575,6 @@ external_plugins:
       - issue_comment
   - name: cherrypicker
   - name: release-blocker
-  k8snetworkplumbingwg/ovs-cni:
-  - name: needs-rebase
-    events:
-      - pull_request
-  - name: cherrypicker
   k8snetworkplumbingwg/kubemacpool:
   - name: needs-rebase
     events:
