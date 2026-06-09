@@ -21,13 +21,13 @@ spec:
                 - /bin/sh
                 - -c
                 - |
-                  for CONTEXT in $(kubectl config get-contexts -o name --kubeconfig=/etc/kubeconfig/config); do
-                    echo "--- Checking cluster ${CONTEXT} ---"
-                    KC="--context=${CONTEXT} --kubeconfig=/etc/kubeconfig/config"
-                    kubectl get pods -n kubevirt-prow-jobs ${KC} | \
-                      awk '/Terminating/{print $1}' | \
-                      xargs -r kubectl delete pod -n kubevirt-prow-jobs ${KC} --force --grace-period=0
-                  done
+                  set -euo pipefail
+                  KC="--context=prow-workloads --kubeconfig=/etc/kubeconfig/config --request-timeout=30s"
+                  CUTOFF=$(date -u -d '2 days ago' +%Y-%m-%dT%H:%M:%SZ)
+                  kubectl get pods -n kubevirt-prow-jobs ${KC} \
+                    -o jsonpath='{range .items[?(@.metadata.deletionTimestamp)]}{.metadata.name}{"\t"}{.metadata.deletionTimestamp}{"\n"}{end}' | \
+                    awk -v cutoff="${CUTOFF}" '$2 <= cutoff {print $1}' | \
+                    xargs -r kubectl delete pod -n kubevirt-prow-jobs ${KC} --force --grace-period=0
                   echo "Cleanup complete."
               resources:
                 requests:
