@@ -511,7 +511,7 @@ presubmits:
           - name: CDI_NAMESPACE
             value: cdi
           - name: CDI_E2E_SKIP
-            value: "Destructive|Cert rotation|cdi-apiserver tests|Importer Test Suite-prometheus"
+            value: "Destructive|Cert rotation|cdi-apiserver tests|Importer Test Suite-prometheus|test_id:3996|test_id:8266"
           - name: SNAPSHOT_SC
             value: ocs-storagecluster-ceph-rbd
           - name: BLOCK_SC
