@@ -141,7 +141,7 @@ postsubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260519-5bbee81
+      - image: quay.io/kubevirtci/pr-creator:v20260608-2d2868b
         command: ["/bin/sh", "-ce"]
         args:
         - |
