@@ -1341,3 +1341,46 @@ periodics:
       env:
       - name: CLUSTER_KUBECONFIG_NAME
         value: prow-s390x-secure-execution
+- name: periodic-project-infra-greenhouse-cache-wipe
+  cron: "0 14 * * 6"
+  annotations:
+    testgrid-create-test-group: "true"
+    testgrid-dashboards: kubevirt-project-infra-periodics
+    testgrid-days-of-results: "30"
+    testgrid-num-failures-to-alert: "1"
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 15m
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    workdir: true
+    clone_depth: 1
+  labels:
+    preset-github-credentials: "true"
+    preset-pgp-bot-key: "true"
+  max_concurrency: 1
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      command:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -ceu
+      args:
+      - |
+        source ./hack/manage-secrets.sh
+        decrypt_secrets
+        install -Dm400 "${secrets_repo_dir}"/secrets/kubeconfigs/prow-workloads ~/.kube/config
+        cleanup_secrets
+
+        ./hack/clear-bazel-cache.sh
+      resources:
+        requests:
+          memory: 200Mi
+      securityContext:
+        runAsUser: 0
