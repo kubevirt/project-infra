@@ -26,6 +26,7 @@ import (
 	"regexp"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/onsi/ginkgo/v2/types"
 	log "github.com/sirupsen/logrus"
@@ -68,6 +69,9 @@ func init() {
 	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.maxTestsToQuarantine, "max-tests-to-quarantine", 1, "the overall number of tests that are going to be quarantined in one run")
 	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.releaseLaneSuffix, "release-lane-suffix", "", "the suffix for the release lane to target (i.e. -1.7) or empty for targeting the main branch")
 	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.matchingLaneRegexString, "matching-lane-regex", defaultMatchingLaneRegexString, "the regular expression that the lanes need to match - note that there's a suffix placeholder required")
+	autoQuarantineCmd.PersistentFlags().DurationVar(&quarantineOpts.maxFailureAge, "max-failure-age", 72*time.Hour, "maximum age of failures to consider as recent")
+	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.minRecentFailures, "min-recent-failures", 2, "minimum number of recent failures required per lane")
+	autoQuarantineCmd.PersistentFlags().DurationVar(&quarantineOpts.minFailureInterval, "min-failure-interval", 24*time.Hour, "minimum time span between recent failures to confirm a consistent pattern")
 	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.jobConfigPath, "job-config-path", "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml", "path to the Prow presubmit job config YAML used to determine required lanes")
 	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.jobConfigOrgRepo, "job-config-org-repo", "kubevirt/kubevirt", "org/repo key for looking up presubmits in the job config")
 	quarantineOpts.prDescriptionOutputFileOpts = options.NewOutputFileOptions(
@@ -188,7 +192,9 @@ func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types
 			continue
 		}
 
-		// Filter impacts by the matching lane regex and required lane status
+		// Filter impacts by the matching lane regex, required lane status,
+		// and recency of failures
+		recentFailureFilter := searchci.HasMinRecentFailures(quarantineOpts.maxFailureAge, quarantineOpts.minRecentFailures, quarantineOpts.minFailureInterval)
 		var filteredImpacts []searchci.Impact
 		for _, impact := range candidate.RelevantImpacts {
 			elements := strings.Split(impact.URL, "/")
@@ -201,6 +207,10 @@ func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types
 			}
 			if _, isRequired := requiredJobs[lastElement]; !isRequired {
 				log.Debugf("skipping impact from optional lane %q for test %q", lastElement, topXTest.Name)
+				continue
+			}
+			if !recentFailureFilter(impact) {
+				log.Debugf("skipping impact from lane %q for test %q: insufficient recent failures", lastElement, topXTest.Name)
 				continue
 			}
 			filteredImpacts = append(filteredImpacts, impact)

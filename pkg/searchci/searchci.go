@@ -159,6 +159,36 @@ func FilterImpacts(impacts []Impact, timeRange TimeRange) []Impact {
 	return FilterImpactsBy(impacts, matchingTimeRange(timeRange))
 }
 
+// HasMinRecentFailures returns a FilterOpt that keeps an Impact only if it has
+// at least minCount build failures within maxAge, and those failures span at
+// least minInterval apart (to reject same-PR bursts).
+func HasMinRecentFailures(maxAge time.Duration, minCount int, minInterval time.Duration) FilterOpt {
+	return func(i Impact) bool {
+		var recentIntervals []time.Duration
+		for _, buildURL := range i.BuildURLs {
+			if buildURL.Interval <= maxAge {
+				recentIntervals = append(recentIntervals, buildURL.Interval)
+			}
+		}
+		if len(recentIntervals) < minCount {
+			return false
+		}
+		if minInterval <= 0 {
+			return true
+		}
+		minI, maxI := recentIntervals[0], recentIntervals[0]
+		for _, d := range recentIntervals[1:] {
+			if d < minI {
+				minI = d
+			}
+			if d > maxI {
+				maxI = d
+			}
+		}
+		return maxI-minI >= minInterval
+	}
+}
+
 // FilterImpactsBy filters all impacts for which all filterOpts apply, i.e. each of them returns true
 func FilterImpactsBy(impacts []Impact, filterOpts ...FilterOpt) []Impact {
 	if impacts == nil {

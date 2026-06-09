@@ -217,6 +217,68 @@ tests/migration/namespace.go:236
 			},
 		),
 	)
+	DescribeTable("HasMinRecentFailures",
+		func(impact Impact, maxAge time.Duration, minCount int, minInterval time.Duration, expected bool) {
+			filter := HasMinRecentFailures(maxAge, minCount, minInterval)
+			Expect(filter(impact)).To(Equal(expected))
+		},
+		Entry("keeps impact with 2 recent failures 24h+ apart",
+			Impact{
+				BuildURLs: []JobBuildURL{
+					{Interval: 4 * time.Hour},
+					{Interval: 36 * time.Hour},
+				},
+			},
+			72*time.Hour, 2, 24*time.Hour,
+			true,
+		),
+		Entry("filters impact with 2 recent failures only 1h apart (burst)",
+			Impact{
+				BuildURLs: []JobBuildURL{
+					{Interval: 2 * time.Hour},
+					{Interval: 3 * time.Hour},
+				},
+			},
+			72*time.Hour, 2, 24*time.Hour,
+			false,
+		),
+		Entry("filters impact with only 1 recent failure (below minCount)",
+			Impact{
+				BuildURLs: []JobBuildURL{
+					{Interval: 4 * time.Hour},
+					{Interval: 200 * time.Hour},
+				},
+			},
+			72*time.Hour, 2, 24*time.Hour,
+			false,
+		),
+		Entry("filters impact with all old failures",
+			Impact{
+				BuildURLs: []JobBuildURL{
+					{Interval: 264 * time.Hour},
+					{Interval: 288 * time.Hour},
+				},
+			},
+			72*time.Hour, 2, 24*time.Hour,
+			false,
+		),
+		Entry("filters impact with no build URLs",
+			Impact{},
+			72*time.Hour, 2, 24*time.Hour,
+			false,
+		),
+		Entry("keeps impact when minInterval is zero (no spread requirement)",
+			Impact{
+				BuildURLs: []JobBuildURL{
+					{Interval: 2 * time.Hour},
+					{Interval: 3 * time.Hour},
+				},
+			},
+			72*time.Hour, 2, time.Duration(0),
+			true,
+		),
+	)
+
 	Context("ScrapeImpacts", func() {
 		var body []byte
 		var server *httptest.Server
