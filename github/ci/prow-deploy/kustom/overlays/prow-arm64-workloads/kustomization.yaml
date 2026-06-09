@@ -6,8 +6,12 @@ generatorOptions:
   disableNameSuffixHash: true
 
 secretGenerator:
-  - name: gcs
+  - &gcs_credentials
+    name: gcs-credentials
     namespace: kubevirt-prow-jobs
     files:
       - secrets/service-account.json
     type: Opaque
+  # For backward compatibility
+  - <<: *gcs_credentials
+    name: gcs

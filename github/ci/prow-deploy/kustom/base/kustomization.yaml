@@ -12,6 +12,10 @@ resources:
   - manifests/upstream/sinker_rolebinding_test-pods.yaml
   - manifests/upstream/sinker_role.yaml
   - manifests/upstream/sinker_serviceaccount.yaml
+  - manifests/upstream/statusreconciler_deployment.yaml
+  - manifests/upstream/statusreconciler_rolebinding.yaml
+  - manifests/upstream/statusreconciler_role.yaml
+  - manifests/upstream/statusreconciler_serviceaccount.yaml
 
   - manifests/local/branch-protector.yaml
   - manifests/local/deck-ingress.yaml
@@ -38,7 +42,6 @@ resources:
   - manifests/local/prow-coverage-service.yaml
   - manifests/local/release-blocker_deployment.yaml
   - manifests/local/release-blocker_service.yaml
-  - manifests/local/statusreconciler_rbac.yaml
   - manifests/local/tide_rbac_prowjob.yaml
 
   - manifests/test_infra/current/cherrypicker_deployment.yaml
@@ -58,8 +61,6 @@ resources:
   - manifests/test_infra/current/prow_controller_manager_rbac.yaml
   - manifests/test_infra/current/prow_controller_manager_service.yaml
   - manifests/test_infra/current/pushgateway_deployment.yaml
-  - manifests/test_infra/current/statusreconciler_deployment.yaml
-  - manifests/test_infra/current/statusreconciler_rbac.yaml
   - manifests/test_infra/current/tide_deployment.yaml
   - manifests/test_infra/current/tide_rbac.yaml
   - manifests/test_infra/current/tide_service.yaml

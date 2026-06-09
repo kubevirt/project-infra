@@ -13,6 +13,7 @@ resources:
   - resources/prow-exporter-rbac.yaml
   - resources/prow-exporter-service.yaml
   - resources/sinker-rbac.yaml
+  - resources/statusreconciler-rbac.yaml
   # templated resources
   - resources/admin-rbac.yaml
 
@@ -47,6 +48,10 @@ patches:
       <<: *deployment_target
       name: horologium
     path: patches/JsonRFC6902/horologium_deployment.yaml
+  - target:
+      <<: *deployment_target
+      name: statusreconciler
+    path: patches/JsonRFC6902/statusreconciler_deployment.yaml
   - target:
       <<: *deployment_target
       name: tide
@@ -268,12 +273,18 @@ secretGenerator:
     type: Opaque
   - <<: *oauth_token
     namespace: kubevirt-prow-jobs
-  - &gcs_secret
-    name: gcs
+  - &gcs_credentials
+    name: gcs-credentials
     files:
       - secrets/service-account.json
     type: Opaque
-  - <<: *gcs_secret
+  - <<: *gcs_credentials
+    namespace: kubevirt-prow-jobs
+  # For backward compatibility
+  - <<: *gcs_credentials
+    name: gcs
+  - <<: *gcs_credentials
+    name: gcs
     namespace: kubevirt-prow-jobs
   - name: virtci-gcs
     namespace: kubevirt-prow-jobs
