@@ -6,6 +6,7 @@ resources:
   - ../../base
   - ../../components/docker-mirror-proxy/base
   - ../../components/greenhouse/base
+  - resources/crier-rbac.yaml
   - resources/docker-mirror-proxy_pvc.yaml
   - resources/hook-rbac.yaml
   - resources/horologium-rbac.yaml
@@ -92,13 +93,6 @@ patches:
       kind: PersistentVolumeClaim
       name: ghproxy
     path: patches/StrategicMerge/ghproxy.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: Role
-      namespace: test-pods
-      name: crier
-    path: patches/StrategicMerge/crier_role.yaml
   - target:
       group: rbac.authorization.k8s.io
       version: v1
@@ -293,7 +287,7 @@ secretGenerator:
     type: Opaque
   - name: slack-token
     files:
-      - token=secrets/slack-token
+      - token=secrets/slack/token
     type: Opaque
   - name: cookie
     files:
