@@ -565,12 +565,6 @@ plugins:
     - verify-owners
     - wip
 
-  nmstate/nmstate:
-    plugins:
-    - override
-    - trigger
-
-
   virtblocks:
     plugins:
     - dco

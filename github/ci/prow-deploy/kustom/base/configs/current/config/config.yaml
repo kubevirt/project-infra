@@ -841,5 +841,3 @@ managed_webhooks:
       token_created_after: 2026-04-15T01:00:00Z
     nmstate/kubernetes-nmstate:
       token_created_after: 2026-04-15T01:00:00Z
-    nmstate/nmstate:
-      token_created_after: 2026-04-15T01:00:00Z
