@@ -1,0 +1,91 @@
+presubmits:
+  kubevirt/vm-file-restore-operator:
+  - name: pull-vm-file-restore-operator-e2e
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror: "true"
+      preset-shared-images: "true"
+    cluster: prow-workloads
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test-e2e"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "52Gi"
+  - name: pull-vm-file-restore-operator-unit-test
+    cluster: kubevirt-prow-control-plane
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-vm-file-restore-operator-lint
+    cluster: kubevirt-prow-control-plane
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-docker-mirror-proxy: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make lint"
+          resources:
+            requests:
+              memory: "4Gi"
