@@ -43,7 +43,6 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
@@ -73,7 +72,6 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
@@ -103,7 +101,6 @@ presubmits:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63

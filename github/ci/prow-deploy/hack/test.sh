@@ -70,6 +70,7 @@ populate_secrets(){
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow-staging/github/app-secret "${secrets_dir}"/github/
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow-staging/github/bot-token "${secrets_dir}"/github/
     install -Dm 400 "${secrets_repo_dir}"/secrets/slack/kubevirtci-token "${secrets_dir}"/slack/token
+    install -Dm 400 "${secrets_repo_dir}"/secrets/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json "${secrets_dir}"/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json
 }
 
 main "$@"

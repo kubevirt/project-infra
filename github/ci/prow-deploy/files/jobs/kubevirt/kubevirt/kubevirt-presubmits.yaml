@@ -11,7 +11,6 @@ presubmits:
       timeout: 2h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -76,7 +75,6 @@ presubmits:
       timeout: 2h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-podman-in-container-enabled: "true"
@@ -419,7 +417,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-generate
     skip_branches:
@@ -448,7 +445,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-verify-rpms
     optional: true
@@ -479,7 +475,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-verify-rpms-cs10
     optional: true
@@ -515,7 +510,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-verify-go-mod
     skip_branches:
@@ -545,7 +539,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-gosec
     optional: true
@@ -631,7 +624,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-build
@@ -661,7 +653,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-build-arm64
@@ -694,7 +685,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-build-s390x
@@ -727,7 +717,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-build-cs10
@@ -763,7 +752,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-build-cs10-arm64
@@ -801,7 +789,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-build-cs10-s390x
@@ -840,7 +827,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-unit-test
@@ -872,7 +858,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-fuzz
@@ -903,7 +888,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-goveralls
     optional: true
@@ -943,7 +927,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-fossa
     skip_branches:
@@ -983,7 +966,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-apidocs
     skip_branches:
@@ -1012,7 +994,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-client-python
     skip_branches:
@@ -1041,7 +1022,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-manifests
     skip_branches:
@@ -1071,7 +1051,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-prom-rules-verify
     run_if_changed: hack/prom-rule-ci/.*
@@ -1101,7 +1080,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-check-unassigned-tests
@@ -1132,7 +1110,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1178,7 +1155,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1225,7 +1201,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1363,7 +1338,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: build-kubevirt-builder
@@ -1396,7 +1370,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: build-kubevirt-builder-cs10
@@ -1428,7 +1401,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     name: pull-kubevirt-code-lint
@@ -1460,7 +1432,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1505,7 +1476,6 @@ presubmits:
       timeout: 2h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1545,7 +1515,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1595,7 +1564,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1641,7 +1609,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1689,7 +1656,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1732,7 +1698,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     name: pull-kubevirt-metrics-lint
@@ -1766,7 +1731,6 @@ presubmits:
       timeout: 2h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1811,7 +1775,6 @@ presubmits:
     labels:
       ci.kubevirt.io/prometheus: ""
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1869,7 +1832,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1913,7 +1875,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1957,7 +1918,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -2003,7 +1963,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -2047,7 +2006,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -2091,7 +2049,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -2135,7 +2092,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -2181,7 +2137,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -2225,7 +2180,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -2268,7 +2222,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -2311,7 +2264,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -2356,7 +2308,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -2401,7 +2352,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -2444,7 +2394,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-quay-credential: "true"
       preset-podman-in-container-enabled: "true"

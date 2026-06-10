@@ -679,9 +679,6 @@ presets:
       value: https://storage.googleapis.com/kubevirt-bazel-cache
     - name: BAZEL_REMOTE_CACHE_ENABLED
       value: "true"
-- labels:
-    preset-bazel-cache-gcs-credentials: "true"
-  env:
     - name: BAZEL_CACHE_GOOGLE_CREDENTIALS
       value: /etc/bazel-cache-gcs/bazel-cache-sa.json
   volumes:

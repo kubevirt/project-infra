@@ -71,7 +71,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     skip_branches:
     - release-v\d+\.\d+
@@ -119,7 +118,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
@@ -152,7 +150,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
@@ -185,7 +182,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
@@ -218,7 +214,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/golang:v20260417-7427ea2
@@ -679,7 +674,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     spec:

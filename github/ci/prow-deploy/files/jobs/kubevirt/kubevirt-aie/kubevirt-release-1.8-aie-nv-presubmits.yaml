@@ -10,7 +10,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-aie-build-1.8-aie-nv
@@ -40,7 +39,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-aie-build-arm64-1.8-aie-nv
@@ -73,7 +71,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
     max_concurrency: 11
     name: pull-kubevirt-aie-code-lint-1.8-aie-nv
@@ -105,7 +102,6 @@ presubmits:
       timeout: 1h0m0s
     labels:
       preset-bazel-cache: "true"
-      preset-bazel-cache-gcs-credentials: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-aie-unit-test-1.8-aie-nv

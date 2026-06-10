@@ -621,7 +621,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
@@ -669,7 +668,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
@@ -816,7 +814,6 @@ periodics:
     repo: project-infra
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-podman-in-container-enabled: "true"
@@ -962,7 +959,6 @@ periodics:
     repo: project-infra
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-pgp-bot-key: "true"
@@ -1036,7 +1032,6 @@ periodics:
     repo: project-infra
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-pgp-bot-key: "true"
@@ -1119,7 +1114,6 @@ periodics:
   labels:
     ci.kubevirt.io/prometheus: ""
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1187,7 +1181,6 @@ periodics:
   labels:
     ci.kubevirt.io/prometheus: ""
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1250,7 +1243,6 @@ periodics:
   labels:
     ci.kubevirt.io/prometheus: ""
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1317,7 +1309,6 @@ periodics:
   labels:
     ci.kubevirt.io/prometheus: ""
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1380,7 +1371,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1471,7 +1461,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1522,7 +1511,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1572,7 +1560,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1624,7 +1611,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1889,7 +1875,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1937,7 +1922,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -1987,7 +1971,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -2035,7 +2018,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -2083,7 +2065,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -2135,7 +2116,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -2183,7 +2163,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -2231,7 +2210,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -2279,7 +2257,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -2331,7 +2308,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -2382,7 +2358,6 @@ periodics:
     repo: project-infra
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-podman-in-container-enabled: "true"
@@ -2501,7 +2476,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -2549,7 +2523,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -2597,7 +2570,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -2649,7 +2621,6 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-bazel-cache-gcs-credentials: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"

@@ -79,7 +79,9 @@ make_bazel_rc () {
         local cache_id
         cache_id="$(get_workspace),$(hash_toolchains)"
         echo "build --remote_cache=${BAZEL_REMOTE_CACHE}/${cache_id}"
-        echo "build --google_credentials=${BAZEL_CACHE_GOOGLE_CREDENTIALS}"
+        if [[ -n "${BAZEL_CACHE_GOOGLE_CREDENTIALS:-}" ]]; then
+            echo "build --google_credentials=${BAZEL_CACHE_GOOGLE_CREDENTIALS}"
+        fi
     else
         # NOTE our caches are versioned by all path segments up until the last two
         # IE PUT /foo/bar/baz/cas/asdf -> is in cache "/foo/bar/baz"
