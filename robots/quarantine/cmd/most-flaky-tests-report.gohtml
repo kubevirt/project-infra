@@ -55,6 +55,38 @@
             transition: transform var(--transition-speed);
         }
 
+        .card.recent-failures {
+            border-left: 4px solid #e53e3e;
+        }
+
+        .card.stale-failures {
+            border-left: 4px solid #cbd5e0;
+            opacity: 0.6;
+        }
+
+        .card.stale-failures:hover {
+            opacity: 1;
+        }
+
+        .recency-badge {
+            display: inline-block;
+            font-size: 0.75em;
+            padding: 1px 6px;
+            border-radius: 3px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        .recency-badge.active {
+            background-color: #fed7d7;
+            color: #9b2c2c;
+        }
+
+        .recency-badge.stale {
+            background-color: #edf2f7;
+            color: #718096;
+        }
+
     </style>
 </head>
 <body>
@@ -85,9 +117,18 @@
                 {{ range $testName := $.TestNames }}
                     {{ $mostFlakyTests := index $.MostFlakyTestsBySig $sig $testName }}
                     {{ if $mostFlakyTests }}
-                        <div class="card" id="test_{{ $testName }}">
+                        {{- $hasRecent := false -}}
+                        {{- range $t := $mostFlakyTests -}}
+                            {{- if $t.HasRecentFailures -}}{{- $hasRecent = true -}}{{- end -}}
+                        {{- end -}}
+                        <div class="card {{ if $hasRecent }}recent-failures{{ else }}stale-failures{{ end }}" id="test_{{ $testName }}">
                             <a href="#test_{{ $testName }}">#</a>
-                            <code title="{{ $testName }}">{{ $testName }}</code><br/>
+                            <code title="{{ $testName }}">{{ $testName }}</code>
+                            {{ if $hasRecent -}}
+                                <span class="recency-badge active">active</span>
+                            {{- else -}}
+                                <span class="recency-badge stale">stale</span>
+                            {{- end }}<br/>
                             {{ range $mostFlakyTest := $mostFlakyTests }}
                                 {{ range $relevantImpact := $mostFlakyTest.RelevantImpacts -}}
                                     <div class="impact-entry" data-lane="{{ $relevantImpact.URLToDisplay }}">

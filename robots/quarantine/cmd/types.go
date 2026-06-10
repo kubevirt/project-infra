@@ -64,11 +64,12 @@ type quarantineOptions struct {
 }
 
 type TestToQuarantine struct {
-	Test            *flakestats.TopXTest
-	TimeRange       searchci.TimeRange
-	SearchCIURL     string
-	RelevantImpacts []searchci.Impact
-	SpecReport      *types.SpecReport
+	Test              *flakestats.TopXTest
+	TimeRange         searchci.TimeRange
+	SearchCIURL       string
+	RelevantImpacts   []searchci.Impact
+	HasRecentFailures bool
+	SpecReport        *types.SpecReport
 }
 
 type TestsPerSIG map[string][]*TestToQuarantine

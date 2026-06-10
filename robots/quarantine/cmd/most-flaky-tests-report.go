@@ -29,6 +29,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
@@ -69,6 +70,9 @@ func init() {
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&outputFileOpts.OverwriteOutputFile, "overwrite-output-file", false, "whether to overwrite the output file")
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&quarantineOpts.filterPeriodicJobRunResults, "filter-periodic-job-run-results", true, "whether to filter the results for periodics")
 	mostFlakyTestsReportCmd.PersistentFlags().StringVar(&quarantineOpts.filterLaneRegex, "filter-lane-regex", filterLaneRegexDefault, "the regular expression to use to filter test lanes with")
+	mostFlakyTestsReportCmd.PersistentFlags().DurationVar(&quarantineOpts.maxFailureAge, "max-failure-age", 72*time.Hour, "maximum age of failures to consider as recent")
+	mostFlakyTestsReportCmd.PersistentFlags().IntVar(&quarantineOpts.minRecentFailures, "min-recent-failures", 2, "minimum number of recent failures required per lane")
+	mostFlakyTestsReportCmd.PersistentFlags().DurationVar(&quarantineOpts.minFailureInterval, "min-failure-interval", 24*time.Hour, "minimum time span between recent failures to confirm a consistent pattern")
 }
 
 var sigMatcher = regexp.MustCompile(`\[(sig-[^]]+)]`)
@@ -115,6 +119,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 const noSIGKey = "NONE"
 
 func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string, testNames []string, mostFlakyTestsBySIG map[string]TestsPerSIG, err error) {
+	recentFailureFilter := searchci.HasMinRecentFailures(quarantineOpts.maxFailureAge, quarantineOpts.minRecentFailures, quarantineOpts.minFailureInterval)
 	mostFlakyTests := make(map[string][]*TestToQuarantine)
 	for _, topXTest := range topXTests {
 		for _, timeRange := range mostFlakyTestsTimeRanges {
@@ -124,6 +129,12 @@ func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string
 			}
 			if candidate == nil {
 				continue
+			}
+			for _, impact := range candidate.RelevantImpacts {
+				if recentFailureFilter(impact) {
+					candidate.HasRecentFailures = true
+					break
+				}
 			}
 			mostFlakyTests[topXTest.Name] = append(mostFlakyTests[topXTest.Name], candidate)
 		}
