@@ -267,6 +267,16 @@ tests/migration/namespace.go:236
 			72*time.Hour, 2, 24*time.Hour,
 			false,
 		),
+		Entry("does not panic with minCount=0 and no build URLs",
+			Impact{},
+			72*time.Hour, 0, 24*time.Hour,
+			false,
+		),
+		Entry("does not panic with negative minCount and no build URLs",
+			Impact{},
+			72*time.Hour, -1, 24*time.Hour,
+			false,
+		),
 		Entry("keeps impact when minInterval is zero (no spread requirement)",
 			Impact{
 				BuildURLs: []JobBuildURL{

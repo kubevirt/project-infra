@@ -170,7 +170,7 @@ func HasMinRecentFailures(maxAge time.Duration, minCount int, minInterval time.D
 				recentIntervals = append(recentIntervals, buildURL.Interval)
 			}
 		}
-		if len(recentIntervals) < minCount {
+		if len(recentIntervals) < minCount || len(recentIntervals) == 0 {
 			return false
 		}
 		if minInterval <= 0 {
