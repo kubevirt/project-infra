@@ -734,7 +734,7 @@ presubmits:
         - name: KUBEVIRT_CENTOS_STREAM_VERSION
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
-          value: 2605290816-89fad9a940
+          value: 2606301559-b9f50e380a
         image: quay.io/kubevirtci/bootstrap:v20260703-61a4923
         name: ""
         resources:
