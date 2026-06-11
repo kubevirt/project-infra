@@ -292,7 +292,7 @@ func spreadJobs(out io.Writer, group *JobGroup, verbose bool) {
 	staggerMinutes := (periodHours * 60) / numJobs
 
 	fmt.Fprintf(out, "\nSpreading %d jobs at %dx/day (every %dh):\n", numJobs, freq, periodHours) //nolint:errcheck
-	fmt.Fprintf(out, "  Stagger interval: %d minutes\n", staggerMinutes)                       //nolint:errcheck
+	fmt.Fprintf(out, "  Stagger interval: %d minutes\n", staggerMinutes)                          //nolint:errcheck
 
 	for i := range group.Jobs {
 		offsetMinutes := i * staggerMinutes

@@ -3,13 +3,9 @@ run:
   go: "1.25"
   modules-download-mode: readonly
 linters:
-  default: none
+  default: standard
   enable:
     - gocyclo
-    - govet
-    - ineffassign
-    - staticcheck
-    - unused
   settings:
     staticcheck:
       checks:
@@ -28,5 +24,6 @@ linters:
         - "-ST1005" # err formatting rule
         - "-QF100*"
         - "-QF1012" # replace WriteString with fmt.Fprintf
-#    gocyclo:
-#      min-complexity: 10
+formatters:
+  enable:
+    - goimports
