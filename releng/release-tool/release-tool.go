@@ -164,47 +164,49 @@ func (r *releaseData) generateReleaseNotes() error {
 	numContributors := len(contributorList)
 	typeOfChanges = strings.TrimSpace(typeOfChanges)
 
-	if _, err := f.WriteString(fmt.Sprintf("This release follows %s and consists of %d changes, contributed by %d people, leading to %s.\n", r.previousTag, numChanges, numContributors, typeOfChanges)); err != nil {
-		return err
-	}
-	if r.promoteRC != "" {
-		if _, err := f.WriteString(fmt.Sprintf("%s is a promotion of release candidate %s which was originally published %s", r.tag, r.promoteRC, r.promoteRCTime.Format("2006-01-02"))); err != nil {
-			return err
+	var writeErr error
+	writeString := func(s string) {
+		if writeErr != nil {
+			return
 		}
+		_, writeErr = f.WriteString(s)
 	}
-	if _, err := f.WriteString("\n"); err != nil {
-		return err
+
+	writeString(fmt.Sprintf("This release follows %s and consists of %d changes, contributed by %d people, leading to %s.\n", r.previousTag, numChanges, numContributors, typeOfChanges))
+	if r.promoteRC != "" {
+		writeString(fmt.Sprintf("%s is a promotion of release candidate %s which was originally published %s", r.tag, r.promoteRC, r.promoteRCTime.Format("2006-01-02")))
 	}
-	_, _ = f.WriteString(fmt.Sprintf("The source code and selected binaries are available for download at: %s.\n", tagUrl))
-	_, _ = f.WriteString("\n")
-	_, _ = f.WriteString("The primary release artifact of KubeVirt is the git tree. The release tag is\n")
-	_, _ = f.WriteString(fmt.Sprintf("signed and can be verified using `git tag -v %s`.\n", r.tag))
-	_, _ = f.WriteString("\n")
-	_, _ = f.WriteString(fmt.Sprintf("Pre-built containers are published on Quay and can be viewed at: <https://quay.io/%s/>.\n", r.org))
-	_, _ = f.WriteString("\n")
+	writeString("\n")
+	writeString(fmt.Sprintf("The source code and selected binaries are available for download at: %s.\n", tagUrl))
+	writeString("\n")
+	writeString("The primary release artifact of KubeVirt is the git tree. The release tag is\n")
+	writeString(fmt.Sprintf("signed and can be verified using `git tag -v %s`.\n", r.tag))
+	writeString("\n")
+	writeString(fmt.Sprintf("Pre-built containers are published on Quay and can be viewed at: <https://quay.io/%s/>.\n", r.org))
+	writeString("\n")
 
 	if len(releaseNotes) > 0 {
-		_, _ = f.WriteString("Notable changes\n---------------\n")
-		_, _ = f.WriteString("\n")
+		writeString("Notable changes\n---------------\n")
+		writeString("\n")
 		for _, note := range releaseNotes {
-			_, _ = f.WriteString(fmt.Sprintf("- %s\n", note))
+			writeString(fmt.Sprintf("- %s\n", note))
 		}
 	}
 
-	_, _ = f.WriteString("\n")
-	_, _ = f.WriteString("Contributors\n------------\n")
-	_, _ = f.WriteString(fmt.Sprintf("%d people contributed to this release:\n\n", numContributors))
+	writeString("\n")
+	writeString("Contributors\n------------\n")
+	writeString(fmt.Sprintf("%d people contributed to this release:\n\n", numContributors))
 
 	for _, contributor := range contributorList {
 		if strings.Contains(contributor, "kubevirt-bot") {
 			// skip the bot
 			continue
 		}
-		_, _ = f.WriteString(fmt.Sprintf("%s\n", strings.TrimSpace(contributor)))
+		writeString(fmt.Sprintf("%s\n", strings.TrimSpace(contributor)))
 	}
 
-	_, _ = f.WriteString(additionalResources)
-	return nil
+	writeString(additionalResources)
+	return writeErr
 }
 
 func (r *releaseData) checkoutProjectInfra() error {

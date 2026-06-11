@@ -222,17 +222,22 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 		} else {
 			reportOutputWriter = reportObject.NewWriter(ctx)
 		}
-		defer func() { _ = reportOutputWriter.Close() }()
-
 		sha := sha256.New()
 		body := io.TeeReader(resp.Body, sha)
 		_, err = io.Copy(reportOutputWriter, body)
 		if err != nil {
+			_ = reportOutputWriter.Close()
 			log.Printf("Could not upload artifact from %s, continuing with next URL: %v", uri, err)
 			continue
 		}
 		if toHex(sha) != artifact.SHA256() {
+			_ = reportOutputWriter.Close()
 			log.Printf("Could not upload artifact from %s, continuing with next URL: Expected shasum %v, got %v", uri, artifact.SHA256(), toHex(sha))
+			continue
+		}
+		// Close performs the actual GCS upload — check its error
+		if err := reportOutputWriter.Close(); err != nil {
+			log.Printf("Could not upload artifact from %s, continuing with next URL: %v", uri, err)
 			continue
 		}
 		return nil

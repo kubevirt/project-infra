@@ -53,11 +53,23 @@ func WriteReportToBucket(ctx context.Context, client *storage.Client, merged tim
 		reportJSONObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileNameWithEnding(reportBaseData.EndOfReport, merged, "json")))
 		log.Printf("Report JSON will be written to gs://%s/%s", reportJSONObject.BucketName(), reportJSONObject.ObjectName())
 		reportOutputWriter = reportObject.NewWriter(ctx)
-		defer func() { _ = reportOutputWriter.Close() }()
+		defer func() {
+			if cerr := reportOutputWriter.Close(); cerr != nil && err == nil {
+				err = fmt.Errorf("failed to close report writer: %v", cerr)
+			}
+		}()
 		reportCSVOutputWriter = reportCSVObject.NewWriter(ctx)
-		defer func() { _ = reportCSVOutputWriter.Close() }()
+		defer func() {
+			if cerr := reportCSVOutputWriter.Close(); cerr != nil && err == nil {
+				err = fmt.Errorf("failed to close CSV report writer: %v", cerr)
+			}
+		}()
 		reportJSONOutputWriter = reportJSONObject.NewWriter(ctx)
-		defer func() { _ = reportJSONOutputWriter.Close() }()
+		defer func() {
+			if cerr := reportJSONOutputWriter.Close(); cerr != nil && err == nil {
+				err = fmt.Errorf("failed to close JSON report writer: %v", cerr)
+			}
+		}()
 	}
 	err = DoReport(reportBaseData.JobResults, reportOutputWriter, reportCSVOutputWriter, reportJSONOutputWriter, org, repo, reportBaseData.PRNumbers, isDryRun, reportBaseData.StartOfReport, reportBaseData.EndOfReport)
 	if err != nil {

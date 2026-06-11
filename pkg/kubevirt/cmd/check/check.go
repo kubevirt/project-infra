@@ -24,7 +24,7 @@ var checkCommand = &cobra.Command{
 	Use:   "check",
 	Short: "kubevirt check checks job definitions in project-infra for kubevirt/kubevirt repo",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString()) //nolint:errcheck
+		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
 	},
 }
 
