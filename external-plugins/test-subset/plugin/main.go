@@ -115,7 +115,7 @@ func gatherOptions() *options {
 	for _, group := range []flagutil.OptionGroup{&o.github} {
 		group.AddFlags(fs)
 	}
-	fs.Parse(os.Args[1:])
+	_ = fs.Parse(os.Args[1:])
 	return o
 }
 

@@ -225,7 +225,7 @@ tests/migration/namespace.go:236
 			body, err = os.ReadFile("testdata/searchci.html")
 			Expect(err).ToNot(HaveOccurred())
 			server = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-				writer.Write(body)
+				_, _ = writer.Write(body)
 				writer.WriteHeader(http.StatusOK)
 			}))
 			serviceURL = server.URL

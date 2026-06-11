@@ -286,7 +286,7 @@ func writeHTMLReport(startOfReport time.Time, endOfReport time.Time, topXLaneTes
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 	err = htmlTemplate.Execute(file, TopXTestExecutions{StartOfReport: startOfReport, EndOfReport: endOfReport, PerLaneExecutions: topXLaneTestExecutions, SortedLinkFilenames: sortedLinkFilenames})
 	if err != nil {
 		return err
@@ -332,7 +332,7 @@ func fetchTopXLaneTestExecutions(reportFilenames []string, topX int) (map[string
 		if err != nil {
 			return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
 		}
-		defer openFile.Close()
+		defer func() { _ = openFile.Close() }()
 		csvReader := csv.NewReader(openFile)
 		linkFilename := filepath.Base(filename)
 		testExecutionsPerLane := []*TestExecutions{}

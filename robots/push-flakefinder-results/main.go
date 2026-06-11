@@ -72,7 +72,7 @@ func main() {
 	if response.StatusCode != http.StatusOK {
 		log.Fatalf("error %s fetching report %q", response.Status, reportCSVURL)
 	}
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 
 	csvReader := csv.NewReader(response.Body)
 	values, err := csvReader.ReadAll()

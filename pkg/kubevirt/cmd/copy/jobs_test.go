@@ -643,7 +643,7 @@ func Test_copyPeriodicJobsForNewProvider(t *testing.T) {
 	}
 	temp, err := os.MkdirTemp("", "jobconfig")
 	panicOn(err)
-	defer os.RemoveAll(temp)
+	defer func() { _ = os.RemoveAll(temp) }()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotUpdated := copyPeriodicJobsForNewProvider(tt.args.jobConfig, tt.args.targetProviderReleaseSemver, tt.args.sourceProviderReleaseSemver); gotUpdated != tt.wantUpdated {

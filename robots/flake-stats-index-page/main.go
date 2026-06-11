@@ -157,7 +157,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error creating HTML file: %v", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	tmpl := template.Must(template.New("htmlPage").Parse(htmlTemplate))
 	if err := tmpl.Execute(f, calendars); err != nil {
@@ -173,7 +173,7 @@ func listFilesFromGCS(bucketName, prefix, pattern string) ([]File, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create storage client: %w", err)
 	}
-	defer client.Close()
+	defer func() { _ = client.Close() }()
 
 	bucket := client.Bucket(bucketName)
 	query := &storage.Query{Prefix: prefix}

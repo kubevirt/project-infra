@@ -264,7 +264,7 @@ func runStatsCommand(configurationOptions ConfigOptions) error {
 			matches := gcsRegexp.FindStringSubmatch(configurationOptions.outputGCSURL)
 			reportObject := storageClient.Bucket(matches[1]).Object(matches[2])
 			writer := reportObject.NewWriter(ctx)
-			defer writer.Close()
+			defer func() { _ = writer.Close() }()
 			outputWriter = writer
 		}
 		err = htmlTemplate.Execute(outputWriter, statsHTMLData)

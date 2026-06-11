@@ -57,7 +57,7 @@ func HTTPService(testNamespace, svcPort, labelSelector, expectedContent, urlPath
 	res, err := http.Get(url)
 	Expect(err).NotTo(HaveOccurred())
 
-	defer res.Body.Close()
+	defer func() { _ = res.Body.Close() }()
 	scanner := bufio.NewScanner(res.Body)
 
 	found := false

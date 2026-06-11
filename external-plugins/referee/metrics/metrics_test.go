@@ -78,7 +78,7 @@ var _ = Describe("metrics", func() {
 				resp, err = client.Get(fmt.Sprintf("http://%s:%d%s", host, port, metricsPath))
 				g.Expect(err).ToNot(HaveOccurred())
 			}).WithTimeout(10 * time.Second).WithPolling(1 * time.Second).Should(Succeed())
-			defer resp.Body.Close()
+			defer func() { _ = resp.Body.Close() }()
 
 			body, err := io.ReadAll(resp.Body)
 			Expect(err).NotTo(HaveOccurred())

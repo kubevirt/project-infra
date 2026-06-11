@@ -53,11 +53,11 @@ func WriteReportToBucket(ctx context.Context, client *storage.Client, merged tim
 		reportJSONObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileNameWithEnding(reportBaseData.EndOfReport, merged, "json")))
 		log.Printf("Report JSON will be written to gs://%s/%s", reportJSONObject.BucketName(), reportJSONObject.ObjectName())
 		reportOutputWriter = reportObject.NewWriter(ctx)
-		defer reportOutputWriter.Close()
+		defer func() { _ = reportOutputWriter.Close() }()
 		reportCSVOutputWriter = reportCSVObject.NewWriter(ctx)
-		defer reportCSVOutputWriter.Close()
+		defer func() { _ = reportCSVOutputWriter.Close() }()
 		reportJSONOutputWriter = reportJSONObject.NewWriter(ctx)
-		defer reportJSONOutputWriter.Close()
+		defer func() { _ = reportJSONOutputWriter.Close() }()
 	}
 	err = DoReport(reportBaseData.JobResults, reportOutputWriter, reportCSVOutputWriter, reportJSONOutputWriter, org, repo, reportBaseData.PRNumbers, isDryRun, reportBaseData.StartOfReport, reportBaseData.EndOfReport)
 	if err != nil {

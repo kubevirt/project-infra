@@ -194,7 +194,7 @@ func runGantt(cmd *cobra.Command, args []string) error {
 	})
 
 	out := cmd.OutOrStdout()
-	fmt.Fprintln(out, "```mermaid")
+	fmt.Fprintln(out, "```mermaid") //nolint:errcheck
 	title := fmt.Sprintf("%s* Schedule (24h)", pattern)
 	chart := gantt.NewChart(
 		out,
@@ -226,6 +226,6 @@ func runGantt(cmd *cobra.Command, args []string) error {
 	if err := chart.Build(); err != nil {
 		return fmt.Errorf("build error: %w", err)
 	}
-	fmt.Fprintln(out, "\n```")
+	fmt.Fprintln(out, "\n```") //nolint:errcheck
 	return nil
 }

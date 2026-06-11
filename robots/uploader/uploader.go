@@ -45,7 +45,7 @@ func gatherOptions() options {
 	fs.StringVar(&o.dir, "dir", "", "directory inside the bucket")
 	fs.BoolVar(&o.requiresAuth, "requires-auth", false, "set to true if the bucket requires authentication for downloading artifacts")
 	fs.StringVar(&o.workspacePath, "workspace", "", "path to the workspace file")
-	fs.Parse(os.Args[1:])
+	_ = fs.Parse(os.Args[1:])
 	return o
 }
 

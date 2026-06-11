@@ -190,7 +190,7 @@ func ForPortOpen(host, port string) error {
 				return err
 			}
 			if conn != nil {
-				defer conn.Close()
+				defer func() { _ = conn.Close() }()
 				return nil
 			}
 		}

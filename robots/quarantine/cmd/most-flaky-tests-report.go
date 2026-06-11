@@ -237,7 +237,7 @@ func hasNotOnlyClusteredFailures() searchci.FilterOpt {
 			if junitXMLHTTPResponse.StatusCode != 200 {
 				log.Fatalf("failed to get junit xml from %q", junitXMLURL)
 			}
-			defer junitXMLHTTPResponse.Body.Close()
+			defer func() { _ = junitXMLHTTPResponse.Body.Close() }()
 			junitXML, err := io.ReadAll(junitXMLHTTPResponse.Body)
 			if err != nil {
 				log.Fatalf("failed to get junit xml from %q", junitXMLURL)

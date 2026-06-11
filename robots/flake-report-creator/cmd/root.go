@@ -54,7 +54,7 @@ var (
 		Use:   "flake-report-creator",
 		Short: "flake-report-creator creates reports from junit artifacts of kubevirt ci builds",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
+			_, _ = fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
 		},
 	}
 	globalOpts = GlobalOptions{}

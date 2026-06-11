@@ -29,7 +29,7 @@ var getCommand = &cobra.Command{
 	Use:   "get",
 	Short: "kubevirt get describes job definitions in project-infra for kubevirt/kubevirt repo",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
+		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString()) //nolint:errcheck
 	},
 }
 

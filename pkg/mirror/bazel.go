@@ -153,7 +153,7 @@ func RemoveStaleDownloadURLS(artifacts []Artifact, ignoreURLSMatching *regexp.Re
 				log.Printf("Could not connect to source URL: %v", err)
 				continue
 			}
-			defer resp.Body.Close()
+			defer func() { _ = resp.Body.Close() }()
 			if resp.StatusCode == http.StatusNotFound {
 				log.Printf("Could not find artifact %s, will remove URL: Status Code: %v", notFoundUrl, resp.StatusCode)
 				notFoundUrls = append(notFoundUrls, notFoundUrl)
@@ -195,7 +195,7 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 		return fmt.Errorf("error checking if object exists: %v", err)
 	} else if err == nil {
 		// object already exists
-		reader.Close()
+		_ = reader.Close()
 		log.Printf("File %s already exists, will not upload again\n", obj)
 		return nil
 	}
@@ -205,7 +205,7 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 			log.Printf("Could not connect to source, continuing with next URL: %v", err)
 			continue
 		}
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 		if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			log.Printf("Could not upload artifact from %s, continuing with next URL: Status Code: %v", uri, resp.StatusCode)
 			continue
@@ -222,7 +222,7 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 		} else {
 			reportOutputWriter = reportObject.NewWriter(ctx)
 		}
-		defer reportOutputWriter.Close()
+		defer func() { _ = reportOutputWriter.Close() }()
 
 		sha := sha256.New()
 		body := io.TeeReader(resp.Body, sha)
@@ -249,7 +249,7 @@ func VerifyArtifact(ctx context.Context, client *storage.Client, artifact Artifa
 	} else if err != nil {
 		return fmt.Errorf("artifact %v: error checking if object exists: %v", artifact.Name(), err)
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 	sha := sha256.New()
 	if _, err := io.Copy(sha, reader); err != nil {
 		return fmt.Errorf("artifact %v: failed to download the object: %v", artifact.Name(), err)

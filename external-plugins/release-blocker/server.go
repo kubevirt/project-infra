@@ -73,7 +73,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	fmt.Fprint(w, "Event received. Have a nice day.")
+	fmt.Fprint(w, "Event received. Have a nice day.") //nolint:errcheck
 
 	if err := s.handleEvent(eventType, eventGUID, payload); err != nil {
 		logrus.WithError(err).Error("Error parsing event.")

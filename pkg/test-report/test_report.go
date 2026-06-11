@@ -339,7 +339,7 @@ func FetchDontRunEntriesFromFile(dontRunFileURL string, client *http.Client) ([]
 		return nil, fmt.Errorf("when fetching %q received status code: %d", dontRunFileURL, response.StatusCode)
 	}
 
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 	var records []*FilterTestRecord
 	err = json.NewDecoder(response.Body).Decode(&records)
 	if err != nil {

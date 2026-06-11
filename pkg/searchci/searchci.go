@@ -67,7 +67,7 @@ func ScrapeImpacts(testNameSubstring string, timeRange TimeRange) ([]Impact, err
 	if err != nil {
 		return nil, fmt.Errorf("failed to get search.ci results from %s: %w", scrapeResultURL, err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read search.ci result from %s: %w", scrapeResultURL, err)

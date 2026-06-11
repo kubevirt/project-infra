@@ -11,7 +11,7 @@ var (
 		Use:   "periodic-jobs",
 		Short: "periodic-jobs provides tools for managing Prow periodic job schedules",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
+			fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString()) //nolint:errcheck
 		},
 	}
 	inputFile string

@@ -342,7 +342,9 @@ func plotWeeklyGraph(opts weeklyGraphOpts) error {
 // ToHtml saves the figure as standalone HTML. It still requires internet to load plotly.js from CDN.
 func ToHtml(figs []*grob.Fig, path string) {
 	buf := figToBuffer(figs)
-	os.WriteFile(path, buf.Bytes(), os.ModePerm)
+	if err := os.WriteFile(path, buf.Bytes(), os.ModePerm); err != nil {
+		log.Fatalf("failed to write HTML file %s: %v", path, err)
+	}
 }
 
 func figToBuffer(figs []*grob.Fig) *bytes.Buffer {
@@ -360,7 +362,9 @@ func figToBuffer(figs []*grob.Fig) *bytes.Buffer {
 		panic(err)
 	}
 	buf := &bytes.Buffer{}
-	tmpl.Execute(buf, figBytesList)
+	if err := tmpl.Execute(buf, figBytesList); err != nil {
+		panic(err)
+	}
 	return buf
 }
 

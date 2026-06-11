@@ -126,7 +126,7 @@ func extractChangedTests(debug bool, revisionRange string, testDirectory string,
 		if err != nil {
 			return err
 		}
-		defer commitsTemp.Close()
+		defer func() { _ = commitsTemp.Close() }()
 		err = json.NewEncoder(commitsTemp).Encode(&commits)
 		if err != nil {
 			return err
@@ -136,7 +136,7 @@ func extractChangedTests(debug bool, revisionRange string, testDirectory string,
 		if err != nil {
 			return err
 		}
-		defer outlinesTemp.Close()
+		defer func() { _ = outlinesTemp.Close() }()
 		err = json.NewEncoder(outlinesTemp).Encode(&outlines)
 		if err != nil {
 			return err
@@ -166,7 +166,7 @@ func extractChangedTests(debug bool, revisionRange string, testDirectory string,
 	if err != nil {
 		return err
 	}
-	defer outputTestNamesFile.Close()
+	defer func() { _ = outputTestNamesFile.Close() }()
 	changedTestNames, err := generateTestNames(allPaths, filepath.Join(repoPath, testDirectory))
 	if err != nil {
 		return err
@@ -183,7 +183,7 @@ func extractChangedTests(debug bool, revisionRange string, testDirectory string,
 	if err != nil {
 		return err
 	}
-	defer outputTestPathsFile.Close()
+	defer func() { _ = outputTestPathsFile.Close() }()
 	err = json.NewEncoder(outputTestPathsFile).Encode(&allPaths)
 	if err != nil {
 		return err

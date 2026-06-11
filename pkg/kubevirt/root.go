@@ -36,7 +36,7 @@ var rootCmd = &cobra.Command{
 	Use:   "kubevirt",
 	Short: "kubevirt describes and alters job definitions in project-infra for kubevirt/kubevirt repo",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
+		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString()) //nolint:errcheck
 	},
 }
 

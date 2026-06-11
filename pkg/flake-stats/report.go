@@ -148,7 +148,7 @@ func (r FlakeStats) fetchFlakeFinder24hReportData(targetReportDate time.Time) (*
 	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("error %s fetching report %q", response.Status, reportJSONURL)
 	}
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 
 	var flakefinderReportData flakefinder.Params
 	err = json.NewDecoder(response.Body).Decode(&flakefinderReportData)
@@ -280,7 +280,7 @@ func (r FlakeStats) writeHTMLReport(overallFailures *TopXTest, topXTests TopXTes
 		return fmt.Errorf("failed to create file %q: %w", r.writeOpts.OutputFile, err)
 	}
 	logrus.Printf("Writing html to %q", r.writeOpts.OutputFile)
-	defer htmlReportOutputWriter.Close()
+	defer func() { _ = htmlReportOutputWriter.Close() }()
 
 	templateData := &ReportData{
 		OverallFailures: overallFailures,
@@ -304,7 +304,7 @@ func (r FlakeStats) writeMDReport(overallFailures *TopXTest, topXTests TopXTests
 		return fmt.Errorf("failed to create file %q: %w", r.writeOpts.OutputFile, err)
 	}
 	logrus.Printf("Writing markdown to %q", r.writeOpts.OutputFile)
-	defer mdReportOutputWriter.Close()
+	defer func() { _ = mdReportOutputWriter.Close() }()
 
 	templateData := &ReportData{
 		OverallFailures: overallFailures,

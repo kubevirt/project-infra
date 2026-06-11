@@ -93,11 +93,11 @@ func runSpread(cmd *cobra.Command, args []string) error {
 
 	matchedJobs := findMatchingJobs(periodicsNode, pattern)
 	if len(matchedJobs) == 0 {
-		fmt.Fprintf(out, "No jobs found matching pattern: %s\n", pattern)
+		fmt.Fprintf(out, "No jobs found matching pattern: %s\n", pattern) //nolint:errcheck
 		return nil
 	}
 
-	fmt.Fprintf(out, "Found %d jobs matching pattern '%s'\n", len(matchedJobs), pattern)
+	fmt.Fprintf(out, "Found %d jobs matching pattern '%s'\n", len(matchedJobs), pattern) //nolint:errcheck
 
 	groups := groupByFrequency(matchedJobs)
 
@@ -125,7 +125,7 @@ func runSpread(cmd *cobra.Command, args []string) error {
 	updateCronNodes(matchedJobs)
 
 	if spreadOpts.dryRun {
-		fmt.Fprintf(out, "\nDry run mode - changes not written to file\n")
+		fmt.Fprintf(out, "\nDry run mode - changes not written to file\n") //nolint:errcheck
 		printChanges(out, matchedJobs)
 		return nil
 	}
@@ -139,7 +139,7 @@ func runSpread(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to write file: %w", err)
 	}
 
-	fmt.Fprintf(out, "\nSuccessfully updated %s\n", output)
+	fmt.Fprintf(out, "\nSuccessfully updated %s\n", output) //nolint:errcheck
 	printChanges(out, matchedJobs)
 
 	return nil
@@ -291,8 +291,8 @@ func spreadJobs(out io.Writer, group *JobGroup, verbose bool) {
 	periodHours := 24 / freq
 	staggerMinutes := (periodHours * 60) / numJobs
 
-	fmt.Fprintf(out, "\nSpreading %d jobs at %dx/day (every %dh):\n", numJobs, freq, periodHours)
-	fmt.Fprintf(out, "  Stagger interval: %d minutes\n", staggerMinutes)
+	fmt.Fprintf(out, "\nSpreading %d jobs at %dx/day (every %dh):\n", numJobs, freq, periodHours) //nolint:errcheck
+	fmt.Fprintf(out, "  Stagger interval: %d minutes\n", staggerMinutes)                       //nolint:errcheck
 
 	for i := range group.Jobs {
 		offsetMinutes := i * staggerMinutes
@@ -308,7 +308,7 @@ func spreadJobs(out io.Writer, group *JobGroup, verbose bool) {
 		group.Jobs[i].Cron.Hours = hours
 
 		if verbose {
-			fmt.Fprintf(out, "  %s: %02d %s\n",
+			fmt.Fprintf(out, "  %s: %02d %s\n", //nolint:errcheck
 				group.Jobs[i].Name,
 				startMinute,
 				formatHours(hours))
@@ -334,11 +334,11 @@ func updateCronNodes(jobs []JobWithNode) {
 }
 
 func printGroups(out io.Writer, groups []JobGroup) {
-	fmt.Fprintf(out, "\nJob groups by frequency:\n")
+	fmt.Fprintf(out, "\nJob groups by frequency:\n") //nolint:errcheck
 	for _, group := range groups {
-		fmt.Fprintf(out, "  %dx/day: %d jobs\n", group.Frequency, len(group.Jobs))
+		fmt.Fprintf(out, "  %dx/day: %d jobs\n", group.Frequency, len(group.Jobs)) //nolint:errcheck
 		for _, job := range group.Jobs {
-			fmt.Fprintf(out, "    - %s (cron: %d %s * * *)\n",
+			fmt.Fprintf(out, "    - %s (cron: %d %s * * *)\n", //nolint:errcheck
 				job.Name,
 				job.Cron.Minute,
 				formatHours(job.Cron.Hours))
@@ -347,9 +347,9 @@ func printGroups(out io.Writer, groups []JobGroup) {
 }
 
 func printChanges(out io.Writer, jobs []JobWithNode) {
-	fmt.Fprintf(out, "\nCron expression changes:\n")
+	fmt.Fprintf(out, "\nCron expression changes:\n") //nolint:errcheck
 	for _, job := range jobs {
 		newCron := fmt.Sprintf("%d %s * * *", job.Cron.Minute, formatHours(job.Cron.Hours))
-		fmt.Fprintf(out, "  %s: %s\n", job.Name, newCron)
+		fmt.Fprintf(out, "  %s: %s\n", job.Name, newCron) //nolint:errcheck
 	}
 }

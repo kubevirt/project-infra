@@ -225,7 +225,7 @@ func writeYAMLFile(inputYaml []byte, fileName string) error {
 		return err
 	}
 	err = os.WriteFile(temp.Name(), inputYaml, 0666)
-	defer temp.Close()
+	defer func() { _ = temp.Close() }()
 	if err != nil {
 		return err
 	}

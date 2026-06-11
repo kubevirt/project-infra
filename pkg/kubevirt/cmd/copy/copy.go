@@ -24,7 +24,7 @@ var copyCommand = &cobra.Command{
 	Use:   "copy",
 	Short: "kubevirt copy copies job definitions in project-infra for kubevirt/kubevirt repo from existing provider jobs",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
+		fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString()) //nolint:errcheck
 	},
 }
 

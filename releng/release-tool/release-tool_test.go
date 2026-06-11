@@ -14,7 +14,7 @@ import (
 )
 
 func standardCleanup(r *releaseData) {
-	os.RemoveAll(r.cacheDir)
+	_ = os.RemoveAll(r.cacheDir)
 }
 
 func standardSetup() releaseData {
