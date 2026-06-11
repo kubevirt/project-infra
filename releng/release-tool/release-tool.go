@@ -316,7 +316,7 @@ func (r *releaseData) makeTag(branch string) error {
 	}
 
 	if err := r.generateReleaseNotes(); err != nil {
-		return err
+		log.Printf("Warning: release notes generation failed: %v", err)
 	}
 
 	_, err := gitCommand("-C", r.repoDir, "tag", "-s", r.tag, "-F", r.releaseNotesFile)
