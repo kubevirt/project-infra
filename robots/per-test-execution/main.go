@@ -332,7 +332,6 @@ func fetchTopXLaneTestExecutions(reportFilenames []string, topX int) (map[string
 		if err != nil {
 			return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
 		}
-		defer func() { _ = openFile.Close() }()
 		csvReader := csv.NewReader(openFile)
 		linkFilename := filepath.Base(filename)
 		testExecutionsPerLane := []*TestExecutions{}
@@ -343,6 +342,7 @@ func fetchTopXLaneTestExecutions(reportFilenames []string, topX int) (map[string
 				if errors.Is(err, io.EOF) {
 					break
 				}
+				_ = openFile.Close()
 				return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
 			}
 			if i == 0 {
@@ -352,11 +352,13 @@ func fetchTopXLaneTestExecutions(reportFilenames []string, topX int) (map[string
 			}
 			atoi, err := strconv.Atoi(record[1])
 			if err != nil {
+				_ = openFile.Close()
 				return nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
 			}
 			totalExecutions := atoi
 			atoi, err = strconv.Atoi(record[2])
 			if err != nil {
+				_ = openFile.Close()
 				return nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
 			}
 			failedExecutions := atoi
@@ -382,6 +384,7 @@ func fetchTopXLaneTestExecutions(reportFilenames []string, topX int) (map[string
 			testExecutionsPerLane = append(testExecutionsPerLane, topXTestExecution)
 
 		}
+		_ = openFile.Close()
 		topXLaneTestExecutions[linkFilename] = testExecutionsPerLane
 	}
 	return topXLaneTestExecutions, nil
