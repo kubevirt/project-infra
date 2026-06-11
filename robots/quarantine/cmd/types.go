@@ -53,6 +53,7 @@ type quarantineOptions struct {
 
 	filterPeriodicJobRunResults bool
 	filterLaneRegex             string
+	includeRollingWindow        bool
 
 	testName string
 

@@ -122,6 +122,17 @@ func (r FlakeStats) AggregateData() (TopXTests, error) {
 
 func (r FlakeStats) fetchFlakeFinder24hReportsForRecentDays() ([]*flakefinder.Params, error) {
 	var recentFlakeFinderReports []*flakefinder.Params
+
+	if r.reportOpts.IncludeRollingWindow {
+		today := time.Now()
+		flakeFinderReportData, err := r.fetchFlakeFinder24hReportData(today)
+		if err != nil {
+			logrus.Warnf("could not fetch today's rolling window report for %v, skipping: %v", today.Format(time.DateOnly), err)
+		} else {
+			recentFlakeFinderReports = append(recentFlakeFinderReports, flakeFinderReportData)
+		}
+	}
+
 	targetReportDate := previousDay(time.Now())
 	for i := 0; i < r.reportOpts.DaysInThePast; i++ {
 		flakeFinderReportData, err := r.fetchFlakeFinder24hReportData(targetReportDate)

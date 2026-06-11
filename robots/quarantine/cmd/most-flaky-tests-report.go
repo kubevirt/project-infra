@@ -69,6 +69,7 @@ func init() {
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&outputFileOpts.OverwriteOutputFile, "overwrite-output-file", false, "whether to overwrite the output file")
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&quarantineOpts.filterPeriodicJobRunResults, "filter-periodic-job-run-results", true, "whether to filter the results for periodics")
 	mostFlakyTestsReportCmd.PersistentFlags().StringVar(&quarantineOpts.filterLaneRegex, "filter-lane-regex", filterLaneRegexDefault, "the regular expression to use to filter test lanes with")
+	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&quarantineOpts.includeRollingWindow, "include-rolling-window", true, "whether to include today's rolling window flakefinder data")
 }
 
 var sigMatcher = regexp.MustCompile(`\[(sig-[^]]+)]`)
@@ -78,6 +79,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 		flakestats.DaysInThePast(quarantineOpts.daysInThePast),
 		flakestats.FilterPeriodicJobRunResults(quarantineOpts.filterPeriodicJobRunResults),
 		flakestats.FilterLaneRegex(quarantineOpts.filterLaneRegex),
+		flakestats.IncludeRollingWindow(quarantineOpts.includeRollingWindow),
 	)
 	err := reportOpts.Validate()
 	if err != nil {
