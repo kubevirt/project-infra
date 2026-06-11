@@ -327,67 +327,67 @@ func readTopXLaneTestExecutionsFromReportFiles(reportFilenames []string, topX in
 func fetchTopXLaneTestExecutions(reportFilenames []string, topX int) (map[string][]*TestExecutions, error) {
 	topXLaneTestExecutions := make(map[string][]*TestExecutions)
 	for _, filename := range reportFilenames {
-		log.Debugf("Reading top %d entries of generated file %q to create top x list", topX, filename)
-		openFile, err := os.OpenFile(filename, os.O_RDONLY, 0666)
+		linkFilename, testExecutions, err := readTopXFromFile(filename, topX)
 		if err != nil {
-			return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
+			return nil, err
 		}
-		csvReader := csv.NewReader(openFile)
-		linkFilename := filepath.Base(filename)
-		testExecutionsPerLane := []*TestExecutions{}
-		var headers []string
-		for i := 0; i < topX+1; i++ {
-			record, err := csvReader.Read()
-			if err != nil {
-				if errors.Is(err, io.EOF) {
-					break
-				}
-				_ = openFile.Close()
-				return nil, fmt.Errorf("failed to read file %q: %v", filename, err)
-			}
-			if i == 0 {
-				// store headers for lookup of link to latest failure
-				headers = record
-				continue
-			}
-			atoi, err := strconv.Atoi(record[1])
-			if err != nil {
-				_ = openFile.Close()
-				return nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
-			}
-			totalExecutions := atoi
-			atoi, err = strconv.Atoi(record[2])
-			if err != nil {
-				_ = openFile.Close()
-				return nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
-			}
-			failedExecutions := atoi
-
-			var failureLink string
-			if failedExecutions > 0 {
-				// fetch link to latest failure - search for first 'f' character from end to start, since the values
-				// are stored chronologically
-				for i := len(headers) - 1; i > 0; i-- {
-					if record[i] == "f" {
-						failureLink = headers[i]
-						break
-					}
-				}
-			}
-
-			topXTestExecution := &TestExecutions{
-				Name:             record[0],
-				TotalExecutions:  totalExecutions,
-				FailedExecutions: failedExecutions,
-				LatestFailureURL: failureLink,
-			}
-			testExecutionsPerLane = append(testExecutionsPerLane, topXTestExecution)
-
-		}
-		_ = openFile.Close()
-		topXLaneTestExecutions[linkFilename] = testExecutionsPerLane
+		topXLaneTestExecutions[linkFilename] = testExecutions
 	}
 	return topXLaneTestExecutions, nil
+}
+
+func readTopXFromFile(filename string, topX int) (string, []*TestExecutions, error) {
+	log.Debugf("Reading top %d entries of generated file %q to create top x list", topX, filename)
+	openFile, err := os.OpenFile(filename, os.O_RDONLY, 0666)
+	if err != nil {
+		return "", nil, fmt.Errorf("failed to read file %q: %v", filename, err)
+	}
+	defer func() { _ = openFile.Close() }()
+	csvReader := csv.NewReader(openFile)
+	linkFilename := filepath.Base(filename)
+	var testExecutionsPerLane []*TestExecutions
+	var headers []string
+	for i := 0; i < topX+1; i++ {
+		record, err := csvReader.Read()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+			return "", nil, fmt.Errorf("failed to read file %q: %v", filename, err)
+		}
+		if i == 0 {
+			headers = record
+			continue
+		}
+		atoi, err := strconv.Atoi(record[1])
+		if err != nil {
+			return "", nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
+		}
+		totalExecutions := atoi
+		atoi, err = strconv.Atoi(record[2])
+		if err != nil {
+			return "", nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
+		}
+		failedExecutions := atoi
+
+		var failureLink string
+		if failedExecutions > 0 {
+			for i := len(headers) - 1; i > 0; i-- {
+				if record[i] == "f" {
+					failureLink = headers[i]
+					break
+				}
+			}
+		}
+
+		testExecutionsPerLane = append(testExecutionsPerLane, &TestExecutions{
+			Name:             record[0],
+			TotalExecutions:  totalExecutions,
+			FailedExecutions: failedExecutions,
+			LatestFailureURL: failureLink,
+		})
+	}
+	return linkFilename, testExecutionsPerLane, nil
 }
 
 type writeReportFileResult struct {

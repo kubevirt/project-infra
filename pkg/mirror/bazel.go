@@ -214,6 +214,7 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 		log.Printf("File will be written to gs://%s/%s", bucket, reportObject.ObjectName())
 
 		var reportOutputWriter io.WriteCloser
+		var cancelWrite context.CancelFunc
 		if dryRun {
 			reportOutputWriter, err = os.OpenFile("/dev/null", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
@@ -221,25 +222,39 @@ func WriteToBucket(dryRun bool, ctx context.Context, client *storage.Client, art
 				return fmt.Errorf("Failed to open /dev/null: %v", err)
 			}
 		} else {
-			reportOutputWriter = reportObject.NewWriter(ctx)
+			var writeCtx context.Context
+			writeCtx, cancelWrite = context.WithCancel(ctx)
+			reportOutputWriter = reportObject.NewWriter(writeCtx)
 		}
 		sha := sha256.New()
 		body := io.TeeReader(resp.Body, sha)
 		_, err = io.Copy(reportOutputWriter, body)
 		_ = resp.Body.Close()
 		if err != nil {
+			if cancelWrite != nil {
+				cancelWrite()
+			}
 			_ = reportOutputWriter.Close()
 			log.Printf("Could not upload artifact from %s, continuing with next URL: %v", uri, err)
 			continue
 		}
 		if toHex(sha) != artifact.SHA256() {
+			if cancelWrite != nil {
+				cancelWrite()
+			}
 			_ = reportOutputWriter.Close()
 			log.Printf("Could not upload artifact from %s, continuing with next URL: Expected shasum %v, got %v", uri, artifact.SHA256(), toHex(sha))
 			continue
 		}
 		if err := reportOutputWriter.Close(); err != nil {
+			if cancelWrite != nil {
+				cancelWrite()
+			}
 			log.Printf("Could not upload artifact from %s, continuing with next URL: %v", uri, err)
 			continue
+		}
+		if cancelWrite != nil {
+			cancelWrite()
 		}
 		return nil
 	}

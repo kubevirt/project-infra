@@ -52,22 +52,19 @@ func WriteReportToBucket(ctx context.Context, client *storage.Client, merged tim
 		log.Printf("Report CSV will be written to gs://%s/%s", reportCSVObject.BucketName(), reportCSVObject.ObjectName())
 		reportJSONObject := client.Bucket(flakefinder.BucketName).Object(path.Join(ReportOutputPath, CreateReportFileNameWithEnding(reportBaseData.EndOfReport, merged, "json")))
 		log.Printf("Report JSON will be written to gs://%s/%s", reportJSONObject.BucketName(), reportJSONObject.ObjectName())
-		reportOutputWriter = reportObject.NewWriter(ctx)
+		writeCtx, writeCancel := context.WithCancel(ctx)
+		defer writeCancel()
+		reportOutputWriter = reportObject.NewWriter(writeCtx)
+		reportCSVOutputWriter = reportCSVObject.NewWriter(writeCtx)
+		reportJSONOutputWriter = reportJSONObject.NewWriter(writeCtx)
 		defer func() {
-			if cerr := reportOutputWriter.Close(); cerr != nil && err == nil {
-				err = fmt.Errorf("failed to close report writer: %v", cerr)
+			if err != nil {
+				writeCancel()
 			}
-		}()
-		reportCSVOutputWriter = reportCSVObject.NewWriter(ctx)
-		defer func() {
-			if cerr := reportCSVOutputWriter.Close(); cerr != nil && err == nil {
-				err = fmt.Errorf("failed to close CSV report writer: %v", cerr)
-			}
-		}()
-		reportJSONOutputWriter = reportJSONObject.NewWriter(ctx)
-		defer func() {
-			if cerr := reportJSONOutputWriter.Close(); cerr != nil && err == nil {
-				err = fmt.Errorf("failed to close JSON report writer: %v", cerr)
+			for _, w := range []*storage.Writer{reportJSONOutputWriter, reportCSVOutputWriter, reportOutputWriter} {
+				if cerr := w.Close(); cerr != nil && err == nil {
+					err = fmt.Errorf("failed to close GCS writer: %v", cerr)
+				}
 			}
 		}()
 	}

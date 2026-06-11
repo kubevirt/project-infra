@@ -263,12 +263,23 @@ func runStatsCommand(configurationOptions ConfigOptions) error {
 			gcsRegexp := regexp.MustCompile(`^gs://([^/]+)/(.*)$`)
 			matches := gcsRegexp.FindStringSubmatch(configurationOptions.outputGCSURL)
 			reportObject := storageClient.Bucket(matches[1]).Object(matches[2])
-			writer := reportObject.NewWriter(ctx)
-			defer func() { _ = writer.Close() }()
-			outputWriter = writer
+			writeCtx, writeCancel := context.WithCancel(ctx)
+			defer writeCancel()
+			gcsWriter := reportObject.NewWriter(writeCtx)
+			outputWriter = gcsWriter
+
+			err = htmlTemplate.Execute(outputWriter, statsHTMLData)
+			if err != nil {
+				writeCancel()
+				_ = gcsWriter.Close()
+				return err
+			}
+			if cerr := gcsWriter.Close(); cerr != nil {
+				return fmt.Errorf("failed to close GCS writer: %v", cerr)
+			}
+			return nil
 		}
-		err = htmlTemplate.Execute(outputWriter, statsHTMLData)
-		return err
+		return htmlTemplate.Execute(outputWriter, statsHTMLData)
 	}
 
 	return fmt.Errorf("not implemented")

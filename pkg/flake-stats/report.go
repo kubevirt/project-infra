@@ -145,10 +145,10 @@ func (r FlakeStats) fetchFlakeFinder24hReportData(targetReportDate time.Time) (*
 	if err != nil {
 		return nil, fmt.Errorf("error fetching report %q", reportJSONURL)
 	}
+	defer func() { _ = response.Body.Close() }()
 	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("error %s fetching report %q", response.Status, reportJSONURL)
 	}
-	defer func() { _ = response.Body.Close() }()
 
 	var flakefinderReportData flakefinder.Params
 	err = json.NewDecoder(response.Body).Decode(&flakefinderReportData)
