@@ -23,16 +23,17 @@ import (
 	_ "embed"
 	"flag"
 	"fmt"
-	"github.com/google/go-github/github"
-	log "github.com/sirupsen/logrus"
-	"golang.org/x/oauth2"
 	"os"
 	"os/exec"
 	"regexp"
-	"sigs.k8s.io/prow/pkg/config/secret"
 	"strconv"
 	"strings"
 	"text/template"
+
+	"github.com/google/go-github/github"
+	log "github.com/sirupsen/logrus"
+	"golang.org/x/oauth2"
+	"sigs.k8s.io/prow/pkg/config/secret"
 )
 
 type options struct {

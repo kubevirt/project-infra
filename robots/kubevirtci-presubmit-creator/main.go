@@ -190,9 +190,9 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 			Name:           fmt.Sprintf("check-provision-k8s-%s.%s", semver.Major, semver.Minor),
 			MaxConcurrency: 3,
 			Labels: map[string]string{
-				"preset-docker-mirror-proxy":              "true",
-				"preset-kubevirtci-check-provision-env":    "true",
-				"preset-podman-in-container-enabled":       "true",
+				"preset-docker-mirror-proxy":            "true",
+				"preset-kubevirtci-check-provision-env": "true",
+				"preset-podman-in-container-enabled":    "true",
 			},
 			Cluster: cluster,
 			Spec: &v1.PodSpec{

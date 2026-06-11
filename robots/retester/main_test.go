@@ -287,11 +287,11 @@ func TestNotFitForRetest(t *testing.T) {
 	defer func() { presubmitRequiredMap = savedMap }()
 
 	presubmitRequiredMap = map[string]struct{}{
-		"pull-kubevirt-build":                      {},
-		"pull-kubevirt-build-s390x":                {},
-		"pull-kubevirt-generate":                   {},
-		"pull-kubevirt-verify-go-mod":              {},
-		"pull-kubevirt-unit-test":                  {},
+		"pull-kubevirt-build":                     {},
+		"pull-kubevirt-build-s390x":               {},
+		"pull-kubevirt-generate":                  {},
+		"pull-kubevirt-verify-go-mod":             {},
+		"pull-kubevirt-unit-test":                 {},
 		"pull-kubevirt-e2e-k8s-1.33-sig-compute":  {},
 		"pull-kubevirt-e2e-k8s-1.34-sig-compute":  {},
 		"pull-kubevirt-e2e-k8s-1.35-sig-compute":  {},
