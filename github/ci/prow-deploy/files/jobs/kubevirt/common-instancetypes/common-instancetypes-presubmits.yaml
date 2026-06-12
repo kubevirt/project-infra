@@ -164,7 +164,7 @@ presubmits:
         - /usr/local/bin/runner.sh
         - "/bin/sh"
         - "-c"
-        - "make cluster-up && make cluster-sync && make cluster-functest"
+        - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
         env:
         - name: CGO_ENABLED
           value: "0"
