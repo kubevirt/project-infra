@@ -57,7 +57,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260608-2d2868b
+    - image: quay.io/kubevirtci/pr-creator:v20260611-cdf7248
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -95,7 +95,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260608-2d2868b
+    - image: quay.io/kubevirtci/pr-creator:v20260611-cdf7248
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -131,7 +131,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260608-2d2868b
+    - image: quay.io/kubevirtci/pr-creator:v20260611-cdf7248
       command:
       - /bin/sh
       - -ceu
@@ -170,7 +170,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260608-2d2868b
+    - image: quay.io/kubevirtci/pr-creator:v20260611-cdf7248
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -279,7 +279,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260608-2d2868b
+      - image: quay.io/kubevirtci/pr-creator:v20260611-cdf7248
         command: ["/bin/sh", "-ce"]
         args:
           - |
