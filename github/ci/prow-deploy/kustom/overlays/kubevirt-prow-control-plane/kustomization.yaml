@@ -10,6 +10,7 @@ resources:
   - resources/docker-mirror-proxy_pvc.yaml
   - resources/hook-rbac.yaml
   - resources/horologium-rbac.yaml
+  - resources/prow-controller-manager-rbac.yaml
   - resources/prow-exporter-deployment.yaml
   - resources/prow-exporter-rbac.yaml
   - resources/prow-exporter-service.yaml
@@ -93,13 +94,6 @@ patches:
       kind: PersistentVolumeClaim
       name: ghproxy
     path: patches/StrategicMerge/ghproxy.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: Role
-      namespace: test-pods
-      name: prow-controller-manager
-    path: patches/StrategicMerge/prow_controller_manager_role.yaml
 
   # namespaces
   - target:

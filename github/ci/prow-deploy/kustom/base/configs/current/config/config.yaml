@@ -4,26 +4,6 @@ prowjob_namespace: kubevirt-prow-jobs
 pod_namespace: kubevirt-prow-jobs
 log_level: debug
 
-plank:
-  job_url_template: 'https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
-  job_url_prefix_config:
-    '*':  https://prow.ci.kubevirt.io/view/
-  pod_pending_timeout: 60m
-  pod_unscheduled_timeout: 24h
-  default_decoration_configs:
-    '*':
-      timeout: 2h
-      grace_period: 15s
-      utility_images:
-        clonerefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260617-37d12bec7"
-        initupload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260617-37d12bec7"
-        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260617-37d12bec7"
-        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260617-37d12bec7"
-      gcs_configuration:
-        bucket: "kubevirt-prow"
-        path_strategy: "explicit"
-      gcs_credentials_secret: "gcs"
-
 deck:
   spyglass:
     size_limit: 500000000 # 500MB
@@ -80,6 +60,32 @@ deck:
     '*':
       github_team_ids:
         - 3701123 # prow-job-taskforce
+
+# https://docs.prow.k8s.io/docs/components/core/prow-controller-manager/
+# https://docs.prow.k8s.io/docs/components/deprecated/plank/
+# https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#Plank
+plank:
+  job_url_template: 'https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
+  job_url_prefix_config:
+    '*': https://prow.ci.kubevirt.io/view/
+  default_decoration_config_entries:
+    - config:
+        gcs_configuration:
+          bucket: gs://kubevirt-prow
+          path_strategy: explicit
+        gcs_credentials_secret: gcs-credentials
+        github_api_endpoints:
+          - http://ghproxy
+          - https://api.github.com
+        utility_images:
+          clonerefs: us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260617-37d12bec7
+          entrypoint: us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260617-37d12bec7
+          initupload: us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260617-37d12bec7
+          sidecar: us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260617-37d12bec7
+        grace_period: 15s
+        timeout: 2h
+  pod_pending_timeout: 60m
+  pod_unscheduled_timeout: 24h
 
 # https://docs.prow.k8s.io/docs/components/core/sinker/
 # https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#Sinker
