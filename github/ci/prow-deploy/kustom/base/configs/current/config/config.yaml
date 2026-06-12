@@ -675,12 +675,21 @@ presets:
   env:
     - name: BAZEL_VERSION
       value: "6.5.0"
-    - name: CACHE_HOST
-      value: bazel-cache.kubevirt-prow
-    - name: CACHE_PORT
-      value: "8080"
+    - name: BAZEL_REMOTE_CACHE
+      value: https://storage.googleapis.com/kubevirt-bazel-cache
     - name: BAZEL_REMOTE_CACHE_ENABLED
       value: "true"
+    - name: BAZEL_CACHE_GOOGLE_CREDENTIALS
+      value: /etc/bazel-cache-gcs/bazel-cache-sa.json
+  volumes:
+    - name: bazel-cache-gcs
+      secret:
+        secretName: bazel-cache-gcs
+        defaultMode: 0400
+  volumeMounts:
+    - name: bazel-cache-gcs
+      mountPath: /etc/bazel-cache-gcs
+      readOnly: true
 - labels:
     preset-bazel-unnested: "true"
   env:
