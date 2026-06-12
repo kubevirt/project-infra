@@ -1,4 +1,9 @@
 resources:
+  - manifests/upstream/crier_deployment.yaml
+  - manifests/upstream/crier_rolebinding_test-pods.yaml
+  - manifests/upstream/crier_rolebinding.yaml
+  - manifests/upstream/crier_role.yaml
+  - manifests/upstream/crier_serviceaccount.yaml
   - manifests/upstream/ghproxy_deployment.yaml
   - manifests/upstream/ghproxy_persistentvolumeclaim.yaml
   - manifests/upstream/ghproxy_service.yaml
@@ -46,9 +51,6 @@ resources:
 
   - manifests/test_infra/current/cherrypicker_deployment.yaml
   - manifests/test_infra/current/cherrypicker_service.yaml
-  - manifests/test_infra/current/crier_deployment.yaml
-  - manifests/test_infra/current/crier_rbac.yaml
-  - manifests/test_infra/current/crier_service.yaml
   - manifests/test_infra/current/deck_deployment.yaml
   - manifests/test_infra/current/deck_rbac.yaml
   - manifests/test_infra/current/deck_service.yaml
