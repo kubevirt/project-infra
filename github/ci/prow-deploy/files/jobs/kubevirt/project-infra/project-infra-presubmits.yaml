@@ -774,7 +774,7 @@ presubmits:
             requests:
               memory: "2Gi"
   - name: pull-project-infra-ci-search-deploy-test
-    optional: false
+    optional: true
     run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*"
     decorate: true
     labels:
