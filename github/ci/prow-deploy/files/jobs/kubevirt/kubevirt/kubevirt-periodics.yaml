@@ -108,7 +108,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources: {}
 - annotations:
@@ -151,7 +151,7 @@ periodics:
           secretKeyRef:
             key: oauth
             name: oauth-token
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources: {}
 - annotations:
@@ -184,7 +184,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources: {}
 - annotations:
@@ -215,7 +215,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.23.4
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources: {}
 - annotations:
@@ -246,7 +246,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources: {}
 - annotations:
@@ -284,7 +284,7 @@ periodics:
         value: windows_sysprep
       - name: KUBEVIRT_WINDOWS_PRODUCT_KEY_PATH
         value: /etc/win-sysprep/productKey
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -382,7 +382,7 @@ periodics:
         value: /etc/github/oauth
       - name: BUILD_ARCH
         value: amd64,crossbuild-s390x,crossbuild-aarch64
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -423,7 +423,7 @@ periodics:
             gsutil -m rm -r ${nightly_build_dir};
           fi;
         done
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -458,7 +458,7 @@ periodics:
       - /bin/sh
       - -c
       - automation/conformance.sh
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -509,7 +509,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: kind-1.35-vgpu
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -581,7 +581,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: kind-sriov
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -729,7 +729,7 @@ periodics:
         value: kind-1.34-wg-arm64
       - name: KUBEVIRT_NUM_NODES
         value: "2"
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -781,7 +781,7 @@ periodics:
         value: dual
       - name: RUN_ON_ARM64_INFRA
         value: "true"
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -858,7 +858,7 @@ periodics:
         value: crossbuild-s390x
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -905,7 +905,7 @@ periodics:
       - /bin/sh
       - -c
       - make test
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -934,7 +934,7 @@ periodics:
       - /bin/sh
       - -c
       - make go-test
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1007,7 +1007,7 @@ periodics:
         value: Always
       - name: PERFSCALE_WORKLOAD
         value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-100.yaml
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1091,7 +1091,7 @@ periodics:
         value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-400.yaml
       - name: PERFSCALE_WORKLOAD_SIX_HUNDRED
         value: tools/perfscale-load-generator/examples/workload/kubevirt-density/kubevirt-burst-600.yaml
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1152,7 +1152,7 @@ periodics:
         value: 1G
       - name: KUBEVIRT_WITH_ETC_IN_MEMORY
         value: "true"
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         limits:
@@ -1217,7 +1217,7 @@ periodics:
         value: 8G
       - name: KUBEVIRT_WITH_ETC_IN_MEMORY
         value: "true"
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1283,7 +1283,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1346,7 +1346,7 @@ periodics:
         value: "512"
       - name: KUBEVIRT_REALTIME_SCHEDULER
         value: "true"
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1394,7 +1394,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1439,7 +1439,7 @@ periodics:
         value: kind-1.34-sev
       - name: KUBEVIRT_PROVIDER
         value: kind-1.34
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1487,7 +1487,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1536,7 +1536,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1587,7 +1587,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1636,7 +1636,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1750,7 +1750,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources: {}
 - annotations:
@@ -1791,7 +1791,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources: {}
 - annotations:
@@ -1855,7 +1855,7 @@ periodics:
         value: kubevirtbot@redhat.com
       - name: GIT_REPO_URL
         value: https://kubevirt-bot@github.com/kubevirt/sig-release.git
-      image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      image: quay.io/kubevirtci/golang:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1898,7 +1898,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1947,7 +1947,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -1994,7 +1994,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -2041,7 +2041,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -2092,7 +2092,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -2139,7 +2139,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -2186,7 +2186,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -2233,7 +2233,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -2284,7 +2284,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -2331,7 +2331,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -2399,7 +2399,7 @@ periodics:
         value: amd64,crossbuild-s390x
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -2499,7 +2499,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -2546,7 +2546,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -2597,7 +2597,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
@@ -2644,7 +2644,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
