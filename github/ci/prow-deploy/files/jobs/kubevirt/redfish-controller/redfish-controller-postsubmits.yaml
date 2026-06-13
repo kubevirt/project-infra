@@ -17,7 +17,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      - image: quay.io/kubevirtci/golang:v20260612-73bc71e
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -48,7 +48,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+      - image: quay.io/kubevirtci/golang:v20260612-73bc71e
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
