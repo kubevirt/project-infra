@@ -774,8 +774,7 @@ presubmits:
             requests:
               memory: "2Gi"
   - name: pull-project-infra-ci-search-deploy-test
-    optional: true
-    run_if_changed: "github/ci/services/ci-search/.*|github/ci/services/common/.*"
+    run_if_changed: "github/ci/services/(ci-search|common)/.*"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"

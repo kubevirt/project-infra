@@ -28,5 +28,7 @@ spec:
         - --deck-uri=https://prow.ci.kubevirt.io/
         - --job-uri-prefix=https://prow.ci.kubevirt.io/view/gs/
         - --index-bucket=kubevirt-prow
+        # Required since https://github.com/openshift/ci-search/pull/142
+        - --jira-endpoint=https://redhat.atlassian.net
       securityContext:
         fsGroup: 1000
