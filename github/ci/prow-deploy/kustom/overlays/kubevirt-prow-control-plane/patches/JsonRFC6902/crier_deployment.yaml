@@ -18,6 +18,26 @@
     configMap:
       name: job-config
 
+# inject consolidated KUBECONFIG with federated clusters for the k8s reporter (podinfo.json)
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --kubeconfig=/etc/kubeconfig/config
+
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/-
+  value:
+    name: kubeconfig
+    mountPath: /etc/kubeconfig
+    readOnly: true
+
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: kubeconfig
+    secret:
+      secretName: kubeconfig
+      defaultMode: 420
+
 # inject slack credentials
 - op: add
   path: /spec/template/spec/containers/0/args/-

@@ -63,6 +63,7 @@ deck:
         - artifacts/filtered.cov
       optional_files:
         - artifacts/filtered.html
+    # podinfo.json is uploaded by crier's k8s reporter
     - lens:
         name: podinfo
       required_files:
@@ -88,7 +89,7 @@ sinker:
   max_pod_age: 30m
   terminated_pod_ttl: 2h
 
-# https://docs.prow.k8s.io/docs/components/core/crier/
+# https://docs.prow.k8s.io/docs/components/core/crier/#slack-reporter
 # https://pkg.go.dev/sigs.k8s.io/prow/pkg/apis/prowjobs/v1#SlackReporterConfig
 slack_reporter_configs:
   '*':
