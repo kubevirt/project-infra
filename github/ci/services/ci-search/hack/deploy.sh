@@ -59,4 +59,4 @@ fi
 
 kubectl apply -k "./overlays/${environment}"
 
-go run ../common/k8s/cmd/wait -namespace ci-search -selector search -kind statefulset
+kubectl rollout status -f ./base/patches/statefulset.yaml --timeout='200s'
