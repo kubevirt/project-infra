@@ -43,7 +43,7 @@ var _ = Describe("Events", func() {
 
 		AfterEach(func() {
 			if gitClientFactory != nil {
-				gitClientFactory.Clean()
+				_ = gitClientFactory.Clean()
 			}
 		})
 

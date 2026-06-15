@@ -306,11 +306,15 @@ func diff(a, b string) string {
 	if err != nil {
 		panic(err)
 	}
-	defer os.RemoveAll(temp)
+	defer func() { _ = os.RemoveAll(temp) }()
 	fileNameA := filepath.Join(temp, "a")
-	os.WriteFile(fileNameA, []byte(a), 0666)
+	if err := os.WriteFile(fileNameA, []byte(a), 0666); err != nil {
+		panic(err)
+	}
 	fileNameB := filepath.Join(temp, "b")
-	os.WriteFile(fileNameB, []byte(b), 0666)
+	if err := os.WriteFile(fileNameB, []byte(b), 0666); err != nil {
+		panic(err)
+	}
 	command := osexec.Command("diff", "-y", "-W", "200", fileNameA, fileNameB)
 	output, _ := command.CombinedOutput()
 	return string(output)

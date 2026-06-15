@@ -377,7 +377,7 @@ to contain
 				{
 					SpecReports: []SpecReport{
 						{
-							LeafNodeText:         leafNodeText,
+							LeafNodeText:            leafNodeText,
 							ContainerHierarchyTexts: containerTexts,
 						},
 					},
@@ -439,11 +439,11 @@ to contain
 				{
 					SpecReports: []SpecReport{
 						{
-							LeafNodeText:         "should do something",
+							LeafNodeText:            "should do something",
 							ContainerHierarchyTexts: []string{"[sig-compute] my flaky test"},
 						},
 						{
-							LeafNodeText:         "should work",
+							LeafNodeText:            "should work",
 							ContainerHierarchyTexts: []string{"[sig-network] another flaky test"},
 						},
 					},

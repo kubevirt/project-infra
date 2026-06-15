@@ -616,7 +616,7 @@ func (h *GitHubEventsHandler) loadConfigsAtRef(
 		log.WithError(err).Error("Could not create a temp directory to store configs.")
 		return nil, err
 	}
-	defer os.RemoveAll(tmpdir)
+	defer func() { _ = os.RemoveAll(tmpdir) }()
 	// In order to actually support multi-threaded access to the git repo, we can't checkout any refs or assume that
 	// the repo is checked out with any refspec. Instead, we use git cat-file to read the files that we need to the
 	// memory and write them to a temp file. We need the temp file because the current version of Prow's config module
@@ -719,13 +719,16 @@ func writeTempFile(log *logrus.Logger, basedir string, content []byte) (string, 
 		log.WithError(err).Errorf("Could not create temp file for job config.")
 		return "", err
 	}
-	defer tmpfile.Close()
+	defer func() { _ = tmpfile.Close() }()
 	_, err = tmpfile.Write(content)
 	if err != nil {
 		log.WithError(err).Errorf("Could not write data to file: %s", tmpfile.Name())
 		return "", err
 	}
-	tmpfile.Sync()
+	if err := tmpfile.Sync(); err != nil {
+		log.WithError(err).Errorf("Could not sync data to file: %s", tmpfile.Name())
+		return "", err
+	}
 	return tmpfile.Name(), nil
 }
 

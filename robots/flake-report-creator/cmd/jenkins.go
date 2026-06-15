@@ -340,7 +340,7 @@ func writeReportToFile(startOfReport time.Time, endOfReport time.Time, reports [
 
 func writeHTMLReportToOutputFile(outputFile string, reportTemplate string, params interface{}) {
 	reportOutputWriter := createReportOutputWriter(outputFile)
-	defer reportOutputWriter.Close()
+	defer func() { _ = reportOutputWriter.Close() }()
 
 	err := flakefinder.WriteTemplateToOutput(reportTemplate, params, reportOutputWriter)
 	if err != nil {
@@ -350,7 +350,7 @@ func writeHTMLReportToOutputFile(outputFile string, reportTemplate string, param
 
 func writeJSONToOutputFile(jsonOutputFile string, parameters flakefinder.Params) {
 	reportOutputWriter := createReportOutputWriter(jsonOutputFile)
-	defer reportOutputWriter.Close()
+	defer func() { _ = reportOutputWriter.Close() }()
 
 	encoder := json.NewEncoder(reportOutputWriter)
 	err := encoder.Encode(

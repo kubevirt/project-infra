@@ -195,7 +195,7 @@ var openOnStatusGateWayTimeout = func(err error) bool {
 var circuitBreakerBuildDataGetter = circuitbreaker.NewCircuitBreaker(retryDelay, openOnStatusGateWayTimeout)
 
 func getBuildFromGetterWithRetry(buildDataGetter BuildDataGetter, buildNumber int64, fLog *log.Entry) (build *gojenkins.Build, statusCode int, err error) {
-	retry.Do(
+	_ = retry.Do(
 		circuitBreakerBuildDataGetter.WrapRetryableFunc(
 			func() error {
 				build, err = buildDataGetter.GetBuild(buildNumber)

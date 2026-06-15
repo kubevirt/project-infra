@@ -51,7 +51,7 @@ func CutBucketConnections(ctx context.Context, alert BillingAlert) error {
 
 func cutBucketConnections(client *storage.Client, buckets []string) error {
 
-	for  _, bucket := range buckets {
+	for _, bucket := range buckets {
 		err := removeUsers(client, bucket)
 		if err != nil {
 			return fmt.Errorf("failed to remove users from bucket %v: %v", bucket, err)

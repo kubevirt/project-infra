@@ -301,7 +301,7 @@ func writeHTMLReportToOutputFile(data testreport.Data) error {
 		return fmt.Errorf("failed to write report %q: %v", executionReportFlagOpts.outputFile, err)
 	}
 	logger.Printf("Writing html to %q", executionReportFlagOpts.outputFile)
-	defer htmlReportOutputWriter.Close()
+	defer func() { _ = htmlReportOutputWriter.Close() }()
 	err = writeHTMLReportToOutput(data, htmlReportOutputWriter)
 	if err != nil {
 		return fmt.Errorf("failed to write report: %v", err)
@@ -321,7 +321,7 @@ func writeJsonBaseDataFile(testNamesToJobNamesToExecutionStatus map[string]map[s
 	if err != nil && err != os.ErrNotExist {
 		return fmt.Errorf("failed to write report: %v", err)
 	}
-	defer jsonOutputWriter.Close()
+	defer func() { _ = jsonOutputWriter.Close() }()
 
 	_, err = jsonOutputWriter.Write(bytes)
 	return err

@@ -37,7 +37,7 @@ func init() {
 		Use:   "test-report",
 		Short: "test-report creates reports about test executions",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
+			_, _ = fmt.Fprint(cmd.OutOrStderr(), cmd.UsageString())
 		},
 	}
 

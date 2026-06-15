@@ -95,7 +95,7 @@ func LoadConfig(path string) (*Config, error) {
 	}
 
 	cfg := &Config{}
-	
+
 	if err := yaml.Unmarshal(data, cfg); err != nil {
 		return nil, fmt.Errorf("parsing config file %s: %w", path, err)
 	}
@@ -286,7 +286,7 @@ func (h *GitHubEventsHandler) generateCoverageJob(
 						Args: []string{
 							fmt.Sprintf("go test %s -coverprofile=${ARTIFACTS}/filtered.cov && covreport -i ${ARTIFACTS}/filtered.cov -o ${ARTIFACTS}/filtered.html", cfg.TestPackages),
 						},
-						Env:  envVars,
+						Env: envVars,
 					},
 				},
 			},

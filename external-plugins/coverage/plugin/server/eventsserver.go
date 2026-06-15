@@ -36,5 +36,5 @@ func (s *GitHubEventsServer) ServeHTTP(writer http.ResponseWriter, request *http
 	}
 
 	go s.eventsHandler.Handle(event)
-	writer.Write([]byte("Event received. Have a nice day."))
+	_, _ = writer.Write([]byte("Event received. Have a nice day."))
 }
