@@ -3,6 +3,12 @@ resources:
   - resources/deployment.yaml
   - resources/service.yaml
 
+images:
+  - name: ghcr.io/rpardini/docker-registry-proxy:0.6.2
+    newName: quay.io/kubevirtci/rpardini-docker-registry-proxy
+    # Include workaround for https://github.com/rpardini/docker-registry-proxy/issues/181
+    newTag: 0.6.2-ssl-verify-depth-3
+
 configMapGenerator:
   - name: mirror-proxy-config
     namespace: kubevirt-prow-jobs
