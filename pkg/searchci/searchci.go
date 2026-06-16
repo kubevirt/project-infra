@@ -110,6 +110,9 @@ func ScrapeImpact(body string) []Impact {
 				URLToDisplay: jobHistoryURL[strings.LastIndex(jobHistoryURL, "/")+1:],
 			})
 		case strings.Contains(viewJobBuildURL, "view"):
+			if len(result) == 0 {
+				continue
+			}
 			timeAmountStr := submatch[7]
 			timeAmount, err := strconv.Atoi(timeAmountStr)
 			if err != nil {
