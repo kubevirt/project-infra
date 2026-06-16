@@ -160,6 +160,54 @@ tests/migration/namespace.go:236
 				},
 			},
 		),
+		Entry("range index error",
+			`
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><title>Search OpenShift CI</title>
+<link rel="stylesheet" href="/static/bootstrap-4.4.1.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="/static/uPlot.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<style>
+#results.nowrap PRE { white-space: pre; }
+#results PRE { width: calc(95vw - 2.5em); white-space: pre-wrap; padding-bottom: 1em; }
+.row-match TD { border-top: 0; }
+.table TD { padding-bottom: 0.25rem; }
+#results .table-job-compact TD > PRE { margin-bottom: 0; padding-bottom: 0.25rem; }
+</style>
+</head>
+<body>
+<div id="results" class="container-fluid nowrap">
+
+<form class="form mt-4 mb-4" method="GET">
+	<div class="input-group input-group-lg mb-2">
+		<input title="A regular expression over the contents of test logs and junit output - uses ripgrep regular expressions" autocomplete="off" autofocus name="search" class="form-control col-auto" value="\[rfe_id:393]\[crit:high]\[vendor:cnv-qe@redhat.com]\[level:system]\[sig-compute] VM Live Migration triggered by evacuation during evacuation when evacuating fails after a successful migration backoff should be cleared\u0026maxAge=336h\u0026context=1\u0026type=junit\u0026name=\u0026excludeName=periodic-.*\u0026maxMatches=1\u0026maxBytes=20971520\u0026groupBy=job" placeholder="Search OpenShift CI failures by entering a regex search ...">
+		<select title="How far back to search for jobs" name="maxAge" class="form-control custom-select col-1" onchange="this.form.submit();"><option value="6h" >6h</option><option value="12h" >12h</option><option value="24h" >1d</option><option value="48h" selected>2d</option><option value="168h" >7d</option><option value="336h" >14d</option></select>
+		<select title="Number of lines before and after the match to show" name="context" class="form-control custom-select col-1" onchange="this.form.submit();"><option value="-1" selected>Links</option><option value="0" >No context</option><option value="1" selected>1 lines</option><option value="2" >2 lines</option><option value="3" >3 lines</option><option value="5" >5 lines</option><option value="7" >7 lines</option><option value="10" >10 lines</option><option value="15" >15 lines</option></select>
+		<select title="Type of results to return" name="type" class="form-control custom-select col-1" onchange="this.form.submit();"><option value="bug+issue+junit" selected>bug+issue+junit</option><option value="bug+junit" >bug+junit</option><option value="bug+issue" >bug+issue</option><option value="issue" >issue</option><option value="bug" >bug</option><option value="junit" >junit</option><option value="build-log" >build-log</option><option value="all" >all</option></select>
+		<div class="input-group-append"><input class="btn btn-outline-primary" type="submit" value="Search"></div>
+	</div>
+	<div class="input-group input-group-sm mb-3">
+		<div class="input-group-prepend"><span class="input-group-text" for="name">Job:</span></div>
+		<input title="A regular expression that matches the name of a job or the title of a bug" class="form-control col-auto" name="name" value="" placeholder="Focus job or bug names by regex ...">
+		<input title="A regular expression that matches the name of a job or the title of a bug" class="form-control col-auto" name="excludeName" value="" placeholder="Skip job or bug names by regex ...">
+		<input title="The number of matches per job / file to show" autocomplete="off" class="form-control col-1" name="maxMatches" value="5" placeholder="Max matches per job or bug">
+		<input title="The maximum number of bytes for the response" autocomplete="off" class="form-control col-1" name="maxBytes" value="20971520" placeholder="Max bytes to return">
+		<select title="Group results by job (with stats) or no grouping" name="groupBy" class="form-control custom-select col-1" onchange="this.form.submit();">[<option value="job" selected>job</option> <option value="none" >none</option>]</select>
+		<div class="input-group-append"><span class="input-group-text">
+			<input id="wrap" type="checkbox" name="wrap"  onchange="document.getElementById('results').classList.toggle('nowrap')">
+			<label for="wrap" style="margin-bottom: 0; margin-left: 0.4em;">Wrap lines</label>
+		</span></div>
+	</div>
+</form>
+<div style="margin-top: 3rem; position: relative" class="pl-3"><p style="position:absolute; top: -2rem;" class="small"><em title="5924 runs, 659 failing runs, 0 matched runs, 517 jobs, 0 matched jobs">Found in 0.00% of runs (0.00% of failures) across 5924 total runs and 517 jobs (11.12% failed) in 41ms</em> - <a href="/">clear search</a> | <a href="/chart?search=%5C%5Brfe_id%3A393%5D%5C%5Bcrit%3Ahigh%5D%5C%5Bvendor%3Acnv-qe%40redhat.com%5D%5C%5Blevel%3Asystem%5D%5C%5Bsig-compute%5D+VM+Live+Migration+triggered+by+evacuation+during+evacuation+when+evacuating+fails+after+a+successful+migration+backoff+should+be+cleared\u0026maxAge=336h\u0026context=1\u0026type=junit\u0026name=\u0026excludeName=periodic-.*\u0026maxMatches=1\u0026maxBytes=20971520\u0026groupBy=job">chart view</a> - source code located <a target="_blank" href="https://github.com/openshift/ci-search">on github</a></p><p style="padding-top: 1em;"><em>No results found.</em></p><p><em>Search uses <a target="_blank" href="https://docs.rs/regex/0.2.5/regex/#syntax">ripgrep regular-expression patterns</a> to find results. Try simplifying your search or using case-insensitive options.</em></p></div>
+</div>
+</body>
+</html>
+`,
+			nil,
+		),
 	)
 	Context("NewScrapeURL", func() {
 
