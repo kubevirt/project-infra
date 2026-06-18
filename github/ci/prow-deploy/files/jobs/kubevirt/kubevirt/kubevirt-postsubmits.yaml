@@ -14,7 +14,7 @@ postsubmits:
       testgrid-num-failures-to-alert: "1"
     decorate: true
     decoration_config:
-      timeout: 3h
+      timeout: 5h
       grace_period: 5m
     labels:
       preset-podman-in-container-enabled: "true"
