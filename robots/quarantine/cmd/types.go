@@ -36,6 +36,10 @@ type autoQuarantineOptions struct {
 	releaseLaneSuffix       string
 	matchingLaneRegexString string
 
+	maxFailureAge      time.Duration
+	minRecentFailures  int
+	minFailureInterval time.Duration
+
 	jobConfigPath    string
 	jobConfigOrgRepo string
 
