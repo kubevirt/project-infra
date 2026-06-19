@@ -1,0 +1,49 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: terminating-pod-cleanup
+spec:
+  schedule: "30 6 * * 1"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      labels:
+        app: terminating-pod-cleanup
+    spec:
+      activeDeadlineSeconds: 300
+      template:
+        spec:
+          containers:
+            - name: cleanup
+              image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+              command:
+                - /usr/local/bin/runner.sh
+                - /bin/sh
+                - -c
+                - |
+                  set -euo pipefail
+                  KC="--context=prow-workloads --kubeconfig=/etc/kubeconfig/config --request-timeout=30s"
+                  CUTOFF=$(date -u -d '2 days ago' +%Y-%m-%dT%H:%M:%SZ)
+                  kubectl get pods -n kubevirt-prow-jobs ${KC} \
+                    -o jsonpath='{range .items[?(@.metadata.deletionTimestamp)]}{.metadata.name}{"\t"}{.metadata.deletionTimestamp}{"\n"}{end}' \
+                    | awk -v cutoff="${CUTOFF}" '$2 <= cutoff {print $1}' \
+                    | xargs -r kubectl delete pod -n kubevirt-prow-jobs ${KC} --force --grace-period=0
+                  echo "Cleanup complete."
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+                limits:
+                  cpu: 100m
+                  memory: 128Mi
+              volumeMounts:
+                - name: kubeconfig
+                  mountPath: /etc/kubeconfig
+                  readOnly: true
+          restartPolicy: Never
+          volumes:
+            - name: kubeconfig
+              secret:
+                secretName: kubeconfig
+                defaultMode: 420

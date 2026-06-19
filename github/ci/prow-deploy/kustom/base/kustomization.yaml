@@ -47,6 +47,7 @@ resources:
   - manifests/local/prow-coverage-service.yaml
   - manifests/local/release-blocker_deployment.yaml
   - manifests/local/release-blocker_service.yaml
+  - manifests/local/terminating-pod-cleanup.yaml
   - manifests/local/tide_rbac_prowjob.yaml
 
   - manifests/test_infra/current/cherrypicker_deployment.yaml
