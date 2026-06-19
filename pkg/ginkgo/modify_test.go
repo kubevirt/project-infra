@@ -24,6 +24,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"golang.org/x/tools/imports"
 )
 
 var _ = Describe("modify", func() {
@@ -127,6 +128,67 @@ func main() {}
 `
 			result := ensureImport(code, "kubevirt.io/kubevirt/tests/decorators")
 			Expect(result).To(BeEquivalentTo(code))
+		})
+	})
+
+	When("imports.Process preserves comments", func() {
+
+		It("retains all comments when formatting with correct options", func() {
+			input := `/*
+ * License header comment.
+ */
+
+package foo
+
+import (
+	"fmt"
+)
+
+// Function comment.
+func main() {
+	// inline comment
+	fmt.Println("hello") // trailing comment
+}
+`
+			formatted, err := imports.Process("foo.go", []byte(input), &imports.Options{
+				FormatOnly: true,
+				Comments:   true,
+				TabIndent:  true,
+				TabWidth:   8,
+			})
+			Expect(err).ToNot(HaveOccurred())
+			result := string(formatted)
+
+			By("verifying the license header is preserved")
+			Expect(result).To(ContainSubstring("License header comment."))
+
+			By("verifying the function comment is preserved")
+			Expect(result).To(ContainSubstring("// Function comment."))
+
+			By("verifying the inline comment is preserved")
+			Expect(result).To(ContainSubstring("// inline comment"))
+
+			By("verifying the trailing comment is preserved")
+			Expect(result).To(ContainSubstring("// trailing comment"))
+		})
+
+		It("strips comments when Comments is false (demonstrating the bug)", func() {
+			input := `package foo
+
+import (
+	"fmt"
+)
+
+// This comment should be stripped.
+func main() {
+	fmt.Println("hello")
+}
+`
+			formatted, err := imports.Process("foo.go", []byte(input), &imports.Options{
+				FormatOnly: true,
+			})
+			Expect(err).ToNot(HaveOccurred())
+			Expect(string(formatted)).ToNot(ContainSubstring("// This comment should be stripped."))
 		})
 	})
 
