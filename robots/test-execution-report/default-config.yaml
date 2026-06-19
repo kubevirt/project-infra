@@ -1,0 +1,2 @@
+jobNamePattern: ^pull-kubevirt-e2e-k8s-.*$
+testNamePattern: .*
