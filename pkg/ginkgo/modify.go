@@ -40,7 +40,12 @@ func QuarantineTest(report *types.SpecReport) error {
 		return fmt.Errorf("could not quarantine test %q: %w", report.FullText(), err)
 	}
 	code = ensureImport(code, decoratorsImport)
-	formatted, err := imports.Process(report.LeafNodeLocation.FileName, []byte(code), &imports.Options{FormatOnly: true})
+	formatted, err := imports.Process(report.LeafNodeLocation.FileName, []byte(code), &imports.Options{
+		FormatOnly: true,
+		Comments:   true,
+		TabIndent:  true,
+		TabWidth:   8,
+	})
 	if err != nil {
 		return fmt.Errorf("could not format file for quarantined test %q: %w", report.FullText(), err)
 	}
