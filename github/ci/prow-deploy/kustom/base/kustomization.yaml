@@ -11,6 +11,11 @@ resources:
   - manifests/upstream/horologium_rolebinding.yaml
   - manifests/upstream/horologium_role.yaml
   - manifests/upstream/horologium_serviceaccount.yaml
+  - manifests/upstream/prow-controller-manager_deployment.yaml
+  - manifests/upstream/prow-controller-manager_role.yaml
+  - manifests/upstream/prow-controller-manager_rolebinding.yaml
+  - manifests/upstream/prow-controller-manager_rolebinding_test-pods.yaml
+  - manifests/upstream/prow-controller-manager_serviceaccount.yaml
   - manifests/upstream/prowjob_customresourcedefinition.yaml
   - manifests/upstream/sinker_deployment.yaml
   - manifests/upstream/sinker_rolebinding.yaml
@@ -59,9 +64,6 @@ resources:
   - manifests/test_infra/current/hook_service.yaml
   - manifests/test_infra/current/needs-rebase_deployment.yaml
   - manifests/test_infra/current/needs-rebase_service.yaml
-  - manifests/test_infra/current/prow_controller_manager_deployment.yaml
-  - manifests/test_infra/current/prow_controller_manager_rbac.yaml
-  - manifests/test_infra/current/prow_controller_manager_service.yaml
   - manifests/test_infra/current/pushgateway_deployment.yaml
   - manifests/test_infra/current/tide_deployment.yaml
   - manifests/test_infra/current/tide_rbac.yaml
