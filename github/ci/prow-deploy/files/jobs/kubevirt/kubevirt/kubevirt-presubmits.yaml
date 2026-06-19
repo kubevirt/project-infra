@@ -492,7 +492,7 @@ presubmits:
         - name: KUBEVIRT_CENTOS_STREAM_VERSION
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
-          value: 2602251001-25ce1ccb15
+          value: 2605290816-89fad9a940
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
         name: ""
         resources:
@@ -734,7 +734,7 @@ presubmits:
         - name: KUBEVIRT_CENTOS_STREAM_VERSION
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
-          value: 2602251001-25ce1ccb15
+          value: 2605290816-89fad9a940
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
         name: ""
         resources:
@@ -769,7 +769,7 @@ presubmits:
         - name: KUBEVIRT_CENTOS_STREAM_VERSION
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
-          value: 2602251001-25ce1ccb15
+          value: 2605290816-89fad9a940
         - name: BUILD_ARCH
           value: crossbuild-aarch64
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
@@ -806,7 +806,7 @@ presubmits:
         - name: KUBEVIRT_CENTOS_STREAM_VERSION
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
-          value: 2602251001-25ce1ccb15
+          value: 2605290816-89fad9a940
         - name: BUILD_ARCH
           value: crossbuild-s390x
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
