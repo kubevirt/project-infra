@@ -16,6 +16,7 @@ resources:
   - resources/prow-exporter-service.yaml
   - resources/sinker-rbac.yaml
   - resources/statusreconciler-rbac.yaml
+  - resources/tide-rbac.yaml
   # templated resources
   - resources/admin-rbac.yaml
 
