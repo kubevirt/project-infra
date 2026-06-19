@@ -26,6 +26,11 @@ resources:
   - manifests/upstream/statusreconciler_rolebinding.yaml
   - manifests/upstream/statusreconciler_role.yaml
   - manifests/upstream/statusreconciler_serviceaccount.yaml
+  - manifests/upstream/tide_deployment.yaml
+  - manifests/upstream/tide_role.yaml
+  - manifests/upstream/tide_rolebinding.yaml
+  - manifests/upstream/tide_service.yaml
+  - manifests/upstream/tide_serviceaccount.yaml
 
   - manifests/local/branch-protector.yaml
   - manifests/local/deck-ingress.yaml
@@ -52,7 +57,6 @@ resources:
   - manifests/local/prow-coverage-service.yaml
   - manifests/local/release-blocker_deployment.yaml
   - manifests/local/release-blocker_service.yaml
-  - manifests/local/tide_rbac_prowjob.yaml
 
   - manifests/test_infra/current/cherrypicker_deployment.yaml
   - manifests/test_infra/current/cherrypicker_service.yaml
@@ -65,6 +69,3 @@ resources:
   - manifests/test_infra/current/needs-rebase_deployment.yaml
   - manifests/test_infra/current/needs-rebase_service.yaml
   - manifests/test_infra/current/pushgateway_deployment.yaml
-  - manifests/test_infra/current/tide_deployment.yaml
-  - manifests/test_infra/current/tide_rbac.yaml
-  - manifests/test_infra/current/tide_service.yaml

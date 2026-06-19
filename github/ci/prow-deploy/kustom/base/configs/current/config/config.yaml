@@ -122,6 +122,8 @@ slack_reporter_configs:
     # The template shown below is the default
     report_template: 'Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <{{.Status.URL}}|View logs>'
 
+# https://docs.prow.k8s.io/docs/components/core/tide/config/
+# https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#Tide
 tide:
   sync_period: 2m
   merge_method:
