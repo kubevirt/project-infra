@@ -20,6 +20,8 @@
 package cmd
 
 import (
+	"time"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	flakestats "kubevirt.io/project-infra/pkg/flake-stats"
@@ -67,5 +69,76 @@ var _ = Describe("most-flaky-tests", func() {
 				},
 			),
 		)
+	})
+
+	When("aggregating most flaky tests by SIG", func() {
+		var originalGetQuarantineCandidate func(*flakestats.TopXTest, searchci.TimeRange) (*TestToQuarantine, error)
+
+		BeforeEach(func() {
+			originalGetQuarantineCandidate = getQuarantineCandidate
+			quarantineOpts.maxFailureAge = 72 * time.Hour
+			quarantineOpts.minRecentFailures = 2
+			quarantineOpts.minFailureInterval = 24 * time.Hour
+		})
+
+		AfterEach(func() {
+			getQuarantineCandidate = originalGetQuarantineCandidate
+		})
+
+		It("marks candidate with recent spread-out failures as HasRecentFailures", func() {
+			getQuarantineCandidate = func(topXTest *flakestats.TopXTest, _ searchci.TimeRange) (*TestToQuarantine, error) {
+				return &TestToQuarantine{
+					Test: topXTest,
+					RelevantImpacts: []searchci.Impact{
+						{
+							URL:     "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.35-sig-compute",
+							Percent: 10,
+							BuildURLs: []searchci.JobBuildURL{
+								{Interval: 4 * time.Hour},
+								{Interval: 36 * time.Hour},
+							},
+						},
+					},
+				}, nil
+			}
+
+			_, _, result, err := aggregateMostFlakyTestsBySIG(flakestats.TopXTests{
+				flakestats.NewTopXTest("[sig-compute] my recent flaky test"),
+			})
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(HaveKey("sig-compute"))
+			tests := result["sig-compute"]["[sig-compute] my recent flaky test"]
+			Expect(tests).ToNot(BeEmpty())
+			Expect(tests[0].HasRecentFailures).To(BeTrue())
+		})
+
+		It("marks candidate with only stale failures as not HasRecentFailures", func() {
+			getQuarantineCandidate = func(topXTest *flakestats.TopXTest, _ searchci.TimeRange) (*TestToQuarantine, error) {
+				return &TestToQuarantine{
+					Test: topXTest,
+					RelevantImpacts: []searchci.Impact{
+						{
+							URL:     "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.35-sig-compute",
+							Percent: 10,
+							BuildURLs: []searchci.JobBuildURL{
+								{Interval: 264 * time.Hour},
+								{Interval: 288 * time.Hour},
+							},
+						},
+					},
+				}, nil
+			}
+
+			_, _, result, err := aggregateMostFlakyTestsBySIG(flakestats.TopXTests{
+				flakestats.NewTopXTest("[sig-compute] my stale flaky test"),
+			})
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(HaveKey("sig-compute"))
+			tests := result["sig-compute"]["[sig-compute] my stale flaky test"]
+			Expect(tests).ToNot(BeEmpty())
+			Expect(tests[0].HasRecentFailures).To(BeFalse())
+		})
 	})
 })
