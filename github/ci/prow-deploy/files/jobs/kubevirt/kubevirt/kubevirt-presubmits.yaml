@@ -1383,7 +1383,7 @@ presubmits:
         - /bin/sh
         - -ce
         - |
-          make builder-build-cs10
+          make builder-build-centos-stream-10
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
         name: ""
         resources:

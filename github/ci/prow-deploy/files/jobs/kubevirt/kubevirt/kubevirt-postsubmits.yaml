@@ -270,7 +270,7 @@ postsubmits:
             - "-c"
             - >
               cat $QUAY_PASSWORD | podman login quay.io --username $(cat $QUAY_USER) --password-stdin=true &&
-              make builder-publish-cs10
+              make builder-publish-centos-stream-10
           securityContext:
             privileged: true
           resources:
