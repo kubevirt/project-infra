@@ -6,13 +6,11 @@ RUN git clone --depth 1 --revision 3815e13b727dd09738bf9bd7e8a06ab616cb0d62 http
   /usr/local/bin/phony --help
 
 FROM gcr.io/k8s-prow/config-bootstrapper:v20221117-3815e13b72 as cfg-bootstrap
-FROM gcr.io/k8s-prow/hmac:v20221117-3815e13b72 as hmac
 
 FROM quay.io/kubevirtci/bootstrap:v20260612-73bc71e
 
 COPY --from=builder /usr/local/bin/phony /usr/local/bin/
 COPY --from=cfg-bootstrap /ko-app/config-bootstrapper /usr/local/bin/
-COPY --from=hmac /ko-app/hmac /usr/local/bin/
 
 RUN curl -fLo ./kustomize.tar.gz https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.8.7/kustomize_v3.8.7_linux_amd64.tar.gz && \
   tar -xvf kustomize.tar.gz && \

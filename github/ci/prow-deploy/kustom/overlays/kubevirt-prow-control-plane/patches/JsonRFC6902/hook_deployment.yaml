@@ -1,38 +1,63 @@
-- op: remove
-  path: /spec/template/spec/containers/0/livenessProbe
-- op: remove
-  path: /spec/template/spec/containers/0/readinessProbe
-
-# replaces KUBECONFIG env to simple value
+---
+# scale up the deployment
 - op: replace
-  path: /spec/template/spec/containers/0/env/0
+  path: /spec/replicas
+  value: 4
+
+# inject jobs configmap
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --job-config-path=/etc/job-config
+
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/-
   value:
-    name: KUBECONFIG
-    value: "/etc/kubeconfig/config"
+    name: job-config
+    mountPath: /etc/job-config
+    readOnly: true
 
-# removes AWS env vars
-- op: remove
-  path: /spec/template/spec/containers/0/env/3
-- op: remove
-  path: /spec/template/spec/containers/0/env/2
-- op: remove
-  path: /spec/template/spec/containers/0/env/1
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: job-config
+    configMap:
+      name: job-config
 
-# removes aws-iam-token mount and volume
-- op: remove
-  path: /spec/template/spec/containers/0/volumeMounts/14
-- op: remove
-  path: /spec/template/spec/volumes/14
+# inject consolidated KUBECONFIG with federated clusters for the updateconfig plugin
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --kubeconfig=/etc/kubeconfig/config
 
-# removes kubeconfig-k8s-infra-kops-prow-build mount and volume
-- op: remove
-  path: /spec/template/spec/containers/0/volumeMounts/13
-- op: remove
-  path: /spec/template/spec/volumes/13
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/-
+  value:
+    name: kubeconfig
+    mountPath: /etc/kubeconfig
+    readOnly: true
 
-# removes kubeconfig-eks-prow-build-cluster mount and volume
-- op: remove
-  path: /spec/template/spec/containers/0/volumeMounts/12
-- op: remove
-  path: /spec/template/spec/volumes/12
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: kubeconfig
+    secret:
+      secretName: kubeconfig
+      defaultMode: 420
 
+# inject slack credentials for the slackevents plugin
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --slack-token-file=/etc/slack/token
+
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/-
+  value:
+    name: slack-token
+    mountPath: /etc/slack
+    readOnly: true
+
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: slack-token
+    secret:
+      secretName: slack-token

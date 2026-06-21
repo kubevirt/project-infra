@@ -239,9 +239,6 @@ configMapGenerator:
   - name: plugins
     files:
       - configs/plugins/plugins.yaml
-  - name: cat-api-key
-    files:
-      - configs/cat-api/api-key
 
 secretGenerator:
   - &github_token
@@ -285,6 +282,10 @@ secretGenerator:
     files:
       - secrets/virtci-service-account.json
     type: Opaque
+  - name: hmac-token
+    files:
+      - hmac=secrets/github/hmac-token
+    type: Opaque
   - name: slack-token
     files:
       - token=secrets/slack/token
@@ -310,9 +311,6 @@ secretGenerator:
   - name: kubeconfig-build-rules-k8s
     files:
       - kubeconfig=secrets/kubeconfig-build-rules-k8s
-  - name: unsplash-api-key
-    literals:
-      - honk.txt=
   - name: kubevirtci-docker-credential
     namespace: kubevirt-prow-jobs
     # username=dockerUser

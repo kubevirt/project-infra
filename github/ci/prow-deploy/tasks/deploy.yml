@@ -58,24 +58,6 @@
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
 
-- name: Reconcile webhooks for onboarded repositories
-  shell: |
-    hmac \
-      --config-path=$PROW_CONFIG_PATH \
-      --github-token-path=$GITHUB_TOKEN_PATH \
-      --kubeconfig=$KUBECONFIG \
-      --kubeconfig-context=kubevirt-prow-control-plane \
-      --hmac-token-secret-namespace={{ prowNamespace }} \
-      --hmac-token-secret-name=hmac-token \
-      --hmac-token-key=hmac \
-      --hook-url https://prow.ci.kubevirt.io/hook \
-      --dry-run=false
-  environment:
-    PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
-    GITHUB_TOKEN_PATH: "{{ secrets_dir }}/github/bot-token"
-    KUBECONFIG: "{{ kubeconfig_path }}"
-  when: reconcile_github_webhooks
-
 # See https://github.com/kubernetes/test-infra/issues/25768
 - name: Rescale pushgateway deployment
   shell: |
