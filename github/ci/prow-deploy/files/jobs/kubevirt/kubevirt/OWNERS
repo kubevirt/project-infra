@@ -27,7 +27,6 @@ filters:
     - jean-edouard
     - lyarwood
     - mhenriks
-    - victortoso
     - vladikr
     - xpivarc
   BUILD\.bazel|.*\.bzl|WORKSPACE|Makefile|\.bazelrc|ci\.bazelrc|\.bazelversion|nogo_config\.json:

@@ -11,7 +11,7 @@ periodics:
     base_ref: main
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+    - image: quay.io/kubevirtci/golang:v20260612-73bc71e
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/sh"
@@ -31,7 +31,7 @@ periodics:
     - name: token
       secret:
         secretName:  commenter-oauth-token
-- name: periodic-project-infra-close
+- name: periodic-project-infra-stale-issues
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
@@ -41,73 +41,13 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
       command:
       - /ko-app/commenter
       args:
       - |-
         --query=org:kubevirt
-          -label:lifecycle/frozen
-          label:lifecycle/rotten
-      - --updated=720h
-      - --token=/etc/github/oauth
-      - |-
-        --comment=Rotten issues close after 30d of inactivity.
-        Reopen the issue with `/reopen`.
-        Mark the issue as fresh with `/remove-lifecycle rotten`.
-
-        /close
-      - --template
-      - --ceiling=10
-      - --confirm
-- name: periodic-project-infra-rotten
-  interval: 1h
-  annotations:
-    testgrid-create-test-group: "false"
-  labels:
-    preset-github-credentials: "true"
-  decorate: true
-  cluster: kubevirt-prow-control-plane
-  spec:
-    containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
-      command:
-      - /ko-app/commenter
-      args:
-      - |-
-        --query=org:kubevirt
-          -label:lifecycle/frozen
-          label:lifecycle/stale
-          -label:lifecycle/rotten
-      - --updated=720h
-      - --token=/etc/github/oauth
-      - |-
-        --comment=Stale issues rot after 30d of inactivity.
-        Mark the issue as fresh with `/remove-lifecycle rotten`.
-        Rotten issues close after an additional 30d of inactivity.
-
-        If this issue is safe to close now please do so with `/close`.
-
-        /lifecycle rotten
-      - --template
-      - --ceiling=10
-      - --confirm
-- name: periodic-project-infra-stale
-  interval: 1h
-  annotations:
-    testgrid-create-test-group: "false"
-  labels:
-    preset-github-credentials: "true"
-  decorate: true
-  cluster: kubevirt-prow-control-plane
-  spec:
-    containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
-      command:
-      - /ko-app/commenter
-      args:
-      - |-
-        --query=org:kubevirt
+          is:issue
           -label:lifecycle/frozen
           -label:lifecycle/stale
           -label:lifecycle/rotten
@@ -125,6 +65,180 @@ periodics:
       - --template
       - --ceiling=10
       - --confirm
+- name: periodic-project-infra-rotten-issues
+  interval: 1h
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+      command:
+      - /ko-app/commenter
+      args:
+      - |-
+        --query=org:kubevirt
+          is:issue
+          -label:lifecycle/frozen
+          label:lifecycle/stale
+          -label:lifecycle/rotten
+      - --updated=720h
+      - --token=/etc/github/oauth
+      - |-
+        --comment=Stale issues rot after 30d of inactivity.
+        Mark the issue as fresh with `/remove-lifecycle rotten`.
+        Rotten issues close after an additional 30d of inactivity.
+
+        If this issue is safe to close now please do so with `/close`.
+
+        /lifecycle rotten
+      - --template
+      - --ceiling=10
+      - --confirm
+- name: periodic-project-infra-close-issues
+  interval: 1h
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+      command:
+      - /ko-app/commenter
+      args:
+      - |-
+        --query=org:kubevirt
+          is:issue
+          -label:lifecycle/frozen
+          label:lifecycle/rotten
+      - --updated=720h
+      - --token=/etc/github/oauth
+      - |-
+        --comment=Rotten issues close after 30d of inactivity.
+        Reopen the issue with `/reopen`.
+        Mark the issue as fresh with `/remove-lifecycle rotten`.
+
+        /close
+      - --template
+      - --ceiling=10
+      - --confirm
+- name: periodic-project-infra-stale-prs
+  interval: 1h
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+      command:
+      - /ko-app/commenter
+      args:
+      - |-
+        --query=org:kubevirt
+          is:pr
+          -label:lifecycle/frozen
+          -label:lifecycle/stale
+          -label:lifecycle/rotten
+          is:public
+      - --updated=1080h
+      - --token=/etc/github/oauth
+      - |-
+        --comment=There has been no activity on this PR for 45 days.
+        To protect limited CI resources, it has been automatically labelled 'stale'.
+        This PR will automatically rot after an additional 14 days of inactivity, and will be closed shortly after that.
+
+        What you can do:
+
+        * If the PR is waiting on you to respond to a question or feedback and/or update the PR, please do so.
+        * You can mark the PR as fresh and remove the label with the following command: `/remove-lifecycle stale`
+        * If this PR is safe to close now, please help the project by closing it with: `/close`
+        * If you need attention on this PR from a reviewer, you can raise it on the agenda of the relevant [SIG meeting or KubeVirt Community meeting](https://calendar.google.com/calendar/u/0/embed?src=kubevirt@cncf.io), or ping the [kubevirt-dev slack](https://kubernetes.slack.com/messages/kubevirt-dev) channel.
+
+        /lifecycle stale
+      - --template
+      - --ceiling=10
+      - --confirm
+- name: periodic-project-infra-rotten-prs
+  interval: 1h
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+      command:
+      - /ko-app/commenter
+      args:
+      - |-
+        --query=org:kubevirt
+          is:pr
+          -label:lifecycle/frozen
+          label:lifecycle/stale
+          -label:lifecycle/rotten
+      - --updated=336h
+      - --token=/etc/github/oauth
+      - |-
+        --comment=There has been no activity on this PR for 59 days and it has been stale for 14 days.
+        To protect limited CI resources, it has been automatically labelled 'rotten' and will be closed in 7 days.
+
+        What you can do:
+
+        * If the PR is waiting on you to respond to a question or feedback and/or update the PR, please do so.
+        * You can mark the PR as fresh and remove the label with the following command: `/remove-lifecycle rotten`
+        * If this PR is safe to close now, please help the project by closing it with: `/close`
+        * If you need attention on this PR from a reviewer, you can raise it on the agenda of the relevant [SIG meeting or KubeVirt Community meeting](https://calendar.google.com/calendar/u/0/embed?src=kubevirt@cncf.io), or ping the [kubevirt-dev slack](https://kubernetes.slack.com/messages/kubevirt-dev) channel.
+
+        /lifecycle rotten
+      - --template
+      - --ceiling=10
+      - --confirm
+- name: periodic-project-infra-close-prs
+  interval: 1h
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decorate: true
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+      command:
+      - /ko-app/commenter
+      args:
+      - |-
+        --query=org:kubevirt
+          is:pr
+          -label:lifecycle/frozen
+          label:lifecycle/rotten
+      - --updated=168h
+      - --token=/etc/github/oauth
+      - |-
+        --comment=There has been no activity on this PR for 66 days and it has been rotten for 7 days.
+        To protect limited CI resources, it has been automatically closed.
+
+        What you can do:
+
+        * If the PR is waiting on you to respond to a question or feedback and/or update the PR, please do so.
+        * You can reopen the PR with the following command: `/reopen`
+        * Raise attention on this PR at a relevant [SIG meeting or KubeVirt Community meeting](https://calendar.google.com/calendar/u/0/embed?src=kubevirt@cncf.io), or ping the [kubevirt-dev slack](https://kubernetes.slack.com/messages/kubevirt-dev) channel.
+
+        /close
+      - --template
+      - --ceiling=10
+      - --confirm
 - name: periodic-project-infra-needs-approver-review
   interval: 1h
   annotations:
@@ -135,7 +249,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
       command:
       - /ko-app/commenter
       args:
@@ -171,7 +285,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
       command:
       - /ko-app/commenter
       args:
@@ -196,7 +310,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260325-0ac3b4d79f
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
       command:
       - /ko-app/commenter
       args:
@@ -301,7 +415,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+      - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -356,7 +470,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+      - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -398,7 +512,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+      - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -439,7 +553,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+      - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
         command: ["/bin/sh", "-ce"]
         args:
           - |
@@ -479,7 +593,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+      - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
         command:
         - "/bin/bash"
         - -c
@@ -517,7 +631,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+      - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -566,7 +680,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+      - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -602,7 +716,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+      - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -649,7 +763,7 @@ periodics:
   spec:
     containers:
     - name: peribolos
-      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260430-7dfdc18c1
+      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260617-37d12bec7
       command:
       - /ko-app/peribolos
       args:
@@ -692,7 +806,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+    - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -726,7 +840,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+    - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
       command: [/bin/sh, -ce]
       args:
       - |
@@ -764,7 +878,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+    - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       command: ["/bin/sh"]
       args:
       - "-ce"
@@ -795,7 +909,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+      - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -833,7 +947,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+    - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -869,7 +983,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+    - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -904,7 +1018,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
         env:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
@@ -939,7 +1053,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260427-c0f350d
+    - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
       command:
       - /usr/local/bin/runner.sh
       - /bin/sh
@@ -1021,7 +1135,7 @@ periodics:
   name: periodic-project-infra-check-prow-jobconfigs
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+    - image: quay.io/kubevirtci/golang:v20260612-73bc71e
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/sh"
@@ -1059,7 +1173,7 @@ periodics:
   name: periodic-project-infra-perf-report-creator
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+    - image: quay.io/kubevirtci/golang:v20260612-73bc71e
       env:
         - name: KUBEVIRT_PROVIDER
           value: k8s-1.34
@@ -1125,7 +1239,7 @@ periodics:
   spec:
     containers:
     - &cluster_livez_container
-      image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -1187,7 +1301,7 @@ periodics:
   name: periodic-project-infra-prow-s390x-workloads-livez
   annotations:
     <<: *cluster_livez_annotations
-    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfillekes@ibm.com, svamsikr@redhat.com
   spec:
     containers:
     - <<: *cluster_livez_container
@@ -1198,7 +1312,7 @@ periodics:
   name: periodic-project-infra-prow-s390x-e2e-test-livez
   annotations:
     <<: *cluster_livez_annotations
-    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfillekes@ibm.com, svamsikr@redhat.com
   spec:
     containers:
     - <<: *cluster_livez_container
@@ -1209,7 +1323,7 @@ periodics:
   name: periodic-project-infra-prow-s390x-openshift-livez
   annotations:
     <<: *cluster_livez_annotations
-    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfillekes@ibm.com, svamsikr@redhat.com
   spec:
     containers:
     - <<: *cluster_livez_container
@@ -1220,10 +1334,53 @@ periodics:
   name: periodic-project-infra-prow-s390x-secure-execution-livez
   annotations:
     <<: *cluster_livez_annotations
-    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfilleke@redhat.com, svamsikr@redhat.com
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfillekes@ibm.com, svamsikr@redhat.com
   spec:
     containers:
     - <<: *cluster_livez_container
       env:
       - name: CLUSTER_KUBECONFIG_NAME
         value: prow-s390x-secure-execution
+- name: periodic-project-infra-greenhouse-cache-wipe
+  cron: "0 14 * * 6"
+  annotations:
+    testgrid-create-test-group: "true"
+    testgrid-dashboards: kubevirt-project-infra-periodics
+    testgrid-days-of-results: "30"
+    testgrid-num-failures-to-alert: "1"
+    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
+  cluster: kubevirt-prow-control-plane
+  decorate: true
+  decoration_config:
+    timeout: 15m
+    grace_period: 5m
+  extra_refs:
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+    workdir: true
+    clone_depth: 1
+  labels:
+    preset-github-credentials: "true"
+    preset-pgp-bot-key: "true"
+  max_concurrency: 1
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+      command:
+      - /usr/local/bin/runner.sh
+      - /bin/bash
+      - -ceu
+      args:
+      - |
+        source ./hack/manage-secrets.sh
+        decrypt_secrets
+        install -Dm400 "${secrets_repo_dir}"/secrets/kubeconfigs/prow-workloads ~/.kube/config
+        cleanup_secrets
+
+        ./hack/clear-bazel-cache.sh
+      resources:
+        requests:
+          memory: 200Mi
+      securityContext:
+        runAsUser: 0

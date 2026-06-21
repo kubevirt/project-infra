@@ -18,10 +18,12 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
+        - name: BUILD_ARCHES
+          value: "amd64 arm64 s390x"
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -54,10 +56,12 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
+        - name: BUILD_ARCHES
+          value: "amd64 arm64 s390x"
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -89,7 +93,7 @@ postsubmits:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -127,7 +131,7 @@ postsubmits:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -172,7 +176,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt

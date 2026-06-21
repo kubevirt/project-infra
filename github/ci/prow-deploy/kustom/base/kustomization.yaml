@@ -1,17 +1,36 @@
 resources:
-  - manifests/upstream/ghproxy_deployment.yml
-  - manifests/upstream/ghproxy_persistentvolumeclaim.yml
-  - manifests/upstream/ghproxy_service.yml
-  - manifests/upstream/horologium_deployment.yml
-  - manifests/upstream/horologium_rolebinding.yml
-  - manifests/upstream/horologium_role.yml
-  - manifests/upstream/horologium_serviceaccount.yml
+  - manifests/upstream/crier_deployment.yaml
+  - manifests/upstream/crier_rolebinding_test-pods.yaml
+  - manifests/upstream/crier_rolebinding.yaml
+  - manifests/upstream/crier_role.yaml
+  - manifests/upstream/crier_serviceaccount.yaml
+  - manifests/upstream/ghproxy_deployment.yaml
+  - manifests/upstream/ghproxy_persistentvolumeclaim.yaml
+  - manifests/upstream/ghproxy_service.yaml
+  - manifests/upstream/horologium_deployment.yaml
+  - manifests/upstream/horologium_rolebinding.yaml
+  - manifests/upstream/horologium_role.yaml
+  - manifests/upstream/horologium_serviceaccount.yaml
+  - manifests/upstream/prow-controller-manager_deployment.yaml
+  - manifests/upstream/prow-controller-manager_role.yaml
+  - manifests/upstream/prow-controller-manager_rolebinding.yaml
+  - manifests/upstream/prow-controller-manager_rolebinding_test-pods.yaml
+  - manifests/upstream/prow-controller-manager_serviceaccount.yaml
   - manifests/upstream/prowjob_customresourcedefinition.yaml
-  - manifests/upstream/sinker_deployment.yml
-  - manifests/upstream/sinker_rolebinding.yml
-  - manifests/upstream/sinker_rolebinding_test-pods.yml
-  - manifests/upstream/sinker_role.yml
-  - manifests/upstream/sinker_serviceaccount.yml
+  - manifests/upstream/sinker_deployment.yaml
+  - manifests/upstream/sinker_rolebinding.yaml
+  - manifests/upstream/sinker_rolebinding_test-pods.yaml
+  - manifests/upstream/sinker_role.yaml
+  - manifests/upstream/sinker_serviceaccount.yaml
+  - manifests/upstream/statusreconciler_deployment.yaml
+  - manifests/upstream/statusreconciler_rolebinding.yaml
+  - manifests/upstream/statusreconciler_role.yaml
+  - manifests/upstream/statusreconciler_serviceaccount.yaml
+  - manifests/upstream/tide_deployment.yaml
+  - manifests/upstream/tide_role.yaml
+  - manifests/upstream/tide_rolebinding.yaml
+  - manifests/upstream/tide_service.yaml
+  - manifests/upstream/tide_serviceaccount.yaml
 
   - manifests/local/branch-protector.yaml
   - manifests/local/deck-ingress.yaml
@@ -33,18 +52,14 @@ resources:
   - manifests/local/test-subset-deployment.yaml
   - manifests/local/test-subset-service.yaml
   - manifests/local/prow-coverage-rbac.yaml
+  - manifests/local/prow-coverage-configmap.yaml
   - manifests/local/prow-coverage-deployment.yaml
   - manifests/local/prow-coverage-service.yaml
   - manifests/local/release-blocker_deployment.yaml
   - manifests/local/release-blocker_service.yaml
-  - manifests/local/statusreconciler_rbac.yaml
-  - manifests/local/tide_rbac_prowjob.yaml
 
   - manifests/test_infra/current/cherrypicker_deployment.yaml
   - manifests/test_infra/current/cherrypicker_service.yaml
-  - manifests/test_infra/current/crier_deployment.yaml
-  - manifests/test_infra/current/crier_rbac.yaml
-  - manifests/test_infra/current/crier_service.yaml
   - manifests/test_infra/current/deck_deployment.yaml
   - manifests/test_infra/current/deck_rbac.yaml
   - manifests/test_infra/current/deck_service.yaml
@@ -53,12 +68,4 @@ resources:
   - manifests/test_infra/current/hook_service.yaml
   - manifests/test_infra/current/needs-rebase_deployment.yaml
   - manifests/test_infra/current/needs-rebase_service.yaml
-  - manifests/test_infra/current/prow_controller_manager_deployment.yaml
-  - manifests/test_infra/current/prow_controller_manager_rbac.yaml
-  - manifests/test_infra/current/prow_controller_manager_service.yaml
   - manifests/test_infra/current/pushgateway_deployment.yaml
-  - manifests/test_infra/current/statusreconciler_deployment.yaml
-  - manifests/test_infra/current/statusreconciler_rbac.yaml
-  - manifests/test_infra/current/tide_deployment.yaml
-  - manifests/test_infra/current/tide_rbac.yaml
-  - manifests/test_infra/current/tide_service.yaml

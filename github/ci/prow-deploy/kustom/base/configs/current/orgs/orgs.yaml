@@ -27,7 +27,6 @@ orgs:
       - akrejcir
       - alancaldelas
       - alaypatel07
-      - aliamerj
       - alicefr
       - AlonaKaplan
       - alromeros
@@ -54,6 +53,7 @@ orgs:
       - dominikholler
       - Dsanatar
       - EdDev
+      - ema-aka-young
       - enp0s3
       - fanzhangio
       - fossedihelm
@@ -76,7 +76,6 @@ orgs:
       - kubevirt-commenter-bot
       - kvaps
       - laxmi-333
-      - lerrigatto
       - lyarwood
       - machadovilaca
       - maiqueb
@@ -105,6 +104,7 @@ orgs:
       - Ruclo
       - rthallisey
       - salawhaaat
+      - SamAlber
       - sbiradar10
       - shellyka13
       - shubham-pampattiwar
@@ -117,12 +117,12 @@ orgs:
       - tiraboschi
       - vamsikrishna-siddu
       - vasiliy-ul
-      - victortoso
       - vishnuchalla
       - vladikr
       - xpivarc
       - weshayutin
       - Whitedyl
+      - yanirq
       - zhencliu
       - zhlhahaha
     members_can_create_repositories: false
@@ -601,6 +601,16 @@ orgs:
         has_projects: true
         has_wiki: true
         has_issues: true
+      redfish-controller:
+        default_branch: main
+        has_projects: true
+        has_wiki: true
+        has_issues: true
+      kubevirt-observability-controller:
+        default_branch: main
+        has_projects: true
+        has_wiki: true
+        has_issues: true
     teams:
       QE:
         description: ""
@@ -624,6 +634,7 @@ orgs:
         description: ""
         maintainers:
           - dhiller
+          - dollierp
         privacy: secret
         repos:
           kubectl-virt-plugin: admin
@@ -702,7 +713,6 @@ orgs:
       dra-pci-driver-mantainers:
         maintainers:
         - alicefr
-        - victortoso
         repos:
           dra-pci-driver: admin
       enhancements-maintainers:
@@ -783,8 +793,10 @@ orgs:
       monitoring-maintainers:
         maintainers:
           - sradco
+          - machadovilaca
         repos:
           monitoring: admin
+          kubevirt-observability-controller: admin
       must-gather:
         description: ""
         maintainers:
@@ -1088,7 +1100,6 @@ orgs:
         privacy: closed
         maintainers:
           - dhiller
-          - lerrigatto
         repos:
           charts: write
       virt-template-maintainers:
@@ -1117,3 +1128,9 @@ orgs:
           iommufd-device-plugin: admin
           kubevirt-aie: admin
           kubevirt-aie-webhook: admin
+      redfish-controller-maintainers:
+        description: "Maintainers of redfish-controller"
+        maintainers:
+          - MarSik
+        repos:
+          redfish-controller: admin

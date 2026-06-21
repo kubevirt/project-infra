@@ -85,6 +85,12 @@ func IgnoreTests(tests []string) func(r *ReportOptions) {
 	}
 }
 
+func IncludeRollingWindow(b bool) func(r *ReportOptions) {
+	return func(r *ReportOptions) {
+		r.IncludeRollingWindow = b
+	}
+}
+
 func NewDefaultReportOpts(opts ...ReportOption) *ReportOptions {
 	r := &ReportOptions{
 		DaysInThePast:               defaultDaysInThePast,
@@ -109,6 +115,7 @@ type ReportOptions struct {
 	MatchingLaneRegexString     string
 	matchingLaneRegex           *regexp.Regexp
 	TestsToIgnore               []string
+	IncludeRollingWindow        bool
 }
 
 func (o *ReportOptions) Validate() error {

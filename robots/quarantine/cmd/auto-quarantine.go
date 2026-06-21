@@ -26,14 +26,17 @@ import (
 	"regexp"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/onsi/ginkgo/v2/types"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	flakestats "kubevirt.io/project-infra/pkg/flake-stats"
 	"kubevirt.io/project-infra/pkg/ginkgo"
 	"kubevirt.io/project-infra/pkg/options"
 	"kubevirt.io/project-infra/pkg/searchci"
+	"sigs.k8s.io/prow/pkg/config"
+
+	flakestats "kubevirt.io/project-infra/pkg/flake-stats"
 )
 
 const (
@@ -66,6 +69,11 @@ func init() {
 	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.maxTestsToQuarantine, "max-tests-to-quarantine", 1, "the overall number of tests that are going to be quarantined in one run")
 	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.releaseLaneSuffix, "release-lane-suffix", "", "the suffix for the release lane to target (i.e. -1.7) or empty for targeting the main branch")
 	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.matchingLaneRegexString, "matching-lane-regex", defaultMatchingLaneRegexString, "the regular expression that the lanes need to match - note that there's a suffix placeholder required")
+	autoQuarantineCmd.PersistentFlags().DurationVar(&quarantineOpts.maxFailureAge, "max-failure-age", 72*time.Hour, "maximum age of failures to consider as recent")
+	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.minRecentFailures, "min-recent-failures", 2, "minimum number of recent failures required per lane")
+	autoQuarantineCmd.PersistentFlags().DurationVar(&quarantineOpts.minFailureInterval, "min-failure-interval", 24*time.Hour, "minimum time span between recent failures to confirm a consistent pattern")
+	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.jobConfigPath, "job-config-path", "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml", "path to the Prow presubmit job config YAML used to determine required lanes")
+	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.jobConfigOrgRepo, "job-config-org-repo", "kubevirt/kubevirt", "org/repo key for looking up presubmits in the job config")
 	quarantineOpts.prDescriptionOutputFileOpts = options.NewOutputFileOptions(
 		"pr-description-*.md",
 		options.WithOverwrite(),
@@ -79,11 +87,38 @@ func init() {
 	}
 }
 
+func loadRequiredJobNames(jobConfigPath, orgRepo string) (map[string]struct{}, error) {
+	jobConfig, err := config.ReadJobConfig(jobConfigPath)
+	if err != nil {
+		return nil, fmt.Errorf("could not read job config from %q: %w", jobConfigPath, err)
+	}
+	presubmits, ok := jobConfig.PresubmitsStatic[orgRepo]
+	if !ok {
+		return nil, fmt.Errorf("no presubmits found for org/repo %q in job config", orgRepo)
+	}
+	requiredJobs := make(map[string]struct{})
+	for _, ps := range presubmits {
+		if ps.ContextRequired() {
+			requiredJobs[ps.Name] = struct{}{}
+		}
+	}
+	return requiredJobs, nil
+}
+
 func AutoQuarantine(_ *cobra.Command, _ []string) error {
 	err := quarantineOpts.prDescriptionOutputFileOpts.Validate()
 	if err != nil {
 		return err
 	}
+
+	requiredJobs, err := loadRequiredJobNames(quarantineOpts.jobConfigPath, quarantineOpts.jobConfigOrgRepo)
+	if err != nil {
+		return fmt.Errorf("could not load required job names: %w", err)
+	}
+	if len(requiredJobs) == 0 {
+		return fmt.Errorf("no required jobs found in %q for %q", quarantineOpts.jobConfigPath, quarantineOpts.jobConfigOrgRepo)
+	}
+	log.Infof("loaded %d required job names from %q", len(requiredJobs), quarantineOpts.jobConfigPath)
 
 	reportOpts := flakestats.NewDefaultReportOpts(
 		flakestats.DaysInThePast(quarantineOpts.daysInThePast),
@@ -110,7 +145,7 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("could not find ginkgo test reports: %w", err)
 	}
 
-	testsToQuarantine, err := determineTestsForQuarantine(topXTests, reports)
+	testsToQuarantine, err := determineTestsForQuarantine(topXTests, reports, requiredJobs)
 	if err != nil {
 		return err
 	}
@@ -135,7 +170,7 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types.Report) ([]*TestToQuarantine, error) {
+func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types.Report, requiredJobs map[string]struct{}) ([]*TestToQuarantine, error) {
 	var jobHistoryURLMatcher = regexp.MustCompile(quarantineOpts.MatchingLaneRegexString())
 	var ceilingForTestsToQuarantine = quarantineOpts.maxTestsToQuarantine
 	var testsToQuarantine []*TestToQuarantine
@@ -157,7 +192,9 @@ func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types
 			continue
 		}
 
-		// Additionally filter impacts by the matching lane regex to target the right branch
+		// Filter impacts by the matching lane regex, required lane status,
+		// and recency of failures
+		recentFailureFilter := searchci.HasMinRecentFailures(quarantineOpts.maxFailureAge, quarantineOpts.minRecentFailures, quarantineOpts.minFailureInterval)
 		var filteredImpacts []searchci.Impact
 		for _, impact := range candidate.RelevantImpacts {
 			elements := strings.Split(impact.URL, "/")
@@ -168,10 +205,18 @@ func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types
 			if !jobHistoryURLMatcher.MatchString(lastElement) {
 				continue
 			}
+			if _, isRequired := requiredJobs[lastElement]; !isRequired {
+				log.Debugf("skipping impact from optional lane %q for test %q", lastElement, topXTest.Name)
+				continue
+			}
+			if !recentFailureFilter(impact) {
+				log.Debugf("skipping impact from lane %q for test %q: insufficient recent failures", lastElement, topXTest.Name)
+				continue
+			}
 			filteredImpacts = append(filteredImpacts, impact)
 		}
 		if filteredImpacts == nil {
-			log.Infof("search.ci found no matches in relevant jobs for %q", topXTest.Name)
+			log.Infof("search.ci found no matches in required jobs for %q", topXTest.Name)
 			continue
 		}
 		candidate.RelevantImpacts = filteredImpacts

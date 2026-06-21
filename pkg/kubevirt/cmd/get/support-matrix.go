@@ -339,7 +339,7 @@ func fetchK8sSchedules() (*schedulesDoc, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error when fetching k8s schedule yaml: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error when reading k8s schedule yaml: %v", err)
@@ -357,7 +357,7 @@ func fetchK8sEOLs() (*EOLDoc, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error when fetching %q: %v", k8sEOLYAML, err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error when reading %q: %v", k8sEOLYAML, err)

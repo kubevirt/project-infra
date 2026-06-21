@@ -43,7 +43,7 @@ var _ = Describe("Test-subset", func() {
 			Expect(err).ShouldNot(HaveOccurred())
 
 			// Create a fake git repo
-			makeRepoWithEmptyProwConfig(gitrepo, org, repo)
+			Expect(makeRepoWithEmptyProwConfig(gitrepo, org, repo)).ShouldNot(HaveOccurred())
 
 			// Generate a base commit with jobs
 			baseConfig, err := json.Marshal(&config.Config{
@@ -136,7 +136,7 @@ var _ = Describe("Test-subset", func() {
 
 		AfterEach(func() {
 			if gitClientFactory != nil {
-				gitClientFactory.Clean()
+				_ = gitClientFactory.Clean()
 			}
 		})
 

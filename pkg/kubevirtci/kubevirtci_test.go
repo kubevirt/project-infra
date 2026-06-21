@@ -73,7 +73,7 @@ func TestReadExistingProviders(t *testing.T) {
 			if err != nil {
 				panic(err)
 			}
-			defer os.RemoveAll(dir)
+			defer func() { _ = os.RemoveAll(dir) }()
 			createProviderEnv(dir, tt.existing)
 			got, err := ReadExistingProviders(dir)
 			if (err != nil) != tt.wantErr {
@@ -216,7 +216,7 @@ func TestBumpMinorReleaseOfProvider(t *testing.T) {
 			if err != nil {
 				panic(err)
 			}
-			defer os.RemoveAll(dir)
+			defer func() { _ = os.RemoveAll(dir) }()
 			createProviderEnv(dir, tt.existing)
 			if err := BumpMinorReleaseOfProvider(dir, tt.upstreamMinors); (err != nil) != tt.wantErr {
 				t.Errorf("BumpMinorReleaseOfProvider() error = %v, wantErr %v", err, tt.wantErr)
@@ -292,8 +292,8 @@ func TestEnsureProviderExists(t *testing.T) {
 	for _, tt := range testsEnsureProviderExists {
 		t.Run(tt.name, func(t *testing.T) {
 			providerDir, clusterUpDir := createEnsureProviderExistsEnv(tt)
-			defer os.RemoveAll(providerDir)
-			defer os.RemoveAll(clusterUpDir)
+			defer func() { _ = os.RemoveAll(providerDir) }()
+			defer func() { _ = os.RemoveAll(clusterUpDir) }()
 			if err := EnsureProviderExists(providerDir, clusterUpDir, tt.release); (err != nil) != tt.wantErr {
 				t.Errorf("EnsureProviderExists() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -312,8 +312,8 @@ func TestEnsureProviderExists_CopiesClusterUpDir(t *testing.T) {
 	for _, tt := range testsEnsureProviderExists {
 		t.Run(tt.name, func(t *testing.T) {
 			providerDir, clusterUpDir := createEnsureProviderExistsEnv(tt)
-			defer os.RemoveAll(providerDir)
-			defer os.RemoveAll(clusterUpDir)
+			defer func() { _ = os.RemoveAll(providerDir) }()
+			defer func() { _ = os.RemoveAll(clusterUpDir) }()
 			if err := EnsureProviderExists(providerDir, clusterUpDir, tt.release); (err != nil) != tt.wantErr {
 				t.Errorf("EnsureProviderExists() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -489,7 +489,7 @@ func TestDropUnsupportedProviders(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tempDir, err := os.MkdirTemp("", "dropProviders-")
 			panicOnErr(err)
-			defer os.RemoveAll(tempDir)
+			defer func() { _ = os.RemoveAll(tempDir) }()
 			for _, dir := range tt.args.scenario.dirsBefore {
 				panicOnErr(mkDirs(path.Join(tempDir, dir)))
 			}

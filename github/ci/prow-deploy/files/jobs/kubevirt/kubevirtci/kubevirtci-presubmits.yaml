@@ -50,7 +50,7 @@ presubmits:
           value: "true"
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=SRIOV
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -105,7 +105,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: 1.22.3
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -146,7 +146,7 @@ presubmits:
           value: "2"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -182,7 +182,7 @@ presubmits:
           value: kind-1.34
         - name: KUBEVIRT_DEPLOY_CDI
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -223,7 +223,7 @@ presubmits:
           value: "2"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -259,7 +259,7 @@ presubmits:
           value: kind-1.35
         - name: KUBEVIRT_DEPLOY_CDI
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -317,7 +317,7 @@ presubmits:
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=MediatedDevices --plugin-env
             kubevirt-conformance.E2E_SKIP=QUARANTINE
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -359,7 +359,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -387,7 +387,7 @@ presubmits:
         - -c
         - dnf install -y genisoimage libvirt && cd cluster-provision/images/vm-image-builder
           && ./create-containerdisk.sh alpine-cloud-init
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -426,7 +426,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -458,7 +458,7 @@ presubmits:
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -490,7 +490,7 @@ presubmits:
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -507,6 +507,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: check-provision-k8s-1.34-s390x
+    optional: true
     spec:
       containers:
       - command:
@@ -521,7 +522,7 @@ presubmits:
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -539,6 +540,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: check-provision-k8s-1.34
+    optional: true
     spec:
       containers:
       - command:
@@ -549,7 +551,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -581,7 +583,7 @@ presubmits:
           value: 1.24.7
         - name: PROVISION_CENTOS_VERSION
           value: "10"
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -611,7 +613,39 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        name: ""
+        resources:
+          requests:
+            memory: 16Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 3
+    name: check-provision-k8s-1.35-centos10
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cd cluster-provision/k8s/1.35 && ../provision.sh
+        env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
+        - name: PROVISION_CENTOS_VERSION
+          value: "10"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -644,7 +678,7 @@ presubmits:
           value: linux
         - name: BYPASS_PMAN_CHANGE_CHECK
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -653,7 +687,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -664,6 +698,36 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: check-provision-k8s-1.36
+    optional: false
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cd cluster-provision/k8s/1.36 && ../provision.sh
+        env:
+        - name: GIMME_GO_VERSION
+          value: 1.24.7
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        name: ""
+        resources:
+          requests:
+            memory: 16Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      timeout: 3h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 3
+    name: check-provision-k8s-1.36-centos10
     optional: true
     spec:
       containers:
@@ -675,7 +739,9 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: 1.24.7
-        image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        - name: PROVISION_CENTOS_VERSION
+          value: "10"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
           requests:

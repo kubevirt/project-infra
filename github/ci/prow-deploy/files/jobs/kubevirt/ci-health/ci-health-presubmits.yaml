@@ -1,0 +1,30 @@
+presubmits:
+  kubevirt/ci-health:
+  - name: pull-ci-health-test
+    run_if_changed: "cmd/.*|e2e/.*|pkg/.*|go\\..*"
+    optional: false
+    decorate: true
+    cluster: kubevirt-prow-control-plane
+    annotations:
+      testgrid-create-test-group: "false"
+    labels:
+      preset-github-credentials: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-ce"
+        - |
+          go test ./...
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.24.3"
+        - name: GITHUB_TOKEN_PATH
+          value: "/etc/github/oauth"
+        resources:
+          requests:
+            memory: "1Gi"
+          limits:
+            memory: "1Gi"

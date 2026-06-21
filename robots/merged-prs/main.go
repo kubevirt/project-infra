@@ -97,7 +97,7 @@ func queryPageOfMergedPRsForAuthors(reqURL string) (SearchResult, error) {
 	if err != nil {
 		return SearchResult{}, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return SearchResult{}, fmt.Errorf("GitHub API returned status code %d", resp.StatusCode)

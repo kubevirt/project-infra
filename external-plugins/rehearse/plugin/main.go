@@ -116,7 +116,7 @@ func gatherOptions() *options {
 	for _, group := range []flagutil.OptionGroup{&o.github} {
 		group.AddFlags(fs)
 	}
-	fs.Parse(os.Args[1:])
+	_ = fs.Parse(os.Args[1:])
 	return o
 }
 
@@ -181,13 +181,13 @@ func main() {
 
 func helpProvider(_ []prowconfig.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	pluginHelp := &pluginhelp.PluginHelp{
-		Description: `The rehearse plugin is used to test modifications of Prow jobs to provide pre-merge feedback.`,
+		Description: "Test modifications to Prow job configurations before merging by rehearsing changed or new presubmit jobs directly from a PR.",
 	}
 	pluginHelp.AddCommand(pluginhelp.Command{
 		Usage:       "/rehearse [all|job-name|?]",
-		Description: "Rehearses modified Prow jobs inside a pull request.",
+		Description: "Rehearse modified or new Prow jobs detected in a PR. /rehearse or /rehearse all runs all changed jobs. /rehearse <job-name> runs a specific job. /rehearse ? lists jobs available for rehearsal. Multiple /rehearse <job-name> lines can be included in a single comment. Rehearsal jobs are prefixed with rehearsal- and appear as separate GitHub status contexts.",
 		Featured:    true,
-		WhoCanUse:   "Project members",
+		WhoCanUse:   "Top-level approvers in project-infra, or KubeVirt org members if the PR has the ok-to-rehearse label.",
 		Examples:    []string{"/rehearse", "/rehearse all", "/rehearse job-name", "/rehearse ?"},
 	})
 	return pluginHelp, nil

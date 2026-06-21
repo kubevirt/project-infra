@@ -29,14 +29,14 @@ type options struct {
 	endpoint       string
 	port           int
 	kubeconfig     string
-	jobsNs         string
+	configPath     string
 	github         prowflagutil.GitHubOptions
 }
 
 func (o *options) validate() {
 	var errs []error
-	if o.jobsNs == "" {
-		errs = append(errs, fmt.Errorf("jobs-namespace can't be empty"))
+	if o.configPath == "" {
+		errs = append(errs, fmt.Errorf("config can't be empty"))
 	}
 
 	err := o.github.Validate(o.dryRun)
@@ -81,15 +81,15 @@ func gatherOptions() *options {
 		"",
 		"Path to kubeconfig. If empty, will try to use K8s defaults.")
 
-	fs.StringVar(&o.jobsNs,
-		"jobs-namespace",
-		"",
-		"The namespace in which Prow jobs should be created.")
+	fs.StringVar(&o.configPath,
+		"config",
+		"/etc/coverage/config.yaml",
+		"Path to the job configuration file.")
 
 	for _, group := range []flagutil.OptionGroup{&o.github} {
 		group.AddFlags(fs)
 	}
-	fs.Parse(os.Args[1:])
+	_ = fs.Parse(os.Args[1:])
 	return o
 
 }
@@ -114,6 +114,9 @@ func main() {
 	prowClient, err := v1.NewForConfig(config)
 	mustSucceed(err, "Could not create Prow client.")
 
+	cfg, err := handler.LoadConfig(opts.configPath)
+	mustSucceed(err, "Could not load job configuration.")
+
 	if err := secret.Add(opts.github.TokenPath, opts.hmacSecretFile); err != nil {
 		logrus.WithError(err).Fatalf("Failed to load secrets.")
 	}
@@ -123,9 +126,9 @@ func main() {
 
 	eventsHandler := handler.NewGitHubEventsHandler(
 		logger,
-		prowClient.ProwJobs(opts.jobsNs),
+		prowClient.ProwJobs(cfg.Defaults.Namespace),
 		githubClient,
-		opts.jobsNs,
+		cfg,
 		opts.dryRun,
 	)
 

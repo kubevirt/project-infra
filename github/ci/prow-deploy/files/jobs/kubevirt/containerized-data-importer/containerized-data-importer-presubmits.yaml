@@ -19,7 +19,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -47,7 +47,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        - image: quay.io/kubevirtci/golang:v20260612-73bc71e
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -85,7 +85,7 @@ presubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -120,7 +120,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -152,7 +152,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -184,7 +184,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -216,7 +216,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260417-7427ea2
+        - image: quay.io/kubevirtci/golang:v20260612-73bc71e
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -250,7 +250,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -289,7 +289,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -328,7 +328,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -367,7 +367,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -410,7 +410,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -453,7 +453,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -470,6 +470,79 @@ presubmits:
           resources:
             requests:
               memory: "52Gi"
+  - name: pull-containerized-data-importer-e2e-s390x
+    skip_branches:
+      - release-v\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
+    always_run: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 6h
+      grace_period: 10m
+    max_concurrency: 1
+    cluster: kubevirt-prow-control-plane
+    extra_refs:
+    - org: kubevirt
+      repo: project-infra
+      base_ref: main
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+      preset-github-credentials: "true"
+      preset-pgp-bot-key: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+          env:
+          - name: KUBECONFIG
+            value: /kubeconfig
+          - name: TARGET
+            value: external
+          - name: BUILD_ARCH
+            value: crossbuild-s390x
+          - name: ARCHITECTURE
+            value: s390x
+          - name: PULL_POLICY
+            value: Always
+          - name: CDI_NAMESPACE
+            value: cdi
+          - name: CDI_E2E_SKIP
+            value: "Destructive|Cert rotation|cdi-apiserver tests|Importer Test Suite-prometheus|test_id:3996|test_id:8266"
+          - name: SNAPSHOT_SC
+            value: ocs-storagecluster-ceph-rbd
+          - name: BLOCK_SC
+            value: ocs-storagecluster-ceph-rbd
+          - name: CSICLONE_SC
+            value: ocs-storagecluster-ceph-rbd
+          - name: CDI_LABEL_FILTER
+            value: "!VDDK && !ImageIO"
+          - name: UPLOAD_PROXY_URL_OVERRIDE
+            value: "https://cdi-uploadproxy-cdi.apps.odf.cdi.ci:6005"
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - |
+              source ../project-infra/hack/manage-secrets.sh
+              decrypt_secrets
+              install -m400 "${secrets_repo_dir}"/secrets/kubeconfigs/prow-s390x-openshift /kubeconfig
+              cleanup_secrets
+
+              cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+              echo "195.212.74.206 api.odf.cdi.ci oauth-openshift.apps.odf.cdi.ci cdi-uploadproxy-cdi.apps.odf.cdi.ci" >> /etc/hosts
+
+              kubectl delete cdi cdi --ignore-not-found --timeout=120s
+              kubectl delete ns cdi --ignore-not-found --timeout=120s
+              automation/test.sh
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
   - name: pull-containerized-data-importer-e2e-ceph-wffc
     skip_branches:
       - release-v\d+\.\d+
@@ -492,7 +565,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -531,7 +604,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -570,7 +643,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -613,7 +686,7 @@ presubmits:
         env:
         - name: FOSSA_TOKEN_FILE
           value: /root/.docker/secrets/fossa/token
-        image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
         name: ""
         resources:
           requests:
@@ -650,7 +723,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image:  quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+        - image:  quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"

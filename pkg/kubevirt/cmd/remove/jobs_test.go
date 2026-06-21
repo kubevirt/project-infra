@@ -491,7 +491,7 @@ func Test_removeOldJobsIfNewOnesExist(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tempDir, err := os.MkdirTemp("", "removeOldJobsIfNewOnesExist-")
 			checkErr(err)
-			defer os.RemoveAll(tempDir)
+			defer func() { _ = os.RemoveAll(tempDir) }()
 
 			copyFiles([]string{tt.args.removeJobsOpts.jobConfigPathKubevirtPeriodics, tt.args.removeJobsOpts.jobConfigPathKubevirtPresubmits}, tempDir)
 			removeJobsOpts = removeJobsOptions{

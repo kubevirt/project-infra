@@ -122,6 +122,17 @@ func (r FlakeStats) AggregateData() (TopXTests, error) {
 
 func (r FlakeStats) fetchFlakeFinder24hReportsForRecentDays() ([]*flakefinder.Params, error) {
 	var recentFlakeFinderReports []*flakefinder.Params
+
+	if r.reportOpts.IncludeRollingWindow {
+		today := time.Now()
+		flakeFinderReportData, err := r.fetchFlakeFinder24hReportData(today)
+		if err != nil {
+			logrus.Warnf("could not fetch today's rolling window report for %v, skipping: %v", today.Format(time.DateOnly), err)
+		} else {
+			recentFlakeFinderReports = append(recentFlakeFinderReports, flakeFinderReportData)
+		}
+	}
+
 	targetReportDate := previousDay(time.Now())
 	for i := 0; i < r.reportOpts.DaysInThePast; i++ {
 		flakeFinderReportData, err := r.fetchFlakeFinder24hReportData(targetReportDate)
@@ -145,10 +156,10 @@ func (r FlakeStats) fetchFlakeFinder24hReportData(targetReportDate time.Time) (*
 	if err != nil {
 		return nil, fmt.Errorf("error fetching report %q", reportJSONURL)
 	}
+	defer func() { _ = response.Body.Close() }()
 	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("error %s fetching report %q", response.Status, reportJSONURL)
 	}
-	defer response.Body.Close()
 
 	var flakefinderReportData flakefinder.Params
 	err = json.NewDecoder(response.Body).Decode(&flakefinderReportData)
@@ -280,7 +291,7 @@ func (r FlakeStats) writeHTMLReport(overallFailures *TopXTest, topXTests TopXTes
 		return fmt.Errorf("failed to create file %q: %w", r.writeOpts.OutputFile, err)
 	}
 	logrus.Printf("Writing html to %q", r.writeOpts.OutputFile)
-	defer htmlReportOutputWriter.Close()
+	defer func() { _ = htmlReportOutputWriter.Close() }()
 
 	templateData := &ReportData{
 		OverallFailures: overallFailures,
@@ -304,7 +315,7 @@ func (r FlakeStats) writeMDReport(overallFailures *TopXTest, topXTests TopXTests
 		return fmt.Errorf("failed to create file %q: %w", r.writeOpts.OutputFile, err)
 	}
 	logrus.Printf("Writing markdown to %q", r.writeOpts.OutputFile)
-	defer mdReportOutputWriter.Close()
+	defer func() { _ = mdReportOutputWriter.Close() }()
 
 	templateData := &ReportData{
 		OverallFailures: overallFailures,

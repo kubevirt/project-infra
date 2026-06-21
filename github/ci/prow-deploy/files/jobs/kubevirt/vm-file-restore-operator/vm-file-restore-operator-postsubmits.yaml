@@ -1,0 +1,117 @@
+postsubmits:
+  kubevirt/vm-file-restore-operator:
+  - name: push-release-vm-file-restore-operator-images
+    branches:
+    - release-\d+\.\d+
+    cluster: kubevirt-prow-control-plane
+    always_run: true
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        env:
+        - name: DOCKER_REPO
+          value: quay.io/kubevirt
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin quay.io &&
+          make buildah-manifest &&
+          # Only push images on tags
+          git fetch --tags &&
+          [ -z "$(git tag --points-at HEAD | head -1)" ] ||
+          TAG="$(git tag --points-at HEAD | head -1)" make buildah-manifest-push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: push-release-vm-file-restore-operator-tag
+    branches:
+    - release-\d+\.\d+
+    cluster: kubevirt-prow-control-plane
+    always_run: true
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-github-credentials: "true"
+      preset-kubevirtci-quay-credential: "false"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        env:
+        - name: DOCKER_REPO
+          value: quay.io/kubevirt
+        - name: GH_CLI_VERSION
+          value: "1.5.0"
+        - name: GITHUB_TOKEN_PATH
+          value: /etc/github/oauth
+        - name: GITHUB_REPOSITORY
+          value: kubevirt/vm-file-restore-operator
+        - name: GIT_USER_NAME
+          value: kubevirt-bot
+        command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
+        args:
+        - ./hack/release.sh
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: push-latest-vm-file-restore-operator-images
+    branches:
+    - main
+    cluster: kubevirt-prow-control-plane
+    always_run: true
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "false"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        env:
+        - name: DOCKER_REPO
+          value: quay.io/kubevirt
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin quay.io &&
+          make buildah-manifest &&
+          make buildah-manifest-push
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"

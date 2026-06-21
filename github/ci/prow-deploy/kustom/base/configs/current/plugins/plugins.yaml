@@ -89,7 +89,6 @@ plugins:
     plugins:
     - approve
     - lgtm
-    - release-note
     - trigger
 
   kubevirt/cloud-image-builder:
@@ -512,6 +511,14 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/vm-file-restore-operator:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+
   kubevirt/iommufd-device-plugin:
     plugins:
     - approve
@@ -558,17 +565,17 @@ plugins:
     - verify-owners
     - wip
 
-  nmstate/nmstate:
-    plugins:
-    - override
-    - trigger
-
-
   virtblocks:
     plugins:
     - dco
     - trigger
 
+  kubevirt/redfish-controller:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - trigger
 
 external_plugins:
   libguestfs-appliance:
@@ -605,6 +612,11 @@ external_plugins:
     events:
       - pull_request
       - issue_comment
+  - name: coverage
+    endpoint: http://prow-coverage:9901
+    events:
+      - pull_request
+  kubevirt/ci-health:
   - name: coverage
     endpoint: http://prow-coverage:9901
     events:
@@ -680,10 +692,12 @@ approve:
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
+  - kubevirt/vm-file-restore-operator
   - kubevirt/iommufd-device-plugin
   - kubevirt/kubevirt-aie
   - kubevirt/kubevirt-aie-webhook
   - kubevirt/ci-health
+  - kubevirt/redfish-controller
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -825,11 +839,16 @@ lgtm:
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
+  - kubevirt/vm-file-restore-operator
   - kubevirt/ci-health
+  - kubevirt/redfish-controller
   review_acts_as_lgtm: true
 
 override:
   allow_top_level_owners: true
+  allowed_github_teams:
+    kubevirt:
+      - prow-job-taskforce
 
 triggers:
 - repos:
@@ -883,7 +902,9 @@ triggers:
   - kubevirt/virt-template
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
+  - kubevirt/vm-file-restore-operator
   - kubevirt/ci-health
+  - kubevirt/redfish-controller
   ignore_ok_to_test: true
 - repos:
   - virtblocks/virtblocks

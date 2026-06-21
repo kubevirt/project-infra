@@ -36,6 +36,13 @@ type autoQuarantineOptions struct {
 	releaseLaneSuffix       string
 	matchingLaneRegexString string
 
+	maxFailureAge      time.Duration
+	minRecentFailures  int
+	minFailureInterval time.Duration
+
+	jobConfigPath    string
+	jobConfigOrgRepo string
+
 	prDescriptionOutputFileOpts *options.OutputFileOptions
 }
 
@@ -50,6 +57,7 @@ type quarantineOptions struct {
 
 	filterPeriodicJobRunResults bool
 	filterLaneRegex             string
+	includeRollingWindow        bool
 
 	testName string
 

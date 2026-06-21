@@ -6,13 +6,17 @@ resources:
   - ../../base
   - ../../components/docker-mirror-proxy/base
   - ../../components/greenhouse/base
+  - resources/crier-rbac.yaml
   - resources/docker-mirror-proxy_pvc.yaml
   - resources/hook-rbac.yaml
   - resources/horologium-rbac.yaml
+  - resources/prow-controller-manager-rbac.yaml
   - resources/prow-exporter-deployment.yaml
   - resources/prow-exporter-rbac.yaml
   - resources/prow-exporter-service.yaml
   - resources/sinker-rbac.yaml
+  - resources/statusreconciler-rbac.yaml
+  - resources/tide-rbac.yaml
   # templated resources
   - resources/admin-rbac.yaml
 
@@ -27,10 +31,6 @@ patches:
       kind: Deployment
       name: rehearse
     path: patches/JsonRFC6902/prow-rehearse-deployment.yaml
-  - target:
-      <<: *deployment_target
-      name: coverage
-    path: patches/JsonRFC6902/prow-coverage-deployment.yaml
   - target:
       <<: *deployment_target
       name: test-subset
@@ -51,6 +51,10 @@ patches:
       <<: *deployment_target
       name: horologium
     path: patches/JsonRFC6902/horologium_deployment.yaml
+  - target:
+      <<: *deployment_target
+      name: statusreconciler
+    path: patches/JsonRFC6902/statusreconciler_deployment.yaml
   - target:
       <<: *deployment_target
       name: tide
@@ -91,20 +95,6 @@ patches:
       kind: PersistentVolumeClaim
       name: ghproxy
     path: patches/StrategicMerge/ghproxy.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: Role
-      namespace: test-pods
-      name: crier
-    path: patches/StrategicMerge/crier_role.yaml
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: Role
-      namespace: test-pods
-      name: prow-controller-manager
-    path: patches/StrategicMerge/prow_controller_manager_role.yaml
 
   # namespaces
   - target:
@@ -272,13 +262,24 @@ secretGenerator:
     type: Opaque
   - <<: *oauth_token
     namespace: kubevirt-prow-jobs
-  - &gcs_secret
-    name: gcs
+  - &gcs_credentials
+    name: gcs-credentials
     files:
       - secrets/service-account.json
     type: Opaque
-  - <<: *gcs_secret
+  - <<: *gcs_credentials
     namespace: kubevirt-prow-jobs
+  # For backward compatibility
+  - <<: *gcs_credentials
+    name: gcs
+  - <<: *gcs_credentials
+    name: gcs
+    namespace: kubevirt-prow-jobs
+  - name: bazel-cache-gcs
+    namespace: kubevirt-prow-jobs
+    files:
+      - secrets/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json
+    type: Opaque
   - name: virtci-gcs
     namespace: kubevirt-prow-jobs
     files:
@@ -286,7 +287,7 @@ secretGenerator:
     type: Opaque
   - name: slack-token
     files:
-      - token=secrets/slack-token
+      - token=secrets/slack/token
     type: Opaque
   - name: cookie
     files:

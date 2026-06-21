@@ -111,9 +111,36 @@ var _ = Describe("generateCoverageJob", func() {
 	)
 
 	BeforeEach(func() {
-		handler = &GitHubEventsHandler{
-			jobsNamespace: "kubevirt-prow-jobs",
+		cfg := &Config{
+			Defaults: JobConfig{
+				Namespace: "kubevirt-prow-jobs",
+				Image:     "quay.io/kubevirtci/covreport:latest",
+				Cluster:   "kubevirt-prow-control-plane",
+				Env: map[string]string{
+					"GO_MOD_PATH": "go.mod",
+					"GOTOOLCHAIN": "local",
+				},
+				TimeoutMinutes:     120,
+				GracePeriodSeconds: 15,
+				UtilityImages: UtilityImagesConfig{
+					CloneRefs:  "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260401-f6cc3990c",
+					InitUpload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260401-f6cc3990c",
+					Entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260401-f6cc3990c",
+					Sidecar:    "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260401-f6cc3990c",
+				},
+				GCS: GCSConfig{
+					Bucket:            "kubevirt-prow",
+					PathStrategy:      "explicit",
+					CredentialsSecret: "gcs",
+				},
+			},
+			Repos: map[string]JobConfig{
+				"kubevirt/project-infra": {
+					TestPackages: "./external-plugins/... ./releng/... ./robots/... ./cmd/... ./pkg/...",
+				},
+			},
 		}
+		handler = &GitHubEventsHandler{config: cfg}
 
 		pr = &github.PullRequest{
 			Number: 123,
@@ -132,7 +159,8 @@ var _ = Describe("generateCoverageJob", func() {
 			User: github.User{Login: "testuser"},
 		}
 
-		job = handler.generateCoverageJob(pr, "test-event-123")
+		jobCfg, _ := cfg.RepoConfig("kubevirt/project-infra")
+		job = handler.generateCoverageJob(pr, "test-event-123", jobCfg)
 	})
 
 	DescribeTable("Should set the correct configuration",
@@ -228,8 +256,26 @@ var _ = Describe("Handle", func() {
 			logger:        logger,
 			githubClient:  fakeGithubClient,
 			prowJobClient: fakeProwClient.ProwJobs("test-namespace"),
-			jobsNamespace: "test-namespace",
-			dryrun:        false,
+			config: &Config{
+				Defaults: JobConfig{
+					Namespace: "test-namespace",
+					Image:     "test-image:latest",
+					Cluster:   "test-cluster",
+					GCS:       GCSConfig{Bucket: "test-bucket", CredentialsSecret: "gcs"},
+					UtilityImages: UtilityImagesConfig{
+						CloneRefs:  "clonerefs:latest",
+						InitUpload: "initupload:latest",
+						Entrypoint: "entrypoint:latest",
+						Sidecar:    "sidecar:latest",
+					},
+				},
+				Repos: map[string]JobConfig{
+					"kubevirt/project-infra": {
+						TestPackages: "./...",
+					},
+				},
+			},
+			dryrun: false,
 		}
 	})
 
@@ -295,6 +341,22 @@ var _ = Describe("Handle", func() {
 
 			Expect(fakeProwClient.Actions()).To(HaveLen(1))
 			Expect(fakeProwClient.Actions()[0].GetVerb()).To(Equal("create"))
+		})
+	})
+
+	Context("When the PR is from an unconfigured repo", func() {
+		It("Should not create a job", func() {
+			event := &GitHubEvent{
+				Type:    "pull_request",
+				GUID:    "event-guid-unknown-repo",
+				Payload: createPREventPayload(github.PullRequestActionOpened, 600, "kubevirt", "unknown-repo"),
+			}
+			fakeGithubClient.PullRequestChanges[600] = []github.PullRequestChange{
+				{Filename: "main.go"},
+			}
+			handler.Handle(event)
+
+			Expect(fakeProwClient.Actions()).To(BeEmpty())
 		})
 	})
 

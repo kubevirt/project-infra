@@ -9,9 +9,11 @@ filters:
     approvers:
     - 0xfelix
     - dhiller
+    - dollierp
     - stu-gott
     reviewers:
     - 0xfelix
     - dhiller
+    - dollierp
     - stu-gott
 options: {}

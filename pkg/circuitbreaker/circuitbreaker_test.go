@@ -81,32 +81,32 @@ var _ = Describe("circuitbreaker.go", func() {
 		It("should call the target", func() {
 			mockRetryableFunc := &MockRetryableFunc{errors: []error{nil}}
 			retryableFunc := circuitBreaker.WrapRetryableFunc(mockRetryableFunc.target())
-			retryableFunc()
+			_ = retryableFunc()
 			Expect(mockRetryableFunc.calls).To(BeEquivalentTo(1))
 		})
 
 		It("should not call the target a second time before the retry period has passed", func() {
 			mockRetryableFunc := &MockRetryableFunc{errors: []error{fmt.Errorf("test"), nil}}
 			retryableFunc := circuitBreaker.WrapRetryableFunc(mockRetryableFunc.target())
-			retryableFunc()
-			retryableFunc()
+			_ = retryableFunc()
+			_ = retryableFunc()
 			Expect(mockRetryableFunc.calls).To(BeEquivalentTo(1))
 		})
 
 		It("should call the target a second time if the error should not open the circuit", func() {
 			mockRetryableFunc := &MockRetryableFunc{errors: []error{fmt.Errorf("42"), nil}}
 			retryableFunc := circuitBreaker.WrapRetryableFunc(mockRetryableFunc.target())
-			retryableFunc()
-			retryableFunc()
+			_ = retryableFunc()
+			_ = retryableFunc()
 			Expect(mockRetryableFunc.calls).To(BeEquivalentTo(2))
 		})
 
 		It("should call the target a second time after retry period has passed", func() {
 			mockRetryableFunc := &MockRetryableFunc{errors: []error{fmt.Errorf("test"), nil}}
 			retryableFunc := circuitBreaker.WrapRetryableFunc(mockRetryableFunc.target())
-			retryableFunc()
+			_ = retryableFunc()
 			time.Sleep(retryAfter)
-			retryableFunc()
+			_ = retryableFunc()
 			Expect(mockRetryableFunc.calls).To(BeEquivalentTo(2))
 		})
 
@@ -126,8 +126,8 @@ var _ = Describe("circuitbreaker.go", func() {
 			targetFuncB := &MockRetryableFunc{errors: []error{nil}}
 			retryableFuncA := circuitBreaker.WrapRetryableFunc(targetFuncA.target())
 			retryableFuncB := circuitBreaker.WrapRetryableFunc(targetFuncB.target())
-			retryableFuncA()
-			retryableFuncB()
+			_ = retryableFuncA()
+			_ = retryableFuncB()
 			Expect(targetFuncA.calls).To(BeEquivalentTo(1))
 			Expect(targetFuncB.calls).To(BeEquivalentTo(0))
 		})
@@ -137,9 +137,9 @@ var _ = Describe("circuitbreaker.go", func() {
 			targetFuncB := &MockRetryableFunc{errors: []error{nil}}
 			retryableFuncA := circuitBreaker.WrapRetryableFunc(targetFuncA.target())
 			retryableFuncB := circuitBreaker.WrapRetryableFunc(targetFuncB.target())
-			retryableFuncA()
+			_ = retryableFuncA()
 			time.Sleep(retryAfter)
-			retryableFuncB()
+			_ = retryableFuncB()
 			Expect(targetFuncA.calls).To(BeEquivalentTo(1))
 			Expect(targetFuncB.calls).To(BeEquivalentTo(1))
 		})

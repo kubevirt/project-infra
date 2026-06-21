@@ -38,7 +38,7 @@ var _ = Describe("Rehearse", func() {
 
 		AfterEach(func() {
 			if gitClientFactory != nil {
-				gitClientFactory.Clean()
+				_ = gitClientFactory.Clean()
 			}
 		})
 
@@ -47,7 +47,7 @@ var _ = Describe("Rehearse", func() {
 			It("Should generate Prow jobs for the changed configs", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					Expect(makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")).ShouldNot(HaveOccurred())
 				})
 
 				var baseref string
@@ -230,7 +230,7 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs if there are no changes", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					Expect(makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")).ShouldNot(HaveOccurred())
 				})
 
 				var baseref string
@@ -367,7 +367,7 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs if a job was deleted", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					Expect(makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")).ShouldNot(HaveOccurred())
 				})
 
 				var baseref string
@@ -528,7 +528,7 @@ var _ = Describe("Rehearse", func() {
 			It("Should not act on pull request event if always run is set to false", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					Expect(makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")).ShouldNot(HaveOccurred())
 				})
 
 				var baseref string
@@ -709,7 +709,7 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					Expect(makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")).ShouldNot(HaveOccurred())
 				})
 
 				var baseref string
@@ -918,7 +918,7 @@ var _ = Describe("Rehearse", func() {
 
 		AfterEach(func() {
 			if gitClientFactory != nil {
-				gitClientFactory.Clean()
+				_ = gitClientFactory.Clean()
 			}
 		})
 
@@ -926,7 +926,7 @@ var _ = Describe("Rehearse", func() {
 
 			It("Should generate Prow jobs for the changed configs", func() {
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					Expect(makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")).ShouldNot(HaveOccurred())
 				})
 
 				var baseref string
@@ -1108,7 +1108,7 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs if there are no changes", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					Expect(makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")).ShouldNot(HaveOccurred())
 				})
 
 				var baseref string
@@ -1239,7 +1239,7 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs if a job was deleted", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					Expect(makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")).ShouldNot(HaveOccurred())
 				})
 
 				var baseref string
@@ -1392,7 +1392,7 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs if a job is not permitted", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					Expect(makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")).ShouldNot(HaveOccurred())
 				})
 
 				var baseref string
@@ -1543,7 +1543,7 @@ var _ = Describe("Rehearse", func() {
 			It("Should not generate Prow jobs", func() {
 
 				By("Creating a fake git repo", func() {
-					makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")
+					Expect(makeRepoWithEmptyProwConfig(gitrepo, "foo", "bar")).ShouldNot(HaveOccurred())
 				})
 
 				var baseref string

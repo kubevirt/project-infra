@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prow-coverage-config
+data:
+  config.yaml: |
+    defaults:
+      namespace: kubevirt-prow-jobs
+      image: "quay.io/kubevirtci/covreport:latest"
+      cluster: kubevirt-prow-control-plane
+      env:
+        GO_MOD_PATH: go.mod
+        GOTOOLCHAIN: local
+      timeoutMinutes: 120
+      gracePeriodSeconds: 15
+      utilityImages:
+        cloneRefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260617-37d12bec7"
+        initUpload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260617-37d12bec7"
+        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260617-37d12bec7"
+        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260617-37d12bec7"
+      gcs:
+        bucket: kubevirt-prow
+        pathStrategy: explicit
+        credentialsSecret: gcs
+    repos:
+      kubevirt/project-infra:
+        testPackages: "./external-plugins/... ./releng/... ./robots/... ./cmd/... ./pkg/..."
+      kubevirt/ci-health:
+        testPackages: "./pkg/... ./cmd/..."

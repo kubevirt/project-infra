@@ -69,6 +69,7 @@ func init() {
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&outputFileOpts.OverwriteOutputFile, "overwrite-output-file", false, "whether to overwrite the output file")
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&quarantineOpts.filterPeriodicJobRunResults, "filter-periodic-job-run-results", true, "whether to filter the results for periodics")
 	mostFlakyTestsReportCmd.PersistentFlags().StringVar(&quarantineOpts.filterLaneRegex, "filter-lane-regex", filterLaneRegexDefault, "the regular expression to use to filter test lanes with")
+	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&quarantineOpts.includeRollingWindow, "include-rolling-window", true, "whether to include today's rolling window flakefinder data")
 }
 
 var sigMatcher = regexp.MustCompile(`\[(sig-[^]]+)]`)
@@ -78,6 +79,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 		flakestats.DaysInThePast(quarantineOpts.daysInThePast),
 		flakestats.FilterPeriodicJobRunResults(quarantineOpts.filterPeriodicJobRunResults),
 		flakestats.FilterLaneRegex(quarantineOpts.filterLaneRegex),
+		flakestats.IncludeRollingWindow(quarantineOpts.includeRollingWindow),
 	)
 	err := reportOpts.Validate()
 	if err != nil {
@@ -189,7 +191,9 @@ func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string
 	return sigs, testNames, mostFlakyTestsBySIG, nil
 }
 
-func getQuarantineCandidate(topXTest *flakestats.TopXTest, timeRange searchci.TimeRange) (*TestToQuarantine, error) {
+var getQuarantineCandidate = getQuarantineCandidateDefault
+
+func getQuarantineCandidateDefault(topXTest *flakestats.TopXTest, timeRange searchci.TimeRange) (*TestToQuarantine, error) {
 	impacts, err := searchci.ScrapeImpacts(topXTest.Name, timeRange)
 	if err != nil {
 		return nil, fmt.Errorf("could not scrape results for test %q: %w", topXTest.Name, err)
@@ -235,7 +239,7 @@ func hasNotOnlyClusteredFailures() searchci.FilterOpt {
 			if junitXMLHTTPResponse.StatusCode != 200 {
 				log.Fatalf("failed to get junit xml from %q", junitXMLURL)
 			}
-			defer junitXMLHTTPResponse.Body.Close()
+			defer func() { _ = junitXMLHTTPResponse.Body.Close() }()
 			junitXML, err := io.ReadAll(junitXMLHTTPResponse.Body)
 			if err != nil {
 				log.Fatalf("failed to get junit xml from %q", junitXMLURL)

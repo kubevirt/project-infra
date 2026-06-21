@@ -107,7 +107,9 @@ func main() {
 		if err != nil {
 			log.Fatalf("error writing report output: %v", err)
 		}
-		reportIndexObjectWriter.Close()
+		if err := reportIndexObjectWriter.Close(); err != nil {
+			log.Fatalf("error closing report index object writer: %v", err)
+		}
 	}
 }
 

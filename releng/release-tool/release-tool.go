@@ -101,7 +101,7 @@ func (r *releaseData) generateReleaseNotes() error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	// just create releasenotes file and exit if skip is enabled
 	if r.skipReleaseNotes {
@@ -164,41 +164,49 @@ func (r *releaseData) generateReleaseNotes() error {
 	numContributors := len(contributorList)
 	typeOfChanges = strings.TrimSpace(typeOfChanges)
 
-	f.WriteString(fmt.Sprintf("This release follows %s and consists of %d changes, contributed by %d people, leading to %s.\n", r.previousTag, numChanges, numContributors, typeOfChanges))
-	if r.promoteRC != "" {
-		f.WriteString(fmt.Sprintf("%s is a promotion of release candidate %s which was originally published %s", r.tag, r.promoteRC, r.promoteRCTime.Format("2006-01-02")))
+	var writeErr error
+	writeString := func(s string) {
+		if writeErr != nil {
+			return
+		}
+		_, writeErr = f.WriteString(s)
 	}
-	f.WriteString("\n")
-	f.WriteString(fmt.Sprintf("The source code and selected binaries are available for download at: %s.\n", tagUrl))
-	f.WriteString("\n")
-	f.WriteString("The primary release artifact of KubeVirt is the git tree. The release tag is\n")
-	f.WriteString(fmt.Sprintf("signed and can be verified using `git tag -v %s`.\n", r.tag))
-	f.WriteString("\n")
-	f.WriteString(fmt.Sprintf("Pre-built containers are published on Quay and can be viewed at: <https://quay.io/%s/>.\n", r.org))
-	f.WriteString("\n")
+
+	writeString(fmt.Sprintf("This release follows %s and consists of %d changes, contributed by %d people, leading to %s.\n", r.previousTag, numChanges, numContributors, typeOfChanges))
+	if r.promoteRC != "" {
+		writeString(fmt.Sprintf("%s is a promotion of release candidate %s which was originally published %s", r.tag, r.promoteRC, r.promoteRCTime.Format("2006-01-02")))
+	}
+	writeString("\n")
+	writeString(fmt.Sprintf("The source code and selected binaries are available for download at: %s.\n", tagUrl))
+	writeString("\n")
+	writeString("The primary release artifact of KubeVirt is the git tree. The release tag is\n")
+	writeString(fmt.Sprintf("signed and can be verified using `git tag -v %s`.\n", r.tag))
+	writeString("\n")
+	writeString(fmt.Sprintf("Pre-built containers are published on Quay and can be viewed at: <https://quay.io/%s/>.\n", r.org))
+	writeString("\n")
 
 	if len(releaseNotes) > 0 {
-		f.WriteString("Notable changes\n---------------\n")
-		f.WriteString("\n")
+		writeString("Notable changes\n---------------\n")
+		writeString("\n")
 		for _, note := range releaseNotes {
-			f.WriteString(fmt.Sprintf("- %s\n", note))
+			writeString(fmt.Sprintf("- %s\n", note))
 		}
 	}
 
-	f.WriteString("\n")
-	f.WriteString("Contributors\n------------\n")
-	f.WriteString(fmt.Sprintf("%d people contributed to this release:\n\n", numContributors))
+	writeString("\n")
+	writeString("Contributors\n------------\n")
+	writeString(fmt.Sprintf("%d people contributed to this release:\n\n", numContributors))
 
 	for _, contributor := range contributorList {
 		if strings.Contains(contributor, "kubevirt-bot") {
 			// skip the bot
 			continue
 		}
-		f.WriteString(fmt.Sprintf("%s\n", strings.TrimSpace(contributor)))
+		writeString(fmt.Sprintf("%s\n", strings.TrimSpace(contributor)))
 	}
 
-	f.WriteString(additionalResources)
-	return nil
+	writeString(additionalResources)
+	return writeErr
 }
 
 func (r *releaseData) checkoutProjectInfra() error {
@@ -222,7 +230,7 @@ func (r *releaseData) checkoutProjectInfra() error {
 	}
 
 	// start fresh because checkout doesn't exist or is corrupted
-	os.RemoveAll(r.infraDir)
+	_ = os.RemoveAll(r.infraDir)
 	err = os.MkdirAll(r.infraDir, 0755)
 	if err != nil {
 		return err
@@ -267,7 +275,7 @@ func (r *releaseData) checkoutUpstream() error {
 	}
 
 	// start fresh because checkout doesn't exist or is corrupted
-	os.RemoveAll(r.repoDir)
+	_ = os.RemoveAll(r.repoDir)
 	err = os.MkdirAll(r.repoDir, 0755)
 	if err != nil {
 		return err
@@ -309,7 +317,9 @@ func (r *releaseData) makeTag(branch string) error {
 		}
 	}
 
-	r.generateReleaseNotes()
+	if err := r.generateReleaseNotes(); err != nil {
+		log.Printf("Warning: release notes generation failed: %v", err)
+	}
 
 	_, err := gitCommand("-C", r.repoDir, "tag", "-s", r.tag, "-F", r.releaseNotesFile)
 	if err != nil {
@@ -1164,9 +1174,7 @@ func (r *releaseData) cutNewTag() error {
 		return err
 	}
 
-	r.makeTag(r.tagBranch)
-
-	return nil
+	return r.makeTag(r.tagBranch)
 }
 
 func (r *releaseData) printData() {
@@ -1234,8 +1242,8 @@ func main() {
 	infraDir := fmt.Sprintf("%s/%s/https-%s", *cacheDir, "kubevirt", "project-infra")
 
 	if *cleanCacheDir {
-		os.RemoveAll(repoDir)
-		os.RemoveAll(infraDir)
+		_ = os.RemoveAll(repoDir)
+		_ = os.RemoveAll(infraDir)
 	}
 
 	ctx := context.Background()
@@ -1274,7 +1282,9 @@ func main() {
 	}
 
 	if *autoRelease {
-		r.autoDetectData(*autoReleaseCadance, *autoPromoteAfterDays)
+		if err := r.autoDetectData(*autoReleaseCadance, *autoPromoteAfterDays); err != nil {
+			log.Fatalf("ERROR during auto-detect: %v", err)
+		}
 	}
 
 	// If this is a promotion, we need to set the tag to promote

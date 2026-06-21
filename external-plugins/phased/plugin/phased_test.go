@@ -84,7 +84,7 @@ var _ = Describe("Phased", func() {
 				},
 			})
 
-			makeRepoWithEmptyProwConfig(gitrepo, org, repo)
+			Expect(makeRepoWithEmptyProwConfig(gitrepo, org, repo)).ShouldNot(HaveOccurred())
 
 			Expect(err).ShouldNot(HaveOccurred())
 			err = gitrepo.AddCommit(org, repo, map[string][]byte{
@@ -97,7 +97,7 @@ var _ = Describe("Phased", func() {
 
 		AfterEach(func() {
 			if gitClientFactory != nil {
-				gitClientFactory.Clean()
+				_ = gitClientFactory.Clean()
 			}
 		})
 

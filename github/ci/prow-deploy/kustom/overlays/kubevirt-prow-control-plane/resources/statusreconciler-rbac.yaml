@@ -1,0 +1,27 @@
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: kubevirt-prow-jobs
+  name: statusreconciler
+rules:
+  - apiGroups:
+      - prow.k8s.io
+    resources:
+      - prowjobs
+    verbs:
+      - create
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: kubevirt-prow-jobs
+  name: statusreconciler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: statusreconciler
+subjects:
+  - kind: ServiceAccount
+    name: statusreconciler
+    namespace: kubevirt-prow

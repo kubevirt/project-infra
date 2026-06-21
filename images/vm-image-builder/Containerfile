@@ -1,11 +1,19 @@
-FROM quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+FROM quay.io/kubevirtci/bootstrap:v20260612-73bc71e
 
 RUN dnf install -y \
     cloud-utils \
+    dnsmasq \
+    edk2-aarch64 \
     libguestfs \
     libguestfs-tools-c \
+    libvirt-client \
+    libvirt-daemon \
+    libvirt-daemon-config-network \
+    libvirt-daemon-driver-qemu \
     libvirt \
+    iptables-nft \
     qemu-img \
+    qemu-kvm \
     qemu-system-aarch64 \
     qemu-system-s390x \
     genisoimage \
@@ -15,3 +23,5 @@ RUN dnf install -y \
 
 COPY qemu.conf /etc/libvirt/qemu.conf
 COPY start_libvirtd.sh /usr/local/bin/start_libvirtd.sh
+COPY bootstrap_libvirt_minimal.sh /usr/local/bin/bootstrap_libvirt_minimal.sh
+RUN chmod +x /usr/local/bin/start_libvirtd.sh /usr/local/bin/bootstrap_libvirt_minimal.sh

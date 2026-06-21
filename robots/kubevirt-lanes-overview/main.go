@@ -106,7 +106,11 @@ func main() {
 	writer := csv.NewWriter(temp)
 	headers := []string{"job_name"}
 	headers = append(headers, envVars...)
-	writer.Write(headers)
-	writer.WriteAll(rows)
+	if err := writer.Write(headers); err != nil {
+		log.Fatalf("error writing CSV headers: %v", err)
+	}
+	if err := writer.WriteAll(rows); err != nil {
+		log.Fatalf("error writing CSV rows: %v", err)
+	}
 	log.Printf("Output written to %q", temp.Name())
 }

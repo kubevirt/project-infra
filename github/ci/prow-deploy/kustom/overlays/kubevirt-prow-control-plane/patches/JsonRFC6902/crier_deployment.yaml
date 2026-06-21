@@ -1,50 +1,62 @@
 ---
-# resets KUBECONFIG env to simple value
-- op: replace
-  path: /spec/template/spec/containers/0/env/0
-  value:
-    name: KUBECONFIG
-    value: "/etc/kubeconfig/config"
-
-# removes AWS env vars
-- op: remove
-  path: /spec/template/spec/containers/0/env/3
-- op: remove
-  path: /spec/template/spec/containers/0/env/2
-- op: remove
-  path: /spec/template/spec/containers/0/env/1
-
-# removes volume and mount for aws-iam-token
-- op: remove
-  path: /spec/template/spec/containers/0/volumeMounts/10
-- op: remove
-  path: /spec/template/spec/volumes/10
-
-  # removes kubeconfig-k8s-infra-kops-prow-build mount and volume
-- op: remove
-  path: /spec/template/spec/containers/0/volumeMounts/5
-- op: remove
-  path: /spec/template/spec/volumes/9
-
-# removes kubeconfig-eks-prow-build-cluster mount and volume
-- op: remove
-  path: /spec/template/spec/containers/0/volumeMounts/4
-- op: remove
-  path: /spec/template/spec/volumes/8
-
-# adds gcs service account arg, volume and mount
+# inject jobs configmap
 - op: add
-  path: /spec/template/spec/containers/0/args/0
-  value: --gcs-credentials-file=/etc/gcs/service-account.json
+  path: /spec/template/spec/containers/0/args/-
+  value: --job-config-path=/etc/job-config
+
 - op: add
-  path: /spec/template/spec/containers/0/volumeMounts/0
+  path: /spec/template/spec/containers/0/volumeMounts/-
   value:
-    name: gcs
-    mountPath: /etc/gcs
+    name: job-config
+    mountPath: /etc/job-config
     readOnly: true
+
 - op: add
-  path: /spec/template/spec/volumes/0
+  path: /spec/template/spec/volumes/-
   value:
-    name: gcs
+    name: job-config
+    configMap:
+      name: job-config
+
+# inject consolidated KUBECONFIG with federated clusters for the k8s reporter (podinfo.json)
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --kubeconfig=/etc/kubeconfig/config
+
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/-
+  value:
+    name: kubeconfig
+    mountPath: /etc/kubeconfig
+    readOnly: true
+
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: kubeconfig
     secret:
-      secretName: gcs
+      secretName: kubeconfig
+      defaultMode: 420
+
+# inject slack credentials
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --slack-token-file=/etc/slack/token
+
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --slack-workers=10
+
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/-
+  value:
+    name: slack-token
+    mountPath: /etc/slack
+    readOnly: true
+
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: slack-token
+    secret:
+      secretName: slack-token

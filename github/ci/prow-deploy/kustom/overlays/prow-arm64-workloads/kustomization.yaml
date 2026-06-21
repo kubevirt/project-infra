@@ -6,8 +6,17 @@ generatorOptions:
   disableNameSuffixHash: true
 
 secretGenerator:
-  - name: gcs
+  - &gcs_credentials
+    name: gcs-credentials
     namespace: kubevirt-prow-jobs
     files:
       - secrets/service-account.json
+    type: Opaque
+  # For backward compatibility
+  - <<: *gcs_credentials
+    name: gcs
+  - name: bazel-cache-gcs
+    namespace: kubevirt-prow-jobs
+    files:
+      - secrets/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json
     type: Opaque

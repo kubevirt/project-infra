@@ -1,5 +1,5 @@
 # BASE
-FROM registry.fedoraproject.org/fedora:41
+FROM registry.fedoraproject.org/fedora:43
 
 # COPY app configs
 WORKDIR /src
@@ -13,10 +13,10 @@ RUN dnf update -y && \
       nodejs npm python3-pip ruby ruby-devel rubygems rubygems-devel \
       rubygem-bundler rubygem-json rubygem-nenv rubygem-rake && \
     alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
-    npm install -g markdownlint-cli casperjs phantomjs-prebuilt yaspeller && \
+    npm install -g markdownlint-cli@0.40 yaspeller@10.0.1 && \
     cd /src && bundle install && bundle update && cd && \
     pip install --upgrade pip && \
-    pip install mkdocs mkdocs-awesome-pages-plugin mkdocs-htmlproofer-plugin && \
+    pip install --no-cache-dir mkdocs mkdocs-awesome-nav mkdocs-htmlproofer-plugin && \
     gem list && \
     rpm -e --nodeps libX11 libX11-common libXrender libXft && \
     dnf remove -y @development-tools gcc qt5-srpm-macros \

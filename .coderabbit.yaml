@@ -1,0 +1,36 @@
+language: "en-US"
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  high_level_summary: true
+  tools:
+    enabled: true
+    golangci-lint:
+      enabled: true
+  path_filters:
+    - "!vendor/**"
+  path_instructions:
+    - path: "**/*.go"
+      instructions: |
+        Ensure all errors are handled. Flag unhandled error returns.
+        Check for concurrency issues (race conditions, mutex misuse).
+        Follow Go naming conventions and effective Go idioms.
+    - path: "**/*_test.go"
+      instructions: |
+        Verify table-driven tests where appropriate.
+        Check for proper test cleanup and resource management.
+        Ensure tests use Ginkgo/Gomega patterns consistently where applicable.
+    - path: "**/github/ci/prow-deploy/files/jobs/**/*.yaml"
+      instructions: |
+        Prow job configuration. Focus on:
+        - Job names follow kubevirt naming conventions.
+        - Timeout configurations are appropriate.
+        - Cluster and preset labels are correct.
+        - run_if_changed regexes are correct and not overly broad or narrow.
+        - Environment variables are consistently named.
+    - path: "**/hack/**/*.sh"
+      instructions: |
+        Shell script infrastructure automation.
+        Check for proper error handling (set -e, error traps).
+        Verify no hardcoded paths where environment variables should be used.
+        Ensure scripts are idempotent where possible.

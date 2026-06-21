@@ -67,7 +67,7 @@ func ScrapeImpacts(testNameSubstring string, timeRange TimeRange) ([]Impact, err
 	if err != nil {
 		return nil, fmt.Errorf("failed to get search.ci results from %s: %w", scrapeResultURL, err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read search.ci result from %s: %w", scrapeResultURL, err)
@@ -110,6 +110,9 @@ func ScrapeImpact(body string) []Impact {
 				URLToDisplay: jobHistoryURL[strings.LastIndex(jobHistoryURL, "/")+1:],
 			})
 		case strings.Contains(viewJobBuildURL, "view"):
+			if len(result) == 0 {
+				continue
+			}
 			timeAmountStr := submatch[7]
 			timeAmount, err := strconv.Atoi(timeAmountStr)
 			if err != nil {
@@ -157,6 +160,36 @@ func matchingTimeRange(timeRange TimeRange) func(i Impact) bool {
 
 func FilterImpacts(impacts []Impact, timeRange TimeRange) []Impact {
 	return FilterImpactsBy(impacts, matchingTimeRange(timeRange))
+}
+
+// HasMinRecentFailures returns a FilterOpt that keeps an Impact only if it has
+// at least minCount build failures within maxAge, and those failures span at
+// least minInterval apart (to reject same-PR bursts).
+func HasMinRecentFailures(maxAge time.Duration, minCount int, minInterval time.Duration) FilterOpt {
+	return func(i Impact) bool {
+		var recentIntervals []time.Duration
+		for _, buildURL := range i.BuildURLs {
+			if buildURL.Interval <= maxAge {
+				recentIntervals = append(recentIntervals, buildURL.Interval)
+			}
+		}
+		if len(recentIntervals) < minCount || len(recentIntervals) == 0 {
+			return false
+		}
+		if minInterval <= 0 {
+			return true
+		}
+		minI, maxI := recentIntervals[0], recentIntervals[0]
+		for _, d := range recentIntervals[1:] {
+			if d < minI {
+				minI = d
+			}
+			if d > maxI {
+				maxI = d
+			}
+		}
+		return maxI-minI >= minInterval
+	}
 }
 
 // FilterImpactsBy filters all impacts for which all filterOpts apply, i.e. each of them returns true
