@@ -71,7 +71,9 @@ plank:
   default_decoration_config_entries:
     - config:
         gcs_configuration:
-          bucket: gs://kubevirt-prow
+          # `gs://` prefix must be stripped for testgrid integration
+          # => https://github.com/GoogleCloudPlatform/testgrid/pull/107
+          bucket: kubevirt-prow
           path_strategy: explicit
         gcs_credentials_secret: gcs-credentials
         github_api_endpoints:
