@@ -331,6 +331,7 @@ tide:
   - labels: [ "kind/flake", "priority/critical-urgent" ]
   - labels: [ "kind/failing-test", "priority/critical-urgent" ]
   - labels: [ "kind/bug", "priority/critical-urgent" ]
+  - labels: [ "approved-vep" ]
 
 branch-protection:
   required_status_checks:
