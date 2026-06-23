@@ -966,6 +966,14 @@ orgs:
           web-ui: write
           web-ui-components: write
           web-ui-operator: write
+      wg-arch-s390x:
+        description: >-
+          Working group which takes care of all things related to supporting
+          s390x architecture on KubeVirt.
+          Ref: https://github.com/kubevirt/community/blob/main/wg-arch-s390x/charter.md
+        maintainers:
+          - chandramerla
+        privacy: closed
       community-team:
         description: "Maintainers of KubeVirt community and websites"
         maintainers:
