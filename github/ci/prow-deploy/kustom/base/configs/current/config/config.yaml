@@ -1,10 +1,22 @@
 ---
+# https://docs.prow.k8s.io/docs/config/
+# https://sigs.k8s.io/prow/pkg/config/prow-config-documented.yaml
 # https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#ProwConfig
 prowjob_namespace: kubevirt-prow-jobs
 pod_namespace: kubevirt-prow-jobs
 log_level: debug
 
 deck:
+  default_rerun_auth_configs:
+    - cluster: '*'
+      rerun_auth_configs:
+        github_team_ids:
+          - 3701123  # https://github.com/orgs/kubevirt/teams/prow-job-taskforce
+    - cluster: prow-s390x-workloads
+      rerun_auth_configs:
+        github_team_ids:
+          - 3701123  # https://github.com/orgs/kubevirt/teams/prow-job-taskforce
+          - 18168981 # https://github.com/orgs/kubevirt/teams/wg-arch-s390x
   spyglass:
     size_limit: 500000000 # 500MB
     gcs_browser_prefix: https://gcsweb.ci.kubevirt.io/gcs/
@@ -56,10 +68,6 @@ deck:
       required_files:
         - artifacts/rest-coverage.json
   tide_update_period: 1s
-  rerun_auth_configs:
-    '*':
-      github_team_ids:
-        - 3701123 # prow-job-taskforce
 
 # https://docs.prow.k8s.io/docs/components/core/prow-controller-manager/
 # https://docs.prow.k8s.io/docs/components/deprecated/plank/
