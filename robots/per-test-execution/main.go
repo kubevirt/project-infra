@@ -361,12 +361,12 @@ func readTopXFromFile(filename string, topX int) (string, []*TestExecutions, err
 		}
 		atoi, err := strconv.Atoi(record[1])
 		if err != nil {
-			return "", nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
+			return "", nil, fmt.Errorf("failed to convert value %q: %v", record[1], err)
 		}
 		totalExecutions := atoi
 		atoi, err = strconv.Atoi(record[2])
 		if err != nil {
-			return "", nil, fmt.Errorf("failed to convert value %q: %v", atoi, err)
+			return "", nil, fmt.Errorf("failed to convert value %q: %v", record[2], err)
 		}
 		failedExecutions := atoi
 

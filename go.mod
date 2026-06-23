@@ -224,6 +224,6 @@ replace (
 	k8s.io/client-go => k8s.io/client-go v0.30.1
 )
 
-go 1.25.0
+go 1.26.0
 
-toolchain go1.25.1
+toolchain go1.26.4
