@@ -42,7 +42,7 @@ presubmits:
         - "/bin/sh"
         - "-ce"
         - |
-          go test ./robots/...
+          go test ./robots/... ./pkg/...
         env:
         - name: GIMME_GO_VERSION
           value: "1.25.1"
