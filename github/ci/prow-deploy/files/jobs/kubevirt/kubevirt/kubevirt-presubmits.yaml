@@ -2281,7 +2281,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.36-sig-compute
+          value: k8s-1.36-sig-compute-parallel
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
