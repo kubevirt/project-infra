@@ -534,77 +534,51 @@ periodics:
         type: Directory
       name: vfio
 - annotations:
-    k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 0 23 * * 6
   decorate: true
   decoration_config:
-    grace_period: 30m0s
+    grace_period: 5m0s
     timeout: 4h0m0s
   extra_refs:
   - base_ref: main
     org: kubevirt
     repo: kubevirt
+    clone_depth: 1
   labels:
+    preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
     preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-kind-sriov
+  name: periodic-kubevirt-e2e-k8s-1.36-sig-network-sriov-emulated
   spec:
-    affinity:
-      podAntiAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-            - key: sriov-pod
-              operator: In
-              values:
-              - "true"
-          topologyKey: kubernetes.io/hostname
-        - labelSelector:
-            matchExpressions:
-            - key: sriov-pod-multi
-              operator: In
-              values:
-              - "true"
-          topologyKey: kubernetes.io/hostname
     containers:
     - command:
       - /usr/local/bin/runner.sh
-      - /bin/bash
-      - -ce
+      - /bin/sh
+      - -c
       - automation/test.sh
       env:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: kind-sriov
-      image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        value: k8s-1.36-emulated-igb
+      - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+        value: "true"
+      - name: KUBEVIRT_WITH_ETC_CAPACITY
+        value: 1G
+      image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
       name: ""
       resources:
         requests:
           memory: 52Gi
       securityContext:
         privileged: true
-      volumeMounts:
-      - mountPath: /sys/fs/cgroup
-        name: cgroup
-      - mountPath: /dev/vfio/
-        name: vfio
     nodeSelector:
-      hardwareSupport: sriov-nic
-    priorityClassName: sriov
-    volumes:
-    - hostPath:
-        path: /sys/fs/cgroup
-        type: Directory
-      name: cgroup
-    - hostPath:
-        path: /dev/vfio/
-        type: Directory
-      name: vfio
+      type: bare-metal-external
 - annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
