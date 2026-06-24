@@ -195,7 +195,7 @@ func TestInitRequiredPresubmits(t *testing.T) {
 	}{
 		{
 			"pull-kubevirt-e2e-kind-sriov",
-			true,
+			false,
 		},
 		{
 			"pull-kubevirt-fuzz",

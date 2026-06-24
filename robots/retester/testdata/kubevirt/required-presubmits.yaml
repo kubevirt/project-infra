@@ -18,7 +18,7 @@ presubmits:
         sriov-pod: "true"
       max_concurrency: 10
       name: pull-kubevirt-e2e-kind-sriov
-      run_before_merge: true
+      optional: true
       skip_branches:
         - release-\d+\.\d+
       spec:
