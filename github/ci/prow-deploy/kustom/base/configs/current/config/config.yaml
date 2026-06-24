@@ -127,6 +127,9 @@ slack_reporter_configs:
 # https://docs.prow.k8s.io/docs/components/core/tide/config/
 # https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#Tide
 tide:
+  batch_size_limit:
+    # smaller size should increase probability of succeeding
+    "kubevirt/kubevirt": 8
   sync_period: 2m
   merge_method:
     kubevirt/libguestfs-appliance: merge
