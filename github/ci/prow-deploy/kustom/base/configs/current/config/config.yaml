@@ -235,6 +235,25 @@ tide:
     - do-not-merge/invalid-commit-message
     - needs-rebase
     - "dco-signoff: no"
+  # approved-vep PRs for kubevirt/kubevirt are in a separate pool so that Tide
+  # batches them independently. Tide's priority config only affects individual
+  # merge order, not batch composition, so without this separation VEP PRs
+  # compete with the full merge queue and get mixed into large batches.
+  - repos:
+    - kubevirt/kubevirt
+    labels:
+    - lgtm
+    - approved
+    - approved-vep
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/work-in-progress
+    - do-not-merge/release-note-label-needed
+    - do-not-merge/invalid-commit-message
+    - needs-rebase
+    - "dco-signoff: no"
   - repos:
     - kubevirt/containerdisks
     - kubevirt/kubevirt
@@ -285,6 +304,7 @@ tide:
     - do-not-merge/invalid-commit-message
     - needs-rebase
     - "dco-signoff: no"
+    - approved-vep
   # dependabot PRs that have been labeled skip-review by the commenter periodic
   - author: dependabot[bot]
     repos:
@@ -336,7 +356,6 @@ tide:
   - labels: [ "kind/flake", "priority/critical-urgent" ]
   - labels: [ "kind/failing-test", "priority/critical-urgent" ]
   - labels: [ "kind/bug", "priority/critical-urgent" ]
-  - labels: [ "approved-vep" ]
 
 branch-protection:
   required_status_checks:
