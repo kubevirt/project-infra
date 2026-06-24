@@ -11,17 +11,3 @@
   copy:
     content: '{{ dockerMirrorProxyCA.crt }}'
     dest: '{{ components_dir }}/docker-mirror-proxy/base/configs/ca.crt'
-
-- name: set cat-api directory
-  set_fact:
-    cat_api_config_dir: '{{ configs_dir}}/cat-api'
-
-- name: cat-api-config directory
-  file:
-    path: '{{ cat_api_config_dir }}'
-    state: directory
-
-- name: create cat-api-config
-  copy:
-    content: '{{ catApiKey | default("")}}'
-    dest: '{{ cat_api_config_dir }}/api-key'

@@ -3,10 +3,10 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: kubevirt-prow-jobs
-  name: "hook"
+  name: hook
 rules:
   - apiGroups:
-      - "prow.k8s.io"
+      - prow.k8s.io
     resources:
       - prowjobs
     verbs:
@@ -27,12 +27,12 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: kubevirt-prow-jobs
-  name: "hook"
+  name: hook
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: "hook"
+  name: hook
 subjects:
-- kind: ServiceAccount
-  name: "hook"
-  namespace: kubevirt-prow
+  - kind: ServiceAccount
+    name: hook
+    namespace: kubevirt-prow

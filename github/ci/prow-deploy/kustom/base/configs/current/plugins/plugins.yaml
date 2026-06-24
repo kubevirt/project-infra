@@ -714,6 +714,7 @@ approve:
 blunderbuss:
   ignore_drafts: true
 
+# https://docs.prow.k8s.io/docs/components/plugins/updateconfig/
 config_updater:
   maps:
     github/ci/prow-deploy/kustom/base/configs/current/config/config.yaml:

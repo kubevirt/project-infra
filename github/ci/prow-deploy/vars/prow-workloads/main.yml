@@ -1,6 +1,5 @@
 testinfra_dir: /tmp/test-infra
 bootstrap_full_config: false
-reconcile_github_webhooks: false
 rescale_pushgateway_deployment: false
 rescale_deck_deployment: false
 project_infra_root: /home/prow/go/src/github.com/kubevirt/project-infra
