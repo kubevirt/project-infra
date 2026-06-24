@@ -245,7 +245,6 @@ tide:
     - "dco-signoff: no"
   - repos:
     - kubevirt/containerdisks
-    - kubevirt/kubevirt
     - kubevirt/containerized-data-importer
     - kubevirt/hostpath-provisioner
     - kubevirt/hostpath-provisioner-operator
@@ -284,6 +283,21 @@ tide:
     labels:
     - lgtm
     - approved
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/work-in-progress
+    - do-not-merge/release-note-label-needed
+    - do-not-merge/invalid-commit-message
+    - needs-rebase
+    - "dco-signoff: no"
+  - repos:
+    - kubevirt/kubevirt
+    labels:
+    - lgtm
+    - approved
+    - approved-vep
     missingLabels:
     - do-not-merge
     - do-not-merge/hold
