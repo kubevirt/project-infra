@@ -1,10 +1,12 @@
 ---
-# Removes history-uri and status-path which point to a
-# remote google storage location
-- op: remove
-  path: /spec/template/spec/containers/0/args/7
-- op: remove
+# store tide status files in our GCS bucket
+- op: replace
   path: /spec/template/spec/containers/0/args/6
+  value: --status-path=gs://kubevirt-prow/tide-status
+
+- op: replace
+  path: /spec/template/spec/containers/0/args/7
+  value: --history-uri=gs://kubevirt-prow/tide-history.json
 
 # inject jobs configmap
 - op: add
