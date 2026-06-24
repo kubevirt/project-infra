@@ -63,6 +63,88 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - name: pull-common-instancetypes-functest-almalinux-9
+    branches:
+      - main
+    always_run: false
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/rhel/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 1
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - "/bin/sh"
+        - "-c"
+        - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 16G
+        - name: FUNCTEST_EXTRA_ARGS
+          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*AlmaLinux 9"'
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        name: ""
+        resources:
+          requests:
+            memory: 20Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - name: pull-common-instancetypes-functest-almalinux-10
+    branches:
+      - main
+    always_run: false
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/rhel/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 1
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - "/bin/sh"
+        - "-c"
+        - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 16G
+        - name: FUNCTEST_EXTRA_ARGS
+          value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*AlmaLinux 10"'
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        name: ""
+        resources:
+          requests:
+            memory: 20Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
   - name: pull-common-instancetypes-functest-fedora
     branches:
       - main
