@@ -4,11 +4,11 @@
   path: /spec/template/spec/containers/0/resources
   value:
     limits:
-      cpu: 500m
-      memory: 600Mi
+      cpu: 1
+      memory: 1Gi
     requests:
-      cpu: 500m
-      memory: 600Mi
+      cpu: 1
+      memory: 1Gi
 
 # inject jobs configmap
 - op: add
