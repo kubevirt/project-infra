@@ -294,10 +294,28 @@ tide:
     - "dco-signoff: no"
   - repos:
     - kubevirt/kubevirt
+    includedBranches:
+    - "main"
     labels:
     - lgtm
     - approved
     - approved-vep
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/work-in-progress
+    - do-not-merge/release-note-label-needed
+    - do-not-merge/invalid-commit-message
+    - needs-rebase
+    - "dco-signoff: no"
+  - repos:
+    - kubevirt/kubevirt
+    excludedBranches:
+    - "main"
+    labels:
+    - lgtm
+    - approved
     missingLabels:
     - do-not-merge
     - do-not-merge/hold
