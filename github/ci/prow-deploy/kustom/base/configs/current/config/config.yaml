@@ -292,6 +292,7 @@ tide:
     - do-not-merge/invalid-commit-message
     - needs-rebase
     - "dco-signoff: no"
+    # BEGIN kubevirt/kubevirt section
   - repos:
     - kubevirt/kubevirt
     includedBranches:
@@ -300,6 +301,24 @@ tide:
     - lgtm
     - approved
     - approved-vep
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/work-in-progress
+    - do-not-merge/release-note-label-needed
+    - do-not-merge/invalid-commit-message
+    - needs-rebase
+    - "dco-signoff: no"
+  - repos:
+    - kubevirt/kubevirt
+    includedBranches:
+    - "main"
+    labels:
+    - lgtm
+    - approved
+    - kind/bug
+    - priority/critical-urgent
     missingLabels:
     - do-not-merge
     - do-not-merge/hold
@@ -325,6 +344,7 @@ tide:
     - do-not-merge/invalid-commit-message
     - needs-rebase
     - "dco-signoff: no"
+    # END kubevirt/kubevirt section
   # dependabot PRs that have been labeled skip-review by the commenter periodic
   - author: dependabot[bot]
     repos:
