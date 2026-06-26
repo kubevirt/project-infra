@@ -2,17 +2,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  name: prow
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
-  name: deck
-  namespace: default
+    nginx.ingress.kubernetes.io/app-root: ""
 spec:
-  tls:
-  - hosts:
-    - prow.ci.kubevirt.io
-    secretName: deck-tls
+  ingressClassName: nginx
   rules:
-  - host: prow.ci.kubevirt.io
+  - host: prow.prowdeploy.ci
     http:
       paths:
       - path: /hook
@@ -29,3 +25,6 @@ spec:
             name: deck
             port:
               number: 80
+  tls:
+  - hosts:
+    - prow.prowdeploy.ci

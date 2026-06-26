@@ -73,9 +73,12 @@ populate_secrets(){
 
     mkdir -p "${secrets_dir}"/github
 
+    install -Dm 400 "${secrets_repo_dir}"/secrets/prow/cookie "${secrets_dir}"/
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow/github/app-id "${secrets_dir}"/github/
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow/github/app-secret "${secrets_dir}"/github/
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow/github/bot-token "${secrets_dir}"/github/
+    install -Dm 400 "${secrets_repo_dir}"/secrets/prow/github/client-id "${secrets_dir}"/github/
+    install -Dm 400 "${secrets_repo_dir}"/secrets/prow/github/client-secret "${secrets_dir}"/github/
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow/github/hmac-token "${secrets_dir}"/github/
     install -Dm 400 "${secrets_repo_dir}"/secrets/slack/kubevirtci-token "${secrets_dir}"/slack/token
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json "${secrets_dir}"/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json

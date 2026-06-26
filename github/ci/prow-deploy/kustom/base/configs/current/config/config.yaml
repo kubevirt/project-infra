@@ -6,67 +6,75 @@ prowjob_namespace: kubevirt-prow-jobs
 pod_namespace: kubevirt-prow-jobs
 log_level: debug
 
+# https://docs.prow.k8s.io/docs/components/core/deck/
+# https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#Deck
 deck:
   default_rerun_auth_configs:
     - cluster: '*'
       rerun_auth_configs:
-        github_team_ids:
-          - 3701123  # https://github.com/orgs/kubevirt/teams/prow-job-taskforce
+        github_team_slugs:
+          # https://github.com/orgs/kubevirt/teams/prow-job-taskforce
+          - &prow_job_taskforce
+            org: kubevirt
+            slug: prow-job-taskforce
     - cluster: prow-s390x-workloads
       rerun_auth_configs:
-        github_team_ids:
-          - 3701123  # https://github.com/orgs/kubevirt/teams/prow-job-taskforce
-          - 18168981 # https://github.com/orgs/kubevirt/teams/wg-arch-s390x
+        github_team_slugs:
+          - *prow_job_taskforce
+          # https://github.com/orgs/kubevirt/teams/wg-arch-s390x
+          - org: kubevirt
+            slug: wg-arch-s390x
+  # https://docs.prow.k8s.io/docs/spyglass/
   spyglass:
-    size_limit: 500000000 # 500MB
     gcs_browser_prefix: https://gcsweb.ci.kubevirt.io/gcs/
+    lenses:
+      - lens:
+          name: metadata
+        required_files:
+          - ^(?:started|finished)\.json$
+        optional_files:
+          - ^(?:podinfo|prowjob)\.json$
+      - lens:
+          config:
+            highlight_regexes:
+              # see default patterns https://github.com/kubernetes-sigs/prow/blob/269d4b273f64d1a4371bc6c0bebc4d452320a649/pkg/spyglass/lenses/buildlog/lens.go#L98
+              - ^E\d{4} \d\d:\d\d:\d\d\.\d+
+              - "(Error|ERROR|error)s?:"
+              - (FAIL|Failure \[)\b
+              - "(timed out|TIMEOUT)"
+              - panic\b
+              - \[FAILED\]
+              - "fatal: "
+              - /logs/artifacts/k8s-reporter/.*\*
+              - " undefined: "
+          name: buildlog
+        required_files:
+          - build-log.txt
+      - lens:
+          name: junit
+        required_files:
+          - artifacts/junit.*\.xml
+      # podinfo.json is uploaded by crier's k8s reporter
+      - lens:
+          name: podinfo
+        required_files:
+          - podinfo.json
+      - lens:
+          name: coverage
+        required_files:
+          - artifacts/filtered.cov
+        optional_files:
+          - artifacts/filtered.html
+      - lens:
+          config:
+            threshold_warning: 50
+            threshold_error: 10
+          name: restcoverage
+        required_files:
+          - artifacts/rest-coverage.json
+    size_limit: 500000000 # 500MB
     testgrid_config: gs://k8s-testgrid/config
     testgrid_root: https://testgrid.k8s.io/
-    lenses:
-    - lens:
-        name: metadata
-      required_files:
-      - started.json|finished.json
-      optional_files:
-      - podinfo.json
-    - lens:
-        name: buildlog
-        config:
-          highlight_regexes:
-          # see default patterns https://github.com/kubernetes-sigs/prow/blob/269d4b273f64d1a4371bc6c0bebc4d452320a649/pkg/spyglass/lenses/buildlog/lens.go#L98
-          - ^E\d{4} \d\d:\d\d:\d\d\.\d+
-          - "(Error|ERROR|error)s?:"
-          - (FAIL|Failure \[)\b
-          - "(timed out|TIMEOUT)"
-          - panic\b
-          - \[FAILED\]
-          - "fatal: "
-          - /logs/artifacts/k8s-reporter/.*\*
-          - " undefined: "
-      required_files:
-        - build-log.txt
-    - lens:
-        name: junit
-      required_files:
-        - artifacts/junit.*\.xml
-    - lens:
-        name: coverage
-      required_files:
-        - artifacts/filtered.cov
-      optional_files:
-        - artifacts/filtered.html
-    # podinfo.json is uploaded by crier's k8s reporter
-    - lens:
-        name: podinfo
-      required_files:
-        - podinfo.json
-    - lens:
-        name: restcoverage
-        config:
-          threshold_warning: 50
-          threshold_error: 10
-      required_files:
-        - artifacts/rest-coverage.json
   tide_update_period: 1s
 
 # https://docs.prow.k8s.io/docs/components/core/prow-controller-manager/

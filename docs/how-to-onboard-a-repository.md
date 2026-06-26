@@ -1,7 +1,7 @@
 How to onboard a repository to KubeVirt Prow
 ============================================
 
-Prow needs to be able to act on your repository, thus it requires at least write access. For this to work you need to install the Application [kubevirt-bot](https://github.com/apps/kubevirt-prow) to your repository or organization.
+Prow needs to be able to act on your repository, thus it requires at least write access. For this to work you need to install the Application [kubevirt-prow](https://github.com/apps/kubevirt-prow) to your repository or organization.
 
 You also need to invite [kubevirt-bot](https://github.com/kubevirt-bot) to your repository. This is a GitHub account we use for several CI matters.
 
