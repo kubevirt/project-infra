@@ -216,7 +216,6 @@ postsubmits:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
         resources:
           requests:
             memory: 8Gi

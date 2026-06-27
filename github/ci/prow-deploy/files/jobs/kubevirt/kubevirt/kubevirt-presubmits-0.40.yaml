@@ -1,5 +1,3 @@
-periodics: null
-postsubmits: {}
 presubmits:
   kubevirt/kubevirt:
   - always_run: false
@@ -33,7 +31,6 @@ presubmits:
         - /bin/sh
         - -c
         - automation/test.sh
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -71,7 +68,6 @@ presubmits:
         - /bin/sh
         - -c
         - automation/test.sh
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -108,7 +104,6 @@ presubmits:
         - /bin/sh
         - -c
         - automation/test.sh
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -141,7 +136,6 @@ presubmits:
         - -c
         - export TARGET=k8s-1.19-sig-network && automation/test.sh
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -174,7 +168,6 @@ presubmits:
         - -c
         - export TARGET=k8s-1.19-sig-storage && automation/test.sh
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -247,7 +240,6 @@ presubmits:
         - /bin/sh
         - -c
         - automation/test.sh
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -285,7 +277,6 @@ presubmits:
         - /bin/sh
         - -c
         - automation/test.sh
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -317,7 +308,6 @@ presubmits:
         - -c
         - TARGET=k8s-1.19-cnao automation/test.sh
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -349,7 +339,6 @@ presubmits:
         - -c
         - export TARGET=windows2016 && automation/test.sh
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -411,7 +400,6 @@ presubmits:
         - name: KUBEVIRT_PROVIDER
           value: kind-k8s-sriov-1.17.0
         image: quay.io/kubevirtci/golang:v20210316-d295087
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -465,7 +453,6 @@ presubmits:
         - -c
         - TARGET_COMMIT=$PULL_BASE_SHA automation/repeated_test.sh
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -497,7 +484,6 @@ presubmits:
         - -c
         - export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=rook-ceph && automation/test.sh
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -530,7 +516,6 @@ presubmits:
         - -c
         - export TARGET=k8s-1.17 && export KUBEVIRT_STORAGE=rook-ceph-default && automation/test.sh
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -559,7 +544,6 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 4Gi
@@ -588,7 +572,6 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make verify-rpm-deps
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 4Gi
@@ -619,7 +602,6 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make gosec
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 4Gi
@@ -646,7 +628,6 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 4Gi
@@ -673,7 +654,6 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make test
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 4Gi
@@ -705,7 +685,6 @@ presubmits:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 8Gi
@@ -740,7 +719,6 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 4Gi
@@ -767,7 +745,6 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 4Gi
@@ -794,7 +771,6 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX="docker.io/kubevirt" && make olm-verify
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 4Gi
@@ -821,7 +797,6 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make prom-rules-verify
         image: quay.io/kubevirtci/bootstrap:v20210311-09ebaa2
-        name: ""
         resources:
           requests:
             memory: 4Gi

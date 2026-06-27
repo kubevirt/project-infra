@@ -23,7 +23,6 @@ presubmits:
         - -c
         - make functest
         image: quay.io/kubevirtci/golang:v20260612-73bc71e
-        name: ""
         resources:
           requests:
             memory: 16Gi
@@ -59,7 +58,6 @@ presubmits:
             - -c
             - make functest
           image: quay.io/kubevirtci/golang:v20260612-73bc71e
-          name: ""
           resources:
             requests:
               memory: 16Gi

@@ -23,7 +23,6 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
         resources:
           requests:
             memory: 12Gi
@@ -55,7 +54,6 @@ presubmits:
         - name: BUILD_ARCH
           value: crossbuild-aarch64
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
         resources:
           requests:
             memory: 8Gi
@@ -85,7 +83,6 @@ presubmits:
         - |
           make lint
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
         resources:
           requests:
             memory: 12Gi
@@ -115,7 +112,6 @@ presubmits:
         - -c
         - make test
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
         resources:
           requests:
             cpu: "4"
@@ -144,7 +140,6 @@ presubmits:
         - -c
         - make test
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
         resources:
           requests:
             memory: 12Gi
@@ -183,7 +178,6 @@ presubmits:
         - name: KUBEVIRT_CS10_BUILDER_VERSION
           value: "2602231621-e36f1c7568"
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -237,7 +231,6 @@ presubmits:
         - name: KUBEVIRT_CS10_BUILDER_VERSION
           value: "2602231621-e36f1c7568"
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
         resources:
           requests:
             memory: 52Gi
