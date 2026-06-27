@@ -23,7 +23,6 @@ presubmits:
         - -c
         - automation/test.sh
         image: quay.io/kubevirtci/golang:v20260707-cacb217
-        name: ""
         resources:
           requests:
             memory: 16Gi

@@ -56,7 +56,6 @@ presubmits:
           - -c
           - make test
           image: quay.io/kubevirtci/golang:v20260707-cacb217
-          name: ""
           resources:
             requests:
               memory: 500Mi
@@ -84,7 +83,6 @@ presubmits:
           - -c
           - make build
           image: quay.io/kubevirtci/golang:v20260707-cacb217
-          name: ""
           resources:
             requests:
               memory: 500Mi

@@ -86,7 +86,6 @@ presubmits:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
         image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
-        name: ""
         resources:
           requests:
             memory: 8Gi
@@ -687,7 +686,6 @@ presubmits:
         - name: FOSSA_TOKEN_FILE
           value: /root/.docker/secrets/fossa/token
         image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
-        name: ""
         resources:
           requests:
             memory: 4Gi

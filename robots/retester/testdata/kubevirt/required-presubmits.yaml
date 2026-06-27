@@ -49,7 +49,6 @@ presubmits:
               - name: TARGET
                 value: kind-sriov
             image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
-            name: ""
             resources:
               requests:
                 memory: 52Gi

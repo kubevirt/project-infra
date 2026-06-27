@@ -1,5 +1,3 @@
-periodics: null
-postsubmits: {}
 presubmits:
   kubevirt/hyperconverged-cluster-operator:
   - always_run: true
@@ -24,7 +22,6 @@ presubmits:
         - -c
         - export TARGET=k8s-1.17 && automation/test.sh
         image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v20201201-08dc4a9
-        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -55,7 +52,6 @@ presubmits:
 #        - cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true
 #          quay.io && export TARGET=ocp-4.4 && automation/test.sh
 #        image: quay.io/kubevirtci/bootstrap:v20201119-a5880e0
-#        name: ""
 #        resources:
 #          requests:
 #            memory: 52Gi
