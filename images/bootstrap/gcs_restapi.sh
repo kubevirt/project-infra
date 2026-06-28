@@ -97,15 +97,31 @@ stat_gcs_file() {
 
     auth_header=$(get_auth_header "$auth") || exit 1
 
-    stat_response=$(curl -s -X GET \
+    local http_code
+    local stat_response
+    stat_response=$(curl -s --write-out '\n%{http_code}' -X GET \
       ${auth_header:+-H "$auth_header"} \
       "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path")
+    local curl_exit=$?
 
-    if echo "$stat_response" | jq -e '.error' > /dev/null; then
+    if [ "$curl_exit" -ne 0 ]; then
+        echo "Warning: curl failed with exit code $curl_exit for $2" >&2
         return 1
-    else
-        return 0
     fi
+
+    http_code=$(echo "$stat_response" | tail -1)
+    stat_response=$(echo "$stat_response" | sed '$d')
+
+    if [ "$http_code" != "200" ]; then
+        return 1
+    fi
+
+    if ! echo "$stat_response" | jq -e '.name' > /dev/null 2>&1; then
+        echo "Warning: stat got HTTP 200 but invalid JSON for $2" >&2
+        return 1
+    fi
+
+    return 0
 }
 
 # Function to read the content of a file from GCS
@@ -116,18 +132,38 @@ cat_gcs_file() {
 
     auth_header=$(get_auth_header "$auth") || exit 1
 
-    file_content=$(curl --silent --fail -X GET \
+    local tmpfile
+    tmpfile=$(mktemp)
+
+    local http_code
+    http_code=$(curl --silent --output "$tmpfile" --write-out '%{http_code}' -X GET \
       ${auth_header:+-H "$auth_header"} \
       -H "Cache-Control: no-cache" \
       "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path?alt=media&ignoreCache=1")
+    local curl_exit=$?
 
-    if [ -z "$file_content" ]; then
-        echo "Error: No content received"
+    if [ "$curl_exit" -ne 0 ]; then
+        echo "Error: curl failed with exit code $curl_exit for $2" >&2
+        rm -f "$tmpfile"
         return 1
-    else
-        echo "$file_content"
-        return 0
     fi
+
+    if [ "$http_code" != "200" ]; then
+        echo "Error: HTTP $http_code for $2" >&2
+        echo "Response body: $(cat "$tmpfile")" >&2
+        rm -f "$tmpfile"
+        return 1
+    fi
+
+    if [ ! -s "$tmpfile" ]; then
+        echo "Error: HTTP 200 but empty body for $2" >&2
+        rm -f "$tmpfile"
+        return 1
+    fi
+
+    cat "$tmpfile"
+    rm -f "$tmpfile"
+    return 0
 }
 
 # Function to delete a file from GCS
