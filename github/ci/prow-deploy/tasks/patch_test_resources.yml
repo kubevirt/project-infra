@@ -20,38 +20,20 @@
         yq -i '.spec.resources.requests.storage = "10Gi"' {{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/resources/docker-mirror-proxy_pvc.yaml
     - name: patch ingresses
       shell: |
-        yq -i '. *d load("{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/patches/StrategicMerge/{{ item }}-ingress.yaml")' {{ project_infra_root }}/github/ci/prow-deploy/kustom/base/manifests/local/{{ item }}-ingress.yaml
-        yq -i 'del(.spec.tls[0].secretName)' {{ project_infra_root }}/github/ci/prow-deploy/kustom/base/manifests/local/{{ item }}-ingress.yaml
+        yq -i '. *d load("{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/{{ item[1] }}")' {{ project_infra_root }}/github/ci/prow-deploy/kustom/base/{{ item[0] }}
+        yq -i 'del(.spec.tls[0].secretName)' {{ project_infra_root }}/github/ci/prow-deploy/kustom/base/{{ item[0] }}
       loop:
-        - deck
-        - gcsweb
+        - [manifests/upstream/prow_ingress.yaml, patches/StrategicMerge/prow-ingress.yaml]
+        - [manifests/local/gcsweb-ingress.yaml, patches/StrategicMerge/gcsweb-ingress.yaml]
     - name: remove resource patching
       shell: |
-        yq -i 'map(select(.path != "/spec/template/spec/containers/0/resources"))' {{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/patches/JsonRFC6902/{{ item }}.yaml
-      loop:
-        - deck_deployment
-        - prow_controller_manager_deployment
+        for component in deck prow_controller_manager; do
+          yq -i 'map(select(.path != "/spec/template/spec/containers/0/resources"))' {{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/patches/JsonRFC6902/${component}_deployment.yaml
+        done
+        yq -i '[]' {{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/patches/JsonRFC6902/prow_ingress.yaml
 
     - name: Create kubeconfig secret
       copy:
         src: '{{ kubeconfig_path }}'
         dest: '{{ secrets_dir }}/kubeconfig'
-        remote_src: true
-
-    - name: Create kubeconfig-build-test-infra-trusted secret
-      copy:
-        src: '{{ kubeconfig_path }}'
-        dest: '{{ secrets_dir }}/kubeconfig-build-test-infra-trusted'
-        remote_src: true
-
-    - name: Create kubeconfig-build-k8s-prow-builds
-      copy:
-        src: '{{ kubeconfig_path }}'
-        dest: '{{ secrets_dir }}/kubeconfig-build-k8s-prow-builds'
-        remote_src: true
-
-    - name: Create kubeconfig-build-rules-k8s
-      copy:
-        src: '{{ kubeconfig_path }}'
-        dest: '{{ secrets_dir }}/kubeconfig-build-rules-k8s'
         remote_src: true

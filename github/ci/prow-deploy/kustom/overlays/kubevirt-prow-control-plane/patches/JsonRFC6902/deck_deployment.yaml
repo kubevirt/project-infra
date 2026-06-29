@@ -1,10 +1,4 @@
-# Removes deprecated  --redirect-http-to=
-- op: remove
-  path: /spec/template/spec/containers/0/args/2
-- op: remove
-  path: /spec/template/spec/containers/0/livenessProbe
-- op: remove
-  path: /spec/template/spec/containers/0/readinessProbe
+---
 # sets resources
 - op: add
   path: /spec/template/spec/containers/0/resources
@@ -16,35 +10,94 @@
       cpu: 1
       memory: 2Gi
 
-# resets KUBECONFIG entry to simple value
+# scale up the deployment
 - op: replace
-  path: /spec/template/spec/containers/0/env/0
+  path: /spec/replicas
+  value: 3
+
+# inject jobs configmap
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --job-config-path=/etc/job-config
+
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/-
   value:
-    name: KUBECONFIG
-    value: "/etc/kubeconfig/config"
+    name: job-config
+    mountPath: /etc/job-config
+    readOnly: true
 
-# removes AWS env vars
-- op: remove
-  path: /spec/template/spec/containers/0/env/3
-- op: remove
-  path: /spec/template/spec/containers/0/env/2
-- op: remove
-  path: /spec/template/spec/containers/0/env/1
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: job-config
+    configMap:
+      name: job-config
 
-# removes aws-iam-token mount
-- op: remove
-  path: /spec/template/spec/containers/0/volumeMounts/12
-- op: remove
-  path: /spec/template/spec/volumes/12
+# inject consolidated KUBECONFIG with federated clusters
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --kubeconfig=/etc/kubeconfig/config
 
-# removes mount and volume for kubeconfig-k8s-infra-kops-prow-build
-- op: remove
-  path: /spec/template/spec/containers/0/volumeMounts/7
-- op: remove
-  path: /spec/template/spec/volumes/8
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/-
+  value:
+    name: kubeconfig
+    mountPath: /etc/kubeconfig
+    readOnly: true
 
-# removes mount and volume for kubeconfig-eks-prow-build-cluster
-- op: remove
-  path: /spec/template/spec/containers/0/volumeMounts/6
-- op: remove
-  path: /spec/template/spec/volumes/7
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: kubeconfig
+    secret:
+      secretName: kubeconfig
+      defaultMode: 420
+
+# oauth configuration for PR Status and Abort/ReRun features
+# https://docs.prow.k8s.io/docs/components/core/deck/github-oauth-setup/
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --github-oauth-config-file=/etc/githuboauth/secret
+
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/-
+  value:
+    name: oauth-config
+    mountPath: /etc/githuboauth
+    readOnly: true
+
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: oauth-config
+    secret:
+      secretName: github-oauth-config
+
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --oauth-url=/github-login
+
+# https://docs.prow.k8s.io/docs/components/core/deck/csrf/
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --cookie-secret=/etc/cookie/secret
+
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: cookie-secret
+    secret:
+      secretName: cookie
+
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/-
+  value:
+    name: cookie-secret
+    mountPath: /etc/cookie
+    readOnly: true
+
+# add the Rerun button to the Rerun modal dialog
+- op: add
+  path: /spec/template/spec/containers/0/args/-
+  value: --rerun-creates-job=true
