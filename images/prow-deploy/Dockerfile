@@ -12,11 +12,6 @@ FROM quay.io/kubevirtci/bootstrap:v20260612-73bc71e
 COPY --from=builder /usr/local/bin/phony /usr/local/bin/
 COPY --from=cfg-bootstrap /ko-app/config-bootstrapper /usr/local/bin/
 
-RUN curl -fLo ./kustomize.tar.gz https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.8.7/kustomize_v3.8.7_linux_amd64.tar.gz && \
-  tar -xvf kustomize.tar.gz && \
-  mv ./kustomize /usr/local/bin && \
-  rm kustomize.tar.gz
-
 RUN curl -fLRO "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
   chmod a+x ./kubectl && \
   mv ./kubectl /google-cloud-sdk/bin/ && \

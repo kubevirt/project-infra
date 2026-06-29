@@ -132,12 +132,12 @@ patches:
   - target: &configmap_target
       version: v1
       kind: ConfigMap
-      namespace: ""
+      namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
       <<: *configmap_target
-      namespace: default
+      namespace: prow
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target: &serviceaccount_target
@@ -222,7 +222,7 @@ patches:
       group: batch
       version: v1
       kind: CronJob
-      namespace: ""
+      namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
 

@@ -10,14 +10,13 @@ images:
     newTag: 0.6.2-ssl-verify-depth-3
 
 configMapGenerator:
-  - name: mirror-proxy-config
-    namespace: kubevirt-prow-jobs
-    files:
-      - configs/ca.crt
-  - name: mirror-proxy-config
+  - &mirror_proxy_config
+    name: mirror-proxy-config
     namespace: kubevirt-prow
     files:
       - configs/ca.crt
+  - <<: *mirror_proxy_config
+    namespace: kubevirt-prow-jobs
   - name: docker-daemon-mirror-config
     namespace: kubevirt-prow-jobs
     files:

@@ -66,10 +66,7 @@ then renders the yaml configurations, then copy them to the environment director
 When configuration and secrets are in place in the overlay specific directories,
 we can finally call kustomize to generate overlay specific manifests:
 
-    kustomize build kustom/overlays/$overlay > prow-deploy.yaml
-
-WARNING: There is a version of kustomize that is embedded in kubectl, but it's not the version
-required by this deployment, so don't use it.
+    kubectl kustomize kustom/overlays/$overlay > prow-deploy.yaml
 
 After the manifests are rendered without errors, you can directly apply them with kubectl
 
