@@ -688,7 +688,7 @@ periodics:
         args:
           - |
             git-pr.sh \
-              --command "go run ./robots/kubevirtci-presubmit-creator --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" \
+              --command "go run ./robots/kubevirtci-presubmit-creator --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --extra-archs=s390x --dry-run=false" \
               --repo project-infra \
               --branch create-kubevirtci-presubmit \
               --target main
@@ -736,7 +736,7 @@ periodics:
               exit 0
             fi
             git-pr.sh \
-              --command "go run ./robots/kubevirtci-presubmit-remover --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --dry-run=false" \
+              --command "go run ./robots/kubevirtci-presubmit-remover --job-config-path-kubevirtci-presubmit=$(pwd)/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-presubmits.yaml --github-token-path= --extra-archs=s390x --dry-run=false" \
               --repo project-infra \
               --branch remove-kubevirtci-presubmit \
               --target main
