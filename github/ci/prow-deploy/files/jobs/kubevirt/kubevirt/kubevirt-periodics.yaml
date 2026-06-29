@@ -816,6 +816,7 @@ periodics:
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-quay-credential: "true"
+    preset-pgp-bot-key: "true"
     preset-podman-in-container-enabled: "true"
     preset-shared-images: "true"
   name: periodic-kubevirt-e2e-test-S390X
@@ -859,7 +860,6 @@ periodics:
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
       image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-      name: ""
       resources:
         requests:
           memory: 8Gi
@@ -868,18 +868,12 @@ periodics:
       volumeMounts:
       - mountPath: /etc/github
         name: token
-      - mountPath: /etc/pgp
-        name: pgp-bot-key
-        readOnly: true
     nodeSelector:
       type: bare-metal-external
     volumes:
     - name: token
       secret:
         secretName: oauth-token
-    - name: pgp-bot-key
-      secret:
-        secretName: pgp-bot-key
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
@@ -2360,6 +2354,7 @@ periodics:
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-kubevirtci-quay-credential: "true"
+    preset-pgp-bot-key: "true"
     preset-podman-in-container-enabled: "true"
     preset-shared-images: "true"
   max_concurrency: 1
@@ -2400,7 +2395,6 @@ periodics:
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
       image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-      name: ""
       resources:
         requests:
           memory: 8Gi
@@ -2409,16 +2403,10 @@ periodics:
       volumeMounts:
       - mountPath: /etc/github
         name: token
-      - mountPath: /etc/pgp
-        name: pgp-bot-key
-        readOnly: true
     volumes:
     - name: token
       secret:
         secretName: oauth-token
-    - name: pgp-bot-key
-      secret:
-        secretName: pgp-bot-key
 - annotations:
     testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
     testgrid-dashboards: kubevirt-periodics
