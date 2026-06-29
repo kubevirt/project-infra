@@ -18,6 +18,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"kubevirt.io/project-infra/pkg/querier"
@@ -34,6 +35,32 @@ import (
 
 const OrgAndRepoForJobConfig = "kubevirt/kubevirtci"
 
+// ArchConfig holds architecture-specific job parameters for non-default architectures.
+type ArchConfig struct {
+	Cluster      string
+	Timeout      time.Duration
+	AlwaysRun    bool
+	Labels       map[string]string
+	EnvVars      []v1.EnvVar
+	NodeSelector map[string]string
+}
+
+var knownArchConfigs = map[string]ArchConfig{
+	"s390x": {
+		Cluster:   "prow-s390x-workloads",
+		Timeout:   4 * time.Hour,
+		AlwaysRun: false,
+		Labels: map[string]string{
+			"preset-kubevirtci-check-provision-env": "true",
+			"preset-podman-in-container-enabled":    "true",
+		},
+		EnvVars: []v1.EnvVar{
+			{Name: "SLIM", Value: "true"},
+			{Name: "RUN_KUBEVIRT_CONFORMANCE", Value: "false"},
+		},
+	},
+}
+
 type options struct {
 	dryRun bool
 
@@ -41,6 +68,7 @@ type options struct {
 	endpoint                         string
 	jobConfigPathKubevirtciPresubmit string
 	k8sReleaseSemver                 string
+	extraArchs                       string
 }
 
 func (o *options) Validate() error {
@@ -50,7 +78,40 @@ func (o *options) Validate() error {
 	if o.k8sReleaseSemver != "" && !querier.SemVerMinorRegex.MatchString(o.k8sReleaseSemver) {
 		return fmt.Errorf("k8s-release-semver does not match SemVerMinorRegex: %s", o.k8sReleaseSemver)
 	}
+	for _, arch := range parseExtraArchs(o.extraArchs) {
+		if _, ok := knownArchConfigs[arch]; !ok {
+			return fmt.Errorf("unknown architecture %q in extra-archs, known: %v", arch, knownArchNames())
+		}
+	}
 	return nil
+}
+
+func parseExtraArchs(raw string) []string {
+	if raw == "" {
+		return nil
+	}
+	var archs []string
+	seen := make(map[string]struct{})
+	for _, a := range strings.Split(raw, ",") {
+		a = strings.TrimSpace(a)
+		if a == "" {
+			continue
+		}
+		if _, ok := seen[a]; ok {
+			continue
+		}
+		seen[a] = struct{}{}
+		archs = append(archs, a)
+	}
+	return archs
+}
+
+func knownArchNames() []string {
+	names := make([]string, 0, len(knownArchConfigs))
+	for name := range knownArchConfigs {
+		names = append(names, name)
+	}
+	return names
 }
 
 func gatherOptions() options {
@@ -61,6 +122,7 @@ func gatherOptions() options {
 	fs.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
 	fs.StringVar(&o.jobConfigPathKubevirtciPresubmit, "job-config-path-kubevirtci-presubmit", "", "The directory of the k8s providers")
 	fs.StringVar(&o.k8sReleaseSemver, "k8s-release-semver", "", "The semver of the k8s release to create a presubmit for")
+	fs.StringVar(&o.extraArchs, "extra-archs", "", "Comma-separated list of extra architectures to create presubmit jobs for (e.g. s390x)")
 	err := fs.Parse(os.Args[1:])
 	if err != nil {
 		fmt.Println(fmt.Errorf("failed to parse args: %v", err))
@@ -131,7 +193,9 @@ func main() {
 		log.Panicln(err)
 	}
 
-	newJobConfig, exists := AddNewPresubmitIfNotExists(jobConfig, latestReleaseSemver)
+	extraArchs := parseExtraArchs(o.extraArchs)
+
+	newJobConfig, exists := AddNewPresubmitIfNotExists(jobConfig, latestReleaseSemver, extraArchs)
 	if exists && !o.dryRun {
 		log.Info(fmt.Sprintf("presubmit job for %v exists, nothing to do.", latestReleaseSemver))
 		os.Exit(0)
@@ -156,21 +220,33 @@ func main() {
 	}
 }
 
-func AddNewPresubmitIfNotExists(jobConfig config.JobConfig, latestReleaseSemver *querier.SemVer) (newJobConfig config.JobConfig, jobExists bool) {
+func AddNewPresubmitIfNotExists(jobConfig config.JobConfig, latestReleaseSemver *querier.SemVer, extraArchs []string) (newJobConfig config.JobConfig, jobExists bool) {
 	newJobConfig = jobConfig
 	kubevirtciJobs := make(map[string]config.Presubmit, len(newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig]))
 	for _, job := range newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig] {
 		kubevirtciJobs[job.Name] = job
 	}
 
+	allExist := true
+
 	wantedCheckProvisionJobName := createKubevirtciPresubmitJobName(latestReleaseSemver)
-	if _, exists := kubevirtciJobs[wantedCheckProvisionJobName]; exists {
-		return newJobConfig, true
+	if _, exists := kubevirtciJobs[wantedCheckProvisionJobName]; !exists {
+		newPresubmitJobForRelease := CreatePresubmitJobForRelease(latestReleaseSemver)
+		newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig] = append(newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig], newPresubmitJobForRelease)
+		allExist = false
 	}
 
-	newPresubmitJobForRelease := CreatePresubmitJobForRelease(latestReleaseSemver)
-	newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig] = append(newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig], newPresubmitJobForRelease)
-	return newJobConfig, false
+	for _, arch := range extraArchs {
+		archJobName := createKubevirtciPresubmitJobNameArch(latestReleaseSemver, arch)
+		if _, exists := kubevirtciJobs[archJobName]; !exists {
+			archCfg := knownArchConfigs[arch]
+			archJob := CreatePresubmitJobForReleaseArch(latestReleaseSemver, arch, archCfg)
+			newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig] = append(newJobConfig.PresubmitsStatic[OrgAndRepoForJobConfig], archJob)
+			allExist = false
+		}
+	}
+
+	return newJobConfig, allExist
 }
 
 func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
@@ -230,6 +306,61 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 	return res
 }
 
+func CreatePresubmitJobForReleaseArch(semver *querier.SemVer, arch string, archCfg ArchConfig) config.Presubmit {
+	yes := true
+	golangImage := "quay.io/kubevirtci/golang:v20260319-c8f1db8"
+
+	envVars := []v1.EnvVar{
+		{Name: "GIMME_GO_VERSION", Value: "1.24.7"},
+	}
+	envVars = append(envVars, archCfg.EnvVars...)
+
+	res := config.Presubmit{
+		AlwaysRun: archCfg.AlwaysRun,
+		Optional:  true,
+		JobBase: config.JobBase{
+			UtilityConfig: config.UtilityConfig{
+				Decorate: &yes,
+				DecorationConfig: &prowjobs.DecorationConfig{
+					Timeout: &prowjobs.Duration{Duration: archCfg.Timeout},
+				},
+			},
+			Name:           createKubevirtciPresubmitJobNameArch(semver, arch),
+			MaxConcurrency: 3,
+			Labels:         archCfg.Labels,
+			Cluster:        archCfg.Cluster,
+			Spec: &v1.PodSpec{
+				NodeSelector: archCfg.NodeSelector,
+				Containers: []v1.Container{
+					{
+						Image: golangImage,
+						Command: []string{
+							"/usr/local/bin/runner.sh",
+							"/bin/sh",
+							"-c",
+							fmt.Sprintf("cd cluster-provision/k8s/%s.%s && ../provision.sh", semver.Major, semver.Minor),
+						},
+						Env: envVars,
+						SecurityContext: &v1.SecurityContext{
+							Privileged: &yes,
+						},
+						Resources: v1.ResourceRequirements{
+							Requests: v1.ResourceList{
+								v1.ResourceMemory: *resource.NewQuantity(16*1024*1024*1024, resource.BinarySI),
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	return res
+}
+
 func createKubevirtciPresubmitJobName(latestReleaseSemver *querier.SemVer) string {
 	return fmt.Sprintf("check-provision-k8s-%s.%s", latestReleaseSemver.Major, latestReleaseSemver.Minor)
+}
+
+func createKubevirtciPresubmitJobNameArch(semver *querier.SemVer, arch string) string {
+	return fmt.Sprintf("check-provision-k8s-%s.%s-%s", semver.Major, semver.Minor, arch)
 }
