@@ -29,6 +29,28 @@ Global Flags:
 --github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/oauth")
 ```
 
+### `kubevirt check presubmits`
+
+`kubevirt check presubmits` validates the sig-compute TARGET configuration for the latest k8s version
+
+For the latest Kubernetes version found in the presubmit job definitions, it checks that
+the sig-compute lane is properly split into serial and parallel targets, and that no bare
+sig-compute target exists.
+
+```
+Usage:
+kubevirt check presubmits [flags]
+
+Flags:
+-h, --help                                         help for presubmits
+    --job-config-path-kubevirt-presubmits string   The path to the kubevirt presubmit job definitions
+
+Global Flags:
+    --dry-run                    Whether the file should get modified or just modifications printed to stdout. (default true)
+    --github-endpoint string     GitHub's API endpoint (may differ for enterprise). (default "https://api.github.com/")
+    --github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/oauth")
+```
+
 ### `kubevirt copy jobs`
 
 `kubevirt copy jobs` creates copies of the periodic and presubmit SIG jobs for latest kubevirtci providers
