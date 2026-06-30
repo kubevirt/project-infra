@@ -51,7 +51,6 @@ presubmits:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         image: quay.io/kubevirtci/bootstrap:v20230607-07930d7
-        name: ""
         resources:
           requests:
             memory: 20Gi

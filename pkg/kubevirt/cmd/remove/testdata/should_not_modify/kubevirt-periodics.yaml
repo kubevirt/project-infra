@@ -21,7 +21,6 @@ periodics:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
-      name: ""
       resources: {}
       volumeMounts:
       - mountPath: /etc/github
@@ -61,7 +60,6 @@ periodics:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
-      name: ""
       resources: {}
       volumeMounts:
       - mountPath: /etc/github
@@ -101,7 +99,6 @@ periodics:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
-      name: ""
       resources: {}
       volumeMounts:
       - mountPath: /etc/github
@@ -141,7 +138,6 @@ periodics:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       image: quay.io/kubevirtci/flakefinder:v20210915-prow-control-plane-v0.1.0-v20210609-402d3ba6b7-229-gf170d8293
-      name: ""
       resources: {}
       volumeMounts:
       - mountPath: /etc/github
@@ -195,7 +191,6 @@ periodics:
       - name: TARGET
         value: k8s-1.19-sig-network
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -237,7 +232,6 @@ periodics:
       - name: KUBEVIRT_WINDOWS_PRODUCT_KEY_PATH
         value: /etc/win-sysprep/productKey
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -290,7 +284,6 @@ periodics:
       - name: TARGET
         value: k8s-1.19-sig-storage
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -336,7 +329,6 @@ periodics:
       - name: TARGET
         value: k8s-1.19-sig-compute
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -382,7 +374,6 @@ periodics:
       - name: TARGET
         value: k8s-1.20-sig-network
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -428,7 +419,6 @@ periodics:
       - name: TARGET
         value: k8s-1.20-sig-storage
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -474,7 +464,6 @@ periodics:
       - name: TARGET
         value: k8s-1.20-sig-compute
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -522,7 +511,6 @@ periodics:
       - name: KUBEVIRT_E2E_FOCUS
         value: \[sig-operator\]
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -568,7 +556,6 @@ periodics:
       - name: TARGET
         value: k8s-1.21-sig-network
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -614,7 +601,6 @@ periodics:
       - name: TARGET
         value: k8s-1.21-sig-storage
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -660,7 +646,6 @@ periodics:
       - name: TARGET
         value: k8s-1.21-sig-compute
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -708,7 +693,6 @@ periodics:
       - name: KUBEVIRT_E2E_FOCUS
         value: \[sig-operator\]
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -781,7 +765,6 @@ periodics:
       - name: DOCKER_PREFIX
         value: quay.io/kubevirt
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 8Gi
@@ -863,7 +846,6 @@ periodics:
       - name: BUILD_ARCH
         value: crossbuild-aarch64
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 8Gi
@@ -910,7 +892,6 @@ periodics:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 200Mi
@@ -949,7 +930,6 @@ periodics:
       - -c
       - automation/conformance.sh
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -1012,7 +992,6 @@ periodics:
       - name: GIMME_GO_VERSION
         value: 1.13.8
       image: quay.io/kubevirtci/golang:v20210316-d295087
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -1075,7 +1054,6 @@ periodics:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
       image: quay.io/kubevirt/builder:2105121048-a05ef0ee1
-      name: ""
       resources:
         requests:
           memory: 8Gi
@@ -1163,7 +1141,6 @@ periodics:
       - name: GIT_ASKPASS
         value: ../project-infra/hack/git-askpass.sh
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -1229,7 +1206,6 @@ periodics:
       - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
         value: --prometheus-port 30007
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           cpu: "12"
@@ -1276,7 +1252,6 @@ periodics:
       - name: TARGET
         value: k8s-1.22-sig-network
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -1322,7 +1297,6 @@ periodics:
       - name: TARGET
         value: k8s-1.22-sig-storage
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -1368,7 +1342,6 @@ periodics:
       - name: TARGET
         value: k8s-1.22-sig-compute
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
@@ -1416,7 +1389,6 @@ periodics:
       - name: KUBEVIRT_E2E_FOCUS
         value: \[sig-operator\]
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913
-      name: ""
       resources:
         requests:
           memory: 29Gi
