@@ -53,6 +53,32 @@ presubmits:
             memory: "4Gi"
           limits:
             memory: "4Gi"
+  - name: pull-project-infra-check-presubmits
+    run_if_changed: "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml"
+    decorate: true
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-ce"
+        - |
+          go run ./robots/kubevirt check presubmits \
+           --job-config-path-kubevirt-presubmits=github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml 
+           --github-token-path='' \
+           --dry-run=false
+        env:
+        - name: GIMME_GO_VERSION
+          value: "1.26.4"
+        - name: GOFLAGS
+          value: "-mod=vendor"
+        resources:
+          requests:
+            memory: "4Gi"
+          limits:
+            memory: "4Gi"
   - name: pull-project-infra-test-releng
     run_if_changed: "releng/.*|go.mod"
     optional: false
