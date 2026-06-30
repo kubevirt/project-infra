@@ -2,7 +2,6 @@ filters:
   ".*":
     reviewers:
       - ci-maintainers
-      - Whitedyl
     approvers:
       - ci-maintainers
       - aglitke
