@@ -1,0 +1,80 @@
+presubmits:
+  kubevirt/kubevirt-observability-controller:
+  - name: pull-koc-unit-test
+    skip_branches:
+      - release-v\d+\.\d+
+    cluster: kubevirt-prow-control-plane
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test"
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-koc-generate-verify
+    skip_branches:
+      - release-v\d+\.\d+
+    cluster: kubevirt-prow-control-plane
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make generate-verify"
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-koc-functest
+    skip_branches:
+      - release-v\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: false
+    decorate: true
+    decoration_config:
+      timeout: 5h
+      grace_period: 5m
+    max_concurrency: 6
+    cluster: prow-workloads
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-shared-images: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "automation/test.sh"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "52Gi"
