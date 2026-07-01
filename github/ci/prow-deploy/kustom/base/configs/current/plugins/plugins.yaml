@@ -502,7 +502,7 @@ plugins:
     - owners-label
     - release-note
     - trigger
-    
+
   kubevirt/kubevirt-migration-operator:
     plugins:
     - approve
@@ -576,6 +576,15 @@ plugins:
     - lgtm
     - owners-label
     - trigger
+
+  kubevirt/kubevirt-observability-controller:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+    - help
 
 external_plugins:
   libguestfs-appliance:
@@ -698,6 +707,7 @@ approve:
   - kubevirt/kubevirt-aie-webhook
   - kubevirt/ci-health
   - kubevirt/redfish-controller
+  - kubevirt/kubevirt-observability-controller
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -843,6 +853,7 @@ lgtm:
   - kubevirt/vm-file-restore-operator
   - kubevirt/ci-health
   - kubevirt/redfish-controller
+  - kubevirt/kubevirt-observability-controller
   review_acts_as_lgtm: true
 
 override:
@@ -906,6 +917,7 @@ triggers:
   - kubevirt/vm-file-restore-operator
   - kubevirt/ci-health
   - kubevirt/redfish-controller
+  - kubevirt/kubevirt-observability-controller
   ignore_ok_to_test: true
 - repos:
   - virtblocks/virtblocks
