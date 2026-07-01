@@ -17,7 +17,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: phased
-          image: quay.io/kubevirtci/phased:v20260624-f0a9591
+          image: quay.io/kubevirtci/phased:v20260630-1d4341e
           imagePullPolicy: IfNotPresent
           args:
             - --github-token-path=/etc/github/oauth
