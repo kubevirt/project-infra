@@ -418,50 +418,57 @@ branch-protection:
           branches:
             main:
               require_manually_triggered_jobs: true
-            release-0.33:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.32:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.31:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.30:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.29:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.28:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.27:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.26:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.25:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.24:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.23:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
+            release-0.4: &archived_branch
+              unmanaged: true
+            release-0.6: *archived_branch
+            release-0.8: *archived_branch
+            release-0.9: *archived_branch
+            release-0.10: *archived_branch
+            release-0.11: *archived_branch
+            release-0.12: *archived_branch
+            release-0.13: *archived_branch
+            release-0.14: *archived_branch
+            release-0.15: *archived_branch
+            release-0.16: *archived_branch
+            release-0.17: *archived_branch
+            release-0.18: *archived_branch
+            release-0.19: *archived_branch
+            release-0.20: *archived_branch
+            release-0.21: *archived_branch
+            release-0.22: *archived_branch
+            release-0.23: *archived_branch
+            release-0.24: *archived_branch
+            release-0.26: *archived_branch
+            release-0.27: *archived_branch
+            release-0.29: *archived_branch
+            release-0.30: *archived_branch
+            release-0.31: *archived_branch
+            release-0.32: *archived_branch
+            release-0.33: *archived_branch
+            release-0.34: *archived_branch
+            release-0.35: *archived_branch
+            release-0.36: *archived_branch
+            release-0.37: *archived_branch
+            release-0.38: *archived_branch
+            release-0.39: *archived_branch
+            release-0.40: *archived_branch
+            release-0.41: *archived_branch
+            release-0.42: *archived_branch
+            release-0.43: *archived_branch
+            release-0.44: *archived_branch
+            release-0.45: *archived_branch
+            release-0.46: *archived_branch
+            release-0.47: *archived_branch
+            release-0.48: *archived_branch
+            release-0.49: *archived_branch
+            release-0.50: *archived_branch
+            release-0.51: *archived_branch
+            release-0.52: *archived_branch
+            release-0.53: *archived_branch
+            release-0.54: *archived_branch
+            release-0.55: *archived_branch
+            release-0.56: *archived_branch
+            release-0.57: *archived_branch
         kubevirt-aie:
           branches:
             release-1.8-aie-nv:
